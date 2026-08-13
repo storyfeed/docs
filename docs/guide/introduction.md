@@ -1,15 +1,15 @@
 # Introduction
 
-Storyfeed records the activities that matter in your app, and reads them back
-as a feed — grouped, headline-ready, and renderable without any domain
-knowledge in your frontend.
+Storyfeed is an implementation of the activity feed pattern for Laravel.
+Activities are recorded explicitly, read back as a timeline or an aggregated
+feed, and serialized following
+[W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
 ```php
 Storyfeed::record(ActivityVerb::Upload, object: $document, actor: $user, target: $project);
 ```
 
-Record a burst of those, read the feed, and Storyfeed has already collapsed
-them into a story:
+Recorded in a burst, activities aggregate the way feeds are expected to:
 
 <div class="storyfeed-example">
 Bob, Sally, and 3 others uploaded files to Project X.
@@ -21,17 +21,11 @@ Bob, Sally, and 3 others uploaded files to Project X.
   event listener — you choose what makes the feed. No model spying, no magic.
 - **Reads never touch your domain tables.** Each entity is snapshotted at
   publish time, so a feed page is fast regardless of how many models it spans.
-- **Grouping happens behind the scenes.** Activities are grouped at write time
-  along multiple axes; the read picks the best telling.
+- **Aggregation happens behind the scenes.** Activities are grouped at write
+  time along multiple axes; the read picks the best one.
 - **The payload is a versioned contract.** Every item ships its own headline
   template, icon, and linked entities. Adding a new activity type never
   requires a frontend change.
-
-## Conformance
-
-Serialization follows [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
-— spec-conformant JSON-LD with a published `@context` — and ActivityPub
-federation is on the long-range roadmap.
 
 ## License
 

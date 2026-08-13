@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Storyfeed
   text: Activity streams for Laravel
-  tagline: Record the activities that matter. Read them back as one feed, grouped and headline-ready.
+  tagline: The activity feed pattern — timeline, aggregation, Activity Streams 2.0 — for your Laravel app.
   image:
     src: /logo.svg
     alt: Storyfeed
@@ -20,12 +20,12 @@ hero:
       link: https://newsroom.storyfeed.dev
 
 features:
-  - title: Curated recording
-    details: A typed API for publishing the activities that matter. You choose what makes the feed — no model spying.
-  - title: Self-describing reads
+  - title: Explicit recording
+    details: A typed API for publishing activities. You choose what makes the feed — no model spying.
+  - title: Self-describing payload
     details: Entity snapshots kill polymorphic N+1s. Every item ships its own headline template, icon, and linked entities.
-  - title: Grouping that doesn't lie
-    details: Activities collapse the way social feeds do ("…and 3 others") — with headlines that can only claim what's true of the group.
+  - title: Aggregation
+    details: Activities collapse into stories ("…and 3 others") — with headlines that only claim what is true of the group.
   - title: Activity Streams 2.0
     details: Spec-conformant JSON-LD with a published @context. ActivityPub on the long-range roadmap.
 ---

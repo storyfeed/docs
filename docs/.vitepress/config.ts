@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'Storyfeed',
-  description: 'Activity streams for Laravel. Record the activities that matter; read them back as one feed, grouped and headline-ready.',
+  description: 'The activity feed pattern for Laravel — timeline and aggregated reads, W3C Activity Streams 2.0 serialization.',
   lang: 'en-US',
 
   // Served at the root of docs.storyfeed.dev, so no base path.

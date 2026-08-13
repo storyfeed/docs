@@ -12,18 +12,22 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 
 1. **Code first.** Every concept is shown before it is explained. If a section
    has three paragraphs before its first code block, restructure it.
-2. **No autobiography, no selling.** The reader already clicked; positioning
-   prose ("the feature nobody asks for", the sixteen-years line) belongs on the
-   splash site, not in the guide. A docs page earns excitement by making the
-   thing look *easy*, not by claiming it is loved.
-3. **Short declarative sentences.** One idea each. Sub-clauses about why the
+2. **No autobiography, no selling, no category arguments.** The reader already
+   clicked; positioning prose belongs on the splash site. A docs page earns
+   excitement by making the thing look *easy*, not by claiming it is loved or
+   arguing about what it isn't.
+3. **Industry vocabulary, not invented vocabulary.** The pattern is an
+   *activity feed*; the flat read is a *timeline*; grouping is *aggregation*
+   (the package's own API says `aggregateGrammar`); the wire format is
+   *Activity Streams 2.0*. Humble means the reader recognizes every noun.
+4. **Short declarative sentences.** One idea each. Sub-clauses about why the
    API is shaped this way go in a `::: tip` or a "Why?" details block, or get
    cut.
-4. **Tables for anything enumerable** — options, modes, columns, tokens.
+5. **Tables for anything enumerable** — options, modes, columns, tokens.
    Prose lists hide information; tables scan.
-5. **Every page answers "what do I have when I'm done?" in its first two
+6. **Every page answers "what do I have when I'm done?" in its first two
    lines.**
-6. **Reference pages are exhaustive; guide pages are minimal.** A guide shows
+7. **Reference pages are exhaustive; guide pages are minimal.** A guide shows
    the one obvious path. Alternatives, edge cases, and configuration live in
    reference pages the guide links to.
 
