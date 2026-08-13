@@ -35,12 +35,12 @@ jobs:
 
       - run: npm run build
 
-      # enablement lets the workflow turn Pages on itself, so a freshly created
-      # repo needs no visit to Settings — and a future re-create can't leave the
-      # deploy failing on a checkbox nobody remembers.
+      # No `enablement: true` here: it needs admin rights the workflow token does
+      # not have in this org ("Resource not accessible by integration"), so it
+      # fails in a way that reads like a config error. Pages was enabled once via
+      # the API with build_type=workflow; if this repo is ever recreated, do that
+      # again rather than trusting a flag that cannot work here.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
