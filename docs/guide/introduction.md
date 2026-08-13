@@ -15,17 +15,6 @@ them into a story:
 Bob, Sally, and 3 others uploaded files to Project X.
 </div>
 
-## Streams, not logs
-
-Laravel is well served for audit logging — who changed what, for compliance and
-debugging. Storyfeed is the other thing: the narrative a product shows its own
-users. The difference is visible the moment a feed gets busy. An audit log has
-five rows; a stream has one sentence.
-
-Deciding which activities collapse together, along which axis, and what the
-resulting sentence can honestly claim is most of the work. Storyfeed does that
-part for you.
-
 ## How it works
 
 - **You record explicitly.** `Storyfeed::record()` from an action, observer, or

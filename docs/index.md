@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Storyfeed
   text: Activity streams for Laravel
-  tagline: The narrative a product shows its own users — not an audit log.
+  tagline: Record the activities that matter. Read them back as one feed, grouped and headline-ready.
   image:
     src: /logo.svg
     alt: Storyfeed
