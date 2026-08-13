@@ -1,34 +1,59 @@
 /**
- * Brand tokens. One hue, taken from the logo (sky-700), so light and dark are
- * the same decision made twice rather than two palettes.
+ * Brand tokens — amber on ink.
  *
- * Placeholder status: the logo is an SVG Repo mark, not a designed identity.
- * When there is a real one, this file and docs/public/logo.svg change together.
+ * The mark carries its own ink field (docs/public/logo.svg) because amber on
+ * white is unreadable at 1.7:1. That has a consequence the palette has to
+ * respect: the avatar amber and the LINK amber are deliberately different
+ * colours. Links run at amber-700 in light mode (5.0:1 on white) and amber-300
+ * in dark (11.2:1 on the dark page). Using the logo's #fbbf24 for body links
+ * would look right in a screenshot and fail for a real reader.
+ *
+ * Same rule on buttons: VitePress puts white text on the brand fill by default,
+ * which is 2.1:1 on amber. Button text is ink here, never white.
  */
 :root {
-  --vp-c-brand-1: #0369a1;
-  --vp-c-brand-2: #0284c7;
-  --vp-c-brand-3: #38bdf8;
-  --vp-c-brand-soft: rgba(3, 105, 161, 0.14);
+  --vp-c-brand-1: #b45309; /* amber-700 — links, active nav */
+  --vp-c-brand-2: #92400e; /* hover */
+  --vp-c-brand-3: #f59e0b; /* solid fills */
+  --vp-c-brand-soft: rgba(245, 158, 11, 0.14);
+
+  --vp-button-brand-bg: #f59e0b;
+  --vp-button-brand-hover-bg: #d97706;
+  --vp-button-brand-active-bg: #b45309;
+  --vp-button-brand-text: #0f172a;
+  --vp-button-brand-hover-text: #0f172a;
+  --vp-button-brand-active-text: #0f172a;
+  --vp-button-brand-border: transparent;
 }
 
 .dark {
-  --vp-c-brand-1: #7dd3fc;
-  --vp-c-brand-2: #38bdf8;
-  --vp-c-brand-3: #0ea5e9;
-  --vp-c-brand-soft: rgba(56, 189, 248, 0.16);
+  --vp-c-brand-1: #fbbf24; /* amber-300 — the logo's own amber, legible here */
+  --vp-c-brand-2: #f59e0b;
+  --vp-c-brand-3: #d97706;
+  --vp-c-brand-soft: rgba(251, 191, 36, 0.16);
+
+  --vp-button-brand-bg: #f59e0b;
+  --vp-button-brand-hover-bg: #fbbf24;
+  --vp-button-brand-active-bg: #d97706;
+  --vp-button-brand-text: #0f172a;
+  --vp-button-brand-hover-text: #0f172a;
+  --vp-button-brand-active-text: #0f172a;
 }
 
-/* The home hero gradient, from the same hue. */
+/* The home hero gradient, from the same two ambers. */
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #0369a1, #38bdf8);
+  --vp-home-hero-name-background: linear-gradient(120deg, #b45309, #f59e0b);
+}
+
+.dark {
+  --vp-home-hero-name-background: linear-gradient(120deg, #f59e0b, #fde68a);
 }
 
 /* Feed examples read as prose, so give sample headlines a quieter treatment
    than a code block — they are output, not something you type. */
 .storyfeed-example {
-  border-left: 3px solid var(--vp-c-brand-1);
+  border-left: 3px solid var(--vp-c-brand-3);
   padding: 0.25rem 0 0.25rem 1rem;
   margin: 1rem 0;
   color: var(--vp-c-text-2);
