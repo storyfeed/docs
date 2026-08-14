@@ -1,14 +1,16 @@
 # Anatomy of an activity stream
 
 This page defines every word the rest of the documentation uses, in plain
-English, by following **one burst of activity** from raw rows to a rendered
+English, by following **five real activities** from raw rows to a rendered
 sentence.
 
 No API here. Read it once and the vocabulary elsewhere stops being jargon.
 
-## The burst
+## 1. One activity
 
-Two people upload five files to one project over a few minutes:
+Two people upload five files to one project over a few minutes. Recorded, that is
+five rows — and every section below is about turning them into something a person
+wants to read:
 
 | # | who | did what | to what | where |
 |---|---|---|---|---|
@@ -18,12 +20,8 @@ Two people upload five files to one project over a few minutes:
 | 4 | Marcus | uploaded | proof-sheet.fig | Password Crackdown |
 | 5 | Marcus | uploaded | wordmark-v3.png | Password Crackdown |
 
-Five rows. Every section below is about turning them into something a person
-wants to read.
-
-## 1. One activity
-
-An **activity** is one recorded fact, shaped like a sentence with named slots:
+Take row 1. An **activity** is one recorded fact, shaped like a sentence with
+named slots:
 
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
 > **to Password Crackdown** *(target)*
@@ -70,7 +68,7 @@ log file, and the reader's own actions dominate it:
 
 What a person wants is one line:
 
-> Ines, Marcus and 3 others uploaded 5 files to Password Crackdown
+> Ines and Marcus uploaded 5 files to Password Crackdown
 
 Everything from here on is machinery for producing that line honestly. The word
 for it is **aggregation** — collapsing several activities into one telling.
@@ -78,9 +76,9 @@ for it is **aggregation** — collapsing several activities into one telling.
 ## 3. An axis is the question you group by
 
 An **axis** is a rule for deciding which activities count as *the same story*.
-Each axis asks a different question of the burst above:
+Each axis asks a different question of those five rows:
 
-| axis | its question | what our burst becomes |
+| axis | its question | what our five rows become |
 |---|---|---|
 | **repeat** | same person, doing the same thing again? | "Ines uploaded 3 files to Password Crackdown" |
 | **actors** | different people, same thing, same place? | "Ines and Marcus uploaded 5 files to Password Crackdown" |
@@ -90,9 +88,9 @@ Each axis asks a different question of the burst above:
 Two things the word "axis" does not tell you, and both matter:
 
 **It is not a sort order or a coordinate.** It is a grouping question. If it
-helps, read "axis" as "angle" — the angle you look at the burst from.
+helps, read "axis" as "angle" — the angle you look at the activities from.
 
-**Exactly one axis wins per activity.** The burst above could be told as a
+**Exactly one axis wins per activity.** Our five rows could be told as a
 `repeat` story or an `actors` story; it is not told as both. Choosing is called
 **curation**, and it happens when the activity is recorded, not when it is read.
 
@@ -113,7 +111,7 @@ An axis only applies when there is enough of the thing it collapses. Otherwise
 | `object` | 2+ activities on one object |
 | `repeat` | the fallback — applies when nothing else does |
 
-So our five-row burst has **two** actors, and `actors` wants three. It stays two
+So our five rows have **two** actors, and `actors` wants three. They stay two
 `repeat` stories: "Ines uploaded 3 files", "Marcus uploaded 2 files". Add a third
 person and the same rows become one `actors` story.
 
@@ -199,9 +197,10 @@ The difference that matters: a composite is a real row, so it has a permanent
 identity you can link to. A derived group's id is stable only while that axis
 keeps winning.
 
-A **batch** is a third thing and is not a feed concept at all: it is the package
-noticing that one person's activity arrived in a burst, used to decide when a
-burst has finished. Batches are how composites can be minted automatically; they
+A **batch** is a third thing and is not a feed concept at all. A **burst** is
+several activities by one person arriving close together — our five rows are two
+bursts, one each. A batch is the package tracking a burst so it can tell when the
+person has stopped. Batches are how composites can be minted automatically; they
 never appear in a feed themselves.
 
 ## 8. Read modes: how collapsed do you want it?
@@ -214,7 +213,7 @@ The same activities, three ways, named for what the *reader* gets:
 | **live** | grouped as things happen |
 | **summary** | the collapsed best-angle view — the default |
 
-Our burst: `log` shows five lines, `live` and `summary` show two ("Ines uploaded
+Our five rows: `log` shows five lines, `live` and `summary` show two ("Ines uploaded
 3 files", "Marcus uploaded 2"). Same facts, different granularity, and **each
 mode gives every activity exactly one node** — never both a group and its
 members.
