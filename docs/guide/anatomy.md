@@ -84,6 +84,22 @@ const summary = [
     contexts: [p('7','Metaverse Pivot')], distinct: { actors: 3, contexts: 1 } }),
 ]
 
+// Section 2 reuses section 1's comment, plus the context it actually carries —
+// so the fourth role arrives on an activity the reader has already read.
+const withContext = [
+  node({ id: 'c2', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: m('6', 'Ines Duarte'),
+    object: { type: 'comment', id: '932', url: null, component: 'Note',
+      label: 'The mobile breakpoint eats the caption — the older version handled this better.',
+      data: { excerpt: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?' } },
+    target: d('89', 'style-tile-rev-a.sketch'), context: p('3', 'Port Migration') }),
+  node({ id: 'c1', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
+    headline_template: ':actor added the task :object in :context',
+    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table'),
+    context: p('3', 'Port Migration') }),
+]
+
 const oneActivity = [
   node({ id: 'a6', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
@@ -91,13 +107,13 @@ const oneActivity = [
     object: { type: 'comment', id: '932', url: null, component: 'Note',
       label: 'The mobile breakpoint eats the caption — the older version handled this better.',
       data: { excerpt: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?' } },
-    target: d('89', 'style-tile-rev-a.sketch'), context: p('3', 'Port Migration') }),
+    target: d('89', 'style-tile-rev-a.sketch') }),
   node({ id: 'a5', verb: 'upload', icon: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
-    headline_template: ':actor uploaded :object to :context',
-    actor: m('6', 'Ines Duarte'), object: d('91', 'pricing-table-final.docx'), context: p('3', 'Port Migration') }),
+    headline_template: ':actor uploaded :object to :target',
+    actor: m('6', 'Ines Duarte'), object: d('91', 'pricing-table-final.docx'), target: p('3', 'Port Migration') }),
   node({ id: 'a4', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
-    headline_template: ':actor added the task :object in :context',
-    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table'), context: p('3', 'Port Migration') }),
+    headline_template: ':actor added the task :object',
+    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table') }),
   node({ id: 'a3', verb: 'create', icon: 'folder', published_at: '2026-08-13T16:00:00.000000Z',
     headline_template: ':actor created the project :object for :target',
     actor: m('6', 'Ines Duarte'), object: p('9', 'Bird Removal'), target: c('2', 'Chirp') }),
@@ -118,21 +134,34 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 > **to Password Crackdown** *(target)*
 
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
-The other four slots are the **roles**, and they hold entities.
+The three **roles** hold entities: the **actor** who acted, the **object** they
+acted on, and the **target** the act was aimed at.
 
 ### Examples
 
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
   <template #annotations="{ node }">
-    <Annotation><SlotMapping :node="node" /></Annotation>
+    <Annotation><SlotMapping :node="node" :slots="['verb', 'actor', 'object', 'target']" /></Annotation>
   </template>
 </FeedStream>
 
-The comment is the shape worth studying: five slots filled, and the headline names
-the **target** rather than the object — because the object is the comment itself,
-whose label is the comment text. The document it was left on is what the sentence
-needs, and the project it happened in is the context.
+The comment is the shape worth studying: the headline names the **target** rather
+than the object, because the object is the comment itself and its label is the
+comment text. The document it was left on is what the sentence needs.
+
+## 2. Context: where it happened
+
+A fourth role, **context**, records where an activity happened — the container it
+belongs to. Here is the same comment with the context it actually carries, and a
+task created inside a project:
+
+<FeedStream :items="withContext" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+  <template #annotations="{ node }">
+    <Annotation><SlotMapping :node="node" :slots="['verb', 'actor', 'object', 'target', 'context']" /></Annotation>
+  </template>
+</FeedStream>
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
@@ -144,7 +173,7 @@ needs, and the project it happened in is the context.
 > project was both aimed at the project and inside it. Filling both with the same
 > model is a perfectly ordinary activity.
 
-## 2. Why the raw list stops working
+## 3. Why the raw list stops working
 
 One activity reads fine. Here are eight minutes of the demo app's real history,
 one line per activity — the **log**:
@@ -183,7 +212,7 @@ One of those axes is not built in: `scene` is a **custom axis** the demo app
 registered for itself, grouping by project. [Aggregation](/deeper/aggregation)
 covers writing one.
 
-## 3. An axis is the question you group by
+## 4. An axis is the question you group by
 
 An **axis** is a rule for deciding which activities count as *the same story*.
 Each axis asks a different question of those five rows:
@@ -207,7 +236,7 @@ group is keyed by *axis + hash*, so the same activities grouped along a differen
 axis are a genuinely different group, with a different id. That is why an axis
 can't be renamed after the fact — it isn't a display name.
 
-## 4. Eligibility: when an axis declines
+## 5. Eligibility: when an axis declines
 
 An axis only applies when there is enough of the thing it collapses. Otherwise
 "Ines and 0 others uploaded" — technically grouped, pointless to read.
@@ -230,7 +259,7 @@ Two consequences:
 - **Below threshold, activities stay single.** An ungrouped activity is not a
   failure; it is a group of one that nobody bothered to call a group.
 
-## 5. What the reader's app receives
+## 6. What the reader's app receives
 
 A feed page is a list of **nodes**. There are exactly two kinds.
 
@@ -257,7 +286,7 @@ of four.
 is `count: 5`, `distinct.actors: 2`. "Ines, Marcus and 3 others" would be wrong
 here — there is no third person. Which is the point of separating them.
 
-## 6. Grammar turns a node into a sentence
+## 7. Grammar turns a node into a sentence
 
 **Grammar** is the registry of headline templates. A template is a string with
 **tokens**:
@@ -290,7 +319,7 @@ Two lists in one sentence stay accurate and become unreadable — a hundred and
 eighty characters of names. Keep the second collapsed dimension as `:count`.
 :::
 
-## 7. Composites: a story you authored, not one that was inferred
+## 8. Composites: a story you authored, not one that was inferred
 
 Everything so far is a group the server *derived* from separate activities. A
 **composite** is the other direction: **one** activity whose object is a
@@ -310,7 +339,7 @@ bursts, one each. A batch is the package tracking a burst so it can tell when th
 person has stopped. Batches are how composites can be minted automatically; they
 never appear in a feed themselves.
 
-## 8. Read modes: how collapsed do you want it?
+## 9. Read modes: how collapsed do you want it?
 
 The same activities, three ways, named for what the *reader* gets:
 
@@ -325,7 +354,7 @@ Our five rows: `log` shows five lines, `live` and `summary` show two ("Ines uplo
 mode gives every activity exactly one node** — never both a group and its
 members.
 
-## 9. Reconciliation: the feed changes under the reader
+## 10. Reconciliation: the feed changes under the reader
 
 Groups are not stable rows. Our two `repeat` stories become one `actors` story
 the moment a third person uploads — a **new node, with a new id**, containing

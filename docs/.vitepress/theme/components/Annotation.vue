@@ -4,18 +4,25 @@
  * notch pointing up at the node it explains, so it reads as a tutorial overlay
  * pinned to that activity rather than as part of the feed.
  *
- * Deliberately unlike the surrounding UI — tinted surface, mono tab, amber rule.
- * An annotation that looked like a feed affordance would teach readers that the
+ * Deliberately unlike the surrounding UI — tinted surface, mono tab, notch. An
+ * annotation that looked like a feed affordance would teach readers that the
  * package renders it, and it renders nothing of the kind.
+ *
+ * The tone is off-brand on purpose. Amber is the product's voice — links, hero,
+ * logo — so an amber annotation reads as part of what is being demonstrated, and
+ * at this density turns the page yellow. The narrator gets a different colour.
  *
  * Holds no knowledge of what it wraps, so it can carry a slot mapping, a payload
  * dump or a curation trace equally.
  */
-withDefaults(defineProps<{ label?: string }>(), { label: 'Anatomy' })
+withDefaults(defineProps<{ label?: string; tone?: string }>(), {
+  label: 'Anatomy',
+  tone: 'slate',
+})
 </script>
 
 <template>
-  <aside class="sf-annotation">
+  <aside class="sf-annotation" :class="`sf-annotation--${tone}`">
     <p class="sf-annotation__tab">{{ label }}</p>
     <slot />
   </aside>
@@ -23,10 +30,6 @@ withDefaults(defineProps<{ label?: string }>(), { label: 'Anatomy' })
 
 <style scoped>
 .sf-annotation {
-  --sf-anno-bg: #fffbeb;
-  --sf-anno-border: rgba(180, 83, 9, 0.34);
-  --sf-anno-tab: #92400e;
-
   position: relative;
   margin: 14px 0 2px;
   border: 1px solid var(--sf-anno-border);
@@ -35,7 +38,64 @@ withDefaults(defineProps<{ label?: string }>(), { label: 'Anatomy' })
   padding: 9px 12px 10px;
 }
 
-.dark .sf-annotation {
+/* Tones. The tab colour clears 4.5:1 on its own surface in both schemes — the
+   tab is the only text the annotation owns, and it is small and uppercase, which
+   is the combination that punishes a decorative colour choice. */
+.sf-annotation--slate {
+  --sf-anno-bg: #f1f5f9;
+  --sf-anno-border: rgba(51, 65, 85, 0.26);
+  --sf-anno-tab: #334155;
+}
+
+.dark .sf-annotation--slate {
+  --sf-anno-bg: #1a2130;
+  --sf-anno-border: rgba(148, 163, 184, 0.3);
+  --sf-anno-tab: #cbd5e1;
+}
+
+.sf-annotation--blue {
+  --sf-anno-bg: #eff6ff;
+  --sf-anno-border: rgba(29, 78, 216, 0.28);
+  --sf-anno-tab: #1d4ed8;
+}
+
+.dark .sf-annotation--blue {
+  --sf-anno-bg: #131c33;
+  --sf-anno-border: rgba(147, 197, 253, 0.3);
+  --sf-anno-tab: #93c5fd;
+}
+
+.sf-annotation--teal {
+  --sf-anno-bg: #f0fdfa;
+  --sf-anno-border: rgba(15, 118, 110, 0.28);
+  --sf-anno-tab: #0f766e;
+}
+
+.dark .sf-annotation--teal {
+  --sf-anno-bg: #0f2320;
+  --sf-anno-border: rgba(94, 234, 212, 0.28);
+  --sf-anno-tab: #5eead4;
+}
+
+.sf-annotation--violet {
+  --sf-anno-bg: #f5f3ff;
+  --sf-anno-border: rgba(109, 40, 217, 0.28);
+  --sf-anno-tab: #6d28d9;
+}
+
+.dark .sf-annotation--violet {
+  --sf-anno-bg: #1d1833;
+  --sf-anno-border: rgba(196, 181, 253, 0.3);
+  --sf-anno-tab: #c4b5fd;
+}
+
+.sf-annotation--amber {
+  --sf-anno-bg: #fffbeb;
+  --sf-anno-border: rgba(180, 83, 9, 0.34);
+  --sf-anno-tab: #92400e;
+}
+
+.dark .sf-annotation--amber {
   --sf-anno-bg: #241d10;
   --sf-anno-border: rgba(251, 191, 36, 0.3);
   --sf-anno-tab: #fbbf24;

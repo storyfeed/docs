@@ -8,9 +8,16 @@ import { computed } from 'vue'
  * Derived entirely from the node, so an example's mapping cannot disagree with
  * the sentence above it — they are the same data read twice.
  */
-const props = defineProps<{ node: Record<string, any> }>()
+/**
+ * `slots` limits the mapping to the keys a section has actually introduced, so an
+ * early example is not annotated with vocabulary the reader has not met yet.
+ * Omitted, it maps everything the node carries.
+ */
+const props = defineProps<{ node: Record<string, any>; slots?: string[] }>()
 
 const ROLES = ['actor', 'object', 'target', 'context'] as const
+
+const shows = (key: string) => !props.slots || props.slots.includes(key)
 
 /**
  * Each role holds a typed entity, so show the type beside the label. Without it a
@@ -27,23 +34,33 @@ const rows = computed(() => {
   const node = props.node
   const out: { slot: string; value: string; type?: string; code?: boolean }[] = []
 
-  out.push({ slot: 'kind', value: node.kind, code: true })
-  out.push({ slot: 'verb', value: node.verb, code: true })
+  if (shows('kind')) {
+    out.push({ slot: 'kind', value: node.kind, code: true })
+  }
+
+  if (shows('verb')) {
+    out.push({ slot: 'verb', value: node.verb, code: true })
+  }
 
   if (node.kind === 'group') {
-    out.push({ slot: 'axis', value: node.axis, code: true })
-    out.push({ slot: 'count', value: String(node.count) })
+    if (shows('axis')) {
+      out.push({ slot: 'axis', value: node.axis, code: true })
+    }
+
+    if (shows('count')) {
+      out.push({ slot: 'count', value: String(node.count) })
+    }
   }
 
   for (const role of ROLES) {
     const entity = node[role]
 
-    if (entity?.label) {
+    if (entity?.label && shows(role)) {
       out.push({ slot: role, value: entity.label, type: entity.type })
     }
   }
 
-  if (node.icon) {
+  if (node.icon && shows('icon')) {
     out.push({ slot: 'icon', value: node.icon, code: true })
   }
 
