@@ -10,7 +10,7 @@ component reading a real payload. How it gets from one to the other is the rest 
 these docs.
 
 <script setup>
-import { who, where, document, comment, activity, group } from '../.vitepress/theme/samples'
+import { who, where, document, comment, entity, activity, group } from '../.vitepress/theme/samples'
 
 const designer = who.designer
 const reviewer = who.reviewer
@@ -37,6 +37,31 @@ const burst = group({
   distinct: { actors: 1, objects: 7, targets: 1 },
 })
 
+const crowd = group({
+  id: 'i7', verb: 'upload', axis: 'actors', count: 5, icon: 'file-up',
+  published_at: '2026-08-14T14:31:00.000000Z',
+  headline_template: ':actors uploaded :count files to :target',
+  actors: [who.designer, who.dev, who.reviewer], targets: [crackdown],
+  distinct: { actors: 5, objects: 5, targets: 1 },
+})
+
+const story = group({
+  id: 'i8', verb: 'approve', axis: 'composite', count: 2, icon: 'file-check',
+  published_at: '2026-08-14T14:20:00.000000Z',
+  headline_template: ':actor approved :count files in :context',
+  actors: [who.ops], contexts: [where.migration],
+  objects: [document('80', 'wordmark-v3.png'), document('81', 'hero-mobile-rev-a.fig')],
+  distinct: { actors: 1, objects: 2, contexts: 1 },
+})
+
+const external = activity({
+  id: 'i9', verb: 'sync', icon: 'refresh-cw',
+  published_at: '2026-08-14T13:55:00.000000Z',
+  headline_template: ':actor synced :object to :target',
+  actor: entity('storyfeed.party', '1', 'Concur Web Service', null),
+  object: document('85', 'expense-report-q3.pdf'), target: crackdown,
+})
+
 const note = activity({
   id: 'i3', verb: 'comment', icon: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
@@ -48,35 +73,97 @@ const note = activity({
 
 </script>
 
-## What you record, and what it reads back
+## Single activity
 
 ```php
-Storyfeed::record('upload', $document, actor: $user, target: $project);
+Storyfeed::activity()
+    ->actor($user)
+    ->verb('upload', $document)
+    ->to($project)
+    ->publish();
 ```
 
 <FeedStream :items="[upload]" :grouped="false" />
 
-Record the same thing a few times and it arrives aggregated, with no second call:
+## Consecutive activities
+
+The same person, the same act, several times. Grouped as they are written — there
+is no second call.
 
 ```php
 foreach ($documents as $document) {
-    Storyfeed::record('upload', $document, actor: $user, target: $project);
+    Storyfeed::activity()
+        ->actor($user)
+        ->verb('upload', $document)
+        ->to($project)
+        ->publish();
 }
 ```
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-A different verb, and an object that carries its own preview:
+## The same act by different people
 
 ```php
-Storyfeed::record('comment', $comment, actor: $user, target: $document);
+foreach ($uploads as [$user, $document]) {
+    Storyfeed::activity()
+        ->actor($user)
+        ->verb('upload', $document)
+        ->to($project)
+        ->publish();
+}
+```
+
+<FeedStream :items="[crowd]" :grouped="false" />
+
+## A story you author yourself
+
+One activity over many objects, recorded that way on purpose — a real row with a
+permanent id, not a grouping the server inferred.
+
+```php
+Storyfeed::activity()
+    ->actor($user)
+    ->verb('approve')
+    ->objects($documents)
+    ->context($project)
+    ->publish();
+```
+
+<FeedStream :items="[story]" :grouped="false" />
+
+## An object that carries its own preview
+
+```php
+Storyfeed::activity()
+    ->actor($user)
+    ->verb('comment', $comment)
+    ->target($document)
+    ->publish();
 ```
 
 <FeedStream :items="[note]" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
+## A participant with no model
+
+An external system, or your app acting on its own behalf. Named, in any role, with
+nothing in your database to point at.
+
+```php
+Storyfeed::activity()
+    ->actor('Concur Web Service')
+    ->verb('sync', $document)
+    ->to($project)
+    ->publish();
+```
+
+<FeedStream :items="[external]" :grouped="false" />
+
 ## How it works
+
+
 
 
 
