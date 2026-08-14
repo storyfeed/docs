@@ -11,14 +11,19 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
 > **to Password Crackdown** *(target)*
 
-Four **roles**. Any of them can be empty:
+Five named slots. The verb is the only one an activity cannot go without; the four
+**roles** are each optional:
 
-| role | the question it answers |
-|---|---|
-| **actor** | who did it |
-| **object** | what it was done to |
-| **target** | what the act was directed at |
-| **context** | the container it happened inside |
+| slot | the question it answers | |
+|---|---|---|
+| **verb** | what happened | required |
+| **actor** | who did it | a role |
+| **object** | what it was done to | a role |
+| **target** | what the act was directed at | a role |
+| **context** | the container it happened inside | a role |
+
+The verb is a plain string — `upload`, `confirm`, `archive`. The four roles hold
+entities, and any of them can be empty.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
