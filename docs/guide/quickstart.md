@@ -3,6 +3,22 @@
 Five steps: make a model feedable, author a story, publish an activity, read
 the feed, render it. The example is a document being uploaded to a project.
 
+<script setup>
+import { member, project, document, activity } from '../.vitepress/theme/samples'
+
+// The same names the snippets use, so the rendered result is this page's example
+// and not a different one.
+const published = activity({
+  id: 'q1', verb: 'upload', icon: 'file-up',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor uploaded :object to :target',
+  actor: member('6', 'Ines Duarte'),
+  object: document('88', 'annual-report-v3.fig'),
+  target: project('4', 'Password Crackdown'),
+})
+</script>
+
+
 ## 1. Make your models feedable
 
 Anything that appears in the feed — actor, object, target, or context —
@@ -108,7 +124,6 @@ member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
 ## 3. Publish an activity
 
 ```php
-// Ines Duarte uploaded annual-report-v3.fig to Password Crackdown
 Storyfeed::activity()
     ->actor($user)
     ->verb('upload', $document)
@@ -129,10 +144,16 @@ listener.
 
 ```php
 $page = Storyfeed::feed()
-    ->context($project)
+    ->involving($project)
     ->limit(20)
     ->get();
 ```
+
+<FeedStream :items="[published]" :grouped="false" />
+
+That is the activity from step 3, read back. `involving()` matches the project in
+any role, so it finds this one whether the project was the target, the context or
+the object — including the activity that created the project itself.
 
 `$page` is the payload envelope — `payload_version`, `items`, `next_cursor`,
 `sync_token` — and is `Responsable`, so an API endpoint is one line:
