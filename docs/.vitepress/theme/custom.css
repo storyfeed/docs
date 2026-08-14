@@ -59,3 +59,27 @@
   color: var(--vp-c-text-2);
   font-style: italic;
 }
+
+/* ─── Feed widgets in prose ───────────────────────────────────────────────────
+   The kit owns its internal spacing; the docs own the space around it. Keeping
+   these rules here rather than in feed/feed.css means that file stays
+   byte-comparable with the demo app's copy, so re-porting is a diff and not a
+   merge. */
+
+.vp-doc .sf-feed {
+  margin: 2rem 0 2.75rem;
+}
+
+/* A heading before a feed needs the same air a heading before a paragraph gets —
+   VitePress styles its own elements and knows nothing about ours. */
+.vp-doc h2 + .sf-feed,
+.vp-doc h3 + .sf-feed {
+  margin-top: 1.75rem;
+}
+
+/* A feed followed by prose, and prose followed by a feed, both need the gap to
+   read as a break rather than a continuation. */
+.vp-doc .sf-feed + p,
+.vp-doc .sf-feed + .custom-block {
+  margin-top: 0;
+}

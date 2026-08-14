@@ -56,8 +56,8 @@ const rows = computed(() => {
 .sf-mapping {
   display: flex;
   flex-wrap: wrap;
-  gap: 1px 16px;
-  margin: 4px 0 0;
+  gap: 5px 18px;
+  margin: 9px 0 2px;
   font-size: 12.5px;
 }
 
