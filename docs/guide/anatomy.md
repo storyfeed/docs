@@ -142,7 +142,7 @@ acted on, and the **target** the act was aimed at.
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
   <template #annotations="{ node }">
-    <Annotation><SlotMapping :node="node" :slots="['verb', 'actor', 'object', 'target']" /></Annotation>
+    <Annotation><SlotMapping :node="node" :slots="['actor', 'verb', 'object', 'target']" /></Annotation>
   </template>
 </FeedStream>
 
@@ -159,7 +159,7 @@ task created inside a project:
 <FeedStream :items="withContext" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
   <template #annotations="{ node }">
-    <Annotation><SlotMapping :node="node" :slots="['verb', 'actor', 'object', 'target', 'context']" /></Annotation>
+    <Annotation><SlotMapping :node="node" :slots="['actor', 'verb', 'object', 'target', 'context']" /></Annotation>
   </template>
 </FeedStream>
 

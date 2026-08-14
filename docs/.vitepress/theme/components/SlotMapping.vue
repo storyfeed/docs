@@ -2,22 +2,22 @@
 import { computed } from 'vue'
 
 /**
- * Docs-only: renders a node's filled slots beneath its headline, through the
- * kit's `body` slot.
+ * Docs-only: maps a node's slots, for the kit's `annotations` slot.
  *
  * Derived entirely from the node, so an example's mapping cannot disagree with
  * the sentence above it — they are the same data read twice.
- */
-/**
- * `slots` limits the mapping to the keys a section has actually introduced, so an
- * early example is not annotated with vocabulary the reader has not met yet.
- * Omitted, it maps everything the node carries.
+ *
+ * `slots` fixes exactly which keys are shown and in what order. An empty slot
+ * still gets a row, reading `null`: that a slot can be empty is part of the
+ * anatomy, and a mapping that silently omitted it would make every activity look
+ * as though it filled everything. Omit the prop to map whatever the node carries.
  */
 const props = defineProps<{ node: Record<string, any>; slots?: string[] }>()
 
 const ROLES = ['actor', 'object', 'target', 'context'] as const
 
-const shows = (key: string) => !props.slots || props.slots.includes(key)
+/** Keys that are not roles, so they read as values rather than entities. */
+const PLAIN = ['kind', 'verb', 'axis'] as const
 
 /**
  * Each role holds a typed entity, so show the type beside the label. Without it a
@@ -32,39 +32,43 @@ const LONG = 42
 
 const rows = computed(() => {
   const node = props.node
-  const out: { slot: string; value: string; type?: string; code?: boolean }[] = []
 
-  if (shows('kind')) {
-    out.push({ slot: 'kind', value: node.kind, code: true })
-  }
+  /** One row's value: an entity becomes type + label, anything else prints as-is. */
+  const resolve = (key: string) => {
+    if (ROLES.includes(key as any)) {
+      const entity = node[key]
 
-  if (shows('verb')) {
-    out.push({ slot: 'verb', value: node.verb, code: true })
-  }
-
-  if (node.kind === 'group') {
-    if (shows('axis')) {
-      out.push({ slot: 'axis', value: node.axis, code: true })
+      return entity?.label
+        ? { value: entity.label, type: entity.type }
+        : { value: 'null', empty: true }
     }
 
-    if (shows('count')) {
-      out.push({ slot: 'count', value: String(node.count) })
+    if (key === 'count') {
+      return { value: String(node.count) }
     }
+
+    const value = node[key]
+
+    return value == null
+      ? { value: 'null', empty: true }
+      : { value: String(value), code: PLAIN.includes(key as any) }
   }
 
-  for (const role of ROLES) {
-    const entity = node[role]
-
-    if (entity?.label && shows(role)) {
-      out.push({ slot: role, value: entity.label, type: entity.type })
-    }
+  // With `slots` given, the list is exhaustive and ordered — nothing added,
+  // nothing dropped, so every example in a section maps to the same shape.
+  if (props.slots) {
+    return props.slots.map((slot) => ({ slot, ...resolve(slot) }))
   }
 
-  if (node.icon && shows('icon')) {
-    out.push({ slot: 'icon', value: node.icon, code: true })
-  }
+  const keys = [
+    'kind',
+    'verb',
+    ...(node.kind === 'group' ? ['axis', 'count'] : []),
+    ...ROLES.filter((role) => node[role]?.label),
+    ...(node.icon ? ['icon'] : []),
+  ]
 
-  return out
+  return keys.map((slot) => ({ slot, ...resolve(slot) }))
 })
 </script>
 
@@ -74,11 +78,12 @@ const rows = computed(() => {
       v-for="row in rows"
       :key="row.slot"
       class="sf-mapping-pair"
-      :class="{ 'sf-mapping-pair--wide': row.value.length > LONG }"
+      :class="{ 'sf-mapping-pair--wide': !row.empty && row.value.length > LONG }"
     >
       <dt>{{ row.slot }}</dt>
       <dd>
         <code v-if="row.code">{{ row.value }}</code>
+        <em v-else-if="row.empty" class="sf-mapping-null">null</em>
         <template v-else>
           <span v-if="row.type" class="sf-mapping-type">{{ row.type }}</span>
           {{ row.value }}
@@ -89,6 +94,14 @@ const rows = computed(() => {
 </template>
 
 <style scoped>
+.sf-mapping-null {
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  font-style: normal;
+  color: var(--vp-c-text-3, #8a94a6);
+  opacity: 0.75;
+}
+
 .sf-mapping {
   display: flex;
   flex-wrap: wrap;
