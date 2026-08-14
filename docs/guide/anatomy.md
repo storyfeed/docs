@@ -118,13 +118,7 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
 The other four slots are the **roles**, and they hold entities.
 
-Which slots an activity fills follows from the sentence you are recording. Below is
-a feed of six activities, rendered by the **same components the
-[demo app](https://newsroom.storyfeed.dev) uses** — each showing the story a reader
-sees, then the slots it was recorded with.
-
-They are ordered by how many slots they fill, which is useful for learning and is
-not how a feed looks: a real stream is chronological and mixed.
+### Examples
 
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><SlotMapping :node="node" /></template>
@@ -134,12 +128,6 @@ The comment is the shape worth studying: five slots filled, and the headline nam
 the **target** rather than the object — because the object is the comment itself,
 whose label is the comment text. The document it was left on is what the sentence
 needs, and the project it happened in is the context.
-
-Two details carried over from the real app. Document labels are filenames with
-version suffixes, which is why an object needs a label and a link rather than an
-id. And each item's circle is the **actor's** avatar — the payload also ships an
-`icon` token (`file-up`, `message-circle`) which this renderer falls back to when
-an activity has no actor. The package ships no icons; the token is yours to map.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
@@ -366,6 +354,7 @@ arrive with zero items and a usable cursor.
 | **count** | activities in the group | distinct people (that's `distinct.actors`) |
 | **grammar** | the registry of headline templates | rendered prose |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
+| **icon** | a token the payload ships, e.g. `file-up` | an image, or a set the package owns |
 | **composite** | one authored story about many objects | a derived group |
 | **batch** | a burst-detection window | anything a reader sees |
 | **read mode** | how collapsed the reader wants it | a filter |
