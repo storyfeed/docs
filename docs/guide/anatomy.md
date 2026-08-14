@@ -25,14 +25,8 @@ Four **roles**. Any of them can be empty:
 Target is what the act was aimed at. Context is where it happened.
 
 A comment on a document has the **document** as its target and the **project** as
-its context. Both are true of the same activity, and they answer different
-questions later: "what happened to this document" reads the target, "what happened
-in this project" reads the context.
-
-Which roles you record decides which questions your feed can answer. Recording
-"project created" with the project as the **object** and no context means a
-context-scoped project page will not include it — the activity is about the
-project, but it did not happen inside it.
+its context. Both are true of the same activity, and neither substitutes for the
+other.
 
 ### Anonymous actors and parties
 
