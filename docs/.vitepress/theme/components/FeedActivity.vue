@@ -52,10 +52,10 @@ const slots = computed(() => [
     </div>
 
     <dl class="sf-slots">
-      <template v-for="row in slots" :key="row.slot">
+      <div v-for="row in slots" :key="row.slot" class="sf-slot">
         <dt>{{ row.slot }}</dt>
         <dd><code v-if="row.code">{{ row.value }}</code><template v-else>{{ row.value }}</template></dd>
-      </template>
+      </div>
     </dl>
   </article>
 </template>
@@ -99,30 +99,44 @@ const slots = computed(() => [
   white-space: nowrap;
 }
 
-/* The mapping: this activity's slots, as its own detail block. */
+/* The mapping: one thin metadata line, so a run of items still reads as a feed
+   rather than as a stack of tables. */
 .sf-slots {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 2px 14px;
-  margin: 12px 0 0;
-  padding-top: 10px;
-  border-top: 1px dashed var(--vp-c-divider);
-  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 6px 0 0;
+  padding: 0;
+  font-size: 12.5px;
+}
+
+.sf-slot {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .sf-slots dt {
   color: var(--vp-c-text-3);
   font-family: var(--vp-font-family-mono);
-  font-size: 12px;
+  font-size: 11.5px;
+  align-self: center;
+}
+
+.sf-slots dt::after {
+  content: ':';
 }
 
 .sf-slots dd {
   margin: 0;
-  color: var(--vp-c-text-1);
+  color: var(--vp-c-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sf-slots code {
-  font-size: 12px;
-  padding: 1px 5px;
+  font-size: 11.5px;
+  padding: 0 4px;
 }
 </style>

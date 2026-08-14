@@ -35,7 +35,7 @@ defineProps<{ title?: string }>()
   border: 0;
   border-radius: 0;
   background: none;
-  padding: 14px 2px 12px;
+  padding: 12px 2px 11px;
   margin: 0;
 }
 
