@@ -61,25 +61,48 @@
 }
 
 /* ─── Feed widgets in prose ───────────────────────────────────────────────────
-   The kit owns its internal spacing; the docs own the space around it. Keeping
-   these rules here rather than in feed/feed.css means that file stays
-   byte-comparable with the demo app's copy, so re-porting is a diff and not a
+   A rendered feed is output, so it gets a well of its own that lines up with the
+   code block above it: same 8px radius, same 16px vertical rhythm, same corner
+   label slot. The difference is deliberate — a code block is filled, this is
+   page-coloured inside a ring, because one is what you type and the other is what
+   a browser shows.
+
+   These rules live here rather than in feed/feed.css so that file stays
+   byte-comparable with the demo app's copy, and re-porting is a diff not a
    merge. */
 
 .vp-doc .sf-feed {
-  margin: 2rem 0 2.75rem;
+  position: relative;
+  margin: 16px 0 28px;
+  padding: 22px 24px 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
 }
 
-/* A heading before a feed needs the same air a heading before a paragraph gets —
-   VitePress styles its own elements and knows nothing about ours. */
+/* Mirrors the language tag VitePress puts on a code block, in the same corner at
+   the same size, so the pair reads as input then output. */
+.vp-doc .sf-feed::before {
+  content: 'rendered';
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  z-index: 2;
+  color: var(--vp-code-lang-color);
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* A heading straight before a feed needs the air a heading before a paragraph
+   gets — VitePress styles its own elements and knows nothing about ours. */
 .vp-doc h2 + .sf-feed,
 .vp-doc h3 + .sf-feed {
-  margin-top: 1.75rem;
+  margin-top: 20px;
 }
 
-/* A feed followed by prose, and prose followed by a feed, both need the gap to
-   read as a break rather than a continuation. */
-.vp-doc .sf-feed + p,
-.vp-doc .sf-feed + .custom-block {
-  margin-top: 0;
+/* The last row's rail should not run into the well's floor. */
+.vp-doc .sf-feed > *:last-child {
+  margin-bottom: 0;
 }
