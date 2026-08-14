@@ -1,0 +1,232 @@
+/**
+ * Feed kit styling.
+ *
+ * Every colour is a VitePress token with a fallback, so the kit themes with
+ * the surrounding site in both light and dark without a theme prop. If you
+ * are not on VitePress, redefine the six variables below and the rest follows.
+ */
+
+.sf-feed {
+    --sf-text: var(--vp-c-text-1, #1f2933);
+    --sf-muted: var(--vp-c-text-2, #6b7785);
+    --sf-faint: var(--vp-c-text-3, #97a1af);
+    --sf-line: var(--vp-c-divider, #e2e5e9);
+    --sf-hover: var(--vp-c-bg-soft, #f6f6f7);
+    --sf-ring: var(--vp-c-bg, #ffffff);
+
+    --sf-gutter: 2rem;
+    --sf-gap: 0.75rem;
+
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--sf-muted);
+}
+
+/* ---- row scaffold: avatar/icon gutter + timeline rail ---- */
+
+.sf-row {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sf-gap);
+}
+
+.sf-rail {
+    display: flex;
+    width: var(--sf-gutter);
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    flex-shrink: 0;
+}
+
+.sf-rail__line {
+    margin-top: 0.25rem;
+    width: 1px;
+    flex: 1;
+    background: var(--sf-line);
+}
+
+.sf-rail__line--lead {
+    margin-top: 0;
+    opacity: 0;
+}
+
+.sf-body {
+    min-width: 0;
+    flex: 1;
+    padding-top: 0.375rem;
+}
+
+.sf-body--spaced {
+    padding-bottom: 1.25rem;
+}
+
+.sf-body--dense {
+    padding-top: 0.25rem;
+}
+
+/* ---- headline row ---- */
+
+.sf-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.sf-headline {
+    line-height: 1.6;
+    color: var(--sf-muted);
+}
+
+/* Entity labels carry the emphasis; connective words recede. */
+.sf-entity {
+    font-weight: 500;
+    color: var(--sf-text);
+    text-decoration: none;
+    text-underline-offset: 2px;
+}
+
+a.sf-entity:hover {
+    text-decoration: underline;
+}
+
+.sf-entity--unknown {
+    font-style: italic;
+    color: var(--sf-muted);
+    font-weight: 400;
+}
+
+.sf-time {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: var(--sf-faint);
+}
+
+/* ---- avatars ---- */
+
+.sf-avatars {
+    display: flex;
+}
+
+.sf-avatars > * + * {
+    margin-left: -0.75rem;
+}
+
+.sf-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    color: #fff;
+    font-weight: 600;
+    user-select: none;
+    box-shadow: 0 0 0 2px var(--sf-ring);
+}
+
+.sf-avatar--md {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+}
+
+.sf-avatar--sm {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.625rem;
+}
+
+.sf-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1px solid var(--sf-line);
+    color: var(--sf-muted);
+    background: var(--sf-ring);
+}
+
+.sf-icon svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* ---- group disclosure ---- */
+
+.sf-toggle {
+    margin-top: 0.25rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--sf-muted);
+    cursor: pointer;
+    text-underline-offset: 2px;
+}
+
+.sf-toggle:hover {
+    color: var(--sf-text);
+    text-decoration: underline;
+}
+
+.sf-children {
+    margin-top: 0.75rem;
+}
+
+.sf-overflow {
+    padding-left: calc(var(--sf-gutter) + var(--sf-gap));
+    font-size: 0.75rem;
+    color: var(--sf-faint);
+}
+
+/* ---- day headings, empty state, pager ---- */
+
+.sf-day {
+    padding-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--sf-faint);
+}
+
+.sf-day--later {
+    padding-top: 0.5rem;
+}
+
+.sf-empty {
+    border: 1px dashed var(--sf-line);
+    border-radius: 0.5rem;
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--sf-muted);
+}
+
+.sf-more {
+    border: 1px solid var(--sf-line);
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--sf-muted);
+    background: none;
+    cursor: pointer;
+}
+
+.sf-more:hover:not(:disabled) {
+    background: var(--sf-hover);
+    color: var(--sf-text);
+}
+
+.sf-more:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

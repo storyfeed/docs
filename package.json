@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "vitepress": "^2.0.0-alpha.19"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^1.0.0"
   }
 }

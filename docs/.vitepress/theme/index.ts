@@ -1,21 +1,34 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import FeedActivity from './components/FeedActivity.vue'
-import FeedGroup from './components/FeedGroup.vue'
-import FeedStream from './components/FeedStream.vue'
+import FeedStream from './feed/FeedStream.vue'
+import FeedNode from './feed/FeedNode.vue'
+import SlotMapping from './components/SlotMapping.vue'
+import { FEED_NOW } from './feed/keys'
+import './feed/feed.css'
 import './custom.css'
 
-// Default theme plus brand tokens and the feed widgets.
-//
-// The widgets are registered globally so any page can show a feed without an
-// import block. They render a headline TEMPLATE with its tokens substituted —
-// the same mechanism a real renderer uses — so a documented example cannot
-// disagree with its own slot mapping.
+/**
+ * A fixed reference point for relative times.
+ *
+ * Every page here is prerendered against static sample payloads, so without
+ * this a build would bake "2h ago" into the HTML and the phrase would drift
+ * further from the truth every day the site was not rebuilt. Pinning it also
+ * stops the ticking timer from ever starting.
+ *
+ * This instant is the one the sample payloads were captured against.
+ */
+const DOCS_NOW = Date.parse('2026-08-14T15:00:00Z')
+
+// The feed widgets are the demo app's own renderer, ported (see feed/README.md).
+// Registered globally so any page can show a feed without an import block, and
+// node-shaped: `:items` takes payload nodes verbatim, so a documented example
+// and the payload contract cannot drift apart.
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
-    app.component('FeedActivity', FeedActivity)
-    app.component('FeedGroup', FeedGroup)
     app.component('FeedStream', FeedStream)
+    app.component('FeedNode', FeedNode)
+    app.component('SlotMapping', SlotMapping)
+    app.provide(FEED_NOW, DOCS_NOW)
   },
 } satisfies Theme

@@ -1,0 +1,922 @@
+{
+  "payload_version": 1,
+  "items": [
+    {
+      "kind": "group",
+      "id": "grp_0f1a4958d4d7f6377ec2cc7e64881eebcd767d59",
+      "axis": "composite",
+      "count": 7,
+      "verb": "upload",
+      "published_at": "2026-08-14T14:49:02.000000Z",
+      "headline_template": ":actor uploaded :objects to :context",
+      "headline": null,
+      "icon": "file-up",
+      "exemplars": {
+        "actors": [
+          {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          }
+        ],
+        "objects": [
+          {
+            "type": "document",
+            "id": "1599",
+            "label": "signage-plan-client-copy.fig",
+            "url": "/projects/15#document-1599",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1599,
+              "title": "signage-plan-client-copy.fig",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          {
+            "type": "document",
+            "id": "1598",
+            "label": "pricing-table-final.docx",
+            "url": "/projects/15#document-1598",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1598,
+              "title": "pricing-table-final.docx",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          {
+            "type": "document",
+            "id": "1597",
+            "label": "motion-test-rev-b.docx",
+            "url": "/projects/15#document-1597",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1597,
+              "title": "motion-test-rev-b.docx",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          }
+        ],
+        "targets": [
+          {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          }
+        ]
+      },
+      "distinct": {
+        "actors": 1,
+        "objects": 7,
+        "targets": 1,
+        "contexts": 1
+      },
+      "children": [
+        {
+          "kind": "activity",
+          "id": "01m00byyyay0gwzrthg3fep6yy",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:49:02.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1599",
+            "label": "signage-plan-client-copy.fig",
+            "url": "/projects/15#document-1599",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1599,
+              "title": "signage-plan-client-copy.fig",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byyp6nbabxc26pwwjjsk7",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:48:15.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1598",
+            "label": "pricing-table-final.docx",
+            "url": "/projects/15#document-1598",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1598,
+              "title": "pricing-table-final.docx",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byyb4d07vr20ev4vgsfa5",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:48:00.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1597",
+            "label": "motion-test-rev-b.docx",
+            "url": "/projects/15#document-1597",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1597,
+              "title": "motion-test-rev-b.docx",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byy4381a4pkkm3jqv8c17",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:46:56.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1596",
+            "label": "hero-desktop-rev-b.docx",
+            "url": "/projects/15#document-1596",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1596,
+              "title": "hero-desktop-rev-b.docx",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byxwsvcqaxm4bm96edne4",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:45:46.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1595",
+            "label": "motion-test-client-copy.pdf",
+            "url": "/projects/15#document-1595",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1595,
+              "title": "motion-test-client-copy.pdf",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byxm05e18a4970chcbzs1",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:45:37.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1594",
+            "label": "colour-tokens-final-2.sketch",
+            "url": "/projects/15#document-1594",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1594,
+              "title": "colour-tokens-final-2.sketch",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        },
+        {
+          "kind": "activity",
+          "id": "01m00byxd9h0x03ss79j1skdd5",
+          "verb": "upload",
+          "published_at": "2026-08-14T14:45:08.000000Z",
+          "headline_template": ":actor uploaded :object to :context",
+          "headline": null,
+          "icon": "file-up",
+          "actor": {
+            "type": "member",
+            "id": "8",
+            "label": "Aiko Tanaka",
+            "url": "/members/8",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 8,
+              "name": "Aiko Tanaka",
+              "role": "developer",
+              "initials": "AT",
+              "avatar_color": "#14b8a6"
+            }
+          },
+          "object": {
+            "type": "document",
+            "id": "1593",
+            "label": "colour-tokens-v1.fig",
+            "url": "/projects/15#document-1593",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 1593,
+              "title": "colour-tokens-v1.fig",
+              "status": "draft",
+              "version": 1,
+              "project_id": 15
+            }
+          },
+          "target": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "context": {
+            "type": "project",
+            "id": "15",
+            "label": "Verification Tiers",
+            "url": "/projects/15",
+            "attributes": [],
+            "modal": false,
+            "component": null,
+            "data": {
+              "id": 15,
+              "name": "Verification Tiers",
+              "client": "Chirp",
+              "status": "active"
+            }
+          },
+          "data": null
+        }
+      ],
+      "children_truncated": false
+    },
+    {
+      "kind": "activity",
+      "id": "01m00d917apmpp5krs00kvrgz2",
+      "verb": "complete",
+      "published_at": "2026-08-14T15:12:02.000000Z",
+      "headline_template": ":actor completed :object",
+      "headline": null,
+      "icon": "circle-check",
+      "actor": {
+        "type": "member",
+        "id": "7",
+        "label": "Tom\u00e1s Rivera",
+        "url": "/members/7",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 7,
+          "name": "Tom\u00e1s Rivera",
+          "role": "strategist",
+          "initials": "TR",
+          "avatar_color": "#6366f1"
+        }
+      },
+      "object": {
+        "type": "task",
+        "id": "592",
+        "label": "Rewrite the icon library",
+        "url": "/projects/3#task-592",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 592,
+          "title": "Rewrite the icon library",
+          "status": "complete",
+          "project_id": 3
+        }
+      },
+      "target": {
+        "type": "project",
+        "id": "3",
+        "label": "Port Migration",
+        "url": "/projects/3",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 3,
+          "name": "Port Migration",
+          "client": "Orchard Devices",
+          "status": "active"
+        }
+      },
+      "context": {
+        "type": "project",
+        "id": "3",
+        "label": "Port Migration",
+        "url": "/projects/3",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 3,
+          "name": "Port Migration",
+          "client": "Orchard Devices",
+          "status": "active"
+        }
+      },
+      "data": null
+    },
+    {
+      "kind": "activity",
+      "id": "01m00d77n1a8x4592ygcc5gmej",
+      "verb": "upload",
+      "published_at": "2026-08-14T15:11:02.000000Z",
+      "headline_template": ":actor uploaded :object to :context",
+      "headline": null,
+      "icon": "file-up",
+      "actor": {
+        "type": "member",
+        "id": "1",
+        "label": "Jasper Tey",
+        "url": "/members/1",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1,
+          "name": "Jasper Tey",
+          "role": "principal",
+          "initials": "JT",
+          "avatar_color": "#334155"
+        }
+      },
+      "object": {
+        "type": "document",
+        "id": "1608",
+        "label": "signage-plan-v2.csv",
+        "url": "/projects/5#document-1608",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1608,
+          "title": "signage-plan-v2.csv",
+          "status": null,
+          "version": null,
+          "project_id": 5
+        }
+      },
+      "target": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "context": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "data": null
+    },
+    {
+      "kind": "activity",
+      "id": "01m00d77aj7jppv5ys4z6bsntp",
+      "verb": "upload",
+      "published_at": "2026-08-14T15:10:26.000000Z",
+      "headline_template": ":actor uploaded :object to :context",
+      "headline": null,
+      "icon": "file-up",
+      "actor": {
+        "type": "member",
+        "id": "1",
+        "label": "Jasper Tey",
+        "url": "/members/1",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1,
+          "name": "Jasper Tey",
+          "role": "principal",
+          "initials": "JT",
+          "avatar_color": "#334155"
+        }
+      },
+      "object": {
+        "type": "document",
+        "id": "1607",
+        "label": "pricing-table-rev-b.pdf",
+        "url": "/projects/5#document-1607",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1607,
+          "title": "pricing-table-rev-b.pdf",
+          "status": null,
+          "version": null,
+          "project_id": 5
+        }
+      },
+      "target": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "context": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "data": null
+    },
+    {
+      "kind": "activity",
+      "id": "01m00d76shr5pwt72dgbnmjyz3",
+      "verb": "upload",
+      "published_at": "2026-08-14T15:10:02.000000Z",
+      "headline_template": ":actor uploaded :object to :context",
+      "headline": null,
+      "icon": "file-up",
+      "actor": {
+        "type": "member",
+        "id": "1",
+        "label": "Jasper Tey",
+        "url": "/members/1",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1,
+          "name": "Jasper Tey",
+          "role": "principal",
+          "initials": "JT",
+          "avatar_color": "#334155"
+        }
+      },
+      "object": {
+        "type": "document",
+        "id": "1605",
+        "label": "hero-mobile-final.docx",
+        "url": "/projects/5#document-1605",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 1605,
+          "title": "hero-mobile-final.docx",
+          "status": null,
+          "version": null,
+          "project_id": 5
+        }
+      },
+      "target": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "context": {
+        "type": "project",
+        "id": "5",
+        "label": "Password Crackdown",
+        "url": "/projects/5",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 5,
+          "name": "Password Crackdown",
+          "client": "Streamline+",
+          "status": "active"
+        }
+      },
+      "data": null
+    }
+  ],
+  "next_cursor": null,
+  "sync_token": null
+}

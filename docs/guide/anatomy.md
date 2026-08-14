@@ -1,8 +1,112 @@
 # Anatomy of an activity stream
 
 This page defines every word the rest of the documentation uses, in plain
-English, by following **five real activities** from raw rows to a rendered
+English, by following **real activities** from raw rows to a rendered
 sentence. No API — the terms only.
+
+<script setup>
+// Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
+// widgets below are the demo app's real renderer reading a real payload rather
+// than a diagram of one.
+const m = (id, label) => ({ type: 'member', id, label, url: `/members/${id}` })
+const p = (id, label) => ({ type: 'project', id, label, url: `/projects/${id}` })
+const c = (id, label) => ({ type: 'client', id, label, url: `/clients/${id}` })
+const d = (id, label) => ({ type: 'document', id, label, url: `/documents/${id}` })
+const t = (id, label) => ({ type: 'task', id, label, url: `/tasks/${id}` })
+
+const node = (over) => ({
+  kind: 'activity', id: over.id, verb: over.verb,
+  published_at: over.published_at,
+  headline_template: over.headline_template, headline: null, icon: over.icon,
+  actor: over.actor ?? null, object: over.object ?? null,
+  target: over.target ?? null, context: over.context ?? null, data: {},
+})
+
+const group = (over) => ({
+  kind: 'group', id: over.id, verb: over.verb, axis: over.axis, count: over.count,
+  published_at: over.published_at,
+  headline_template: over.headline_template, headline: null, icon: over.icon,
+  exemplars: { actors: over.actors ?? [], objects: over.objects ?? [], targets: over.targets ?? [], contexts: over.contexts ?? [] },
+  distinct: over.distinct ?? {},
+  children: over.children ?? [], children_truncated: false,
+})
+
+// Eight real minutes of the demo app's history, 14:44–14:52 UTC.
+const log = [
+  ['14:52:02','comment','message-circle',':actor commented on :target', m('4','Sally Nguyen'), null, d('120','the spacing scale thread'), null],
+  ['14:51:02','complete','circle-check',':actor completed :object', m('3','Bob Callahan'), t('601','Storyboard the icon library'), null, null],
+  ['14:50:02','complete','circle-check',':actor completed :object', m('8','Priya Raman'), t('602','Simplify the wordmark'), null, null],
+  ['14:49:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('603','Rebuild the alt text'), null, null],
+  ['14:49:02','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('301','signage-plan-client-copy.fig'), null, p('12','Verification Tiers')],
+  ['14:48:15','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('302','pricing-table-final.docx'), null, p('12','Verification Tiers')],
+  ['14:48:02','revise','file-pen',':actor revised :object', m('9','Aiko Tanaka'), d('303','wireframes-wip.sketch'), null, p('3','Port Migration')],
+  ['14:48:00','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('304','motion-test-rev-b.docx'), null, p('12','Verification Tiers')],
+  ['14:47:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('604','Kerning pass on the motion tests'), null, null],
+  ['14:46:56','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('305','hero-desktop-rev-b.docx'), null, p('12','Verification Tiers')],
+  ['14:46:02','complete','circle-check',':actor completed :object', m('9','Aiko Tanaka'), t('605','Audit the colour tokens'), null, null],
+  ['14:45:46','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('306','motion-test-client-copy.pdf'), null, p('12','Verification Tiers')],
+  ['14:45:37','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('307','colour-tokens-final-2.sketch'), null, p('12','Verification Tiers')],
+  ['14:45:08','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('308','colour-tokens-v1.fig'), null, p('12','Verification Tiers')],
+  ['14:45:02','complete','circle-check',':actor completed :object', m('8','Priya Raman'), t('606','Rewrite the hero images'), null, null],
+  ['14:45:02','approve','file-check',':actor approved :object', m('5','Marcus Webb'), d('309','proof-sheet-final-2.png'), null, null],
+  ['14:44:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('607','Rewrite the print specimen'), null, null],
+  ['14:44:02','complete','circle-check',':actor completed :object', m('9','Aiko Tanaka'), t('608','Redraw the signage mock-ups'), null, null],
+].map(([time, verb, icon, tpl, actor, object, target, context], i) => node({
+  id: `l${i}`, verb, icon, headline_template: tpl,
+  published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
+}))
+
+// The same window, collapsed. Counts reach back past 14:44 — see the note below.
+const summary = [
+  group({ id: 'g1', verb: 'complete', axis: 'actors', count: 12, icon: 'circle-check',
+    published_at: '2026-08-14T14:51:02.000000Z',
+    headline_template: ':actors completed :count tasks',
+    actors: [m('3','Bob Callahan'), m('8','Priya Raman')], distinct: { actors: 4 } }),
+  group({ id: 'g2', verb: 'upload', axis: 'composite', count: 7, icon: 'file-up',
+    published_at: '2026-08-14T14:49:02.000000Z',
+    headline_template: ':actor uploaded :objects to :context',
+    actors: [m('9','Aiko Tanaka')],
+    objects: [d('308','colour-tokens-v1.fig'), d('307','colour-tokens-final-2.sketch'), d('306','motion-test-client-copy.pdf')],
+    contexts: [p('12','Verification Tiers')], distinct: { actors: 1, objects: 7, contexts: 1 } }),
+  group({ id: 'g3', verb: 'revise', axis: 'scene', count: 12, icon: 'file-pen',
+    published_at: '2026-08-14T14:48:02.000000Z',
+    headline_template: ':actors revised :count documents in :context',
+    actors: [m('9','Aiko Tanaka'), m('10','Tomás Rivera')],
+    contexts: [p('3','Port Migration')], distinct: { actors: 3, contexts: 1 } }),
+  group({ id: 'g4', verb: 'approve', axis: 'actors', count: 9, icon: 'file-check',
+    published_at: '2026-08-14T14:45:02.000000Z',
+    headline_template: ':actors approved :count documents',
+    actors: [m('5','Marcus Webb'), m('3','Bob Callahan')], distinct: { actors: 3 } }),
+  group({ id: 'g5', verb: 'create', axis: 'scene', count: 5, icon: 'square-check',
+    published_at: '2026-08-14T14:44:02.000000Z',
+    headline_template: ':actors added :count items in :context',
+    actors: [m('1','Jasper Tey'), m('5','Marcus Webb')],
+    contexts: [p('7','Metaverse Pivot')], distinct: { actors: 3, contexts: 1 } }),
+]
+
+const oneActivity = [
+  node({ id: 'a6', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: m('6', 'Ines Duarte'),
+    object: { type: 'comment', id: '932', label: 'The mobile breakpoint eats the caption — the older version handled this better.', url: null },
+    target: d('89', 'style-tile-rev-a.sketch'), context: p('3', 'Port Migration') }),
+  node({ id: 'a5', verb: 'upload', icon: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
+    headline_template: ':actor uploaded :object to :context',
+    actor: m('6', 'Ines Duarte'), object: d('91', 'pricing-table-final.docx'), context: p('3', 'Port Migration') }),
+  node({ id: 'a4', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
+    headline_template: ':actor added the task :object in :context',
+    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table'), context: p('3', 'Port Migration') }),
+  node({ id: 'a3', verb: 'create', icon: 'folder', published_at: '2026-08-13T16:00:00.000000Z',
+    headline_template: ':actor created the project :object for :target',
+    actor: m('6', 'Ines Duarte'), object: p('9', 'Bird Removal'), target: c('2', 'Chirp') }),
+  node({ id: 'a2', verb: 'join', icon: 'user-plus', published_at: '2026-08-13T11:00:00.000000Z',
+    headline_template: ':actor joined :target',
+    actor: m('5', 'Marcus Webb'), target: p('3', 'Port Migration') }),
+  node({ id: 'a1', verb: 'create', icon: 'building-2', published_at: '2026-08-12T10:00:00.000000Z',
+    headline_template: ':actor brought on :object as a client',
+    actor: m('1', 'Jasper Tey'), object: c('2', 'Chirp') }),
+]
+</script>
 
 ## 1. One activity
 
@@ -14,50 +118,28 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
 The other four slots are the **roles**, and they hold entities.
 
-Which slots an activity fills follows from the sentence you are recording. Every
-example below is a real story from the [demo app](https://newsroom.storyfeed.dev) —
-its own template, its own labels, its own icon token — showing the story a reader
+Which slots an activity fills follows from the sentence you are recording. Below is
+a feed of six activities, rendered by the **same components the
+[demo app](https://newsroom.storyfeed.dev) uses** — each showing the story a reader
 sees, then the slots it was recorded with.
 
 They are ordered by how many slots they fill, which is useful for learning and is
 not how a feed looks: a real stream is chronological and mixed.
 
-<FeedStream title="Six activities, ordered by the slots they fill">
-  <FeedActivity icon="building-2" when="3d"
-    headline=":actor brought on :object as a client"
-    actor="Jasper Tey" verb="create" object="Chirp" />
-
-  <FeedActivity icon="user-plus" when="2d"
-    headline=":actor joined :target"
-    actor="Marcus Webb" verb="join" target="Port Migration" />
-
-  <FeedActivity icon="folder" when="2d"
-    headline=":actor created the project :object for :target"
-    actor="Ines Duarte" verb="create" object="Bird Removal" target="Chirp" />
-
-  <FeedActivity icon="square-check" when="6h"
-    headline=":actor added the task :object in :context"
-    actor="Deja Williams" verb="create" object="Kerning pass on the pricing table" context="Port Migration" />
-
-  <FeedActivity icon="file-up" when="2h"
-    headline=":actor uploaded :object to :context"
-    actor="Ines Duarte" verb="upload" object="style-tile-rev-a.sketch" context="Port Migration" />
-
-  <FeedActivity icon="message-circle" when="20m"
-    headline=":actor commented on :target"
-    actor="Ines Duarte" verb="comment" object="the comment itself" target="style-tile-rev-a.sketch" context="Port Migration" />
+<FeedStream :items="oneActivity" :grouped="false">
+  <template #body="{ node }"><SlotMapping :node="node" /></template>
 </FeedStream>
 
-The last one is the shape worth studying: five slots filled, and the headline names
+The comment is the shape worth studying: five slots filled, and the headline names
 the **target** rather than the object — because the object is the comment itself,
-which has no name a reader would recognise. The document it was left on is what the
-sentence needs, and the project it happened in is the context.
+whose label is the comment text. The document it was left on is what the sentence
+needs, and the project it happened in is the context.
 
-Two details carried over from the real app, both doing work. Document labels are
-filenames with version suffixes, which is why an object needs a label and a link
-rather than an id. And `icon` is a **token** — `file-up`, `message-circle` — that
-the payload ships and your renderer resolves; the vocabulary above is Lucide
-because the demo app chose Lucide.
+Two details carried over from the real app. Document labels are filenames with
+version suffixes, which is why an object needs a label and a link rather than an
+id. And each item's circle is the **actor's** avatar — the payload also ships an
+`icon` token (`file-up`, `message-circle`) which this renderer falls back to when
+an activity has no actor. The package ships no icons; the token is yours to map.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
@@ -72,28 +154,9 @@ because the demo app chose Lucide.
 ## 2. Why the raw list stops working
 
 One activity reads fine. Here are eight minutes of the demo app's real history,
-newest first, one line per activity — the **log**:
+one line per activity — the **log**:
 
-<FeedStream title="log — 14:44 to 14:52, eighteen activities" dense>
-  <FeedActivity when="14:52:02" icon="message-circle" headline=":actor commented on :target" actor="Sally Nguyen" verb="comment" target="the spacing scale thread" />
-  <FeedActivity when="14:51:02" icon="circle-check" headline=":actor completed :object" actor="Bob Callahan" verb="complete" object="Storyboard the icon library" />
-  <FeedActivity when="14:50:02" icon="circle-check" headline=":actor completed :object" actor="Priya Raman" verb="complete" object="Simplify the wordmark" />
-  <FeedActivity when="14:49:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Rebuild the alt text" />
-  <FeedActivity when="14:49:02" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="signage-plan-client-copy.fig" context="Verification Tiers" />
-  <FeedActivity when="14:48:15" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="pricing-table-final.docx" context="Verification Tiers" />
-  <FeedActivity when="14:48:02" icon="file-pen" headline=":actor revised :object" actor="Aiko Tanaka" verb="revise" object="wireframes-wip.sketch" />
-  <FeedActivity when="14:48:00" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="motion-test-rev-b.docx" context="Verification Tiers" />
-  <FeedActivity when="14:47:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Kerning pass on the motion tests" />
-  <FeedActivity when="14:46:56" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="hero-desktop-rev-b.docx" context="Verification Tiers" />
-  <FeedActivity when="14:46:02" icon="circle-check" headline=":actor completed :object" actor="Aiko Tanaka" verb="complete" object="Audit the colour tokens" />
-  <FeedActivity when="14:45:46" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="motion-test-client-copy.pdf" context="Verification Tiers" />
-  <FeedActivity when="14:45:37" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="colour-tokens-final-2.sketch" context="Verification Tiers" />
-  <FeedActivity when="14:45:08" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="colour-tokens-v1.fig" context="Verification Tiers" />
-  <FeedActivity when="14:45:02" icon="circle-check" headline=":actor completed :object" actor="Priya Raman" verb="complete" object="Rewrite the hero images" />
-  <FeedActivity when="14:45:02" icon="file-check" headline=":actor approved :object" actor="Marcus Webb" verb="approve" object="proof-sheet-final-2.png" />
-  <FeedActivity when="14:44:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Rewrite the print specimen" />
-  <FeedActivity when="14:44:02" icon="circle-check" headline=":actor completed :object" actor="Aiko Tanaka" verb="complete" object="Redraw the signage mock-ups" />
-</FeedStream>
+<FeedStream :items="log" :grouped="false" />
 
 Somewhere in there, Aiko Tanaka uploaded seven files to Verification Tiers — one
 coherent piece of work. You cannot see it. The uploads are **not adjacent**: four
@@ -101,32 +164,13 @@ other people's activity is interleaved, and Aiko herself revises a document on a
 different project in the middle of her own run. To find the shape of what she did,
 you have to reconstruct it row by row.
 
-That is what fails about a raw list, and it fails at eighteen rows. It is not
-about volume.
+That is what fails about a raw list, and it fails at eighteen rows. It is not about
+volume.
 
 The same stretch, read as a **summary**:
 
-<FeedStream title="summary — the same eight minutes">
-  <FeedGroup when="14:51:02" icon="circle-check" axis="actors" :count="12"
-    headline=":actors completed :count tasks"
-    actors="Bob Callahan, Priya Raman" :distinct-actors="4" />
-
-  <FeedGroup when="14:49:02" icon="file-up" axis="composite" :count="7"
-    headline=":actor uploaded :objects to :context"
-    actor="Aiko Tanaka" context="Verification Tiers"
-    objects="colour-tokens-v1.fig, colour-tokens-final-2.sketch, motion-test-client-copy.pdf" :distinct-objects="7" />
-
-  <FeedGroup when="14:48:02" icon="file-pen" axis="scene" :count="12"
-    headline=":actors revised :count documents in :context"
-    actors="Aiko Tanaka, Tomás Rivera" :distinct-actors="3" context="Port Migration" />
-
-  <FeedGroup when="14:45:02" icon="file-check" axis="actors" :count="9"
-    headline=":actors approved :count documents"
-    actors="Marcus Webb, Bob Callahan" :distinct-actors="3" />
-
-  <FeedGroup when="14:44:02" icon="square-check" axis="scene" :count="5"
-    headline=":actors added :count items in :context"
-    actors="Jasper Tey, Marcus Webb" :distinct-actors="3" context="Metaverse Pivot" />
+<FeedStream :items="summary" :grouped="false">
+  <template #body="{ node }"><SlotMapping :node="node" /></template>
 </FeedStream>
 
 Aiko's scattered uploads are now one line, and finding them took no work at all.
