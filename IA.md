@@ -65,6 +65,8 @@ recording first fails silently rather than loudly.
 - ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
 - ✅ Reading feeds — the builder, scoping, read modes, pagination
 - ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines; reconciliation
+- ✅ A live renderer — Vue: reconciliation in code, sync_token, bounded empty-page loop
+  (written by the Newsroom agent against production; the parts a static template cannot show)
 
 ### Digging deeper
 

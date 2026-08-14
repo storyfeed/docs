@@ -131,3 +131,20 @@ is why you run them when readers are not mid-scroll.
 Note also that `children_truncated` means a group's `children` list is capped by
 `grouping.children_limit` — do not treat a claimed-children check as complete
 when the list is truncated.
+
+All three rules are implemented in [A live renderer](/basics/live-renderer).
+
+## Verifying your renderer
+
+One check catches the whole class of token bugs: **render every node your feed
+produces and count the fallback strings.**
+
+```
+fallback leaks ("Someone"/"Something"): 0
+```
+
+A leak means a token resolved to nothing. This matters more than it sounds,
+because a headline containing "Someone" reads perfectly well — the failure looks
+like an anonymous feed rather than a bug, and it survives review. Run it across
+every read mode and every registered axis; degraded (un-snapshotted) entities are
+the deliberate exception, since they *should* render your placeholder.

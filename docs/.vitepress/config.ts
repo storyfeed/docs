@@ -63,6 +63,7 @@ export default defineConfig({
           { text: 'Recording activities', link: '/basics/recording' },
           { text: 'Reading feeds', link: '/basics/reading' },
           { text: 'Rendering', link: '/basics/rendering' },
+          { text: 'A live renderer', link: '/basics/live-renderer' },
         ],
       },
       {
