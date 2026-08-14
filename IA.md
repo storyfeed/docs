@@ -10,8 +10,12 @@ Legend: ✅ written · 🚧 in progress · ⬜ planned
 The success metric is a developer reading the docs and *getting it* — and
 wanting to try the package. The register is Laravel's own docs. Concretely:
 
-1. **Code first.** Every concept is shown before it is explained. If a section
-   has three paragraphs before its first code block, restructure it.
+1. **Code first, and nothing before it is needed.** Every concept is shown before
+   it is explained. If a section has three paragraphs before its first code
+   block, restructure it. And do not front-load: if a section opens by setting up
+   material for *later* sections, that material belongs later. A page teaches one
+   thing at a time — an example arrives at the moment it becomes necessary, not
+   where it was convenient to introduce.
 2. **No autobiography, no selling, no category arguments, no meta-commentary.**
    The reader already clicked; positioning prose belongs on the splash site. A
    docs page earns excitement by making the thing look *easy*, not by claiming it

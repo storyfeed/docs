@@ -6,20 +6,7 @@ sentence. No API — the terms only.
 
 ## 1. One activity
 
-Two people upload five files to one project over a few minutes. Recorded, that is
-five rows — and every section below is about turning them into something a person
-wants to read:
-
-| # | who | did what | to what | where |
-|---|---|---|---|---|
-| 1 | Ines | uploaded | annual-report-v3.fig | Password Crackdown |
-| 2 | Ines | uploaded | hero-mobile.png | Password Crackdown |
-| 3 | Ines | uploaded | colour-tokens.docx | Password Crackdown |
-| 4 | Marcus | uploaded | proof-sheet.fig | Password Crackdown |
-| 5 | Marcus | uploaded | wordmark-v3.png | Password Crackdown |
-
-Take row 1. An **activity** is one recorded fact, shaped like a sentence with
-named slots:
+An **activity** is one recorded fact, shaped like a sentence with named slots:
 
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
 > **to Password Crackdown** *(target)*
@@ -55,14 +42,27 @@ named participant that has no model in your app — Stripe, a nightly job — is
 
 ## 2. Why the raw list stops working
 
-Five rows is fine. Five hundred is not. A feed that lists every row reads like a
-log file, and the reader's own actions dominate it:
+One activity reads fine. Here are five, recorded over a few minutes as two people
+upload files to one project — the example the rest of this page follows:
+
+| # | who | did what | to what | where |
+|---|---|---|---|---|
+| 1 | Ines | uploaded | annual-report-v3.fig | Password Crackdown |
+| 2 | Ines | uploaded | hero-mobile.png | Password Crackdown |
+| 3 | Ines | uploaded | colour-tokens.docx | Password Crackdown |
+| 4 | Marcus | uploaded | proof-sheet.fig | Password Crackdown |
+| 5 | Marcus | uploaded | wordmark-v3.png | Password Crackdown |
+
+Listed one per line, that is already a log file, and one person's actions dominate
+it:
 
 > Ines uploaded annual-report-v3.fig to Password Crackdown
 > Ines uploaded hero-mobile.png to Password Crackdown
 > Ines uploaded colour-tokens.docx to Password Crackdown
 > Marcus uploaded proof-sheet.fig to Password Crackdown
 > Marcus uploaded wordmark-v3.png to Password Crackdown
+
+Five is survivable. Five hundred is not.
 
 What a person wants is one line:
 
