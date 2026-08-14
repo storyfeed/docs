@@ -14,12 +14,11 @@ const ROLES = ['actor', 'object', 'target', 'context'] as const
 
 /**
  * Entity labels are whatever the snapshot stored, and some are sentences — a
- * comment's label is its body, because a comment has no name. Full labels are
- * right in the headline; in a compact slot list they only break the scan.
+ * comment's label is its body, because a comment has no name. Shown in full: the
+ * length is the point, and it is why that activity's headline names the target
+ * instead. A long value takes its own row rather than being cut.
  */
-function short(value: string): string {
-  return value.length > 42 ? `${value.slice(0, 41).trimEnd()}…` : value
-}
+const LONG = 42
 
 const rows = computed(() => {
   const node = props.node
@@ -37,7 +36,7 @@ const rows = computed(() => {
     const entity = node[role]
 
     if (entity?.label) {
-      out.push({ slot: role, value: short(entity.label) })
+      out.push({ slot: role, value: entity.label })
     }
   }
 
@@ -51,7 +50,12 @@ const rows = computed(() => {
 
 <template>
   <dl class="sf-mapping">
-    <div v-for="row in rows" :key="row.slot" class="sf-mapping-pair">
+    <div
+      v-for="row in rows"
+      :key="row.slot"
+      class="sf-mapping-pair"
+      :class="{ 'sf-mapping-pair--wide': row.value.length > LONG }"
+    >
       <dt>{{ row.slot }}</dt>
       <dd>
         <code v-if="row.code">{{ row.value }}</code>
@@ -76,6 +80,12 @@ const rows = computed(() => {
   max-width: 100%;
 }
 
+/* A sentence-length value gets the whole row, so it is readable in full rather
+   than squeezed between two other pairs. */
+.sf-mapping-pair--wide {
+  flex: 0 0 100%;
+}
+
 .sf-mapping dt {
   color: var(--vp-c-text-3, #8a94a6);
   font-family: var(--vp-font-family-mono);
@@ -90,8 +100,6 @@ const rows = computed(() => {
 .sf-mapping dd {
   margin: 0;
   color: var(--vp-c-text-2, #4b5563);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .sf-mapping code {
