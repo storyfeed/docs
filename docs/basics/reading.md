@@ -125,8 +125,9 @@ Two rules:
 - **Ordering is ignored.** The read owns its own ordering, because that is what
   the cursor encodes a position in.
 
-Pass the same callback on every page of a paginated feed. Changing it mid-feed
-moves the ground the cursor is standing on, exactly as changing `verb()` would.
+Pass the same callback on every page of a paginated feed — same rule as every
+other filter, see [A cursor belongs to the query that made
+it](#a-cursor-belongs-to-the-query-that-made-it).
 
 ## Pagination
 
@@ -146,6 +147,18 @@ from the head. Equality compare only — `null → non-null` counts as a change.
 
 A client that accumulates pages needs two more rules with it — see
 [Reconciling updates](/basics/rendering#reconciling-updates).
+
+### A cursor belongs to the query that made it
+
+A cursor is a position in the stream **this** query produced — its scope, its
+filters, its mode. Send it back with the same query. Applied to a different
+candidate set it does not error and does not return nothing; it can **skip or
+repeat** nodes, which surfaces as a feed that looks like it has a rendering bug.
+
+The trap in practice is that the first page and the later pages are often built
+in different places — a controller renders one, an endpoint serves the rest. If
+the two disagree by a single filter, the feed is wrong from the second page on,
+and nothing in the payload says so.
 
 ## Conditional building
 
