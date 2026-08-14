@@ -13,6 +13,10 @@
  * - Rename a person and you will want to rename their key too. Both live on the
  *   same line, so it is one edit, but a page importing `who.ines` will keep
  *   working and keep saying `ines` until you do.
+ * - These are not a copy of the demo app's payloads. The person type here is
+ *   `user` where the app emits its own model's alias, and comment labels are not
+ *   truncated the way the app truncates them. Regenerating any of this from real
+ *   app JSON means translating it, not pasting it.
  * - Prose is out of reach. Where a page names someone in a sentence rather than
  *   in data — the anatomy walkthrough does, following one person's uploads — that
  *   sentence needs editing by hand.

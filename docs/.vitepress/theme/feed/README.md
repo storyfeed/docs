@@ -62,6 +62,14 @@ Both slots exist on group nodes too. Fill a group's `body` only when
 one exemplar and implies it stands for the group, the same failure as a headline
 that names one document out of five.
 
+The body renders only when the payload names a component on the object. That is a
+boundary, not a gap: `component` is the backend stating what this entity should
+render as, while `data` is an app-specific bag the contract does not define. A
+renderer that reached into `data` for a conventional key — `excerpt`, say — would
+be inventing presentation the backend never asked for, and would do it for any
+entity that happened to use that word for something else. No component, no body;
+an app that wants a preview says so by naming one.
+
 **Annotations.** `<slot name="annotations" :node>` renders below the body on both
 node kinds, for surfaces that explain a node rather than render it — this site's
 slot mappings, a payload dump, a curation trace. It exists so documenting a feed
@@ -90,3 +98,16 @@ opinion about which set you use. The payload delivers a token (`file-up`), and
 `FeedIcon` maps tokens to components. Swap the map for Heroicons or inline SVG
 and nothing else changes. Imports here assume `lucide-vue-next`; the Newsroom
 uses `@lucide/vue` — same icons, different package name, one import line.
+
+## The pinned clock
+
+`FEED_NOW` is declared in `keys.ts` and nowhere else. `useRelativeTime` imports and
+re-exports it, and must never declare its own: two `Symbol('feedNow')` calls are
+different keys, so a second declaration makes every `provide()` from the first one
+miss. `inject(FEED_NOW, null)` then falls back to the wall clock, which is the
+correct default and therefore cannot announce that anything went wrong. A
+prerendered page silently drifts instead.
+
+A byte-identical rebuild is the control that catches it: build twice, diff the
+output. It fails on anything non-deterministic without needing to know what it is
+looking for.
