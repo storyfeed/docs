@@ -71,34 +71,76 @@ because the demo app chose Lucide.
 
 ## 2. Why the raw list stops working
 
-One activity reads fine. Here are five, recorded over a few minutes as two people
-upload files to one project — the example the rest of this page follows:
+One activity reads fine. Here are eight minutes of the demo app's real history,
+newest first, one line per activity — the **log**:
 
-| # | who | did what | to what | where |
-|---|---|---|---|---|
-| 1 | Ines | uploaded | annual-report-v3.fig | Password Crackdown |
-| 2 | Ines | uploaded | hero-mobile.png | Password Crackdown |
-| 3 | Ines | uploaded | colour-tokens.docx | Password Crackdown |
-| 4 | Marcus | uploaded | proof-sheet.fig | Password Crackdown |
-| 5 | Marcus | uploaded | wordmark-v3.png | Password Crackdown |
+<FeedStream title="log — 14:44 to 14:52, eighteen activities" dense>
+  <FeedActivity when="14:52:02" icon="message-circle" headline=":actor commented on :target" actor="Sally Nguyen" verb="comment" target="the spacing scale thread" />
+  <FeedActivity when="14:51:02" icon="circle-check" headline=":actor completed :object" actor="Bob Callahan" verb="complete" object="Storyboard the icon library" />
+  <FeedActivity when="14:50:02" icon="circle-check" headline=":actor completed :object" actor="Priya Raman" verb="complete" object="Simplify the wordmark" />
+  <FeedActivity when="14:49:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Rebuild the alt text" />
+  <FeedActivity when="14:49:02" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="signage-plan-client-copy.fig" context="Verification Tiers" />
+  <FeedActivity when="14:48:15" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="pricing-table-final.docx" context="Verification Tiers" />
+  <FeedActivity when="14:48:02" icon="file-pen" headline=":actor revised :object" actor="Aiko Tanaka" verb="revise" object="wireframes-wip.sketch" />
+  <FeedActivity when="14:48:00" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="motion-test-rev-b.docx" context="Verification Tiers" />
+  <FeedActivity when="14:47:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Kerning pass on the motion tests" />
+  <FeedActivity when="14:46:56" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="hero-desktop-rev-b.docx" context="Verification Tiers" />
+  <FeedActivity when="14:46:02" icon="circle-check" headline=":actor completed :object" actor="Aiko Tanaka" verb="complete" object="Audit the colour tokens" />
+  <FeedActivity when="14:45:46" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="motion-test-client-copy.pdf" context="Verification Tiers" />
+  <FeedActivity when="14:45:37" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="colour-tokens-final-2.sketch" context="Verification Tiers" />
+  <FeedActivity when="14:45:08" icon="file-up" headline=":actor uploaded :object to :context" actor="Aiko Tanaka" verb="upload" object="colour-tokens-v1.fig" context="Verification Tiers" />
+  <FeedActivity when="14:45:02" icon="circle-check" headline=":actor completed :object" actor="Priya Raman" verb="complete" object="Rewrite the hero images" />
+  <FeedActivity when="14:45:02" icon="file-check" headline=":actor approved :object" actor="Marcus Webb" verb="approve" object="proof-sheet-final-2.png" />
+  <FeedActivity when="14:44:02" icon="circle-check" headline=":actor completed :object" actor="Marcus Webb" verb="complete" object="Rewrite the print specimen" />
+  <FeedActivity when="14:44:02" icon="circle-check" headline=":actor completed :object" actor="Aiko Tanaka" verb="complete" object="Redraw the signage mock-ups" />
+</FeedStream>
 
-Listed one per line, that is already a log file, and one person's actions dominate
-it:
+Somewhere in there, Aiko Tanaka uploaded seven files to Verification Tiers — one
+coherent piece of work. You cannot see it. The uploads are **not adjacent**: four
+other people's activity is interleaved, and Aiko herself revises a document on a
+different project in the middle of her own run. To find the shape of what she did,
+you have to reconstruct it row by row.
 
-> Ines uploaded annual-report-v3.fig to Password Crackdown
-> Ines uploaded hero-mobile.png to Password Crackdown
-> Ines uploaded colour-tokens.docx to Password Crackdown
-> Marcus uploaded proof-sheet.fig to Password Crackdown
-> Marcus uploaded wordmark-v3.png to Password Crackdown
+That is what fails about a raw list, and it fails at eighteen rows. It is not
+about volume.
 
-Five is survivable. Five hundred is not.
+The same stretch, read as a **summary**:
 
-What a person wants is one line:
+<FeedStream title="summary — the same eight minutes">
+  <FeedGroup when="14:51:02" icon="circle-check" axis="actors" :count="12"
+    headline=":actors completed :count tasks"
+    actors="Bob Callahan, Priya Raman" :distinct-actors="4" />
 
-> Ines and Marcus uploaded 5 files to Password Crackdown
+  <FeedGroup when="14:49:02" icon="file-up" axis="composite" :count="7"
+    headline=":actor uploaded :objects to :context"
+    actor="Aiko Tanaka" context="Verification Tiers"
+    objects="colour-tokens-v1.fig, colour-tokens-final-2.sketch, motion-test-client-copy.pdf" :distinct-objects="7" />
 
-Producing that line is **aggregation**: collapsing several activities into one
-telling.
+  <FeedGroup when="14:48:02" icon="file-pen" axis="scene" :count="12"
+    headline=":actors revised :count documents in :context"
+    actors="Aiko Tanaka, Tomás Rivera" :distinct-actors="3" context="Port Migration" />
+
+  <FeedGroup when="14:45:02" icon="file-check" axis="actors" :count="9"
+    headline=":actors approved :count documents"
+    actors="Marcus Webb, Bob Callahan" :distinct-actors="3" />
+
+  <FeedGroup when="14:44:02" icon="square-check" axis="scene" :count="5"
+    headline=":actors added :count items in :context"
+    actors="Jasper Tey, Marcus Webb" :distinct-actors="3" context="Metaverse Pivot" />
+</FeedStream>
+
+Aiko's scattered uploads are now one line, and finding them took no work at all.
+Producing that is **aggregation**: collapsing several activities into one telling.
+
+> [!NOTE]
+> This is a legibility change, not a compression ratio. Those collapsed nodes count
+> activities from before 14:44 as well — the `12 tasks` group reaches back past the
+> window — so "eighteen rows became five lines" would be false. What changed is that
+> one coherent piece of work is now visible in one glance.
+
+One of those axes is not built in: `scene` is a **custom axis** the demo app
+registered for itself, grouping by project. [Aggregation](/deeper/aggregation)
+covers writing one.
 
 ## 3. An axis is the question you group by
 

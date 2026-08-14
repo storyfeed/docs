@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { provide } from 'vue'
+
 /**
  * The frame around a set of feed items, so a run of examples reads as one feed
  * rather than as separate figures.
+ *
+ * `dense` suppresses each item's slot line — for a stream whose point is its
+ * length rather than its anatomy.
  */
-defineProps<{ title?: string }>()
+const props = defineProps<{ title?: string; dense?: boolean }>()
+
+provide('sf-dense', props.dense ?? false)
 </script>
 
 <template>
@@ -41,5 +48,12 @@ defineProps<{ title?: string }>()
 
 .sf-stream :deep(.sf-activity + .sf-activity) {
   border-top: 1px solid var(--vp-c-divider);
+}
+</style>
+
+<style scoped>
+/* A dense stream is a list of lines, not a list of cards. */
+.sf-stream:has(> .sf-dense) {
+  padding-bottom: 2px;
 }
 </style>

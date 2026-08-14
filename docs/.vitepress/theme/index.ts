@@ -1,6 +1,7 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import FeedActivity from './components/FeedActivity.vue'
+import FeedGroup from './components/FeedGroup.vue'
 import FeedStream from './components/FeedStream.vue'
 import './custom.css'
 
@@ -14,6 +15,7 @@ export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
     app.component('FeedActivity', FeedActivity)
+    app.component('FeedGroup', FeedGroup)
     app.component('FeedStream', FeedStream)
   },
 } satisfies Theme

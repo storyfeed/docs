@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 /**
  * One activity, rendered the way a real renderer would: the headline is a
@@ -20,6 +20,9 @@ const props = defineProps<{
 }>()
 
 const ROLES = ['actor', 'object', 'target', 'context'] as const
+
+/** A dense stream hides the slot lines — see FeedStream. */
+const dense = inject('sf-dense', false)
 
 /** The headline split into literal text and resolved tokens. */
 const parts = computed(() =>
@@ -52,7 +55,7 @@ const slots = computed(() => [
       <span v-if="when" class="sf-when">{{ when }}</span>
     </div>
 
-    <dl class="sf-slots">
+    <dl v-if="!dense" class="sf-slots">
       <div v-for="row in slots" :key="row.slot" class="sf-slot">
         <dt>{{ row.slot }}</dt>
         <dd><code v-if="row.code">{{ row.value }}</code><template v-else>{{ row.value }}</template></dd>
