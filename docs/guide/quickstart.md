@@ -4,7 +4,7 @@ Five steps: make a model feedable, author a story, publish an activity, read
 the feed, render it. The example is a document being uploaded to a project.
 
 <script setup>
-import { member, project, document, activity } from '../.vitepress/theme/samples'
+import { who, where, document, activity } from '../.vitepress/theme/samples'
 
 // The same names the snippets use, so the rendered result is this page's example
 // and not a different one.
@@ -12,9 +12,9 @@ const published = activity({
   id: 'q1', verb: 'upload', icon: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
-  actor: member('6', 'Ines Duarte'),
+  actor: who.designer,
   object: document('88', 'annual-report-v3.fig'),
-  target: project('4', 'Password Crackdown'),
+  target: where.crackdown,
 })
 </script>
 

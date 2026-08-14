@@ -5,29 +5,30 @@ Activities are recorded explicitly, read back as a timeline or an aggregated
 feed, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
-Each snippet below is followed by what it produces, rendered by a real feed
-component reading a real payload.
+Below: what you record, and what the reader gets back — rendered by a real feed
+component reading a real payload. How it gets from one to the other is the rest of
+these docs.
 
 <script setup>
-import { member, project, document, comment, activity, group } from '../.vitepress/theme/samples'
+import { who, where, document, comment, activity, group } from '../.vitepress/theme/samples'
 
-const ines = member('6', 'Ines Duarte')
-const priya = member('8', 'Priya Raman')
-const crackdown = project('4', 'Password Crackdown')
+const designer = who.designer
+const reviewer = who.reviewer
+const crackdown = where.crackdown
 const report = document('88', 'annual-report-v3.fig')
 
 const upload = activity({
   id: 'i1', verb: 'upload', icon: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
-  actor: ines, object: report, target: crackdown,
+  actor: designer, object: report, target: crackdown,
 })
 
 const burst = group({
   id: 'i2', verb: 'upload', axis: 'repeat', count: 7, icon: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
-  actors: [ines], targets: [crackdown],
+  actors: [designer], targets: [crackdown],
   objects: [
     report,
     document('87', 'signage-plan-rev-b.fig'),
@@ -40,50 +41,22 @@ const note = activity({
   id: 'i3', verb: 'comment', icon: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
-  actor: priya,
+  actor: reviewer,
   object: comment('511', 'Second page still overflows on the print stylesheet.'),
   target: report,
 })
 
-const rows = [
-  activity({ id: 'i4', verb: 'upload', icon: 'file-up',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: ines, object: report, target: crackdown }),
-  activity({ id: 'i5', verb: 'upload', icon: 'file-up',
-    published_at: '2026-08-14T14:29:30.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: ines, object: document('87', 'signage-plan-rev-b.fig'), target: crackdown }),
-  note,
-  activity({ id: 'i6', verb: 'upload', icon: 'file-up',
-    published_at: '2026-08-14T14:27:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: ines, object: document('86', 'pricing-table-final.docx'), target: crackdown }),
-]
-
-const collapsed = [burst, note]
 </script>
 
-## Record an activity
+## What you record, and what it reads back
 
 ```php
 Storyfeed::record('upload', $document, actor: $user, target: $project);
 ```
 
-Read it back:
+<FeedStream :items="[upload]" :grouped="false" />
 
-```php
-$page = Storyfeed::feed()->get();
-```
-
-<FeedStream :items="[upload]" :grouped="false">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
-
-## Record several, and they aggregate
-
-Nothing extra to call: activities are grouped as they are written, and the read
-picks a grouping.
+Record the same thing a few times and it arrives aggregated, with no second call:
 
 ```php
 foreach ($documents as $document) {
@@ -93,34 +66,19 @@ foreach ($documents as $document) {
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## Choose how collapsed the reader gets it
+A different verb, and an object that carries its own preview:
 
 ```php
-Storyfeed::feed()->log()->get();
+Storyfeed::record('comment', $comment, actor: $user, target: $document);
 ```
 
-<FeedStream :items="rows" :grouped="false">
+<FeedStream :items="[note]" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
-
-```php
-Storyfeed::feed()->summary()->get();
-```
-
-<FeedStream :items="collapsed" :grouped="false">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
-
-## Scope a feed to one model
-
-```php
-Storyfeed::feed()->involving($project)->get();
-```
-
-Anything the project took part in, whichever role it played — including the
-activity that created the project itself.
 
 ## How it works
+
+
 
 - **You record explicitly.** `Storyfeed::record()` from an action, observer, or
   event listener — you choose what makes the feed. No model spying, no magic.

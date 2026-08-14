@@ -50,6 +50,59 @@ export const comment = (id: string, body: string) =>
     data: { excerpt: body.length > 160 ? `${body.slice(0, 160)}…` : body },
   })
 
+/**
+ * ── The cast ─────────────────────────────────────────────────────────────────
+ *
+ * Every person and recurring place the docs use, in one place. Change a name here
+ * and every page follows.
+ *
+ * Keys name the part, not the person, so swapping "Ines Duarte" for someone else
+ * does not leave a dozen pages importing a key that no longer matches the name it
+ * returns. Ids stay stable too: they appear in entity urls, and a reader who
+ * clicks one on two different pages should land somewhere consistent.
+ *
+ * The one thing this cannot reach is prose. Where a page names a cast member in a
+ * sentence rather than in data, that sentence needs editing by hand — the anatomy
+ * page does this a few times when it walks through a specific person's uploads.
+ */
+const PEOPLE: Record<string, [string, string]> = {
+  owner: ['1', 'Jasper Tey'],
+  qa: ['3', 'Bob Callahan'],
+  intern: ['4', 'Sally Nguyen'],
+  dev: ['5', 'Marcus Webb'],
+  designer: ['6', 'Ines Duarte'],
+  pm: ['7', 'Deja Williams'],
+  reviewer: ['8', 'Priya Raman'],
+  writer: ['9', 'Aiko Tanaka'],
+  ops: ['10', 'Tomás Rivera'],
+}
+
+const PLACES: Record<string, [string, string]> = {
+  migration: ['3', 'Port Migration'],
+  crackdown: ['4', 'Password Crackdown'],
+  pivot: ['7', 'Metaverse Pivot'],
+  removal: ['9', 'Bird Removal'],
+  tiers: ['12', 'Verification Tiers'],
+}
+
+const FIRMS: Record<string, [string, string]> = {
+  bird: ['2', 'Chirp'],
+}
+
+const build = (source: Record<string, [string, string]>, make: (id: string, label: string) => any) =>
+  Object.fromEntries(
+    Object.entries(source).map(([key, [id, label]]) => [key, make(id, label)]),
+  )
+
+/** `who.designer`, `who.reviewer`, … */
+export const who: Record<string, any> = build(PEOPLE, member)
+
+/** `where.migration`, `where.crackdown`, … */
+export const where: Record<string, any> = build(PLACES, project)
+
+/** `firm.bird`, … */
+export const firm: Record<string, any> = build(FIRMS, client)
+
 /** An activity node. */
 export function activity(over: Record<string, any>) {
   return {

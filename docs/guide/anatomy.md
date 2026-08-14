@@ -8,11 +8,7 @@ sentence. No API — the terms only.
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one.
-const m = (id, label) => ({ type: 'member', id, label, url: `/members/${id}`, component: null, data: {} })
-const p = (id, label) => ({ type: 'project', id, label, url: `/projects/${id}`, component: null, data: {} })
-const c = (id, label) => ({ type: 'client', id, label, url: `/clients/${id}`, component: null, data: {} })
-const d = (id, label) => ({ type: 'document', id, label, url: `/documents/${id}`, component: null, data: {} })
-const t = (id, label) => ({ type: 'task', id, label, url: `/tasks/${id}`, component: null, data: {} })
+import { who, where, firm, document as d, task as t } from '../.vitepress/theme/samples'
 
 const node = (over) => ({
   kind: 'activity', id: over.id, verb: over.verb,
@@ -33,24 +29,24 @@ const group = (over) => ({
 
 // Eight real minutes of the demo app's history, 14:44–14:52 UTC.
 const log = [
-  ['14:52:02','comment','message-circle',':actor commented on :target', m('4','Sally Nguyen'), null, d('120','the spacing scale thread'), null],
-  ['14:51:02','complete','circle-check',':actor completed :object', m('3','Bob Callahan'), t('601','Storyboard the icon library'), null, null],
-  ['14:50:02','complete','circle-check',':actor completed :object', m('8','Priya Raman'), t('602','Simplify the wordmark'), null, null],
-  ['14:49:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('603','Rebuild the alt text'), null, null],
-  ['14:49:02','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('301','signage-plan-client-copy.fig'), null, p('12','Verification Tiers')],
-  ['14:48:15','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('302','pricing-table-final.docx'), null, p('12','Verification Tiers')],
-  ['14:48:02','revise','file-pen',':actor revised :object', m('9','Aiko Tanaka'), d('303','wireframes-wip.sketch'), null, p('3','Port Migration')],
-  ['14:48:00','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('304','motion-test-rev-b.docx'), null, p('12','Verification Tiers')],
-  ['14:47:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('604','Kerning pass on the motion tests'), null, null],
-  ['14:46:56','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('305','hero-desktop-rev-b.docx'), null, p('12','Verification Tiers')],
-  ['14:46:02','complete','circle-check',':actor completed :object', m('9','Aiko Tanaka'), t('605','Audit the colour tokens'), null, null],
-  ['14:45:46','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('306','motion-test-client-copy.pdf'), null, p('12','Verification Tiers')],
-  ['14:45:37','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('307','colour-tokens-final-2.sketch'), null, p('12','Verification Tiers')],
-  ['14:45:08','upload','file-up',':actor uploaded :object to :context', m('9','Aiko Tanaka'), d('308','colour-tokens-v1.fig'), null, p('12','Verification Tiers')],
-  ['14:45:02','complete','circle-check',':actor completed :object', m('8','Priya Raman'), t('606','Rewrite the hero images'), null, null],
-  ['14:45:02','approve','file-check',':actor approved :object', m('5','Marcus Webb'), d('309','proof-sheet-final-2.png'), null, null],
-  ['14:44:02','complete','circle-check',':actor completed :object', m('5','Marcus Webb'), t('607','Rewrite the print specimen'), null, null],
-  ['14:44:02','complete','circle-check',':actor completed :object', m('9','Aiko Tanaka'), t('608','Redraw the signage mock-ups'), null, null],
+  ['14:52:02','comment','message-circle',':actor commented on :target', who.intern, null, d('120','the spacing scale thread'), null],
+  ['14:51:02','complete','circle-check',':actor completed :object', who.qa, t('601','Storyboard the icon library'), null, null],
+  ['14:50:02','complete','circle-check',':actor completed :object', who.reviewer, t('602','Simplify the wordmark'), null, null],
+  ['14:49:02','complete','circle-check',':actor completed :object', who.dev, t('603','Rebuild the alt text'), null, null],
+  ['14:49:02','upload','file-up',':actor uploaded :object to :context', who.writer, d('301','signage-plan-client-copy.fig'), null, where.tiers],
+  ['14:48:15','upload','file-up',':actor uploaded :object to :context', who.writer, d('302','pricing-table-final.docx'), null, where.tiers],
+  ['14:48:02','revise','file-pen',':actor revised :object', who.writer, d('303','wireframes-wip.sketch'), null, where.migration],
+  ['14:48:00','upload','file-up',':actor uploaded :object to :context', who.writer, d('304','motion-test-rev-b.docx'), null, where.tiers],
+  ['14:47:02','complete','circle-check',':actor completed :object', who.dev, t('604','Kerning pass on the motion tests'), null, null],
+  ['14:46:56','upload','file-up',':actor uploaded :object to :context', who.writer, d('305','hero-desktop-rev-b.docx'), null, where.tiers],
+  ['14:46:02','complete','circle-check',':actor completed :object', who.writer, t('605','Audit the colour tokens'), null, null],
+  ['14:45:46','upload','file-up',':actor uploaded :object to :context', who.writer, d('306','motion-test-client-copy.pdf'), null, where.tiers],
+  ['14:45:37','upload','file-up',':actor uploaded :object to :context', who.writer, d('307','colour-tokens-final-2.sketch'), null, where.tiers],
+  ['14:45:08','upload','file-up',':actor uploaded :object to :context', who.writer, d('308','colour-tokens-v1.fig'), null, where.tiers],
+  ['14:45:02','complete','circle-check',':actor completed :object', who.reviewer, t('606','Rewrite the hero images'), null, null],
+  ['14:45:02','approve','file-check',':actor approved :object', who.dev, d('309','proof-sheet-final-2.png'), null, null],
+  ['14:44:02','complete','circle-check',':actor completed :object', who.dev, t('607','Rewrite the print specimen'), null, null],
+  ['14:44:02','complete','circle-check',':actor completed :object', who.writer, t('608','Redraw the signage mock-ups'), null, null],
 ].map(([time, verb, icon, tpl, actor, object, target, context], i) => node({
   id: `l${i}`, verb, icon, headline_template: tpl,
   published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
@@ -61,27 +57,27 @@ const summary = [
   group({ id: 'g1', verb: 'complete', axis: 'actors', count: 12, icon: 'circle-check',
     published_at: '2026-08-14T14:51:02.000000Z',
     headline_template: ':actors completed :count tasks',
-    actors: [m('3','Bob Callahan'), m('8','Priya Raman')], distinct: { actors: 4 } }),
+    actors: [who.qa, who.reviewer], distinct: { actors: 4 } }),
   group({ id: 'g2', verb: 'upload', axis: 'composite', count: 7, icon: 'file-up',
     published_at: '2026-08-14T14:49:02.000000Z',
     headline_template: ':actor uploaded :objects to :context',
-    actors: [m('9','Aiko Tanaka')],
+    actors: [who.writer],
     objects: [d('308','colour-tokens-v1.fig'), d('307','colour-tokens-final-2.sketch'), d('306','motion-test-client-copy.pdf')],
-    contexts: [p('12','Verification Tiers')], distinct: { actors: 1, objects: 7, contexts: 1 } }),
+    contexts: [where.tiers], distinct: { actors: 1, objects: 7, contexts: 1 } }),
   group({ id: 'g3', verb: 'revise', axis: 'scene', count: 12, icon: 'file-pen',
     published_at: '2026-08-14T14:48:02.000000Z',
     headline_template: ':actors revised :count documents in :context',
-    actors: [m('9','Aiko Tanaka'), m('10','Tomás Rivera')],
-    contexts: [p('3','Port Migration')], distinct: { actors: 3, contexts: 1 } }),
+    actors: [who.writer, who.ops],
+    contexts: [where.migration], distinct: { actors: 3, contexts: 1 } }),
   group({ id: 'g4', verb: 'approve', axis: 'actors', count: 9, icon: 'file-check',
     published_at: '2026-08-14T14:45:02.000000Z',
     headline_template: ':actors approved :count documents',
-    actors: [m('5','Marcus Webb'), m('3','Bob Callahan')], distinct: { actors: 3 } }),
+    actors: [who.dev, who.qa], distinct: { actors: 3 } }),
   group({ id: 'g5', verb: 'create', axis: 'scene', count: 5, icon: 'square-check',
     published_at: '2026-08-14T14:44:02.000000Z',
     headline_template: ':actors added :count items in :context',
-    actors: [m('1','Jasper Tey'), m('5','Marcus Webb')],
-    contexts: [p('7','Metaverse Pivot')], distinct: { actors: 3, contexts: 1 } }),
+    actors: [who.owner, who.dev],
+    contexts: [where.pivot], distinct: { actors: 3, contexts: 1 } }),
 ]
 
 // Section 2 reuses section 1's comment, plus the context it actually carries —
@@ -89,40 +85,40 @@ const summary = [
 const withContext = [
   node({ id: 'c2', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: m('6', 'Ines Duarte'),
+    actor: who.designer,
     object: { type: 'comment', id: '932', url: null, component: 'Note',
       label: 'The mobile breakpoint eats the caption — the older version handled this better.',
       data: { excerpt: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?' } },
-    target: d('89', 'style-tile-rev-a.sketch'), context: p('3', 'Port Migration') }),
+    target: d('89', 'style-tile-rev-a.sketch'), context: where.migration }),
   node({ id: 'c1', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor added the task :object in :context',
-    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table'),
-    context: p('3', 'Port Migration') }),
+    actor: who.pm, object: t('562', 'Kerning pass on the pricing table'),
+    context: where.migration }),
 ]
 
 const oneActivity = [
   node({ id: 'a6', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: m('6', 'Ines Duarte'),
+    actor: who.designer,
     object: { type: 'comment', id: '932', url: null, component: 'Note',
       label: 'The mobile breakpoint eats the caption — the older version handled this better.',
       data: { excerpt: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?' } },
     target: d('89', 'style-tile-rev-a.sketch') }),
   node({ id: 'a5', verb: 'upload', icon: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
     headline_template: ':actor uploaded :object to :target',
-    actor: m('6', 'Ines Duarte'), object: d('91', 'pricing-table-final.docx'), target: p('3', 'Port Migration') }),
+    actor: who.designer, object: d('91', 'pricing-table-final.docx'), target: where.migration }),
   node({ id: 'a4', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor added the task :object',
-    actor: m('7', 'Deja Williams'), object: t('562', 'Kerning pass on the pricing table') }),
+    actor: who.pm, object: t('562', 'Kerning pass on the pricing table') }),
   node({ id: 'a3', verb: 'create', icon: 'folder', published_at: '2026-08-13T16:00:00.000000Z',
     headline_template: ':actor created the project :object for :target',
-    actor: m('6', 'Ines Duarte'), object: p('9', 'Bird Removal'), target: c('2', 'Chirp') }),
+    actor: who.designer, object: where.removal, target: firm.bird }),
   node({ id: 'a2', verb: 'join', icon: 'user-plus', published_at: '2026-08-13T11:00:00.000000Z',
     headline_template: ':actor joined :target',
-    actor: m('5', 'Marcus Webb'), target: p('3', 'Port Migration') }),
+    actor: who.dev, target: where.migration }),
   node({ id: 'a1', verb: 'create', icon: 'building-2', published_at: '2026-08-12T10:00:00.000000Z',
     headline_template: ':actor brought on :object as a client',
-    actor: m('1', 'Jasper Tey'), object: c('2', 'Chirp') }),
+    actor: who.owner, object: firm.bird }),
 ]
 </script>
 
