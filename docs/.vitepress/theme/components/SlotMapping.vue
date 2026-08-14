@@ -13,16 +13,19 @@ const props = defineProps<{ node: Record<string, any> }>()
 const ROLES = ['actor', 'object', 'target', 'context'] as const
 
 /**
- * Entity labels are whatever the snapshot stored, and some are sentences — a
- * comment's label is its body, because a comment has no name. Shown in full: the
- * length is the point, and it is why that activity's headline names the target
- * instead. A long value takes its own row rather than being cut.
+ * Each role holds a typed entity, so show the type beside the label. Without it a
+ * label alone is ambiguous: a comment has no name, so its label is its body, and
+ * `object: The mobile breakpoint eats the caption…` reads like a stray caption
+ * until you can see it is a `comment` — which is also why that activity's
+ * headline names the target instead.
+ *
+ * Labels are never elided. A long one takes its own row.
  */
 const LONG = 42
 
 const rows = computed(() => {
   const node = props.node
-  const out: { slot: string; value: string; code?: boolean }[] = []
+  const out: { slot: string; value: string; type?: string; code?: boolean }[] = []
 
   out.push({ slot: 'kind', value: node.kind, code: true })
   out.push({ slot: 'verb', value: node.verb, code: true })
@@ -36,7 +39,7 @@ const rows = computed(() => {
     const entity = node[role]
 
     if (entity?.label) {
-      out.push({ slot: role, value: entity.label })
+      out.push({ slot: role, value: entity.label, type: entity.type })
     }
   }
 
@@ -59,7 +62,10 @@ const rows = computed(() => {
       <dt>{{ row.slot }}</dt>
       <dd>
         <code v-if="row.code">{{ row.value }}</code>
-        <template v-else>{{ row.value }}</template>
+        <template v-else>
+          <span v-if="row.type" class="sf-mapping-type">{{ row.type }}</span>
+          {{ row.value }}
+        </template>
       </dd>
     </div>
   </dl>
@@ -100,6 +106,16 @@ const rows = computed(() => {
 .sf-mapping dd {
   margin: 0;
   color: var(--vp-c-text-2, #4b5563);
+}
+
+.sf-mapping-type {
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--vp-c-text-3, #8a94a6);
+}
+
+.sf-mapping-type::after {
+  content: ' ·';
 }
 
 .sf-mapping code {
