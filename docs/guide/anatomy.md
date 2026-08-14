@@ -14,21 +14,71 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
 The other four slots are the **roles**, and they hold entities.
 
-Which slots an activity fills follows from the sentence you are recording:
+Which slots an activity fills follows from the sentence you are recording. Each
+example below shows a story, then the slots it maps to — only the ones that
+sentence needs.
 
-| the sentence | actor | verb | object | target | context |
-|---|---|---|---|---|---|
-| Ines signed in | Ines | `signin` | — | — | — |
-| Ines uploaded annual-report-v3.fig | Ines | `upload` | the file | — | — |
-| Ines uploaded annual-report-v3.fig **to** Password Crackdown | Ines | `upload` | the file | the project | — |
-| Ines created a task **in** Password Crackdown | Ines | `create` | the task | — | the project |
-| Ines commented **on** hero-mobile.png **in** Password Crackdown | Ines | `comment` | the comment | the image | the project |
-| Marcus joined Password Crackdown | Marcus | `join` | — | the project | — |
-| annual-report-v3.fig was archived | — | `archive` | the file | — | — |
+<div class="storyfeed-example">Ines signed in</div>
 
-Read the last row carefully: nobody is named, because whoever archived the file is
-not known. Read the comment row too — the **comment itself** is the object, and the
-image it was left on is the target.
+| slot | value |
+|---|---|
+| **actor** | Ines |
+| **verb** | `signin` |
+
+<div class="storyfeed-example">Ines uploaded annual-report-v3.fig</div>
+
+| slot | value |
+|---|---|
+| **actor** | Ines |
+| **verb** | `upload` |
+| **object** | annual-report-v3.fig |
+
+<div class="storyfeed-example">Ines uploaded annual-report-v3.fig to Password Crackdown</div>
+
+| slot | value |
+|---|---|
+| **actor** | Ines |
+| **verb** | `upload` |
+| **object** | annual-report-v3.fig |
+| **target** | Password Crackdown |
+
+<div class="storyfeed-example">Ines created a task in Password Crackdown</div>
+
+| slot | value |
+|---|---|
+| **actor** | Ines |
+| **verb** | `create` |
+| **object** | the task |
+| **context** | Password Crackdown |
+
+<div class="storyfeed-example">Marcus joined Password Crackdown</div>
+
+| slot | value |
+|---|---|
+| **actor** | Marcus |
+| **verb** | `join` |
+| **target** | Password Crackdown |
+
+<div class="storyfeed-example">Ines commented on hero-mobile.png in Password Crackdown</div>
+
+| slot | value |
+|---|---|
+| **actor** | Ines |
+| **verb** | `comment` |
+| **object** | the comment |
+| **target** | hero-mobile.png |
+| **context** | Password Crackdown |
+
+The comment *itself* is the object; the image it was left on is the target.
+
+<div class="storyfeed-example">annual-report-v3.fig was archived</div>
+
+| slot | value |
+|---|---|
+| **verb** | `archive` |
+| **object** | annual-report-v3.fig |
+
+Nobody is named here, because whoever archived the file is not known.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
