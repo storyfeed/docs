@@ -14,45 +14,50 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
 The other four slots are the **roles**, and they hold entities.
 
-Which slots an activity fills follows from the sentence you are recording. Below
-is a feed of seven activities; each one shows the story a reader sees, then the
-slots it was recorded with.
+Which slots an activity fills follows from the sentence you are recording. Every
+example below is a real story from the [demo app](https://newsroom.storyfeed.dev) —
+its own template, its own labels, its own icon token — showing the story a reader
+sees, then the slots it was recorded with.
 
-<FeedStream title="A feed of one-activity examples">
-  <FeedActivity icon="→" when="just now"
-    headline=":actor signed in"
-    actor="Ines" verb="signin" />
+They are ordered by how many slots they fill, which is useful for learning and is
+not how a feed looks: a real stream is chronological and mixed.
 
-  <FeedActivity icon="↑" when="2m"
-    headline=":actor uploaded :object"
-    actor="Ines" verb="upload" object="annual-report-v3.fig" />
+<FeedStream title="Six activities, ordered by the slots they fill">
+  <FeedActivity icon="building-2" when="3d"
+    headline=":actor brought on :object as a client"
+    actor="Jasper Tey" verb="create" object="Chirp" />
 
-  <FeedActivity icon="↑" when="5m"
-    headline=":actor uploaded :object to :target"
-    actor="Ines" verb="upload" object="annual-report-v3.fig" target="Password Crackdown" />
-
-  <FeedActivity icon="+" when="12m"
-    headline=":actor created :object in :context"
-    actor="Ines" verb="create" object="Kerning pass" context="Password Crackdown" />
-
-  <FeedActivity icon="◇" when="1h"
+  <FeedActivity icon="user-plus" when="2d"
     headline=":actor joined :target"
-    actor="Marcus" verb="join" target="Password Crackdown" />
+    actor="Marcus Webb" verb="join" target="Port Migration" />
 
-  <FeedActivity icon="✎" when="3h"
-    headline=":actor commented on :target in :context"
-    actor="Ines" verb="comment" object="the comment" target="hero-mobile.png" context="Password Crackdown" />
+  <FeedActivity icon="folder" when="2d"
+    headline=":actor created the project :object for :target"
+    actor="Ines Duarte" verb="create" object="Bird Removal" target="Chirp" />
 
-  <FeedActivity icon="⌸" when="yesterday"
-    headline=":object was archived"
-    verb="archive" object="annual-report-v3.fig" />
+  <FeedActivity icon="square-check" when="6h"
+    headline=":actor added the task :object in :context"
+    actor="Deja Williams" verb="create" object="Kerning pass on the pricing table" context="Port Migration" />
+
+  <FeedActivity icon="file-up" when="2h"
+    headline=":actor uploaded :object to :context"
+    actor="Ines Duarte" verb="upload" object="style-tile-rev-a.sketch" context="Port Migration" />
+
+  <FeedActivity icon="message-circle" when="20m"
+    headline=":actor commented on :target"
+    actor="Ines Duarte" verb="comment" object="the comment itself" target="style-tile-rev-a.sketch" context="Port Migration" />
 </FeedStream>
 
-Two of those are worth a second look. The comment has **three** entities: the
-comment itself is the object, the image it was left on is the target, and the
-project is the context — which is why its headline names the target and not the
-object. And the archived file names nobody, because whoever archived it is not
-known.
+The last one is the shape worth studying: five slots filled, and the headline names
+the **target** rather than the object — because the object is the comment itself,
+which has no name a reader would recognise. The document it was left on is what the
+sentence needs, and the project it happened in is the context.
+
+Two details carried over from the real app, both doing work. Document labels are
+filenames with version suffixes, which is why an object needs a label and a link
+rather than an id. And `icon` is a **token** — `file-up`, `message-circle` — that
+the payload ships and your renderer resolves; the vocabulary above is Lucide
+because the demo app chose Lucide.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;

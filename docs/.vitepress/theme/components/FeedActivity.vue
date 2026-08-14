@@ -10,6 +10,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   headline: string
   verb: string
+  /** The icon token the payload carries, e.g. `file-up` (Lucide, in the demo app). */
   actor?: string
   object?: string
   target?: string
@@ -41,7 +42,7 @@ const slots = computed(() => [
 <template>
   <article class="sf-activity">
     <div class="sf-line">
-      <span v-if="icon" class="sf-icon" aria-hidden="true">{{ icon }}</span>
+      <code v-if="icon" class="sf-icon" :title="`icon token: ${icon}`">{{ icon }}</code>
       <p class="sf-headline">
         <template v-for="(part, i) in parts" :key="i">
           <strong v-if="part.entity" class="sf-entity">{{ part.entity }}</strong>
@@ -75,10 +76,16 @@ const slots = computed(() => [
   gap: 10px;
 }
 
+/* The payload ships an icon TOKEN and the renderer resolves it, so the docs show
+   the token rather than pretending to own an icon set. */
 .sf-icon {
   flex: none;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 11px;
+  padding: 1px 6px;
+  color: var(--vp-c-text-3);
+  background: var(--vp-c-default-soft);
+  border-radius: 4px;
+  align-self: center;
 }
 
 .sf-headline {

@@ -84,8 +84,8 @@ Pick one owner deliberately, or register the shared aggregate keys directly with
 
 ```php
 Storyfeed::icons([
-    'document.upload' => 'bi-file-earmark-arrow-up',
-    '*.comment' => 'bi-chat',
+    'document.upload' => 'file-up',
+    '*.comment' => 'message-circle',
 ]);
 ```
 

@@ -44,7 +44,7 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
   "published_at": "2026-08-10T14:03:22Z",
   "headline_template": ":actor confirmed :object for :target",
   "headline": null,                     // pre-rendered fallback; see below
-  "icon": "bi-truck",
+  "icon": "file-check",
   "actor": { /* entity */ },
   "object": { /* entity */ },
   "target": { /* entity or null */ },
@@ -64,7 +64,7 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
   "verb": "upload",
   "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
   "headline_template": ":actors uploaded :count files to :target",
-  "icon": "bi-file-earmark-arrow-up",
+  "icon": "file-up",
   "exemplars": {                        // every role is a LIST
     "actors": [ /* up to 3 entities */ ],
     "objects": [ /* a pinned role has exactly one */ ],

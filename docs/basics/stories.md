@@ -21,7 +21,7 @@ class DocumentWasUploaded extends Story
 
     public function icon(): ?string
     {
-        return 'bi-file-earmark-arrow-up';
+        return 'file-up';
     }
 
     public function groups(): array
