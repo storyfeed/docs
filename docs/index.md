@@ -31,7 +31,7 @@ features:
 ---
 
 ```php
-Storyfeed::record(ActivityVerb::Confirm, object: $delivery, actor: $user, target: $customer);
+Storyfeed::record('confirm', $delivery, actor: $user, target: $customer);
 
 Storyfeed::feed()->context($project)->get();
 ```
@@ -41,7 +41,7 @@ Sally confirmed Delivery #1042 for Acme Co.<br>
 Bob, Sally, and 3 others uploaded files to Project X.
 </div>
 
-::: important PRE-1.0
+::: important Pre-1.0
 The payload contract is a freeze candidate; authoring APIs may still shift.
 [Roadmap →](https://github.com/storyfeed/storyfeed/blob/main/ROADMAP.md)
 :::

@@ -30,16 +30,13 @@ plural tokens are allowed everywhere, because a list of one is still true.
 'repeat.revise' => ':actor made :count revisions in :targets'  // ✓ plural is honest
 ```
 
-`storyfeed:doctor` fails unsafe templates. When no aggregate grammar resolves,
-the group falls back to the head member's singular template **only if every
-token that template uses is pinned by the axis** — otherwise the headline is
-null and [your renderer handles it](/basics/rendering#null-headline-groups).
+`storyfeed:doctor` reports unsafe tokens as warnings; run it with
+`--fail-on=warning` to make CI fail on them.
 
-::: danger
-That fallback path is not itself token-checked in third-party renderers. If your
-renderer composes its own last-resort headline from node entities, it can
-recreate exactly the lie the server refused to tell. Audit it.
-:::
+When no aggregate grammar resolves, the group falls back to the head member's
+singular template **only if every token that template uses is pinned by the
+axis** — otherwise both headline fields are null and
+[your renderer handles it](/basics/rendering#null-headline-groups).
 
 ## One plural list per template
 
@@ -50,8 +47,8 @@ Both of these are token-safe; only one is readable:
 ':actors uploaded :count files in :targets' // ✓ one list, one count
 ```
 
-No tool can catch this — doctor validates safety, not prose. Keep the second
-collapsed dimension as `:count`.
+Doctor validates token safety, not readability. Keep the second collapsed
+dimension as `:count`.
 
 ## Wildcards
 
@@ -69,8 +66,7 @@ Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files
 Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 ```
 
-And resist `'*.*'`: it silences every future gap and makes coverage reports
-meaningless.
+`'*.*'` matches everything, including the gaps you would want reported.
 :::
 
 ## Verbs spanning multiple types
@@ -82,8 +78,7 @@ declares `groups()` for `create` owns them all, and nothing indicates that to a
 reader of the other Stories.
 
 Pick one owner deliberately, or register the shared aggregate keys directly with
-`aggregateGrammar()` where their scope is obvious. This is a category
-difference, not a rule you can be reminded of by a failure.
+`aggregateGrammar()` where their scope is obvious.
 
 ## Icons
 

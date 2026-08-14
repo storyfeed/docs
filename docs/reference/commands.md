@@ -33,8 +33,8 @@ See [Doctor](/reference/doctor) for the checks.
 | `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair) |
 | `storyfeed:bundle` | bundles `Collectable` runs in closed batches into composites (backfill). `--window=` |
 
-`bundle` and `curate` rewrite settled history — run them when readers aren't
-mid-scroll, and expect a `sync_token` change afterward.
+`bundle` and `curate` rewrite settled history and bump the `sync_token`, which
+makes every accumulating client resync.
 
 ## Manifest
 
@@ -43,11 +43,8 @@ mid-scroll, and expect a `sync_token` change afterward.
 | `storyfeed:cache` | compiles registered stories into a cached manifest — also runs on `php artisan optimize` |
 | `storyfeed:clear` | removes the cached manifest |
 
-::: warning
-`optimize` before a test run caches config over `phpunit.xml` and can drop a
-seeded database. Run `optimize:clear` first — see
-[Testing](/deeper/testing#optimize-before-a-test-run-wipes-a-seeded-database).
-:::
+`optimize` caches config, which can drop a seeded database on the next test run
+— see [Testing](/deeper/testing#optimize-before-a-test-run-wipes-a-seeded-database).
 
 ## Generators
 

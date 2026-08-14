@@ -9,20 +9,17 @@ composer update storyfeed/storyfeed
 php artisan vendor:publish --tag="storyfeed-migrations"
 php artisan migrate
 php artisan storyfeed:doctor
+
+# If you verify with your test suite, clear cached config first — it overrides
+# phpunit.xml and can drop a seeded database.
+php artisan optimize:clear
 ```
 
-::: warning REPUBLISHING MIGRATIONS
+::: warning Republishing migrations
 Publishing is additive — new `add_*` files appear, existing ones are untouched.
 If you published before v0.5, check for a duplicate column migration and
 [read the schema note](/reference/schema#if-you-published-before-v0-5) before
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
-:::
-
-::: warning DON'T RUN `optimize` FIRST
-If you verify with your test suite, do **not** run `php artisan optimize`
-beforehand — cached config overrides `phpunit.xml` and can drop a seeded
-database. Run `php artisan optimize:clear` first. See
-[Testing](/deeper/testing#optimize-before-a-test-run-wipes-a-seeded-database).
 :::
 
 ## v0.7 — read modes renamed
@@ -44,9 +41,8 @@ API-only: mode names never appeared in the payload or in cursors, so no client
 change is required. The old values throw and name their replacement rather than
 falling back to a default.
 
-If your UI exposes modes in a query string, translate old values rather than
-letting a stale bookmark fall through to the default — showing the wrong view
-silently is worse than an error.
+If your UI exposes modes in a query string, translate old values; a stale
+bookmark otherwise falls through to the default.
 
 ## v0.6 — aggregation
 
@@ -56,9 +52,9 @@ silently is worse than an error.
   `composite.{verb}` aggregate grammar and `*.{verb}` singular grammar for the
   parent — see [Grammar](/deeper/grammar#composite-parents-need-verb).
 - **Null-headline groups became reachable.** A group with no safe headline now
-  arrives with both `headline_template` and `headline` null. Audit any
-  last-resort branch in your renderer that composes prose from node entities:
-  written for singletons, it announces one actor over a many-actor group.
+  arrives with both `headline_template` and `headline` null. A last-resort branch
+  that composes prose from node entities will name one actor over a many-actor
+  group — see [Rendering](/basics/rendering#null-headline-groups).
 - **`sync_token`** added to the envelope. Store and compare it; on change, drop
   accumulated nodes and refetch.
 

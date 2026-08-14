@@ -77,16 +77,16 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
 }
 ```
 
-**Contract-critical separation:** the group node *shape* is frozen contract; the
-*curation policy* deciding which groups exist (axes, thresholds, windows) is a
-server-side detail, free to change forever. Renderers must not assume any
-grouping behaviour — only that what arrives conforms to this shape.
+The group node *shape* is frozen contract. The *curation policy* deciding which
+groups exist (axes, thresholds, windows) is a server-side detail and free to
+change, so a renderer can rely on the shape but not on which groups appear.
 
 ## Headlines
 
 `headline_template` is primary; tokenize and substitute. `headline` is the
 pre-rendered fallback for closure-authored grammar. When the template is
-non-null, `headline` is null **by design** — never assert non-null `headline`.
+non-null, `headline` is null **by design**, so a test asserting a non-null
+`headline` will fail on a perfectly good node.
 
 Both null on a group node means the group cannot be honestly summarized.
 Renderers **must** handle it — see
@@ -98,7 +98,7 @@ safe iff the axis pins that role.
 
 ## Cursor semantics
 
-- Opaque. Store and return them; never parse or construct.
+- Opaque. Store and return them; they are not parseable.
 - Ordered by `published_at`, newest first.
 - **An empty `items` array is not the end of the feed.** Only a null
   `next_cursor` is. Follow while empty, bounded to a small hop count (five is a

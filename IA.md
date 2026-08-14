@@ -21,8 +21,7 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
    (the package's own API says `aggregateGrammar`); the wire format is
    *Activity Streams 2.0*. Humble means the reader recognizes every noun.
 4. **Short declarative sentences.** One idea each. Sub-clauses about why the
-   API is shaped this way go in a `::: tip` or a "Why?" details block, or get
-   cut.
+   API is shaped this way go in a `::: tip` — or get cut, and default to cut.
 5. **Tables for anything enumerable** — options, modes, columns, tokens.
    Prose lists hide information; tables scan.
 6. **Every page answers "what do I have when I'm done?" in its first two
@@ -36,6 +35,45 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 8. **Reference pages are exhaustive; guide pages are minimal.** A guide shows
    the one obvious path. Alternatives, edge cases, and configuration live in
    reference pages the guide links to.
+9. **A caveat lives where the mistake is made.** Copied code travels to the call
+   site; prose about the code does not. So: a caveat about code is a comment
+   *inside the snippet*; about a command, a trailing `#`; about payload shape, a
+   cell in the shape's table. A standalone callout has to earn it — see the test
+   below. No callout instructs the reader to audit, resist, or never; show the
+   correct line instead. Callout titles are sentence case, or absent.
+10. **Say it once.** One canonical home per fact, plus a pointer — one sentence
+    or a code comment — on every page that literally prints the triggering line
+    of code or command. Count those pages; that is the number of homes.
+    *Exception:* a fact that contradicts a widely-held framework prior gets
+    **stated** at each trigger site, not linked. A reader who doesn't know the
+    fact exists will not click.
+11. **Describe the shipped API.** No internals the public API doesn't expose, no
+    defence of alternatives that weren't shipped, no history of the package or
+    its showcase app, and no anthropomorphism — the package does not refuse,
+    want, or lie; a sentence names what the code does. If the reader needs no
+    knowledge of a fix for it to work, the fix is not documentation.
+12. **String-first, sentence-shaped.** Canonical examples use plain strings and
+    self-describing variables; typed layers (enums, Story classes) arrive
+    afterwards as an improvement on working code. A recording example reads in
+    the same order as the headline it produces:
+    `->actor($user)->verb('upload', $file)->to($project)`.
+
+### When a callout is earned — Silent / Unguarded / In-Hand
+
+All three must hold:
+
+1. **Silent** — the mistake produces plausible output and throws nothing. If it
+   throws, the stack trace is the documentation: use prose.
+2. **Unguarded** — nothing in the reader's default toolchain catches it,
+   including `storyfeed:doctor` **at its default exit code** (it reports; it
+   only fails with `--fail-on`).
+3. **In hand** — on this page the reader is holding, copying, or about to run
+   the exact artifact where the mistake happens.
+
+Severity is derived, not chosen: `danger` = all three *and* the consequence is
+wrong data shown to a user, or data loss. `warning` = all three, recoverable.
+Fails 1 or 2 → prose, or delete. Fails 3 → one sentence and a link, on the page
+that does pass 3.
 
 Models studied for register: Laravel docs (guide/reference split, code-first),
 Spatie package docs (one page per capability, ruthless brevity), Inertia

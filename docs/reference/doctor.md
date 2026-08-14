@@ -26,17 +26,7 @@ your feed. Findings name the fix, not just the fault.
 | `hashes` | grouping hash lengths consistent with the current axis recipes |
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? |
 | `manifest` | is the cached story manifest stale relative to your code? |
-| `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) |
-
-## The check worth understanding
-
-`freshness` is the odd one out. Every other check asks whether what you have is
-*correct*; this one asks whether anything is still *arriving*. The failure it
-exists for is not a broken feed but a **forgotten** one — grammar gets authored
-once, new modules ship, and nothing publishes from them.
-
-It is honest about its reach: a module that never touches Storyfeed is
-invisible to Storyfeed. `storyfeed:stories` covers the part that is detectable.
+| `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one |
 
 ## From findings to code
 
@@ -47,8 +37,6 @@ story class that fixes it.
 php artisan storyfeed:doctor --stubs
 php artisan make:story --from-doctor
 ```
-
-That replaces the register → run → inspect → hand-transcribe ritual entirely.
 
 ## In CI
 
@@ -62,6 +50,5 @@ fast in the suite, doctor reports against real traffic.
 
 ## On a fresh install
 
-Doctor refuses a verdict when there is no data to look at, rather than
-reporting your whole app as unwired. "Nothing to diagnose yet" is a valid
-result.
+With no data, doctor reports nothing to diagnose rather than reporting your app
+as unwired.

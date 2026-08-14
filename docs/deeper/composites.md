@@ -6,10 +6,11 @@ uploaded 6 files to Spring Campaign" as a single activity, not six grouped ones.
 ## Explicit
 
 ```php
-Storyfeed::activity(ActivityVerb::Upload)
-    ->objects($files)
+Storyfeed::activity()
     ->actor($user)
-    ->target($project)
+    ->verb('upload')
+    ->objects($files)
+    ->to($project)
     ->publish();
 ```
 

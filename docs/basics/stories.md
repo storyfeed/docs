@@ -4,7 +4,6 @@ A Story is one class per meaningful activity type — its verb, headline, icon,
 and aggregation, in one file:
 
 ```php
-use App\Enums\ActivityVerb;
 use App\Models\Document;
 use Storyfeed\Grouping\Group;
 use Storyfeed\Story;
@@ -13,7 +12,7 @@ class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = ActivityVerb::Upload;
+    public string|FeedVerb|null $verb = 'upload';
 
     public function headline(): string
     {
@@ -63,32 +62,24 @@ Storyfeed::stories([
 Nothing is inferred from the class name — `$verb` and `$objectType` are both
 explicit. The name is documentation; name it for the reader.
 
-::: tip NAMING
+::: tip Naming
 `{Object}Was{Verbed}` reads well when the object is the patient
 (`DocumentWasUploaded`). For reflexive activities, write what happened:
 `MemberJoined`, not `MemberWasJoined`. Nothing consults the name at runtime.
 :::
 
-## Compilation
+## Caching
 
-Stories compile into the underlying registries at boot — the same registries
-the direct API writes (`Storyfeed::grammar()`, `aggregateGrammar()`,
-`icons()`, …). Both layers are permanent: Stories are the convenience, the
-registries are the substrate and escape hatch.
-
-Cache the compiled manifest in production — it is wired into
-`php artisan optimize`:
+Stories compile into the registries the direct API writes, so both layers stay
+supported. Cache the compiled manifest in production:
 
 ```bash
 php artisan storyfeed:cache    # also runs on `optimize`
-php artisan storyfeed:clear
+php artisan storyfeed:clear    # before a test run: cached config overrides phpunit.xml
+                               # and can drop a seeded database
 ```
 
-::: warning
-Running `optimize` before a test run caches config over `phpunit.xml`'s — if a
-seeded test database seems to vanish, `storyfeed:clear` (or `optimize:clear`)
-first.
-:::
+See [Testing](/deeper/testing#optimize-before-a-test-run-wipes-a-seeded-database).
 
 ## Strict grammar
 

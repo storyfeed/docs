@@ -85,6 +85,9 @@ namespace refactor. Enforce a map:
 Relation::enforceMorphMap([
     'document' => Document::class,
     'project' => Project::class,
+    // Aliases are permanent: an activity whose role alias no longer resolves is
+    // treated as an orphan and deleted by the scheduled trickle. Renaming a key
+    // means keeping the old one pointed somewhere.
     'user' => User::class,
 ]);
 ```

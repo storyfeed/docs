@@ -32,7 +32,7 @@ php artisan migrate
 | table | holds |
 |---|---|
 | `feed_activities` | the activities — the atomic timeline |
-| `feed_snapshots` | cached entity labels and data, so reads never touch your domain tables |
+| `feed_snapshots` | cached entity labels and data |
 | `feed_groupings` | grouping candidates, computed at publish time |
 | `feed_parties` | named participants with no model in your app |
 | `feed_batches` | bursts of activity by one actor |
@@ -76,9 +76,9 @@ Schedule::command('storyfeed:prune')->daily();                    // only if pru
 php artisan storyfeed:doctor
 ```
 
-Doctor inspects your registries, schema, and actual feed traffic, and names
-each problem with its fix. On a fresh install it will tell you there is nothing
-to diagnose yet — it refuses a verdict rather than guessing.
+Doctor inspects your registries, schema, and actual feed traffic, and names each
+problem with its fix. On a fresh install it reports that there is nothing to
+diagnose yet.
 
 ## Next
 

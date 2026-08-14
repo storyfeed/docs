@@ -34,9 +34,9 @@ class Document extends Model implements Feedable
 }
 ```
 
-`toFeed()` is a snapshot, written at publish time and refreshed on save — reads
-never touch your domain tables. `toFeedLink()` is static and runs at read time
-from that snapshot, so labels stay fast and URLs never go stale.
+`toFeed()` is a snapshot, written at publish time and refreshed on save.
+`toFeedLink()` is static and runs at read time from that snapshot, so labels stay
+fast and URLs never go stale.
 
 ::: tip
 `toFeedLink()` receives exactly what `toFeed()` put in `data` — include the key
@@ -50,6 +50,8 @@ Storyfeed stores morph aliases, never class names, so enforce a morph map:
 Relation::enforceMorphMap([
     'document' => Document::class,
     'project' => Project::class,
+    // Aliases are permanent: an activity whose role alias stops resolving is
+    // treated as an orphan and deleted by the scheduled trickle.
     'user' => User::class,
 ]);
 ```
@@ -60,7 +62,6 @@ One class per meaningful activity type — the verb, the headline, the icon, and
 how it groups:
 
 ```php
-use App\Enums\ActivityVerb;
 use App\Models\Document;
 use Storyfeed\Grouping\Group;
 use Storyfeed\Story;
@@ -69,7 +70,7 @@ class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = ActivityVerb::Upload;
+    public string|FeedVerb|null $verb = 'upload';
 
     public function headline(): string
     {
@@ -102,25 +103,27 @@ Storyfeed::stories([
 Headlines are **templates**, substituted by the renderer — translatable, and a
 label can stay a link. A group headline may only use tokens true of *every*
 member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
-`storyfeed:doctor` fails templates that would lie.
+`storyfeed:doctor` reports templates that would lie.
 
 ## 3. Publish an activity
 
 ```php
-Storyfeed::record(ActivityVerb::Upload, object: $document, actor: $user, target: $project);
-```
-
-Or fluently:
-
-```php
-Storyfeed::activity(ActivityVerb::Upload, $document)
+// Ines Duarte uploaded annual-report-v3.fig to Password Crackdown
+Storyfeed::activity()
     ->actor($user)
-    ->for($project)
+    ->verb('upload', $document)
+    ->to($project)
     ->publish();
 ```
 
+Or in one line:
+
+```php
+Storyfeed::record('upload', $document, actor: $user, target: $project);
+```
+
 Call it wherever the fact becomes true — an action, an observer, an event
-listener. Recording is always an explicit call; there is no model spying.
+listener.
 
 ## 4. Read it back
 
@@ -146,13 +149,15 @@ Three read modes:
 | `->live()` | mechanical grouping over the active window |
 | `->summary()` | the collapsed best-axis view — **the default** |
 
-Paginate by passing `next_cursor` back to `->cursor()`. Cursors are opaque:
-store them, never parse them.
+Paginate by handing `next_cursor` back:
 
-::: warning
-An empty `items` array is **not** the end of the feed — only a null
-`next_cursor` is. Follow the cursor while empty, bounded to a few hops.
-:::
+```php
+// Cursors are opaque — store them, don't parse them.
+// End of feed is next_cursor === null. An empty items array is NOT the end:
+// a page can lose every node to a rewrite and still carry a usable cursor,
+// so follow it while empty, bounded to a few hops.
+$page = Storyfeed::feed()->cursor($cursor)->get();
+```
 
 ## 5. Render it
 
@@ -220,6 +225,10 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
         @elseif ($node['headline'])
             {{ $node['headline'] }}
         @elseif ($node['kind'] === 'group')
+            {{-- Both headline fields null: the server could not summarise this
+                 group honestly. Render the count, ideally with the members
+                 visible. Composing actor + verb + object here would name one
+                 actor over a many-actor group. --}}
             {{ $node['count'] }} activities
         @else
             {{ $node['verb'] }}
@@ -232,21 +241,11 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 @endforeach
 ```
 
-Two branches carry more weight than their length suggests.
+The comments on `$one`, `$overflow` and the group branch are the parts to keep
+when you adapt this. [Rendering](/basics/rendering) covers the token rules in
+full.
 
-**Singular tokens on a group must come from `exemplars`.** A group node has no
-`actor`/`object`/`target`/`context` keys — a pinned role arrives as a
-single-entry exemplar list. Reading the role key directly renders "Someone"
-over a group whose actor is perfectly well known, which is a lie in the
-opposite direction from the one the server prevents. Most group headlines use
-at least one pinned token, so this is the common path, not an edge case.
-
-**A null headline on a group means it cannot be honestly summarized.** Render a
-count, ideally with the members visible — never compose
-`<actor> <verb> <object>` yourself, which recreates the one-actor lie the
-server refused to tell.
-
-For a feed that polls or streams, add
+A feed that polls or accumulates pages also needs
 [reconciliation](/basics/rendering#reconciling-updates) — without it, a
 regrouped node duplicates activities on the next poll.
 
@@ -256,6 +255,6 @@ regrouped node duplicates activities on the next poll.
 php artisan storyfeed:doctor
 ```
 
-Doctor reads your registries *and* your actual traffic: a verb with no grammar,
-a group that would arrive unnamed, a model in the feed that nothing publishes
-about. It is the fastest way to find the step you skipped.
+Doctor reads your registries and your actual traffic: a verb with no grammar, a
+group that would arrive unnamed, a model in the feed that nothing publishes
+about.

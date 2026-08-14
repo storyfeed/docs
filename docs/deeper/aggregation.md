@@ -10,10 +10,8 @@ Activities group along **axes** — each axis collapses one dimension:
 | `object` | many actions on one object | `:actor` `:object` | ":actor made :count revisions to :object" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
 
-Candidate hashes are computed at **write time** (cheap, deterministic);
-curation then selects **one winning axis** per activity — by distinct
-cardinality on the collapsed dimension, ties broken by axis priority. The read
-path never groups.
+Each activity ends up in exactly one axis per read mode. The read path never
+groups — grouping cannot be varied per request.
 
 A Story opts into axes via `groups()`:
 
@@ -54,6 +52,10 @@ assume any particular grouping behaviour.
 Below threshold, activities stay atomic. Disable grouping entirely with
 `NullStrategy`.
 
+Thresholds apply at publish time, so changing them is **not retroactive** —
+existing activities keep the grouping they were given. Run `storyfeed:curate` to
+re-apply, which rewrites settled history and bumps the `sync_token`.
+
 ## Custom axes
 
 An axis is a key recipe plus eligibility — no package edits required:
@@ -73,7 +75,7 @@ a group; `!` marks fields whose absence disqualifies. Token safety is derived
 from the recipe — a singular role token is allowed exactly when the role's
 identity is part of the key.
 
-::: warning PRIORITY
+::: warning Priority
 A new axis registers at the **lowest** priority. If it should outrank a
 built-in, say so explicitly:
 
@@ -88,5 +90,5 @@ Then author `scene.{verb}` templates in the aggregate grammar, and run
 ## One story per fact, per mode
 
 Within any read mode, every activity appears in exactly one node — atomic or
-grouped, never both. Different modes may tell the same facts differently;
-that's the point of modes.
+grouped, never both. This is what makes the member-identity
+[reconciliation rule](/basics/rendering#reconciling-updates) sound.

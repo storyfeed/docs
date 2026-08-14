@@ -1,7 +1,22 @@
 # Verbs
 
-Verbs are free-form strings in storage. An enum is the recommended authoring
-layer — IDE-discoverable and typo-proof — but never a closed set:
+A verb is a string. Record one and you have an activity:
+
+```php
+Storyfeed::activity()
+    ->actor($user)
+    ->verb('upload', $document)
+    ->to($project)
+    ->publish();
+```
+
+Verbs are free-form in storage, and nothing has to be registered to record one.
+A registry adds grammar, icons, Activity Streams types, and drift detection.
+
+## A better way: an enum
+
+Same strings, typo-proof and IDE-discoverable, with the AS2 mapping carried
+alongside:
 
 ```php
 use Storyfeed\Concerns\AsFeedVerb;
@@ -23,10 +38,11 @@ Register your vocabulary:
 Storyfeed::verbs(ActivityVerb::class);
 ```
 
-With `AsFeedVerb`, every case doubles as a recording builder:
+Still not a closed set — storage keeps taking any string. With `AsFeedVerb`,
+every case doubles as a recording builder:
 
 ```php
-ActivityVerb::Comment->actor($user)->object($comment)->in($project)->publish();
+ActivityVerb::Comment->actor($user)->object($comment)->to($project)->publish();
 ```
 
 ## Strict mode
@@ -59,8 +75,8 @@ public function activityType(): ActivityType|string|null
 }
 ```
 
-Unmapped verbs serialize as extension types and are preserved verbatim — AS2
-mapping never gates recording, and unknown types are never dropped.
+Unmapped verbs serialize as extension types, preserved verbatim. AS2 mapping
+never gates recording.
 
 ## Inspecting your vocabulary
 

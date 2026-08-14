@@ -55,25 +55,18 @@ combine.
 Pass the previous page's `next_cursor` back:
 
 ```php
+// Cursors are opaque — store them, don't parse them.
+// End of feed is next_cursor === null. An empty items array is NOT the end: a
+// page can return zero items with a live cursor, so follow it while empty,
+// bounded to a few hops.
 $page = Storyfeed::feed()->cursor($request->query('cursor'))->get();
 ```
 
-Cursors are opaque — store them, never parse them. Two rules that prevent real
-bugs:
+Store `sync_token` alongside the cursor and compare it on each page. When it
+changes, settled history was rewritten: drop all accumulated nodes and refetch
+from the head. Equality compare only — `null → non-null` counts as a change.
 
-::: warning EMPTY ≠ DONE
-Only a null `next_cursor` ends the feed. A page can legally return zero items
-with a live cursor; follow it while empty, bounded to a few hops.
-:::
-
-::: warning SYNC TOKEN
-Store `sync_token` and compare on each page. When it changes, settled history
-was rewritten server-side: drop all accumulated nodes and refetch from the
-head. Equality compare only — `null → non-null` counts as a change.
-:::
-
-If your client accumulates pages and polls for new ones, the token is one of
-three rules you need — see
+A client that accumulates pages needs two more rules with it — see
 [Reconciling updates](/basics/rendering#reconciling-updates).
 
 ## Conditional building

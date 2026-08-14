@@ -6,7 +6,7 @@ feed, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
 ```php
-Storyfeed::record(ActivityVerb::Upload, object: $document, actor: $user, target: $project);
+Storyfeed::record('upload', $document, actor: $user, target: $project);
 ```
 
 Recorded in a burst, activities aggregate the way feeds are expected to:
@@ -29,10 +29,10 @@ Bob, Sally, and 3 others uploaded files to Project X.
 
 ## License
 
-Storyfeed is MIT, and everything MIT today stays MIT. The core is complete on
-its own; paid companions like `storyfeed/ui` add convenience on top and never
-take anything away. Building your own renderer against the payload contract is
-expected — the [quickstart](/guide/quickstart) ends with one in plain Blade.
+MIT, and everything MIT today stays MIT — see
+[Compatibility](/reference/compatibility#licensing). Building your own renderer
+against the payload contract is expected; the [quickstart](/guide/quickstart)
+ends with one in plain Blade.
 
 ## Next
 

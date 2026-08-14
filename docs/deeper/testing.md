@@ -7,9 +7,9 @@ Storyfeed::fake();
 
 // … exercise your code …
 
-Storyfeed::assertPublished(ActivityVerb::Upload, $document);
-Storyfeed::assertPublishedCount(3, ActivityVerb::Upload);
-Storyfeed::assertNotPublished(ActivityVerb::Delete);
+Storyfeed::assertPublished('upload', $document);
+Storyfeed::assertPublishedCount(3, 'upload');
+Storyfeed::assertNotPublished('delete');
 Storyfeed::assertNothingPublished();
 ```
 
@@ -55,20 +55,17 @@ StorySurface::assertNoUnwiredSurface(except: [Client::class]);
 ```
 
 That one flags models that appear in your feed but that nothing publishes
-about. It is fake-aware, and it refuses a verdict when there is no data rather
-than indicting your whole app.
+about. It is fake-aware, and with no data it reports nothing to diagnose.
 
 ## `optimize` before a test run wipes a seeded database
 
-::: danger
+::: warning
 `php artisan optimize` caches config, and cached config overrides
 `phpunit.xml` — so the suite runs against your real database and
 `RefreshDatabase` drops it. The symptom is a pile of *unrelated* failures
 (auth 419s, missing notifications) that reads like a broken migration.
 
-Run `php artisan optimize:clear` (or `storyfeed:clear`) before testing. This is
-the single most expensive trap in the package's history, and it costs one
-command to avoid.
+Run `php artisan optimize:clear` (or `storyfeed:clear`) before testing.
 :::
 
 ## Diagnostics in CI

@@ -1,18 +1,21 @@
 # Recording activities
 
-An activity is a verb plus up to four entities. Record one in a single call:
+An activity is a verb plus up to four entities. The builder reads in the order of
+the headline it produces:
 
 ```php
-Storyfeed::record(ActivityVerb::Confirm, object: $delivery, actor: $user, target: $customer);
+// Sally confirmed Delivery #1042 for Acme Co.
+Storyfeed::activity()
+    ->actor($user)
+    ->verb('confirm', $delivery)
+    ->to($customer)
+    ->publish();
 ```
 
-Or fluently, when you need to build conditionally:
+The same thing in one line, when you have everything up front:
 
 ```php
-Storyfeed::activity(ActivityVerb::Confirm, $delivery)
-    ->actor($user)
-    ->target($customer)
-    ->publish();
+Storyfeed::record('confirm', $delivery, actor: $user, target: $customer);
 ```
 
 Recording is always an explicit call — from an action, an observer, an event
@@ -27,13 +30,14 @@ listener. There is no model spying.
 | `target` | where it landed | the project |
 | `context` | the surrounding scope | the workspace |
 
-The fluent builder also has prepositional aliases that read naturally at the
-call site — each is an alias for a role, not a new concept:
+The builder has prepositional aliases for reading naturally at the call site:
 
-| alias | role |
+| alias | sets |
 |---|---|
-| `->in($model)` / `->from($model)` | `context` |
-| `->to($model)` / `->for($model)` | `target` |
+| `->to()` `->for()` `->in()` `->from()` | `target` |
+
+All four are the same setter — pick whichever reads at your call site. `context`
+is set only by `->context()`.
 
 ## The default actor
 
@@ -57,7 +61,8 @@ activity is published as anonymous — a null actor means genuinely unknown.
 ## Extras
 
 ```php
-Storyfeed::activity(ActivityVerb::Upload, $document)
+Storyfeed::activity()
+    ->verb('upload', $document)
     ->data(['size' => $bytes])          // activity-level payload, arrives in the node
     ->publishedAt($importedAt)          // backdate (imports, backfills)
     ->publish();
@@ -67,7 +72,7 @@ Storyfeed::activity(ActivityVerb::Upload, $document)
 replaces the earlier row rather than duplicating it:
 
 ```php
-Storyfeed::activity(ActivityVerb::Update, $document)->replace()->publish();
+Storyfeed::activity()->verb('update', $document)->replace()->publish();
 ```
 
 ## Recording from the verb enum
@@ -76,7 +81,7 @@ If your verbs live in an enum using the `AsFeedVerb` trait, every case is a
 builder:
 
 ```php
-ActivityVerb::Comment->actor($user)->object($comment)->in($project)->publish();
+ActivityVerb::Comment->actor($user)->object($comment)->to($project)->publish();
 ActivityVerb::Confirm->publish($delivery);
 ```
 
@@ -88,5 +93,5 @@ Pass `objects:` (or `->objects()`) to record one story about many objects — a
 [composite](/deeper/composites):
 
 ```php
-Storyfeed::record(ActivityVerb::Upload, objects: $files, actor: $user, target: $project);
+Storyfeed::record('upload', objects: $files, actor: $user, target: $project);
 ```

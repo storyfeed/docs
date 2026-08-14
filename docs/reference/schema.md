@@ -1,7 +1,7 @@
 # Schema
 
-Six tables. You never query them directly — the builder and payload are the
-API — but knowing the shape helps when reasoning about indexes and retention.
+Six tables, created by the published migrations. Useful when reasoning about
+indexes and retention.
 
 ## `feed_activities`
 
@@ -13,19 +13,15 @@ The atomic timeline.
 | `uid` | public ULID — the id in the payload, and the durable address of a fact |
 | `verb` | free-form string, indexed |
 | `{actor,object,target,context}_type` / `_id` | nullable morphs, storing **aliases** |
-| `cached_{role}_id` | FK to the snapshot row, so a read is a join and not a morph lookup |
+| `cached_{role}_id` | FK to the snapshot row |
 | `data` | activity-level JSON payload |
 | `published_at` | the sort key; nullable, stamped at publish |
 | timestamps, `deleted_at` | soft deletes |
 
-Composite indexes cover `(published_at, id)` and each role plus
-`(published_at, id)` — the shapes a scoped, cursor-paged feed actually uses.
-
 ## `feed_snapshots`
 
 Denormalized entity labels and data, so reads never touch your domain tables.
-Written at publish, refreshed on model save, backfilled by
-`storyfeed:trickle`. Carries a `shape` fingerprint used to detect DTO drift.
+Written at publish, refreshed on model save, backfilled by `storyfeed:trickle`.
 
 ## `feed_groupings`
 
@@ -35,8 +31,7 @@ rides these rows.
 
 ## `feed_parties`
 
-Named participants with no model in your app. Stored under the
-`storyfeed.party` morph alias, resolved independently of your app's morph map.
+Named participants with no model in your app.
 
 ## `feed_batches`
 
@@ -68,5 +63,6 @@ mid-run on the duplicate column. Delete the orphaned `add_*` file, then run a
 full rebuild to confirm.
 
 Verify a republish with `php artisan migrate:fresh` locally **before** deploying
-it. This is not hypothetical; it nearly took the showcase app down at 4am.
+it. Applies to installs that published before v0.5; the 1.0 consolidation
+resolves it.
 :::

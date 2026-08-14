@@ -25,9 +25,8 @@ before you publish anything externally.
 
 ## The `@context`
 
-Documents reference `https://ns.storyfeed.dev` — a live, unversioned context
-document defining the package's own terms (currently `sf:verb`). It is
-add-only, so there is no v2 to bump to.
+Documents reference `https://ns.storyfeed.dev`, which defines the package's own
+terms (currently `sf:verb`). It is add-only.
 
 ## Verb mapping
 
@@ -37,8 +36,7 @@ Verbs map to AS2 types via your enum's `activityType()` — see
 - Mapping is **vocabulary transcription only**. It never throws and never gates
   recording or validation.
 - Unmapped verbs serialize as extension types, **preserved verbatim**. Unknown
-  types are never dropped — that is the recurring data-loss bug in this
-  ecosystem, and the package refuses to reproduce it.
+  types are never dropped.
 - Composite objects serialize as `OrderedCollection`.
 
 ## Type overrides

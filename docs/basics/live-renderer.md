@@ -12,10 +12,7 @@ things, and none of them can be demonstrated by a static template:
 - **The bounded empty-page loop**, because an empty page with a live cursor is
   legal.
 
-This example is Vue, and was written and verified against a production feed by
-the [Newsroom](https://newsroom.storyfeed.dev), the package's own showcase app.
-Deliberately excluded: polling wiring (one line of whatever framework you use),
-avatars, links and styling. None of it teaches you anything about the payload.
+The example is Vue. Polling wiring, avatars and styling are omitted.
 
 ## Types
 
@@ -319,28 +316,14 @@ const sentence = computed(() => {
 </template>
 ```
 
-::: tip SELF-REFERENCE
-`FeedNode` recurses into itself for group children, which matches how the
-payload nests. A single-file component can refer to itself by its filename, so
-this resolves as written — outside the SFC compiler, add
+`FeedNode` recurses into itself for group children. A single-file component can
+refer to itself by filename; outside the SFC compiler, add
 `defineOptions({ name: 'FeedNode' })`.
-:::
 
 ## Verifying a renderer
 
-The check that matters takes one line, and it is exactly what the earlier
-version of this documentation's Blade loop would have failed:
-
-**Render every node your feed produces and count the fallback strings.**
-
-```
-fallback leaks ("Someone"/"Something"): 0
-```
-
-Any leak is a token resolving to nothing. Because a headline reads perfectly
-well with "Someone" in it, this class of bug does not look like a bug — it looks
-like an anonymous feed. Run it across every mode and every axis you have
-registered:
+Run the [fallback-leak check](/basics/rendering#verifying-your-renderer) across
+every mode and axis. Real output from the showcase feed:
 
 ```
 activity   Priya Raman commented on Rewrite the colour tokens
@@ -351,6 +334,5 @@ targets    Aiko Tanaka commented in hero-desktop-wip.png, Export the motion test
 repeat     Deja Williams completed Kerning pass on the motion tests, Simplify the icon library, …
 ```
 
-Degraded entities are the deliberate exception: an un-snapshotted entity has
-`label: null` and *should* render your placeholder. Assert on the fallbacks for
-tokens whose entities exist.
+An un-snapshotted entity has `label: null` and should render your placeholder,
+so assert on fallbacks for tokens whose entities exist.

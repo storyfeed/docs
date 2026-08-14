@@ -20,39 +20,24 @@ labels.
 | `:count` | group nodes | total member count | `node.count` |
 | `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - node.exemplars.actors.length` |
 
-::: danger SINGULAR TOKENS COME FROM `exemplars` ON A GROUP
-A group node has **no** `actor`/`object`/`target`/`context` keys. A pinned role
-arrives as an exemplar list of exactly one, by construction. Reading the role
-key directly on a group yields null, so your fallback ("Someone", "Something")
-renders over a group whose actor is perfectly well known — a lie in the
-opposite direction from the one the server prevents, and silent.
+::: danger Singular tokens come from `exemplars` on a group
+A group node has **no** `actor`/`object`/`target`/`context` keys — a pinned role
+arrives as an exemplar list of exactly one. Read the role key directly and your
+fallback ("Someone") renders over a group whose actor is known, silently.
 
-Most group headlines use at least one pinned token (`repeat` pins `:actor` and
-`:target`; `actors` pins `:target`; `targets` pins `:actor`; `composite` pins
-three), so this is the common path.
+`repeat` pins `:actor` and `:target`; `actors` pins `:target`; `targets` pins
+`:actor`; `composite` pins three. Four of five axes pin a role, so this is the
+common path.
 :::
 
-For plural tokens, render the exemplars joined, with overflow from the
-`distinct` block when `distinct[role]` exceeds the exemplars shown
-("…and N more").
+Plural tokens render the exemplars joined, plus the overflow. Exemplars are
+capped at **three** per role, so the overflow is `distinct[role]` minus the
+number shown — the same arithmetic for `:others` and for every plural token's
+"and N more", so compute it once.
 
-::: warning OVERFLOW IS `distinct − exemplars shown`, NEVER `distinct − 1`
-Exemplars are capped at **three** per role. With 10 distinct actors and 3 named,
-the overflow is 7 — subtracting 1 gives "Ann, Sally, Bob and 9 others", which
-implies 12 people where 10 exist. The contract's own example is a 200-actor
-group reporting **197**: 200 minus three named, not minus one.
-
-This applies to `:others` and to every plural token's "and N more" suffix — they
-are the same arithmetic, so compute it once.
-:::
-
-::: tip PREFER SELF-OVERFLOWING PLURALS
-`:others` exists for `":actors and :others uploaded…"`-style templates, but it
-cannot vanish when overflow is zero — a three-actor group renders "and 0
-others". The forward style is a plural token that carries its own overflow
-(`:actors` → "Ann, Sally, Bob and 7 more"), which reads correctly at every
-group size.
-:::
+`:others` cannot vanish when overflow is zero: a three-actor group renders "and
+0 others". A plural token carrying its own overflow (`:actors` → "Ann, Sally,
+Bob and 7 more") reads correctly at every group size.
 
 `headline` (pre-rendered string) is the fallback for grammar authored as PHP
 closures. When `headline_template` is non-null, `headline` is null **by
@@ -75,13 +60,9 @@ Render an avatar stack plus a bare localized count ("{count} activities"), and
 consider opening the group expanded: a group that can't be named is exactly the
 group whose members should be visible.
 
-::: danger AUDIT YOUR LAST-RESORT BRANCH
-A friendly fallback that composes `<actor> <verb> <object>` from the node's
-entities was written for singletons — applied to a group it announces one actor
-over a many-actor group. For `kind: "group"`, degrade to the count treatment,
-never to entity-composed prose. This exact bug shipped in the package's own
-showcase app before it was caught.
-:::
+For `kind: "group"`, degrade to that count treatment rather than to prose
+composed from the node's entities — a last-resort branch written for singletons
+names one actor over a many-actor group.
 
 ## Group children
 
@@ -92,10 +73,9 @@ showcase app before it was caught.
 
 ## Reconciling updates
 
-A static render needs none of this. **A feed that polls or streams does**, and
-it is the hardest part of building a live renderer.
+A static render needs none of this; a feed that polls or accumulates pages does.
 
-The problem: groups are not stable rows. As activity arrives, a `repeat` group
+Groups are not stable rows. As activity arrives, a `repeat` group
 of 4 becomes a group of 5 with a **new node id**, or converts to a `composite`
 entirely. A client that accumulates pages and merges a fresh head page will show
 the same activities twice — once inside the stale node, once inside the new one.
@@ -120,17 +100,12 @@ is for.
 rewritten server-side: drop **all** accumulated nodes and refetch from the head.
 Equality compare only; `null → non-null` counts as a change.
 
-::: tip
-The token is a resync *trigger*, not a reconciliation rule — it discards
-everything rather than repairing individual nodes. That is deliberate: cursors
-and node ids are opaque, so a client cannot compute what changed. Backfills
-(`storyfeed:bundle`, `storyfeed:curate`) are the operations that trip it, which
-is why you run them when readers are not mid-scroll.
-:::
+The token is a resync trigger, not a repair rule: cursors and node ids are
+opaque, so a client cannot compute what changed. Backfills (`storyfeed:bundle`,
+`storyfeed:curate`) are what trip it.
 
-Note also that `children_truncated` means a group's `children` list is capped by
-`grouping.children_limit` — do not treat a claimed-children check as complete
-when the list is truncated.
+Rule 2 has one limit: `children` is capped by `grouping.children_limit`, so a
+claimed-children check is a strong signal rather than a total one.
 
 All three rules are implemented in [A live renderer](/basics/live-renderer).
 
@@ -143,8 +118,8 @@ produces and count the fallback strings.**
 fallback leaks ("Someone"/"Something"): 0
 ```
 
-A leak means a token resolved to nothing. This matters more than it sounds,
-because a headline containing "Someone" reads perfectly well — the failure looks
-like an anonymous feed rather than a bug, and it survives review. Run it across
-every read mode and every registered axis; degraded (un-snapshotted) entities are
-the deliberate exception, since they *should* render your placeholder.
+A leak means a token resolved to nothing. A headline containing "Someone" reads
+perfectly well, so the failure looks like an anonymous feed rather than a bug.
+Run it across every read mode and every registered axis; degraded
+(un-snapshotted) entities are the exception — they *should* render your
+placeholder.
