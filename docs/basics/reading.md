@@ -72,6 +72,10 @@ was rewritten server-side: drop all accumulated nodes and refetch from the
 head. Equality compare only — `null → non-null` counts as a change.
 :::
 
+If your client accumulates pages and polls for new ones, the token is one of
+three rules you need — see
+[Reconciling updates](/basics/rendering#reconciling-updates).
+
 ## Conditional building
 
 `FeedBuilder` is `Conditionable`:

@@ -1,7 +1,7 @@
 # Your first feed
 
-Four steps: make a model feedable, author a story, publish an activity, render
-the page. The example is a document being uploaded to a project.
+Five steps: make a model feedable, author a story, publish an activity, read
+the feed, render it. The example is a document being uploaded to a project.
 
 ## 1. Make your models feedable
 
@@ -160,6 +160,8 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 
 ```blade
 @php
+    // One entity → a linked label. A null label means the snapshot isn't
+    // written yet; the activity still renders, degraded.
     $entity = function (?array $e, string $fallback = 'Something') {
         if ($e === null) {
             return e($fallback);
@@ -171,6 +173,17 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
             : $label;
     };
 
+    // A singular token. Activity nodes carry roles directly; GROUP NODES DO
+    // NOT — a group's pinned roles live in `exemplars`, as a list of exactly
+    // one. Reading $node['actor'] on a group would silently render "Someone".
+    $one = function (array $node, string $role, string $fallback) use ($entity) {
+        return $entity(
+            $node['exemplars'][$role.'s'][0] ?? $node[$role] ?? null,
+            $fallback,
+        );
+    };
+
+    // A plural token: joined exemplars, with overflow from `distinct`.
     $list = function (array $node, string $role) use ($entity) {
         $shown = array_map(fn ($e) => $entity($e), $node['exemplars'][$role] ?? []);
         $more = ($node['distinct'][$role] ?? count($shown)) - count($shown);
@@ -185,20 +198,23 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 
         @if ($node['headline_template'])
             {!! strtr($node['headline_template'], [
-                ':actor'    => $entity($node['actor'] ?? null, 'Someone'),
-                ':object'   => $entity($node['object'] ?? null),
-                ':target'   => $entity($node['target'] ?? null),
-                ':context'  => $entity($node['context'] ?? null),
+                ':actor'    => $one($node, 'actor', 'Someone'),
+                ':object'   => $one($node, 'object', 'Something'),
+                ':target'   => $one($node, 'target', 'Something'),
+                ':context'  => $one($node, 'context', 'Something'),
                 ':actors'   => $list($node, 'actors'),
                 ':objects'  => $list($node, 'objects'),
                 ':targets'  => $list($node, 'targets'),
                 ':contexts' => $list($node, 'contexts'),
                 ':count'    => $node['count'] ?? 1,
+                ':others'   => max(($node['distinct']['actors'] ?? 1) - 1, 0).' others',
             ]) !!}
         @elseif ($node['headline'])
             {{ $node['headline'] }}
-        @else
+        @elseif ($node['kind'] === 'group')
             {{ $node['count'] }} activities
+        @else
+            {{ $node['verb'] }}
         @endif
 
         <time datetime="{{ $node['published_at'] }}">
@@ -208,10 +224,23 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 @endforeach
 ```
 
-The last branch matters: when a group can't be honestly summarized, the server
-sends no headline at all rather than synthesizing one. Render a count (ideally
-with the members visible) — don't compose `<actor> <verb> <object>` yourself,
-which recreates the one-actor lie the server refused to tell.
+Two branches carry more weight than their length suggests.
+
+**Singular tokens on a group must come from `exemplars`.** A group node has no
+`actor`/`object`/`target`/`context` keys — a pinned role arrives as a
+single-entry exemplar list. Reading the role key directly renders "Someone"
+over a group whose actor is perfectly well known, which is a lie in the
+opposite direction from the one the server prevents. Most group headlines use
+at least one pinned token, so this is the common path, not an edge case.
+
+**A null headline on a group means it cannot be honestly summarized.** Render a
+count, ideally with the members visible — never compose
+`<actor> <verb> <object>` yourself, which recreates the one-actor lie the
+server refused to tell.
+
+For a feed that polls or streams, add
+[reconciliation](/basics/rendering#reconciling-updates) — without it, a
+regrouped node duplicates activities on the next poll.
 
 ## Check your work
 

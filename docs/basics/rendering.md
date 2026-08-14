@@ -12,12 +12,25 @@ reference loop. This page covers the rules it encodes.
 `headline_template` is the primary path: tokenize and substitute linked entity
 labels.
 
-| token | on | substitutes |
-|---|---|---|
-| `:actor` `:object` `:target` `:context` | activity nodes; group nodes where the axis pins the role | one linked label |
-| `:actors` `:objects` `:targets` `:contexts` | any group node | the exemplar list |
-| `:count` | group nodes | total member count |
-| `:others` | group nodes | actor overflow ("3 others") |
+| token | on | substitutes | read from |
+|---|---|---|---|
+| `:actor` `:object` `:target` `:context` | activity nodes | one linked label | `node[role]` |
+| `:actor` `:object` `:target` `:context` | group nodes, where the axis pins the role | one linked label | `node.exemplars[role+'s'][0]` |
+| `:actors` `:objects` `:targets` `:contexts` | any group node | the exemplar list | `node.exemplars[role]` |
+| `:count` | group nodes | total member count | `node.count` |
+| `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - 1` |
+
+::: danger SINGULAR TOKENS COME FROM `exemplars` ON A GROUP
+A group node has **no** `actor`/`object`/`target`/`context` keys. A pinned role
+arrives as an exemplar list of exactly one, by construction. Reading the role
+key directly on a group yields null, so your fallback ("Someone", "Something")
+renders over a group whose actor is perfectly well known — a lie in the
+opposite direction from the one the server prevents, and silent.
+
+Most group headlines use at least one pinned token (`repeat` pins `:actor` and
+`:target`; `actors` pins `:target`; `targets` pins `:actor`; `composite` pins
+three), so this is the common path.
+:::
 
 For plural tokens, render the exemplars joined, with overflow from the
 `distinct` block when `distinct[role]` exceeds the exemplars shown
@@ -61,13 +74,42 @@ showcase app before it was caught.
 
 ## Reconciling updates
 
-If your client accumulates pages (infinite scroll), three rules keep it
-consistent as groups re-form:
+A static render needs none of this. **A feed that polls or streams does**, and
+it is the hardest part of building a live renderer.
 
-1. **Window rule** — a fresh head page supersedes accumulated nodes it
-   overlaps.
-2. **Member identity** — drop any accumulated node whose children a fresh node
-   has claimed; the old node identity is stale even if it is below the head
-   page.
-3. **Sync token** — when the envelope's `sync_token` changes, drop everything
-   and refetch. Equality compare only.
+The problem: groups are not stable rows. As activity arrives, a `repeat` group
+of 4 becomes a group of 5 with a **new node id**, or converts to a `composite`
+entirely. A client that accumulates pages and merges a fresh head page will show
+the same activities twice — once inside the stale node, once inside the new one.
+
+Three rules, in the order you should apply them:
+
+**1. Window rule.** A fresh head page supersedes accumulated nodes whose
+`published_at` falls inside the range it covers. Handles the common case:
+regrouping near the head, where the reader is looking.
+
+**2. Member identity.** Drop any accumulated node whose children a fresh node
+has claimed. A node whose members now belong to a different node is stale
+regardless of its timestamp — this is what the window rule misses when a group
+is rewritten *below* the head page (scheduled work like `close-batches` minting
+a composite from an hour-old burst).
+
+Both rules are **head-page rules**. Neither can see a rewrite that happens
+entirely outside the pages the client is holding — which is what the third rule
+is for.
+
+**3. Sync token.** When the envelope's `sync_token` changes, settled history was
+rewritten server-side: drop **all** accumulated nodes and refetch from the head.
+Equality compare only; `null → non-null` counts as a change.
+
+::: tip
+The token is a resync *trigger*, not a reconciliation rule — it discards
+everything rather than repairing individual nodes. That is deliberate: cursors
+and node ids are opaque, so a client cannot compute what changed. Backfills
+(`storyfeed:bundle`, `storyfeed:curate`) are the operations that trip it, which
+is why you run them when readers are not mid-scroll.
+:::
+
+Note also that `children_truncated` means a group's `children` list is capped by
+`grouping.children_limit` — do not treat a claimed-children check as complete
+when the list is truncated.

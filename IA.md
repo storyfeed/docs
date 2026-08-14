@@ -27,7 +27,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
    Prose lists hide information; tables scan.
 6. **Every page answers "what do I have when I'm done?" in its first two
    lines.**
-7. **Reference pages are exhaustive; guide pages are minimal.** A guide shows
+7. **Copyable code is the strictest page on the site.** A reader who copies the
+   quickstart never reaches the page that corrects it. Two artifacts each
+   correct in isolation, contradicting each other one click apart, is worse than
+   either being wrong alone — so example code must satisfy every rule stated
+   anywhere in the docs, and payload-shaped examples get checked against a real
+   payload, not against source.
+8. **Reference pages are exhaustive; guide pages are minimal.** A guide shows
    the one obvious path. Alternatives, edge cases, and configuration live in
    reference pages the guide links to.
 
@@ -49,12 +55,16 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 
 ### The basics
 
-- ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
-- ✅ Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
+Ordered by NEED, matching the quickstart. Recording a non-`Feedable` object does
+not error — it produces an activity whose entity never snapshots — so teaching
+recording first fails silently rather than loudly.
+
 - ✅ Feedable models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
+- ✅ Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
 - ✅ Story classes — anatomy, `make:story`, registration, compilation
+- ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
 - ✅ Reading feeds — the builder, scoping, read modes, pagination
-- ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines
+- ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines; reconciliation
 
 ### Digging deeper
 
