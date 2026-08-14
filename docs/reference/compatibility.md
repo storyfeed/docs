@@ -32,7 +32,9 @@ Storyfeed is pre-1.0. Concretely:
 
 ## Licensing
 
-MIT, and everything MIT today stays MIT. The core is complete on its own —
-recording, reads, aggregation, curation, and the payload contract. Paid
-companions like `storyfeed/ui` add convenience on top; they never take anything
-away.
+MIT, and everything MIT today stays MIT — the core and `storyfeed/ui` alike.
+Nothing here moves behind a licence later.
+
+`storyfeed/ui` is funded by sponsorship rather than sold: sponsorship sets how
+many adapters it reaches, not who may use it. Unsponsored it ships Vue/Inertia
+and Filament; sponsored, Livewire, Blade components and React become reachable.
