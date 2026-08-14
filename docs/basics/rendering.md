@@ -18,7 +18,7 @@ labels.
 | `:actor` `:object` `:target` `:context` | group nodes, where the axis pins the role | one linked label | `node.exemplars[role+'s'][0]` |
 | `:actors` `:objects` `:targets` `:contexts` | any group node | the exemplar list | `node.exemplars[role]` |
 | `:count` | group nodes | total member count | `node.count` |
-| `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - 1` |
+| `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - node.exemplars.actors.length` |
 
 ::: danger SINGULAR TOKENS COME FROM `exemplars` ON A GROUP
 A group node has **no** `actor`/`object`/`target`/`context` keys. A pinned role
@@ -35,6 +35,24 @@ three), so this is the common path.
 For plural tokens, render the exemplars joined, with overflow from the
 `distinct` block when `distinct[role]` exceeds the exemplars shown
 ("…and N more").
+
+::: warning OVERFLOW IS `distinct − exemplars shown`, NEVER `distinct − 1`
+Exemplars are capped at **three** per role. With 10 distinct actors and 3 named,
+the overflow is 7 — subtracting 1 gives "Ann, Sally, Bob and 9 others", which
+implies 12 people where 10 exist. The contract's own example is a 200-actor
+group reporting **197**: 200 minus three named, not minus one.
+
+This applies to `:others` and to every plural token's "and N more" suffix — they
+are the same arithmetic, so compute it once.
+:::
+
+::: tip PREFER SELF-OVERFLOWING PLURALS
+`:others` exists for `":actors and :others uploaded…"`-style templates, but it
+cannot vanish when overflow is zero — a three-actor group renders "and 0
+others". The forward style is a plural token that carries its own overflow
+(`:actors` → "Ann, Sally, Bob and 7 more"), which reads correctly at every
+group size.
+:::
 
 `headline` (pre-rendered string) is the fallback for grammar authored as PHP
 closures. When `headline_template` is non-null, `headline` is null **by

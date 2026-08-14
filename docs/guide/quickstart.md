@@ -183,10 +183,18 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
         );
     };
 
-    // A plural token: joined exemplars, with overflow from `distinct`.
-    $list = function (array $node, string $role) use ($entity) {
+    // How many members a role has BEYOND the exemplars named. Exemplars are
+    // capped at 3, so this is distinct minus however many were shown — never
+    // "minus one".
+    $overflow = fn (array $node, string $role) => max(
+        ($node['distinct'][$role] ?? 0) - count($node['exemplars'][$role] ?? []),
+        0,
+    );
+
+    // A plural token: joined exemplars, with the overflow appended.
+    $list = function (array $node, string $role) use ($entity, $overflow) {
         $shown = array_map(fn ($e) => $entity($e), $node['exemplars'][$role] ?? []);
-        $more = ($node['distinct'][$role] ?? count($shown)) - count($shown);
+        $more = $overflow($node, $role);
 
         return implode(', ', $shown).($more > 0 ? " and {$more} more" : '');
     };
@@ -207,7 +215,7 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
                 ':targets'  => $list($node, 'targets'),
                 ':contexts' => $list($node, 'contexts'),
                 ':count'    => $node['count'] ?? 1,
-                ':others'   => max(($node['distinct']['actors'] ?? 1) - 1, 0).' others',
+                ':others'   => $overflow($node, 'actors').' others',
             ]) !!}
         @elseif ($node['headline'])
             {{ $node['headline'] }}
