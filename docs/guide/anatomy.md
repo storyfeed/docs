@@ -14,71 +14,45 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
 The other four slots are the **roles**, and they hold entities.
 
-Which slots an activity fills follows from the sentence you are recording. Each
-example below shows a story, then the slots it maps to — only the ones that
-sentence needs.
+Which slots an activity fills follows from the sentence you are recording. Below
+is a feed of seven activities; each one shows the story a reader sees, then the
+slots it was recorded with.
 
-<div class="storyfeed-example">Ines signed in</div>
+<FeedStream title="A feed of one-activity examples">
+  <FeedActivity icon="→" when="just now"
+    headline=":actor signed in"
+    actor="Ines" verb="signin" />
 
-| slot | value |
-|---|---|
-| **actor** | Ines |
-| **verb** | `signin` |
+  <FeedActivity icon="↑" when="2m"
+    headline=":actor uploaded :object"
+    actor="Ines" verb="upload" object="annual-report-v3.fig" />
 
-<div class="storyfeed-example">Ines uploaded annual-report-v3.fig</div>
+  <FeedActivity icon="↑" when="5m"
+    headline=":actor uploaded :object to :target"
+    actor="Ines" verb="upload" object="annual-report-v3.fig" target="Password Crackdown" />
 
-| slot | value |
-|---|---|
-| **actor** | Ines |
-| **verb** | `upload` |
-| **object** | annual-report-v3.fig |
+  <FeedActivity icon="+" when="12m"
+    headline=":actor created :object in :context"
+    actor="Ines" verb="create" object="Kerning pass" context="Password Crackdown" />
 
-<div class="storyfeed-example">Ines uploaded annual-report-v3.fig to Password Crackdown</div>
+  <FeedActivity icon="◇" when="1h"
+    headline=":actor joined :target"
+    actor="Marcus" verb="join" target="Password Crackdown" />
 
-| slot | value |
-|---|---|
-| **actor** | Ines |
-| **verb** | `upload` |
-| **object** | annual-report-v3.fig |
-| **target** | Password Crackdown |
+  <FeedActivity icon="✎" when="3h"
+    headline=":actor commented on :target in :context"
+    actor="Ines" verb="comment" object="the comment" target="hero-mobile.png" context="Password Crackdown" />
 
-<div class="storyfeed-example">Ines created a task in Password Crackdown</div>
+  <FeedActivity icon="⌸" when="yesterday"
+    headline=":object was archived"
+    verb="archive" object="annual-report-v3.fig" />
+</FeedStream>
 
-| slot | value |
-|---|---|
-| **actor** | Ines |
-| **verb** | `create` |
-| **object** | the task |
-| **context** | Password Crackdown |
-
-<div class="storyfeed-example">Marcus joined Password Crackdown</div>
-
-| slot | value |
-|---|---|
-| **actor** | Marcus |
-| **verb** | `join` |
-| **target** | Password Crackdown |
-
-<div class="storyfeed-example">Ines commented on hero-mobile.png in Password Crackdown</div>
-
-| slot | value |
-|---|---|
-| **actor** | Ines |
-| **verb** | `comment` |
-| **object** | the comment |
-| **target** | hero-mobile.png |
-| **context** | Password Crackdown |
-
-The comment *itself* is the object; the image it was left on is the target.
-
-<div class="storyfeed-example">annual-report-v3.fig was archived</div>
-
-| slot | value |
-|---|---|
-| **verb** | `archive` |
-| **object** | annual-report-v3.fig |
-
-Nobody is named here, because whoever archived the file is not known.
+Two of those are worth a second look. The comment has **three** entities: the
+comment itself is the object, the image it was left on is the target, and the
+project is the context — which is why its headline names the target and not the
+object. And the archived file names nobody, because whoever archived it is not
+known.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
