@@ -112,6 +112,7 @@ recording first fails silently rather than loudly.
 - ✅ Grammar — aggregate templates, token safety, the anti-lie rule
 - ✅ Composites — `->objects()`, `Collectable`, batches and the quiet window
 - ✅ Publishing from events — `PublishesToFeed`, the single listener
+- ✅ Containers & context — the fourth role: grouping by place, container queries, AS2
 - ✅ Parties & anonymous actors — null actor vs named non-model participant
 - ✅ Activity Streams 2.0 — conformance, routes, the `@context`, extension types
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions

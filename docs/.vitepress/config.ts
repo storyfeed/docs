@@ -73,6 +73,7 @@ export default defineConfig({
           { text: 'Grammar', link: '/deeper/grammar' },
           { text: 'Composites', link: '/deeper/composites' },
           { text: 'Publishing from events', link: '/deeper/events' },
+          { text: 'Containers & context', link: '/deeper/context' },
           { text: 'Parties & anonymous actors', link: '/deeper/parties' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Testing', link: '/deeper/testing' },

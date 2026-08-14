@@ -27,8 +27,10 @@ listener. There is no model spying.
 |---|---|---|
 | `actor` | who did it | the user |
 | `object` | what it was done to | the document |
-| `target` | where it landed | the project |
-| `context` | the surrounding scope | the workspace |
+| `target` | what the act was directed at | the project |
+
+There is a fourth role, `context` — the container an activity happened inside.
+Most apps don't need it; see [Containers & context](/deeper/context).
 
 The builder has prepositional aliases for reading naturally at the call site:
 
@@ -39,24 +41,13 @@ The builder has prepositional aliases for reading naturally at the call site:
 All four are the same setter — pick whichever reads at your call site. `context`
 is set only by `->context()`.
 
-**Target or context?** `target` is what the act was directed at ("commented on
-the task"); `context` is the container it happened inside (the project, the
-workspace, the tenant). They coexist: one comment can have a task as its target
-and a project as its context.
-
-Two consequences worth knowing before you choose:
-
-- **Set `context` whenever there is a plausible container.** It is what
-  `feed()->context($project)` filters on and what context-pinned
-  [axes](/deeper/aggregation#custom-axes) group by.
-- **Roles are set at publish and never backfilled.** `storyfeed:rebuild`
-  rebuilds snapshots and `storyfeed:curate` re-selects axes; neither can
-  populate a role that was never recorded. Adding a context later means
-  rewriting rows.
+Roles are set at publish and **never backfilled** — `storyfeed:rebuild` rebuilds
+snapshots, `storyfeed:curate` re-selects axes, and neither can populate a role
+that was never recorded.
 
 For reading an entity's own page you usually want
-[`involving()`](/basics/reading#scoping) rather than either role — it spans all
-four.
+[`involving()`](/basics/reading#scoping) rather than any single role — it spans
+all four.
 
 ## The default actor
 
