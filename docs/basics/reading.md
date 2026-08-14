@@ -69,10 +69,16 @@ what context-pinned [axes](/deeper/aggregation#custom-axes) group on.
 :::
 
 `involving()` reads a materialized index (`feed_participants`), maintained at
-publish time — so it is a single indexed lookup, not a scan across four morph
+publish time — so it is an indexed semi-join, not a scan across four morph
 columns. An install upgrading into it runs
 `php artisan storyfeed:participants` once; `storyfeed:doctor` tells you if you
 haven't.
+
+Its cost scales with **the queried entity's own share of history**, not the size
+of the feed — the candidate set is the entity's activities, and the database
+orders them. That is sub-millisecond for entities with thousands of activities;
+if a single entity accumulates tens of thousands, measure before assuming, since
+engines differ in how they plan it.
 
 Group counts are recomputed **within** the scope: a group of four whose two
 members fall inside a project arrives as a group of two on that project's page.
