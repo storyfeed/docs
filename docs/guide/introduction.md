@@ -36,5 +36,10 @@ ends with one in plain Blade.
 
 ## Next
 
-[Install the package](/guide/installation), then build
+**New to the pattern, or to this package's vocabulary?**
+[Anatomy of an activity stream](/guide/anatomy) defines every term the rest of
+these docs use — roles, axes, grammar, nodes, read modes — in plain English, by
+following one burst of activity all the way through. No API.
+
+Otherwise: [install the package](/guide/installation), then build
 [your first feed](/guide/quickstart) in about ten minutes.

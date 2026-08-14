@@ -87,6 +87,8 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 ### Getting started
 
 - ✅ Introduction — `guide/introduction`
+- ✅ Anatomy of an activity stream — the vocabulary preface, plain English, one
+  burst carried through every section, glossary with a "what it is NOT" column
 - ✅ Installation — `guide/installation`
 - ✅ Your first feed — `guide/quickstart`
 - ✅ Upgrade guide — per-version notes, including the published-migration rule
