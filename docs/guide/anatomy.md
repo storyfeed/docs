@@ -25,6 +25,10 @@ Four **roles**. Any of them can be empty:
 > context is where it happened. A comment on a document has the **document** as its
 > target and the **project** as its context — both true of the same activity, and
 > neither substitutes for the other.
+>
+> They are often the **same** entity, and that is normal: a file uploaded to a
+> project was both aimed at the project and inside it. Filling both with the same
+> model is a perfectly ordinary activity.
 
 ## 2. Why the raw list stops working
 

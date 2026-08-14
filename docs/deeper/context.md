@@ -49,6 +49,11 @@ They answer different questions and often coexist:
 | `context` | where did it happen? | …**in** the Mobile App project |
 
 A comment on a document has the document as target and the project as context.
+
+They are also **often the same entity** — an upload is aimed at a project and
+happens inside it — and filling both with the same model is ordinary. The roles
+differ in meaning, not in how often they diverge.
+
 Reaching for `target` to mean containment is the historical mistake this role
 exists to prevent: when the container is indistinguishable from the indirect
 object, the only way to find "activity in this project" later is a scan across
