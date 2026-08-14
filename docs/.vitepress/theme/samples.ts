@@ -1,3 +1,5 @@
+import { USERS, PROJECTS, CLIENTS, DOCUMENTS, TASKS, COMMENTS } from './manifest'
+
 /**
  * Payload-shaped sample data for the docs.
  *
@@ -40,68 +42,36 @@ export const document = (id: string, label: string) => entity('document', id, la
 export const task = (id: string, label: string) => entity('task', id, label, `/tasks/${id}`)
 
 /**
- * A comment has no page of its own, so its url is null and its label is its body
- * — the demo app's `Comment::toFeed()` limits the label to 80 characters and the
- * excerpt to 160. `component` names the body component the renderer resolves.
+ * A comment has no page of its own, so its url is null and its label is its body.
+ * Shown whole, not clipped: the demo app truncates at 80 characters, but these are
+ * docs and a reader should see the text the example is talking about.
+ *
+ * `component` names the body component the renderer resolves for the preview.
  */
 export const comment = (id: string, body: string) =>
-  entity('comment', id, body.length > 80 ? `${body.slice(0, 80)}…` : body, null, {
+  entity('comment', id, body, null, {
     component: 'Note',
-    data: { excerpt: body.length > 160 ? `${body.slice(0, 160)}…` : body },
+    data: { excerpt: body },
   })
 
 /**
- * ── The cast ─────────────────────────────────────────────────────────────────
+ * The cast, built from the manifest. Ids come from position in the manifest, so a
+ * page only ever names a key.
  *
- * Every person and recurring place the docs use, in one place. Change a name here
- * and every page follows.
- *
- * Keys name the part, not the person, so swapping "Ines Duarte" for someone else
- * does not leave a dozen pages importing a key that no longer matches the name it
- * returns. Ids stay stable too: they appear in entity urls, and a reader who
- * clicks one on two different pages should land somewhere consistent.
- *
- * The one thing this cannot reach is prose. Where a page names a cast member in a
- * sentence rather than in data, that sentence needs editing by hand — the anatomy
- * page does this a few times when it walks through a specific person's uploads.
+ *   who.ines · where.portMigration · firm.chirp · doc.annualReportV3 ·
+ *   job.simplifyWordmark · note.breakpoint
  */
-const PEOPLE: Record<string, [string, string]> = {
-  owner: ['1', 'Jasper Tey'],
-  qa: ['3', 'Bob Callahan'],
-  intern: ['4', 'Sally Nguyen'],
-  dev: ['5', 'Marcus Webb'],
-  designer: ['6', 'Ines Duarte'],
-  pm: ['7', 'Deja Williams'],
-  reviewer: ['8', 'Priya Raman'],
-  writer: ['9', 'Aiko Tanaka'],
-  ops: ['10', 'Tomás Rivera'],
-}
-
-const PLACES: Record<string, [string, string]> = {
-  migration: ['3', 'Port Migration'],
-  crackdown: ['4', 'Password Crackdown'],
-  pivot: ['7', 'Metaverse Pivot'],
-  removal: ['9', 'Bird Removal'],
-  tiers: ['12', 'Verification Tiers'],
-}
-
-const FIRMS: Record<string, [string, string]> = {
-  bird: ['2', 'Chirp'],
-}
-
-const build = (source: Record<string, [string, string]>, make: (id: string, label: string) => any) =>
+const build = (source: Record<string, string>, make: (id: string, label: string) => any) =>
   Object.fromEntries(
-    Object.entries(source).map(([key, [id, label]]) => [key, make(id, label)]),
+    Object.entries(source).map(([key, label], index) => [key, make(String(index + 1), label)]),
   )
 
-/** `who.designer`, `who.reviewer`, … */
-export const who: Record<string, any> = build(PEOPLE, user)
-
-/** `where.migration`, `where.crackdown`, … */
-export const where: Record<string, any> = build(PLACES, project)
-
-/** `firm.bird`, … */
-export const firm: Record<string, any> = build(FIRMS, client)
+export const who: Record<string, any> = build(USERS, user)
+export const where: Record<string, any> = build(PROJECTS, project)
+export const firm: Record<string, any> = build(CLIENTS, client)
+export const doc: Record<string, any> = build(DOCUMENTS, document)
+export const job: Record<string, any> = build(TASKS, task)
+export const note: Record<string, any> = build(COMMENTS, comment)
 
 /** An activity node. */
 export function activity(over: Record<string, any>) {

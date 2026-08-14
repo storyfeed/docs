@@ -1,15 +1,15 @@
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
+import { FEED_NOW } from './keys';
 
 /**
- * Injection key for a fixed "now", as a millisecond timestamp.
- *
- * Provide it when the surrounding page is prerendered and the sample data is
- * static: without it a build-time render bakes "2h ago" into the HTML and the
- * phrase drifts further from the truth every day the page is not rebuilt.
- * With it, the rendered text is stable and honest about the reference point.
+ * Re-exported for callers that import the key from here. It MUST come from
+ * keys.ts and not be declared again: two Symbol('feedNow') calls produce two
+ * different keys, so a second declaration makes every provide() from the other
+ * one silently miss, and the pinned clock falls back to Date.now() with nothing
+ * to show that it did.
  */
-export const FEED_NOW = Symbol('feedNow');
+export { FEED_NOW };
 
 /**
  * Self-refreshing relative timestamp with a tiered cadence: every second

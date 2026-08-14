@@ -10,12 +10,12 @@ component reading a real payload. How it gets from one to the other is the rest 
 these docs.
 
 <script setup>
-import { who, where, document, comment, entity, activity, group } from '../.vitepress/theme/samples'
+import { who, where, doc, note, entity, activity, group } from '../.vitepress/theme/samples'
 
-const designer = who.designer
-const reviewer = who.reviewer
-const crackdown = where.crackdown
-const report = document('88', 'annual-report-v3.fig')
+const designer = who.ines
+const reviewer = who.priya
+const crackdown = where.passwordCrackdown
+const report = doc.annualReportV3
 
 const upload = activity({
   id: 'i1', verb: 'upload', icon: 'file-up',
@@ -31,8 +31,8 @@ const burst = group({
   actors: [designer], targets: [crackdown],
   objects: [
     report,
-    document('87', 'signage-plan-rev-b.fig'),
-    document('86', 'pricing-table-final.docx'),
+    doc.signagePlanRevB,
+    doc.pricingTableFinal,
   ],
   distinct: { actors: 1, objects: 7, targets: 1 },
 })
@@ -41,7 +41,7 @@ const crowd = group({
   id: 'i7', verb: 'upload', axis: 'actors', count: 5, icon: 'file-up',
   published_at: '2026-08-14T14:31:00.000000Z',
   headline_template: ':actors uploaded :count files to :target',
-  actors: [who.designer, who.dev, who.reviewer], targets: [crackdown],
+  actors: [who.ines, who.marcus, who.priya], targets: [crackdown],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 
@@ -49,8 +49,8 @@ const story = group({
   id: 'i8', verb: 'approve', axis: 'composite', count: 2, icon: 'file-check',
   published_at: '2026-08-14T14:20:00.000000Z',
   headline_template: ':actor approved :count files in :context',
-  actors: [who.ops], contexts: [where.migration],
-  objects: [document('80', 'wordmark-v3.png'), document('81', 'hero-mobile-rev-a.fig')],
+  actors: [who.tomas], contexts: [where.portMigration],
+  objects: [doc.wordmarkV3, doc.heroMobileRevA],
   distinct: { actors: 1, objects: 2, contexts: 1 },
 })
 
@@ -59,15 +59,15 @@ const external = activity({
   published_at: '2026-08-14T13:55:00.000000Z',
   headline_template: ':actor synced :object to :target',
   actor: entity('storyfeed.party', '1', 'Concur Web Service', null),
-  object: document('85', 'expense-report-q3.pdf'), target: crackdown,
+  object: doc.expenseReportQ3, target: crackdown,
 })
 
-const note = activity({
+const reply = activity({
   id: 'i3', verb: 'comment', icon: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
   actor: reviewer,
-  object: comment('511', 'Second page still overflows on the print stylesheet.'),
+  object: note.overflow,
   target: report,
 })
 
@@ -147,7 +147,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[note]" :grouped="false">
+<FeedStream :items="[reply]" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
