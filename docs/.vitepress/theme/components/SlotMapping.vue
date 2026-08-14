@@ -12,6 +12,15 @@ const props = defineProps<{ node: Record<string, any> }>()
 
 const ROLES = ['actor', 'object', 'target', 'context'] as const
 
+/**
+ * Entity labels are whatever the snapshot stored, and some are sentences — a
+ * comment's label is its body, because a comment has no name. Full labels are
+ * right in the headline; in a compact slot list they only break the scan.
+ */
+function short(value: string): string {
+  return value.length > 42 ? `${value.slice(0, 41).trimEnd()}…` : value
+}
+
 const rows = computed(() => {
   const node = props.node
   const out: { slot: string; value: string; code?: boolean }[] = []
@@ -28,7 +37,7 @@ const rows = computed(() => {
     const entity = node[role]
 
     if (entity?.label) {
-      out.push({ slot: role, value: entity.label })
+      out.push({ slot: role, value: short(entity.label) })
     }
   }
 
