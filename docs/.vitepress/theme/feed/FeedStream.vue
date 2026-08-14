@@ -61,6 +61,9 @@ const days = useFeedDays(toRef(() => props.items));
                         <template #body="slotProps"
                             ><slot name="body" v-bind="slotProps"
                         /></template>
+                        <template #annotations="slotProps"
+                            ><slot name="annotations" v-bind="slotProps"
+                        /></template>
                         <template #time="slotProps"
                             ><slot name="time" v-bind="slotProps">{{
                                 slotProps.label

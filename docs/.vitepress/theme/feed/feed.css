@@ -230,3 +230,13 @@ a.sf-entity:hover {
     opacity: 0.5;
     cursor: default;
 }
+
+/* A note/comment preview under a headline (bodies/Note.vue). */
+.sf-note {
+    margin: 6px 0 0;
+    border-left: 2px solid var(--vp-c-divider, #e2e2e3);
+    padding: 0 0 0 12px;
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--vp-c-text-2, #4b5563);
+}

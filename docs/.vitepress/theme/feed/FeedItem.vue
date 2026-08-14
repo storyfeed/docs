@@ -69,6 +69,14 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
                 belongs here is entirely app-specific.
             -->
             <slot name="body" :node="item" />
+
+            <!--
+                Annotations slot: for documentation and debugging surfaces that
+                need to explain a node rather than render it — a slot mapping, a
+                payload dump, a curation trace. Separate from `body` on purpose,
+                so annotating a feed never costs you the app's own previews.
+            -->
+            <slot name="annotations" :node="item" />
         </div>
     </div>
 </template>

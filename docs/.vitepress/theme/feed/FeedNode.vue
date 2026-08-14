@@ -20,6 +20,7 @@ withDefaults(
     -->
     <FeedItem v-if="item.kind === 'activity'" :item="item" :is-last="isLast">
         <template #body="slotProps"><slot name="body" v-bind="slotProps" /></template>
+        <template #annotations="slotProps"><slot name="annotations" v-bind="slotProps" /></template>
         <!--
             The fallback matters: forwarding a slot the consumer did not
             provide would render empty and silently erase the timestamp.
@@ -32,6 +33,7 @@ withDefaults(
     </FeedItem>
     <FeedGroup v-else-if="item.kind === 'group'" :item="item" :is-last="isLast">
         <template #body="slotProps"><slot name="body" v-bind="slotProps" /></template>
+        <template #annotations="slotProps"><slot name="annotations" v-bind="slotProps" /></template>
     </FeedGroup>
     <!-- Unknown kinds (future payload additions) are skipped, never fatal. -->
 </template>

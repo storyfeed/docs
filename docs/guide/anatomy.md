@@ -8,11 +8,11 @@ sentence. No API — the terms only.
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one.
-const m = (id, label) => ({ type: 'member', id, label, url: `/members/${id}` })
-const p = (id, label) => ({ type: 'project', id, label, url: `/projects/${id}` })
-const c = (id, label) => ({ type: 'client', id, label, url: `/clients/${id}` })
-const d = (id, label) => ({ type: 'document', id, label, url: `/documents/${id}` })
-const t = (id, label) => ({ type: 'task', id, label, url: `/tasks/${id}` })
+const m = (id, label) => ({ type: 'member', id, label, url: `/members/${id}`, component: null, data: {} })
+const p = (id, label) => ({ type: 'project', id, label, url: `/projects/${id}`, component: null, data: {} })
+const c = (id, label) => ({ type: 'client', id, label, url: `/clients/${id}`, component: null, data: {} })
+const d = (id, label) => ({ type: 'document', id, label, url: `/documents/${id}`, component: null, data: {} })
+const t = (id, label) => ({ type: 'task', id, label, url: `/tasks/${id}`, component: null, data: {} })
 
 const node = (over) => ({
   kind: 'activity', id: over.id, verb: over.verb,
@@ -88,7 +88,9 @@ const oneActivity = [
   node({ id: 'a6', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
     actor: m('6', 'Ines Duarte'),
-    object: { type: 'comment', id: '932', label: 'The mobile breakpoint eats the caption — the older version handled this better.', url: null },
+    object: { type: 'comment', id: '932', url: null, component: 'Note',
+      label: 'The mobile breakpoint eats the caption — the older version handled this better.',
+      data: { excerpt: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?' } },
     target: d('89', 'style-tile-rev-a.sketch'), context: p('3', 'Port Migration') }),
   node({ id: 'a5', verb: 'upload', icon: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
     headline_template: ':actor uploaded :object to :context',
@@ -121,7 +123,8 @@ The other four slots are the **roles**, and they hold entities.
 ### Examples
 
 <FeedStream :items="oneActivity" :grouped="false">
-  <template #body="{ node }"><SlotMapping :node="node" /></template>
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+  <template #annotations="{ node }"><SlotMapping :node="node" /></template>
 </FeedStream>
 
 The comment is the shape worth studying: five slots filled, and the headline names
@@ -144,7 +147,9 @@ needs, and the project it happened in is the context.
 One activity reads fine. Here are eight minutes of the demo app's real history,
 one line per activity — the **log**:
 
-<FeedStream :items="log" :grouped="false" />
+<FeedStream :items="log" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
 
 Somewhere in there, Aiko Tanaka uploaded seven files to Verification Tiers — one
 coherent piece of work. You cannot see it. The uploads are **not adjacent**: four
@@ -158,7 +163,7 @@ volume.
 The same stretch, read as a **summary**:
 
 <FeedStream :items="summary" :grouped="false">
-  <template #body="{ node }"><SlotMapping :node="node" /></template>
+  <template #annotations="{ node }"><SlotMapping :node="node" /></template>
 </FeedStream>
 
 Aiko's scattered uploads are now one line, and finding them took no work at all.

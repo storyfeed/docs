@@ -3,6 +3,7 @@ import type { Theme } from 'vitepress'
 import FeedStream from './feed/FeedStream.vue'
 import FeedNode from './feed/FeedNode.vue'
 import SlotMapping from './components/SlotMapping.vue'
+import FeedBody from './components/FeedBody.vue'
 import { FEED_NOW } from './feed/keys'
 import './feed/feed.css'
 import './custom.css'
@@ -29,6 +30,7 @@ export default {
     app.component('FeedStream', FeedStream)
     app.component('FeedNode', FeedNode)
     app.component('SlotMapping', SlotMapping)
+    app.component('FeedBody', FeedBody)
     app.provide(FEED_NOW, DOCS_NOW)
   },
 } satisfies Theme

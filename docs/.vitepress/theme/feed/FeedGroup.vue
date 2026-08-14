@@ -89,6 +89,15 @@ const hiddenBeyondChildren = computed(
                 </time>
             </div>
 
+            <!--
+                A group is a node too, so it gets the same annotations slot an
+                activity does — otherwise a documentation surface can annotate
+                every kind of node except the interesting one.
+            -->
+            <slot name="body" :node="item" />
+
+            <slot name="annotations" :node="item" />
+
             <button
                 v-if="item.children.length > 0"
                 type="button"
@@ -112,6 +121,9 @@ const hiddenBeyondChildren = computed(
                 >
                     <template #body="slotProps">
                         <slot name="body" v-bind="slotProps" />
+                    </template>
+                    <template #annotations="slotProps">
+                        <slot name="annotations" v-bind="slotProps" />
                     </template>
                 </FeedItem>
                 <p v-if="hiddenBeyondChildren > 0" class="sf-overflow">

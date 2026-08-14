@@ -57,6 +57,12 @@ page is not rebuilt. Pinning also stops the timer from ever starting.
 text, a document preview. Empty by default because what belongs there is
 entirely app-specific.
 
+**Annotations.** `<slot name="annotations" :node>` renders below the body on both
+node kinds, for surfaces that explain a node rather than render it — this site's
+slot mappings, a payload dump, a curation trace. It exists so documenting a feed
+never costs you the app's own previews, which is what happens when the two share
+the `body` slot.
+
 **Timestamps.** `<slot name="time" :node :label>` wraps the rendered time; the
 Newsroom makes it a permalink to the activity's AS2 document.
 
