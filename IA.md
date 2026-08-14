@@ -12,10 +12,17 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 
 1. **Code first.** Every concept is shown before it is explained. If a section
    has three paragraphs before its first code block, restructure it.
-2. **No autobiography, no selling, no category arguments.** The reader already
-   clicked; positioning prose belongs on the splash site. A docs page earns
-   excitement by making the thing look *easy*, not by claiming it is loved or
-   arguing about what it isn't.
+2. **No autobiography, no selling, no category arguments, no meta-commentary.**
+   The reader already clicked; positioning prose belongs on the splash site. A
+   docs page earns excitement by making the thing look *easy*, not by claiming it
+   is loved or arguing about what it isn't. Never write about the page itself
+   ("no API here", "read this once and…", "the second column is the useful one").
+   **And never warn about confusion.** If two terms are easy to mix up, that is a
+   subheading explaining the difference — "The difference between target and
+   context" — not a caution about how expensive the mistake is. Confusion
+   observed while building the package is not evidence about the reader, and
+   ranking it ("the single most expensive confusion") is autobiography wearing a
+   warning label.
 3. **Industry vocabulary, not invented vocabulary.** The pattern is an
    *activity feed*; the flat read is a *timeline*; grouping is *aggregation*
    (the package's own API says `aggregateGrammar`); the wire format is

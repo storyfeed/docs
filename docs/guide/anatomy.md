@@ -2,9 +2,7 @@
 
 This page defines every word the rest of the documentation uses, in plain
 English, by following **five real activities** from raw rows to a rendered
-sentence.
-
-No API here. Read it once and the vocabulary elsewhere stops being jargon.
+sentence. No API — the terms only.
 
 ## 1. One activity
 
@@ -35,25 +33,25 @@ Four **roles**. Any of them can be empty:
 | **target** | what the act was directed at |
 | **context** | the container it happened inside |
 
-**`target` and `context` are not the same thing, and this is the single most
-expensive confusion in the vocabulary.** Target is *what the act was aimed at*;
-context is *where it happened*. A comment on a document has the **document** as
-target and the **project** as context — both true, both different.
+### The difference between target and context
 
-It matters because you later ask for "activity in this project", and only the
-roles you actually recorded can answer. In the package's own showcase app,
-"project created" recorded the project as the **object** with the client as
-target and no context at all — so a project page that asked by context silently
-omitted each project's own creation. Nothing errored. The page was just quietly
-incomplete.
+Target is what the act was aimed at. Context is where it happened.
 
-::: tip Anonymous is not "system"
-An empty actor means the actor is genuinely **unknown** — the renderer says
-"Someone". A *named* participant that has no model in your app (Stripe, a
-nightly job) is a **party**: a real name, a real entity, just not one of your
-tables. Never conflate the two; a party is information, a null actor is the
-absence of it.
-:::
+A comment on a document has the **document** as its target and the **project** as
+its context. Both are true of the same activity, and they answer different
+questions later: "what happened to this document" reads the target, "what happened
+in this project" reads the context.
+
+Which roles you record decides which questions your feed can answer. Recording
+"project created" with the project as the **object** and no context means a
+context-scoped project page will not include it — the activity is about the
+project, but it did not happen inside it.
+
+### Anonymous actors and parties
+
+An empty actor means the actor is **unknown**; a renderer prints "Someone". A
+named participant that has no model in your app — Stripe, a nightly job — is a
+**party**: a real name and a real entity, just not one of your tables.
 
 ## 2. Why the raw list stops working
 
@@ -70,8 +68,8 @@ What a person wants is one line:
 
 > Ines and Marcus uploaded 5 files to Password Crackdown
 
-Everything from here on is machinery for producing that line honestly. The word
-for it is **aggregation** — collapsing several activities into one telling.
+Producing that line is **aggregation**: collapsing several activities into one
+telling.
 
 ## 3. An axis is the question you group by
 
@@ -85,10 +83,8 @@ Each axis asks a different question of those five rows:
 | **targets** | same person, same thing, different places? | doesn't apply — only one project here |
 | **object** | the same thing being acted on repeatedly? | doesn't apply — five different files |
 
-Two things the word "axis" does not tell you, and both matter:
-
-**It is not a sort order or a coordinate.** It is a grouping question. If it
-helps, read "axis" as "angle" — the angle you look at the activities from.
+An axis is not a sort order or a coordinate; it is a grouping question. Read it
+as "angle" if that helps — the angle you look at the activities from.
 
 **Exactly one axis wins per activity.** Our five rows could be told as a
 `repeat` story or an `actors` story; it is not told as both. Choosing is called
@@ -115,7 +111,7 @@ So our five rows have **two** actors, and `actors` wants three. They stay two
 `repeat` stories: "Ines uploaded 3 files", "Marcus uploaded 2 files". Add a third
 person and the same rows become one `actors` story.
 
-Two consequences worth expecting:
+Two consequences:
 
 - **Thresholds are checked when recording**, so changing them later does not
   re-group old activity — the history keeps the grouping it was given.
@@ -140,10 +136,10 @@ children". It is a thing in its own right:
 | `distinct` | how many there really are per role |
 | `children` | the member activities, possibly capped |
 
-**`exemplars` is a list even when it holds one item.** That surprises people, and
-the reason is worth internalising: on the `actors` axis every member shares one
-target, so `exemplars.targets` is a list of exactly one — *by construction*, not
-by accident. Uniformity means a renderer writes one code path instead of four.
+**`exemplars` is a list even when it holds one item.** On the `actors` axis every
+member shares one target, so `exemplars.targets` holds exactly one entry — by
+construction. That uniformity is what lets a renderer write one code path instead
+of four.
 
 **`count` and `distinct` are different numbers.** Five activities by two people
 is `count: 5`, `distinct.actors: 2`. "Ines, Marcus and 3 others" would be wrong
@@ -161,7 +157,7 @@ here — there is no third person. Which is the point of separating them.
 The server ships the *template*; your renderer substitutes the entities. That is
 why headlines can be translated and why a name can also be a link.
 
-Two flavours, and the distinction is the whole reason grammar has rules:
+Two flavours:
 
 - **Singular grammar** describes one activity: `:actor uploaded :object to :target`
 - **Aggregate grammar** describes a group: `:actors uploaded :count files to :target`
@@ -177,10 +173,9 @@ dimension can finally be *named* rather than hidden:
 
 > Ines uploaded annual-report-v3.fig, hero-mobile.png and 1 more to Password Crackdown
 
-::: tip The one rule no tool can check
-At most one plural list per template. Two lists in one sentence is perfectly
-honest and completely unreadable — 180 characters of names. Keep the second
-collapsed dimension as `:count`.
+::: tip One plural list per template
+Two lists in one sentence stay accurate and become unreadable — a hundred and
+eighty characters of names. Keep the second collapsed dimension as `:count`.
 :::
 
 ## 7. Composites: a story you authored, not one that was inferred
@@ -220,8 +215,6 @@ members.
 
 ## 9. Reconciliation: the feed changes under the reader
 
-This is last because it only makes sense once nodes and groups do.
-
 Groups are not stable rows. Our two `repeat` stories become one `actors` story
 the moment a third person uploads — a **new node, with a new id**, containing
 activities the reader is already looking at. A client that keeps pages and merges
@@ -236,19 +229,13 @@ Three ideas, in the order you apply them:
 3. **Sync token** — an opaque value in the envelope. When it changes, history was
    rewritten somewhere you cannot see; drop everything and refetch.
 
-`sync_token` reads like transport metadata, which is exactly the trap: it looks
-skippable. It is the only signal that history outside your pages changed, so a
-client that stores a stream without storing the token alongside it will keep
-showing nodes that are no longer true.
+The token is the only signal that history changed outside the pages a client
+holds, so a client that stores a stream stores the token with it.
 
-And one shape that catches everybody: **an empty page is not the end of the
-feed.** Only a null cursor is. A page can legally arrive with zero items and a
-perfectly good cursor.
+**An empty page is not the end of the feed** — only a null cursor is. A page can
+arrive with zero items and a usable cursor.
 
-## Glossary — and what each thing is *not*
-
-The confusions in this vocabulary are almost all adjacent-concept collisions
-rather than missing definitions, so the second column is the useful one.
+## Glossary
 
 | term | it is | it is **not** |
 |---|---|---|
