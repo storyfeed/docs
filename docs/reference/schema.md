@@ -1,6 +1,6 @@
 # Schema
 
-Six tables, created by the published migrations. Useful when reasoning about
+Seven tables, created by the published migrations. Useful when reasoning about
 indexes and retention.
 
 ## `feed_activities`
@@ -38,6 +38,15 @@ Named participants with no model in your app.
 Bursts of activity by one actor, with `activities_count` and
 `last_activity_at`. Closed by quiet window; closing fires `BatchClosed` and
 mints composites.
+
+## `feed_participants`
+
+One row per (activity, filled role): `activity_id`, `role`, `entity_type`
+(alias), `entity_id`, and a denormalized `published_at`. Indexed
+`(entity_type, entity_id, published_at, activity_id)`, which is what makes
+`involving()` a single ordered lookup instead of a four-way OR across the morph
+columns. Written in the publish transaction; backfilled by
+`storyfeed:participants`.
 
 ## `feed_meta`
 

@@ -36,6 +36,7 @@ php artisan migrate
 | `feed_groupings` | grouping candidates, computed at publish time |
 | `feed_parties` | named participants with no model in your app |
 | `feed_batches` | bursts of activity by one actor |
+| `feed_participants` | the index `involving()` reads |
 | `feed_meta` | package bookkeeping |
 
 ::: warning

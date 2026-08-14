@@ -20,6 +20,7 @@ your feed. Findings name the fix, not just the fault.
 | `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) |
 | `surface` | models that appear in the feed but that nothing publishes about |
 | `parties` | party rows whose morph alias no longer resolves |
+| `participants` | activities missing from the index `involving()` reads (an install that upgraded into it) |
 | `tables` | are the package tables present? |
 | `columns` | are write-path columns present? (catches schema drift after an upgrade) |
 | `shapes` | snapshot fingerprints that no longer match current output (DTO drift) |

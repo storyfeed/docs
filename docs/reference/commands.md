@@ -32,6 +32,7 @@ See [Doctor](/reference/doctor) for the checks.
 | `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
 | `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair) |
 | `storyfeed:bundle` | bundles `Collectable` runs in closed batches into composites (backfill). `--window=` |
+| `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
 `bundle` and `curate` rewrite settled history and bump the `sync_token`, which
 makes every accumulating client resync.

@@ -10,7 +10,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | key | default | |
 |---|---|---|
-| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta` | remap on collision, or point at pre-existing feed tables |
+| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants` | remap on collision, or point at pre-existing feed tables |
 | `models.*` | the package models | swap in your own; they should extend the defaults |
 
 ## Identity

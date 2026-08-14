@@ -22,6 +22,36 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
+## v0.7 — scoped feeds: `involving()`
+
+`FeedBuilder::for()` is now **`involving()`**, and it spans all four roles —
+actor, object, target and context:
+
+```php
+Storyfeed::feed()->for($project);        // → ->involving($project)
+```
+
+The old name threw two meanings at once: on the recording side `for()` sets the
+*target*, on the read side it filtered by *any* role. It now throws and names
+its replacement.
+
+`involving()` reads a new materialized index, so this upgrade has a required
+step:
+
+```bash
+php artisan vendor:publish --tag="storyfeed-migrations"
+php artisan migrate
+php artisan storyfeed:participants   # one-time backfill for existing history
+```
+
+Until the backfill runs, `involving()` returns nothing for activities recorded
+before the table existed. `storyfeed:doctor` reports it as
+`participants.unindexed`.
+
+Worth re-checking your entity pages while you are here: if one scopes by
+`context()`, it is omitting that entity's own lifecycle — "project created"
+records the project as the object, not the context.
+
 ## v0.7 — read modes renamed
 
 `flat` / `grouped` / `curated` → **`log`** / **`live`** / **`summary`**. The
