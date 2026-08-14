@@ -80,18 +80,20 @@
   background: var(--vp-c-bg);
 }
 
-/* Mirrors the language tag VitePress puts on a code block, in the same corner at
-   the same size, so the pair reads as input then output. */
+/* Sits where VitePress puts a code block's language tag, but much quieter than
+   one: on a page like the anatomy walkthrough the label repeats down the page, and
+   at the language tag's weight it competed with the feeds themselves. */
 .vp-doc .sf-feed::before {
-  content: 'rendered';
+  content: 'output';
   position: absolute;
-  top: 2px;
-  right: 8px;
+  top: 4px;
+  right: 9px;
   z-index: 2;
-  color: var(--vp-code-lang-color);
+  color: var(--vp-c-text-3);
   font-family: var(--vp-font-family-mono);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
   user-select: none;
 }
 
