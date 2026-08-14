@@ -1,0 +1,17 @@
+Correction to this commit's message.
+
+It claims section 6's raw templates were verified present. The check behind that
+claim was broken: it located the section by searching for 'Composites', which
+matched the SIDEBAR nav link at character 743 rather than the section heading at
+8737, so the slice ran backwards and returned an empty string. The check printed
+False and I reported the opposite in the message.
+
+Re-verified properly against the built HTML with heading-anchored bounds: section
+6 renders ':actor', ':object' and ':target' as intended, and section 1 has no
+unsubstituted tokens. Both original conclusions hold — the evidence for one of
+them did not.
+
+Same failure as the git log misparse earlier today: the artifact was correct and
+the reader was the defect. A grep whose bounds come from a full-page string match
+will find the navigation before the content on any page whose nav lists its own
+section names.
