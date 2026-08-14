@@ -11,19 +11,24 @@ An **activity** is one recorded fact, shaped like a sentence with named slots:
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
 > **to Password Crackdown** *(target)*
 
-Five named slots. The verb is the only one an activity cannot go without; the four
-**roles** are each optional:
+The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
+The other four slots are the **roles**, and they hold entities.
 
-| slot | the question it answers | |
-|---|---|---|
-| **verb** | what happened | required |
-| **actor** | who did it | a role |
-| **object** | what it was done to | a role |
-| **target** | what the act was directed at | a role |
-| **context** | the container it happened inside | a role |
+Which slots an activity fills follows from the sentence you are recording:
 
-The verb is a plain string — `upload`, `confirm`, `archive`. The four roles hold
-entities, and any of them can be empty.
+| the sentence | actor | verb | object | target | context |
+|---|---|---|---|---|---|
+| Ines signed in | Ines | `signin` | — | — | — |
+| Ines uploaded annual-report-v3.fig | Ines | `upload` | the file | — | — |
+| Ines uploaded annual-report-v3.fig **to** Password Crackdown | Ines | `upload` | the file | the project | — |
+| Ines created a task **in** Password Crackdown | Ines | `create` | the task | — | the project |
+| Ines commented **on** hero-mobile.png **in** Password Crackdown | Ines | `comment` | the comment | the image | the project |
+| Marcus joined Password Crackdown | Marcus | `join` | — | the project | — |
+| annual-report-v3.fig was archived | — | `archive` | the file | — | — |
+
+Read the last row carefully: nobody is named, because whoever archived the file is
+not known. Read the comment row too — the **comment itself** is the object, and the
+image it was left on is the target.
 
 > [!NOTE]
 > **Target and context are different roles.** Target is what the act was aimed at;
