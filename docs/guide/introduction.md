@@ -75,6 +75,8 @@ const note = activity({
 
 ## Single activity
 
+A member uploads a document to a project.
+
 ```php
 Storyfeed::activity()
     ->actor($user)
@@ -87,8 +89,7 @@ Storyfeed::activity()
 
 ## Consecutive activities
 
-The same person, the same act, several times. Grouped as they are written — there
-is no second call.
+The same member uploads seven documents to that project, one after another.
 
 ```php
 foreach ($documents as $document) {
@@ -104,6 +105,8 @@ foreach ($documents as $document) {
 
 ## The same act by different people
 
+Five members upload documents to the same project.
+
 ```php
 foreach ($uploads as [$user, $document]) {
     Storyfeed::activity()
@@ -118,8 +121,8 @@ foreach ($uploads as [$user, $document]) {
 
 ## A story you author yourself
 
-One activity over many objects, recorded that way on purpose — a real row with a
-permanent id, not a grouping the server inferred.
+A member approves two documents at once, and the two of them are one fact, not
+two.
 
 ```php
 Storyfeed::activity()
@@ -133,6 +136,8 @@ Storyfeed::activity()
 <FeedStream :items="[story]" :grouped="false" />
 
 ## An object that carries its own preview
+
+A member comments on a document.
 
 ```php
 Storyfeed::activity()
@@ -148,8 +153,8 @@ Storyfeed::activity()
 
 ## A participant with no model
 
-An external system, or your app acting on its own behalf. Named, in any role, with
-nothing in your database to point at.
+An external service pushes a document into a project, and it has no row in your
+database to point at.
 
 ```php
 Storyfeed::activity()
