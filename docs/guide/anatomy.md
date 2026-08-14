@@ -124,7 +124,9 @@ The other four slots are the **roles**, and they hold entities.
 
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
-  <template #annotations="{ node }"><SlotMapping :node="node" /></template>
+  <template #annotations="{ node }">
+    <Annotation><SlotMapping :node="node" /></Annotation>
+  </template>
 </FeedStream>
 
 The comment is the shape worth studying: five slots filled, and the headline names
@@ -163,7 +165,9 @@ volume.
 The same stretch, read as a **summary**:
 
 <FeedStream :items="summary" :grouped="false">
-  <template #annotations="{ node }"><SlotMapping :node="node" /></template>
+  <template #annotations="{ node }">
+    <Annotation><SlotMapping :node="node" /></Annotation>
+  </template>
 </FeedStream>
 
 Aiko's scattered uploads are now one line, and finding them took no work at all.

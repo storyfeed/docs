@@ -57,6 +57,11 @@ page is not rebuilt. Pinning also stops the timer from ever starting.
 text, a document preview. Empty by default because what belongs there is
 entirely app-specific.
 
+Both slots exist on group nodes too. Fill a group's `body` only when
+`distinct.objects === 1`: with more than one distinct object a preview privileges
+one exemplar and implies it stands for the group, the same failure as a headline
+that names one document out of five.
+
 **Annotations.** `<slot name="annotations" :node>` renders below the body on both
 node kinds, for surfaces that explain a node rather than render it — this site's
 slot mappings, a payload dump, a curation trace. It exists so documenting a feed

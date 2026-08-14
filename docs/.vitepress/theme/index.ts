@@ -4,6 +4,7 @@ import FeedStream from './feed/FeedStream.vue'
 import FeedNode from './feed/FeedNode.vue'
 import SlotMapping from './components/SlotMapping.vue'
 import FeedBody from './components/FeedBody.vue'
+import Annotation from './components/Annotation.vue'
 import { FEED_NOW } from './feed/keys'
 import './feed/feed.css'
 import './custom.css'
@@ -31,6 +32,7 @@ export default {
     app.component('FeedNode', FeedNode)
     app.component('SlotMapping', SlotMapping)
     app.component('FeedBody', FeedBody)
+    app.component('Annotation', Annotation)
     app.provide(FEED_NOW, DOCS_NOW)
   },
 } satisfies Theme
