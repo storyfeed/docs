@@ -75,7 +75,7 @@ const note = activity({
 
 ## Single activity
 
-A member uploads a document to a project.
+A user uploads a document to a project.
 
 ```php
 Storyfeed::activity()
@@ -89,7 +89,7 @@ Storyfeed::activity()
 
 ## Consecutive activities
 
-The same member uploads seven documents to that project, one after another.
+The same user uploads seven documents to that project, one after another.
 
 ```php
 foreach ($documents as $document) {
@@ -105,7 +105,7 @@ foreach ($documents as $document) {
 
 ## The same act by different people
 
-Five members upload documents to the same project.
+Five users upload documents to the same project.
 
 ```php
 foreach ($uploads as [$user, $document]) {
@@ -121,7 +121,7 @@ foreach ($uploads as [$user, $document]) {
 
 ## A story you author yourself
 
-A member approves two documents at once, and the two of them are one fact, not
+A user approves two documents at once, and the two of them are one fact, not
 two.
 
 ```php
@@ -137,7 +137,7 @@ Storyfeed::activity()
 
 ## An object that carries its own preview
 
-A member comments on a document.
+A user comments on a document.
 
 ```php
 Storyfeed::activity()
