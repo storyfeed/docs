@@ -45,35 +45,35 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 - ✅ Introduction — `guide/introduction`
 - ✅ Installation — `guide/installation`
 - ✅ Your first feed — `guide/quickstart`
-- ⬜ Upgrade guide — per-version notes, including the published-migration rule
+- ✅ Upgrade guide — per-version notes, including the published-migration rule
 
 ### The basics
 
-- ⬜ Recording activities — `record()`, the fluent builder, roles, `replace:`
-- ⬜ Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
-- ⬜ Feedable models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
-- ⬜ Story classes — anatomy, `make:story`, registration, compilation
-- ⬜ Reading feeds — the builder, scoping, read modes, pagination
-- ⬜ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines
+- ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
+- ✅ Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
+- ✅ Feedable models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
+- ✅ Story classes — anatomy, `make:story`, registration, compilation
+- ✅ Reading feeds — the builder, scoping, read modes, pagination
+- ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines
 
 ### Digging deeper
 
-- ⬜ Grouping — axes, the winning axis, group nodes, custom axes
-- ⬜ Grammar — aggregate templates, token safety, the anti-lie rule
-- ⬜ Composites — `->objects()`, `Collectable`, batches and the quiet window
-- ⬜ Publishing from events — `PublishesToFeed`, the single listener
-- ⬜ Parties & anonymous actors — null actor vs named non-model participant
-- ⬜ Activity Streams 2.0 — conformance, routes, the `@context`, extension types
-- ⬜ Testing — `Storyfeed::fake()`, coverage assertions
+- ✅ Aggregation — axes, the winning axis, group nodes, custom axes
+- ✅ Grammar — aggregate templates, token safety, the anti-lie rule
+- ✅ Composites — `->objects()`, `Collectable`, batches and the quiet window
+- ✅ Publishing from events — `PublishesToFeed`, the single listener
+- ✅ Parties & anonymous actors — null actor vs named non-model participant
+- ✅ Activity Streams 2.0 — conformance, routes, the `@context`, extension types
+- ✅ Testing — `Storyfeed::fake()`, coverage assertions
 
 ### Reference
 
-- ⬜ The payload contract — envelope, entity objects, activity/group nodes, cursors, sync token
-- ⬜ Configuration — every key in `config/storyfeed.php`
-- ⬜ Commands — the full `storyfeed:*` reference
-- ⬜ Doctor — every check, what it means, how to act on it
-- ⬜ Schema — the tables and their columns
-- ⬜ Compatibility — PHP/Laravel support policy
+- ✅ The payload contract — envelope, entity objects, activity/group nodes, cursors, sync token
+- ✅ Configuration — every key in `config/storyfeed.php`
+- ✅ Commands — the full `storyfeed:*` reference
+- ✅ Doctor — every check, what it means, how to act on it
+- ✅ Schema — the tables and their columns
+- ✅ Compatibility — PHP/Laravel support policy
 
 ## Notes
 

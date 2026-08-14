@@ -37,9 +37,9 @@ export default defineConfig({
       },
     ],
 
-    // Only pages that exist are listed. The planned structure lives in IA.md
-    // at the repo root — a sidebar entry pointing at nothing is worse than a
-    // short sidebar.
+    // The whole spine, visible from any page: a reader should see the shape of
+    // the documentation before deciding to trust it. Every entry resolves —
+    // planned-but-unwritten pages live in IA.md, never here.
     sidebar: [
       {
         text: 'Getting started',
@@ -47,6 +47,41 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Your first feed', link: '/guide/quickstart' },
+          { text: 'Upgrading', link: '/guide/upgrading' },
+        ],
+      },
+      {
+        text: 'The basics',
+        items: [
+          { text: 'Recording activities', link: '/basics/recording' },
+          { text: 'Verbs', link: '/basics/verbs' },
+          { text: 'Feedable models', link: '/basics/feedable-models' },
+          { text: 'Story classes', link: '/basics/stories' },
+          { text: 'Reading feeds', link: '/basics/reading' },
+          { text: 'Rendering', link: '/basics/rendering' },
+        ],
+      },
+      {
+        text: 'Digging deeper',
+        items: [
+          { text: 'Aggregation', link: '/deeper/aggregation' },
+          { text: 'Grammar', link: '/deeper/grammar' },
+          { text: 'Composites', link: '/deeper/composites' },
+          { text: 'Publishing from events', link: '/deeper/events' },
+          { text: 'Parties & anonymous actors', link: '/deeper/parties' },
+          { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
+          { text: 'Testing', link: '/deeper/testing' },
+        ],
+      },
+      {
+        text: 'Reference',
+        items: [
+          { text: 'The payload contract', link: '/reference/payload' },
+          { text: 'Configuration', link: '/reference/configuration' },
+          { text: 'Commands', link: '/reference/commands' },
+          { text: 'Doctor', link: '/reference/doctor' },
+          { text: 'Schema', link: '/reference/schema' },
+          { text: 'Compatibility', link: '/reference/compatibility' },
         ],
       },
     ],
