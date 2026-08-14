@@ -33,7 +33,7 @@ export function entity(
   }
 }
 
-export const member = (id: string, label: string) => entity('member', id, label, `/members/${id}`)
+export const user = (id: string, label: string) => entity('user', id, label, `/users/${id}`)
 export const project = (id: string, label: string) => entity('project', id, label, `/projects/${id}`)
 export const client = (id: string, label: string) => entity('client', id, label, `/clients/${id}`)
 export const document = (id: string, label: string) => entity('document', id, label, `/documents/${id}`)
@@ -95,7 +95,7 @@ const build = (source: Record<string, [string, string]>, make: (id: string, labe
   )
 
 /** `who.designer`, `who.reviewer`, … */
-export const who: Record<string, any> = build(PEOPLE, member)
+export const who: Record<string, any> = build(PEOPLE, user)
 
 /** `where.migration`, `where.crackdown`, … */
 export const where: Record<string, any> = build(PLACES, project)
