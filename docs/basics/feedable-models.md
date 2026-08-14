@@ -29,6 +29,30 @@ class Document extends Model implements Feedable
 }
 ```
 
+<script setup>
+import { who, where, doc, note, activity, group } from '../.vitepress/theme/samples'
+
+// A project's own feed: activities where it is the target, and the one that
+// created it — where it is the object, which a context-only filter would miss.
+const scoped = [
+  group({ id: 'f1', verb: 'upload', axis: 'repeat', count: 3, icon: 'file-up',
+    published_at: '2026-08-14T14:30:00.000000Z',
+    headline_template: ':actor uploaded :count files to :target',
+    actors: [who.ines], targets: [where.passwordCrackdown],
+    objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+    distinct: { actors: 1, objects: 3, targets: 1 } }),
+  activity({ id: 'f2', verb: 'comment', icon: 'message-circle',
+    published_at: '2026-08-14T14:28:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+  activity({ id: 'f3', verb: 'create', icon: 'folder',
+    published_at: '2026-08-12T09:00:00.000000Z',
+    headline_template: ':actor created the project :object',
+    actor: who.jasper, object: where.passwordCrackdown }),
+]
+</script>
+
+
 ## Snapshots and links
 
 The two methods split along the cache boundary:
@@ -75,6 +99,34 @@ Schedule::command('storyfeed:trickle')->everyMinute();
 Un-snapshotted entities still appear — with `label: null`, `url: null` — and
 renderers show a neutral placeholder. Activities are never hidden by the read
 path.
+
+## The model's own feed
+
+The trait also gives the model a feed of everything it took part in:
+
+```php
+$project->storyfeed()->get();
+```
+
+That is the facade form with the argument filled in — identical, and the same
+builder, so read modes, verbs, limits, cursors and
+[`query()`](/basics/reading#anything-else-query) all apply:
+
+```php
+Storyfeed::feed()->involving($project)->get();
+```
+
+<FeedStream :items="scoped" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+Both need `feed_participants` populated. A fresh install gets it from the
+migration; an existing one runs `php artisan storyfeed:participants` once, and
+`storyfeed:doctor` says so until it has.
+
+`storyfeed()` on a model is not the `storyfeed()` helper, which returns the
+manager — or a pending activity, given a verb. Inside a model class both are
+reachable: `storyfeed()` is the function, `$this->storyfeed()` is this.
 
 ## Morph aliases
 
