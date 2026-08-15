@@ -51,7 +51,7 @@ export default defineConfig({
         text: 'Getting started',
         items: [
           { text: 'Introduction', link: '/guide/introduction' },
-          { text: 'Anatomy of an activity stream', link: '/guide/anatomy' },
+          { text: 'Usage examples', link: '/guide/usage-examples' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Your first feed', link: '/guide/quickstart' },
           { text: 'Upgrading', link: '/guide/upgrading' },
