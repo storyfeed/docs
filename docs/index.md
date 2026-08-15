@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Storyfeed
   text: Activity streams for Laravel
-  tagline: Turn your app's activity into a rich stream of stories.
+  tagline: The activity feed pattern — timeline, aggregation, Activity Streams 2.0 — for your Laravel app.
   image:
     src: /logo.svg
     alt: Storyfeed
@@ -24,6 +24,11 @@ hero:
 <script setup>
 import LandingTicker from './.vitepress/theme/demo/LandingTicker.vue'
 </script>
+
+<p class="sf-pitch">
+Your app already produces the activity. Storyfeed turns it into a rich stream
+of stories — live, from a real Laravel app:
+</p>
 
 <LandingTicker />
 

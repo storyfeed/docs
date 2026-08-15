@@ -98,3 +98,14 @@
 .vp-doc .sf-feed > *:last-child {
   margin-bottom: 0;
 }
+
+/* The one sentence between the hero and the ticker: prose, not a heading, but
+   with enough presence to hand off from the tagline to the demo. */
+.vp-doc .sf-pitch {
+  margin: 2.5rem auto 0;
+  max-width: 640px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
