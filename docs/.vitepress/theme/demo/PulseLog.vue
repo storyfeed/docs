@@ -36,7 +36,9 @@ const GLYPHS: Record<string, string> = {
 <style scoped>
 .sf-pulse {
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b586c transparent;
   padding: 14px 16px;
   font-family: var(--vp-font-family-mono);
   font-size: 12px;

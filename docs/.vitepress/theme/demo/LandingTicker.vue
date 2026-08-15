@@ -205,7 +205,9 @@ onBeforeUnmount(() => {
 
 .sf-ticker__feed {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vp-c-divider) transparent;
   padding: 6px 18px 12px;
 }
 
