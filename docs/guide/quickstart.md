@@ -125,8 +125,8 @@ member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
 
 ```php
 Storyfeed::activity()
-    ->actor($user)
-    ->verb('upload', $document)
+    ->by($user)
+    ->action('upload', $document)
     ->to($project)
     ->publish();
 ```

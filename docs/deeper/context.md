@@ -3,14 +3,28 @@
 `context` is the fourth role: the container an activity happened **inside** — a
 project, a workspace, a tenant.
 
+<script setup>
+import { who, where, doc, activity } from '../.vitepress/theme/samples'
+
+const placed = activity({
+  id: 'cx1', verb: 'upload', icon: 'file-up',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor uploaded :object to :context',
+  actor: who.aiko, object: doc.signagePlanClientCopy, target: where.verificationTiers,
+  context: where.verificationTiers,
+})
+</script>
+
 ```php
 Storyfeed::activity()
-    ->actor($user)
-    ->verb('upload', $document)
+    ->by($user)
+    ->action('upload', $document)
     ->to($project)          // target: what the act was directed at
-    ->context($workspace)   // context: where it happened
+    ->context($project)     // context: where it happened
     ->publish();
 ```
+
+<FeedStream :items="[placed]" :grouped="false" />
 
 Most applications can ignore it. Set it when you want one of the three things
 below.

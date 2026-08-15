@@ -50,16 +50,6 @@
   --vp-home-hero-name-background: linear-gradient(120deg, #f59e0b, #fde68a);
 }
 
-/* Feed examples read as prose, so give sample headlines a quieter treatment
-   than a code block — they are output, not something you type. */
-.storyfeed-example {
-  border-left: 3px solid var(--vp-c-brand-3);
-  padding: 0.25rem 0 0.25rem 1rem;
-  margin: 1rem 0;
-  color: var(--vp-c-text-2);
-  font-style: italic;
-}
-
 /* ─── Feed widgets in prose ───────────────────────────────────────────────────
    A rendered feed is output, so it gets a well of its own that lines up with the
    code block above it: same 8px radius, same 16px vertical rhythm, same corner

@@ -1,5 +1,17 @@
 # Parties & anonymous actors
 
+<script setup>
+import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
+
+const synced = activity({
+  id: 'pt1', verb: 'sync', icon: 'refresh-cw',
+  published_at: '2026-08-14T13:55:00.000000Z',
+  headline_template: ':actor synced :object to :target',
+  actor: entity('storyfeed.party', '1', 'Concur Web Service', null),
+  object: doc.expenseReportQ3, target: where.passwordCrackdown,
+})
+</script>
+
 Two different things that both look like "not a user":
 
 | | means | in the payload |
@@ -15,11 +27,13 @@ $party = Storyfeed::party('Stripe');
 Storyfeed::record('sync', $invoice, actor: $party);
 ```
 
+<FeedStream :items="[synced]" :grouped="false" />
+
 Parties work in **any** role — actor, object, target, or context:
 
 ```php
 Storyfeed::activity()
-    ->verb('notify', $invoice)
+    ->action('notify', $invoice)
     ->to(Storyfeed::party('Accounts Payable'))
     ->publish();
 ```

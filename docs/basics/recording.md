@@ -1,21 +1,33 @@
 # Recording activities
 
+<script setup>
+import { who, where, firm, activity } from '../.vitepress/theme/samples'
+
+const created = activity({
+  id: 'r1', verb: 'create', icon: 'folder',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor created the project :object for :target',
+  actor: who.ines, object: where.birdRemoval, target: firm.chirp,
+})
+</script>
+
 An activity is a verb plus up to four entities. The builder reads in the order of
 the headline it produces:
 
 ```php
-// Sally confirmed Delivery #1042 for Acme Co.
 Storyfeed::activity()
-    ->actor($user)
-    ->verb('confirm', $delivery)
-    ->to($customer)
+    ->by($user)
+    ->action('create', $project)
+    ->for($client)
     ->publish();
 ```
+
+<FeedStream :items="[created]" :grouped="false" />
 
 The same thing in one line, when you have everything up front:
 
 ```php
-Storyfeed::record('confirm', $delivery, actor: $user, target: $customer);
+Storyfeed::record('create', $project, actor: $user, target: $client);
 ```
 
 Recording is always an explicit call — from an action, an observer, an event
@@ -32,14 +44,19 @@ listener. There is no model spying.
 There is a fourth role, `context` — the container an activity happened inside.
 Most apps don't need it; see [Containers & context](/deeper/context).
 
-The builder has prepositional aliases for reading naturally at the call site:
+Each role has a setter named for it — `actor()`, `verb()`, `object()`,
+`target()`, `context()` — and aliases so the call site reads as the sentence:
 
-| alias | sets |
-|---|---|
-| `->to()` `->for()` `->in()` `->from()` | `target` |
+| alias | sets | reads as |
+|---|---|---|
+| `->by()` | `actor` | who acted |
+| `->action()` | `verb` | what they did |
+| `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
 
-All four are the same setter — pick whichever reads at your call site. `context`
-is set only by `->context()`.
+An alias and its setter record identical rows — pick whichever reads at your
+call site. `context` is set only by `->context()`; note that `->in()` and
+`->from()` predate the context role and set the **target**, not the container
+and not a source.
 
 Roles are set at publish and **never backfilled** — `storyfeed:rebuild` rebuilds
 snapshots, `storyfeed:curate` re-selects axes, and neither can populate a role
@@ -72,7 +89,7 @@ activity is published as anonymous — a null actor means genuinely unknown.
 
 ```php
 Storyfeed::activity()
-    ->verb('upload', $document)
+    ->action('upload', $document)
     ->data(['size' => $bytes])          // activity-level payload, arrives in the node
     ->publishedAt($importedAt)          // backdate (imports, backfills)
     ->publish();
@@ -82,7 +99,7 @@ Storyfeed::activity()
 replaces the earlier row rather than duplicating it:
 
 ```php
-Storyfeed::activity()->verb('update', $document)->replace()->publish();
+Storyfeed::activity()->action('update', $document)->replace()->publish();
 ```
 
 ## Recording from the verb enum
@@ -91,7 +108,7 @@ If your verbs live in an enum using the `AsFeedVerb` trait, every case is a
 builder:
 
 ```php
-ActivityVerb::Comment->actor($user)->object($comment)->to($project)->publish();
+ActivityVerb::Comment->by($user)->object($comment)->to($project)->publish();
 ActivityVerb::Confirm->publish($delivery);
 ```
 

@@ -1,18 +1,33 @@
 # Composites
 
-A composite is one authored story whose object is a **collection** — "Tomás
-uploaded 6 files to Spring Campaign" as a single activity, not six grouped ones.
+<script setup>
+import { who, where, doc, group } from '../.vitepress/theme/samples'
+
+const authored = group({
+  id: 'cp1', verb: 'upload', axis: 'composite', count: 2, icon: 'file-up',
+  published_at: '2026-08-14T14:20:00.000000Z',
+  headline_template: ':actor uploaded :count files to :target',
+  actors: [who.tomas], targets: [where.portMigration],
+  objects: [doc.wordmarkV3, doc.heroMobileRevA],
+  distinct: { actors: 1, objects: 2, targets: 1 },
+})
+</script>
+
+A composite is one authored story whose object is a **collection** — several
+files uploaded as a single activity, not several grouped ones.
 
 ## Explicit
 
 ```php
 Storyfeed::activity()
-    ->actor($user)
-    ->verb('upload')
+    ->by($user)
+    ->action('upload')
     ->objects($files)
     ->to($project)
     ->publish();
 ```
+
+<FeedStream :items="[authored]" :grouped="false" />
 
 This writes a parent activity plus its atomic members. In `log()` the members
 appear as an ordinary timeline; in aggregated modes the parent arrives as one
