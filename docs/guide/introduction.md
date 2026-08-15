@@ -103,7 +103,7 @@ foreach ($documents as $document) {
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## Concurrent actions within a shared context
+## Concurrent actions on the same project
 
 Five users upload to the same project, each from their own request, minutes apart.
 Nothing coordinates them.
