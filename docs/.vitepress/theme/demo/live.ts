@@ -19,10 +19,32 @@ export type LivePulseLine = {
   status?: number
 }
 
+export type FeedModes = {
+  live: Record<string, any>[]
+  summary: Record<string, any>[]
+  log: Record<string, any>[]
+}
+
 export type LiveSnapshot = {
   server_now: string
   pulse: LivePulseLine[]
-  feed: { items: Record<string, any>[] }
+  /**
+   * Either shape is accepted: `items` (the original contract) or `modes` with
+   * all three read modes, which lights the Log · Live · Summary toggles. The
+   * docs tolerate both so the Newsroom can ship the richer one whenever.
+   */
+  feed: { items?: Record<string, any>[]; modes?: FeedModes }
+}
+
+/** Normalize either feed shape; null modes means "no toggles". */
+export function feedModes(snapshot: LiveSnapshot): FeedModes | null {
+  const modes = snapshot.feed.modes
+
+  if (modes && Array.isArray(modes.live) && Array.isArray(modes.summary) && Array.isArray(modes.log)) {
+    return modes
+  }
+
+  return null
 }
 
 /** Confirmed with the Newsroom before this lights up — one place to edit. */
@@ -45,7 +67,9 @@ async function fetchSnapshot(timeout: number): Promise<LiveSnapshot | null> {
 
     const body = await response.json()
 
-    if (!Array.isArray(body?.pulse) || !Array.isArray(body?.feed?.items)) {
+    const feedOk = Array.isArray(body?.feed?.items) || Array.isArray(body?.feed?.modes?.live)
+
+    if (!Array.isArray(body?.pulse) || !feedOk) {
       return null
     }
 

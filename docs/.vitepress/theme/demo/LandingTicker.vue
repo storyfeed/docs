@@ -2,8 +2,8 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import DemoFeed from './DemoFeed.vue'
 import PulseLog from './PulseLog.vue'
-import { probeLive, startLive } from './live'
-import type { LiveSnapshot } from './live'
+import { feedModes, probeLive, startLive } from './live'
+import type { FeedModes, LiveSnapshot } from './live'
 import { DEMO_NOW, PRESEED_FEED, PRESEED_PULSE, STEPS, finalFeed, finalPulse, stamp } from './timeline'
 import type { PulseLine } from './timeline'
 
@@ -35,6 +35,15 @@ const pulse = ref<ShownLine[]>(shown(PRESEED_PULSE, 0).reverse())
 const feed = ref<Record<string, any>[]>([...PRESEED_FEED])
 const mode = ref<'scripted' | 'live'>('scripted')
 
+/**
+ * The read-mode toggles: the same instant re-told at three granularities,
+ * which is the read-modes concept demonstrated in one click. Only lit when the
+ * endpoint supplies all three; the scripted fallback has one storyline.
+ */
+const READ_MODES = ['live', 'summary', 'log'] as const
+const readMode = ref<(typeof READ_MODES)[number]>('live')
+const modes = ref<FeedModes | null>(null)
+
 let timer: ReturnType<typeof setTimeout> | null = null
 let stopLive: (() => void) | null = null
 
@@ -45,7 +54,19 @@ function applyLive(snapshot: LiveSnapshot): void {
     kind: l.kind,
     status: l.status,
   }))
-  feed.value = snapshot.feed.items.slice(0, 6)
+
+  modes.value = feedModes(snapshot)
+  feed.value = modes.value
+    ? modes.value[readMode.value].slice(0, 6)
+    : (snapshot.feed.items ?? []).slice(0, 6)
+}
+
+function pick(next: (typeof READ_MODES)[number]): void {
+  readMode.value = next
+
+  if (modes.value) {
+    feed.value = modes.value[next].slice(0, 6)
+  }
 }
 
 function goLive(first: LiveSnapshot): void {
@@ -59,6 +80,7 @@ function goLive(first: LiveSnapshot): void {
   stopLive = startLive(applyLive, () => {
     // The endpoint went quiet: hand back to the script, mid-story.
     stopLive = null
+    modes.value = null
     mode.value = 'scripted'
     pulse.value = shown(PRESEED_PULSE, 0).reverse()
     feed.value = [...PRESEED_FEED]
@@ -128,7 +150,19 @@ onBeforeUnmount(() => {
       <PulseLog :lines="pulse" />
     </section>
     <section class="sf-ticker__pane sf-ticker__pane--story">
-      <header class="sf-ticker__label">your feed</header>
+      <header class="sf-ticker__label">
+        your feed
+        <span v-if="mode === 'live' && modes" class="sf-ticker__modes">
+          <button
+            v-for="m in READ_MODES"
+            :key="m"
+            type="button"
+            class="sf-ticker__mode"
+            :class="{ 'sf-ticker__mode--on': readMode === m }"
+            @click="pick(m)"
+          >{{ m }}</button>
+        </span>
+      </header>
       <div class="sf-ticker__feed">
         <DemoFeed :key="mode" :items="feed" :pin="mode === 'scripted' ? DEMO_NOW : null" />
       </div>
@@ -201,6 +235,38 @@ onBeforeUnmount(() => {
   .sf-ticker__live {
     animation: none;
   }
+}
+
+.sf-ticker__label {
+  display: flex;
+  align-items: center;
+}
+
+.sf-ticker__modes {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+
+.sf-ticker__mode {
+  padding: 1px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--vp-c-text-3);
+  cursor: pointer;
+}
+
+.sf-ticker__mode:hover {
+  color: var(--vp-c-text-1);
+}
+
+.sf-ticker__mode--on {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
 }
 
 .sf-ticker__feed {
