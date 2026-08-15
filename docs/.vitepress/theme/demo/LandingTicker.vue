@@ -274,7 +274,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--vp-c-divider) transparent;
-  padding: 6px 18px 12px;
+  padding: 16px 18px 12px;
 }
 
 /* Inside the demo the pane is the chrome — strip the docs' output well. */
