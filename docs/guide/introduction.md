@@ -48,10 +48,10 @@ const crowd = group({
 const story = group({
   id: 'i8', verb: 'approve', axis: 'composite', count: 2, icon: 'file-check',
   published_at: '2026-08-14T14:20:00.000000Z',
-  headline_template: ':actor approved :count files in :context',
-  actors: [who.tomas], contexts: [where.portMigration],
+  headline_template: ':actor approved :count files',
+  actors: [who.tomas],
   objects: [doc.wordmarkV3, doc.heroMobileRevA],
-  distinct: { actors: 1, objects: 2, contexts: 1 },
+  distinct: { actors: 1, objects: 2 },
 })
 
 const external = activity({
@@ -78,9 +78,8 @@ const reply = activity({
 A user uploads a document to a project.
 
 ```php
-Storyfeed::activity()
-    ->actor($user)
-    ->verb('upload', $document)
+Storyfeed::activity('upload', $document)
+    ->by($user)
     ->to($project)
     ->publish();
 ```
@@ -93,9 +92,8 @@ The same user uploads seven documents to that project, one after another.
 
 ```php
 foreach ($documents as $document) {
-    Storyfeed::activity()
-        ->actor($user)
-        ->verb('upload', $document)
+    Storyfeed::activity('upload', $document)
+        ->by($user)
         ->to($project)
         ->publish();
 }
@@ -109,9 +107,8 @@ Five users upload documents to the same project.
 
 ```php
 foreach ($uploads as [$user, $document]) {
-    Storyfeed::activity()
-        ->actor($user)
-        ->verb('upload', $document)
+    Storyfeed::activity('upload', $document)
+        ->by($user)
         ->to($project)
         ->publish();
 }
@@ -125,11 +122,9 @@ A user approves two documents at once, and the two of them are one fact, not
 two.
 
 ```php
-Storyfeed::activity()
-    ->actor($user)
-    ->verb('approve')
+Storyfeed::activity('approve')
+    ->by($user)
     ->objects($documents)
-    ->context($project)
     ->publish();
 ```
 
@@ -140,10 +135,9 @@ Storyfeed::activity()
 A user comments on a document.
 
 ```php
-Storyfeed::activity()
-    ->actor($user)
-    ->verb('comment', $comment)
-    ->target($document)
+Storyfeed::activity('comment', $comment)
+    ->by($user)
+    ->on($document)
     ->publish();
 ```
 
@@ -157,14 +151,31 @@ An external service pushes a document into a project, and it has no row in your
 database to point at.
 
 ```php
-Storyfeed::activity()
-    ->actor('Concur Web Service')
-    ->verb('sync', $document)
+Storyfeed::activity('sync', $document)
+    ->by('Concur Web Service')
     ->to($project)
     ->publish();
 ```
 
 <FeedStream :items="[external]" :grouped="false" />
+
+## Whichever preposition the verb takes
+
+The chain is the sentence, so the role setters have the prepositions English
+actually uses. Every line below records the same thing — one activity, one actor,
+one target:
+
+```php
+Storyfeed::activity('comment', $comment)->by($user)->on($document)->publish();
+Storyfeed::activity('share', $document)->by($user)->with($teammate)->publish();
+Storyfeed::activity('move', $document)->by($user)->into($folder)->publish();
+Storyfeed::activity('upload', $document)->by($user)->to($project)->publish();
+Storyfeed::activity('create', $project)->by($user)->for($client)->publish();
+```
+
+Pick the one that reads true; the stored activity is identical either way. The
+long-hand — `actor()`, `object()`, `target()`, `context()` — names the slots
+directly and is always available. [Recording](/basics/recording) has the full set.
 
 ## How it works
 
