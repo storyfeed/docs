@@ -48,10 +48,10 @@ const crowd = group({
 const story = group({
   id: 'i8', verb: 'approve', axis: 'composite', count: 2, icon: 'file-check',
   published_at: '2026-08-14T14:20:00.000000Z',
-  headline_template: ':actor approved :count files',
-  actors: [who.tomas],
+  headline_template: ':actor approved :count files in :context',
+  actors: [who.tomas], contexts: [where.portMigration],
   objects: [doc.wordmarkV3, doc.heroMobileRevA],
-  distinct: { actors: 1, objects: 2 },
+  distinct: { actors: 1, objects: 2, contexts: 1 },
 })
 
 const external = activity({
@@ -78,8 +78,9 @@ const reply = activity({
 A user uploads a document to a project.
 
 ```php
-Storyfeed::activity('upload', $document)
+Storyfeed::activity()
     ->by($user)
+    ->action('upload', $document)
     ->to($project)
     ->publish();
 ```
@@ -92,8 +93,9 @@ The same user uploads seven documents to that project, one after another.
 
 ```php
 foreach ($documents as $document) {
-    Storyfeed::activity('upload', $document)
+    Storyfeed::activity()
         ->by($user)
+        ->action('upload', $document)
         ->to($project)
         ->publish();
 }
@@ -107,8 +109,9 @@ Five users upload documents to the same project.
 
 ```php
 foreach ($uploads as [$user, $document]) {
-    Storyfeed::activity('upload', $document)
+    Storyfeed::activity()
         ->by($user)
+        ->action('upload', $document)
         ->to($project)
         ->publish();
 }
@@ -122,9 +125,11 @@ A user approves two documents at once, and the two of them are one fact, not
 two.
 
 ```php
-Storyfeed::activity('approve')
+Storyfeed::activity()
     ->by($user)
+    ->action('approve')
     ->objects($documents)
+    ->context($project)
     ->publish();
 ```
 
@@ -135,8 +140,9 @@ Storyfeed::activity('approve')
 A user comments on a document.
 
 ```php
-Storyfeed::activity('comment', $comment)
+Storyfeed::activity()
     ->by($user)
+    ->action('comment', $comment)
     ->on($document)
     ->publish();
 ```
@@ -151,8 +157,9 @@ An external service pushes a document into a project, and it has no row in your
 database to point at.
 
 ```php
-Storyfeed::activity('sync', $document)
+Storyfeed::activity()
     ->by('Concur Web Service')
+    ->action('sync', $document)
     ->to($project)
     ->publish();
 ```
@@ -166,16 +173,18 @@ actually uses. Every line below records the same thing — one activity, one act
 one target:
 
 ```php
-Storyfeed::activity('comment', $comment)->by($user)->on($document)->publish();
-Storyfeed::activity('share', $document)->by($user)->with($teammate)->publish();
-Storyfeed::activity('move', $document)->by($user)->into($folder)->publish();
-Storyfeed::activity('upload', $document)->by($user)->to($project)->publish();
-Storyfeed::activity('create', $project)->by($user)->for($client)->publish();
+->by($user)->action('comment', $comment)->on($document)
+->by($user)->action('share', $document)->with($teammate)
+->by($user)->action('move', $document)->into($folder)
+->by($user)->action('upload', $document)->to($project)
+->by($user)->action('create', $project)->for($client)
 ```
 
-Pick the one that reads true; the stored activity is identical either way. The
-long-hand — `actor()`, `object()`, `target()`, `context()` — names the slots
-directly and is always available. [Recording](/basics/recording) has the full set.
+Pick the one that reads true; the stored activity is identical either way. Each is
+sugar for a role: `by()` is the actor, `action()` is the verb, and the rest are the
+target. The long-hand — `actor()`, `verb()`, `object()`, `target()`, `context()` —
+names the slots directly and is always there.
+[Recording](/basics/recording) has the full set.
 
 ## How it works
 
