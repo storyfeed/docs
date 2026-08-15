@@ -1,4 +1,4 @@
-import { who, where, doc, job, note, activity, group } from '../samples'
+import { who, where, firm, doc, job, note, activity, group } from '../samples'
 
 /**
  * The landing demo's script: a Laravel app's low-level pulse on the left, the
@@ -102,13 +102,9 @@ export const PRESEED_FEED: FeedNode[] = [
     id: 'demo-seed-2', verb: 'create', icon: 'folder',
     published_at: at('14:28:30'),
     headline_template: ':actor created the project :object for :target',
-    actor: who.ines, object: where.birdRemoval, target: firmChirp(),
+    actor: who.ines, object: where.birdRemoval, target: firm.chirp,
   }),
 ]
-
-function firmChirp() {
-  return { type: 'client', id: '1', label: 'Chirp', url: '/clients/1', attributes: {}, modal: false, component: null, data: {} }
-}
 
 export const PRESEED_PULSE: PulseLine[] = [
   { time: '14:28:30', text: 'POST /clients/1/projects', kind: 'request' },
