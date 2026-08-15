@@ -1,27 +1,16 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
-import type { PulseLine } from './timeline'
-
 /**
  * The app's low-level pulse: requests, events, jobs, as a terminal pane.
  *
+ * Newest line at the TOP, matching the feed beside it — both panes tell time
+ * in the same direction, so a new beat lands at the same height in each.
+ *
  * Deliberately machine-gray and monospace — the whole demo is the contrast
- * between this pane and the feed beside it, so this one must not be pretty.
+ * between this pane and the feed, so this one must not be pretty.
  */
-const props = defineProps<{ lines: PulseLine[] }>()
+defineProps<{ lines: { time: string; text: string; kind: 'request' | 'event' | 'job' }[] }>()
 
-const pane = ref<HTMLElement | null>(null)
-
-watch(
-  () => props.lines.length,
-  async () => {
-    await nextTick()
-
-    pane.value?.scrollTo({ top: pane.value.scrollHeight })
-  },
-)
-
-const GLYPHS: Record<PulseLine['kind'], string> = {
+const GLYPHS: Record<string, string> = {
   request: '→',
   event: '⚡',
   job: '↻',
@@ -29,8 +18,13 @@ const GLYPHS: Record<PulseLine['kind'], string> = {
 </script>
 
 <template>
-  <div ref="pane" class="sf-pulse" aria-hidden="true">
-    <div v-for="(line, i) in lines" :key="i" class="sf-pulse__line" :class="`sf-pulse__line--${line.kind}`">
+  <div class="sf-pulse" aria-hidden="true">
+    <div
+      v-for="line in lines"
+      :key="`${line.time}-${line.text}`"
+      class="sf-pulse__line"
+      :class="`sf-pulse__line--${line.kind}`"
+    >
       <span class="sf-pulse__time">{{ line.time }}</span>
       <span class="sf-pulse__glyph">{{ GLYPHS[line.kind] }}</span>
       <span class="sf-pulse__text">{{ line.text }}</span>
@@ -61,7 +55,7 @@ const GLYPHS: Record<PulseLine['kind'], string> = {
 @keyframes sf-pulse-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(-4px);
   }
 
   to {

@@ -4,7 +4,7 @@ import FeedStream from '../feed/FeedStream.vue'
 import FeedBody from '../components/FeedBody.vue'
 import { FEED_NOW } from '../feed/keys'
 import PulseLog from './PulseLog.vue'
-import { DEMO_NOW, PRESEED_FEED, PRESEED_PULSE, STEPS, finalFeed, finalPulse } from './timeline'
+import { DEMO_NOW, PRESEED_FEED, PRESEED_PULSE, STEPS, finalFeed, finalPulse, stamp } from './timeline'
 import type { PulseLine } from './timeline'
 
 /**
@@ -20,22 +20,22 @@ import type { PulseLine } from './timeline'
  */
 provide(FEED_NOW, DEMO_NOW)
 
-const pulse = ref<PulseLine[]>([...PRESEED_PULSE])
+type ShownLine = { time: string; text: string; kind: PulseLine['kind'] }
+
+const shown = (lines: PulseLine[], cycle: number): ShownLine[] =>
+  lines.map((l) => ({ time: stamp(l.offset, cycle), text: l.text, kind: l.kind }))
+
+// Newest first, both panes — a new beat lands at the same height in each.
+const pulse = ref<ShownLine[]>(shown(PRESEED_PULSE, 0).reverse())
 const feed = ref<Record<string, any>[]>([...PRESEED_FEED])
-const fading = ref(false)
 
 let timer: ReturnType<typeof setTimeout> | null = null
 
-function play(index: number): void {
+function play(index: number, cycle: number): void {
   if (index >= STEPS.length) {
-    // Fade, reset to the preseed, replay.
-    fading.value = true
-    timer = setTimeout(() => {
-      pulse.value = [...PRESEED_PULSE]
-      feed.value = [...PRESEED_FEED]
-      fading.value = false
-      timer = setTimeout(() => play(0), 900)
-    }, 450)
+    // No reset: the loop wraps, and the story clock rolls forward a cycle so
+    // time never runs backwards in the pane.
+    play(0, cycle + 1)
 
     return
   }
@@ -43,25 +43,25 @@ function play(index: number): void {
   const step = STEPS[index]
 
   timer = setTimeout(() => {
-    pulse.value = [...pulse.value, ...step.lines].slice(-14)
+    pulse.value = [...shown(step.lines, cycle).reverse(), ...pulse.value].slice(0, 14)
 
     if (step.apply) {
       feed.value = step.apply(feed.value)
     }
 
-    play(index + 1)
+    play(index + 1, cycle)
   }, step.delay)
 }
 
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    pulse.value = finalPulse().slice(-14)
+    pulse.value = shown(finalPulse(), 0).reverse().slice(0, 14)
     feed.value = finalFeed()
 
     return
   }
 
-  play(0)
+  play(0, 0)
 })
 
 onBeforeUnmount(() => {
@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="sf-ticker" :class="{ 'sf-ticker--fading': fading }">
+  <div class="sf-ticker">
     <section class="sf-ticker__pane sf-ticker__pane--pulse">
       <header class="sf-ticker__label">your app</header>
       <PulseLog :lines="pulse" />
@@ -94,11 +94,6 @@ onBeforeUnmount(() => {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: 20px;
   margin: 2.5rem 0;
-  transition: opacity 0.45s ease;
-}
-
-.sf-ticker--fading {
-  opacity: 0;
 }
 
 @media (max-width: 720px) {

@@ -14,11 +14,27 @@ import { who, where, firm, doc, job, note, activity, group } from '../samples'
  */
 
 type FeedNode = Record<string, any>
-export type PulseLine = { time: string; text: string; kind: 'request' | 'event' | 'job' }
+export type PulseLine = { offset: number; text: string; kind: 'request' | 'event' | 'job' }
 export type Step = { delay: number; lines: PulseLine[]; apply?: (feed: FeedNode[]) => FeedNode[] }
 
 /** The demo's fixed "now": just after the last scene, so labels stay sensible. */
 export const DEMO_NOW = Date.parse('2026-08-14T14:34:00Z')
+
+/**
+ * The pulse clock. The loop never resets, so its clock must never repeat:
+ * offsets are seconds from the first upload, and each cycle advances the story
+ * clock by a fixed stride. Deterministic — cycle 0's stamps are what the
+ * prerender ships.
+ */
+const STORY_BASE = Date.parse('2026-08-14T14:31:02Z')
+
+const CYCLE_SECONDS = 360
+
+export function stamp(offset: number, cycle: number): string {
+  return new Date(STORY_BASE + (cycle * CYCLE_SECONDS + offset) * 1000)
+    .toISOString()
+    .slice(11, 19)
+}
 
 const at = (time: string) => `2026-08-14T${time}.000000Z`
 
@@ -107,10 +123,10 @@ export const PRESEED_FEED: FeedNode[] = [
 ]
 
 export const PRESEED_PULSE: PulseLine[] = [
-  { time: '14:28:30', text: 'POST /clients/1/projects', kind: 'request' },
-  { time: '14:28:30', text: 'ProjectCreated', kind: 'event' },
-  { time: '14:29:10', text: 'POST /projects/4/tasks', kind: 'request' },
-  { time: '14:29:10', text: 'TaskCreated', kind: 'event' },
+  { offset: -152, text: 'POST /clients/1/projects', kind: 'request' },
+  { offset: -152, text: 'ProjectCreated', kind: 'event' },
+  { offset: -112, text: 'POST /projects/4/tasks', kind: 'request' },
+  { offset: -112, text: 'TaskCreated', kind: 'event' },
 ]
 
 // ── The loop ─────────────────────────────────────────────────────────────────
@@ -121,50 +137,50 @@ const replace = (feed: FeedNode[], node: FeedNode) => {
   return [node, ...next].slice(0, 6)
 }
 
-const upload = (time: string): PulseLine[] => [
-  { time, text: 'POST /projects/4/documents', kind: 'request' },
-  { time, text: 'DocumentUploaded', kind: 'event' },
+const upload = (offset: number): PulseLine[] => [
+  { offset, text: 'POST /projects/4/documents', kind: 'request' },
+  { offset, text: 'DocumentUploaded', kind: 'event' },
 ]
 
 export const STEPS: Step[] = [
   // Scene A — the burst. One activity, then the SAME node re-told as a group
   // whose count ticks up: aggregation, demonstrated without a word.
-  { delay: 1600, lines: upload('14:31:02'), apply: (f) => replace(f, burstAt(1)) },
-  { delay: 2600, lines: upload('14:31:19'), apply: (f) => replace(f, burstAt(2)) },
-  { delay: 2200, lines: upload('14:31:31'), apply: (f) => replace(f, burstAt(3)) },
-  { delay: 2000, lines: upload('14:31:40'), apply: (f) => replace(f, burstAt(4)) },
+  { delay: 1600, lines: upload(0), apply: (f) => replace(f, burstAt(1)) },
+  { delay: 2600, lines: upload(17), apply: (f) => replace(f, burstAt(2)) },
+  { delay: 2200, lines: upload(29), apply: (f) => replace(f, burstAt(3)) },
+  { delay: 2000, lines: upload(38), apply: (f) => replace(f, burstAt(4)) },
 
   // Scene B — a comment, arriving with its preview.
   {
     delay: 3200,
     lines: [
-      { time: '14:31:48', text: 'POST /documents/88/comments', kind: 'request' },
-      { time: '14:31:48', text: 'CommentPosted', kind: 'event' },
+      { offset: 46, text: 'POST /documents/88/comments', kind: 'request' },
+      { offset: 46, text: 'CommentPosted', kind: 'event' },
     ],
     apply: (f) => replace(f, comment),
   },
 
   // Scene C — different people, one act: the actors axis takes over.
   { delay: 3000, lines: [
-      { time: '14:32:20', text: 'POST /documents/93/approve', kind: 'request' },
-      { time: '14:32:20', text: 'DocumentApproved', kind: 'event' },
+      { offset: 78, text: 'POST /documents/93/approve', kind: 'request' },
+      { offset: 78, text: 'DocumentApproved', kind: 'event' },
     ], apply: (f) => replace(f, approvalsAt(1)) },
   { delay: 2100, lines: [
-      { time: '14:32:34', text: 'POST /documents/94/approve', kind: 'request' },
-      { time: '14:32:34', text: 'DocumentApproved', kind: 'event' },
+      { offset: 92, text: 'POST /documents/94/approve', kind: 'request' },
+      { offset: 92, text: 'DocumentApproved', kind: 'event' },
     ], apply: (f) => replace(f, approvalsAt(2)) },
   { delay: 2100, lines: [
-      { time: '14:32:47', text: 'POST /documents/95/approve', kind: 'request' },
-      { time: '14:32:47', text: 'DocumentApproved', kind: 'event' },
+      { offset: 105, text: 'POST /documents/95/approve', kind: 'request' },
+      { offset: 105, text: 'DocumentApproved', kind: 'event' },
     ], apply: (f) => replace(f, approvalsAt(3)) },
 
   // Scene D — no request at all: a queued job, and an actor with no model.
   {
     delay: 3400,
     lines: [
-      { time: '14:33:04', text: 'Queued  SyncConcurExpenses', kind: 'job' },
-      { time: '14:33:05', text: 'Done    SyncConcurExpenses  412ms', kind: 'job' },
-      { time: '14:33:05', text: 'ExpenseSynced', kind: 'event' },
+      { offset: 122, text: 'Queued  SyncConcurExpenses', kind: 'job' },
+      { offset: 123, text: 'Done    SyncConcurExpenses  412ms', kind: 'job' },
+      { offset: 123, text: 'ExpenseSynced', kind: 'event' },
     ],
     apply: (f) => replace(f, synced),
   },
@@ -173,14 +189,14 @@ export const STEPS: Step[] = [
   {
     delay: 3200,
     lines: [
-      { time: '14:33:40', text: 'POST /projects/3/members', kind: 'request' },
-      { time: '14:33:40', text: 'MemberJoined', kind: 'event' },
+      { offset: 158, text: 'POST /projects/3/members', kind: 'request' },
+      { offset: 158, text: 'MemberJoined', kind: 'event' },
     ],
     apply: (f) => replace(f, joined),
   },
 
-  // Hold the finished story, then the orchestrator resets and replays.
-  { delay: 6000, lines: [] },
+  // A breath before the next cycle begins — the loop wraps, never resets.
+  { delay: 4000, lines: [] },
 ]
 
 /** The state the loop ends on — also what reduced-motion visitors see. */
