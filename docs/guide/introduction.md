@@ -103,19 +103,44 @@ foreach ($documents as $document) {
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## The same act by different people
+## Concurrent actions within a shared context
 
-Five users upload documents to the same project.
+Five users upload to the same project, each from their own request, minutes apart.
+Nothing coordinates them.
 
 ```php
-foreach ($uploads as [$user, $document]) {
-    Storyfeed::activity()
-        ->by($user)
-        ->action('upload', $document)
-        ->to($project)
-        ->publish();
-}
+// Ines, 14:31
+Storyfeed::activity()
+    ->by($user)
+    ->action('upload', $document)
+    ->to($project)
+    ->publish();
 ```
+
+*a minute later, another request*
+
+```php
+// Marcus, 14:32
+Storyfeed::activity()
+    ->by($user)
+    ->action('upload', $document)
+    ->to($project)
+    ->publish();
+```
+
+*three minutes later, another request*
+
+```php
+// Priya, 14:35
+Storyfeed::activity()
+    ->by($user)
+    ->action('upload', $document)
+    ->to($project)
+    ->publish();
+```
+
+Each call knows only its own activity. The grouping is worked out as each one is
+written, so the feed arrives already collapsed:
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
