@@ -26,13 +26,10 @@ import LandingTicker from './.vitepress/theme/demo/LandingTicker.vue'
 </script>
 
 <p class="sf-pitch">
-Storyfeed records what happens in your Laravel app — who did what, to what —
-and reads it back as an activity feed. Recording is one explicit call; there is
-no model spying. Grouping happens as activities are written, so seven uploads
-arrive as one story, and the same history reads at three granularities: a raw
-log, live grouping, or a summary. Every item ships its own headline template
-and linked entities, so the feed renders with any stack. Below, a live Laravel
-app and the feed recorded from it:
+Curate the activity from your app into a rich stream of stories. Storyfeed
+records what happens — who did what, to what — and reads it back as the feed
+your users expect: a raw log, live grouping, or a summary. Below, a live
+Laravel app and the feed recorded from it:
 </p>
 
 <LandingTicker />
