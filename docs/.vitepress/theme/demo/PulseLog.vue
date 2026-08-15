@@ -41,8 +41,8 @@ const GLYPHS: Record<string, string> = {
   font-family: var(--vp-font-family-mono);
   font-size: 12px;
   line-height: 1.9;
-  background: #242b38;
-  color: #8b98ab;
+  background: #323b4a;
+  color: #a2aebe;
 }
 
 .sf-pulse__line {
@@ -71,7 +71,7 @@ const GLYPHS: Record<string, string> = {
 }
 
 .sf-pulse__time {
-  color: #64748b;
+  color: #98a8bc;
 }
 
 .sf-pulse__glyph {
@@ -80,7 +80,7 @@ const GLYPHS: Record<string, string> = {
 }
 
 .sf-pulse__line--request .sf-pulse__text {
-  color: #aab6c6;
+  color: #c0cad6;
 }
 
 .sf-pulse__line--event .sf-pulse__glyph,

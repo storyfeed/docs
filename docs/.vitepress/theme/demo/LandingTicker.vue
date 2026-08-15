@@ -161,8 +161,8 @@ onBeforeUnmount(() => {
 }
 
 .sf-ticker__pane--pulse {
-  background: #242b38;
-  border-color: #3b4657;
+  background: #323b4a;
+  border-color: #4b586c;
 }
 
 .sf-ticker__pane--story {
@@ -181,8 +181,8 @@ onBeforeUnmount(() => {
 }
 
 .sf-ticker__pane--pulse .sf-ticker__label {
-  color: #7d8a9c;
-  border-color: #3b4657;
+  color: #97a4b5;
+  border-color: #4b586c;
 }
 
 .sf-ticker__live {
