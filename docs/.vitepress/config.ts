@@ -109,8 +109,8 @@ export default defineConfig({
     outline: 'deep',
 
     footer: {
-      message: 'Released under the MIT License. Everything MIT today stays MIT.',
-      copyright: 'Built by <a href="https://teylabs.com">Tey Labs</a>',
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2026–present <a href="https://teylabs.com">Tey Labs</a>',
     },
   },
 })
