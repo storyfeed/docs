@@ -31,24 +31,10 @@ features:
 ---
 
 <script setup>
-import { who, where, doc, activity, group } from './.vitepress/theme/samples'
-
-const nodes = [
-  activity({
-    id: 'h1', verb: 'upload', icon: 'file-up',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
-  }),
-  group({
-    id: 'h2', verb: 'upload', axis: 'actors', count: 5, icon: 'file-up',
-    published_at: '2026-08-14T14:28:00.000000Z',
-    headline_template: ':actors uploaded :count files to :target',
-    actors: [who.ines, who.marcus, who.priya], targets: [where.passwordCrackdown],
-    distinct: { actors: 5, objects: 5, targets: 1 },
-  }),
-]
+import LandingTicker from './.vitepress/theme/demo/LandingTicker.vue'
 </script>
+
+<LandingTicker />
 
 ```php
 Storyfeed::activity()
@@ -59,8 +45,6 @@ Storyfeed::activity()
 
 $project->storyfeed()->get();
 ```
-
-<FeedStream :items="nodes" :grouped="false" />
 
 ::: important Pre-1.0
 The payload contract is a freeze candidate; authoring APIs may still shift.
