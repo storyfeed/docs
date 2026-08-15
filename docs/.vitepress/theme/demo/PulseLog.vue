@@ -8,7 +8,7 @@
  * Deliberately machine-gray and monospace — the whole demo is the contrast
  * between this pane and the feed, so this one must not be pretty.
  */
-defineProps<{ lines: { time: string; text: string; kind: 'request' | 'event' | 'job' }[] }>()
+defineProps<{ lines: { time: string; text: string; kind: 'request' | 'event' | 'job'; status?: number }[] }>()
 
 const GLYPHS: Record<string, string> = {
   request: '→',
@@ -28,7 +28,7 @@ const GLYPHS: Record<string, string> = {
       <span class="sf-pulse__time">{{ line.time }}</span>
       <span class="sf-pulse__glyph">{{ GLYPHS[line.kind] }}</span>
       <span class="sf-pulse__text">{{ line.text }}</span>
-      <span v-if="line.kind === 'request'" class="sf-pulse__status">201</span>
+      <span v-if="line.status" class="sf-pulse__status">{{ line.status }}</span>
     </div>
   </div>
 </template>
