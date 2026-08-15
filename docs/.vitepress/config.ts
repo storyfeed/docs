@@ -27,8 +27,12 @@ export default defineConfig({
   themeConfig: {
     logo: '/logo.svg',
 
+    // The trifecta convention: every site's chrome links the other two, same
+    // order everywhere — storyfeed.dev pitches, this site teaches, the
+    // Newsroom proves.
     nav: [
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
+      { text: 'storyfeed.dev', link: 'https://storyfeed.dev' },
       { text: 'Live demo', link: 'https://newsroom.storyfeed.dev' },
       {
         text: 'v0.x',
