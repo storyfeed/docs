@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Storyfeed
   text: Activity streams for Laravel
-  tagline: The activity feed pattern — timeline, aggregation, Activity Streams 2.0 — for your Laravel app.
+  tagline: Turn your app's activity into a rich stream of stories.
   image:
     src: /logo.svg
     alt: Storyfeed
@@ -19,15 +19,6 @@ hero:
       text: Live demo
       link: https://newsroom.storyfeed.dev
 
-features:
-  - title: Explicit recording
-    details: A typed API for publishing activities. You choose what makes the feed — no model spying.
-  - title: Self-describing payload
-    details: Entity snapshots kill polymorphic N+1s. Every item ships its own headline template, icon, and linked entities.
-  - title: Aggregation
-    details: Activities collapse into stories ("…and 3 others") — with headlines that only claim what is true of the group.
-  - title: Activity Streams 2.0
-    details: Spec-conformant JSON-LD with a published @context. ActivityPub on the long-range roadmap.
 ---
 
 <script setup>
@@ -35,16 +26,6 @@ import LandingTicker from './.vitepress/theme/demo/LandingTicker.vue'
 </script>
 
 <LandingTicker />
-
-```php
-Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
-    ->publish();
-
-$project->storyfeed()->get();
-```
 
 ::: important Pre-1.0
 The payload contract is a freeze candidate; authoring APIs may still shift.
