@@ -71,8 +71,57 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 12. **String-first, sentence-shaped.** Canonical examples use plain strings and
     self-describing variables; typed layers (enums, Story classes) arrive
     afterwards as an improvement on working code. A recording example reads in
-    the same order as the headline it produces:
-    `->actor($user)->verb('upload', $file)->to($project)`.
+    the same order as the headline it produces, and showcase pages use the
+    sugar — the chain IS the pitch:
+    `->by($user)->action('upload', $file)->to($project)`. One register per
+    page: mixing `->to($project)` with `->target($document)` in adjacent
+    examples makes the reader reconcile two spellings of one slot. The
+    long-hand (`actor()`, `verb()`, `target()`, `context()`) is documented once,
+    in Recording.
+
+13. **Never truncate content.** An example's text is the information — a
+    comment whose label is a whole sentence is *teaching* that a comment's label
+    is its body. No `Str::limit`, no ellipsis, no CSS clipping; a long value
+    wraps or takes its own row. Where the demo app truncates for its UI, the
+    docs diverge and the divergence is deliberate.
+14. **Examples are rendered by the real components, from payload-shaped data.**
+    A feed in the docs is the ported kit reading node-shaped samples — never a
+    mocked blockquote, never prose pretending to be output. Sample data carries
+    the contract's full entity shape (an inline subset is how the comment
+    preview silently broke), and every mock name and string lives in ONE
+    manifest (`theme/manifest.ts`) so recasting the docs is one edit.
+15. **Snippet, then its output.** What a code block produces is shown directly
+    beneath it, rendered, in a well that lines up with the code block (same
+    radius and rhythm, page-coloured inside a ring, muted `output` corner tag).
+    The output is of THIS snippet — not a more advanced scenario the snippet
+    does not produce. Showcase examples follow three beats: one plain-English
+    sentence describing the incoming request, the recording, the published
+    output.
+16. **Snippets show the real shape of the requests.** Activities arrive from
+    separate requests at different moments — so show separate publishes with
+    time-passing captions ("*a minute later, another request*"), not a
+    `foreach` that implies one request did it all. A loop is only shown when
+    one request genuinely loops.
+17. **Annotations are editorial overlay, and look it.** Docs commentary on a
+    rendered node goes in the kit's `annotations` slot inside the callout
+    chrome (`Annotation.vue`) — notch, mono tab, and a tone that is
+    deliberately OFF-brand, because amber is the product's voice and the
+    annotation is the narrator's. Never repurpose the `body` slot: that is the
+    app's, and stealing it cost the comment example its preview.
+18. **An annotation maps exactly the vocabulary introduced so far.** Fixed key
+    set, fixed order, nothing added, nothing dropped — and an empty slot shows
+    `null` rather than vanishing, so every example in a section has the same
+    shape and the column scans. Entity values print `type · label`, because a
+    bare label is ambiguous. Vocabulary is progressive across sections (the
+    anatomy page teaches three roles before context exists); a section's
+    annotations never leak a term a later section introduces.
+19. **The sample world is ultra-simple, nothing clever.** The person type is
+    `user` — the word a developer reads without translating — regardless of
+    what the demo app calls it. Prose names parts, not cast members ("A user
+    uploads a document"), because prose is the one thing the manifest cannot
+    reach and named prose goes stale on recast. No role words in showcase
+    headings ("on the same project", not "on a shared target") — role
+    vocabulary starts where it is taught.
 
 ### When a callout is earned — Silent / Unguarded / In-Hand
 
