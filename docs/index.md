@@ -26,8 +26,7 @@ import LandingTicker from './.vitepress/theme/demo/LandingTicker.vue'
 </script>
 
 <p class="sf-pitch">
-Your app already produces the activity. Storyfeed turns it into a rich stream
-of stories — live, from a real Laravel app:
+A live Laravel app, and the feed Storyfeed records from it:
 </p>
 
 <LandingTicker />
