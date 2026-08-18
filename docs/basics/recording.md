@@ -106,7 +106,8 @@ Storyfeed::activity()->action('save', $draft)->replace()->publish();
 
 **The object and the verb — `data` is not part of the key**, and the superseded
 rows are hard-deleted. No cursor, no read mode and no curated view brings them
-back.
+back. (`->publishAndReplace()` is the same thing in one call; everything below
+applies to it identically.)
 
 That makes one plausible-looking shape destructive: a single `updateStatus` verb
 carrying `data: ['from' => …, 'to' => …]` supersedes its *own* previous
