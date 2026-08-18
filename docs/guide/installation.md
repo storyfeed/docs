@@ -11,16 +11,22 @@
 ## Install
 
 ```bash
-composer require storyfeed/storyfeed:^0.8@alpha
+composer require storyfeed/storyfeed:0.8.0-alpha.2
 ```
 
 The service provider and `Storyfeed` facade register via package discovery.
 
-::: tip
-Storyfeed is pre-1.0, so the `@alpha` flag lets Composer see the tag without
-loosening `minimum-stability` for your whole project. From the first stable tag
-this becomes plain `composer require storyfeed/storyfeed`.
-:::
+The pin is exact on purpose. A `0.x` minor is free to break without a
+deprecation cycle — see [Stability before
+1.0](/reference/compatibility#stability-before-1-0) — so a range would promise a
+compatibility this package does not offer, and `^0.8@alpha` would have carried
+an app through two renaming waves in one week. Upgrading is a decision you make:
+change the constraint, read the [upgrade notes](/guide/upgrading), run
+`storyfeed:doctor`.
+
+A version carrying a stability suffix is its own stability flag, so this needs
+no `@alpha` and no change to your project's `minimum-stability`. From the first
+stable tag it becomes plain `composer require storyfeed/storyfeed`.
 
 ## Migrations
 

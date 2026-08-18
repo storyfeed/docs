@@ -103,16 +103,11 @@ group counts and the distinct-role counts behind `:actors and 3 others`
 recompute inside the filter. A group whose members are all excluded produces no
 node.
 
-When a filter is active, `query()` callbacks are wrapped in their own group
-before it is applied — a top-level `orWhere` in a callback cannot readmit an
-excluded verb. Feeds that never filter generate the SQL they always did.
+A [`query()` callback](/basics/reading#anything-else-query) is wrapped in its
+own group, so a top-level `orWhere` inside one cannot readmit an excluded verb
+— or reach past the scope a name was entered with.
 
 ## Feed classes
-
-::: warning Available on `main`
-Feed classes and `make:feed` land in the release after `v0.8.0-alpha.1`. On a
-tagged install, presets and `only()` / `except()` are the whole surface.
-:::
 
 A closure runs at boot, before any order exists, so it can carry verbs but not a
 subject. A class takes its subject as a constructor argument:
@@ -152,9 +147,24 @@ Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
 `make()` is `new static(...)`, so the subject is a typed constructor argument
 and the language does the work: `CustomerFeed::make()` is an
 `ArgumentCountError` and `CustomerFeed::make($user)` a `TypeError`. Both fail on
-the first call, unconditionally. `new CustomerFeed` is flagged by PHPStan and
-your IDE before it runs; `make()` forwards variadically, so a missing argument
-there surfaces at runtime.
+the first call, unconditionally.
+
+They also fail in CI. `make()` forwards variadically to a constructor that
+varies by subclass, which is what an analyser sees — so the package ships a
+PHPStan rule that resolves the call against the constructor it will actually
+reach and checks the arity where the call is written:
+
+```
+CustomerFeed::make() invoked with 0 arguments, 1 required —
+CustomerFeed::__construct() declares ($customer). A Feed takes its subject
+through the constructor, so this is an unscoped feed: it would throw
+ArgumentCountError on the first call.
+```
+
+It arrives with the package through `phpstan/extension-installer`, with no
+configuration. Arity only — argument types are already PHPStan's business — and
+it stays quiet where it cannot be certain: spread arguments, named arguments,
+`static::make()`, abstract classes.
 
 A class that takes a subject has no unscoped entry, including by name:
 
@@ -181,7 +191,7 @@ A role filter is a single-slot assignment — a second `involving()` replaces th
 first — so the role a `scope()` binds cannot be rebound:
 
 ```php
-CustomerFeed::make($order)->context($other);                     // throws
+CustomerFeed::make($order)->context($other);                     // throws FeedMisconfigured
 CustomerFeed::make($order)->only(['order.placed'])->summary();   // fine
 ```
 

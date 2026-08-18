@@ -59,7 +59,7 @@ node's *shape* is frozen.
 
 | key | default | |
 |---|---|---|
-| `routes.enabled` | `false` | opt-in, read-only endpoints |
+| `routes.enabled` | `false` | opt-in, read-only single-activity endpoint |
 | `routes.prefix` | `'storyfeed'` | **also mints activity IRIs** — changing it changes document ids |
 | `routes.middleware` | `[]` | add auth/throttling here |
 

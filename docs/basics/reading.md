@@ -121,13 +121,27 @@ The constraint reaches the **whole** read, not just the page: group children and
 the counts behind `:actors and 3 others` are built from the same query. Exclude
 one member of a group of four and you get a group of three whose children match.
 
-Two rules:
+Three rules:
 
 - **Do not `limit()` or `offset()` inside the callback** — it throws. That would
   cut the candidate set before grouping and curation ran, producing a page that
   looks right and is not. Size the page with `limit()` on the builder.
 - **Ordering is ignored.** The read owns its own ordering, because that is what
   the cursor encodes a position in.
+- **A callback narrows and can never widen.** Each one is wrapped in its own
+  group, which then ANDs against the publish gate, the scope and any verb
+  allowlist. A top-level `orWhere` inside a callback therefore constrains the
+  callback's own group rather than becoming a sibling of the scope:
+
+  ```php
+  // reaches nothing outside the project: the OR is confined to this group
+  $project->storyfeed()
+      ->query(fn (ActivityBuilder $q) => $q->where('verb', 'upload')->orWhere('verb', 'revise'))
+      ->get();
+  ```
+
+  To read a wider set, read it — a second feed, or a callback that names the
+  whole set inside its own closure.
 
 Pass the same callback on every page of a paginated feed — same rule as every
 other filter, see [A cursor belongs to the query that made
