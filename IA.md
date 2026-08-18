@@ -50,13 +50,14 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
    site; prose about the code does not. So: a caveat about code is a comment
    *inside the snippet*; about a command, a trailing `#`; about payload shape, a
    cell in the shape's table. A standalone callout has to earn it — see the test
-   below. Prefer **GitHub-flavored alerts** (`> [!NOTE]`, `> [!TIP]`,
-   `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`) — they render natively and
-   their semantics are already known to every reader. `[!NOTE]` for something to
-   take in even when skimming; `[!IMPORTANT]` only when success depends on it;
-   `[!WARNING]`/`[!CAUTION]` only for real risk. A distinction between two terms
-   is a `[!NOTE]`, never a warning. No callout instructs the reader to audit, resist, or never; show the
-   correct line instead. Callout titles are sentence case, or absent.
+   below. **One spelling: VitePress containers** (`::: tip`, `::: warning`,
+   `::: danger`), because two spellings of one device inside a page read as an
+   accident, and the severity vocabulary below is the container vocabulary.
+   `::: tip` for something to take in even when skimming, and for a distinction
+   between two terms — a distinction is never a warning. `::: warning` and
+   `::: danger` only for real risk, graded by the test below. No callout
+   instructs the reader to audit, resist, or never; show the correct line
+   instead. Callout titles are sentence case, or absent.
 10. **Say it once.** One canonical home per fact, plus a pointer — one sentence
     or a code comment — on every page that literally prints the triggering line
     of code or command. Count those pages; that is the number of homes.

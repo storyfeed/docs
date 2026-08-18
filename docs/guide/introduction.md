@@ -143,15 +143,15 @@ task created inside a project:
   </template>
 </FeedStream>
 
-> [!NOTE]
-> **Target and context are different roles.** Target is what the act was aimed at;
-> context is where it happened. A comment on a document has the **document** as its
-> target and the **project** as its context — both true of the same activity, and
-> neither substitutes for the other.
->
-> They are often the **same** entity, and that is normal: a file uploaded to a
-> project was both aimed at the project and inside it. Filling both with the same
-> model is a perfectly ordinary activity.
+::: tip Target vs context
+Target is what the act was aimed at; context is where it happened. A comment on a
+document has the **document** as its target and the **project** as its context —
+both true of the same activity, and neither substitutes for the other.
+
+They are often the **same** entity, and that is normal: a file uploaded to a
+project was both aimed at the project and inside it. Filling both with the same
+model is a perfectly ordinary activity.
+:::
 
 ## 3. Why the raw list stops working
 
@@ -182,11 +182,12 @@ The same stretch, read as a **summary**:
 Aiko's scattered uploads are now one line, and finding them took no work at all.
 Producing that is **aggregation**: collapsing several activities into one telling.
 
-> [!NOTE]
-> This is a legibility change, not a compression ratio. Those collapsed nodes count
-> activities from before 14:44 as well — the `12 tasks` group reaches back past the
-> window — so "eighteen rows became five lines" would be false. What changed is that
-> one coherent piece of work is now visible in one glance.
+::: tip
+This is a legibility change, not a compression ratio. Those collapsed nodes count
+activities from before 14:44 as well — the `12 tasks` group reaches back past the
+window — so "eighteen rows became five lines" would be false. What changed is that
+one coherent piece of work is now visible in one glance.
+:::
 
 One of those axes is not built in: `scene` is a **custom axis** the demo app
 registered for itself, grouping by project. [Aggregation](/deeper/aggregation)
