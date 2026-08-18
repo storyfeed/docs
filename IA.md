@@ -200,6 +200,14 @@ recording first fails silently rather than loudly.
 
 ## Notes
 
+- **The pre-1.0 status is chrome, not a page.** A reader arrives from a search
+  engine on a deep page and never sees the introduction, so the status rides in
+  `layout-top` on every route (`theme/components/StabilityBanner.vue`) and
+  points at its one canonical home, Compatibility → Stability before 1.0. It
+  does not replace a per-page version callout: the banner answers "how settled
+  is any of this", a page callout answers "does this snippet run on the install
+  the site documents", and only the second can name an API. A page documenting
+  something not in the current tag still carries its own callout.
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that

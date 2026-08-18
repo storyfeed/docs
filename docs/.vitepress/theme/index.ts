@@ -1,10 +1,12 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
+import { h } from 'vue'
 import FeedStream from './feed/FeedStream.vue'
 import FeedNode from './feed/FeedNode.vue'
 import SlotMapping from './components/SlotMapping.vue'
 import FeedBody from './components/FeedBody.vue'
 import Annotation from './components/Annotation.vue'
+import StabilityBanner from './components/StabilityBanner.vue'
 import { FEED_NOW } from './feed/keys'
 import './feed/feed.css'
 import './custom.css'
@@ -27,6 +29,11 @@ const DOCS_NOW = Date.parse('2026-08-14T15:00:00Z')
 // and the payload contract cannot drift apart.
 export default {
   extends: DefaultTheme,
+  // The pre-1.0 notice rides in `layout-top`, above the nav, so it is on every
+  // route rather than only on the pages a reader enters through.
+  Layout: () => h(DefaultTheme.Layout, null, {
+    'layout-top': () => h(StabilityBanner),
+  }),
   enhanceApp({ app }) {
     app.component('FeedStream', FeedStream)
     app.component('FeedNode', FeedNode)

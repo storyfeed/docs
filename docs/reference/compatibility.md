@@ -21,14 +21,43 @@ Two things version independently:
 
 A renderer built against payload v1 keeps working across package majors.
 
-## Pre-1.0
+## Stability before 1.0
 
-Storyfeed is pre-1.0. Concretely:
+Storyfeed is pre-1.0 and genuinely unfinished. It is not marketed, not
+announced, and the author is currently its only user. Anyone who finds it is
+welcome to build on it, at their own risk — which is a real risk here, not
+boilerplate.
 
-- The payload contract is a **freeze candidate** — treat its shape as stable.
-- Authoring APIs may still shift, with the change named in the upgrade notes.
+| | |
+|---|---|
+| **breaking changes** | ship without a deprecation cycle and without a major bump. The version is `0.x` so that they can |
+| **these docs** | change with the code and can lag it. A page describing a method renamed yesterday is a bug worth reporting, not a promise to plan around |
+| **installing** | pin an exact commit or tag, never a range. `dev-main` is a moving target by design |
+| **design decisions** | get reversed — in the open, with the reasoning written down, sometimes within days |
+
+The evidence for those, rather than a disclaimer standing in for it: two
+renaming waves landed in one week — `for()` became `involving()` on the read
+side, and `flat`/`grouped`/`curated` became `log`/`live`/`summary` — and a
+licensing decision was reversed four days after it was taken.
+
+Also true, and unchanged by the above:
+
 - Schema changes ship as additive `add_*` migrations; one consolidation at 1.0.
 - Unknown read modes and config values **throw**, naming their replacement.
+- Every rename lands in the [upgrade notes](/guide/upgrading) with its
+  replacement.
+
+### What does not move
+
+**The payload contract.** It versions independently of the package — see
+[Versioning](#versioning) above — and it is a freeze candidate: treat its shape
+as stable and build renderers against it. It hardens early and stays hard while
+everything behind it moves, which is what makes the rest of this section
+affordable. The package can change its mind because the contract does not.
+
+**The MIT commitment.** Instability is about the API surface. It is not a
+licence to walk back what has been published — see [Licensing](#licensing)
+below.
 
 ## Licensing
 
