@@ -404,8 +404,10 @@ method call.
 
 ## License
 
-MIT, and everything MIT today stays MIT — see
-[Compatibility](/reference/compatibility#licensing). Building your own renderer
+MIT — this package and `storyfeed/ui`, and what is MIT stays MIT. One adapter,
+the Filament plugin, is a separate commercial package; the full model and the
+reasoning are on [Compatibility](/reference/compatibility#licensing). Building
+your own renderer
 against the payload contract is expected; the [quickstart](/guide/quickstart)
 ends with one in plain Blade.
 

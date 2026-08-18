@@ -32,9 +32,47 @@ Storyfeed is pre-1.0. Concretely:
 
 ## Licensing
 
-MIT, and everything MIT today stays MIT — the core and `storyfeed/ui` alike.
-Nothing here moves behind a licence later.
+| package | licence | where |
+|---|---|---|
+| `storyfeed/storyfeed` — the core, documented here | MIT | Packagist |
+| `storyfeed/ui` — Vue/Inertia + Blade feed components | MIT | Packagist |
+| `storyfeed/filament` — the Filament plugin | commercial, ~$49 one-time | Anystack: a licence key and a private Composer endpoint |
+
+**What is MIT stays MIT** — the core and `storyfeed/ui` alike. Neither moves
+behind a licence later.
 
 `storyfeed/ui` is funded by sponsorship rather than sold: sponsorship sets how
 many adapters it reaches, not who may use it. Unsponsored it ships Vue/Inertia
-and Filament; sponsored, Livewire, Blade components and React become reachable.
+and Blade components; sponsored, Livewire and React become reachable.
+
+### The Filament plugin is paid, and this page used to say otherwise
+
+Until **2026-08-18** this page promised the Filament adapter as part of MIT
+`storyfeed/ui`. It is now `storyfeed/filament`: a separate repository,
+commercial from its first commit, not yet built. That narrows something already
+written down in public, so it is explained here rather than quietly edited.
+
+- **The pattern stays free, end to end.** The core plus `storyfeed/ui` render a
+  real feed — recording, reads, grouping, curation, the payload contract and
+  components that consume it — with nothing withheld. A package you cannot see
+  working is not worth learning.
+- **Filament is the one corner of this ecosystem with a working paid-plugin
+  market**: a directory, a habit of paying, buyers with a budget line. Charging
+  there is an ordinary transaction, not a toll booth bolted onto an open-source
+  project.
+- **What the plugin sells is live-feed correctness and Filament-native
+  components.** Reconcile by node identity rather than list position; drop and
+  refetch when the `sync_token` changes; an empty page is not the end of the
+  feed; follow with a live cursor. Rules every consumer gets wrong
+  independently, worth getting right once on everyone's behalf and keeping right
+  as Filament moves.
+- **What it does not sell is safety.** Deciding which verbs an audience may see
+  — the thing that makes a customer-facing feed trustworthy — shipped in the
+  **MIT core** on the same day, as named feed presets with per-verb allow and
+  deny lists and a doctor check that insists every verb be decided. Nothing that
+  makes a feed safe to show will ever live in a paid package. If it did, the
+  free core could not honestly ship a customer-facing feed at all.
+- **Now is the only moment this costs nobody.** No release anyone depends on, no
+  installs, no adopters — there is nobody whose plans this breaks. The same
+  change after the package has users would be a bait and switch, so it is being
+  made before, in the open, with the reasoning attached.

@@ -197,7 +197,13 @@ recording first fails silently rather than loudly.
 
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
-- Anything describing `storyfeed/ui` waits until that package exists.
+- Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
+  package exists. When the `storyfeed/filament` page lands it is a **pricing and
+  install** page — what it costs, the licence key, the private Composer endpoint
+  — not a normal package page; the free-versus-paid model and its reasoning stay
+  on Compatibility. Nothing about keeping a feed safe to show belongs on it:
+  audience scoping is in the MIT core, and pricing copy must never imply
+  otherwise.
 - The 2023 scaffold's sidebar anticipated much of this structure; what it got
   wrong was exposing internals (`FeedActivity` etc.) as user-facing pages — the
   contract is the public surface, the models are not.

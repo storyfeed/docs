@@ -11,7 +11,7 @@
 ## Install
 
 ```bash
-composer require storyfeed/storyfeed:^0.6@alpha
+composer require storyfeed/storyfeed:^0.8@alpha
 ```
 
 The service provider and `Storyfeed` facade register via package discovery.

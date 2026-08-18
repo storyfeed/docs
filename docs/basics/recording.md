@@ -99,8 +99,38 @@ Storyfeed::activity()
 replaces the earlier row rather than duplicating it:
 
 ```php
-Storyfeed::activity()->action('update', $document)->replace()->publish();
+Storyfeed::activity()->action('save', $draft)->replace()->publish();
 ```
+
+### What `->replace()` matches on
+
+**The object and the verb — `data` is not part of the key**, and the superseded
+rows are hard-deleted. No cursor, no read mode and no curated view brings them
+back.
+
+That makes one plausible-looking shape destructive: a single `updateStatus` verb
+carrying `data: ['from' => …, 'to' => …]` supersedes its *own* previous
+transition, because every transition shares the same object and verb. Seven
+states in, one line out, and the survivor is whichever fired last.
+
+For a lifecycle, use **a verb per transition, and keep `->replace()`**:
+
+```php
+Storyfeed::activity()->action('order.confirmed', $order)->replace()->publish();
+Storyfeed::activity()->action('order.cooking', $order)->replace()->publish();
+Storyfeed::activity()->action('order.ready', $order)->replace()->publish();
+```
+
+Distinct verbs never collide, so each transition stays idempotent against itself
+— a double-clicked button or a retried webhook still collapses — and inert
+toward its neighbours. The narrative survives in full, and you keep the tooling:
+[grammar](/deeper/grammar) templates and icons are registered per verb, and
+`storyfeed:verbs` and doctor's `verbs` check key on the verb too. One verb for a
+seven-state machine gives all of them one thing to say about seven facts.
+
+One verb plus `->replace()` is still the right answer where the past instances
+are genuinely noise: `save` on a draft, `viewed`, a heartbeat, "location
+updated". Latest-wins state, not a story anyone reads.
 
 ## Recording from the verb enum
 
