@@ -68,6 +68,10 @@ The narrower filters answer narrower questions:
 
 Scopes combine.
 
+A scope selects rows; it says nothing about which verbs a surface may show, and
+a read never hides an activity from a viewer. Both halves are declared together,
+per audience, with [named feeds](/basics/named-feeds).
+
 ::: tip Involving vs context
 `context()` is the container question, and it misses an entity's own lifecycle:
 "project created" records the project as the **object**, so a context-scoped

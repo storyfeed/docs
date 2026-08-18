@@ -69,6 +69,7 @@ export default defineConfig({
           { text: 'Story classes', link: '/basics/stories' },
           { text: 'Recording activities', link: '/basics/recording' },
           { text: 'Reading feeds', link: '/basics/reading' },
+          { text: 'Named feeds', link: '/basics/named-feeds' },
           { text: 'Rendering', link: '/basics/rendering' },
           { text: 'A live renderer', link: '/basics/live-renderer' },
         ],

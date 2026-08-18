@@ -170,6 +170,19 @@ Three read modes:
 | `->live()` | mechanical grouping over the active window |
 | `->summary()` | the collapsed best-axis view — **the default** |
 
+A read selects; it never hides. Nothing beneath the read path filters an
+activity out for a viewer, so an app with more than one audience decides
+visibility twice — by what it records, and by the scope and verbs each surface
+reads through:
+
+```php
+// the same order, for the customer who placed it
+$page = Storyfeed::feed('customer')->involving($order)->limit(20)->get();
+```
+
+[Named feeds](/basics/named-feeds) declare that per audience, once, before the
+second audience exists.
+
 Paginate by handing `next_cursor` back:
 
 ```php

@@ -401,15 +401,19 @@ method call.
 - **The payload is a versioned contract.** Every item ships its own headline
   template, icon, and linked entities. Adding a new activity type never
   requires a frontend change.
+- **A read selects; it never hides.** There is no visibility layer beneath the
+  read path. What a surface may show is decided twice — by what you record, and
+  by the scope and verbs it reads through. An app with more than one audience
+  declares the second half per audience with
+  [named feeds](/basics/named-feeds).
 
 ## License
 
 MIT — this package and `storyfeed/ui`, and what is MIT stays MIT. One adapter,
 the Filament plugin, is a separate commercial package; the full model and the
 reasoning are on [Compatibility](/reference/compatibility#licensing). Building
-your own renderer
-against the payload contract is expected; the [quickstart](/guide/quickstart)
-ends with one in plain Blade.
+your own renderer against the payload contract is expected; the
+[quickstart](/guide/quickstart) ends with one in plain Blade.
 
 ## Next
 

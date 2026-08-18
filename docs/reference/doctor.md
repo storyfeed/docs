@@ -19,6 +19,7 @@ your feed. Findings name the fix, not just the fault.
 | `tokens` | does any aggregate template use a token its axis doesn't pin? (the anti-lie rule) |
 | `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) |
 | `surface` | models that appear in the feed but that nothing publishes about |
+| `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? |
 | `parties` | party rows whose morph alias no longer resolves |
 | `participants` | activities missing from the index `involving()` reads (an install that upgraded into it) |
 | `tables` | are the package tables present? |
@@ -28,6 +29,25 @@ your feed. Findings name the fix, not just the fault.
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? |
 | `manifest` | is the cached story manifest stale relative to your code? |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one |
+
+## Feed coverage
+
+The `feeds` check reports four findings, all at warning severity:
+
+| finding | means |
+|---|---|
+| `feeds.unclassified` | a verb is named by no restricted feed, so nobody decided who may see it. Names no feed — it is the absence of one |
+| `feeds.unknown_verb` | a feed names a verb that is neither registered nor recorded. Usually a typo, and a typo in an allowlist drops the real verb from that feed |
+| `feeds.none_restricted` | feeds are registered, but none restricts anything |
+| `feeds.preset_failed` | a preset threw while doctor inspected it, so the verbs it decides are unchecked. A `define()` reading constructor state lands here |
+
+The verb vocabulary is your registered verbs plus the verbs actually in
+`feed_activities`, because the verb nobody declared is the one that leaks. An
+open feed — calling neither `only()` nor `except()` — classifies nothing, and an
+app that never calls `Storyfeed::feeds()` gets no findings from this check.
+
+Findings that name a feed end with where it was declared, file and line, for
+classes and closures alike.
 
 ## From findings to code
 

@@ -169,6 +169,10 @@ recording first fails silently rather than loudly.
 - ✅ Story classes — anatomy, `make:story`, registration, compilation
 - ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
 - ✅ Reading feeds — the builder, scoping, read modes, pagination
+- ✅ Named feeds — `Storyfeed::feeds()`, `only()`/`except()`, `Feed` classes,
+  `make:feed`, and what a name is not. Sits directly after Reading because it is
+  the same builder and the reader needs the scope half in hand before a second
+  audience exists; the doctor findings it produces live in Reference, not here
 - ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines; reconciliation
 - ✅ A live renderer — Vue: reconciliation in code, sync_token, bounded empty-page loop
   (written by the Newsroom agent against production; the parts a static template cannot show)

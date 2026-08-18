@@ -52,3 +52,9 @@ makes every accumulating client resync.
 | command | does |
 |---|---|
 | `make:story` | creates a story class. `--from-doctor` generates a stub per gap doctor found |
+| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()` |
+
+`make:feed --from-doctor` writes one class carrying every undecided verb,
+commented out, and `only([])` throws until a human moves each one into `only()`
+or `except()`. It transcribes what doctor observed; it does not decide, and the
+file it writes cannot make the check pass on its own.
