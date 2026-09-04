@@ -69,6 +69,7 @@ node's *shape* is frozen.
 |---|---|---|
 | `prune.after_days` | `null` | retention window; `null` keeps everything |
 | `trickle.limit` | `200` | activities snapshotted per `storyfeed:trickle` run |
+| `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
 
 ## Diagnostics
 

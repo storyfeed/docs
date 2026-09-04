@@ -5,8 +5,8 @@ Storyfeed is pre-1.0. Breaking changes are named here with their replacement.
 ## Before you upgrade
 
 ```bash
-# The install is pinned to an exact version, so an upgrade names the new one.
-composer require storyfeed/storyfeed:0.8.0-alpha.2
+# A caret constraint on 0.x stops at the next minor, so an upgrade names it.
+composer require storyfeed/storyfeed:^0.9
 php artisan vendor:publish --tag="storyfeed-migrations"
 php artisan migrate
 php artisan storyfeed:doctor

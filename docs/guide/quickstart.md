@@ -66,8 +66,8 @@ Storyfeed stores morph aliases, never class names, so enforce a morph map:
 Relation::enforceMorphMap([
     'document' => Document::class,
     'project' => Project::class,
-    // Aliases are permanent: an activity whose role alias stops resolving is
-    // treated as an orphan and deleted by the scheduled trickle.
+    // Aliases are permanent: an activity whose role alias stops resolving
+    // still shows, with a placeholder; the trickle counts it, never deletes it.
     'user' => User::class,
 ]);
 ```
