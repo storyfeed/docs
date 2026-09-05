@@ -1,4 +1,4 @@
-# Latest wins, and when to replace
+# Repeating activities
 
 One row for an act that repeats, and every row for an act that happens once.
 
@@ -55,4 +55,4 @@ is in [Recording](/basics/recording#what-replace-matches-on).
 ## A save-shaped verb that is not published at all
 
 A save that changes nothing a reader would notice has no row, replaced or
-otherwise. See [A save is not news](/cookbook/transitions).
+otherwise. See [A save is not news](/cookbook/choosing-when-to-publish).

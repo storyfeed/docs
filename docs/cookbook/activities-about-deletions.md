@@ -1,4 +1,4 @@
-# The deletion sentence
+# Activities about deletions
 
 A removal story that still renders after the row it is about is gone.
 

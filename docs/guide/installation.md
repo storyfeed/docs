@@ -83,4 +83,4 @@ diagnose yet.
 
 ## Next
 
-[Your first feed](/guide/quickstart) — record, read, render.
+[Quickstart](/guide/quickstart) — record, read, render.

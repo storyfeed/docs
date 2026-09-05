@@ -1,4 +1,4 @@
-# Your first feed
+# Quickstart
 
 Five steps: make a model feedable, author a story, publish an activity, read
 the feed, render it. The example is a document being uploaded to a project.

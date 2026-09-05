@@ -1,4 +1,4 @@
-# When the sentence has no actor
+# Activities without an actor
 
 An actor on every activity somebody performed, a party on every activity a
 system performed, and a sentence with no `:actor` when nobody did.

@@ -1,4 +1,4 @@
-# A save is not news; a transition is
+# Choosing when to publish
 
 A publish site that fires when a status changes and stays silent on every
 other save. A feed that reads as what happened, not as what was edited.

@@ -1,4 +1,4 @@
-# One thing owns the verb and its grammar
+# Keeping verbs and grammar together
 
 Every verb the app publishes has a headline, every headline has a publisher,
 and both are declared in the same file.

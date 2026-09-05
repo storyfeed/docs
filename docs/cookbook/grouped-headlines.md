@@ -1,4 +1,4 @@
-# The plural sentence is authored beside the singular
+# Headlines for grouped activities
 
 A group that reads as one sentence, written on the lines next to the sentence
 for one activity.
