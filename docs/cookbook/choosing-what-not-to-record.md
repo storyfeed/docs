@@ -36,12 +36,12 @@ Storyfeed::grammar([
 
 | what happened | activity | because |
 |---|---|---|
-| a model created as a draft | no | a draft is not news |
-| a save with no status change | no | a save is not news |
+| a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | the text of a comment edited | no | the comment is the story; its edit is not |
 | a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
 | a field-level audit row | no | an audit log is its own surface |
-| a status transition | yes | see [A save is not news](/cookbook/choosing-when-to-publish) |
+| a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | a comment posted | yes | the sentence names what was commented on |
 | a document uploaded | yes | |
 
@@ -83,4 +83,4 @@ A verb declared by a Story or by `Storyfeed::verbs()` and never published is
 listed by `storyfeed:verbs --used` and by doctor's `verbs` check. A grammar
 entry for a verb nothing declares is reported by neither. The one case a
 retired verb is kept on purpose is in
-[One thing owns the verb](/cookbook/verbs-and-grammar-together#a-verb-nothing-publishes-any-more).
+[Keeping verbs and grammar together](/cookbook/verbs-and-grammar-together#a-verb-nothing-publishes-any-more).

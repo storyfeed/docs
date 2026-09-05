@@ -89,9 +89,9 @@ class RecordSubmission implements ShouldQueue
 
 <FeedStream :items="[anonymous]" :grouped="false" />
 
-The row is published with `actor: null`, and the renderer supplies its own
-label. The line that prevents it is `->by($this->user)`, with the user passed
-into the job the way the event above carries it.
+The row is published with `actor: null`. The line that prevents it is
+`->by($this->user)`, with the user passed into the job the way the event above
+carries it.
 
 ## Who acted decides the sentence
 
@@ -107,19 +107,18 @@ into the job the way the event above carries it.
 Storyfeed::activity()
     ->by('DocuSign')
     ->action('sign', $document)
-    ->for($project)
+    ->to($project)
     ->publish();
 ```
 
 <FeedStream :items="[signed]" :grouped="false" />
 
-A string actor becomes a party: a named participant with no model. A null
-actor means the actor is unknown. The two render differently and mean
-different things; see [Parties & anonymous actors](/deeper/parties).
+A string actor is a party and a null actor is anonymous; the difference is in
+[Parties & anonymous actors](/deeper/parties).
 
-For a job that publishes many activities, scope the block with
-`Storyfeed::as('System', …)` instead of naming the party on each call. That is
-in [Parties](/deeper/parties#scoped-attribution).
+A job that publishes many activities scopes the block with
+`Storyfeed::as('System', …)` instead of naming the party on each call; see
+[Scoped attribution](/deeper/parties#scoped-attribution).
 
 ## Nobody acted
 
@@ -130,7 +129,7 @@ Storyfeed::grammar([
 
 Storyfeed::activity()
     ->action('expire', $document)
-    ->in($project)
+    ->to($project)
     ->publish();
 ```
 

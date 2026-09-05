@@ -35,24 +35,11 @@ Storyfeed::grammar([
 The question is whether a second row of this verb on this object is a second
 fact. An upload is. A rename is not.
 
-## A transition is a verb, replaced against itself
-
-```php
-Storyfeed::activity()->by($user)->action('submit', $document)->replace()->publish();
-```
-
-*later, the review completes*
-
-```php
-Storyfeed::activity()->by($user)->action('approve', $document)->replace()->publish();
-```
-
-`submit` replaces only `submit`, so a retried request or a double-clicked
-button collapses to one row and the `approve` row is untouched. Both rows
-survive. `->replace()` matches on the object and the verb. The full statement
-is in [Recording](/basics/recording#what-replace-matches-on).
+A status verb is replaced only against itself, so a retried `submit` collapses
+to one row and leaves `approve` untouched; the full statement is in
+[Recording](/basics/recording#what-replace-matches-on).
 
 ## A save-shaped verb that is not published at all
 
 A save that changes nothing a reader would notice has no row, replaced or
-otherwise. See [A save is not news](/cookbook/choosing-when-to-publish).
+otherwise. See [Choosing when to publish](/cookbook/choosing-when-to-publish).
