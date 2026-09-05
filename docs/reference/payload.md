@@ -25,14 +25,71 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
 {
   "type": "delivery",                  // morph alias, never a class name
   "id": "42",                          // string-cast
-  "label": "Delivery #1042",           // null ⇒ degraded (no snapshot yet)
-  "url": "https://…/deliveries/1042",  // regenerated at read time; null ⇒ not linkable
+  "label": "Delivery #1042",           // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
+  "url": "https://…/deliveries/1042",  // minted at read time; null ⇒ not linkable
   "attributes": {},                    // link attributes, e.g. {"target": "_blank"}
   "modal": false,                      // hint: open as a modal
   "component": null,                   // backend-named body component
-  "data": {}                           // snapshot data
+  "data": {},                          // snapshot data
+  "media": null                        // typed image slots; null, or all four keys — see below
 }
 ```
+
+`url`, `label`, `attributes`, `modal` and `media` come from the model's static
+resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
+with the snapshot. `type`, `id`, `component` and `data` come from the snapshot.
+[Feedable models](/basics/feedable-models#snapshots-and-media) covers the
+resolver.
+
+### Entity media
+
+```jsonc
+"media": {
+  "icon":    null,                       // small, representational, ~32×32, 1:1: an avatar, a logo
+  "image":   null,                       // a larger visual representation of a NON-image resource
+  "preview": {                           // a preview of the resource: the dense-feed thumbnail
+    "src": "https://…/photos/88/thumb.jpg",
+    "mediaType": "image/jpeg",
+    "width": 400,                        // int, or null when unknown; never 0
+    "height": 300,
+    "alt": null                          // null ⇒ fall back to the entity label
+  },
+  "url": {                               // the resource itself is an image; describes what `entity.url` points at
+    "src": "https://…/photos/88/full.jpg",   // always equal to `entity.url`
+    "mediaType": "image/jpeg",
+    "width": 4032,
+    "height": 3024,
+    "alt": "Pad thai, table 4"
+  }
+}
+```
+
+| value | meaning |
+|---|---|
+| `media: null` | the entity has no media; the common case |
+| `media: {…}` | all four keys present, each an image object or `null` |
+| `media.url !== null` | the thing behind `entity.url` is an image |
+| `width`, `height` | advisory, for reserving the box before the bytes arrive; `null` when unknown, never `0` |
+
+`entity.url` stays a string. When the resolver typed it as an image, `media.url`
+carries the same location again with its `mediaType`, `width` and `height`.
+The four keys are Activity Streams 2.0 property names with AS2's definitions:
+a photo is `url` (the full image) plus `preview` (the derivative a list paints).
+Group `exemplars` are ordinary entity objects and carry `media` the same way.
+
+### One payload, one feed
+
+A resolver's URL is authority for the feed named in its context and for no
+other. The name is declared by the feed registry, never read from the request,
+so the same snapshot resolves differently on each surface and neither payload
+carries the other's URL. A kitchen feed may carry a signed operational link
+that must never appear on the customer feed.
+
+That guarantee ends at the payload boundary, and the node does not say which
+feed minted it. Anything that stores or forwards a payload keys it by feed:
+a cache keyed only by cursor, a digest that reuses one feed's page for another
+audience, or a renderer that memoises entities across feeds by `type:id` serves
+one feed's authority to another's audience.
 
 ## Activity node
 
@@ -115,6 +172,7 @@ resync *trigger*, not a reconciliation rule.
 
 An entity with no snapshot arrives with `label: null` and `url: null` rather
 than being omitted. Activities are never withheld from the payload because an
-entity is un-snapshotted, and a broken `toFeedLink()` degrades to `url: null`
-with the exception reported server-side — a renderer never sees an exception
-artifact.
+entity is un-snapshotted. A resolver is never called for an entity with no
+snapshot, so `media` is `null` too. A throwing `feedMedia()` degrades to
+`url: null` and `media: null` with the exception reported server-side — a
+renderer never sees an exception artifact.

@@ -105,9 +105,11 @@ Storyfeed::activity()->action('save', $draft)->replace()->publish();
 ### What `->replace()` matches on
 
 **The object and the verb — `data` is not part of the key**, and the superseded
-rows are hard-deleted. No cursor, no read mode and no curated view brings them
-back. (`->publishAndReplace()` is the same thing in one call; everything below
-applies to it identically.)
+rows are soft-deleted. No cursor, no read mode and no curated view brings them
+back; they stay in the table with `deleted_at` set until `storyfeed:prune`
+retires them. Setting `storyfeed.replace.delete` to `'force'` hard-deletes them
+inside the publish transaction. (`->publishAndReplace()` is the same thing in
+one call; everything below applies to it identically.)
 
 That makes one plausible-looking shape destructive: a single `updateStatus` verb
 carrying `data: ['from' => …, 'to' => …]` supersedes its *own* previous

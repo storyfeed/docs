@@ -28,8 +28,9 @@ implements `Feedable`:
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
-use Storyfeed\FeedLink;
+use Storyfeed\FeedMedia;
 
 class Document extends Model implements Feedable
 {
@@ -43,22 +44,23 @@ class Document extends Model implements Feedable
         );
     }
 
-    public static function toFeedLink(array $data): ?FeedLink
+    public static function feedMedia(FeedContext $context): ?FeedMedia
     {
-        return FeedLink::make(url: route('documents.show', $data['id']));
+        // Reads what toFeed() cached above; a key it did not cache reads as null.
+        return FeedMedia::make(url: route('documents.show', $context->data('id')));
     }
 }
 ```
 
 `toFeed()` is a snapshot, written at publish time and refreshed on save.
-`toFeedLink()` is static and runs at read time from that snapshot, so labels stay
-fast and URLs never go stale.
+`feedMedia()` is static and runs at read time from that snapshot, so labels stay
+fast and URLs never go stale. Throwing inside it is safe: the failure is
+reported and the entity degrades to `url: null`.
 
-::: tip
-`toFeedLink()` receives exactly what `toFeed()` put in `data` — include the key
-you need to build the URL. Throwing inside it is safe: the failure is reported
-and the entity degrades to `url: null`.
-:::
+`Project` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
+`feedMedia()` that returns null, and an unlinked entity still renders at full
+weight. [Feedable models](/basics/feedable-models) covers the context, a URL per
+feed, and images.
 
 Storyfeed stores morph aliases, never class names, so enforce a morph map:
 

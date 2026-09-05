@@ -31,6 +31,7 @@ export function entity(
     modal: false,
     component: null,
     data: {},
+    media: null,
     ...over,
   }
 }

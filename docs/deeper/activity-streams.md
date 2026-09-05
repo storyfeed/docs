@@ -60,6 +60,10 @@ Verbs map to AS2 types via your enum's `activityType()` — see
 - Unmapped verbs serialize as extension types, **preserved verbatim**. Unknown
   types are never dropped.
 - Composite objects serialize as `OrderedCollection`.
+- An entity's [media slots](/reference/payload#entity-media) serialize as AS2
+  `Link` objects under `icon`, `image` and `preview`, with `mediaType`, `width`
+  and `height`. A `url` typed as an image is a `Link` too. `$context->feed()`
+  is `null` in this serializer: a federation document has no surface.
 
 ## Type overrides
 
@@ -71,7 +75,7 @@ public ActivityType|string|null $type = ActivityType::Add;
 
 Per-model, when the AS2 type belongs with the entity rather than the verb,
 implement `HasActivityStreamsType` — it keeps the mapping next to
-`toFeed()`/`toFeedLink()` instead of in a central registry.
+`toFeed()`/`feedMedia()` instead of in a central registry.
 
 ## Federation
 
