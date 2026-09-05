@@ -22,6 +22,13 @@ php artisan vendor:publish --tag="storyfeed-config"
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | party name for otherwise-anonymous publishes (jobs, commands) |
 
+## Recording
+
+| key | default | |
+|---|---|---|
+| `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
+| `replace.delete` | `'soft'` | what [`->replace()`](/basics/recording#what-replace-matches-on) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
+
 ## Verbs
 
 | key | default | |
@@ -55,6 +62,12 @@ node's *shape* is frozen.
 | `grouping.composite.auto` | `true` | bundle `Collectable` runs at batch close |
 | `grouping.composite.min_objects` | `2` | smallest distinct object count that mints a composite |
 
+## Hydration
+
+| key | default | |
+|---|---|---|
+| `hydration.enabled` | `true` | whether [`$context->model()`](/basics/feedable-models#the-live-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
+
 ## AS2.0 routes
 
 | key | default | |
@@ -78,3 +91,4 @@ node's *shape* is frozen.
 | `doctor.stale_after` | `30` | days without new activity before doctor flags a forgotten feed; `null` disables |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor scan for feed surface; `null` = `app_path()`. Dev-time only |
+| `demo.enabled` | `false` | register the vocabulary `storyfeed:demo` seeds with, so a seeded demo renders. On in the environment showing the demo, not in production |
