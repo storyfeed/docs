@@ -7,6 +7,23 @@ Storyfeed::activity()->by($user)->action('rename', $document)->replace()->publis
 Storyfeed::activity()->by($user)->action('upload', $document)->publish();              // every upload is its own row
 ```
 
+```php
+// AppServiceProvider::boot()
+Storyfeed::verbs([
+    'rename' => ActivityType::Update,
+    'upload' => ActivityType::Add,
+    'submit' => ActivityType::Offer,
+    'approve' => ActivityType::Accept,
+]);
+
+Storyfeed::grammar([
+    'document.rename' => ':actor renamed :object',
+    'document.upload' => ':actor uploaded :object',
+    'document.submit' => ':actor submitted :object',
+    'document.approve' => ':actor approved :object',
+]);
+```
+
 ## Which verbs replace
 
 | the verb | happens | publish with | examples |

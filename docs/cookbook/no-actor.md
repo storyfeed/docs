@@ -53,19 +53,35 @@ const expired = activity({
 
 <FeedStream :items="[submitted]" :grouped="false" />
 
+```php
+// AppServiceProvider::boot()
+Storyfeed::verbs([
+    'submit' => ActivityType::Offer,
+    'sign' => ActivityType::Accept,
+    'expire' => ActivityType::Remove,
+]);
+
+Storyfeed::grammar([
+    'document.submit' => ':actor submitted :object to :target',
+    'document.sign' => ':actor reported :object signed for :target',
+]);
+```
+
 ## The actor read from the request
 
 An activity published with no actor takes the authenticated user. On a queue
 worker there is none:
 
 ```php
-class SendSubmissionReceipt implements ShouldQueue
+class RecordSubmission implements ShouldQueue
 {
-    public function handle(DocumentSubmitted $event): void
+    public function __construct(public Document $document) {}
+
+    public function handle(): void
     {
         Storyfeed::activity()
-            ->action('submit', $event->document)     // no actor: on a worker, nobody is authenticated
-            ->to($event->document->project)
+            ->action('submit', $this->document)     // no actor: on a worker, nobody is authenticated
+            ->to($this->document->project)
             ->publish();
     }
 }
@@ -74,7 +90,8 @@ class SendSubmissionReceipt implements ShouldQueue
 <FeedStream :items="[anonymous]" :grouped="false" />
 
 The row is published with `actor: null`, and the renderer supplies its own
-label. The line that prevents it is `->by($event->user)`.
+label. The line that prevents it is `->by($this->user)`, with the user passed
+into the job the way the event above carries it.
 
 ## Who acted decides the sentence
 

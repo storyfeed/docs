@@ -45,6 +45,21 @@ const submitted = activity({
 
 <FeedStream :items="[submitted]" :grouped="false" />
 
+```php
+// AppServiceProvider::boot()
+Storyfeed::verbs([
+    'submit' => ActivityType::Offer,
+    'approve' => ActivityType::Accept,
+    'archive' => ActivityType::Remove,
+]);
+
+Storyfeed::grammar([
+    'document.submit' => ':actor submitted :object to :target',
+    'document.approve' => ':actor approved :object to :target',
+    'document.archive' => ':actor archived :object in :target',
+]);
+```
+
 ## What publishes
 
 | what happened | activity | verb |

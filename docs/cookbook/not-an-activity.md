@@ -20,6 +20,18 @@ public function toFeedStory(): ?PendingStory
 Returning `null` publishes nothing. See
 [Publishing from events](/deeper/events).
 
+```php
+// AppServiceProvider::boot()
+Storyfeed::verbs([
+    'submit' => ActivityType::Offer,
+    'comment' => ActivityType::Create,
+]);
+
+Storyfeed::grammar([
+    'document.submit' => ':actor submitted :object to :target',
+]);
+```
+
 ## What stays out
 
 | what happened | activity | because |
@@ -67,6 +79,8 @@ changes the snapshot and publishes nothing.
 
 ## Grammar with no publisher
 
-A template registered for a verb nothing publishes is reported by doctor and
-by `storyfeed:verbs --used`. The one case it is kept on purpose is in
+A verb declared by a Story or by `Storyfeed::verbs()` and never published is
+listed by `storyfeed:verbs --used` and by doctor's `verbs` check. A grammar
+entry for a verb nothing declares is reported by neither. The one case a
+retired verb is kept on purpose is in
 [One thing owns the verb](/cookbook/one-owner#a-verb-nothing-publishes-any-more).

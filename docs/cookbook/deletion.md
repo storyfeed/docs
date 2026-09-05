@@ -13,6 +13,10 @@ $document->delete();
 ```
 
 ```php
+Storyfeed::verbs([
+    'document.remove' => ActivityType::Remove,
+]);
+
 Storyfeed::grammar([
     'project.document.remove' => ':actor removed a document from :object',
 ]);

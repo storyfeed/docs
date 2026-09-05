@@ -4,6 +4,10 @@ A group that reads as one sentence, written on the lines next to the sentence
 for one activity.
 
 ```php
+Storyfeed::verbs([
+    'upload' => ActivityType::Add,
+]);
+
 Storyfeed::grammar([
     'document.upload' => ':actor uploaded :object to :target',
 ]);
@@ -78,16 +82,17 @@ The fallback is described in [Grammar](/deeper/grammar#the-anti-lie-rule).
 
 ## One entry per axis the verb can group on
 
-| axis | the members are | `:count` counts | sentence |
-|---|---|---|---|
-| `repeat` | one actor's repeated act on different objects | the objects | `:actor uploaded :count files to :target` |
-| `actors` | several actors' acts on one target | the acts | `:actors uploaded :count files to :target` |
-| `object` | repeated acts on one object | the acts, not the object | `:actor made :count revisions to :object` |
-| `targets` | one actor's acts across targets | the acts | `:actor commented :count times in :targets` |
+`:count` is always the member count; the noun after it names what a member is.
 
-The noun after `:count` names what the members are. On the `object` axis the
-members are repetitions of one act on one thing, so the count is of revisions
-or times, never of documents.
+| axis | the members are | sentence |
+|---|---|---|
+| `repeat` | one actor, one verb, one target, one kind of object | `:actor uploaded :count files to :target` |
+| `actors` | several actors' acts on one target | `:actors uploaded :count files to :target` |
+| `object` | repeated acts on one object | `:actor made :count revisions to :object` |
+| `targets` | one actor's acts across targets | `:actor commented :count times in :targets` |
+
+On the `object` axis a member is one more act on one thing, so the count is of
+revisions or times, never of documents.
 
 Which tokens each axis allows in the singular is in
 [Aggregation](/deeper/aggregation).
