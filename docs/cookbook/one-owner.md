@@ -8,7 +8,7 @@ class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'upload';
 
     public function headline(): string
     {
@@ -77,7 +77,7 @@ class DocumentWasPrinted extends Story
     // keep their headline.
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = 'print';
+    public string|FeedVerb|BackedEnum|null $verb = 'print';
 
     public function headline(): string
     {

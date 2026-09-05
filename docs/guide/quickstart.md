@@ -79,6 +79,7 @@ how it groups:
 
 ```php
 use App\Models\Document;
+use Storyfeed\Contracts\FeedVerb;
 use Storyfeed\Grouping\Group;
 use Storyfeed\Story;
 
@@ -86,7 +87,7 @@ class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'upload';
 
     public function headline(): string
     {

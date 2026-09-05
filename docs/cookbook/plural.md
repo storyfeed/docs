@@ -101,7 +101,7 @@ class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;
 
-    public string|FeedVerb|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'upload';
 
     public function headline(): string
     {
