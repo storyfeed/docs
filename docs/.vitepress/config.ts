@@ -89,6 +89,20 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Cookbook',
+        items: [
+          { text: 'Roles, never models', link: '/cookbook/roles-not-models' },
+          { text: 'A save is not news', link: '/cookbook/transitions' },
+          { text: 'Latest wins', link: '/cookbook/latest-wins' },
+          { text: 'The target takes the preposition', link: '/cookbook/target' },
+          { text: 'The plural sentence', link: '/cookbook/plural' },
+          { text: 'When the sentence has no actor', link: '/cookbook/no-actor' },
+          { text: 'What should not become an activity', link: '/cookbook/not-an-activity' },
+          { text: 'The deletion sentence', link: '/cookbook/deletion' },
+          { text: 'One thing owns the verb', link: '/cookbook/one-owner' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'The payload contract', link: '/reference/payload' },
