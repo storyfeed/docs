@@ -23,6 +23,70 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
+## Bumping an install that tracks `dev-main`
+
+An app whose root constraint is `dev-main` upgrades with `composer update`,
+not `composer require`. Run it as three steps. When you are done, the two
+storyfeed packages have moved, nothing else has, and you have read the
+version that landed.
+
+### 1. Update the two packages and nothing else
+
+```bash
+composer update storyfeed/storyfeed storyfeed/filament \
+    --with storyfeed/storyfeed:dev-main
+# no dependency flag — only the two named packages move
+```
+
+If this resolves, step 1 is over. Go to step 3.
+
+`--with storyfeed/storyfeed:dev-main` stays in the command even though root
+already says `dev-main`. The plugin's own requirement is `^0.9.0 || dev-main`,
+so in the plugin repository a bare update resolves to the `v0.9.0` tag, which
+is behind `dev-main`. In an app the root constraint wins and the tag cannot be
+selected; the option then repeats what `composer.json` already says, and it
+stays because it puts the intent in the command where a reader can see it.
+
+### 2. If Composer cannot resolve, add `--with-dependencies`
+
+Composer reports that it cannot resolve when one of the two packages now
+requires a transitive dependency the lock cannot satisfy. That report is
+information: a real requirement moved. Accept it deliberately.
+
+```bash
+composer update storyfeed/storyfeed storyfeed/filament \
+    --with storyfeed/storyfeed:dev-main \
+    --with-dependencies   # lowercase -w: transitive dependencies of the two packages only
+git diff composer.lock    # read every package it moved, before you commit
+```
+
+`--with-dependencies` (`-w`) moves only the transitive dependencies of the
+packages you named. `--with-all-dependencies` (`-W`) also lifts the pins on
+every package your own `composer.json` requires, so it has no place in a
+storyfeed bump. Measured on a pilot application, 2026-09-06:
+
+| form | what moved in the lock |
+|---|---|
+| bare | the two storyfeed packages |
+| `--with-dependencies` (`-w`) | the two, plus 11 transitive packages: `livewire`, `laravel/prompts`, `spatie/laravel-package-tools` and eight `symfony/*` |
+| `--with-all-dependencies` (`-W`) | the two, plus about 20 root-required packages, `laravel/framework`, `livewire`, `sanctum`, `flysystem` and `guzzle` among them |
+
+The `-W` run took a browser test red, and the failure presented as a
+storyfeed defect. The framework had moved, not storyfeed.
+
+### 3. Read the version that landed
+
+```bash
+composer show storyfeed/storyfeed   # read the version line
+```
+
+Do this after every bump, whichever step resolved it. `composer update`
+prints the resolution it chose; `composer show` prints what is installed,
+and the two are not the same claim. The same week the numbers above were
+measured, a plugin's CI passed sixteen lanes against a core version no
+consumer installs. Both are one mistake: trusting that a resolution did what
+the command appeared to say, instead of reading what landed.
+
 ## v0.8.0-alpha.2 — `query()` callbacks are nested
 
 Two behaviour changes. Neither has a rename to chase; both change what a read
