@@ -40,12 +40,16 @@ composer update storyfeed/storyfeed storyfeed/filament \
 
 If this resolves, step 1 is over. Go to step 3.
 
-`--with storyfeed/storyfeed:dev-main` stays in the command even though root
-already says `dev-main`. The plugin's own requirement is `^0.9.0 || dev-main`,
-so in the plugin repository a bare update resolves to the `v0.9.0` tag, which
-is behind `dev-main`. In an app the root constraint wins and the tag cannot be
-selected; the option then repeats what `composer.json` already says, and it
-stays because it puts the intent in the command where a reader can see it.
+`--with storyfeed/storyfeed:dev-main` does nothing today. Your root
+constraint is `dev-main` and the plugin's requirement on the core is
+`dev-main`, so no constraint in the graph can select a tag. It stays in the
+command as forward-protection: the plugin's requirement has already widened
+once, to `^0.9.0 || dev-main`, and while it was wide a bare update in the
+plugin repository resolved the core to `v0.9.0`, a tag behind `dev-main`.
+If a requirement widens again, this option is what stops a bump from
+becoming a downgrade. It costs nothing while inert. Drop it only if you have
+read every constraint on `storyfeed/storyfeed` in your lock and would rather
+rerun that check on each bump.
 
 ### 2. If Composer cannot resolve, add `--with-dependencies`
 
