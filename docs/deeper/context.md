@@ -1,38 +1,75 @@
 # Containers & context
 
-`context` is the fourth role: the container an activity happened **inside** — a
-project, a workspace, a tenant.
+`context` is the fourth role: the container an activity happened **inside**.
+With it recorded, a feed can be scoped to the container and an axis can group
+by it.
 
 <script setup>
-import { who, where, doc, activity } from '../.vitepress/theme/samples'
+import { who, where, job, note, activity } from '../.vitepress/theme/samples'
 
-const placed = activity({
-  id: 'cx1', verb: 'upload', icon: 'file-up',
+const inside = activity({
+  id: 'cx1', verb: 'comment', icon: 'message-circle',
   published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :context',
-  actor: who.aiko, object: doc.signagePlanClientCopy, target: where.verificationTiers,
-  context: where.verificationTiers,
+  headline_template: ':actor commented on :target in :context',
+  actor: who.priya, object: note.overflow, target: job.kerningPassPricingTable,
+  context: where.portMigration,
 })
 </script>
 
 ```php
 Storyfeed::activity()
     ->by($user)
-    ->action('upload', $document)
-    ->to($project)          // target: what the act was directed at
-    ->context($project)     // context: where it happened
+    ->action('comment', $comment)
+    ->on($task)               // target: what the comment is on
+    ->context($project)       // context: the project the task belongs to
     ->publish();
 ```
 
-<FeedStream :items="[placed]" :grouped="false" />
+<FeedStream :items="[inside]" :grouped="false" />
 
-Most applications can ignore it. Set it when you want one of the three things
-below.
+## The difference between target and context
 
-## What it buys you
+| role | holds | in the sentence |
+|---|---|---|
+| `target` | what the preposition points at | commented **on** the task |
+| `context` | the container the act happened inside | …**in** the project |
 
-**1. Grouping by place.** Axes key on specific roles, so a container has to *be*
-a role for "several people working in the same place today" to be expressible:
+They carry different facts when the target sits inside the container — a
+comment on a task in a project, a revision to a document in a workspace. That
+is the case `context` is for.
+
+When the target is itself the container, `target` carries it, and the record
+is complete:
+
+```php
+Storyfeed::activity()
+    ->by($user)
+    ->action('upload', $document)
+    ->to($project)
+    ->publish();
+```
+
+Setting `context` to the same project as well is allowed. It records the
+project twice, once in each role, and matters only when something reads the
+`context` role — an axis you registered, a container query, the AS2 document.
+
+Fill each role with what is true and available. The template decides which
+roles the sentence names; a role it leaves out is still there for scoping,
+grouping and the AS2 document.
+
+## When to set it
+
+Whether an activity needs `context` is decided by what reads it, not by the
+sentence:
+
+| you want | why it needs `context` |
+|---|---|
+| a group like "three people commented in the same project today" | axes key on roles, so the container has to *be* a role; no built-in axis keys on `context`, so this is a [custom axis](/deeper/aggregation#custom-axes) |
+| `feed()->context($project)` | the scope reads the `context` column |
+| `:context` in a composite headline | the built-in `composite` axis pins `:actor`, `:target` and `:context` — see [Composites](/deeper/composites) |
+| `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
+
+The axis is the one that cannot be had any other way:
 
 ```php
 Axis::make('scene')
@@ -40,45 +77,28 @@ Axis::make('scene')
     ->eligibleWhenDistinct('actor', min: 2);
 ```
 
-That axis is why context can't be replaced by a filter — see
-[Aggregation](/deeper/aggregation#custom-axes). The built-in `composite` axis
-also pins `:context`.
+A filter can narrow a feed to a container; only a role can group by one.
 
-**2. A container query.** `feed()->context($project)` returns only what happened
-inside the project — narrower than
-[`involving()`](/basics/reading#scoping), which also matches the project's own
-creation and archival.
+## The container query
 
-**3. Activity Streams 2.0 fidelity.** `context` is a property AS2 defines, and
-the serializer emits it. The role exists so the package can say what the spec
-can say.
+`feed()->context($project)` returns what happened inside the project. It is
+narrower than [`involving()`](/basics/reading#scoping), which also matches the
+project's own creation and archival — those record the project as the
+`object`.
 
-## Target or context?
+## A container that is not a model
 
-They answer different questions and often coexist:
+A folder name, a source system, a mailbox: when the room is a value rather than
+an entity, it has three homes.
 
-| | question | example |
-|---|---|---|
-| `target` | what was the act directed at? | commented **on** the task |
-| `context` | where did it happen? | …**in** the Mobile App project |
-
-A comment on a document has the document as target and the project as context.
-
-They are also **often the same entity** — an upload is aimed at a project and
-happens inside it — and filling both with the same model is ordinary. The roles
-differ in meaning, not in how often they diverge.
-
-Reaching for `target` to mean containment is the historical mistake this role
-exists to prevent: when the container is indistinguishable from the indirect
-object, the only way to find "activity in this project" later is a scan across
-every role.
+| home | in the headline | groups by it | in the AS2 document | cost |
+|---|---|---|---|---|
+| `->context('Q3 invoices')` | yes, as `:context` | yes | yes, as a [party](/deeper/parties) | one party per distinct string |
+| `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
+| a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
 
 ## Roles are set at publish, and never backfilled
 
-`storyfeed:rebuild` rebuilds snapshots; `storyfeed:curate` re-selects axes.
-Neither can populate a role that was never recorded, so adding context later
-means rewriting rows — and because grouping keys include it, historical
-activities keep the grouping they were given.
-
-Set it when there is a plausible container, even before you have a view that
-scopes by one.
+Roles are [never backfilled](/basics/recording#roles): a `context` axis
+registered later groups only the activities that were recorded with a
+`context`. If the room is a model you have at publish time, record it.
