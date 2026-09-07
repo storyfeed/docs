@@ -17,6 +17,14 @@ Storyfeed::aggregateGrammar([
 Note the two key shapes: singular grammar is keyed by **object type and verb**;
 aggregate grammar by **axis and verb**.
 
+The key names the type; the template names the role. Your model names belong in
+the key, never in the template:
+
+```php
+'document.upload' => ':user uploaded :document to :project',   // ✗ not tokens — these render as text
+'document.upload' => ':actor uploaded :object to :target',     // ✓
+```
+
 ## The anti-lie rule
 
 A group headline may only use tokens that are true of **every** member. A

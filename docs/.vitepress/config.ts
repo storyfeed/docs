@@ -54,7 +54,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Usage examples', link: '/guide/usage-examples' },
           { text: 'Installation', link: '/guide/installation' },
-          { text: 'Your first feed', link: '/guide/quickstart' },
+          { text: 'Quickstart', link: '/guide/quickstart' },
           { text: 'Upgrading', link: '/guide/upgrading' },
         ],
       },
@@ -86,6 +86,18 @@ export default defineConfig({
           { text: 'Parties & anonymous actors', link: '/deeper/parties' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Testing', link: '/deeper/testing' },
+        ],
+      },
+      {
+        text: 'Cookbook',
+        items: [
+          { text: 'Choosing when to publish', link: '/cookbook/choosing-when-to-publish' },
+          { text: 'Repeating activities', link: '/cookbook/repeating-activities' },
+          { text: 'Headlines for grouped activities', link: '/cookbook/grouped-headlines' },
+          { text: 'Activities without an actor', link: '/cookbook/activities-without-an-actor' },
+          { text: 'Choosing what not to record', link: '/cookbook/choosing-what-not-to-record' },
+          { text: 'Activities about deletions', link: '/cookbook/activities-about-deletions' },
+          { text: 'Keeping verbs and grammar together', link: '/cookbook/verbs-and-grammar-together' },
         ],
       },
       {
