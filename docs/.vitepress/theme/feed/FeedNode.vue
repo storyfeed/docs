@@ -34,6 +34,9 @@ withDefaults(
     <FeedGroup v-else-if="item.kind === 'group'" :item="item" :is-last="isLast">
         <template #body="slotProps"><slot name="body" v-bind="slotProps" /></template>
         <template #annotations="slotProps"><slot name="annotations" v-bind="slotProps" /></template>
+        <template #time="slotProps">
+            <slot name="time" v-bind="slotProps">{{ slotProps.label }}</slot>
+        </template>
     </FeedGroup>
     <!-- Unknown kinds (future payload additions) are skipped, never fatal. -->
 </template>

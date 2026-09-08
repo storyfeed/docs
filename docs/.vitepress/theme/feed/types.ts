@@ -1,6 +1,6 @@
 /**
- * The payload shapes this kit renders. These mirror the storyfeed payload
- * contract — a node from `GET /feed/page` can be passed straight in.
+ * Storyfeed Payload v1 contract types, with defensive renderer optionality.
+ * W72 reconciles the W47 fields; newer contract gaps are recorded in its todo.
  */
 
 export type FeedRole = 'actors' | 'objects' | 'targets' | 'contexts';
@@ -11,12 +11,48 @@ export interface FeedEntity {
     /** Null when the snapshot is degraded; renderers must still read. */
     label: string | null;
     url: string | null;
+    modal: boolean;
+    component: string | null;
+    media: FeedMedia | null;
     attributes?: Record<string, string>;
     /** App-specific extras. This kit reads `initials` and `avatar_color`. */
     data?: Record<string, unknown> & {
         initials?: string;
         avatar_color?: string;
     };
+}
+
+/** AS2's slot names: the slot is what the picture is FOR. */
+export interface FeedMedia {
+    icon: FeedImage | null;
+    image: FeedImage | null;
+    preview: FeedImage | null;
+    url: FeedImage | null;
+}
+
+/** width/height are int or null, never zero, so an aspect box is safe when both are set. */
+export interface FeedImage {
+    src: string;
+    mediaType: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+}
+
+/**
+ * The utterance a row is about, and the conversation around it (storyfeed >=
+ * c7fbb35, additive). Null on nearly every activity. Every key is present
+ * when the object is, so a missing fact reads as null, never as undefined.
+ *
+ * `kind` is the recording app's own word ('commented', 'replied', 'decided') —
+ * a renderer prints it and never switches on it.
+ */
+export interface FeedThread {
+    text: string;
+    by: string | null;
+    kind: string | null;
+    replies: number | null;
+    truncated: boolean;
 }
 
 interface BaseNode {
@@ -31,6 +67,9 @@ interface BaseNode {
 
 export interface ActivityNode extends BaseNode {
     kind: 'activity';
+    data?: Record<string, unknown>;
+    /** Activity-scoped passage; group children carry it normally. */
+    thread?: FeedThread | null;
     actor: FeedEntity | null;
     object: FeedEntity | null;
     target: FeedEntity | null;
@@ -43,6 +82,7 @@ export interface GroupNode extends BaseNode {
     /** The TRUE member total, which may exceed `children.length`. */
     count: number;
     children: ActivityNode[];
+    children_truncated: boolean;
     /** Every role is a list, even when the axis pins it to one. */
     exemplars: Record<FeedRole, FeedEntity[]>;
     /** True distinct totals per role, for computing overflow. */
@@ -55,5 +95,9 @@ export interface FeedPayload {
     payload_version: number;
     items: FeedNode[];
     next_cursor: string | null;
+    /**
+     * Opaque marker for rewritten settled history. Compare for equality only;
+     * this is not a timestamp. Null until the first rewrite.
+     */
     sync_token: string | null;
 }

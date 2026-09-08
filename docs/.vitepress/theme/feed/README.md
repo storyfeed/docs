@@ -11,6 +11,7 @@ seams. Nothing here imports a framework beyond Vue.
 | `FeedStream.vue` | Day headings, list scaffold, load-more |
 | `FeedNode.vue` | **Dispatches on `kind` and nothing else** |
 | `FeedItem.vue` | One activity: avatar/icon gutter, headline, time, body slot |
+| `FeedThread.vue` | Activity-scoped quote and conversation metadata (W44) |
 | `FeedGroup.vue` | One group: avatar stack, aggregate headline, disclosure |
 | `FeedHeadline.vue` | Token substitution — the correctness core |
 | `FeedIcon.vue` | Token → icon component map |
@@ -55,7 +56,11 @@ page is not rebuilt. Pinning also stops the timer from ever starting.
 
 **Bodies.** `<slot name="body" :node>` renders under the headline — a comment's
 text, a document preview. Empty by default because what belongs there is
-entirely app-specific.
+entirely app-specific. When an activity carries `thread`, `FeedThread` renders
+instead of the body slot so the same excerpt is not quoted twice. Reply counts
+print from two upward; `kind` is printed without dispatch. The presenter suppresses
+`by` when it matches the row actor: only the presenter knows whether the headline
+above already named them. Group children follow the same rule.
 
 Both slots exist on group nodes too. Fill a group's `body` only when
 `distinct.objects === 1`: with more than one distinct object a preview privileges
@@ -77,7 +82,8 @@ never costs you the app's own previews, which is what happens when the two share
 the `body` slot.
 
 **Timestamps.** `<slot name="time" :node :label>` wraps the rendered time; the
-Newsroom makes it a permalink to the activity's AS2 document.
+Newsroom makes it a permalink to the activity's AS2 document. It reaches group
+headers and expanded children, with plain labels when no filler is supplied.
 
 ## SSR
 
@@ -111,3 +117,11 @@ prerendered page silently drifts instead.
 A byte-identical rebuild is the control that catches it: build twice, diff the
 output. It fails on anything non-deterministic without needing to know what it is
 looking for.
+
+## Theming
+
+Set `--sf-text-color`, `--sf-muted-color`, `--sf-faint-color`,
+`--sf-line-color`, `--sf-hover-color`, and `--sf-ring-color` on an ancestor.
+The docs maps these to VitePress tokens in `../custom.css`.
+`bodies/index.ts` exports `resolveBody` for app-side body slot fillers;
+`bodies/Note.vue` is the worked example, not an automatic renderer body.

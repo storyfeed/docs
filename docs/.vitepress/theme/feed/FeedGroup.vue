@@ -85,7 +85,7 @@ const hiddenBeyondChildren = computed(
                     :title="time.full.value"
                     class="sf-time"
                 >
-                    {{ time.label.value }}
+                    <slot name="time" :node="item" :label="time.label.value">{{ time.label.value }}</slot>
                 </time>
             </div>
 
@@ -119,6 +119,9 @@ const hiddenBeyondChildren = computed(
                         hiddenBeyondChildren === 0
                     "
                 >
+                    <template #time="slotProps">
+                        <slot name="time" v-bind="slotProps">{{ slotProps.label }}</slot>
+                    </template>
                     <template #body="slotProps">
                         <slot name="body" v-bind="slotProps" />
                     </template>

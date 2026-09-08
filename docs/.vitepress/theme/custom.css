@@ -99,3 +99,13 @@
   margin-bottom: 0;
 }
 
+
+/* App-side mapping for the framework-independent feed kit. */
+:root, .dark {
+  --sf-text-color: var(--vp-c-text-1);
+  --sf-muted-color: var(--vp-c-text-2);
+  --sf-faint-color: var(--vp-c-text-3);
+  --sf-line-color: var(--vp-c-divider);
+  --sf-hover-color: var(--vp-c-bg-soft);
+  --sf-ring-color: var(--vp-c-bg);
+}

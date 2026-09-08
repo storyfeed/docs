@@ -3,6 +3,7 @@ import { toRef } from 'vue';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
+import FeedThread from './FeedThread.vue';
 import { useRelativeTime } from './useRelativeTime';
 import type { ActivityNode } from './types';
 
@@ -68,7 +69,12 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
                 text, a document thumbnail. Left empty by default because what
                 belongs here is entirely app-specific.
             -->
-            <slot name="body" :node="item" />
+            <FeedThread
+                v-if="item.thread"
+                :thread="item.thread"
+                :actor-label="item.actor?.label"
+            />
+            <slot v-else name="body" :node="item" />
 
             <!--
                 Annotations slot: for documentation and debugging surfaces that
