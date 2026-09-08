@@ -63,6 +63,11 @@ php artisan storyfeed:curate --rehash
 
 Use `--window=` to bound it by `published_at` rather than sweeping the table.
 
+**The hourly scheduled run never does this.** The package schedules
+`storyfeed:curate` without `--rehash`, so nothing rehashes on its own — it
+happens only when you run it deliberately. That is the answer to "could this
+fire while my users are reading?": not by itself.
+
 **It rewrites settled group identity, so read the caveat above:** the
 `sync_token` changes and every accumulating client resyncs. A client holding a
 cursor from before the run may find its next page empty where a group moved —
