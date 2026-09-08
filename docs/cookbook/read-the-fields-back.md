@@ -14,9 +14,9 @@ composition before writing its headline.
 ## An invitation accepted
 
 ```text
-Alex · joined   · Sam        · —      incoherent
-Sam  · joined   · Sam        · —      incoherent
-Sam  · accepted · invitation · table  coherent
+Nayani · joined   · Sam        · —      incoherent
+Sam    · joined   · Sam        · —      incoherent
+Sam    · accepted · invitation · table  coherent
 ```
 
 The event is an invitee accepting an invitation to a table. The inviter sent
