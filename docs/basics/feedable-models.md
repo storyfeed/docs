@@ -1,6 +1,6 @@
 # Feedable models
 
-Anything that appears in the feed — actor, object, target, or context —
+Anything that appears in the feed — actor, object, target, context, origin, result, or instrument —
 implements `Feedable`:
 
 ```php

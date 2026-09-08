@@ -11,8 +11,8 @@ const created = activity({
 })
 </script>
 
-An activity is a verb plus up to four entities. The builder reads in the order of
-the headline it produces:
+An activity is a verb plus up to seven entity roles. The builder reads in the
+order of the headline it produces:
 
 ```php
 Storyfeed::activity()
@@ -40,23 +40,31 @@ listener. There is no model spying.
 | `actor` | who did it | the user |
 | `object` | what it was done to | the document |
 | `target` | what the act was directed at | the project |
+| `context` | where it happened | the surrounding container |
+| `origin` | where it came from | the source of an accepted invitation |
+| `result` | what it produced | a diff record or generated artifact, including output too large for `data` |
+| `instrument` | what it happened via | an integration used to import a record, or an agent a person acted through |
 
-There is a fourth role, `context` — the container an activity happened inside.
-Most apps don't need it; see [Containers & context](/deeper/context).
+Direction decides the role. The same integration is a `target` for an upload
+**to** it and an `instrument` for a record sourced **via** it.
+See [Containers & context](/deeper/context) for the surrounding container.
 
-Each role has a setter named for it — `actor()`, `verb()`, `object()`,
-`target()`, `context()` — and aliases so the call site reads as the sentence:
+Each role has a setter named for it: `actor()`, `object()`, `target()`,
+`context()`, `origin()`, `result()` and `instrument()`. `verb()` sets the verb.
+Aliases let the call site read as the sentence:
 
 | alias | sets | reads as |
 |---|---|---|
 | `->by()` | `actor` | who acted |
 | `->action()` | `verb` | what they did |
+| `->using()` | `instrument` | what they acted via |
+| `->resulting()` | `result` | what they produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
 
 An alias and its setter record identical rows — pick whichever reads at your
 call site. `context` is set only by `->context()`; note that `->in()` and
 `->from()` predate the context role and set the **target**, not the container
-and not a source.
+and not a source. Use `->origin($source)` for the source.
 
 Roles are set at publish and **never backfilled** — `storyfeed:rebuild` rebuilds
 snapshots, `storyfeed:curate` re-selects axes, and neither can populate a role
@@ -64,7 +72,7 @@ that was never recorded.
 
 For reading an entity's own page you usually want
 [`involving()`](/basics/reading#scoping) rather than any single role — it spans
-all four.
+all seven roles.
 
 ## The default actor
 

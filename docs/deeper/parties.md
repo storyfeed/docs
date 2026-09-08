@@ -29,7 +29,7 @@ Storyfeed::record('sync', $invoice, actor: $party);
 
 <FeedStream :items="[synced]" :grouped="false" />
 
-Parties work in **any** role — actor, object, target, or context:
+Parties work in **any** role — actor, object, target, context, origin, result, or instrument:
 
 ```php
 Storyfeed::activity()

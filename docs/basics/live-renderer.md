@@ -18,7 +18,7 @@ The example is Vue. Polling wiring, avatars and styling are omitted.
 
 ```ts
 // The payload contract, as much of it as a renderer needs.
-export type FeedRole = 'actor' | 'object' | 'target' | 'context'
+export type FeedRole = 'actor' | 'object' | 'target' | 'context' | 'origin' | 'result' | 'instrument'
 
 export interface FeedEntity {
   type: string
@@ -31,7 +31,7 @@ export interface FeedEntity {
   data: Record<string, unknown>
 }
 
-interface BaseNode {
+interface BaseNode extends Record<FeedRole, FeedEntity | null> {
   id: string
   verb: string
   published_at: string
@@ -42,10 +42,6 @@ interface BaseNode {
 
 export interface ActivityNode extends BaseNode {
   kind: 'activity'
-  actor: FeedEntity | null
-  object: FeedEntity | null
-  target: FeedEntity | null
-  context: FeedEntity | null
   data: Record<string, unknown>
 }
 
@@ -69,8 +65,9 @@ export interface FeedPayload {
 }
 ```
 
-Note what a `GroupNode` does **not** have: `actor`, `object`, `target`,
-`context`. That absence is why `one()` below exists.
+Both node kinds carry all seven role keys. A group key follows the
+[payload pinning and count rule](/reference/payload#group-node); `one()` falls
+back to the exemplar when an emitted singular token needs it.
 
 ## The stream
 
@@ -236,16 +233,10 @@ import { computed } from 'vue'
 
 const props = defineProps<{ node: FeedNode }>()
 
-/**
- * A singular token resolves from the exemplar list on a group, and from the
- * role key on an activity. A role the axis PINS is a list of exactly one, by
- * construction — which is what makes the singular token safe there.
- *
- * Group nodes carry no `actor`/`object`/`target`/`context` keys at all, so
- * reading them directly yields the fallback on every group.
- */
+/** Resolve an emitted singular token from its role key, then exemplars. */
 function one(role: FeedRole) {
-  return props.node.exemplars?.[`${role}s`]?.[0] ?? props.node[role] ?? null
+  return props.node[role] ?? (props.node.kind === 'group'
+    ? props.node.exemplars[`${role}s`]?.[0] ?? null : null)
 }
 
 /** What the server counted, minus what it gave us names for. */
@@ -277,11 +268,17 @@ const sentence = computed(() => {
       case ':actor': return one('actor')?.label ?? 'Someone'
       case ':object':
       case ':target':
-      case ':context': return one(token.slice(1) as FeedRole)?.label ?? 'Something'
+      case ':context':
+      case ':origin':
+      case ':result':
+      case ':instrument': return one(token.slice(1) as FeedRole)?.label ?? 'Something'
       case ':actors':
       case ':objects':
       case ':targets':
-      case ':contexts': return list(token.slice(1, -1) as FeedRole)
+      case ':contexts':
+      case ':origins':
+      case ':results':
+      case ':instruments': return list(token.slice(1, -1) as FeedRole)
       case ':count': return String(props.node.count ?? 1)
       // Prefer the self-overflowing plural above; :others is kept for
       // templates that name one actor and count the rest.

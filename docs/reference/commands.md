@@ -68,12 +68,10 @@ Use `--window=` to bound it by `published_at` rather than sweeping the table.
 happens only when you run it deliberately. That is the answer to "could this
 fire while my users are reading?": not by itself.
 
-**It rewrites settled group identity, so read the caveat above:** the
-`sync_token` changes and every accumulating client resyncs. A client holding a
-cursor from before the run may find its next page empty where a group moved —
-the activities are still there and a fresh read returns them, which is what the
-new `sync_token` is telling the client to do. Prefer running it when a feed is
-quiet.
+`--rehash` can move a group past a live cursor, leaving the next page empty.
+The changed `sync_token` is the contract signal: clients must discard all
+accumulated nodes and refetch from the head, including after an empty response.
+See the [Sync token rule](/reference/payload#sync-token).
 
 If you find yourself reading `WriteGroupings` or `CurateCluster` out of
 `vendor/` to replay their invariants by hand, this command is what you are

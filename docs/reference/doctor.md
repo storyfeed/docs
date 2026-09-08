@@ -25,7 +25,7 @@ your feed. Findings name the fix, not just the fault.
 | `tables` | are the package tables present? |
 | `columns` | are write-path columns present? (catches schema drift after an upgrade) |
 | `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it |
-| `roles` | does a singular template name a role (`:target`, `:context`, `:object`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info |
+| `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info |
 | `grouping` | activities with no grouping row that today's axes would group — an import that ran `storyfeed:rebuild` before `storyfeed:trickle` |
 | `entities` | a model filling a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the row is gone. See [Entities](#entities) |
 | `hydration` | which `Feedable` models load their live model in `feedMedia()`, and what a page pays for it. See [Hydration](#hydration) |

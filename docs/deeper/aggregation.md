@@ -82,6 +82,21 @@ a group; `!` marks fields whose absence disqualifies. Token safety is derived
 from the recipe — a singular role token is allowed exactly when the role's
 identity is part of the key.
 
+| role | type field | id field |
+|---|---|---|
+| `actor` | `aa` | `aid` |
+| `object` | `oa` | `oid` |
+| `target` | `ta` | `tid` |
+| `context` | `ca` | `cid` |
+| `origin` | `ora` | `orid` |
+| `result` | `ra` | `rid` |
+| `instrument` | `ia` | `iid` |
+
+Use both fields to pin a role. `v` adds the verb and `d` adds the day.
+`eligibleWhenDistinct()` accepts any of these seven role names. The built-in
+axes do not pin `origin`, `result` or `instrument`; a custom axis can. Their
+plural tokens are available on every axis.
+
 ::: warning Priority
 A new axis registers at the **lowest** priority. If it should outrank a
 built-in, say so explicitly:

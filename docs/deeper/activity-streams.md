@@ -1,8 +1,8 @@
 # Activity Streams 2.0
 
 Storyfeed serializes to [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
-JSON-LD for its recording model. Activity entity roles are `actor`, `object`,
-`target` and `context`; `origin`, `result` and `instrument` are not yet modelled.
+JSON-LD for its recording model. All seven [entity roles](/basics/recording#roles)
+serialize under their AS2 property names.
 This is a document serialization surface, not a general AS2 importer.
 
 One read-only endpoint, off by default:
@@ -21,6 +21,16 @@ One read-only endpoint, off by default:
 
 Exposing an activity is an app decision — add auth or throttling via
 `middleware`.
+
+## Source, outcome and means
+
+| role | AS2 meaning |
+|---|---|
+| [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
+| [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
+| [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used; W3C Example 85 places a music `Service` here |
+
+[Recording](/basics/recording#roles) shows how direction determines the role.
 
 ## Serving a collection
 
@@ -74,7 +84,8 @@ Verbs map to AS2 types via your enum's `activityType()` — see
 Reading Storyfeed's own documents with `Reader::activity()` recovers the `uid`
 from the document `id`, the verb from `sf:verb`, the emitted `type`, and
 `published` as `published_at` (at the serializer's whole-second precision).
-The serialized `actor`, `object`, `target` and `context` values pass through
+The serialized `actor`, `object`, `target`, `context`, `origin`, `result` and
+`instrument` values pass through
 unchanged, or return `null` when absent. That is the round-trip subset:
 top-level `summary` and `replies` are dropped, and the reader does not
 reconstruct every storage attribute or reproduce the whole document.

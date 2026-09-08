@@ -28,6 +28,22 @@ the key, never in the template:
 For singular activities with no recorded actor, register a separate
 [actorless voice](/deeper/parties#actorless-voice) keyed by exact verb.
 
+## Tokens
+
+| singular token | plural token | entity role |
+|---|---|---|
+| `:actor` | `:actors` | who acted |
+| `:object` | `:objects` | what the activity acted on |
+| `:target` | `:targets` | what the activity was directed at |
+| `:context` | `:contexts` | the surrounding container |
+| `:origin` | `:origins` | the source |
+| `:result` | `:results` | the produced entity |
+| `:instrument` | `:instruments` | the tool or service used |
+
+Singular tokens resolve to one entity label. Plural tokens resolve to group
+exemplars with overflow. [Rendering](/basics/rendering#headline-templates)
+covers substitution and the `:count` and `:others` tokens.
+
 ## The anti-lie rule
 
 A group headline may only use tokens that are true of **every** member. A

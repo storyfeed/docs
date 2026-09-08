@@ -60,7 +60,7 @@ The narrower filters answer narrower questions:
 
 | call | returns |
 |---|---|
-| `->involving($model)` | every activity where the model is actor, object, target **or** context |
+| `->involving($model)` | every activity where the model is actor, object, target, context, origin, result **or** instrument |
 | `->context($project)` | only activities recorded *inside* that container |
 | `->actor($user)` | only what that actor did |
 | `->object($doc)` / `->target($customer)` | only that exact role |
@@ -82,7 +82,7 @@ what context-pinned [axes](/deeper/aggregation#custom-axes) group on.
 :::
 
 `involving()` reads a materialized index (`feed_participants`), maintained at
-publish time — so it is an indexed semi-join, not a scan across four morph
+publish time — so it is an indexed semi-join, not a scan across the role morph
 columns. An install upgrading into it runs
 `php artisan storyfeed:participants` once; `storyfeed:doctor` tells you if you
 haven't.
