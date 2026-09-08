@@ -80,6 +80,10 @@ under the `repeat` sentence:
 Without an aggregate template, a group has no authored sentence and falls back.
 The fallback is described in [Grammar](/deeper/grammar#the-anti-lie-rule).
 
+If changing the target stops a `repeat` group from forming, the built-in
+[`targets` axis](/deeper/aggregation#axis-registry) leaves target free;
+`repeat` includes its id in the key.
+
 ## One entry per axis the verb can group on
 
 `:count` is always the member count; the noun after it names what a member is.

@@ -364,7 +364,7 @@ arrive with zero items and a usable cursor.
 | **activity** | one recorded fact | a log entry — you choose what gets recorded |
 | **verb** | what happened, as a string | a closed set; enums are convenience |
 | **actor / object / target / context** | the four roles | interchangeable; target ≠ context |
-| **party** | a named participant with no model | a null actor (that means *unknown*) |
+| **party** | a [named participant with no model](/deeper/parties) | a null actor (that means *unknown*; see [actorless voice](/deeper/parties#actorless-voice)) |
 | **axis** | the question you group by | a sort order, or a display label |
 | **curation** | choosing the winning axis at write time | editorial judgement, or anything at read time |
 | **eligibility** | the minimum that makes an axis worth applying | a limit on how big a group can get |

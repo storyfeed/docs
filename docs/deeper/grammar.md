@@ -25,6 +25,9 @@ the key, never in the template:
 'document.upload' => ':actor uploaded :object to :target',     // ✓
 ```
 
+For singular activities with no recorded actor, register a separate
+[actorless voice](/deeper/parties#actorless-voice) keyed by exact verb.
+
 ## The anti-lie rule
 
 A group headline may only use tokens that are true of **every** member. A

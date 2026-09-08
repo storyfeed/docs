@@ -91,7 +91,9 @@ class RecordSubmission implements ShouldQueue
 
 The row is published with `actor: null`. The line that prevents it is
 `->by($this->user)`, with the user passed into the job the way the event above
-carries it.
+carries it. For a known system use a [party](/deeper/parties#parties); when the
+actor is genuinely absent, [actorless voice](/deeper/parties#actorless-voice)
+provides a separate sentence for the same verb.
 
 ## Who acted decides the sentence
 

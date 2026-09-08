@@ -277,6 +277,9 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 @endforeach
 ```
 
+For a named system or an absent actor, use [Parties and actorless voice](/deeper/parties);
+for Filament timestamp formatting, see [display timezone](/cookbook/fresh-consumer#display-timezone).
+
 The comments on `$one`, `$overflow` and the group branch are the parts to keep
 when you adapt this. [Rendering](/basics/rendering) covers the token rules in
 full.

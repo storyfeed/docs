@@ -6,6 +6,9 @@ Every key in `config/storyfeed.php`. All have working defaults.
 php artisan vendor:publish --tag="storyfeed-config"
 ```
 
+For provider registrations and Filament view props that can be removed, see
+[What a fresh consumer writes today](/cookbook/fresh-consumer).
+
 ## Tables & models
 
 | key | default | |
@@ -21,6 +24,9 @@ php artisan vendor:publish --tag="storyfeed-config"
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | party name for otherwise-anonymous publishes (jobs, commands) |
+
+For named system attribution or a sentence without an actor slot, see
+[Parties and actorless voice](/deeper/parties).
 
 ## Verbs
 
@@ -40,6 +46,9 @@ php artisan vendor:publish --tag="storyfeed-config"
 | `grouping.policy.min_targets` | `2` | distinct targets before `targets` applies |
 | `grouping.policy.min_target_members` | `3` | members required on `targets` |
 | `grouping.policy.min_object_members` | `2` | members required on `object` |
+
+When grouping does not fire, check the [axis registry](/deeper/aggregation#axis-registry)
+before changing thresholds: `repeat` pins the target id, while `targets` does not.
 
 ::: tip
 Curation policy is not payload contract — change these freely. Only the group

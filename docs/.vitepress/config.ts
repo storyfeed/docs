@@ -91,6 +91,7 @@ export default defineConfig({
       {
         text: 'Cookbook',
         items: [
+          { text: 'What a fresh consumer writes today', link: '/cookbook/fresh-consumer' },
           { text: 'Choosing when to publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Repeating activities', link: '/cookbook/repeating-activities' },
           { text: 'Headlines for grouped activities', link: '/cookbook/grouped-headlines' },

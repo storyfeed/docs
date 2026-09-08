@@ -84,6 +84,8 @@ resolver is always restored, even if the callback throws.
 You can also set an app-wide `actor_resolver` in the config, or a
 `parties.fallback` name for queue/console publishes. When nothing resolves, the
 activity is published as anonymous — a null actor means genuinely unknown.
+Use [actorless voice](/deeper/parties#actorless-voice) when that activity should
+read without an actor slot.
 
 ## Extras
 

@@ -58,6 +58,9 @@ ones you are most likely to touch first:
 | `grouping.batch.quiet_minutes` | `10` | idle time before an actor's burst is considered finished |
 | `prune.after_days` | `null` | retention; `null` keeps everything |
 
+For a Filament app’s provider and view defaults, see
+[What a fresh consumer writes today](/cookbook/fresh-consumer).
+
 ## Scheduling
 
 The feed works synchronously out of the box. With Laravel’s scheduler running,

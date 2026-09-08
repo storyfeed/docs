@@ -50,6 +50,16 @@ a neutral placeholder. A null **actor** means anonymous: supply your own label
 (conventionally "Someone"). Activities are never withheld because an entity is
 degraded.
 
+For a named system actor use a [party](/deeper/parties#parties); for a genuinely
+absent actor use [actorless voice](/deeper/parties#actorless-voice) to omit the
+actor slot.
+
+## Timestamps
+
+For Filament timestamps, [display timezone and formatting](/cookbook/fresh-consumer#display-timezone)
+cover `FeedRendering::timezone()`, `storyfeed-filament.timezone`, and their
+resolution order.
+
 ## Null-headline groups
 
 A group with no aggregate grammar and no safe fallback arrives with **both**

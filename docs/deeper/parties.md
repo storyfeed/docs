@@ -16,7 +16,7 @@ Two different things that both look like "not a user":
 
 | | means | in the payload |
 |---|---|---|
-| **anonymous** | the actor is genuinely unknown | `actor: null` — the renderer supplies its own label |
+| **anonymous** | the actor is genuinely unknown | `actor: null` — actorless grammar or a renderer fallback |
 | **party** | a named participant with no model in your app | an ordinary entity, `type: "storyfeed.party"`, real `label`, `url: null` |
 
 ## Parties
@@ -65,3 +65,23 @@ callback throws.
 ```
 
 With no fallback, unresolvable publishes are anonymous.
+
+## Actorless voice
+
+```php
+// AppServiceProvider::boot()
+Storyfeed::actorlessGrammar([
+    'confirm' => ':object was confirmed', // exact verb, not objectType.verb
+]);
+```
+
+A singular activity with no recorded actor identity uses this template before
+ordinary grammar. A named party or an actor whose model can no longer be
+resolved still uses ordinary grammar. If no actorless entry matches, ordinary
+grammar remains the fallback.
+
+Keys are exact verbs, including dotted verbs. There are no wildcards or
+aggregate forms. String templates cannot contain `:actor` or `:actors`.
+Closures receive the activity and return finished text, as in
+[Grammar](/deeper/grammar). Registrations merge by default; pass `merge: false`
+to replace the actorless registry.

@@ -1,6 +1,9 @@
 # Aggregation
 
-Activities group along **axes** — each axis collapses one dimension:
+Activities group along **axes** — each axis collapses one dimension.
+These built-in axes are registered by default:
+
+## Axis registry
 
 | axis | collapses | pins (safe singular tokens) | example headline |
 |---|---|---|---|
@@ -48,6 +51,10 @@ assume any particular grouping behaviour.
     ],
 ],
 ```
+
+If activities across different targets do not group under `repeat`, check the
+[axis registry](#axis-registry): `repeat` includes target type and id in its
+key; `targets` pins actor identity, verb, and day while leaving target free.
 
 Below threshold, activities stay atomic. Disable grouping entirely with
 `NullStrategy`.
