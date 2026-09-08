@@ -95,6 +95,7 @@ export default defineConfig({
           { text: 'What a fresh consumer writes today', link: '/cookbook/fresh-consumer' },
           { text: 'Choosing when to publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Repeating activities', link: '/cookbook/repeating-activities' },
+          { text: 'Counts that keep moving', link: '/cookbook/counts-that-keep-moving' },
           { text: 'Headlines for grouped activities', link: '/cookbook/grouped-headlines' },
           { text: 'Activities without an actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Choosing what not to record', link: '/cookbook/choosing-what-not-to-record' },
