@@ -1,7 +1,11 @@
 # Activity Streams 2.0
 
 Storyfeed serializes to [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
-JSON-LD. One read-only endpoint, off by default:
+JSON-LD for its recording model. Activity entity roles are `actor`, `object`,
+`target` and `context`; `origin`, `result` and `instrument` are not yet modelled.
+This is a document serialization surface, not a general AS2 importer.
+
+One read-only endpoint, off by default:
 
 ```php
 'routes' => [
@@ -57,13 +61,23 @@ Verbs map to AS2 types via your enum's `activityType()` — see
 
 - Mapping is **vocabulary transcription only**. It never throws and never gates
   recording or validation.
-- Unmapped verbs serialize as extension types, **preserved verbatim**. Unknown
-  types are never dropped.
+- Unmapped verbs serialize with the base `Activity` type; the raw verb travels
+  as `sf:verb`. An unmapped `frobnicate` produces `"type": "Activity"` and
+  `"sf:verb": "frobnicate"`. Explicitly mapped extension type strings are
+  **preserved verbatim** as `type`.
 - Composite objects serialize as `OrderedCollection`.
 - An entity's [media slots](/reference/payload#entity-media) serialize as AS2
   `Link` objects under `icon`, `image` and `preview`, with `mediaType`, `width`
   and `height`. A `url` typed as an image is a `Link` too. `$context->feed()`
   is `null` in this serializer: a federation document has no surface.
+
+Reading Storyfeed's own documents with `Reader::activity()` recovers the `uid`
+from the document `id`, the verb from `sf:verb`, the emitted `type`, and
+`published` as `published_at` (at the serializer's whole-second precision).
+The serialized `actor`, `object`, `target` and `context` values pass through
+unchanged, or return `null` when absent. That is the round-trip subset:
+top-level `summary` and `replies` are dropped, and the reader does not
+reconstruct every storage attribute or reproduce the whole document.
 
 ## Type overrides
 
