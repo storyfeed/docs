@@ -59,8 +59,12 @@ is in [Story classes](/basics/stories).
 ```bash
 php artisan storyfeed:doctor --only=grammar   # published pairs with no headline
 php artisan storyfeed:verbs --used            # registered but never recorded, and recorded but never registered
-php artisan storyfeed:stories                 # every publish site in the app
+php artisan storyfeed:stories                 # registered definitions and recorded pairs
 ```
+
+`storyfeed:stories` cannot discover an unregistered publisher that has never
+run. Its `(call site)` rows identify recorded object/verb pairs, not source
+locations.
 
 `grammar.strict` throws at the publish call in `local` and `testing` when the
 pair has no headline. It is in [Story classes](/basics/stories#strict-grammar).
@@ -86,5 +90,7 @@ class DocumentWasPrinted extends Story
 }
 ```
 
-`storyfeed:verbs --used` lists it as registered and not recorded, which is
-the comment's claim in the terminal.
+`storyfeed:verbs --used` compares declarations with distinct stored verbs.
+While historical `print` rows remain, `print` still counts as recorded; the
+command cannot tell whether a publisher is still active. Keep the Story
+registered so those rows retain their headline.

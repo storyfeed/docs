@@ -41,8 +41,10 @@ headline.
 
 ## What a removal story may reference
 
-Deleting a `Feedable` model soft-deletes every activity it took part in, in
-any role. Force-deleting it hard-deletes them.
+For an Eloquent model using `Storyfeed\Concerns\InteractsWithFeed`, a
+model-instance delete soft-deletes every activity it took part in, in any
+role. A `forceDeleted` event hard-deletes them. The table assumes these
+model events run.
 
 | the removal story references | after the delete |
 |---|---|
@@ -50,10 +52,18 @@ any role. Force-deleting it hard-deletes them.
 | the deleted model, published after the delete | the snapshot renders; its link points at a record that is gone |
 | the surviving parent as `object`, the name in `data` | renders and links |
 
+Implementing `Feedable` alone installs no lifecycle hooks. A Feedable adapter
+around a media or discussion row does not receive the underlying model’s
+delete events automatically. Decide whether those activities should survive
+and wire any cleanup explicitly.
+
+Bulk query deletes, such as `Document::where(...)->delete()`, do not dispatch
+individual model events and therefore do not run this cascade.
+
 The lifecycle hooks are in
 [Feedable models](/basics/feedable-models#keeping-snapshots-fresh).
 
 ## A soft delete is a delete
 
-`$document->delete()` on a soft-deleting model fires the same hook and
-soft-deletes the activities. Restoring the model does not restore them.
+`$document->delete()` on a soft-deleting model using the trait fires the same
+hook and soft-deletes the activities. Restoring the model does not restore them.

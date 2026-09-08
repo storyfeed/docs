@@ -51,29 +51,52 @@ const crowd = group({
 ```php
 Storyfeed::activity()
     ->by($user)
-    ->action('upload', $document)
+    ->action('upload', $annualReport)
     ->to($project)
     ->publish();
 ```
 
 <FeedStream :items="[one]" :grouped="false" />
 
-*a minute later, another request, and another after that*
+*a minute later, another request*
 
 ```php
 Storyfeed::activity()
     ->by($user)
-    ->action('upload', $document)
+    ->action('upload', $signagePlan)
     ->to($project)
     ->publish();
 ```
 
-The three publishes are identical. The feed arrives with them already grouped,
-under the `repeat` sentence:
+*another minute later, a third request*
+
+```php
+Storyfeed::activity()
+    ->by($user)
+    ->action('upload', $pricingTable)
+    ->to($project)
+    ->publish();
+```
+
+These are three different documents, each uploaded once. Read with grouping:
+
+```php
+$feed = Storyfeed::feed()->involving($project)->live()->get();
+```
+
+With the default grouping strategy, these activities share the same actor,
+verb, object type, target, and publish day, so `live()` groups them under the
+`repeat` sentence:
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-*five users, five requests, the same project*
+`log()` returns individual activities. `live()` reads repeat groups and authored
+composites; `summary()` can select other eligible axes. Aggregate grammar
+names a group; it does not create one. The five-user example below needs
+`summary()` and an eligible `actors` bucket (at least three distinct actors
+under the default policy). See [Aggregation](/deeper/aggregation).
+
+*five users, five different documents, five requests, the same project*
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
@@ -95,11 +118,26 @@ If changing the target stops a `repeat` group from forming, the built-in
 | `object` | repeated acts on one object | `:actor made :count revisions to :object` |
 | `targets` | one actor's acts across targets | `:actor commented :count times in :targets` |
 
+The file wording above assumes one upload per distinct document. If the same
+document can be uploaded repeatedly, count “uploads” instead: `:count` does
+not count distinct documents.
+
 On the `object` axis a member is one more act on one thing, so the count is of
 revisions or times, never of documents.
 
 Which tokens each axis allows in the singular is in
 [Aggregation](/deeper/aggregation).
+
+## When the content is the news
+
+A group has children, but no group-level `thread` quote. Quotes and media on
+individual activities remain on those children; a closed group can hide the
+words or image the reader needed at a glance. Children are capped by
+`grouping.children_limit` (25 by default), and `children_truncated` says when
+some are omitted. The headline's count still covers the whole group.
+
+Use `log()` for a surface where each decision or comment must remain visible.
+An aggregate sentence alone cannot preserve each member's content.
 
 ## The same pair in a Story
 

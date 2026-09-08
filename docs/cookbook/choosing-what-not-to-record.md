@@ -74,13 +74,98 @@ const reply = activity({
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
-The comment is the object and its text is the body. Editing that text later
-changes the snapshot and publishes nothing.
+The quote above comes from the comment's snapshot. Give the Comment model
+this contract (and register its `comment` morph alias as in
+[Feedable models](/basics/feedable-models)):
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Comment extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->body,
+            data: ['excerpt' => $this->body], // full text, not a shortened preview
+            component: 'Note',
+        );
+    }
+}
+```
+
+`Note` is an app-owned body component. The renderer above resolves
+`node.object.component` and passes it `node.object`; `Note` displays
+`entity.data.excerpt` as escaped text in a blockquote. Core carries the hint
+and data; your renderer supplies the component.
+
+Saving this model with recording enabled refreshes its shared snapshot through
+`InteractsWithFeed`. All rows referencing the comment then show its edited
+text, without publishing another activity. Implementing `Feedable` without
+the trait requires an explicit snapshot refresh.
+
+## A quote belonging to one activity
+
+```php
+use Storyfeed\FeedThread;
+
+Storyfeed::activity()
+    ->by($user)
+    ->action('comment', $comment)
+    ->on($document)
+    ->thread(FeedThread::make(text: $comment->body))
+    ->publish();
+```
+
+Use this instead of the snapshot body when the utterance should be captured
+on the activity. The reader receives it as `node.thread.text`; the Filament
+renderer and this site's feed component render that quote. Omit the `Note`
+body slot for this version so the text is not displayed twice. `FeedThread`
+also accepts `by`, `kind`, and `replies` when attribution and a conversation
+count are needed; an uncounted conversation uses `replies: null`.
+
+When the object is the discussion itself, each activity can still carry the
+particular reply it is about:
+
+```php
+Storyfeed::grammar([
+    'discussion.reply' => ':actor replied about :target',
+]);
+Storyfeed::verbs(['reply' => ActivityType::Create]);
+
+// $discussion is Feedable and registered under the discussion morph alias.
+Storyfeed::activity()
+    ->by($user)
+    ->action('reply', $discussion)
+    ->on($document)
+    ->thread(FeedThread::make(text: $reply->body))
+    ->publish();
+```
+
+Editing a comment or discussion snapshot does not refresh an existing
+`FeedThread`: its text is stored on that activity. Choose whether your app
+keeps the captured words or explicitly updates the activity when speech is
+edited. A latest-reply pulse can replace by discussion and verb; that retention
+choice is in [Repeating activities](/cookbook/repeating-activities).
+
+Supporting machine evidence belongs in activity `data` or an entity detail
+rendered with its provenance. It is not the human utterance in `FeedThread`.
+For a non-conversational passage attached to an entity, the Filament adapter's
+`Detail\Excerpt` provides an excerpt and its source.
 
 ## Grammar with no publisher
 
-A verb declared by a Story or by `Storyfeed::verbs()` and never published is
-listed by `storyfeed:verbs --used` and by doctor's `verbs` check. A grammar
-entry for a verb nothing declares is reported by neither. The one case a
-retired verb is kept on purpose is in
+`storyfeed:verbs --used` and doctor's `verbs` check compare declared verbs
+with distinct stored verbs. A declared verb absent from storage is reported;
+a verb with historical rows still counts as recorded even if its publisher
+has been removed. Neither command searches for publish sites. A grammar
+entry alone does not declare a verb, so these checks do not report an unused
+grammar entry. `storyfeed:stories` inventories registered definitions and
+recorded pairs, but cannot find an unregistered publisher that has never run.
+The case for keeping a retired verb on purpose is in
 [Keeping verbs and grammar together](/cookbook/verbs-and-grammar-together#a-verb-nothing-publishes-any-more).

@@ -15,6 +15,7 @@ class DocumentObserver
         $verb = match ($document->status) {
             'submitted' => 'submit',
             'approved' => 'approve',
+            'archived' => 'archive',
             default => null,                         // a draft is not news either
         };
 
@@ -55,7 +56,7 @@ Storyfeed::verbs([
 
 Storyfeed::grammar([
     'document.submit' => ':actor submitted :object to :target',
-    'document.approve' => ':actor approved :object to :target',
+    'document.approve' => ':actor approved :object in :target',
     'document.archive' => ':actor archived :object in :target',
 ]);
 ```
