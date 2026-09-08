@@ -30,12 +30,49 @@ See [Doctor](/reference/doctor) for the checks.
 | command | does |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
-| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false` |
+| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=` |
 | `storyfeed:bundle` | bundles `Collectable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
 `bundle` and `curate` rewrite settled history and bump the `sync_token`, which
 makes every accumulating client resync.
+
+### `--rehash`: when the grouping recipe changes underneath existing rows
+
+Grouping is **derived at publish time** — the hash comes from the role columns,
+the verb and the day. Change what that hash would compute and **existing rows
+keep the hash they were written with.** Nothing recomputes it on read, and
+nothing warns you.
+
+Four things change it, and three of them are things this package encourages:
+
+- registering a new axis
+- editing an axis recipe key
+- tuning `grouping.policy` thresholds
+- migrating a verb or a role on rows already published
+
+Neither `storyfeed:rebuild` nor a plain `storyfeed:curate` fixes this.
+`rebuild` rebuilds *snapshots*, which are a different kind of derived data —
+they self-heal. Plain `curate` re-picks a winner from the hashes already
+stored. Only `--rehash` re-runs the grouping strategy first, so rows adopt the
+new recipe:
+
+```bash
+php artisan storyfeed:curate --rehash
+```
+
+Use `--window=` to bound it by `published_at` rather than sweeping the table.
+
+**It rewrites settled group identity, so read the caveat above:** the
+`sync_token` changes and every accumulating client resyncs. A client holding a
+cursor from before the run may find its next page empty where a group moved —
+the activities are still there and a fresh read returns them, which is what the
+new `sync_token` is telling the client to do. Prefer running it when a feed is
+quiet.
+
+If you find yourself reading `WriteGroupings` or `CurateCluster` out of
+`vendor/` to replay their invariants by hand, this command is what you are
+reimplementing.
 
 ## Manifest
 
