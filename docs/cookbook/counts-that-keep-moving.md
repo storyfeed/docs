@@ -34,14 +34,20 @@ box they just typed into.
 
 ## Resolving it instead
 
-Store nothing, and supply the count when the page is built:
+Three parts. All three are load-bearing.
+
+**One — store nothing.**
 
 ```php
 FeedThread::make($excerpt)->replies(null)   // "nobody counted"
 ```
 
-Then fill it in one batched lookup as the page is presented, keyed by each
-node's subject:
+`replies(null)` means *nobody counted*, which is a different claim from zero and
+renders as an excerpt with no count rather than as "0 replies".
+
+**Two — resolve the whole page in one query, not one per node.** This is not an
+optimisation. It is what makes read-time resolution viable at all; without it
+the rule amounts to an N+1 per page and you will go back to recording counts.
 
 ```php
 $counts = Comment::query()
@@ -51,13 +57,29 @@ $counts = Comment::query()
     ->pluck('total', 'discussion_id');
 ```
 
-`replies(null)` means *nobody counted*, which is a different claim from zero and
-renders as an excerpt with no count rather than as "0 replies".
+Do it where the page is assembled, keyed by each node's subject id — not inside
+a node renderer, which cannot see its siblings.
 
-::: tip Keep settled counts null on purpose
-Set the count back to `null` when presenting, rather than assuming storage is
-empty. A backfill, a hand-repaired row, or a future writer can put one back, and
-a stale recorded count silently outranks your live one.
+**Three — decide which verbs show no count at all, even after resolving.** A
+resolved count is available everywhere; that does not make it wanted everywhere.
+A settled discussion is the case to think about: its reply count is not news, and
+quoting a number on a closed conversation invites a reader to reopen it.
+
+```php
+$node['thread']['replies'] = $node['verb'] === 'discussion.settled'
+    ? null
+    : $counts[$subjectId] ?? null;
+```
+
+Set it back to `null` explicitly rather than assuming storage was empty. A
+backfill, a hand-repaired row, or a future writer can put a value back, and a
+stale recorded count silently outranks your live one.
+
+::: warning This is the part that gets dropped
+Parts one and two are mechanical and people get them right. Part three is a
+product decision wearing implementation clothes, and skipping it produces a
+surface that resolves counts perfectly and then shows them where they do not
+belong.
 :::
 
 ## Which counts this covers
@@ -92,3 +114,19 @@ is the wrong trade.
 Worse, it fights itself: a healer comparing a recorded count against a live one
 finds a difference on every pass, and rewrites the same story forever. Storing
 `null` is what keeps a healer idempotent here.
+
+## Where this came from
+
+Not a design. The rule was written by a consumer solving a different problem
+entirely: a recorded count made a **healer** replace stories that had not
+changed, every pass, forever, because the stored count and the live one always
+disagreed. Storing `null` was what made healing idempotent.
+
+Months later that same app gave one of its feed surfaces an inline reply box —
+and the rule already protected it from a trap nobody had considered when it was
+written. Nothing on that screen could make a recorded count stale, because no
+count was recorded.
+
+That is the argument for the rule, better than any clean design story: **it held
+against a case its author never saw.** Which is what you want from a rule about
+facts that keep moving.
