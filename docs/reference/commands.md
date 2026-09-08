@@ -19,9 +19,9 @@ Schedule::command('storyfeed:prune')->daily();
 
 | command | does |
 |---|---|
-| `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`, `--stubs`, `--only=` |
+| `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`, `--stubs`, `--only=`, `--list` names the checks `--only=` accepts, `--fail-on=warning\|error` exits non-zero |
 | `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs |
-| `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't |
+| `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
 
 See [Doctor](/reference/doctor) for the checks.
 
