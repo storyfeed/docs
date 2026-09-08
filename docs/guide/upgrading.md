@@ -88,8 +88,8 @@ activities and the IRI from you, so the query is yours to scope.
 
 ## v0.7 — scoped feeds: `involving()`
 
-`FeedBuilder::for()` is now **`involving()`**, and it spans all four roles —
-actor, object, target and context:
+`FeedBuilder::for()` is now **`involving()`**, and at this release it spans actor, object, target and context.
+[Current scoping](/basics/reading#scoping) covers all seven roles:
 
 ```php
 Storyfeed::feed()->for($project);        // → ->involving($project)

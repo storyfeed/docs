@@ -12,8 +12,8 @@ The atomic timeline.
 | `id` | internal PK; event snapshots carry it, feed nodes use `uid` |
 | `uid` | public ULID — the id in the payload, and the durable address of a fact |
 | `verb` | free-form string, indexed |
-| `{actor,object,target,context}_type` / `_id` | nullable morphs, storing **aliases** |
-| `cached_{role}_id` | FK to the snapshot row |
+| `{actor,object,target,context,origin,result,instrument}_type` / `_id` | nullable morphs, storing **aliases** |
+| `cached_{role}_id` | nullable snapshot row id for each of the seven roles |
 | `data` | activity-level JSON payload |
 | `published_at` | the sort key; nullable, stamped at publish |
 | timestamps, `deleted_at` | soft deletes |
@@ -46,7 +46,7 @@ mints composites.
 One row per (activity, filled role): `activity_id`, `role`, `entity_type`
 (alias), `entity_id`, and a denormalized `published_at`. Indexed
 `(entity_type, entity_id, published_at, activity_id)`, which is what makes
-`involving()` a single ordered lookup instead of a four-way OR across the morph
+`involving()` a single ordered lookup instead of an OR across the morph
 columns. Written in the publish transaction; backfilled by
 `storyfeed:participants`.
 

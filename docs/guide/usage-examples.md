@@ -202,6 +202,5 @@ one target:
 
 Pick the one that reads true; the stored activity is identical either way. Each is
 sugar for a role: `by()` is the actor, `action()` is the verb, and the rest are the
-target. The long-hand — `actor()`, `verb()`, `object()`, `target()`, `context()` —
-names the slots directly and is always there.
+target. Each role also has a setter named for it.
 [Recording](/basics/recording) has the full set.

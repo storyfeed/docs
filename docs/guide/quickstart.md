@@ -21,7 +21,7 @@ const published = activity({
 
 ## 1. Make your models feedable
 
-Anything that appears in the feed — actor, object, target, or context —
+Anything that appears in the feed — actor, object, target, context, origin, result, or instrument —
 implements `Feedable`:
 
 ```php
@@ -220,12 +220,11 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
             : $label;
     };
 
-    // A singular token. Activity nodes carry roles directly; GROUP NODES DO
-    // NOT — a group's pinned roles live in `exemplars`, as a list of exactly
-    // one. Reading $node['actor'] on a group would silently render "Someone".
+    // Resolve the emitted singular token from its role key, then exemplars.
+    // A group key is null unless the axis pins it and its distinct count is 1.
     $one = function (array $node, string $role, string $fallback) use ($entity) {
         return $entity(
-            $node['exemplars'][$role.'s'][0] ?? $node[$role] ?? null,
+            $node[$role] ?? $node['exemplars'][$role.'s'][0] ?? null,
             $fallback,
         );
     };
@@ -261,6 +260,12 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
                 ':objects'  => $list($node, 'objects'),
                 ':targets'  => $list($node, 'targets'),
                 ':contexts' => $list($node, 'contexts'),
+                ':origin' => $one($node, 'origin', 'Something'),
+                ':origins' => $list($node, 'origins'),
+                ':result' => $one($node, 'result', 'Something'),
+                ':results' => $list($node, 'results'),
+                ':instrument' => $one($node, 'instrument', 'Something'),
+                ':instruments' => $list($node, 'instruments'),
                 ':count'    => $node['count'] ?? 1,
                 ':others'   => $overflow($node, 'actors').' others',
             ]) !!}

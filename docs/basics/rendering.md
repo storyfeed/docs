@@ -14,21 +14,17 @@ labels.
 
 | token | on | substitutes | read from |
 |---|---|---|---|
-| `:actor` `:object` `:target` `:context` | activity nodes | one linked label | `node[role]` |
-| `:actor` `:object` `:target` `:context` | group nodes, where the axis pins the role | one linked label | `node.exemplars[role+'s'][0]` |
-| `:actors` `:objects` `:targets` `:contexts` | any group node | the exemplar list | `node.exemplars[role]` |
+| `:actor` `:object` `:target` `:context` `:origin` `:result` `:instrument` | activity nodes | one linked label | `node[role]` |
+| `:actor` `:object` `:target` `:context` `:origin` `:result` `:instrument` | group nodes, where the emitted template names the role | one linked label | `node[role] ?? node.exemplars[role+'s'][0]` |
+| `:actors` `:objects` `:targets` `:contexts` `:origins` `:results` `:instruments` | any group node | the exemplar list | `node.exemplars[role]` |
 | `:count` | group nodes | total member count | `node.count` |
 | `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - node.exemplars.actors.length` |
 
-::: danger Singular tokens come from `exemplars` on a group
-A group node has **no** `actor`/`object`/`target`/`context` keys — a pinned role
-arrives as an exemplar list of exactly one. Read the role key directly and your
-fallback ("Someone") renders over a group whose actor is known, silently.
+Group nodes carry singular role keys under the [payload contract's pinning and
+count rule](/reference/payload#group-node). Resolve a singular token from that
+key, then fall back to its exemplar list. The singular fallback can retain a
+token for one distinct entity even when the axis does not pin that role.
 
-`repeat` pins `:actor` and `:target`; `actors` pins `:target`; `targets` pins
-`:actor`; `composite` pins three. Four of five axes pin a role, so this is the
-common path.
-:::
 
 Plural tokens render the exemplars joined, plus the overflow. Exemplars are
 capped at **three** per role, so the overflow is `distinct[role]` minus the

@@ -19,7 +19,7 @@ serializers with the old ones maintained.
 
 ## Entity object
 
-Every role (`actor`, `object`, `target`, `context`) is `null` or:
+Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`) is `null` or:
 
 ```jsonc
 {
@@ -113,6 +113,9 @@ one feed's authority to another's audience.
   "object": { /* entity */ },
   "target": { /* entity or null */ },
   "context": { /* entity or null */ },
+  "origin": { /* entity or null */ },
+  "result": { /* entity or null */ },
+  "instrument": { /* entity or null */ },
   "data": {},
   "thread": null                       // optional FeedThread conversation metadata
 }
@@ -131,17 +134,35 @@ one feed's authority to another's audience.
   "headline_template": ":actors uploaded :count files to :target",
   "headline": null,
   "glyph": "file-up",
+  "actor": null,
+  "object": null,
+  "target": { /* the shared target entity */ },
+  "context": null,
+  "origin": null,
+  "result": null,
+  "instrument": null,
   "exemplars": {                        // every role is a LIST
     "actors": [ /* up to 3 entities */ ],
-    "objects": [ /* a pinned role has exactly one */ ],
-    "targets": [ /* a role null across members is [] */ ],
-    "contexts": []
+    "objects": [ /* up to 3 entities */ ],
+    "targets": [ /* the shared target entity */ ],
+    "contexts": [ /* one context entity */ ],
+    "origins": [],
+    "results": [],
+    "instruments": []
   },
-  "distinct": { "actors": 5, "objects": 3, "targets": 4, "contexts": 1 },
+  "distinct": {
+    "actors": 5, "objects": 3, "targets": 1, "contexts": 1,
+    "origins": 0, "results": 0, "instruments": 0
+  },
   "children": [ /* member activity nodes, newest first, possibly truncated */ ],
   "children_truncated": false
 }
 ```
+
+Each singular role key is an entity only when the axis pins the role, its
+exemplar list has exactly one entry, and its distinct count is exactly one.
+Otherwise it is `null`. Each plural role has an exemplar list capped at three
+and a distinct count; an absent role has `[]` and `0`.
 
 The group node *shape* is frozen contract. The *curation policy* deciding which
 groups exist (axes, thresholds, windows) is a server-side detail and free to
@@ -181,6 +202,11 @@ Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
 from the head. Equality compare only; `null → non-null` is a change. It is a
 resync *trigger*, not a reconciliation rule.
+
+This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows)
+moves a group past a live cursor and the next page is empty. Check the token
+before treating that response as the end of the feed. A client that ignores a
+changed token does not conform to the payload contract.
 
 ## Degraded entities
 
