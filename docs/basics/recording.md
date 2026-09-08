@@ -143,6 +143,38 @@ toward its neighbours. The narrative survives in full, and you keep the tooling:
 `storyfeed:verbs` and doctor's `verbs` check key on the verb too. One verb for a
 seven-state machine gives all of them one thing to say about seven facts.
 
+### The qualification: lifecycles that cycle
+
+"Distinct verbs never collide" holds while the lifecycle only moves **forward**.
+It stops holding the moment an object can re-enter a state it has already been
+in — a ticket closed, reopened and closed again; an order marked ready, cancelled
+and made ready again; anything that can be un-done and re-done.
+
+There, `order.ready` fires twice on the same object, and `->replace()` does
+precisely what it promises: the second occurrence supersedes the first. The
+collapse you wanted between a double-clicked button and its retry is the same
+collapse you did not want between March and September. **The row survives; the
+first time it happened does not.**
+
+The key is the object and the verb, and a cycle repeats both. Nothing in the
+package can tell the two cases apart, because from storage they are identical.
+
+So the rule is narrower than it first reads:
+
+- **Monotonic lifecycle** — each state entered at most once. Verb per
+  transition, keep `->replace()`. This is most lifecycles.
+- **Cycling lifecycle** — a state can recur, and each recurrence is a fact a
+  reader would want. **Drop `->replace()`** and let the occurrences append.
+
+Dropping it costs the idempotency: a retried webhook now writes a second row.
+If that matters, guard at the boundary you already have — the transition itself
+should be recording once, and a lifecycle that can cycle usually has a
+transition record to hang that on.
+
+If you are unsure which kind you have, ask whether *"this happened again"* is
+information. For `save` on a draft it is not. For a reopened ticket it is the
+most interesting thing on the row.
+
 One verb plus `->replace()` is still the right answer where the past instances
 are genuinely noise: `save` on a draft, `viewed`, a heartbeat, "location
 updated". Latest-wins state, not a story anyone reads.
