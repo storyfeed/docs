@@ -5,10 +5,11 @@
   "description": "Documentation site for storyfeed/storyfeed \u2014 docs.storyfeed.dev",
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
-    "build": "vitepress build docs",
+    "build": "node scripts/llms.mjs && vitepress build docs",
     "preview": "vitepress preview docs --port 5174",
     "drift": "node scripts/drift-detector/index.mjs",
-    "test:drift": "node --test scripts/drift-detector/drift.test.mjs"
+    "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
+    "llms": "node scripts/llms.mjs"
   },
   "devDependencies": {
     "vitepress": "^2.0.0-alpha.19"

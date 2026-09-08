@@ -20,3 +20,7 @@ docs/.vitepress/cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Generated at build time by scripts/llms.mjs — never committed, so it cannot go stale
+docs/public/llms.txt
+docs/public/llms-full.txt
