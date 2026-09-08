@@ -41,10 +41,32 @@ plural tokens are allowed everywhere, because a list of one is still true.
 `storyfeed:doctor` reports unsafe tokens as warnings; run it with
 `--fail-on=warning` to make CI fail on them.
 
-When no aggregate grammar resolves, the group falls back to the head member's
-singular template **only if every token that template uses is pinned by the
-axis** — otherwise both headline fields are null and
-[your renderer handles it](/basics/rendering#null-headline-groups).
+When no aggregate grammar resolves, the group tries the head member's singular
+template. Pinned tokens keep their links. An unpinned role with one distinct
+entity can also keep its token; with several entities, it can become a plain
+noun when the axis pins their type. If neither fallback is safe, both headline
+fields are null and [your renderer handles it](/basics/rendering#null-headline-groups).
+
+Register the noun forms by morph alias:
+
+```php
+use Storyfeed\FeedNoun;
+
+Storyfeed::nouns([
+    'document' => 'document|documents', // morph alias, not a class name
+    'clause' => FeedNoun::trans('nouns.clause'),
+]);
+```
+
+Supply both forms; Storyfeed never inflects. Translation keys are wrapped in
+`FeedNoun::trans()`, and locales with more plural forms can use extra pipe
+segments. Without a registered noun, the fallback uses `item|items`.
+
+The distinct entity count selects the form but is not printed:
+`FeedNoun::form('document|documents', 7)` returns `documents`. Core substitutes
+that text before returning the template, so `:actor uploaded :object` can arrive
+as `:actor uploaded documents`. The substituted noun is plain text, with no
+single entity to link to; `:actor` remains a linkable token.
 
 ## One plural list per template
 
@@ -79,7 +101,7 @@ Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 
 ## Verbs spanning multiple types
 
-Aggregate grammar is keyed per **verb**, while a Story is per
+Aggregate grammar is keyed by **axis and verb**, while a Story is per
 `(objectType, verb)`. When one verb spans several types — `create` on projects,
 tasks, and clients — its aggregate keys have no single owner: whichever Story
 declares `groups()` for `create` owns them all, and nothing indicates that to a

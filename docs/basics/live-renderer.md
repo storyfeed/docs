@@ -37,7 +37,7 @@ interface BaseNode {
   published_at: string
   headline_template: string | null
   headline: string | null
-  icon: string | null
+  glyph: string | null
 }
 
 export interface ActivityNode extends BaseNode {

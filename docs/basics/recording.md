@@ -4,7 +4,7 @@
 import { who, where, firm, activity } from '../.vitepress/theme/samples'
 
 const created = activity({
-  id: 'r1', verb: 'create', icon: 'folder',
+  id: 'r1', verb: 'create', glyph: 'folder',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor created the project :object for :target',
   actor: who.ines, object: where.birdRemoval, target: firm.chirp,
@@ -95,6 +95,11 @@ Storyfeed::activity()
     ->publish();
 ```
 
+`Storyfeed::record()` also accepts named `data:`, `publishedAt:`, `replace:`,
+`objects:`, and `thread:` arguments. Story subclasses expose the same options
+through `YourStory::record()`, without the verb argument. `thread:` accepts a
+`Storyfeed\FeedThread`; use named arguments because the parameter order differs.
+
 `->replace()` upserts instead of appending — publishing the same activity again
 replaces the earlier row rather than duplicating it:
 
@@ -105,11 +110,14 @@ Storyfeed::activity()->action('save', $draft)->replace()->publish();
 ### What `->replace()` matches on
 
 **The object and the verb — `data` is not part of the key**, and the superseded
-rows are hard-deleted. No cursor, no read mode and no curated view brings them
-back. (`->publishAndReplace()` is the same thing in one call; everything below
-applies to it identically.)
+rows are soft-deleted by default. They disappear from normal feed reads but
+remain in storage. Set `storyfeed.replace.delete` to `'force'` to permanently
+delete them and their grouping and participant rows.
 
-That makes one plausible-looking shape destructive: a single `updateStatus` verb
+`->publishAndReplace()` is the same thing in one call; everything below applies
+to it identically.
+
+That makes one plausible-looking shape hide earlier transitions: a single `updateStatus` verb
 carrying `data: ['from' => …, 'to' => …]` supersedes its *own* previous
 transition, because every transition shares the same object and verb. Seven
 states in, one line out, and the survivor is whichever fired last.

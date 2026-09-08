@@ -14,7 +14,7 @@ const d = (id, label) => ({ type: 'document', id, label, url: `/documents/${id}`
 const p = (id, label) => ({ type: 'project', id, label, url: `/projects/${id}`, component: null, data: {} })
 
 const comment = [{
-  kind: 'activity', id: 'a6', verb: 'comment', icon: 'message-circle',
+  kind: 'activity', id: 'a6', verb: 'comment', glyph: 'message-circle',
   published_at: '2026-08-14T14:40:00.000000Z',
   headline_template: ':actor commented on :target', headline: null,
   actor: m('6', 'Ines Duarte'),

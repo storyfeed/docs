@@ -63,7 +63,7 @@ Storyfeed::activity()
 import { who, doc, note, activity } from '../.vitepress/theme/samples'
 
 const reply = activity({
-  id: 'ck7', verb: 'comment', icon: 'message-circle',
+  id: 'ck7', verb: 'comment', glyph: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
   actor: who.priya, object: note.overflow, target: doc.annualReportV3,

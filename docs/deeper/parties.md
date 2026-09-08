@@ -4,7 +4,7 @@
 import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
 
 const synced = activity({
-  id: 'pt1', verb: 'sync', icon: 'refresh-cw',
+  id: 'pt1', verb: 'sync', glyph: 'refresh-cw',
   published_at: '2026-08-14T13:55:00.000000Z',
   headline_template: ':actor synced :object to :target',
   actor: entity('storyfeed.party', '1', 'Concur Web Service', null),

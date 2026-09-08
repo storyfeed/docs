@@ -22,14 +22,14 @@ Storyfeed::aggregateGrammar([
 import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
 
 const one = activity({
-  id: 'ck5a', verb: 'upload', icon: 'file-up',
+  id: 'ck5a', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
   actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
 })
 
 const burst = group({
-  id: 'ck5b', verb: 'upload', axis: 'repeat', count: 3, icon: 'file-up',
+  id: 'ck5b', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
   published_at: '2026-08-14T14:33:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
   actors: [who.ines], targets: [where.passwordCrackdown],
@@ -38,7 +38,7 @@ const burst = group({
 })
 
 const crowd = group({
-  id: 'ck5c', verb: 'upload', axis: 'actors', count: 5, icon: 'file-up',
+  id: 'ck5c', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
   published_at: '2026-08-14T14:35:00.000000Z',
   headline_template: ':actors uploaded :count files to :target',
   actors: [who.ines, who.marcus, who.priya], targets: [where.passwordCrackdown],

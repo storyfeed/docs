@@ -78,7 +78,7 @@ and Blade components; sponsored, Livewire and React become reachable.
 
 Until **2026-08-18** this page promised the Filament adapter as part of MIT
 `storyfeed/ui`. It is now `storyfeed/filament`: a separate repository,
-commercial from its first commit, not yet built. That narrows something already
+commercial from its first commit. That narrows something already
 written down in public, so it is explained here rather than quietly edited.
 
 - **The pattern stays free, end to end.** The core plus `storyfeed/ui` render a

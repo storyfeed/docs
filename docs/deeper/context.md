@@ -7,7 +7,7 @@ project, a workspace, a tenant.
 import { who, where, doc, activity } from '../.vitepress/theme/samples'
 
 const placed = activity({
-  id: 'cx1', verb: 'upload', icon: 'file-up',
+  id: 'cx1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :context',
   actor: who.aiko, object: doc.signagePlanClientCopy, target: where.verificationTiers,

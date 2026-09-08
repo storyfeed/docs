@@ -65,7 +65,7 @@ const rows = computed(() => {
     'verb',
     ...(node.kind === 'group' ? ['axis', 'count'] : []),
     ...ROLES.filter((role) => node[role]?.label),
-    ...(node.icon ? ['icon'] : []),
+    ...(node.glyph ? ['glyph'] : []),
   ]
 
   return keys.map((slot) => ({ slot, ...resolve(slot) }))

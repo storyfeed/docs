@@ -71,7 +71,7 @@ public ActivityType|string|null $type = ActivityType::Add;
 
 Per-model, when the AS2 type belongs with the entity rather than the verb,
 implement `HasActivityStreamsType` — it keeps the mapping next to
-`toFeed()`/`toFeedLink()` instead of in a central registry.
+`toFeed()`/`feedMedia()` instead of in a central registry.
 
 ## Federation
 

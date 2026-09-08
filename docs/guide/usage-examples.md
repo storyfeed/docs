@@ -13,14 +13,14 @@ const crackdown = where.passwordCrackdown
 const report = doc.annualReportV3
 
 const upload = activity({
-  id: 'i1', verb: 'upload', icon: 'file-up',
+  id: 'i1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
   actor: designer, object: report, target: crackdown,
 })
 
 const burst = group({
-  id: 'i2', verb: 'upload', axis: 'repeat', count: 7, icon: 'file-up',
+  id: 'i2', verb: 'upload', axis: 'repeat', count: 7, glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
   actors: [designer], targets: [crackdown],
@@ -33,7 +33,7 @@ const burst = group({
 })
 
 const crowd = group({
-  id: 'i7', verb: 'upload', axis: 'actors', count: 5, icon: 'file-up',
+  id: 'i7', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
   published_at: '2026-08-14T14:31:00.000000Z',
   headline_template: ':actors uploaded :count files to :target',
   actors: [who.ines, who.marcus, who.priya], targets: [crackdown],
@@ -41,7 +41,7 @@ const crowd = group({
 })
 
 const story = group({
-  id: 'i8', verb: 'approve', axis: 'composite', count: 2, icon: 'file-check',
+  id: 'i8', verb: 'approve', axis: 'composite', count: 2, glyph: 'file-check',
   published_at: '2026-08-14T14:20:00.000000Z',
   headline_template: ':actor approved :count files in :context',
   actors: [who.tomas], contexts: [where.portMigration],
@@ -50,7 +50,7 @@ const story = group({
 })
 
 const external = activity({
-  id: 'i9', verb: 'sync', icon: 'refresh-cw',
+  id: 'i9', verb: 'sync', glyph: 'refresh-cw',
   published_at: '2026-08-14T13:55:00.000000Z',
   headline_template: ':actor synced :object to :target',
   actor: entity('storyfeed.party', '1', 'Concur Web Service', null),
@@ -58,7 +58,7 @@ const external = activity({
 })
 
 const reply = activity({
-  id: 'i3', verb: 'comment', icon: 'message-circle',
+  id: 'i3', verb: 'comment', glyph: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
   actor: reviewer,

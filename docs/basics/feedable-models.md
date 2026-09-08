@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
-use Storyfeed\FeedLink;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
 
 class Document extends Model implements Feedable
 {
@@ -22,9 +23,9 @@ class Document extends Model implements Feedable
         );
     }
 
-    public static function toFeedLink(array $data): ?FeedLink
+    public static function feedMedia(FeedContext $context): ?FeedMedia
     {
-        return FeedLink::make(url: route('documents.show', $data['id']));
+        return FeedMedia::make(url: route('documents.show', $context->data('id')));
     }
 }
 ```
@@ -35,17 +36,17 @@ import { who, where, doc, note, activity, group } from '../.vitepress/theme/samp
 // A project's own feed: activities where it is the target, and the one that
 // created it — where it is the object, which a context-only filter would miss.
 const scoped = [
-  group({ id: 'f1', verb: 'upload', axis: 'repeat', count: 3, icon: 'file-up',
+  group({ id: 'f1', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor uploaded :count files to :target',
     actors: [who.ines], targets: [where.passwordCrackdown],
     objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
     distinct: { actors: 1, objects: 3, targets: 1 } }),
-  activity({ id: 'f2', verb: 'comment', icon: 'message-circle',
+  activity({ id: 'f2', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor commented on :target',
     actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
-  activity({ id: 'f3', verb: 'create', icon: 'folder',
+  activity({ id: 'f3', verb: 'create', glyph: 'folder',
     published_at: '2026-08-12T09:00:00.000000Z',
     headline_template: ':actor created the project :object',
     actor: who.jasper, object: where.passwordCrackdown }),
@@ -59,35 +60,46 @@ The two methods split along the cache boundary:
 
 | method | runs at | produces |
 |---|---|---|
-| `toFeed()` | publish time (refreshed on save) | the cached snapshot: label + data |
-| `toFeedLink()` | read time, statically, from the cached data | a fresh URL |
+| `toFeed()` | publish time (refreshed on save) | the cached label, data, and optional body fields |
+| `feedMedia()` | read time, statically, from the cached data | fresh links and media |
 
-Reads never touch your domain tables — a feed page is served entirely from
-snapshots. URLs are regenerated live so they never go stale.
+Reads use snapshots by default. URLs are regenerated at read time. A resolver
+can opt into `$context->model()` when it needs live model data; those lookups
+are batched by model class across the page.
 
 ::: tip
-`toFeedLink()` receives exactly what `toFeed()` put in `data` — include the key
-you need to build the URL. Throwing inside it is safe: the failure is reported
-and the entity degrades to `url: null`. One broken link never breaks a feed.
+`feedMedia()` reads cached values through `$context->data()` — include the key
+you need to build the URL in `toFeed()`. A thrown exception is reported,
+and the entity degrades to `url: null` and `media: null`. One broken resolver never breaks a feed.
 :::
 
-`FeedLink` carries more than a URL when you need it:
+`FeedMedia` carries more than a URL when you need it:
 
 ```php
-FeedLink::make(url: $url, attributes: ['target' => '_blank']);
-FeedLink::modal($url);   // hint the renderer to open as a modal
+FeedMedia::make(url: $url, attributes: ['target' => '_blank']);
+FeedMedia::modal($url);   // hint the renderer to open as a modal
 ```
+
+`InteractsWithFeed` supplies a `feedMedia()` that returns `null`. Override it
+when the entity has a link or media to show.
+
+`FeedEntity::make()` also accepts `content`, `mediaType`, and `attributedTo`
+for authored text, its encoding, and the author's IRI. `FeedMedia::make()`
+accepts `icon`, `image`, and `preview` image slots, plus an `attachment`
+containing a `FeedResource` for a PDF or other non-image resource. See the
+[payload contract](/reference/payload#entity-object).
 
 ## Keeping snapshots fresh
 
 `InteractsWithFeed` wires the model events: saving refreshes the snapshot,
-deleting removes the entity's feed presence.
+deleting soft-deletes activities involving the entity. Automatic snapshot
+refreshes pause when recording is disabled.
 
 | method | use |
 |---|---|
 | `updateFeedSnapshot()` | force a refresh outside a save |
-| `deleteFromFeed()` | remove feed presence (soft) |
-| `forceDeleteFromFeed()` | remove permanently |
+| `deleteFromFeed()` | soft-delete every activity involving this model |
+| `forceDeleteFromFeed()` | permanently delete every activity involving this model, including already soft-deleted activities, plus their grouping and participant rows; entity snapshots are retained |
 
 For entities recorded before they had snapshots (imports, backfills), schedule
 the trickle:

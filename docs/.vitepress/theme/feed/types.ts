@@ -26,7 +26,7 @@ interface BaseNode {
     headline_template: string | null;
     /** Pre-rendered fallback for closure-based grammar. */
     headline?: string | null;
-    icon: string | null;
+    glyph: string | null;
 }
 
 export interface ActivityNode extends BaseNode {

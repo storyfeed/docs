@@ -11,16 +11,14 @@
 ## Install
 
 ```bash
-composer require storyfeed/storyfeed
+composer require storyfeed/storyfeed:dev-main
 ```
 
 The service provider and `Storyfeed` facade register via package discovery.
 
-A `0.x` minor is free to break without a deprecation cycle — see [Stability
-before 1.0](/reference/compatibility#stability-before-1-0) — and the caret
-constraint Composer writes for a `0.x` release stops at the next minor. Upgrading
-is a decision you make: change the constraint, read the [upgrade
-notes](/guide/upgrading), run `storyfeed:doctor`.
+The current package is installed from `dev-main`. Commit `composer.lock` to
+pin the resolved revision. Before updating, read the [upgrade
+notes](/guide/upgrading) and run `storyfeed:doctor` after the update.
 
 ## Migrations
 
@@ -62,7 +60,11 @@ ones you are most likely to touch first:
 
 ## Scheduling
 
-The feed works synchronously out of the box. These keep it tidy:
+The feed works synchronously out of the box. With Laravel’s scheduler running,
+the package schedules `storyfeed:curate` hourly with overlap protection. Set
+`storyfeed.curate.schedule` to `false` to disable that automatic repair.
+
+Add these maintenance tasks to your app’s schedule:
 
 ```php
 // routes/console.php

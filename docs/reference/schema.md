@@ -9,7 +9,7 @@ The atomic timeline.
 
 | column | |
 |---|---|
-| `id` | internal PK, never exposed |
+| `id` | internal PK; event snapshots carry it, feed nodes use `uid` |
 | `uid` | public ULID — the id in the payload, and the durable address of a fact |
 | `verb` | free-form string, indexed |
 | `{actor,object,target,context}_type` / `_id` | nullable morphs, storing **aliases** |
@@ -20,7 +20,9 @@ The atomic timeline.
 
 ## `feed_snapshots`
 
-Denormalized entity labels and data, so reads never touch your domain tables.
+Denormalized entity labels, data, and optional body fields. Reads use these
+snapshots unless a [media resolver](/basics/feedable-models#snapshots-and-links)
+opts into a live model lookup.
 Written at publish, refreshed on model save, backfilled by `storyfeed:trickle`.
 
 ## `feed_groupings`

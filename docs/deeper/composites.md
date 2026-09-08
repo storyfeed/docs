@@ -4,7 +4,7 @@
 import { who, where, doc, group } from '../.vitepress/theme/samples'
 
 const authored = group({
-  id: 'cp1', verb: 'upload', axis: 'composite', count: 2, icon: 'file-up',
+  id: 'cp1', verb: 'upload', axis: 'composite', count: 2, glyph: 'file-up',
   published_at: '2026-08-14T14:20:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
   actors: [who.tomas], targets: [where.portMigration],

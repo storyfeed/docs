@@ -34,7 +34,7 @@ class DocumentObserver
 import { who, where, doc, activity } from '../.vitepress/theme/samples'
 
 const submitted = activity({
-  id: 'ck2', verb: 'submit', icon: 'file-check',
+  id: 'ck2', verb: 'submit', glyph: 'file-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor submitted :object to :target',
   actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,

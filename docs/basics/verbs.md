@@ -4,7 +4,7 @@
 import { who, where, doc, activity } from '../.vitepress/theme/samples'
 
 const uploaded = activity({
-  id: 'v1', verb: 'upload', icon: 'file-up',
+  id: 'v1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
   actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,

@@ -9,7 +9,7 @@ import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
 // The same names the snippets use, so the rendered result is this page's example
 // and not a different one.
 const published = activity({
-  id: 'q1', verb: 'upload', icon: 'file-up',
+  id: 'q1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
   actor: who.ines,
@@ -29,7 +29,8 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
-use Storyfeed\FeedLink;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
 
 class Document extends Model implements Feedable
 {
@@ -43,21 +44,21 @@ class Document extends Model implements Feedable
         );
     }
 
-    public static function toFeedLink(array $data): ?FeedLink
+    public static function feedMedia(FeedContext $context): ?FeedMedia
     {
-        return FeedLink::make(url: route('documents.show', $data['id']));
+        return FeedMedia::make(url: route('documents.show', $context->data('id')));
     }
 }
 ```
 
 `toFeed()` is a snapshot, written at publish time and refreshed on save.
-`toFeedLink()` is static and runs at read time from that snapshot, so labels stay
+`feedMedia()` is static and runs at read time from that snapshot, so labels stay
 fast and URLs never go stale.
 
 ::: tip
-`toFeedLink()` receives exactly what `toFeed()` put in `data` — include the key
-you need to build the URL. Throwing inside it is safe: the failure is reported
-and the entity degrades to `url: null`.
+`feedMedia()` reads cached values through `$context->data()` — include the key
+you need to build the URL in `toFeed()`. A thrown exception is reported,
+and the entity degrades to `url: null` and `media: null`.
 :::
 
 Storyfeed stores morph aliases, never class names, so enforce a morph map:
@@ -242,7 +243,7 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 
 @foreach ($page['items'] as $node)
     <article>
-        <i class="{{ $node['icon'] }}"></i>
+        <i class="{{ $node['glyph'] }}"></i>
 
         @if ($node['headline_template'])
             {!! strtr($node['headline_template'], [

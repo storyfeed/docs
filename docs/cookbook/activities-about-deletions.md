@@ -26,7 +26,7 @@ Storyfeed::grammar([
 import { who, where, doc, activity } from '../.vitepress/theme/samples'
 
 const removed = activity({
-  id: 'ck8', verb: 'document.remove', icon: 'archive',
+  id: 'ck8', verb: 'document.remove', glyph: 'archive',
   published_at: '2026-08-14T17:05:00.000000Z',
   headline_template: ':actor removed a document from :object',
   actor: who.ines, object: where.passwordCrackdown,

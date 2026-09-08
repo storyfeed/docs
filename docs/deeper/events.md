@@ -50,3 +50,17 @@ and publishing without a collision.
 All three are explicit calls. Whichever you choose,
 `php artisan storyfeed:stories` inventories every publish site in the app —
 including ones the package never wired.
+
+## Events emitted by Storyfeed
+
+| event | payload |
+|---|---|
+| `Storyfeed\Events\ActivityPublished` | `$event->activity`: `ActivitySnapshot` |
+| `Storyfeed\Events\ActivityDeleted` | `$event->activity`: `ActivitySnapshot` |
+| `Storyfeed\Events\BatchClosed` | `$event->batch`: `BatchSnapshot`, including its activity snapshots |
+
+These immutable snapshots live in `Storyfeed\Events\Snapshots`. They preserve
+event-time facts; they are not Eloquent models. Events are delivered after the
+outermost transaction commits, and a rollback delivers nothing. Queued listeners
+receive the same captured facts as synchronous listeners. Batch members are
+captured at close, before automatic bundling.

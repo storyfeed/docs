@@ -60,7 +60,7 @@ const hiddenBeyondChildren = computed(
                     :size="item.exemplars.actors.length > 1 ? 'sm' : 'md'"
                 />
             </div>
-            <FeedIcon v-else :icon="item.icon" />
+            <FeedIcon v-else :icon="item.glyph" />
             <div
                 v-if="!isLast || expanded"
                 aria-hidden="true"

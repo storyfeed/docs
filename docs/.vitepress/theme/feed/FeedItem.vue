@@ -24,7 +24,7 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
     <div class="sf-row">
         <div class="sf-rail">
             <EntityAvatar v-if="!dense && item.actor" :entity="item.actor" />
-            <FeedIcon v-else :icon="item.icon" />
+            <FeedIcon v-else :icon="item.glyph" />
             <div v-if="!isLast" aria-hidden="true" class="sf-rail__line" />
         </div>
 

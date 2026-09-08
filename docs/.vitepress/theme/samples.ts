@@ -31,6 +31,7 @@ export function entity(
     modal: false,
     component: null,
     data: {},
+    media: null,
     ...over,
   }
 }
@@ -82,12 +83,13 @@ export function activity(over: Record<string, any>) {
     published_at: over.published_at,
     headline_template: over.headline_template,
     headline: null,
-    icon: over.icon ?? null,
+    glyph: over.glyph ?? null,
     actor: over.actor ?? null,
     object: over.object ?? null,
     target: over.target ?? null,
     context: over.context ?? null,
     data: over.data ?? {},
+    thread: over.thread ?? null,
   }
 }
 
@@ -105,7 +107,7 @@ export function group(over: Record<string, any>) {
     published_at: over.published_at,
     headline_template: over.headline_template,
     headline: null,
-    icon: over.icon ?? null,
+    glyph: over.glyph ?? null,
     exemplars: {
       actors: over.actors ?? [],
       objects: over.objects ?? [],

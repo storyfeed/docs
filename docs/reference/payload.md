@@ -30,9 +30,20 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
   "attributes": {},                    // link attributes, e.g. {"target": "_blank"}
   "modal": false,                      // hint: open as a modal
   "component": null,                   // backend-named body component
-  "data": {}                           // snapshot data
+  "data": {},                          // snapshot data
+  "media": null                        // live image slots and optional attachment
 }
 ```
+
+`FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
+and `attributedTo` (the author’s IRI). These keys appear only when non-null;
+an empty `content` string is preserved.
+
+When `media` is non-null, it contains `icon`, `image`, `preview`, and `url`, each
+an image object or null. An image carries `src`, `width`, `height`, `alt`, and
+`mediaType`. `media.url` describes an image resource; the top-level `url` remains
+the href string. An optional `attachment` carries `type`, `href`, `mediaType`,
+and `name` from `FeedResource`. Its default type is `Document`.
 
 ## Activity node
 
@@ -44,12 +55,13 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
   "published_at": "2026-08-10T14:03:22Z",
   "headline_template": ":actor confirmed :object for :target",
   "headline": null,                     // pre-rendered fallback; see below
-  "icon": "file-check",
+  "glyph": "file-check",
   "actor": { /* entity */ },
   "object": { /* entity */ },
   "target": { /* entity or null */ },
   "context": { /* entity or null */ },
-  "data": {}
+  "data": {},
+  "thread": null                       // optional FeedThread conversation metadata
 }
 ```
 
@@ -64,7 +76,8 @@ Every role (`actor`, `object`, `target`, `context`) is `null` or:
   "verb": "upload",
   "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
   "headline_template": ":actors uploaded :count files to :target",
-  "icon": "file-up",
+  "headline": null,
+  "glyph": "file-up",
   "exemplars": {                        // every role is a LIST
     "actors": [ /* up to 3 entities */ ],
     "objects": [ /* a pinned role has exactly one */ ],
@@ -93,8 +106,13 @@ Renderers **must** handle it — see
 [Rendering](/basics/rendering#null-headline-groups).
 
 Token availability per axis is in
-[Aggregation](/deeper/aggregation); the rule is that a singular role token is
-safe iff the axis pins that role.
+[Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s
+pinned roles; the [singular fallback](/deeper/grammar#the-anti-lie-rule) can also
+keep a role token when the group contains exactly one distinct entity.
+
+The emitted template belongs to the node. Noun substitution can change it even
+when the grammar key is the same; cache rendered results by node rather than
+assuming one emitted template per grammar key.
 
 ## Cursor semantics
 
@@ -115,6 +133,6 @@ resync *trigger*, not a reconciliation rule.
 
 An entity with no snapshot arrives with `label: null` and `url: null` rather
 than being omitted. Activities are never withheld from the payload because an
-entity is un-snapshotted, and a broken `toFeedLink()` degrades to `url: null`
+entity is un-snapshotted, and a broken `feedMedia()` degrades to `url: null` and `media: null`
 with the exception reported server-side — a renderer never sees an exception
 artifact.

@@ -10,7 +10,7 @@
       "published_at": "2026-08-14T14:49:02.000000Z",
       "headline_template": ":actor uploaded :objects to :context",
       "headline": null,
-      "icon": "file-up",
+      "glyph": "file-up",
       "exemplars": {
         "actors": [
           {
@@ -129,7 +129,7 @@
           "published_at": "2026-08-14T14:49:02.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -201,7 +201,7 @@
           "published_at": "2026-08-14T14:48:15.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -273,7 +273,7 @@
           "published_at": "2026-08-14T14:48:00.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -345,7 +345,7 @@
           "published_at": "2026-08-14T14:46:56.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -417,7 +417,7 @@
           "published_at": "2026-08-14T14:45:46.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -489,7 +489,7 @@
           "published_at": "2026-08-14T14:45:37.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -561,7 +561,7 @@
           "published_at": "2026-08-14T14:45:08.000000Z",
           "headline_template": ":actor uploaded :object to :context",
           "headline": null,
-          "icon": "file-up",
+          "glyph": "file-up",
           "actor": {
             "type": "member",
             "id": "8",
@@ -636,7 +636,7 @@
       "published_at": "2026-08-14T15:12:02.000000Z",
       "headline_template": ":actor completed :object",
       "headline": null,
-      "icon": "circle-check",
+      "glyph": "circle-check",
       "actor": {
         "type": "member",
         "id": "7",
@@ -707,7 +707,7 @@
       "published_at": "2026-08-14T15:11:02.000000Z",
       "headline_template": ":actor uploaded :object to :context",
       "headline": null,
-      "icon": "file-up",
+      "glyph": "file-up",
       "actor": {
         "type": "member",
         "id": "1",
@@ -779,7 +779,7 @@
       "published_at": "2026-08-14T15:10:26.000000Z",
       "headline_template": ":actor uploaded :object to :context",
       "headline": null,
-      "icon": "file-up",
+      "glyph": "file-up",
       "actor": {
         "type": "member",
         "id": "1",
@@ -851,7 +851,7 @@
       "published_at": "2026-08-14T15:10:02.000000Z",
       "headline_template": ":actor uploaded :object to :context",
       "headline": null,
-      "icon": "file-up",
+      "glyph": "file-up",
       "actor": {
         "type": "member",
         "id": "1",

@@ -22,21 +22,21 @@ class DocumentSubmitted implements PublishesToFeed
 import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
 
 const submitted = activity({
-  id: 'ck6a', verb: 'submit', icon: 'file-check',
+  id: 'ck6a', verb: 'submit', glyph: 'file-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor submitted :object to :target',
   actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
 })
 
 const anonymous = activity({
-  id: 'ck6b', verb: 'submit', icon: 'file-check',
+  id: 'ck6b', verb: 'submit', glyph: 'file-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor submitted :object to :target',
   actor: null, object: doc.annualReportV3, target: where.passwordCrackdown,
 })
 
 const signed = activity({
-  id: 'ck6c', verb: 'sign', icon: 'file-check',
+  id: 'ck6c', verb: 'sign', glyph: 'file-check',
   published_at: '2026-08-14T16:10:00.000000Z',
   headline_template: ':actor reported :object signed for :target',
   actor: entity('storyfeed.party', '2', 'DocuSign', null),
@@ -44,7 +44,7 @@ const signed = activity({
 })
 
 const expired = activity({
-  id: 'ck6d', verb: 'expire', icon: 'archive',
+  id: 'ck6d', verb: 'expire', glyph: 'archive',
   published_at: '2026-08-21T00:00:00.000000Z',
   headline_template: ':object expired in :target',
   actor: null, object: doc.motionTestClientCopy, target: where.passwordCrackdown,

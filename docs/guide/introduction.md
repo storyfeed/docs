@@ -35,33 +35,33 @@ const log = [
   ['14:45:02','approve','file-check',':actor approved :object', who.marcus, doc.proofSheetFinal2, null, null],
   ['14:44:02','complete','circle-check',':actor completed :object', who.marcus, job.rewritePrintSpecimen, null, null],
   ['14:44:02','complete','circle-check',':actor completed :object', who.aiko, job.redrawSignageMockUps, null, null],
-].map(([time, verb, icon, tpl, actor, object, target, context], i) => activity({
-  id: `l${i}`, verb, icon, headline_template: tpl,
+].map(([time, verb, glyph, tpl, actor, object, target, context], i) => activity({
+  id: `l${i}`, verb, glyph, headline_template: tpl,
   published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
 }))
 
 // The same window, collapsed. Counts reach back past 14:44 — see the note below.
 const summary = [
-  group({ id: 'g1', verb: 'complete', axis: 'actors', count: 12, icon: 'circle-check',
+  group({ id: 'g1', verb: 'complete', axis: 'actors', count: 12, glyph: 'circle-check',
     published_at: '2026-08-14T14:51:02.000000Z',
     headline_template: ':actors completed :count tasks',
     actors: [who.bob, who.priya], distinct: { actors: 4 } }),
-  group({ id: 'g2', verb: 'upload', axis: 'composite', count: 7, icon: 'file-up',
+  group({ id: 'g2', verb: 'upload', axis: 'composite', count: 7, glyph: 'file-up',
     published_at: '2026-08-14T14:49:02.000000Z',
     headline_template: ':actor uploaded :objects to :context',
     actors: [who.aiko],
     objects: [doc.colourTokensV1, doc.colourTokensFinal2, doc.motionTestClientCopy],
     contexts: [where.verificationTiers], distinct: { actors: 1, objects: 7, contexts: 1 } }),
-  group({ id: 'g3', verb: 'revise', axis: 'scene', count: 12, icon: 'file-pen',
+  group({ id: 'g3', verb: 'revise', axis: 'scene', count: 12, glyph: 'file-pen',
     published_at: '2026-08-14T14:48:02.000000Z',
     headline_template: ':actors revised :count documents in :context',
     actors: [who.aiko, who.tomas],
     contexts: [where.portMigration], distinct: { actors: 3, contexts: 1 } }),
-  group({ id: 'g4', verb: 'approve', axis: 'actors', count: 9, icon: 'file-check',
+  group({ id: 'g4', verb: 'approve', axis: 'actors', count: 9, glyph: 'file-check',
     published_at: '2026-08-14T14:45:02.000000Z',
     headline_template: ':actors approved :count documents',
     actors: [who.marcus, who.bob], distinct: { actors: 3 } }),
-  group({ id: 'g5', verb: 'create', axis: 'scene', count: 5, icon: 'square-check',
+  group({ id: 'g5', verb: 'create', axis: 'scene', count: 5, glyph: 'square-check',
     published_at: '2026-08-14T14:44:02.000000Z',
     headline_template: ':actors added :count items in :context',
     actors: [who.jasper, who.marcus],
@@ -71,36 +71,36 @@ const summary = [
 // Section 2 reuses section 1's comment, plus the context it actually carries —
 // so the fourth role arrives on an activity the reader has already read.
 const withContext = [
-  activity({ id: 'c2', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
+  activity({ id: 'c2', verb: 'comment', glyph: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
     actor: who.ines,
     object: note.breakpoint,
     target: doc.styleTileRevA, context: where.portMigration }),
-  activity({ id: 'c1', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
+  activity({ id: 'c1', verb: 'create', glyph: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor added the task :object in :context',
     actor: who.deja, object: job.kerningPassPricingTable,
     context: where.portMigration }),
 ]
 
 const oneActivity = [
-  activity({ id: 'a6', verb: 'comment', icon: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
+  activity({ id: 'a6', verb: 'comment', glyph: 'message-circle', published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor commented on :target',
     actor: who.ines,
     object: note.breakpoint,
     target: doc.styleTileRevA }),
-  activity({ id: 'a5', verb: 'upload', icon: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
+  activity({ id: 'a5', verb: 'upload', glyph: 'file-up', published_at: '2026-08-14T13:00:00.000000Z',
     headline_template: ':actor uploaded :object to :target',
     actor: who.ines, object: doc.pricingTableFinal, target: where.portMigration }),
-  activity({ id: 'a4', verb: 'create', icon: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
+  activity({ id: 'a4', verb: 'create', glyph: 'square-check', published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor added the task :object',
     actor: who.deja, object: job.kerningPassPricingTable }),
-  activity({ id: 'a3', verb: 'create', icon: 'folder', published_at: '2026-08-13T16:00:00.000000Z',
+  activity({ id: 'a3', verb: 'create', glyph: 'folder', published_at: '2026-08-13T16:00:00.000000Z',
     headline_template: ':actor created the project :object for :target',
     actor: who.ines, object: where.birdRemoval, target: firm.chirp }),
-  activity({ id: 'a2', verb: 'join', icon: 'user-plus', published_at: '2026-08-13T11:00:00.000000Z',
+  activity({ id: 'a2', verb: 'join', glyph: 'user-plus', published_at: '2026-08-13T11:00:00.000000Z',
     headline_template: ':actor joined :target',
     actor: who.marcus, target: where.portMigration }),
-  activity({ id: 'a1', verb: 'create', icon: 'building-2', published_at: '2026-08-12T10:00:00.000000Z',
+  activity({ id: 'a1', verb: 'create', glyph: 'building-2', published_at: '2026-08-12T10:00:00.000000Z',
     headline_template: ':actor brought on :object as a client',
     actor: who.jasper, object: firm.chirp }),
 ]
@@ -373,13 +373,13 @@ arrive with zero items and a usable cursor.
 | **count** | activities in the group | distinct people (that's `distinct.actors`) |
 | **grammar** | the registry of headline templates | rendered prose |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
-| **icon** | a token the payload ships, e.g. `file-up` | an image, or a set the package owns |
+| **glyph** | a token the payload ships, e.g. `file-up` | an image, or a set the package owns |
 | **composite** | one authored story about many objects | a derived group |
 | **batch** | a burst-detection window | anything a reader sees |
 | **read mode** | how collapsed the reader wants it | a filter |
 | **cursor** | an opaque page position | an offset, or something to parse |
 | **sync_token** | "history was rewritten, resync" | a cursor, or optional metadata |
-| **snapshot** | a cached label/link per entity | a copy of your model |
+| **snapshot** | cached label, data, and body fields per entity | a copy of your model |
 
 ## Next
 
@@ -395,12 +395,13 @@ method call.
 
 - **You record explicitly.** `Storyfeed::record()` from an action, observer, or
   event listener — you choose what makes the feed. No model spying, no magic.
-- **Reads never touch your domain tables.** Each entity is snapshotted at
-  publish time, so a feed page is fast regardless of how many models it spans.
+- **Reads use snapshots by default.** Each entity is snapshotted at publish
+  time. A media resolver can opt into batched live-model lookups through
+  [`FeedContext::model()`](/basics/feedable-models#snapshots-and-links).
 - **Aggregation happens behind the scenes.** Activities are grouped at write
   time along multiple axes; the read picks the best one.
 - **The payload is a versioned contract.** Every item ships its own headline
-  template, icon, and linked entities. Adding a new activity type never
+  template, glyph, and linked entities. Adding a new activity type never
   requires a frontend change.
 - **A read selects; it never hides.** There is no visibility layer beneath the
   read path. What a surface may show is decided twice — by what you record, and
