@@ -107,6 +107,29 @@ A [`query()` callback](/basics/reading#anything-else-query) is wrapped in its
 own group, so a top-level `orWhere` inside one cannot readmit an excluded verb
 — or reach past the scope a name was entered with.
 
+## `unrestricted()`
+
+```php
+'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
+```
+
+A feed that carries every verb, declared. It changes no query — the feed reads
+the same rows as an open one, and a call site can still narrow it with
+`only()` or `except()`. What changes is what `storyfeed:doctor` reports: a
+verb covered only by this feed is `feeds.unrestricted` at info severity, not
+`feeds.unclassified` at warning. It still reports on every run, so a verb
+recorded next year still surfaces. See
+[Doctor](/reference/doctor#feed-coverage).
+
+```php
+'portal' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->unrestricted(), // throws FeedMisconfigured
+Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
+```
+
+One declaration cannot both filter and carry everything, and `verb()` counts as
+a filter. Narrowing after the declaration is the call-site path and is not
+checked.
+
 ## Feed classes
 
 A closure runs at boot, before any order exists, so it can carry verbs but not a
@@ -276,9 +299,11 @@ allowlist or the denylist of at least one restricted feed:
 The vocabulary it checks is your registered verbs plus the verbs actually
 recorded, so a verb added carelessly six months from now becomes a
 `--fail-on=warning` CI failure. An open feed — one calling neither `only()` nor
-`except()` — decides nothing and contributes nothing. An app that never calls
-`feeds()` gets no findings from the check. See
-[Doctor](/reference/doctor#feed-coverage) for every finding it reports.
+`except()` — decides nothing and contributes nothing; a feed declared
+[`unrestricted()`](#unrestricted) decides nothing either, and lowers that
+finding to info. An app that never calls `feeds()` gets no findings from the
+check. See [Doctor](/reference/doctor#feed-coverage) for every finding it
+reports.
 
 Two things weaken it, both worth knowing before you rely on it:
 
