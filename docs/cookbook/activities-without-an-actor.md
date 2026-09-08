@@ -69,8 +69,9 @@ Storyfeed::grammar([
 
 ## The actor read from the request
 
-An activity published with no actor takes the authenticated user. On a queue
-worker there is none:
+An activity that omits `by()` uses ambient actor resolution. With the default
+configuration this is the authenticated user; a queue worker with no
+authenticated user, custom resolver, or fallback party resolves to null:
 
 ```php
 class RecordSubmission implements ShouldQueue
@@ -80,7 +81,7 @@ class RecordSubmission implements ShouldQueue
     public function handle(): void
     {
         Storyfeed::activity()
-            ->action('submit', $this->document)     // no actor: on a worker, nobody is authenticated
+            ->action('submit', $this->document)     // assumes no custom resolver or fallback party
             ->to($this->document->project)
             ->publish();
     }
@@ -89,11 +90,39 @@ class RecordSubmission implements ShouldQueue
 
 <FeedStream :items="[anonymous]" :grouped="false" />
 
-The row is published with `actor: null`. The line that prevents it is
+Under those defaults the row is published with `actor: null`. To retain the
+known author, use
 `->by($this->user)`, with the user passed into the job the way the event above
 carries it. For a known system use a [party](/deeper/parties#parties); when the
 actor is genuinely absent, [actorless voice](/deeper/parties#actorless-voice)
 provides a separate sentence for the same verb.
+
+## An explicitly unknown actor
+
+```php
+Storyfeed::activity()
+    ->by($knownAuthor) // User|null: null explicitly means anonymous
+    ->action('submit', $document)
+    ->to($project)
+    ->publish();
+```
+
+`by(null)` bypasses the ambient actor, custom resolver, authenticated user,
+and fallback party. It does not borrow the current operator's identity when
+the carried author is unknown.
+
+| spelling | actor behavior |
+|---|---|
+| omit `by()` | resolve the ambient actor |
+| `->by(null)` or `->actor(null)` | explicitly anonymous |
+| `->anonymously()` | explicitly anonymous on an existing builder |
+| `Storyfeed::anonymous()` | start an explicitly anonymous builder |
+
+The last explicit actor choice wins: `->by($user)->anonymously()` clears the
+actor; `->anonymously()->by($user)` names the user. These builder methods
+also override `Storyfeed::as(...)`. The one-call `Storyfeed::record(...,
+actor: null)` still uses ambient resolution; use an anonymous builder when
+null is intentional.
 
 ## Who acted decides the sentence
 
@@ -115,7 +144,8 @@ Storyfeed::activity()
 
 <FeedStream :items="[signed]" :grouped="false" />
 
-A string actor is a party and a null actor is anonymous; the difference is in
+`by('DocuSign')` names a party; `by(null)` explicitly records an anonymous
+actor. The difference is in
 [Parties & anonymous actors](/deeper/parties).
 
 A job that publishes many activities scopes the block with
@@ -129,7 +159,7 @@ Storyfeed::grammar([
     'document.expire' => ':object expired in :target',   // no :actor, on purpose
 ]);
 
-Storyfeed::activity()
+Storyfeed::anonymous() // bypass actor resolution even inside an attributed scope
     ->action('expire', $document)
     ->to($project)
     ->publish();
@@ -137,6 +167,6 @@ Storyfeed::activity()
 
 <FeedStream :items="[expired]" :grouped="false" />
 
-The template has no `:actor`, so a null actor is not a gap in the sentence. A
-scheduled command that publishes this activity records nothing about who ran
-it, because nobody did.
+The builder records no actor, and the template describes the expiry without
+naming one. Removing `:actor` from a template changes only the sentence; it
+does not clear a stored actor or disable actor resolution.
