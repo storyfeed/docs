@@ -113,8 +113,12 @@ Storyfeed::activity()->action('save', $draft)->replace()->publish();
 
 **The object and the verb — `data` is not part of the key**, and the superseded
 rows are soft-deleted by default. They disappear from normal feed reads but
-remain in storage. Set `storyfeed.replace.delete` to `'force'` to permanently
-delete them and their grouping and participant rows.
+remain in storage with `deleted_at` set. No cursor, read mode, or curated view
+brings them back. `storyfeed:prune` permanently removes them when pruning is
+enabled and they fall outside the retention window. Set
+`storyfeed.replace.delete` to `'force'` to permanently delete them and their
+grouping and participant rows inside the publish transaction. Participant rows
+are removed in either mode; soft deletion keeps the grouping rows until pruning.
 
 `->publishAndReplace()` is the same thing in one call; everything below applies
 to it identically.

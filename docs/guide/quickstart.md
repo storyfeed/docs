@@ -28,8 +28,8 @@ implements `Feedable`:
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
 class Document extends Model implements Feedable
@@ -46,6 +46,7 @@ class Document extends Model implements Feedable
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
+        // Reads what toFeed() cached above; a key it did not cache reads as null.
         return FeedMedia::make(url: route('documents.show', $context->data('id')));
     }
 }
@@ -60,6 +61,11 @@ fast and URLs never go stale.
 you need to build the URL in `toFeed()`. A thrown exception is reported,
 and the entity degrades to `url: null` and `media: null`.
 :::
+
+`Project` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
+`feedMedia()` that returns null, and an unlinked entity still renders at full
+weight. [Feedable models](/basics/feedable-models) covers the context, a URL per
+feed, and images.
 
 Storyfeed stores morph aliases, never class names, so enforce a morph map:
 
