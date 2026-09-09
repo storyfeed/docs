@@ -34,6 +34,8 @@ your feed. Findings name the fix, not just the fault.
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? |
 | `manifest` | is the cached story manifest stale relative to your code? |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one |
+| `details` | which detail forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares |
+| `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces |
 
 ## Feed coverage
 
