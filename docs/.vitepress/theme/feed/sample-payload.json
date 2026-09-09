@@ -10,6 +10,39 @@
       "published_at": "2026-08-14T14:49:02.000000Z",
       "headline_template": ":actor uploaded :objects to :context",
       "headline": null,
+      "actor": {
+        "type": "member",
+        "id": "8",
+        "label": "Aiko Tanaka",
+        "url": "/members/8",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 8,
+          "name": "Aiko Tanaka",
+          "role": "developer",
+          "initials": "AT",
+          "avatar_color": "#14b8a6"
+        }
+      },
+      "object": null,
+      "target": null,
+      "context": {
+        "type": "project",
+        "id": "15",
+        "label": "Verification Tiers",
+        "url": "/projects/15",
+        "attributes": [],
+        "modal": false,
+        "component": null,
+        "data": {
+          "id": 15,
+          "name": "Verification Tiers",
+          "client": "Chirp",
+          "status": "active"
+        }
+      },
       "glyph": "file-up",
       "exemplars": {
         "actors": [
@@ -640,14 +673,14 @@
       "actor": {
         "type": "member",
         "id": "7",
-        "label": "Tom\u00e1s Rivera",
+        "label": "Tomás Rivera",
         "url": "/members/7",
         "attributes": [],
         "modal": false,
         "component": null,
         "data": {
           "id": 7,
-          "name": "Tom\u00e1s Rivera",
+          "name": "Tomás Rivera",
           "role": "strategist",
           "initials": "TR",
           "avatar_color": "#6366f1"

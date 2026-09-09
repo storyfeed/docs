@@ -27,19 +27,31 @@ const expanded = ref(unnamed.value);
 
 const time = useRelativeTime(toRef(() => props.item.published_at));
 
-// Group nodes pin roles per axis; the head member fills in what the
-// aggregate template needs beyond the exemplars.
-const head = computed(() => props.item.children[0] ?? null);
+// The server names a group's pinned roles for us (v0.9) — this used to
+// reconstruct them from `exemplars[0] ?? children[0]`, which is the thing that
+// release removed the need for, and which quietly names one entity out of many
+// the first time a group is not uniform.
+//
+// Recover a singular from the exemplars ONLY when the group genuinely has one.
+// `distinct` is the true total from the aggregate query, so a one-item exemplar
+// list is not on its own proof.
+const singular = (role: 'actor' | 'object' | 'target' | 'context') => {
+    const named = props.item[role];
 
-// Singular slots come from the exemplar lists: where the axis pins a role the
-// list holds exactly one entity, which is precisely when a singular token is
-// allowed. The head member fills the rest for unpinned roles the template
-// cannot legally reference anyway.
+    if (named) return named;
+
+    const shown = props.item.exemplars[`${role}s`] ?? [];
+
+    return shown.length === 1 && props.item.distinct[`${role}s`] === 1
+        ? shown[0]
+        : null;
+};
+
 const entities = computed(() => ({
-    actor: props.item.exemplars.actors[0] ?? head.value?.actor ?? null,
-    object: props.item.exemplars.objects[0] ?? head.value?.object ?? null,
-    target: props.item.exemplars.targets[0] ?? head.value?.target ?? null,
-    context: props.item.exemplars.contexts[0] ?? head.value?.context ?? null,
+    actor: singular('actor'),
+    object: singular('object'),
+    target: singular('target'),
+    context: singular('context'),
 }));
 
 // `count` is the TRUE total and `children` is capped by the server, so the
