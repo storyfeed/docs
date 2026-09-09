@@ -91,6 +91,7 @@ export default defineConfig({
           { text: 'Containers & context', link: '/deeper/context' },
           { text: 'Parties & anonymous actors', link: '/deeper/parties' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
+          { text: 'Healing', link: '/deeper/healing' },
           { text: 'Testing', link: '/deeper/testing' },
         ],
       },
