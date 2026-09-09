@@ -79,6 +79,15 @@ export interface ActivityNode extends BaseNode {
 export interface GroupNode extends BaseNode {
     kind: 'group';
     axis: string;
+    /**
+     * Supplied ONLY where the axis pins that role — one exemplar, one distinct
+     * value. Absent everywhere else on purpose: an unpinned role has no single
+     * answer, so the server declines to name one rather than picking.
+     */
+    actor: FeedEntity | null;
+    object: FeedEntity | null;
+    target: FeedEntity | null;
+    context: FeedEntity | null;
     /** The TRUE member total, which may exceed `children.length`. */
     count: number;
     children: ActivityNode[];

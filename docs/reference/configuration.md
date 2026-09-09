@@ -49,6 +49,7 @@ For named system attribution or a sentence without an actor slot, see
 | `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, `'summary'` |
 | `grouping.curate` | `true` | select a winning axis at publish time |
 | `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
+| `grouping.exemplar_limits.<role>` | `3` | distinct exemplars listed per singular role on a group node |
 | `grouping.policy.min_actors` | `3` | distinct actors before the `actors` axis applies |
 | `grouping.policy.min_targets` | `2` | distinct targets before `targets` applies |
 | `grouping.policy.min_target_members` | `3` | members required on `targets` |
@@ -56,6 +57,22 @@ For named system attribution or a sentence without an actor slot, see
 
 When grouping does not fire, check the [axis registry](/deeper/aggregation#axis-registry)
 before changing thresholds: `repeat` pins the target id, while `targets` does not.
+
+`exemplar_limits` is keyed by singular role — `actor`, `object`, `target`,
+`context`, `origin`, `result`, `instrument` — and every default is `3`, which is
+what the payload has always emitted. Raise one where a surface leans on it:
+
+```php
+'exemplar_limits' => [
+    'object' => 6,  // this feed shows the objects' pictures
+    // everything else stays at 3
+],
+```
+
+Exemplars are drawn from the members already loaded, so `children_limit` still
+bounds them, and each one costs a resolver call — a group node listing six
+objects asks your resolver for six more entities on every page. An invalid or
+missing limit falls back to `3` rather than to nothing.
 
 ::: tip
 Curation policy is not payload contract — change these freely. Only the group

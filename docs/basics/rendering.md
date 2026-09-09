@@ -15,15 +15,39 @@ labels.
 | token | on | substitutes | read from |
 |---|---|---|---|
 | `:actor` `:object` `:target` `:context` `:origin` `:result` `:instrument` | activity nodes | one linked label | `node[role]` |
-| `:actor` `:object` `:target` `:context` `:origin` `:result` `:instrument` | group nodes, where the emitted template names the role | one linked label | `node[role] ?? node.exemplars[role+'s'][0]` |
+| `:actor` `:object` `:target` `:context` `:origin` `:result` `:instrument` | group nodes, where the emitted template names the role | one linked label | `node[role]`, or its exemplar **only when `node.distinct[role+'s']` is 1** |
 | `:actors` `:objects` `:targets` `:contexts` `:origins` `:results` `:instruments` | any group node | the exemplar list | `node.exemplars[role]` |
 | `:count` | group nodes | total member count | `node.count` |
 | `:others` | group nodes | actor overflow ("3 others") | `node.distinct.actors - node.exemplars.actors.length` |
 
 Group nodes carry singular role keys under the [payload contract's pinning and
-count rule](/reference/payload#group-node). Resolve a singular token from that
-key, then fall back to its exemplar list. The singular fallback can retain a
-token for one distinct entity even when the axis does not pin that role.
+count rule](/reference/payload#group-node). A group supplies `node[role]` only
+where the axis pins that role — one exemplar, one distinct value. Everywhere
+else the key is absent **on purpose**, because a role the axis did not pin has
+no single answer to give.
+
+So the fallback has a condition, and the condition is the whole point:
+
+> Recover a singular from `node.exemplars[role+'s'][0]` **only when
+> `node.distinct[role+'s']` is `1`.** Otherwise render nothing for that token.
+
+`distinct` is the true total from the aggregate query, not the length of the
+list you were handed, so a one-item exemplar list is not on its own proof that
+the group has one.
+
+**There is a better answer than rendering nothing, and our Filament adapter uses
+it: degrade the singular to the list.** A plural list is legal on every axis — a
+list of length one is still true — and it self-overflows from `distinct` at any
+size. So a template that says `:actor` over a group of nine renders "Ann, Sally
+and 7 more": the sentence is already an aggregate, the word count barely changes,
+and nobody is misled. A missing word in the middle of a sentence is worse than a
+list, which is why an adapter that can reach the list should prefer it. An unconditional `?? exemplars[0]` reads correctly on every
+group that happens to be uniform and then, on the first group with three, names
+one of them and hides the other two — a renderer that quietly invents a fact the
+payload deliberately declined to state. If a template names a role its axis does
+not pin, that is a grammar defect the [`roles` doctor
+check](/reference/doctor) is there to catch, not something the renderer should
+paper over.
 
 
 Plural tokens render the exemplars joined, plus the overflow. Exemplars are

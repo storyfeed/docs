@@ -95,6 +95,40 @@ activity is published as anonymous — a null actor means genuinely unknown.
 Use [actorless voice](/deeper/parties#actorless-voice) when that activity should
 read without an actor slot.
 
+### The actor survives the queue
+
+A listener that publishes is often queued, and `Auth::user()` on a worker is
+null. Storyfeed captures the authenticated user's identity into Laravel's
+[Context](https://laravel.com/docs/context) when the job payload is written, and
+applies it on the worker — so an activity recorded from a queued listener names
+the person who caused it, not nobody.
+
+```php
+class NotifyTeam implements ShouldQueue
+{
+    public function handle(DocumentUploaded $event): void
+    {
+        // Records the user who uploaded, though this runs minutes later
+        // on a worker with no session.
+        Storyfeed::record('upload', object: $event->document);
+    }
+}
+```
+
+Nothing you have configured changes. An explicit `->actor()` and
+`->anonymously()` are both decided first, and your own `actor_resolver` or
+`as()` scope keeps its authority. The transported identity speaks only where
+nothing else has an opinion — and there it speaks *ahead of*
+`parties.fallback`, because someone who is known should not be recorded as
+"System" merely because the worker has no session.
+
+Only a morph alias and a primary key travel, never the model, so the identity is
+recorded even if that user has since been deleted. To opt a scope out:
+
+```php
+Context::addHidden(\Storyfeed\Support\QueuedActor::KEY, null);
+```
+
 ## Extras
 
 ```php

@@ -235,8 +235,19 @@ const props = defineProps<{ node: FeedNode }>()
 
 /** Resolve an emitted singular token from its role key, then exemplars. */
 function one(role: FeedRole) {
-  return props.node[role] ?? (props.node.kind === 'group'
-    ? props.node.exemplars[`${role}s`]?.[0] ?? null : null)
+  if (props.node[role]) return props.node[role]
+  if (props.node.kind !== 'group') return null
+
+  // The server withholds a singular the axis does not pin. Recover one ONLY
+  // when the group genuinely has one — `distinct` is the true total, so an
+  // exemplar list of length 1 is not on its own proof. Otherwise return null
+  // and let the caller say "Something": naming exemplars[0] would make one
+  // arbitrary entity speak for several.
+  const shown = props.node.exemplars?.[`${role}s`] ?? []
+
+  return shown.length === 1 && props.node.distinct?.[`${role}s`] === 1
+    ? shown[0]
+    : null
 }
 
 /** What the server counted, minus what it gave us names for. */

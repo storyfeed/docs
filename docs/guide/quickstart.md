@@ -221,10 +221,16 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
     };
 
     // Resolve the emitted singular token from its role key, then exemplars.
-    // A group key is null unless the axis pins it and its distinct count is 1.
+    // A group key is null unless the axis pins it and its distinct count is 1 —
+    // so only recover one from the exemplars when the group really has one.
+    // `distinct` is the true total; a one-item list is not on its own proof.
     $one = function (array $node, string $role, string $fallback) use ($entity) {
+        $shown = $node['exemplars'][$role.'s'] ?? [];
+
         return $entity(
-            $node[$role] ?? $node['exemplars'][$role.'s'][0] ?? null,
+            $node[$role] ?? (count($shown) === 1 && ($node['distinct'][$role.'s'] ?? 0) === 1
+                ? $shown[0]
+                : null),
             $fallback,
         );
     };
