@@ -22,6 +22,7 @@ historical story untrue: the app must decide which stories should be retired.
 Core does not discover missing sources or apply a default deletion policy.
 
 ::: warning Healing rewrites settled history
+`storyfeed:heal` is a third `sync_token` writer, alongside `storyfeed:curate --rehash` and `storyfeed:bundle`.
 Every applied retirement bumps the feed's `sync_token`, so accumulating clients
 must discard their accumulated pages and refetch — the same resync contract as
 [`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows).
