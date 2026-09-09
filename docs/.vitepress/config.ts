@@ -13,6 +13,12 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
 
+  // Second lock on the same door as .gitignore's `docs/briefs/`: internal lane
+  // briefs sit inside the source root, so without this a committed one becomes
+  // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
+  // convention somebody can defeat with `git add -f`.
+  srcExclude: ['briefs/**'],
+
   sitemap: {
     hostname: 'https://docs.storyfeed.dev',
   },

@@ -24,3 +24,9 @@ yarn-error.log*
 # Generated at build time by scripts/llms.mjs — never committed, so it cannot go stale
 docs/public/llms.txt
 docs/public/llms-full.txt
+
+# Lane briefs. They live under docs/ so a worker can read them beside the pages
+# they describe, which also means VitePress would build each one into a public
+# page — and a push to main here DEPLOYS. Ignored so `git add -A` cannot publish
+# them, and excluded from the build below so a tracked one still would not.
+docs/briefs/
