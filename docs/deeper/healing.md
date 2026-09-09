@@ -11,11 +11,12 @@ with the same identity. A hard-deleted asset whose replacement gets a new ID fit
 that scope. A restorable source does not. A detached asset whose row still exists
 is not absent.
 
-The healer cannot distinguish a deliberate story removal from a gap after
-pruning has erased the removal evidence. **It never treats the absence of a story
-as an instruction.** It does not record missing stories, restore removed ones,
-replace compositions, or infer what used to exist. An explicit retirement request
-for an activity that is already deleted or gone is unchanged.
+**The healer never treats the absence of a story as an instruction.** It does
+not record missing stories, restore removed ones, replace compositions, or infer
+what used to exist. An explicit retirement request for an activity that is
+already deleted or gone is unchanged. Core keeps
+[removal evidence](#removal-evidence-outlives-the-row) that says whether an
+empty key was emptied on purpose; this version of the healer does not consult it.
 
 Retirement is app policy. A source disappearing does not by itself make a
 historical story untrue: the app must decide which stories should be retired.
@@ -127,22 +128,69 @@ runs. No selection runs every registered healer; an empty registry does nothing.
 
 Each request commits separately. If a later request fails, earlier retirements
 remain committed with their resync signal. Results stream in memory; core stores
-no run record, retirement reason, resurrection flag, or removal tombstone.
+no run record or retirement reason. An applied retirement soft-deletes through
+the model, so it writes the same
+[removal evidence](#removal-evidence-outlives-the-row) as any other deletion.
 
-## Removal evidence has a lifetime
+## Removal evidence outlives the row
 
-A live sibling on the same verb-plus-object key describes **current key state**,
-not provenance. A superseded row can lose its live sibling when the successor is
-deleted. The rows alone do not then explain why no live story remains.
+A story's key is its verb plus its object: the identity `->replace()` supersedes
+on. When the last live story on a key is deleted, core records the key in
+`feed_removals`. Pruning removes the row; the record stays.
 
-Pruning can also permanently delete soft-deleted activities. Once that evidence
-is gone, an empty key cannot reveal whether a story was deliberately removed or
-never recorded. This is why this healer only acts on explicit requests about
-existing live activities, and offers no gap-filling or resurrection guarantee.
+```php
+use Storyfeed\Healing\Removals;
 
-Broader healing would need a separate retention contract: either durable removal
-evidence that survives pruning, or changed deletion semantics that preserve the
-necessary evidence. Neither choice is part of this version.
+$removal = Removals::removed('asset.published', 'asset_reference', 81);
+// with a model: Removals::removed('asset.published', $asset)
+
+if ($removal !== null) {
+    $removal->removedAt;   // when the last live story left the key
+    $removal->publishedAt; // that story's own published_at
+}
+```
+
+`removed()` returns `null` while a live story exists on the key, whatever the
+table holds. A `null` therefore means a story is live, or nothing was ever
+recorded there. A `Removal` means the key is empty because something removed it.
+An activity without an object has no key; asking about one throws.
+
+| what happened on the key | evidence |
+|---|---|
+| `delete()` or `forceDelete()` on the last live story | written |
+| a `Feedable` deleted or force-deleted, for every key it empties | written |
+| an applied `storyfeed:heal` retirement | written |
+| `storyfeed:trickle --prune` retiring an activity | written |
+| `->replace()` superseding an earlier story | none: the successor is live on the key |
+| `storyfeed:prune` removing a row that was already soft-deleted | none: its removal, if it was one, was recorded when it left |
+| `storyfeed:prune` removing a live row past the window | none: the [watermark](#the-retention-watermark) records it |
+| a delete inside a transaction that rolls back | none |
+
+Evidence is written per key, not per row, and only when the key empties. A bulk
+delete adds one query and one upsert per chunk of 500 rows; deleting one model
+adds two statements. A prune sweep writes nothing to the table, however many
+rows it removes. Nothing in core deletes from `feed_removals`: the evidence has
+no retention window. The cost is one small row per removed key.
+
+### The retention watermark
+
+A story older than the retention window is absent because it expired. Every
+`storyfeed:prune` sweep records its cutoff after it completes, and a later sweep
+with a longer window never lowers it.
+
+```php
+$expired = Removals::prunedBefore(); // null until a sweep has run
+
+if ($expired !== null && $publishedAt < $expired) {
+    // the story was pruned; do not re-derive it
+}
+```
+
+`feed_removals` is a new table. Publish and run the migration; `storyfeed:doctor`
+reports it missing until then. Evidence starts when the table exists: a story
+soft-deleted before that carries none, and pruning it afterwards leaves the key
+looking never recorded. A deletion that bypasses the model and the package's own
+paths, such as raw SQL, writes nothing.
 
 ## Testing a healer
 
