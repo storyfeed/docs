@@ -33,7 +33,15 @@ So the fallback has a condition, and the condition is the whole point:
 
 `distinct` is the true total from the aggregate query, not the length of the
 list you were handed, so a one-item exemplar list is not on its own proof that
-the group has one. An unconditional `?? exemplars[0]` reads correctly on every
+the group has one.
+
+**There is a better answer than rendering nothing, and our Filament adapter uses
+it: degrade the singular to the list.** A plural list is legal on every axis — a
+list of length one is still true — and it self-overflows from `distinct` at any
+size. So a template that says `:actor` over a group of nine renders "Ann, Sally
+and 7 more": the sentence is already an aggregate, the word count barely changes,
+and nobody is misled. A missing word in the middle of a sentence is worse than a
+list, which is why an adapter that can reach the list should prefer it. An unconditional `?? exemplars[0]` reads correctly on every
 group that happens to be uniform and then, on the first group with three, names
 one of them and hides the other two — a renderer that quietly invents a fact the
 payload deliberately declined to state. If a template names a role its axis does
