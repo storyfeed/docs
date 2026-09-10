@@ -110,6 +110,7 @@ export default defineConfig({
           { text: 'Activities without an actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Choosing what not to record', link: '/cookbook/choosing-what-not-to-record' },
           { text: 'Activities about deletions', link: '/cookbook/activities-about-deletions' },
+          { text: 'An authoriser who is not an actor', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Keeping verbs and grammar together', link: '/cookbook/verbs-and-grammar-together' },
         ],
       },

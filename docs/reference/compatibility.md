@@ -64,15 +64,16 @@ below.
 | package | licence | where |
 |---|---|---|
 | `storyfeed/storyfeed` — the core, documented here | MIT | Packagist |
-| `storyfeed/ui` — Vue/Inertia + Blade feed components | MIT | Packagist |
+| `storyfeed/ui` — conventional detail forms | MIT | Packagist |
 | `storyfeed/filament` — the Filament plugin | commercial, ~$49 one-time | Anystack: a licence key and a private Composer endpoint |
 
 **What is MIT stays MIT** — the core and `storyfeed/ui` alike. Neither moves
 behind a licence later.
 
 `storyfeed/ui` is funded by sponsorship rather than sold: sponsorship sets how
-many adapters it reaches, not who may use it. Unsponsored it ships Vue/Inertia
-and Blade components; sponsored, Livewire and React become reachable.
+many adapters it reaches, not who may use it. It ships detail forms today;
+Vue/Inertia and Blade components are planned, with Livewire and React following
+as sponsorship allows.
 
 ### The Filament plugin is paid, and this page used to say otherwise
 
@@ -81,9 +82,9 @@ Until **2026-08-18** this page promised the Filament adapter as part of MIT
 commercial from its first commit. That narrows something already
 written down in public, so it is explained here rather than quietly edited.
 
-- **The pattern stays free, end to end.** The core plus `storyfeed/ui` render a
-  real feed — recording, reads, grouping, curation, the payload contract and
-  components that consume it — with nothing withheld. A package you cannot see
+- **The pattern stays free, end to end.** The core supplies recording, reads,
+  grouping, curation and the payload contract; `storyfeed/ui` supplies the detail
+  vocabulary. Both are MIT. A package you cannot see
   working is not worth learning.
 - **Filament is the one corner of this ecosystem with a working paid-plugin
   market**: a directory, a habit of paying, buyers with a budget line. Charging
