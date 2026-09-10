@@ -36,6 +36,22 @@ someone else releases. The requirement is always the same sentence:
 
 Two halves that pull against each other, which is why the obvious answers fail.
 
+## First, check whether you already have it
+
+Before adding a row, look for the fact where it would naturally live. An approval
+usually happens *to* something — a photo, a document, a draft — and that thing
+often already carries a column, a custom property, or a status field recording
+who released it.
+
+If it does, use that. The recipe below is for approvals with **no natural home**:
+a change applied to a menu, a release with no record of its own, an authorisation
+that sits between two entities rather than on one.
+
+This is easy to miss in exactly the way the rest of this page is about. A design
+conversation can be entirely correct and still answer a question nobody needed
+answered — nothing false is said, which is what makes it harder to catch than a
+wrong claim.
+
 ## Why not a role
 
 Activity Streams gives an activity seven roles, and none of them means
