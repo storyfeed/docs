@@ -17,6 +17,7 @@ your feed. Findings name the fix, not just the fault.
 | `grammar` | does every verb/type pair in the feed have a headline? |
 | `aggregates` | does every group that formed — or *could* form — have aggregate grammar? |
 | `tokens` | does any aggregate template use a token its axis doesn't pin? (the anti-lie rule) |
+| `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key can be true of one — answered from the registry alone, before any group has formed |
 | `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) |
 | `surface` | models that appear in the feed but that nothing publishes about |
 | `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? |

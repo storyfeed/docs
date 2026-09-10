@@ -97,6 +97,12 @@ Use both fields to pin a role. `v` adds the verb and `d` adds the day.
 axes do not pin `origin`, `result` or `instrument`; a custom axis can. Their
 plural tokens are available on every axis.
 
+`v` is the one field with a consequence outside the key. Aggregate grammar is
+keyed `axis.verb`, so **leaving `v` out opts the axis out of per-verb grammar** —
+its groups may span several verbs, and only a verb-agnostic key (`scene.*`, or
+`*.*`) can be true of one. `storyfeed:doctor --only=axes` says so as soon as the
+axis is registered, before any group has formed.
+
 ::: warning Priority
 A new axis registers at the **lowest** priority. If it should outrank a
 built-in, say so explicitly:
