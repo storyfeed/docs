@@ -64,3 +64,6 @@ event-time facts; they are not Eloquent models. Events are delivered after the
 outermost transaction commits, and a rollback delivers nothing. Queued listeners
 receive the same captured facts as synchronous listeners. Batch members are
 captured at close, before automatic bundling.
+
+A listener on any of the three can be `ShouldQueue`. What the snapshot
+carries onto a worker, and when the job is pushed, is in [Queues](/deeper/queues).
