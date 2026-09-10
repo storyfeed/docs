@@ -87,17 +87,40 @@ that text before returning the template, so `:actor uploaded :object` can arrive
 as `:actor uploaded documents`. The substituted noun is plain text, with no
 single entity to link to; `:actor` remains a linkable token.
 
+## A plural token lists the members that filled the role
+
+It does not promise every member filled it. An axis pins what its key names, and
+a role outside the key is free to be absent on some members.
+
+`targets` is keyed on actor, verb and day — target is not in the key at all. So
+an activity with no target joins the same bucket as one with a target: it counts
+towards `:count` and contributes no exemplar.
+
+```php
+// a targets group of 5 members, 2 of them carrying a target
+'targets.comment' => ':actor commented on :count projects'  // ✗ says five projects
+'targets.comment' => ':actor commented in :targets'         // ✓ names the two there are
+```
+
+Both lines are token-safe — the lie is in the noun the template puts beside
+`:count`, which nothing validates. `node.count` is the member total;
+`node.distinct.targets` counts only the members that filled the role. Where the
+two disagree, some members filled no target.
+
 ## One plural list per template
 
 Both of these are token-safe; only one is readable:
 
 ```php
-':actors uploaded :objects in :targets'    // ✗ 180 characters of names
-':actors uploaded :count files in :targets' // ✓ one list, one count
+// actors axis — pins :target
+':actors uploaded :objects in :targets'    // ✗ three lists, 180 characters of names
+':actors uploaded :count files in :target' // ✓ one list, one count, one pinned role
 ```
 
-Doctor validates token safety, not readability. Keep the second collapsed
-dimension as `:count`.
+Two rules meet here and only one is enforced. Token safety is semantic: doctor
+reports a token an axis cannot make true of every member. Length is editorial:
+nothing reports it, and the fix is to collapse every dimension but one to
+`:count`.
 
 ## Wildcards
 

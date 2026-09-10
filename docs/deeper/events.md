@@ -47,9 +47,9 @@ and publishing without a collision.
 | domain event via `PublishesToFeed` | when several things already react to the event |
 | model observer | lifecycle facts (created, deleted) with no domain event |
 
-All three are explicit calls. Whichever you choose,
-`php artisan storyfeed:stories` inventories every publish site in the app —
-including ones the package never wired.
+All three are explicit calls. Whichever you choose, the pairs they record show
+up in [`storyfeed:stories`](/basics/stories#inventory), including ones the
+package never wired.
 
 ## Events emitted by Storyfeed
 

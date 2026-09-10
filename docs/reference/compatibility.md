@@ -31,7 +31,7 @@ boilerplate.
 | | |
 |---|---|
 | **breaking changes** | ship without a deprecation cycle and without a major bump. The version is `0.x` so that they can |
-| **these docs** | change with the code and can lag it. A page describing a method renamed yesterday is a bug worth reporting, not a promise to plan around |
+| **these docs** | describe `dev-main` and can lag it. Where a tagged release behaves differently, the page says so. A page describing a method renamed yesterday is a bug worth reporting, not a promise to plan around |
 | **installing** | pin an exact commit or tag, never a range. `dev-main` is a moving target by design |
 | **design decisions** | get reversed — in the open, with the reasoning written down, sometimes within days |
 

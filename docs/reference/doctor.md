@@ -34,7 +34,7 @@ your feed. Findings name the fix, not just the fault.
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? |
 | `manifest` | is the cached story manifest stale relative to your code? |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one |
-| `details` | which detail forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares |
+| `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces |
 
 ## Feed coverage
@@ -104,17 +104,23 @@ empty one is not reported.
 story class that fixes it.
 
 ```bash
-php artisan storyfeed:doctor --stubs
+php artisan storyfeed:doctor --stubs   # only the findings that name a registry edit
 php artisan make:story --from-doctor
 ```
+
+It prints no headings and no counts, so its output can be piped. A run that
+prints `// Nothing to author` means no finding named a registry edit — not that
+there were no findings. Run doctor without `--stubs` for the report.
 
 ## In CI
 
 ```bash
-php artisan storyfeed:doctor --json
+php artisan storyfeed:doctor --json --fail-on=warning   # or --fail-on=error
 ```
 
-Structured findings plus exit status. Pair it with the
+Structured findings plus an exit code. Without `--fail-on` the exit code is 0
+whatever the findings say, so that doctor stays safe to run anywhere; the flag
+is the opt-in gate that makes CI fail. Pair it with the
 [coverage assertions](/deeper/testing#coverage-assertions): the assertions fail
 fast in the suite, doctor reports against real traffic.
 
