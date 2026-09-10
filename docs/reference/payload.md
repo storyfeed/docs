@@ -109,6 +109,7 @@ one feed's authority to another's audience.
   "headline_template": ":actor confirmed :object for :target",
   "headline": null,                     // pre-rendered fallback; see below
   "glyph": "file-check",
+  "glyph_intent": null,                 // the app's own word for what the glyph means
   "actor": { /* entity */ },
   "object": { /* entity */ },
   "target": { /* entity or null */ },
@@ -134,6 +135,7 @@ one feed's authority to another's audience.
   "headline_template": ":actors uploaded :count files to :target",
   "headline": null,
   "glyph": "file-up",
+  "glyph_intent": null,
   "actor": null,
   "object": null,
   "target": { /* the shared target entity */ },
@@ -167,6 +169,25 @@ and a distinct count; an absent role has `[]` and `0`.
 The group node *shape* is frozen contract. The *curation policy* deciding which
 groups exist (axes, thresholds, windows) is a server-side detail and free to
 change, so a renderer can rely on the shape but not on which groups appear.
+
+## Glyphs
+
+`glyph` is a token naming an icon — the app's own name, resolved from the icon
+registry. The package ships no icon set, and an unresolved pair is `null`.
+
+`glyph_intent` is a second token beside it, from a registry of its own, saying
+what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
+Free-form and app-owned, the same posture as the verb; no vocabulary is shipped
+or validated, and unknown strings are passed through rather than dropped. It is
+`null` for every pair no intent was registered for, which is every app that has
+not opted in. See [the rail](/basics/the-rail#the-glyph-s-intent) for what a
+renderer does with it.
+
+Both resolve on the same ladder and independently of each other:
+`type.verb`, `type.*`, `*.verb`, `*.*`.
+
+The Activity Streams 2.0 document carries neither: AS2 has no term for an icon
+token, and `icon` there is an image on the entity.
 
 ## Headlines
 

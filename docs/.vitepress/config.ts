@@ -78,6 +78,7 @@ export default defineConfig({
           { text: 'Reading feeds', link: '/basics/reading' },
           { text: 'Named feeds', link: '/basics/named-feeds' },
           { text: 'Rendering', link: '/basics/rendering' },
+          { text: 'The rail', link: '/basics/the-rail' },
           { text: 'A live renderer', link: '/basics/live-renderer' },
         ],
       },

@@ -63,6 +63,14 @@ interface BaseNode {
     /** Pre-rendered fallback for closure-based grammar. */
     headline?: string | null;
     glyph: string | null;
+    /**
+     * What the glyph MEANS, when the app has said (storyfeed >= b465d1f,
+     * additive). A free-form, app-owned string on a registry of its own —
+     * core ships no vocabulary and no colours, and a renderer maps whatever
+     * arrives onto its own palette. Null for every app that has not opted in,
+     * which is why it is optional here as well as nullable.
+     */
+    glyph_intent?: string | null;
 }
 
 export interface ActivityNode extends BaseNode {

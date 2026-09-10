@@ -4,15 +4,36 @@ import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedItem from './FeedItem.vue';
+import { rail as parseRail, railFor } from './rail';
 import { useRelativeTime } from './useRelativeTime';
+import type { Rail, RailName } from './rail';
 import type { GroupNode } from './types';
 
 const props = withDefaults(
     defineProps<{
         item: GroupNode;
         isLast?: boolean;
+        /** Which fact the rail answers first. Null keeps this kit's default. */
+        rail?: Rail | RailName | null;
     }>(),
-    { isLast: false },
+    { isLast: false, rail: null },
+);
+
+/** See `FeedItem` for why an unasked-for rail is `actor-only` here. */
+const resolved = computed<Rail>(() =>
+    parseRail(props.rail === null ? 'actor-only' : props.rail),
+);
+
+// A group's faces are its exemplars, capped at three — and more than one of
+// them suppresses the badge, because a single face over a group of several
+// actors is the one-actor lie the exemplar list exists to refuse.
+const faces = computed(() => props.item.exemplars.actors.slice(0, 3));
+
+const slots = computed(() =>
+    railFor(resolved.value, {
+        actors: faces.value.length,
+        glyph: Boolean(props.item.glyph),
+    }),
 );
 
 // A group the package declined to name (no template, no headline) has nothing
@@ -64,15 +85,37 @@ const hiddenBeyondChildren = computed(
 <template>
     <div class="sf-row">
         <div class="sf-rail">
-            <div v-if="item.exemplars.actors.length > 0" class="sf-avatars">
+            <div class="sf-rail__disc">
+                <div v-if="slots.disc === 'actor'" class="sf-avatars">
+                    <EntityAvatar
+                        v-for="actor in faces"
+                        :key="actor.id"
+                        :entity="actor"
+                        :size="faces.length > 1 ? 'sm' : 'md'"
+                    />
+                </div>
+                <!--
+                    One dividend of the flip: an activity-centric group is a
+                    single glyph, so the stacking case simply does not arise.
+                -->
+                <FeedIcon
+                    v-else-if="slots.disc === 'activity'"
+                    :icon="item.glyph"
+                    :intent="item.glyph_intent"
+                />
+                <span v-else class="sf-icon sf-icon--blank" aria-hidden="true" />
+
+                <FeedIcon
+                    v-if="slots.badge === 'activity'"
+                    :icon="item.glyph"
+                    variant="badge"
+                />
                 <EntityAvatar
-                    v-for="actor in item.exemplars.actors.slice(0, 3)"
-                    :key="actor.id"
-                    :entity="actor"
-                    :size="item.exemplars.actors.length > 1 ? 'sm' : 'md'"
+                    v-else-if="slots.badge === 'actor'"
+                    :entity="faces[0] ?? null"
+                    size="badge"
                 />
             </div>
-            <FeedIcon v-else :icon="item.glyph" />
             <div
                 v-if="!isLast || expanded"
                 aria-hidden="true"
@@ -126,6 +169,7 @@ const hiddenBeyondChildren = computed(
                     :key="child.id"
                     :item="child"
                     dense
+                    :rail="rail"
                     :is-last="
                         index === item.children.length - 1 &&
                         hiddenBeyondChildren === 0

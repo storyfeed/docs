@@ -16,6 +16,15 @@
     --sf-gutter: 2rem;
     --sf-gap: 0.75rem;
 
+    /* The disc the rail draws, and the badge on its corner. Both are read by
+       the badge's offsets, so a variant that changes one needs no second
+       opinion about the geometry. */
+    --sf-disc: 2rem;
+    --sf-badge: 0.875rem;
+    /* Larger, because a face badge carries a LETTER: a glyph is a silhouette
+       and survives 14px, and type does not. */
+    --sf-badge-face: 1.125rem;
+
     font-size: 0.875rem;
     line-height: 1.6;
     color: var(--sf-muted);
@@ -37,6 +46,39 @@
     align-items: center;
     align-self: stretch;
     flex-shrink: 0;
+}
+
+/* The disc is positioned so the badge has a corner to sit on. */
+.sf-rail__disc {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+}
+
+/*
+ * THE BADGE, flush with the disc's right edge and 0.125rem below its bottom.
+ * Derived from --sf-disc and --sf-badge rather than measured against the one
+ * case that existed first: a face badge is 18px and an activity-centric
+ * group's disc is the full 32px, and literals would not have landed on either.
+ */
+.sf-badge {
+    position: absolute;
+    top: calc(var(--sf-disc) - var(--sf-badge) + 0.125rem);
+    left: calc(50% + var(--sf-disc) / 2 - var(--sf-badge));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sf-badge);
+    height: var(--sf-badge);
+    border-radius: 9999px;
+    background: var(--sf-ring);
+    color: var(--sf-muted);
+    box-shadow: 0 0 0 1.5px var(--sf-ring);
+}
+
+.sf-badge svg {
+    width: 0.625rem;
+    height: 0.625rem;
 }
 
 .sf-rail__line {
@@ -138,6 +180,22 @@ a.sf-entity:hover {
     font-size: 0.625rem;
 }
 
+/*
+ * The face on the verb's corner. It rebinds --sf-badge on itself rather than
+ * restating the offsets, so the geometry above resolves against the bigger
+ * disc without knowing this variant exists.
+ */
+.sf-avatar--badge {
+    --sf-badge: var(--sf-badge-face);
+
+    position: absolute;
+    top: calc(var(--sf-disc) - var(--sf-badge) + 0.125rem);
+    left: calc(50% + var(--sf-disc) / 2 - var(--sf-badge));
+    width: var(--sf-badge);
+    height: var(--sf-badge);
+    font-size: 0.5625rem;
+}
+
 .sf-icon {
     display: flex;
     align-items: center;
@@ -154,6 +212,47 @@ a.sf-entity:hover {
 .sf-icon svg {
     width: 0.875rem;
     height: 0.875rem;
+}
+
+/*
+ * Neither subject arrived — an anonymous actor on a feed with no glyph
+ * registered for the verb. The row still renders: activities are never hidden
+ * by the read path, and the mark says this row belongs to the history it sits
+ * in. The ring holds the column without a filled disc claiming a system actor.
+ */
+.sf-icon--blank {
+    border-style: dashed;
+}
+
+/*
+ * ── INTENT ───────────────────────────────────────────────────────────────────
+ *
+ * `data-sf-intent` is the payload's `glyph_intent`: the RECORDING APP's own
+ * word for what a glyph means. Storyfeed ships no vocabulary of intents and no
+ * colours — `success` is not a term the package knows, ranks, or validates —
+ * and neither does this kit. What follows is THIS SITE's palette for THIS
+ * SITE's three words, and it is the whole of what a renderer's side of the
+ * contract looks like: map the strings your app chose onto colours you own.
+ *
+ * An intent with no rule here renders the plain disc, which is also what every
+ * row renders before an app opts in. Unknown is not broken.
+ */
+.sf-icon[data-sf-intent='success'] {
+    border-color: var(--sf-success-line, #86c69f);
+    color: var(--sf-success-color, #2f8355);
+    background: var(--sf-success-fill, #eef8f2);
+}
+
+.sf-icon[data-sf-intent='danger'] {
+    border-color: var(--sf-danger-line, #e2a19b);
+    color: var(--sf-danger-color, #b4443a);
+    background: var(--sf-danger-fill, #fdf1f0);
+}
+
+.sf-icon[data-sf-intent='pending'] {
+    border-color: var(--sf-pending-line, #ddbd7d);
+    color: var(--sf-pending-color, #8a6a1c);
+    background: var(--sf-pending-fill, #fbf4e6);
 }
 
 /* ---- group disclosure ---- */

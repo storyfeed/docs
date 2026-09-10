@@ -5,7 +5,13 @@ import type { FeedEntity } from './types';
 const props = withDefaults(
     defineProps<{
         entity: FeedEntity | null;
-        size?: 'sm' | 'md';
+        /**
+         * `badge` is the face on a flipped rail's corner. It shows ONE letter:
+         * two initials in an 18px disc is a smudge, and the picture a badge
+         * draws is of a person, not of their spelling. The whole label stays on
+         * `aria-label` and `title`, so nothing is lost to a reader who needs it.
+         */
+        size?: 'sm' | 'md' | 'badge';
     }>(),
     { size: 'md' },
 );
@@ -25,7 +31,7 @@ const initials = computed(() => {
     const provided = props.entity?.data?.initials;
 
     if (typeof provided === 'string' && provided.length > 0) {
-        return provided;
+        return props.size === 'badge' ? provided.slice(0, 1) : provided;
     }
 
     const label = props.entity?.label ?? '?';
@@ -34,7 +40,7 @@ const initials = computed(() => {
         label
             .split(/\s+/)
             .filter(Boolean)
-            .slice(0, 2)
+            .slice(0, props.size === 'badge' ? 1 : 2)
             .map((word) => word[0]!.toUpperCase())
             .join('') || '?'
     );
@@ -67,7 +73,7 @@ const color = computed(() => {
         :aria-label="entity?.label ?? 'Someone'"
         :title="entity?.label ?? 'Someone'"
         class="sf-avatar"
-        :class="size === 'sm' ? 'sf-avatar--sm' : 'sf-avatar--md'"
+        :class="`sf-avatar--${size}`"
         :style="{ backgroundColor: color }"
     >
         {{ initials }}
