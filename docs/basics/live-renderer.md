@@ -332,6 +332,17 @@ settings handle timestamp conversion and formatting.
 refer to itself by filename; outside the SFC compiler, add
 `defineOptions({ name: 'FeedNode' })`.
 
+The gutter this node sits beside is [the rail](/basics/the-rail), and which
+subject it leads with is a choice. The kit takes it as a prop:
+
+```vue
+<FeedStream :items="items" rail="activity" />
+```
+
+Left unset, the kit draws one face and no badge — `actor-only` — and group
+children draw the verb alone. The Filament renderer defaults to `actor`
+instead.
+
 ## Verifying a renderer
 
 Run the [fallback-leak check](/basics/rendering#verifying-your-renderer) across

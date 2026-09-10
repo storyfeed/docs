@@ -2,6 +2,7 @@
 import { toRef } from 'vue';
 import FeedNodeView from './FeedNode.vue';
 import { useFeedDays } from './useRelativeTime';
+import type { Rail, RailName } from './rail';
 import type { FeedNode } from './types';
 
 const props = withDefaults(
@@ -12,8 +13,14 @@ const props = withDefaults(
         loadingMore?: boolean;
         /** Set false for a static excerpt with no day headings. */
         grouped?: boolean;
+        /**
+         * Which fact the rail answers first — `actor`, `activity`,
+         * `activity-only`, `actor-only`. Null keeps this kit's default; see
+         * `rail.ts` and `/basics/the-rail`.
+         */
+        rail?: Rail | RailName | null;
     }>(),
-    { nextCursor: null, loadingMore: false, grouped: true },
+    { nextCursor: null, loadingMore: false, grouped: true, rail: null },
 );
 
 const emit = defineEmits<{ loadMore: [] }>();
@@ -57,6 +64,7 @@ const days = useFeedDays(toRef(() => props.items));
                             index === day.items.length - 1 &&
                             !nextCursor
                         "
+                        :rail="rail"
                     >
                         <template #body="slotProps"
                             ><slot name="body" v-bind="slotProps"

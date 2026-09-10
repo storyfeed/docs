@@ -74,6 +74,52 @@ export const doc: Record<string, any> = build(DOCUMENTS, document)
 export const job: Record<string, any> = build(TASKS, task)
 export const note: Record<string, any> = build(COMMENTS, comment)
 
+/**
+ * ── The demo app's glyph intents ─────────────────────────────────────────────
+ *
+ * `glyph_intent` is a free-form string OWNED BY THE RECORDING APP. Storyfeed
+ * ships no vocabulary of intents — `success` is not a term the package knows,
+ * ranks or validates — so these three words are this documentation's own,
+ * exactly as an app registering them would be its own. A renderer maps them
+ * onto a palette it owns; `feed.css` maps these onto three.
+ *
+ * In a real app this is one registration:
+ *
+ *   Storyfeed::glyphIntents([
+ *       '*.approve' => 'success',
+ *       ...
+ *   ]);
+ *
+ * Keys are `type.verb` with wildcards, resolved most-specific first —
+ * `type.verb`, `type.*`, `*.verb`, `*.*` — which is `resolveIntent` below and
+ * is the same ladder core resolves the icon on, in a registry of its own so a
+ * wildcard intent is stated once rather than repeated at every rung.
+ *
+ * Most verbs are deliberately ABSENT. An upload is not a success or a failure,
+ * it is an upload, and inventing a word for it would make the colour mean
+ * nothing. Null is the honest answer and the common one.
+ */
+export const INTENTS: Record<string, string> = {
+  '*.approve': 'success',
+  '*.complete': 'success',
+  '*.sign': 'success',
+  '*.expire': 'danger',
+  '*.document.remove': 'danger',
+  '*.submit': 'pending',
+}
+
+/** Core's resolution ladder, ported: `type.verb`, `type.*`, `*.verb`, `*.*`. */
+export function resolveIntent(type: string | null, verb: string): string | null {
+  const keys =
+    type === null ? [`*.${verb}`, '*.*'] : [`${type}.${verb}`, `${type}.*`, `*.${verb}`, '*.*']
+
+  for (const key of keys) {
+    if (key in INTENTS) return INTENTS[key]
+  }
+
+  return null
+}
+
 /** An activity node. */
 export function activity(over: Record<string, any>) {
   return {
@@ -84,6 +130,11 @@ export function activity(over: Record<string, any>) {
     headline_template: over.headline_template,
     headline: null,
     glyph: over.glyph ?? null,
+    // Resolved from the registry rather than written per node, for the same
+    // reason the whole file exists: a page that spells its own intent out will
+    // eventually spell a different one for the same verb.
+    glyph_intent:
+      over.glyph_intent ?? resolveIntent(over.object?.type ?? null, over.verb),
     actor: over.actor ?? null,
     object: over.object ?? null,
     target: over.target ?? null,
@@ -108,6 +159,8 @@ export function group(over: Record<string, any>) {
     headline_template: over.headline_template,
     headline: null,
     glyph: over.glyph ?? null,
+    glyph_intent:
+      over.glyph_intent ?? resolveIntent(over.objects?.[0]?.type ?? null, over.verb),
     exemplars: {
       actors: over.actors ?? [],
       objects: over.objects ?? [],

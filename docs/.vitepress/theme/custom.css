@@ -94,6 +94,37 @@
   margin-top: 20px;
 }
 
+/* Four rails, one feed, side by side — the only way the difference between the
+   configurations is visible rather than described. Stacks below the width where
+   two wells stop being readable. */
+.vp-doc .sf-rail-cases {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 24px;
+  margin: 16px 0 28px;
+}
+
+@media (min-width: 720px) {
+  .vp-doc .sf-rail-cases {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.vp-doc .sf-rail-cases h4 {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc .sf-rail-cases h4 code {
+  font-size: 12px;
+}
+
+.vp-doc .sf-rail-cases .sf-feed {
+  margin-top: 8px;
+}
+
 /* The last row's rail should not run into the well's floor. */
 .vp-doc .sf-feed > *:last-child {
   margin-bottom: 0;
@@ -108,4 +139,22 @@
   --sf-line-color: var(--vp-c-divider);
   --sf-hover-color: var(--vp-c-bg-soft);
   --sf-ring-color: var(--vp-c-bg);
+}
+
+/*
+ * The three glyph intents THIS SITE's examples use, in this site's colours.
+ * The kit ships light defaults and reads these; Storyfeed itself ships neither
+ * a vocabulary of intents nor a palette for one — mapping the app's own word
+ * onto a colour is the renderer's side of the contract, and this is ours.
+ */
+.dark {
+  --sf-success-line: #2f6a4a;
+  --sf-success-color: #7fca9f;
+  --sf-success-fill: #14231b;
+  --sf-danger-line: #7a3a34;
+  --sf-danger-color: #e59a92;
+  --sf-danger-fill: #251715;
+  --sf-pending-line: #6b5522;
+  --sf-pending-color: #d8b463;
+  --sf-pending-fill: #221c10;
 }
