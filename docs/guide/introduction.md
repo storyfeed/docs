@@ -1,13 +1,12 @@
 # Introduction
 
-Storyfeed is an implementation of the activity feed pattern for Laravel.
+Storyfeed is an implementation of the activity feed pattern in Laravel.
 Activities are recorded explicitly, read back as a timeline or an aggregated
 feed, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
-This page defines every word the rest of the documentation uses, in plain
-English, by following **real activities** from raw rows to a rendered
-sentence. No API yet — the terms only.
+Every other page assumes the words on this one. They are defined here by
+following **real activities** from raw rows to a rendered sentence.
 
 <script setup>
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
@@ -108,14 +107,15 @@ const oneActivity = [
 
 ## 1. One activity
 
-An **activity** is one recorded fact, shaped like a sentence with named slots:
+An **activity** is a recorded fact, shaped like a sentence with named **roles**:
 
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
-> **to Password Crackdown** *(target)*
+> to **Password Crackdown** *(target)*
 
-The **verb** is what happened, as a plain string — `upload`, `confirm`, `archive`.
-The three **roles** hold entities: the **actor** who acted, the **object** they
-acted on, and the **target** the act was aimed at.
+Reading them in that order: the **actor** is who acted. The **verb** is what
+happened, as a plain string — `upload`, `confirm`, `archive`. The **object** is
+what they acted on, and the **target** is what the act was aimed at. Actor,
+object and target hold entities; the verb is the one that does not.
 
 ### Examples
 
