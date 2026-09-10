@@ -114,6 +114,7 @@ export default defineConfig({
       {
         text: 'Reference',
         items: [
+          { text: 'Glossary', link: '/reference/glossary' },
           { text: 'The payload contract', link: '/reference/payload' },
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
