@@ -87,6 +87,7 @@ export default defineConfig({
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Grammar', link: '/deeper/grammar' },
           { text: 'Composites', link: '/deeper/composites' },
+          { text: 'Details', link: '/deeper/details' },
           { text: 'Publishing from events', link: '/deeper/events' },
           { text: 'Queues', link: '/deeper/queues' },
           { text: 'Containers & context', link: '/deeper/context' },

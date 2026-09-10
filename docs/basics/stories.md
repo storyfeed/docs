@@ -100,5 +100,13 @@ the earliest possible catch for "the grammar was authored once and never grew".
 php artisan storyfeed:stories
 ```
 
-Lists every publish site in your app — including publishes the package never
-wired — and what could publish but doesn't.
+Inventories three things: your registered story definitions, the object/verb
+pairs already recorded in the feed — including ones the package never wired,
+listed as `(call site)` — and feedable models that publish nothing at all.
+
+A `(call site)` row names a recorded pair, not a source location, so a publisher
+that has never run is invisible to it. Find those in the source:
+
+```bash
+grep -rn "Storyfeed::record\|Storyfeed::activity\|::record(" app/
+```

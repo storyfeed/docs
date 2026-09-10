@@ -54,11 +54,52 @@ The test does not require a grammatical sentence or prepositions between the
 fields. The summary can change at any time while the record remains. Read the
 stored values independently of the prose used to display them.
 
+## Two failures the litmus passes
+
+It reads one tuple. Two mistakes live outside one tuple, and both look correct
+inside it.
+
+### Whether the event happened once
+
+```text
+Sam · revised · proposal · —   coherent
+Sam · revised · proposal · —   coherent
+Sam · revised · proposal · —   coherent
+```
+
+Three autosaves, one revision as a reader would count it. Every row passes the
+test on its own, because the test never asks how many rows there are. Read a
+window of rows for the verb rather than one composition:
+[Choosing when to publish](/cookbook/choosing-when-to-publish) covers where the
+call belongs, and [Repeating activities](/cookbook/repeating-activities) covers
+collapsing the ones that stay.
+
+### Whether every token has a publisher
+
+```text
+Sam · archived · document · —   coherent — nothing was aimed at
+```
+
+```php
+'document.archive' => ':actor archived :object from :target'   // ✗ nothing fills :target
+```
+
+The composition coheres, and the template names a role no publisher supplies, so
+the headline renders a fallback where a name should be. The test cannot see this
+because it reads the fields, not the grammar that will print them.
+
+```sh
+php artisan storyfeed:doctor --only=roles
+```
+
+The `roles` check reports a singular template naming a role none of its
+activities carry.
+
 ## Check recorded repetitions
 
-::: tip Availability
-The `reflexive` doctor check is on `dev-main` from core commit `a814cea` and is
-not yet in a tagged release.
+::: tip
+`reflexive` is not in a tagged release. An install pinned to v0.9.0 or earlier
+does not have this check.
 :::
 
 ```sh

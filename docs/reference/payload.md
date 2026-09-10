@@ -117,7 +117,8 @@ one feed's authority to another's audience.
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
   "data": {},
-  "thread": null                       // optional FeedThread conversation metadata
+  "thread": null,                      // optional FeedThread conversation metadata
+  "change": null                       // optional FeedChange before/after facts
 }
 ```
 

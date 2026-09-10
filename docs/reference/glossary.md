@@ -34,7 +34,7 @@ neighbours are usually what you actually wanted.
 | **[grammar](/deeper/grammar)** | the registry of headline templates | rendered prose |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
 | **glyph** | a token the payload ships, e.g. `file-up` | an image, or a set the package owns |
-| **detail** | a typed block beneath the sentence — an excerpt, a change, a thread | part of the headline, or a place for markup |
+| **[detail](/deeper/details)** | a typed block beneath the sentence — an excerpt, a change, a thread | part of the headline, or a place for markup |
 
 ## Reading
 

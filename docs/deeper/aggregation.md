@@ -56,6 +56,10 @@ If activities across different targets do not group under `repeat`, check the
 [axis registry](#axis-registry): `repeat` includes target type and id in its
 key; `targets` pins actor identity, verb, and day while leaving target free.
 
+A role a key leaves free may also be absent, so a `targets` bucket can hold
+members carrying no target at all — which is what a plural token
+[does and does not promise](/deeper/grammar#a-plural-token-lists-the-members-that-filled-the-role).
+
 Below threshold, activities stay atomic. Disable grouping entirely with
 `NullStrategy`.
 

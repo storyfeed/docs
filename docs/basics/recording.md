@@ -45,6 +45,11 @@ listener. There is no model spying.
 | `result` | what it produced | a diff record or generated artifact, including output too large for `data` |
 | `instrument` | what it happened via | an integration used to import a record, or an agent a person acted through |
 
+::: tip
+`origin`, `result` and `instrument` are not in a tagged release. An install
+pinned to v0.9.0 or earlier has the first four roles.
+:::
+
 Direction decides the role. The same integration is a `target` for an upload
 **to** it and an `instrument` for a record sourced **via** it.
 See [Containers & context](/deeper/context) for the surrounding container.
