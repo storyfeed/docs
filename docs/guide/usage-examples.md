@@ -1,9 +1,5 @@
 # Usage examples
 
-Each example names a capability, describes the request in one sentence, and
-shows the recording beside what it publishes — rendered by a real feed
-component reading a real payload.
-
 <script setup>
 import { who, where, doc, note, entity, activity, group } from '../.vitepress/theme/samples'
 
@@ -134,42 +130,40 @@ Storyfeed::activity()
     ->publish();
 ```
 
-Each call knows only its own activity. The grouping is worked out as each one is
-written, so the feed arrives already collapsed:
+Each call knows only its own activity. On the feed:
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
 ## A story you author yourself
 
-A user approves two documents at once, and the two of them are one fact, not
-two.
+A user approves two documents at once.
 
 ```php
-Storyfeed::activity()
-    ->by($user)
-    ->action('approve')
-    ->objects($documents)
-    ->context($project)
-    ->publish();
+// app/Http/Controllers/ApproveDocumentsController.php
+public function store(Request $request, Project $project)
+{
+    $documents = $project->documents()
+        ->whereIn('id', $request->array('documents'))
+        ->get();
+
+    // Two documents, one decision, one row.
+    Storyfeed::activity()
+        ->by($request->user())
+        ->action('approve')
+        ->objects($documents)
+        ->context($project)
+        ->publish();
+
+    return back();
+}
 ```
+
+`objects()` takes several models for **one** activity. That is the difference
+between this and the loop further up: seven `publish()` calls are seven
+activities that a reader sees collapsed, while this is a single activity that
+happens to name two documents. Approving two files in one click is one fact.
 
 <FeedStream :items="[story]" :grouped="false" />
-
-## An object that carries its own preview
-
-A user comments on a document.
-
-```php
-Storyfeed::activity()
-    ->by($user)
-    ->action('comment', $comment)
-    ->on($document)
-    ->publish();
-```
-
-<FeedStream :items="[reply]" :grouped="false">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
 
 ## A participant with no model
 
@@ -186,11 +180,11 @@ Storyfeed::activity()
 
 <FeedStream :items="[external]" :grouped="false" />
 
-## Whichever preposition the verb takes
+## Pick the word that reads true
 
-The chain is the sentence, so the role setters have the prepositions English
-actually uses. Every line below records the same thing — one activity, one actor,
-one target:
+Say the sentence out loud first. You comment **on** a document, share it
+**with** someone, move it **into** a folder, upload it **to** a project, create
+a project **for** a client. The code takes the same word:
 
 ```php
 ->by($user)->action('comment', $comment)->on($document)
@@ -200,7 +194,58 @@ one target:
 ->by($user)->action('create', $project)->for($client)
 ```
 
-Pick the one that reads true; the stored activity is identical either way. Each is
-sugar for a role: `by()` is the actor, `action()` is the verb, and the rest are the
-target. Each role also has a setter named for it.
-[Recording](/basics/recording) has the full set.
+**All five prepositions do exactly the same thing.** They set the last
+participant, whose real name is the *target*. `on()`, `with()`, `into()`,
+`to()`, `for()`, `in()` and `from()` are one method wearing seven words, so you
+can write the line that matches what you would say.
+
+Here is the first line with nothing dressed up. It stores a byte-identical row:
+
+```php
+->actor($user)->verb('comment', $comment)->target($document)
+```
+
+Neither is the correct one. Use whichever you would rather read in six months —
+and if no preposition fits your verb, `target()` always does.
+
+[Recording](/basics/recording) lists every role and every word for it.
+
+## When the object brings its own body
+
+Everything above is one call. This one is two places, and that is the point: the
+activity records *what happened*, and the model says *what it looks like when
+something reads it back*.
+
+```php
+Storyfeed::activity()
+    ->by($user)
+    ->action('comment', $comment)
+    ->on($document)
+    ->publish();
+```
+
+Nothing there mentions the comment's text. The text arrives because the comment
+model answers for itself:
+
+```php
+// app/Models/Comment.php
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: $this->body,
+        component: 'Note',
+        data: ['excerpt' => $this->body],
+    );
+}
+```
+
+`component` names a body component your renderer resolves; `data` is yours and
+core never reads it. So the row below draws the comment without the recording
+call having carried a word of it:
+
+<FeedStream :items="[reply]" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+Worth knowing rather than doing on day one — a feed works without it, and every
+other example on this page does.
