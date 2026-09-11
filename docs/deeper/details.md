@@ -21,7 +21,7 @@ It comes back on the node, in that entity's `data`, exactly as it went in:
 
 ```json
 {
-  "$detail": "acme/attachment",
+  "$detail": "Acme/Attachment",
   "$v": 1,
   "size": 240128,
   "mediaType": "application/pdf"
@@ -63,7 +63,7 @@ final class Attachment implements FeedDetail
 
     public static function name(): string
     {
-        return 'acme/attachment';
+        return 'Acme/Attachment';
     }
 
     public static function version(): int
@@ -110,9 +110,22 @@ untouched, which is what lets `$detail` survive the read path.
 
 ### Names
 
-`vendor/form` — namespaced to whoever defines the vocabulary: `acme/attachment`,
-`storyfeed-filament/change`. The name outlives every class that writes it, and
-two libraries that both wanted the word "change" do not collide in a column.
+`Vocabulary/Form` — namespaced to whoever defines the vocabulary, both halves in
+PascalCase: `Storyfeed/MediaObject`, `Acme/Attachment`. The name outlives every
+class that writes it, and two libraries that both wanted the word "change" do
+not collide in a column.
+
+**The namespace is the vocabulary, not the package.** A form defined by this
+project is `Storyfeed/…` wherever its PHP class happens to live — the class can
+move between packages, and rows already written cannot. Putting a package name
+in it means a row remembers which library was fashionable the year it was
+recorded.
+
+**PascalCase, because a name is not a Composer package.** It matches Activity
+Streams' own type casing, which is the vocabulary this one sits beside. A
+lowercase `vendor/name` reads as something you install, which it is not: it is a
+pure lookup key, matched by renderers EXACTLY. Nothing reflects on it, nothing
+autoloads from it, and it need not resolve to any class at all.
 
 Free-form, like verbs. Core never validates a name against anything, and has no
 list to validate against.
@@ -180,16 +193,25 @@ never a rendered diff.
 
 ## Forms that already exist
 
-`storyfeed/filament` ships five and registers them for its own views. An app
+`storyfeed/ui` ships six. They are MIT and free, and they are the vocabulary
+rather than one renderer's furniture — `storyfeed/filament` registers them for
+its own views, and any other renderer may recognise the same names. An app
 writing its own owes nothing to any of them.
 
 | name | is | keys |
 |---|---|---|
-| `storyfeed-filament/fields` | labelled rows | `rows[]` of `label`, `value`, `mono`, `missing` |
-| `storyfeed-filament/excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `storyfeed-filament/change` | before → after, for one field or several | `changes[]` of `label`, `before`, `after` |
-| `storyfeed-filament/file` | what an artefact is and how big | `name`, `size`, `mediaType` |
-| `storyfeed-filament/markdown` | authored body text, as source | `content`, `mediaType` |
+| `Storyfeed/Fields` | labelled rows | `rows[]` of `label`, `value`, `mono`, `missing` |
+| `Storyfeed/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
+| `Storyfeed/Change` | before → after, for one field or several | `changes[]` of `label`, `before`, `after` |
+| `Storyfeed/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
+| `Storyfeed/Markdown` | authored body text, as source | `content`, `mediaType` |
+| `Storyfeed/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
+
+They lived in `storyfeed/filament` under `storyfeed-filament/*` names until they
+graduated. **A row already written carries the old name**, which is what
+`storyfeed:rename-details` exists for — and why it reshapes rather than renames:
+two vocabularies both had a `change`, and they stored different shapes, so a
+rename alone would have blanked every change row.
 
 ## What a renderer does with an unknown form
 
