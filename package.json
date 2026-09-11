@@ -2,14 +2,15 @@
   "name": "storyfeed-docs",
   "private": true,
   "type": "module",
-  "description": "Documentation site for storyfeed/storyfeed \u2014 docs.storyfeed.dev",
+  "description": "Documentation site for storyfeed/storyfeed — docs.storyfeed.dev",
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
     "build": "node scripts/llms.mjs && vitepress build docs",
     "preview": "vitepress preview docs --port 5174",
     "drift": "node scripts/drift-detector/index.mjs",
     "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
-    "llms": "node scripts/llms.mjs"
+    "llms": "node scripts/llms.mjs",
+    "pdf": "node scripts/print-pdf.mjs"
   },
   "devDependencies": {
     "vitepress": "^2.0.0-alpha.19"

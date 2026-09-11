@@ -158,3 +158,101 @@
   --sf-pending-color: #d8b463;
   --sf-pending-fill: #221c10;
 }
+
+/*
+ * ── Print ────────────────────────────────────────────────────────────────────
+ *
+ * These pages are read on paper and on an iPad, annotated, and handed back.
+ * That is a real review loop, and until now the site had no print styles at
+ * all: a print carried the nav, the sidebar, the search control and the
+ * pre-1.0 banner, and a three-page document came out six.
+ *
+ * WHAT IS REMOVED IS NAVIGATION, and only that. Everything a reader might mark
+ * up survives — prose, code, tables, and the rendered feed rows, which are the
+ * whole reason these pages are worth printing.
+ *
+ * Colour is kept. A feed row is partly ABOUT its colour (entity links, the
+ * rail, glyph intent), so a greyscale print would misrepresent the thing under
+ * review; `print-color-adjust` asks the browser not to helpfully drop the
+ * fills. A reader who wants ink saved can choose it at the dialog, which is
+ * where that decision belongs.
+ */
+@media print {
+    :root {
+        --vp-c-bg: #fff;
+    }
+
+    .VPNav,
+    .VPSidebar,
+    .VPLocalNav,
+    .VPDocFooter,
+    .VPFooter,
+    .VPDocAside,
+    .VPBackdrop,
+    .VPSkipLink,
+    .vp-doc-footer,
+    .aside {
+        display: none !important;
+    }
+
+    .VPContent,
+    .VPDoc,
+    .VPDoc .container,
+    .VPDoc .content,
+    .VPDoc .content-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        width: auto !important;
+    }
+
+    body {
+        background: #fff;
+        font-size: 10.5pt;
+        line-height: 1.5;
+    }
+
+    .vp-doc {
+        max-width: 100%;
+    }
+
+    /* Colour is content here — see the note above. */
+    .vp-doc,
+    .vp-doc * {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /*
+     * A heading orphaned at the foot of a page, or a code sample split across
+     * two, costs a reviewer the thing they were about to mark. Feed rows are
+     * short enough to keep whole and are the single most-annotated element on
+     * these pages.
+     */
+    .vp-doc h1,
+    .vp-doc h2,
+    .vp-doc h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .vp-doc pre,
+    .vp-doc blockquote,
+    .vp-doc table,
+    .sf-node,
+    .sf-feed li {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* A printed link is a dead end unless the page says where it went. */
+    .vp-doc a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.85em;
+        word-break: break-all;
+    }
+
+    @page {
+        margin: 16mm 14mm 18mm;
+    }
+}
