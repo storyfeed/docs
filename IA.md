@@ -198,6 +198,264 @@ recording first fails silently rather than loudly.
 - ✅ Schema — the tables and their columns
 - ✅ Compatibility — PHP/Laravel support policy
 
+## Pending coverage
+
+Gaps handed over by the package lead on 2026-08-27 (Solo todo 411, scratchpad
+63), with the lane's follow-up questions answered from source the same day.
+Every item is on `dev-main` and **untagged**; the site is versioned to tags, so
+nothing here publishes ahead of its tag, and a page that lands early carries its
+own version callout. Sequencing is the docs lane's call.
+
+Ask the package lead rather than reading the source. Three readers misread parts
+of this on the day it was filed, source in hand.
+
+### The site documents a package two releases old
+
+Verified 2026-08-27 against `git tag` and `CHANGELOG.md` in the core checkout at
+`~/Dev/projects/storyfeed`, which is a readable source and should be read
+directly rather than asked about.
+
+    v0.8.0-alpha.2   2026-08-18   <- what the site pins and documents
+    v0.8.0           2026-08-23   the first stable tag
+    v0.9.0           2026-08-26
+
+Everything in this subsection is **live and wrong**, which is a different kind
+of debt from a page not yet written: only these are misleading somebody right
+now, and only these get worse by doing nothing. They outrank all seven gaps.
+
+One of these is a class rather than an instance, and it is worth naming: **a
+caveat placed inside a snippet is the only documentation that keeps being wrong
+after the page is fixed.** Rule 9 is right — a caveat about code belongs with
+the code, because copied code travels and prose does not — but the same property
+that makes it reach the call site means a stale one cannot be recalled. Rule 9
+may want a line acknowledging that cost; amending the house rules is Jasper's
+call, not the lane's, so it is noted here rather than done.
+
+- ⬜ **The install line tells a reader to install a pre-release.**
+  `guide/upgrading.md` pins `composer require storyfeed/storyfeed:0.8.0-alpha.2`
+  four days after a stable tag existed. First command a new reader runs. Fix
+  this before anything else on the site.
+- ⬜ **Two snippets teach a destructive default that no longer exists, and it is
+  the default the docs themselves caused.** `guide/quickstart.md:70` and
+  `basics/feedable-models.md:141` both carry an in-snippet comment saying an
+  activity whose alias stops resolving is "treated as an orphan and deleted by
+  the scheduled trickle". As of v0.9.0 pruning is **opt-in and off by default**;
+  the trickle counts unresolved activities and reports them. The changelog is
+  explicit that the destructive behaviour was what an installer got by following
+  these instructions and reading no further — so this is the docs' own defect,
+  not a change they failed to keep up with. Worst possible placement: house rule
+  9 put the caveat inside the snippet deliberately, so it travels to the
+  reader's `AppServiceProvider` and stays wrong there, and house rule 7 names
+  the quickstart the strictest page on the site. `reference/commands.md:7`
+  ("snapshots uncached activities and prunes orphans") is wrong the same way,
+  and `reference/configuration.md` is missing `trickle.prune`.
+- ⬜ **`basics/rendering.md`'s `::: danger` callout is now false, and it is the
+  strongest device on the site.** It states "A group node has **no**
+  `actor`/`object`/`target`/`context` keys". As of v0.9.0 group nodes carry
+  exactly those keys alongside the exemplar lists — additive, nothing removed.
+  The callout is stale twice over: wrong about the shape, and warning about a
+  failure the payload change eliminated. It is not simply inverted, so do not
+  replace it with "read the role key": the guard is pinned-by-registry **and**
+  one distinct entity in fact, so a mis-declared custom axis still degrades to
+  the exemplar list. The correct shape is "the singular key is there when it can
+  be trusted; fall back to the exemplar list". `reference/payload.md`'s group
+  node shape needs the same keys.
+
+  Confirmed in core at `NodePresenter:339-343`: the singular is set only when
+  the role token is in `aggregateTokens($axis)`, **and** there is exactly one
+  exemplar, **and** `distinct` is exactly 1 — otherwise null. All three
+  conditions are load-bearing. A mis-declared custom axis claiming to pin a role
+  it does not still yields null. Getting the replacement right matters more than
+  getting it soon: "read the role key" would be a new bug wearing a fix's
+  clothes.
+- ⬜ **`basics/rendering.md` advises the opposite of current guidance on unnamed
+  groups.** Under null-headline groups it says "consider opening the group
+  expanded". Core reversed that on 2026-08-27 — three unnamed groups turned a
+  sixteen-row feed into forty rows, and it read as broken rather than
+  unfinished. Sound about one node, wrong about a page. A genuine reversal, not
+  two surfaces differing.
+- ⬜ **`reference/doctor.md` overclaims in "From findings to code".** It says
+  `--stubs` closes the loop; neither `roles` nor `aggregates.latent` emits one,
+  both deliberately — the remedy for `roles` is authorial, and for latent an
+  unrenderable stub is the exact harm the check closes.
+
+### Unreleased-in-the-docs: two whole releases
+
+Neither release has an `guide/upgrading.md` section. Both are tagged, so both
+are writable today. The v0.8.0 content is largely **already written under the
+wrong heading** — the site documents the nested `query()` callbacks, the `Feed`
+class role lock and the AS2.0 collection route removal under `v0.8.0-alpha.2`,
+so this is re-attribution plus a stable-release heading, not new prose.
+
+- ⬜ **v0.8.0 — "Feed classes, and a scope that cannot leak."** Mostly a
+  re-heading. Confirm whether the alpha.2 items are restated at the stable tag
+  or the heading simply moves.
+- ⬜ **v0.9.0 — "Grouping says which day, and a group speaks for its members."**
+  Genuinely missing, and it carries the pruning default reversal above, the
+  additive singular keys on group nodes above, plus three more:
+  - `:verb` became a pinnable token. Touches the token table in
+    `basics/rendering.md`, the anti-lie rule in `deeper/grammar.md`, and the
+    pinning column in `deeper/aggregation.md`. Note it converges with the
+    ladder's verb-label rung (gap 2) — "31 clause.added activities" rather than
+    "31 activities" is the same improvement from the other side.
+  - `->data()` accepts an `Arrayable` DTO while storage stays a plain array.
+    `basics/recording.md:93` shows the array form only. The doctrine is the verb
+    ladder's — typed thing is an authoring convenience, storage stays plain.
+  - The solo tiebreak now descends to match `log()`. Two activities sharing a
+    timestamp came back in opposite orders in `log()` and `live()`; groups keep
+    ascending deliberately. Behaviour change worth an upgrade note.
+  - The grouping day is cut in `app.timezone` at publish time, while a
+    renderer's day headings are cut in the display zone at read time. When they
+    disagree the group wins, and a burst straddling midnight renders under one
+    heading with half of it belonging to yesterday. Explicitly **not fixed**;
+    the app-side action is to set `app.timezone` to the zone the feed is read
+    in. Documentable as shipped behaviour with a real remedy.
+
+### Read mode is a per-surface decision — the top of the queue
+
+Added to scratchpad 63 later on 2026-08-27, after four grouping complaints from
+two consumer apps in one afternoon all turned out to be read-mode questions.
+Ranked first of the seven: it is the only item that would have **prevented** the
+confusion rather than explained it afterwards, and it is writable today with
+zero version dependency — all three modes shipped in v0.6.
+
+**It splits across two tiers, and the split is forced rather than chosen.**
+Axis vocabulary is not taught until Digging deeper, so `basics/reading.md`
+cannot say "`live` reads `repeat` plus authored composites" without leaking a
+term its tier has not introduced. The mechanism and the choosing guidance
+therefore live apart:
+
+- ⬜ **`basics/reading.md` — choosing a mode per surface.** Extends the existing
+  Read modes table; no new page, because splitting the choice from the mode list
+  would give one fact two homes. Three surfaces, the mode each wants, one
+  sentence of why: an audit dashboard, an operator feed, a customer page opened
+  once. Plain English throughout, no axis words. The load-bearing sentence is
+  that mode is chosen per **surface**, not per app — one app wanting all three
+  at once is the normal case, not an exotic one.
+- ⬜ **`deeper/aggregation.md` — which axes each mode reads.** A matrix, since it
+  is enumerable: `log` reads no axis at all; `live` reads `repeat` plus authored
+  composites; `summary` reads the winner on any bucket, with a `repeat` fallback.
+  The page currently says only "each activity ends up in exactly one axis per
+  read mode" and never says which — that omission is the actual cause of the
+  complaints. Carry the consequence with it: authoring grammar for an axis your
+  surface's mode never reads produces templates that can never render, and
+  `object` pins the specific object where `repeat` pins only its type, which is
+  why the better-reading rows exist only under `summary`.
+- ⬜ **`basics/named-feeds.md` — a pointer.** A feed class declares its mode
+  (`make:feed --mode=`), so named feeds are the mechanism by which a mode
+  becomes per-surface. One sentence and a link.
+
+**Write this before the Doctor items.** `aggregates.latent` is the same idea one
+altitude down — a check for exactly the pairs no registered feed's mode can read
+— so this page is the conceptual home its finding will point at. Writing it
+first makes gap 4 cheap; writing gap 4 first leaves the finding explaining
+itself from scratch in a reference table.
+
+### Grammar — `deeper/grammar.md` absorbs three
+
+- ⬜ **Grammar is keyed `(axis, verb)`, not verb.** The page states the key shape
+  in one line; the consequence is unwritten. A verb authored on one axis renders
+  unnamed on another. Own section, with the failure shown. **Writable today** —
+  true at the current tag, no version callout, nothing outstanding. The existing
+  key documentation is correct and needs no change: keys are built by
+  concatenation and never split, so a dotted verb (`object.document.opened` is
+  axis `object` plus verb `document.opened`) is safe precisely because nothing
+  parses the key apart.
+- ⬜ **The fallback ladder gained a rung.** Rewrites the existing "When no
+  aggregate grammar resolves…" paragraph, which is now wrong: an unpinned role
+  is pluralised rather than discarded. Authored aggregate → safe singular →
+  pluralised singular → verb label → bare count; five rungs, so a table. Repeat
+  axis only among the built-ins, because a role is substitutable only where the
+  axis pins its kind. The count is the **distinct** count, never the member
+  count.
+
+  The mechanism is the least guessable part and must survive any language pass:
+  core substitutes the **literal text** ("7 clauses") into the template string
+  before returning it, so `:object` is gone by the time the renderer sees it.
+  What arrives is `":actor reworded 7 clauses in the clause library"` — one
+  remaining token, one plain phrase. **No new token, no change to `:count`, no
+  payload shape change, and the token tables in `basics/rendering.md` and
+  `reference/payload.md` do not move.** `:actor` stays a token because it is a
+  real entity the renderer turns into a link; the unpinned role has seven
+  referents and no link to lose, so plain text costs it nothing.
+
+  **Two things land with this rung and only with it**, because neither is
+  observable until it ships:
+
+  - One sentence wherever the rung is documented: a substituted role is plain
+    text, and is therefore the one noun in a headline that is **not** a link.
+    Deliberate — many referents, no single entity to link to — but it breaks the
+    otherwise reliable rule that a token becomes a linked label, and a reader
+    will notice.
+  - A property statement on `reference/payload.md`: a template is per **node**,
+    not per grammar key, so anything memoizing on the emitted string sees
+    unbounded cardinality. Key such a cache on the rendered node or on the
+    grammar key you registered, never on the emitted template. Core stated this
+    in its own `docs/payload.md`; the site's contract page is where an
+    implementer reading this site would look for it. No consumer relies on the
+    old shape — this is stating a property someone could reasonably infer, not
+    warning about a break. The token tables still do not move.
+
+  Not blocked on any question — gated only by the coupling below.
+- ⬜ **`Storyfeed::nouns()` — the noun registry.** New public API, undocumented.
+  Sits with the other registries (`icons()`, translation) as a section; earns
+  `deeper/nouns.md` only if it outgrows one. Keys are the morph alias, never a
+  class name (a comment inside the snippet, not a callout). Both plural forms
+  required. Core never inflects — the prior-contradicting fact, so it is stated
+  at each trigger site rather than linked. Extra pipe segments serve locales with
+  more than two plural forms. A translation key may be used instead of a literal;
+  the key supplies the noun and `phrase()` owns the number, for literals and keys
+  alike. **Hold**: a consumer pilot is in production and the shape may change.
+
+  **Coupled to the ladder rung above, and the coupling is load-bearing.** Without
+  a registered noun the rung renders "7 items" — true, useless, and the exact
+  sentence a consumer's own research flagged. Documenting the rung alone sells a
+  feature the reader cannot reach, so the two want writing together.
+
+### Doctor — `reference/doctor.md` absorbs two
+
+- ⬜ **Read-mode reachability.** New `aggregates.latent` (clusters, has no
+  grammar, and no registered feed's mode can read it) at Info, carrying no fix
+  stub, plus `aggregates.reachability_unknown` when no feeds are registered or
+  one will not inspect. Reachability is "as declared" — any call site may
+  override a feed's mode. CI-affecting: latent being Info means
+  `--fail-on=warning` no longer trips on those pairs, so this needs an entry in
+  `guide/upgrading.md`, and registering named feeds now has a concrete payoff
+  worth a pointer on `basics/named-feeds.md`.
+- ⬜ **The `roles` check and `--only=roles`.** Warns when a singular template
+  names a role its activities never carry. Warning for object/target/context,
+  Info for `:actor`, because a null actor has a documented meaning. One table
+  row and a short section; the cheapest item here. Emits no fix stub — see the
+  overclaim defect above.
+- ⬜ The Checks table has no severity column. With Info load-bearing in **two**
+  places — `aggregates.latent`, and `roles` on `:actor` — it likely needs one.
+
+### Filament renderer — no home on this site yet
+
+Group rendering changed in `storyfeed/filament` (groups render closed named or
+not; a surface with no Alpine renders every group open, because "closed" only
+means something where something can open it; an unnamed group shows its verb
+typeset as English, muted, with the raw token on `title`). Per the note below,
+anything describing `storyfeed/filament` waits for the package and lands as a
+pricing and install page, so this behaviour has nowhere to go today. The lead
+agrees, and would rather the upgrade trap landed than the rest:
+
+- ⬜ **The published-language-file upgrade trap.** The `verb_activities` line
+  changed shape; an app that published the plugin's language files keeps the old
+  string and the new rendering never appears. Same species as the
+  published-migration rule, so it belongs on `guide/upgrading.md`. Passes the
+  callout test — silent, unguarded, in-hand — and is recoverable, so `warning`.
+  The plugin's CHANGELOG.md carries the detail.
+
+### Not for the site
+
+`FeedBuilder::declaredMode()` is `@internal` tooling surface. Recorded here only
+so nobody documents it as public API.
+
+The translated-noun `:count` bug ("7 7 clauses") was fixed in core `5de7e1e`
+rather than documented — `trans_choice()` was adding `count` to the replacements
+for free. A reader needs no knowledge of it for the code to work.
+
 ## Notes
 
 - **The pre-1.0 status is chrome, not a page.** A reader arrives from a search

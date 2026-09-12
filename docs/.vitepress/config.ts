@@ -71,8 +71,8 @@ export default defineConfig({
         // entity never snapshots — so the wrong order fails silently.
         text: 'The basics',
         items: [
-          { text: 'Feedable models', link: '/basics/feedable-models' },
-          { text: 'Verbs', link: '/basics/verbs' },
+          { text: 'Feedable Models', link: '/basics/feedable-models' },
+          { text: 'Activity Types & Verbs', link: '/basics/activity-types-and-verbs' },
           { text: 'Story classes', link: '/basics/stories' },
           { text: 'Recording activities', link: '/basics/recording' },
           { text: 'Reading feeds', link: '/basics/reading' },

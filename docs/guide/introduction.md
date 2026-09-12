@@ -5,10 +5,6 @@ Activities are recorded explicitly, read back as a timeline or an aggregated
 feed, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
-Below are **real activities** from the demo app — one on its own, then eight
-minutes of them as a raw timeline and as an aggregated feed. Each is shown with
-the payload behind it.
-
 <script setup>
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
 // widgets below are the demo app's real renderer reading a real payload rather
@@ -95,17 +91,32 @@ const oneActivity = [
 ]
 </script>
 
-## 1. One activity
+## What is an activity?
 
-An **activity** is a recorded fact, shaped like a sentence with named **roles**:
+An activity is a recorded fact, shaped like a sentence with named roles:
+
+> Ines uploaded annual-report-v3.fig to Password Crackdown
+
+The **actor** is the party that initiated the activity. 
+The **verb** describes the action that occurred. The **object** is
+the subject of interest from the action, and the **target** is 
+what the action was aimed at.
 
 > **Ines** *(actor)* **uploaded** *(verb)* **annual-report-v3.fig** *(object)*
 > to **Password Crackdown** *(target)*
 
-Reading them in that order: the **actor** is who acted. The **verb** is what
-happened, as a plain string — `upload`, `confirm`, `archive`. The **object** is
-what they acted on, and the **target** is what the act was aimed at. Actor,
-object and target hold entities; the verb is the one that does not.
+**Ines** is the party that initiated an **upload** of the file **annual-report-v3.fig**, into the **Password Crackdown** project.
+The summary headline of the activity may take different forms, but the underlying fact is always the same.
+
+> **Ines** submited the file **annual-report-v3.fig** to **Password Crackdown**
+
+> A new file **annual-report-v3.fig** was added to **Password Crackdown** by **Ines**
+
+> **Password Crackdown** received a new file **annual-report-v3.fig** from **Ines**
+
+The recorded action is still an **upload**, despite it being described differently under
+each published headline.
+
 
 ### Examples
 
