@@ -26,7 +26,7 @@ FeedRendering::icons(fn (string $token) => match ($token) {
 ```
 
 Register your app’s verbs as described in
-[Verbs](/basics/verbs), and keep its [aggregate grammar](/cookbook/grouped-headlines).
+[Activity Types & Verbs](/basics/activity-types-and-verbs), and keep its [aggregate grammar](/cookbook/grouped-headlines).
 The [quickstart](/guide/quickstart) covers the models, recording, and reads.
 
 ## Delete these, keep those

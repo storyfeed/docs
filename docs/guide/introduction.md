@@ -118,7 +118,7 @@ The recorded action is still an **upload**, despite it being described different
 each published headline.
 
 
-### Examples
+## Examples of activities
 
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
@@ -131,22 +131,18 @@ The comment is the shape worth studying: the headline names the **target** rathe
 than the object, because the object is the comment itself and its label is the
 comment text. The document it was left on is what the sentence needs.
 
-## 2. A few feeds
+## Sample Feed
 
-Eight minutes of the demo app's real history, one line per activity — the **log**:
+### As a linear log
 
 <FeedStream :items="log" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
-The same stretch, read as a **summary**:
+### As a grouped summary
 
 <FeedStream :items="summary" :grouped="false">
   <template #annotations="{ node }">
     <Annotation><SlotMapping :node="node" /></Annotation>
   </template>
 </FeedStream>
-
-Collapsing several activities into one telling is **aggregation**.
-[Aggregation](/deeper/aggregation) covers how it decides, and how to write an
-axis of your own.

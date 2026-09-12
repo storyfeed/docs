@@ -236,7 +236,7 @@ ActivityVerb::Comment->by($user)->object($comment)->to($project)->publish();
 ActivityVerb::Confirm->publish($delivery);
 ```
 
-See [Verbs](/basics/verbs) for the enum setup.
+See [Activity Types & Verbs](/basics/activity-types-and-verbs) for the enum setup.
 
 ## Collections
 

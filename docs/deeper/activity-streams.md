@@ -67,7 +67,7 @@ terms (currently `sf:verb`). It is add-only.
 ## Verb mapping
 
 Verbs map to AS2 types via your enum's `activityType()` — see
-[Verbs](/basics/verbs#activity-streams-types). The rules that matter:
+[Activity Types & Verbs](/basics/activity-types-and-verbs#activity-streams-types). The rules that matter:
 
 - Mapping is **vocabulary transcription only**. It never throws and never gates
   recording or validation.
