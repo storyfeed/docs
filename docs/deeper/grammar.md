@@ -130,6 +130,38 @@ reports a token an axis cannot make true of every member. Length is editorial:
 nothing reports it, and the fix is to collapse every dimension but one to
 `:count`.
 
+## Finding the Keys You Have Not Written
+
+You do not have to discover missing keys by reading your own app. Doctor reads
+the pairs actually recorded and the axes actually registered, and prints the
+registrations they imply:
+
+```bash
+php artisan storyfeed:doctor --stubs
+```
+
+```php
+Storyfeed::grammar([
+    'order.placed' => 'TODO :actor :object :target :context :origin :result :instrument',
+]);
+
+Storyfeed::aggregateGrammar([
+    'repeat.placed' => 'TODO :actor :target :count',
+]);
+```
+
+Paste them in and write the sentences. The `TODO` line is not a placeholder to
+delete blindly: **it lists the tokens that are safe for that key**, derived
+from the axis recipe, so an aggregate stub can never offer a token its axis
+does not pin. A singular stub lists every role, because a singular key pins
+them all.
+
+Two findings deliberately emit no stub. `roles` names a template that claims a
+role its activities never carry, and the remedy is authorial — the sentence is
+wrong, not missing. `aggregates.latent` names a pair no surface can read, and
+a stub there would be code that cannot render. See
+[Doctor](/reference/doctor#groups-no-surface-can-read).
+
 ## Wildcards
 
 Resolution falls back `{type}.{verb}` → `{type}.*` → `*.{verb}` → `*.*`.

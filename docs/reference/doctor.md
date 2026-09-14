@@ -153,9 +153,18 @@ empty one is not reported.
 
 ## From Findings to Code
 
-`--stubs` prints the story class that fixes a finding, for the findings a
-class can fix. Two do not emit one, deliberately: the remedy for `roles` is
-authorial, and a stub for a pair no surface can read would be exactly the
+`--stubs` prints the registrations the findings imply — a grammar key with the
+tokens that are safe for it, an icon key, an actorless verb, an axis template —
+and `make:story --from-doctor` scaffolds a class per gap.
+
+Nothing here infers what happened. Every pair it scaffolds was actually
+recorded, every axis it lists actually applies per the compiled recipes, and
+every token it offers is actually pinned. Transcribing what the system observed
+is doctor's job; guessing what it meant is not.
+
+Two findings emit no stub, deliberately. The remedy for `roles` is authorial —
+the sentence claims a role the activities do not carry, so it is wrong rather
+than missing. And a stub for `aggregates.latent` would be exactly the
 unrenderable code that finding exists to prevent.
 
 ```bash
