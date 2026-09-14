@@ -19,7 +19,7 @@ invitee · joined   · invitee    · —        incoherent
 invitee · accepted · invitation · project  coherent
 ```
 
-The event is an invitee accepting an invitation to a table. The inviter sent
+The event is an invitee accepting an invitation to a project. The inviter sent
 the invitation earlier; they did not perform the acceptance.
 
 | Composition | What the Fields Say |
@@ -62,9 +62,9 @@ inside it.
 ### Whether the Event Happened Once
 
 ```text
-Sam · revised · proposal · —   coherent
-Sam · revised · proposal · —   coherent
-Sam · revised · proposal · —   coherent
+user · revised · proposal · —   coherent
+user · revised · proposal · —   coherent
+user · revised · proposal · —   coherent
 ```
 
 Three autosaves, one revision as a reader would count it. Every row passes the
@@ -77,7 +77,7 @@ collapsing the ones that stay.
 ### Whether Every Token Has a Publisher
 
 ```text
-Sam · archived · document · —   coherent — nothing was aimed at
+user · archived · document · —   coherent — nothing was aimed at
 ```
 
 ```php
