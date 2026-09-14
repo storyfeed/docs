@@ -18,8 +18,12 @@ const props = withDefaults(
         items: any[]
         expanded?: boolean
         label?: string
-        /** Sit the example inside a running feed, so the rail reads as a line. */
-        context?: boolean
+        /**
+         * Sit the example inside a running feed, so the rail reads as a line.
+         * `true` pads by one row each side for a single activity and two for
+         * several; a number says how many, up to three.
+         */
+        context?: boolean | number
     }>(),
     { expanded: false, label: 'Payload', context: false },
 )
@@ -31,13 +35,24 @@ const copied = ref(false)
 const json = computed(() => JSON.stringify(props.items, null, 2))
 
 /**
- * Two rows above and two below, minted around the example's own timestamps so
- * the feed stays newest-first. They are dimmed by the card, never hidden: the
- * point is that the example is one row in a real feed.
+ * Rows above and below, minted around the example's own timestamps so the feed
+ * stays newest-first. They are dimmed by the card, never hidden: the point is
+ * that the example is one row in a real feed.
+ *
+ * ONE ROW EACH SIDE IS ENOUGH FOR A SINGLE ACTIVITY — the rail only has to
+ * arrive and leave — while a group or a sequence is already several rows tall
+ * and needs two to read as surrounded rather than clipped. A number overrides
+ * both, capped at three, because past that the example stops being the subject.
  *
  * The payload above is serialised from `items` alone, so nothing here can
  * appear in it.
  */
+const pad = computed(() => {
+    if (props.context === false) return 0
+    if (typeof props.context === 'number') return Math.min(Math.max(props.context, 0), 3)
+
+    return props.items.length === 1 ? 1 : 2
+})
 // The payload's own precision is microseconds, so a shifted timestamp keeps
 // that shape rather than JavaScript's milliseconds.
 const shift = (at: string, minutes: number) =>
@@ -46,18 +61,21 @@ const shift = (at: string, minutes: number) =>
         .replace(/\.\d{3}Z$/, '.000000Z')
 
 const drawn = computed(() => {
-    if (!props.context || props.items.length === 0) return props.items
+    if (pad.value === 0 || props.items.length === 0) return props.items
 
     const first = props.items[0].published_at
     const last = props.items[props.items.length - 1].published_at
+    const before = []
+    const after = []
 
-    return [
-        surrounding(0, shift(first, 11), 'ctx-a'),
-        surrounding(1, shift(first, 4), 'ctx-b'),
-        ...props.items,
-        surrounding(2, shift(last, -6), 'ctx-c'),
-        surrounding(3, shift(last, -14), 'ctx-d'),
-    ]
+    for (let i = 0; i < pad.value; i++) {
+        // Furthest row first above, nearest first below: reading order is
+        // newest to oldest either side of the example.
+        before.push(surrounding(i, shift(first, 6 * (pad.value - i) + 3), `ctx-b${i}`))
+        after.push(surrounding(pad.value + i, shift(last, -6 * (i + 1)), `ctx-a${i}`))
+    }
+
+    return [...before, ...props.items, ...after]
 })
 
 /**
@@ -91,7 +109,7 @@ async function copy() {
 </script>
 
 <template>
-    <div class="sf-example" :class="{ 'sf-example--context': context }">
+    <div class="sf-example" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
         <div class="sf-example__preview">
             <FeedStream :items="drawn" :grouped="false" v-bind="$attrs">
                 <template v-for="(_, name) in slots" #[name]="slotProps">
@@ -206,8 +224,12 @@ async function copy() {
  * as a disabled state and blur reads as depth of field — the eye lands on the
  * sharp row without being told which one matters.
  */
-.sf-example--context :deep([role='listitem']:nth-child(-n + 2)),
-.sf-example--context :deep([role='listitem']:nth-last-child(-n + 2)) {
+.sf-example--pad-1 :deep([role='listitem']:nth-child(-n + 1)),
+.sf-example--pad-1 :deep([role='listitem']:nth-last-child(-n + 1)),
+.sf-example--pad-2 :deep([role='listitem']:nth-child(-n + 2)),
+.sf-example--pad-2 :deep([role='listitem']:nth-last-child(-n + 2)),
+.sf-example--pad-3 :deep([role='listitem']:nth-child(-n + 3)),
+.sf-example--pad-3 :deep([role='listitem']:nth-last-child(-n + 3)) {
     filter: blur(1.6px);
     opacity: 0.4;
     user-select: none;

@@ -105,11 +105,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 
     Collapsed by default, because most pages teach the sentence rather than
     the shape. Add `expanded` where the data IS the lesson, and `context` to
-    sit the example inside a running feed — two real rows above and two below,
-    blurred rather than greyed, because grey reads as a disabled state and
-    blur reads as depth of field. Use it where the rail or the rhythm of a
-    feed is part of the point; the payload still serialises `items` alone, so
-    nothing surrounding can appear in it. The card is the
+    sit the example inside a running feed — real rows above and below, blurred
+    rather than greyed, because grey reads as a disabled state and blur reads
+    as depth of field. One row each side for a single activity (the rail only
+    has to arrive and leave), two for a group or a sequence, which is already
+    several rows tall; `:context="3"` overrides, and three is the cap, because
+    past that the example stops being the subject. The payload still
+    serialises `items` alone, so nothing surrounding can appear in it. The card is the
     well: a feed inside one drops its own ring and corner label, because a
     fence inside a fence is the crowding the detail block spent a day removing
     one package over. Use `FeedStream` directly only where a page is showing a
