@@ -157,7 +157,7 @@ sees the current form and no view branches on `$v`.
 
 A detail sits alongside the app's own keys, so a reader finds one by walking
 `data` rather than by reading a fixed key. Keep it near the top: core's `details`
-check and the Filament adapter both stop looking four levels in.
+check stops looking four levels in, and a renderer should not look deeper.
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -197,9 +197,8 @@ never a rendered diff.
 ## Existing Forms
 
 Core ships six under `Storyfeed\Detail`. They are the vocabulary rather than
-one renderer's furniture: `storyfeed/filament` registers them for its own
-views, and any other renderer may recognise the same names. An app writing its
-own owes nothing to any of them, and core reads none of them.
+one renderer's furniture: any renderer may recognise these names, an app
+writing its own form owes nothing to them, and core reads none of them.
 
 | Name | Is | Keys |
 |---|---|---|

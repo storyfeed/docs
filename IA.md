@@ -237,13 +237,12 @@ reading and drawing, a second audience, then renderer-specific pages.
 - ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
 - ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
 - ✅ Activity Types & Verbs — the same verb typed, as a `FeedVerb` enum (owner's page)
-- ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, translation
+- ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, glyph intents, translation
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ Rendering — the smallest loop, links, degraded entities, groups, details, resync
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
 - ✅ Live Rendering — Vue: reconciliation in code, sync_token, bounded empty-page loop
-- ✅ The Feed Rail — the four configurations, choosing one, the glyph's intent
 
 ### Digging Deeper
 
@@ -344,6 +343,13 @@ so nobody documents it as public API.
   is describing a release, and these pages describe `dev-main`.
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
+- **These docs are for someone who installed `storyfeed/storyfeed` and nothing
+  else.** No `storyfeed/ui`, no `storyfeed/filament`: not their APIs, not their
+  config keys, not "the Filament adapter does X" as an aside. A reader who has
+  only the core package must never meet a line they cannot run. Two pages were
+  deleted on 2026-09-14 for breaking this — Setting Up a New Consumer, and The
+  Feed Rail, whose four configurations were the plugin's (its core half, the
+  glyph's intent, moved to Headlines).
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
   package exists. When the `storyfeed/filament` page lands it is a **pricing and
   install** page — what it costs, the licence key, the private Composer endpoint

@@ -64,6 +64,69 @@ The icon is a token; your renderer maps it onto an icon set it owns. Keys
 resolve most-specific first: `order.order.placed`, then `order.*`, then
 `*.order.placed`, then `*.*`.
 
+## What a Glyph Means
+
+A glyph names a shape. `glyph_intent` says what that shape means, and rides
+beside it on every node:
+
+```json
+{
+  "verb": "order.completed",
+  "glyph": "receipt",
+  "glyph_intent": "success"
+}
+```
+
+A renderer that draws the glyph small can tell the verbs apart by shape alone.
+One that draws it large, or a feed whose verbs cluster, needs more than a
+shape.
+
+Register intents the way you register icons — keyed `type.verb`, wildcards
+allowed, resolved most-specific first:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+Storyfeed::glyphIntents([
+    '*.order.completed' => 'success',   // the app's own word, not the package's
+    '*.order.placed'    => 'pending',
+    '*.order.cancelled' => 'danger',
+]);
+```
+
+Or on a story class:
+
+```php
+// app/Stories/DocumentWasUploaded.php
+public function intent(): ?string
+{
+    return 'success';
+}
+```
+
+The value is **your** string. Storyfeed ships no vocabulary of intents and no
+colours: `success` is not a term the package knows, ranks or validates, exactly
+as `circle-check` is not an icon it ships. The three words above are this
+documentation's own, and the renderer maps them onto three colours it owns —
+`success`, `pending` and `danger` are what these examples chose to say, not a
+list to conform to.
+
+Intents resolve on their own registry, so a wildcard is stated once:
+
+| Key | Matches |
+|---|---|
+| `order.order.completed` | that verb on that object type |
+| `order.*` | every verb on that object type |
+| `*.order.completed` | that verb on any object type |
+| `*.*` | everything with no more specific entry |
+
+Most verbs have no intent, and that is the common case. A placed order is not yet a
+success or a failure, so `glyph_intent` is `null` and the disc renders plain —
+which is what every node carries until an app registers its first intent.
+
+A renderer that meets an intent it has no colour for draws the plain glyph.
+Unknown strings pass through, never dropped, so an app can add a word without
+waiting for a renderer to learn it.
+
 ## Translating a Headline
 
 Templates are plain strings, so they translate:

@@ -181,8 +181,7 @@ what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
 Free-form and app-owned, the same posture as the verb; no vocabulary is shipped
 or validated, and unknown strings are passed through rather than dropped. It is
 `null` for every pair no intent was registered for, which is every app that has
-not opted in. See [the rail](/basics/the-rail#the-glyph-s-intent) for what a
-renderer does with it.
+not opted in. See [what a glyph means](/basics/headlines#what-a-glyph-means).
 
 Both resolve on the same ladder and independently of each other:
 `type.verb`, `type.*`, `*.verb`, `*.*`.

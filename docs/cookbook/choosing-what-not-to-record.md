@@ -130,8 +130,7 @@ Storyfeed::activity()
 ```
 
 Use this instead of the snapshot body when the utterance should be captured
-on the activity. The reader receives it as `node.thread.text`; the Filament
-renderer and this site's feed component render that quote. Omit the `Note`
+on the activity. The reader receives it as `node.thread.text`; this site's feed component renders that quote. Omit the `Note`
 body slot for this version so the text is not displayed twice. `FeedThread`
 also accepts `by`, `kind`, and `replies` when attribution and a conversation
 count are needed; an uncounted conversation uses `replies: null`.
@@ -163,8 +162,9 @@ choice is in [Repeating activities](/cookbook/repeating-activities).
 
 Supporting machine evidence belongs in activity `data` or an entity detail
 rendered with its provenance. It is not the human utterance in `FeedThread`.
-For a non-conversational passage attached to an entity, the Filament adapter's
-`Detail\Excerpt` provides an excerpt and its source.
+For a non-conversational passage attached to an entity, the
+[`Excerpt` form](/basics/activity-content) carries the passage and its
+source.
 
 ## Grammar with No Publisher
 

@@ -58,12 +58,6 @@ Substitute the entity labels and you have a row:
 
 That is a working feed. Everything below makes it better, one thing at a time.
 
-::: tip
-You may not need any of it. `storyfeed/ui` draws these nodes for Vue, Inertia
-and Blade, and `storyfeed/filament` is a Filament plugin. This page is for
-writing your own, and for understanding what those packages do.
-:::
-
 ## Linking the Entities
 
 An entity carries its own `url`, minted at read time, so a link needs no route
