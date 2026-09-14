@@ -67,7 +67,7 @@ run. Its `(call site)` rows identify recorded object/verb pairs, not source
 locations.
 
 `grammar.strict` throws at the publish call in `local` and `testing` when the
-pair has no headline. It is in [Story classes](/basics/stories#strict-grammar).
+pair has no headline. It is in [Configuration](/reference/configuration).
 
 ## A verb nothing publishes any more
 

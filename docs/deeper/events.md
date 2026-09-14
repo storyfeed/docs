@@ -48,7 +48,7 @@ and publishing without a collision.
 | model observer | lifecycle facts (created, deleted) with no domain event |
 
 All three are explicit calls. Whichever you choose, the pairs they record show
-up in [`storyfeed:stories`](/basics/stories#inventory), including ones the
+up in [`storyfeed:stories`](/reference/commands), including ones the
 package never wired.
 
 ## Events emitted by Storyfeed
