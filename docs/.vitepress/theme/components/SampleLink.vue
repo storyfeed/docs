@@ -21,6 +21,16 @@ import { ref } from 'vue'
  *
  * Provided through the kit's own `FEED_LINK` seam — the one a consumer uses to
  * hand the feed an Inertia or router link — rather than by forking EntityLink.
+ *
+ * WHY `target`. Preventing `click` is not enough on its own. VitePress's router
+ * listens on `window` with `{ capture: true }`, so it sees the event before any
+ * handler on the anchor, and for a same-origin HTML path it calls
+ * `preventDefault()` itself and routes there — a 404 inside the SPA, with the
+ * browser never involved. Its handler bails on an anchor carrying a `target`
+ * attribute, so `_self` (the default value, changing nothing on its own) hands
+ * the click back to this component. `.vp-raw` is the other documented opt-out
+ * and is wrong here: it unsets VitePress's typography, which is the very link
+ * styling these anchors exist to keep.
  */
 // TWO ROOTS, SO ATTRIBUTES ARE PLACED BY HAND. The dialog sits beside the
 // anchor, which means Vue cannot guess where `class="sf-entity"` belongs — and
@@ -45,6 +55,7 @@ function activate() {
     <a
         v-bind="$attrs"
         :href="href"
+        target="_self"
         :title="
             href
                 ? `${href} — ${modal ? 'opens in place, because this entity asked for it' : 'a link in the app that recorded this; the docs stay put'}`
