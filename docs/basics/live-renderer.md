@@ -342,7 +342,7 @@ The gutter this node sits beside leads with the actor or with the activity,
 and which one is a choice. This kit takes it as a prop:
 
 ```vue
-<FeedStream :items="items" rail="activity" />
+<FeedExample :items="items" rail="activity" />
 ```
 
 Left unset, the kit draws one face and no badge — `actor-only` — and group

@@ -22,7 +22,7 @@ class OrderPlaced
 
 <<< @/snippets/publish-from-listener.php
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 ## From the Event Itself
 
@@ -31,7 +31,7 @@ Return it without publishing; dispatching the event publishes it:
 
 <<< @/snippets/publish-from-event.php
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 Dispatch the event and the activity is published. Return `null` to publish
 nothing, when only some instances belong on the feed:

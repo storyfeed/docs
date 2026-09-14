@@ -54,7 +54,7 @@ const expired = activity({
 })
 </script>
 
-<FeedStream :items="[placed]" :grouped="false" />
+<FeedExample :items="[placed]" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -95,7 +95,7 @@ class RecordSubmission implements ShouldQueue
 }
 ```
 
-<FeedStream :items="[anonymous]" :grouped="false" />
+<FeedExample :items="[anonymous]" />
 
 Under those defaults the row is published with `actor: null`. To retain the
 known author, use
@@ -150,7 +150,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[paid]" :grouped="false" />
+<FeedExample :items="[paid]" />
 
 `by('Stripe')` names a party; `by(null)` explicitly records an anonymous
 actor. The difference is in
@@ -174,7 +174,7 @@ Storyfeed::anonymous() // bypass actor resolution even inside an attributed scop
     ->publish();
 ```
 
-<FeedStream :items="[expired]" :grouped="false" />
+<FeedExample :items="[expired]" />
 
 The builder records no actor, and the template describes the expiry without
 naming one. Removing `:actor` from a template changes only the sentence; it

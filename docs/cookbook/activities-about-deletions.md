@@ -36,7 +36,7 @@ const removed = activity({
 })
 </script>
 
-<FeedStream :items="[removed]" :grouped="false" />
+<FeedExample :items="[removed]" />
 
 The node's `data` carries the name for your renderer to show beneath the
 headline.

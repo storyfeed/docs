@@ -47,7 +47,7 @@ const confirmed = activity({
 
 *The cook moves an order from placed to confirmed.*
 
-<FeedStream :items="[confirmed]" :grouped="false" />
+<FeedExample :items="[confirmed]" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

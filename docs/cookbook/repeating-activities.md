@@ -31,7 +31,7 @@ Storyfeed::activity()->by($cook)->action('menu.dish_added', $dish)->publish();  
 
 After one new dish and two price changes:
 
-<FeedStream :items="pricedTwice" :grouped="false" />
+<FeedExample :items="pricedTwice" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -88,7 +88,7 @@ Storyfeed::activity()->by($user)->action($verb, $order)->publish();
 $timeline = Storyfeed::feed()->involving($order)->log()->get();
 ```
 
-<FeedStream :items="timeline" :grouped="false" />
+<FeedExample :items="timeline" />
 
 For the pulse, each transition request instead runs:
 
@@ -99,7 +99,7 @@ Storyfeed::activity()->by($user)->action($verb, $order)->replace()->publish();
 $pulse = Storyfeed::feed()->involving($order)->live()->get();
 ```
 
-<FeedStream :items="pulse" :grouped="false" />
+<FeedExample :items="pulse" />
 
 The pulse keeps the latest confirmation as well as the latest placement; it
 is not a single current-status row. The second placement is new news, even

@@ -96,11 +96,12 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     manifest (`{{ who.designer.label }}`); `npm run test:cast` fails the build
     when a manifest value appears literally in prose.
 
-    **`<FeedExample :items="…" />` draws the feed and offers "View payload"**,
-    serialised from the SAME nodes it drew — never hand-written beside it,
-    which is the block that eventually disagrees with the picture above it. It
-    caught its first drift within a minute of existing: a sample still
-    carrying a verb the prose had renamed.
+    **Every rendered feed is `<FeedExample :items="…" />`**, which draws it and
+    offers "View payload", serialised from the SAME nodes it drew — never
+    hand-written beside it, which is the block that eventually disagrees with
+    the picture above it. It caught its first drift within a minute of
+    existing: a sample still carrying a verb the prose had renamed. Use
+    `FeedStream` directly only where a page is showing a consumer's own markup.
 
 15. **Snippet, then its output.** What a code block produces is shown directly
     beneath it, rendered, in a well that lines up with the code block (same

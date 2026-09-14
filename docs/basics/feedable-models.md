@@ -69,7 +69,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-<FeedStream :items="withSnapshot" :grouped="false" />
+<FeedExample :items="withSnapshot" />
 
 The snapshot is taken when an activity is published and refreshed every time
 the model saves. The feed reads the snapshot, never the model, so a page of a
@@ -113,7 +113,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-<FeedStream :items="withLink" :grouped="false" />
+<FeedExample :items="withLink" />
 
 It is static because there is no model: `$context` carries the snapshot, and
 the URL is minted fresh on every read. A route that changes never leaves a
@@ -139,11 +139,11 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 On the `kitchen` feed:
 
-<FeedStream :items="withLink" :grouped="false" />
+<FeedExample :items="withLink" />
 
 On a feed with no name:
 
-<FeedStream :items="withSnapshot" :grouped="false" />
+<FeedExample :items="withSnapshot" />
 
 The name is stamped by the registry, never read from the request, so the same
 snapshot resolves the same way in a queued digest, in the console and in a
@@ -158,9 +158,9 @@ test.
 $kitchen->storyfeed()->get();
 ```
 
-<FeedStream :items="scoped" :grouped="false">
+<FeedExample :items="scoped">
   <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
+</FeedExample>
 
 That is `Storyfeed::feed()->involving($kitchen)->get()` with the argument
 filled in: the same builder, so everything in
@@ -246,7 +246,7 @@ class MenuItem extends Model implements Feedable
 }
 ```
 
-<FeedStream :items="[scoped[2]]" :grouped="false" />
+<FeedExample :items="[scoped[2]]" />
 
 ::: headless it makes no images
 `FeedImage` carries a location and its dimensions. Generating a thumbnail,

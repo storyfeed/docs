@@ -116,11 +116,11 @@ each published headline.
 
 ## Examples of Activities
 
-<FeedStream :items="oneActivity" :grouped="false">
+<FeedExample :items="oneActivity">
   <template #annotations="{ node }">
     <Annotation><SlotMapping :node="node" :slots="['actor', 'verb', 'object', 'target']" /></Annotation>
   </template>
-</FeedStream>
+</FeedExample>
 
 The question is the shape worth studying: the headline names the **target** rather
 than the object, because the object is the note itself and its label is the
@@ -130,12 +130,12 @@ note's text. The dish it was asked about is what the sentence needs.
 
 ### As a Linear Log
 
-<FeedStream :items="log" :grouped="false" />
+<FeedExample :items="log" />
 
 ### As a Grouped Summary
 
-<FeedStream :items="summary" :grouped="false">
+<FeedExample :items="summary">
   <template #annotations="{ node }">
     <Annotation><SlotMapping :node="node" /></Annotation>
   </template>
-</FeedStream>
+</FeedExample>

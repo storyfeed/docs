@@ -53,7 +53,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[one]" :grouped="false" />
+<FeedExample :items="[one]" />
 
 *a minute later, another request*
 
@@ -88,7 +88,7 @@ With the default grouping strategy, these activities share the same actor,
 verb, object type, target, and publish day, so `live()` groups them under the
 `repeat` sentence:
 
-<FeedStream :items="[burst]" :grouped="false" />
+<FeedExample :items="[burst]" />
 
 `log()` returns individual activities. `live()` reads repeat groups and authored
 composites; `summary()` can select other eligible axes. Aggregate grammar
@@ -98,7 +98,7 @@ under the default policy). See [Aggregation](/deeper/aggregation).
 
 *five customers, five different orders, five requests, the same kitchen*
 
-<FeedStream :items="[crowd]" :grouped="false" />
+<FeedExample :items="[crowd]" />
 
 Without an aggregate template, a group has no authored sentence and falls back.
 The fallback is described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).

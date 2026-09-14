@@ -20,7 +20,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-<FeedStream :items="[withoutIcon]" :grouped="false" />
+<FeedExample :items="[withoutIcon]" />
 
 Read the key as two parts: the object's morph alias, a dot, and the verb.
 `order.placed` is the verb `placed`, recorded about an `order`. The dot
@@ -61,7 +61,7 @@ Storyfeed::icons([
 ]);
 ```
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 Keys resolve most-specific first: `order.placed`, then `order.*`, then
 `*.placed`, then `*.*`.

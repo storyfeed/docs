@@ -166,11 +166,11 @@ In a job that is the moment the worker got to it.
 *A user places two orders at 23:52 and 23:55. A third order at 23:58
 sits in a backlog, and its job runs at 00:05. Without `publishedAt()`:*
 
-<FeedStream :items="late" />
+<FeedExample :items="late" />
 
 *The same job, with `publishedAt($this->occurredAt)`:*
 
-<FeedStream :items="dated" />
+<FeedExample :items="dated" />
 
 Grouping is cut by day on `published_at`, so the late row with the default
 stamp lands on the next day and does not join the group its two siblings

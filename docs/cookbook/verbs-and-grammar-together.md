@@ -40,7 +40,7 @@ OrderWasPlaced::activity($order)
     ->publish();
 ```
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 Registration is in [Story Classes](/deeper/stories).
 

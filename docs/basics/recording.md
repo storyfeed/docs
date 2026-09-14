@@ -29,7 +29,7 @@ The builder reads in the order of the headline it produces:
 
 <<< @/snippets/publish.php
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
 happened. `placed` is this app's own word, not one the package knows. Verbs
@@ -88,7 +88,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[paid]" :grouped="false" />
+<FeedExample :items="[paid]" />
 
 A string actor is a [party](/deeper/parties): a named participant with no
 model. When nothing names an actor the activity is published with none, which
@@ -106,7 +106,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[priced]" :grouped="false" />
+<FeedExample :items="[priced]" />
 
 `Storyfeed::record()` takes the same as named arguments: `data:`,
 `publishedAt:`, `replace:`, `objects:` and `thread:`.
@@ -124,7 +124,7 @@ Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()
 Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();
 ```
 
-<FeedStream :items="[priced]" :grouped="false" />
+<FeedExample :items="[priced]" />
 
 The key is the object and the verb; `data` is not part of it. Which verbs
 should replace and which should append is worked through in

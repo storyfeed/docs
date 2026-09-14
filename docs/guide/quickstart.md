@@ -49,7 +49,7 @@ Storyfeed::grammar([
 
 That is the activity, and this is it on a feed:
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 Call it wherever the fact becomes true: an action, an observer, an event
 listener.
@@ -63,7 +63,7 @@ One call returns everything the kitchen took part in:
 $page = Storyfeed::feed()->involving($kitchen)->get();
 ```
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 Each node carries its own sentence with the entities already in it, so drawing
 one needs no knowledge of your app. [Reading Feeds](/basics/reading) covers

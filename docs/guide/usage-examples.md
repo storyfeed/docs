@@ -121,7 +121,7 @@ Storyfeed::activity()
 
 Read as a plain timeline instead, the same three activities are three rows:
 
-<FeedStream :items="expanded" :grouped="false" />
+<FeedExample :items="expanded" />
 
 [Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
 decides the grouping.
@@ -130,7 +130,7 @@ decides the grouping.
 
 Five customers, five orders, five separate requests.
 
-<FeedStream :items="[crowd]" :grouped="false" />
+<FeedExample :items="[crowd]" />
 
 [Aggregation](/deeper/aggregation) covers the axes and what each one may say.
 
@@ -146,7 +146,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[paid]" :grouped="false" />
+<FeedExample :items="[paid]" />
 
 [Parties & Anonymous Actors](/deeper/parties).
 
@@ -161,7 +161,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[noted]" :grouped="false" />
+<FeedExample :items="[noted]" />
 
 ## The Facts Behind a Change
 
@@ -177,7 +177,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[priced]" :grouped="false" />
+<FeedExample :items="[priced]" />
 
 [What an Activity Shows](/basics/activity-content) covers the forms a row can
 carry.
@@ -193,7 +193,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[photographed]" :grouped="false" />
+<FeedExample :items="[photographed]" />
 
 ## Six Photographs, One Row
 
@@ -207,7 +207,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[photoBurst]" :grouped="false" />
+<FeedExample :items="[photoBurst]" />
 
 ## A Dish, as a Post
 
@@ -219,7 +219,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[posted]" :grouped="false" />
+<FeedExample :items="[posted]" />
 
 ## And Many More
 

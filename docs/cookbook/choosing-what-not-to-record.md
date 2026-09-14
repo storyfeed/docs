@@ -72,9 +72,9 @@ const question = activity({
 })
 </script>
 
-<FeedStream :items="[question]" :grouped="false">
+<FeedExample :items="[question]">
   <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
+</FeedExample>
 
 The quote above comes from the note's snapshot. Give the Note model
 this contract (and register its `note` morph alias as in

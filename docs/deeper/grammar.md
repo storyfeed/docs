@@ -29,7 +29,7 @@ Storyfeed::aggregateGrammar([
 ]);
 ```
 
-<FeedStream :items="[repeated]" :grouped="false" />
+<FeedExample :items="[repeated]" />
 
 A singular [headline](/basics/headlines) is keyed by object type and verb; a
 group headline by **axis and verb**. A Story's `groups()` writes the same

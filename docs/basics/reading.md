@@ -42,7 +42,7 @@ $page = Storyfeed::feed()
     ->get();
 ```
 
-<FeedStream :items="scoped" :grouped="false" />
+<FeedExample :items="scoped" />
 
 `$page` is a `FeedPage`: the payload envelope, ready to return from a route.
 
@@ -78,7 +78,7 @@ The same four activities as a log:
 Storyfeed::feed()->involving($kitchen)->log()->get();
 ```
 
-<FeedStream :items="log" :grouped="false" />
+<FeedExample :items="log" />
 
 And as a summary:
 
@@ -87,7 +87,7 @@ And as a summary:
 Storyfeed::feed()->involving($kitchen)->summary()->get();
 ```
 
-<FeedStream :items="summary" :grouped="false" />
+<FeedExample :items="summary" />
 
 The app-wide default is `grouping.default` in the config; a call always
 overrides it. Mode names never appear in the payload: which mode a surface
@@ -142,7 +142,7 @@ $kitchen->storyfeed()
     ->get();
 ```
 
-<FeedStream :items="[repeat]" :grouped="false" />
+<FeedExample :items="[repeat]" />
 
 Callbacks compose, and the constraint reaches the whole read: group children
 and the counts behind a group are built from the same query.

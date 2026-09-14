@@ -12,7 +12,7 @@ eventually wants them typed.
 
 ## Using Strings
 
-<FeedStream :items="[placed]" :grouped="false" />
+<FeedExample :items="[placed]" />
 
 ```php
 // where the fact happens: a controller, an action, a listener

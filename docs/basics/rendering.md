@@ -61,7 +61,7 @@ Substitute the entity labels and you have a row:
 @endforeach
 ```
 
-<FeedStream :items="[bare]" :grouped="false" />
+<FeedExample :items="[bare]" />
 
 That is a working feed. Everything below makes it better, one thing at a time.
 
@@ -87,7 +87,7 @@ knowledge:
 ]) !!}
 ```
 
-<FeedStream :items="[one]" :grouped="false" />
+<FeedExample :items="[one]" />
 
 The glyph on the node is a token your app registered. Map it to whatever icon
 set you use; an unknown one falls back rather than failing.
@@ -98,7 +98,7 @@ An entity whose snapshot has not been written yet arrives with `label: null`
 and `url: null`. A null **actor** means the actor is genuinely unknown.
 Neither withholds the activity:
 
-<FeedStream :items="[degraded]" :grouped="false" />
+<FeedExample :items="[degraded]" />
 
 That is what the fallbacks in the loop above are for. Give the unknown actor
 your own word, conventionally "Someone".
@@ -128,7 +128,7 @@ the exemplars plus however many are not shown.
 ]) !!}
 ```
 
-<FeedStream :items="[grouped]" :grouped="false" />
+<FeedExample :items="[grouped]" />
 
 A **singular** token on a group is the one case worth care. A group carries
 `node['actor']` only when the group really has one actor; otherwise the key is
@@ -153,7 +153,7 @@ Sometimes the server cannot summarise a group honestly, and **both**
 @endif
 ```
 
-<FeedStream :items="[unnamed]" :grouped="false" />
+<FeedExample :items="[unnamed]" />
 
 Draw the count, not prose assembled from the node's entities: a branch written
 for single activities names one actor over a many-actor group. `headline` is

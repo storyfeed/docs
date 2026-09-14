@@ -36,7 +36,7 @@ const actors = group({ id: 'ag5', verb: 'placed', axis: 'actors', count: 5, glyp
 
 Three orders from one customer, minutes apart, as a log:
 
-<FeedStream :items="log" :grouped="false" />
+<FeedExample :items="log" />
 
 A Story's `groups()` says how they read as one:
 
@@ -69,7 +69,7 @@ class OrderWasPlaced extends Story
 }
 ```
 
-<FeedStream :items="[repeat]" :grouped="false" />
+<FeedExample :items="[repeat]" />
 
 ## Grouping Along Another Axis
 
@@ -86,7 +86,7 @@ public function groups(): array
 }
 ```
 
-<FeedStream :items="[actors]" :grouped="false" />
+<FeedExample :items="[actors]" />
 
 Each activity lands in exactly one axis per read mode. Grouping is decided
 when the activity is published, never per request.

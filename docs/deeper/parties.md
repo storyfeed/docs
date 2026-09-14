@@ -28,7 +28,7 @@ $party = Storyfeed::party('Stripe');
 Storyfeed::record('paid', $order, actor: $party);
 ```
 
-<FeedStream :items="[paid]" :grouped="false" />
+<FeedExample :items="[paid]" />
 
 Parties work in **any** role — actor, object, target, context, origin, result, or instrument:
 

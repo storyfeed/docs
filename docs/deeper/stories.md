@@ -72,7 +72,7 @@ OrderWasPlaced::activity($order)
     ->publish();
 ```
 
-<FeedStream :items="[placed]" :grouped="false" />
+<FeedExample :items="[placed]" />
 
 The tokens name roles, never models: `:actor`, `:object`, `:target`,
 `:context`. Each becomes the label of the entity in that role.
@@ -115,7 +115,7 @@ class OrderWasPlaced extends Story
 }
 ```
 
-<FeedStream :items="[placedWithIcon]" :grouped="false" />
+<FeedExample :items="[placedWithIcon]" />
 
 The icon is a token; your renderer maps it onto an icon set it owns.
 
@@ -156,7 +156,7 @@ class OrderWasPlaced extends Story
 }
 ```
 
-<FeedStream :items="[grouped]" :grouped="false" />
+<FeedExample :items="[grouped]" />
 
 `:count` is how many, and `:actor` stays singular because every member shares
 the actor. [Aggregation](/deeper/aggregation) covers the other ways activities
@@ -276,6 +276,6 @@ class DishWentLive extends Story
 }
 ```
 
-<FeedStream :items="examples" :grouped="false">
+<FeedExample :items="examples">
   <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
+</FeedExample>

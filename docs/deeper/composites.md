@@ -27,7 +27,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[authored]" :grouped="false" />
+<FeedExample :items="[authored]" />
 
 This writes a parent activity plus its atomic members. In `log()` the members
 appear as an ordinary timeline; in aggregated modes the parent arrives as one

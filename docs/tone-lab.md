@@ -31,11 +31,11 @@ const tones = ['slate', 'blue', 'teal', 'violet', 'amber']
 
 ## {{ tone }}
 
-<FeedStream :items="comment" :grouped="false">
+<FeedExample :items="comment">
   <template #body="{ node }"><FeedBody :node="node" /></template>
   <template #annotations="{ node }">
     <Annotation :tone="tone" :label="`Anatomy — ${tone}`"><SlotMapping :node="node" /></Annotation>
   </template>
-</FeedStream>
+</FeedExample>
 
 </div>

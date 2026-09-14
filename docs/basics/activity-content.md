@@ -75,7 +75,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[plain]" :grouped="false" />
+<FeedExample :items="[plain]" />
 
 Everything below is for the rows where it is not enough. Add one thing at a
 time, and only where a reader would ask for it.
@@ -97,7 +97,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[withThread]" :grouped="false" />
+<FeedExample :items="[withThread]" />
 
 The text is stored on that activity, so editing the note afterwards does not
 change what the row quotes. That is the point: the row says what was said at
@@ -122,7 +122,7 @@ public function toFeed(): FeedEntity
 }
 ```
 
-<FeedStream :items="[withExcerpt]" :grouped="false" />
+<FeedExample :items="[withExcerpt]" />
 
 A detail on the **entity's** snapshot travels wherever that entity appears. A
 detail on the **activity** describes this row and no other:
@@ -143,7 +143,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[withFields]" :grouped="false" />
+<FeedExample :items="[withFields]" />
 
 A value the row has no answer for is **silent by default**. Give it a word
 only where the emptiness is itself the answer, per row or for the whole block
@@ -166,7 +166,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[withChange]" :grouped="false" />
+<FeedExample :items="[withChange]" />
 
 Both sides are kept, never a rendered diff. Omit an index for a field that was
 added or removed; a `null` is a value that is present and empty.
@@ -186,7 +186,7 @@ public function toFeed(): FeedEntity
 }
 ```
 
-<FeedStream :items="[withFile]" :grouped="false" />
+<FeedExample :items="[withFile]" />
 
 `File` says what an artefact is, never where it lives: the URL is
 [`feedMedia()`](/basics/feedable-models#the-link)'s job, and it is minted at

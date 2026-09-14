@@ -55,16 +55,16 @@ Enter it by name, from the facade or from the model:
 Storyfeed::feed('kitchen')->involving($kitchen)->get();
 ```
 
-<FeedStream :items="kitchen" :grouped="false">
+<FeedExample :items="kitchen">
   <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
+</FeedExample>
 
 ```php
 // a controller, or wherever the feed is read
 $order->storyfeed('customer')->get();
 ```
 
-<FeedStream :items="customer" :grouped="false" />
+<FeedExample :items="customer" />
 
 An unknown name throws `UnknownFeed`. A typo does not fall back to the
 unfiltered feed. The verb list binds; the mode does not: `->log()` in a
@@ -153,7 +153,7 @@ class CustomerFeed extends Feed
 CustomerFeed::make($order)->get();
 ```
 
-<FeedStream :items="customer" :grouped="false" />
+<FeedExample :items="customer" />
 
 Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
 
