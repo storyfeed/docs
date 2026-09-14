@@ -1,13 +1,60 @@
-# Reading feeds
+# Reading Feeds
+
+A read is a builder that returns a page of nodes, ready to render or to return
+from a route. When you are done, one line reads the feed a surface wants.
+
+<script setup>
+import { who, where, doc, note, activity, group } from '../.vitepress/theme/samples'
+
+const scoped = [
+  group({ id: 'rd1', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+    published_at: '2026-08-14T14:30:00.000000Z',
+    headline_template: ':actor uploaded :count files to :target',
+    actors: [who.ines], targets: [where.passwordCrackdown],
+    objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+    distinct: { actors: 1, objects: 3, targets: 1 } }),
+  activity({ id: 'rd2', verb: 'comment', glyph: 'message-circle',
+    published_at: '2026-08-14T14:28:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+  activity({ id: 'rd3', verb: 'create', glyph: 'folder',
+    published_at: '2026-08-12T09:00:00.000000Z',
+    headline_template: ':actor created the project :object',
+    actor: who.jasper, object: where.passwordCrackdown }),
+]
+
+const upload = (id, at, object) => activity({ id, verb: 'upload', glyph: 'file-up',
+  published_at: at,
+  headline_template: ':actor uploaded :object to :target',
+  actor: who.ines, object, target: where.passwordCrackdown })
+
+const log = [
+  upload('rd4', '2026-08-14T14:30:00.000000Z', doc.pricingTableFinal),
+  upload('rd5', '2026-08-14T14:29:00.000000Z', doc.signagePlanRevB),
+  upload('rd6', '2026-08-14T14:27:00.000000Z', doc.annualReportV3),
+  activity({ id: 'rd7', verb: 'comment', glyph: 'message-circle',
+    published_at: '2026-08-14T14:20:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+]
+
+const summary = [scoped[0], log[3]]
+</script>
+
+## The Builder
 
 ```php
 $page = Storyfeed::feed()
-    ->context($project)
+    ->involving($project)
     ->limit(20)
     ->get();
 ```
 
-`$page` is a `FeedPage` — the payload envelope, ready to return from a route:
+<FeedStream :items="scoped" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+`$page` is a `FeedPage`: the payload envelope, ready to return from a route.
 
 ```php
 Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
@@ -23,83 +70,74 @@ Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 ```
 
 `FeedPage` is `Arrayable`, `JsonSerializable`, `Responsable`, and read-only
-`ArrayAccess` — `$page['items']` works the same in PHP as client-side.
+`ArrayAccess`, so `$page['items']` works the same in PHP as client-side.
 
-## Read modes
+## Read Modes
 
-| call | industry name | returns |
+| Call | Also Called | Returns |
 |---|---|---|
 | `->log()` | timeline | one node per activity, no groups |
-| `->live()` | aggregated (active window) | groups as they form |
-| `->summary()` | aggregated (collapsed) | the best-axis view — **the default** |
+| `->live()` | aggregated, active window | groups as they form |
+| `->summary()` | aggregated, collapsed | the best grouping of each burst. **The default** |
 
-The app-wide default is `grouping.default` in the config; per-view calls
-always override. Mode names never appear in the payload — which mode a view
-uses is a server-side choice renderers know nothing about.
+The same four activities as a log:
+
+```php
+Storyfeed::feed()->involving($project)->log()->get();
+```
+
+<FeedStream :items="log" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+And as a summary:
+
+```php
+Storyfeed::feed()->involving($project)->summary()->get();
+```
+
+<FeedStream :items="summary" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+The app-wide default is `grouping.default` in the config; a call always
+overrides it. Mode names never appear in the payload: which mode a surface
+uses is a server-side choice a renderer knows nothing about.
 
 ## Scoping
 
-An entity's own page wants `involving()` — every activity that mentions it, in
-any role:
+An entity's own page wants `involving()`: every activity that mentions it, in
+any role.
 
 ```php
-// a project page: uploads INTO it, plus its own creation and archival
 Storyfeed::feed()->involving($project)->get();
+$project->storyfeed()->get();   // the same read, from the model
 ```
-
-A [feedable model](/basics/feedable-models) has the same thing on it, with the
-argument already filled in:
-
-```php
-$project->storyfeed()->get();
-```
-
-Same builder, so everything below applies to both.
 
 The narrower filters answer narrower questions:
 
-| call | returns |
+| Call | Returns |
 |---|---|
-| `->involving($model)` | every activity where the model is actor, object, target, context, origin, result **or** instrument |
-| `->context($project)` | only activities recorded *inside* that container |
+| `->involving($model)` | every activity where the model is actor, object, target, context, origin, result or instrument |
+| `->context($project)` | only activities recorded inside that container |
 | `->actor($user)` | only what that actor did |
 | `->object($doc)` / `->target($customer)` | only that exact role |
 | `->verb('upload')` | one verb |
 
-Scopes combine.
+Scopes combine. Group counts are recomputed within the scope: a group of four
+whose two members fall inside a project arrives as a group of two on that
+project's page.
 
-A scope selects rows; it says nothing about which verbs a surface may show, and
-a read never hides an activity from a viewer. Both halves are declared together,
-per audience, with [named feeds](/basics/named-feeds).
-
-::: tip Involving vs context
-`context()` is the container question, and it misses an entity's own lifecycle:
-"project created" records the project as the **object**, so a context-scoped
-project page omits it. If you want the page a user expects, use `involving()`.
-
-`context()` is still the right filter for a genuine container query, and it is
-what context-pinned [axes](/deeper/aggregation#custom-axes) group on.
+::: tip The difference between involving and context
+`context()` is the container question, and it misses an entity's own
+lifecycle: "project created" records the project as the **object**, so a
+context-scoped project page omits it. A page a user expects is `involving()`.
 :::
 
-`involving()` reads a materialized index (`feed_participants`), maintained at
-publish time — so it is an indexed semi-join, not a scan across the role morph
-columns. An install upgrading into it runs
-`php artisan storyfeed:participants` once; `storyfeed:doctor` tells you if you
-haven't.
+## Custom Constraints with `query()`
 
-Its cost scales with **the queried entity's own share of history**, not the size
-of the feed — the candidate set is the entity's activities, and the database
-orders them. That is sub-millisecond for entities with thousands of activities;
-if a single entity accumulates tens of thousands, measure before assuming, since
-engines differ in how they plan it.
-
-Group counts are recomputed **within** the scope: a group of four whose two
-members fall inside a project arrives as a group of two on that project's page.
-
-## Anything else: `query()`
-
-The filters above are a closed set. `query()` hands you the underlying activity
-query, for the conditions they cannot express:
+The filters above are a closed set. `query()` hands you the underlying
+activity query for anything they cannot express:
 
 ```php
 // everything except comments
@@ -113,77 +151,52 @@ $project->storyfeed()
     ->get();
 ```
 
-Several actors, an object type, a `data->` key and your own scopes all work the
-same way. Callbacks compose, and the closure's return value is ignored — it
-receives the query to constrain, not a predicate to satisfy.
+<FeedStream :items="[scoped[0], scoped[2]]" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
 
-The constraint reaches the **whole** read, not just the page: group children and
-the counts behind `:actors and 3 others` are built from the same query. Exclude
-one member of a group of four and you get a group of three whose children match.
+Callbacks compose, and the constraint reaches the whole read: group children
+and the counts behind a group are built from the same query.
 
-Three rules:
-
-- **Do not `limit()` or `offset()` inside the callback** — it throws. That would
-  cut the candidate set before grouping and curation ran, producing a page that
-  looks right and is not. Size the page with `limit()` on the builder.
-- **Ordering is ignored.** The read owns its own ordering, because that is what
-  the cursor encodes a position in.
-- **A callback narrows and can never widen.** Each one is wrapped in its own
-  group, which then ANDs against the publish gate, the scope and any verb
-  allowlist. A top-level `orWhere` inside a callback therefore constrains the
-  callback's own group rather than becoming a sibling of the scope:
-
-  ```php
-  // reaches nothing outside the project: the OR is confined to this group
-  $project->storyfeed()
-      ->query(fn (ActivityBuilder $q) => $q->where('verb', 'upload')->orWhere('verb', 'revise'))
-      ->get();
-  ```
-
-  To read a wider set, read it — a second feed, or a callback that names the
-  whole set inside its own closure.
-
-Pass the same callback on every page of a paginated feed — same rule as every
-other filter, see [A cursor belongs to the query that made
-it](#a-cursor-belongs-to-the-query-that-made-it).
+- `limit()` or `offset()` inside the callback throws. Size the page with
+  `limit()` on the builder.
+- Ordering inside the callback is ignored. The read owns its ordering, because
+  the cursor encodes a position in it.
+- A callback narrows and never widens. Each one is wrapped in its own group,
+  so a top-level `orWhere` inside it constrains that group rather than reaching
+  past the scope.
 
 ## Pagination
 
 Pass the previous page's `next_cursor` back:
 
 ```php
-// Cursors are opaque — store them, don't parse them.
-// End of feed is next_cursor === null. An empty items array is NOT the end: a
-// page can return zero items with a live cursor, so follow it while empty,
-// bounded to a few hops.
+// Cursors are opaque: store them, never parse them.
+// The end of the feed is next_cursor === null. An empty items array is not the
+// end; a page can return zero items with a live cursor, so follow it while
+// empty, bounded to a few hops.
 $page = Storyfeed::feed()->cursor($request->query('cursor'))->get();
 ```
 
+A cursor is a position in the stream **this** query produced: its scope, its
+filters, its mode. Send it back with the same query, including the same
+`query()` callbacks. Applied to a different query it does not error; it skips
+or repeats nodes. The first page and the later pages are often built in
+different places, a controller and an endpoint, and one filter's difference is
+enough.
+
 Store `sync_token` alongside the cursor and compare it on each page. When it
-changes, settled history was rewritten: drop all accumulated nodes and refetch
-from the head. Equality compare only — `null → non-null` counts as a change.
+changes, settled history was rewritten: drop the accumulated nodes and refetch
+from the head. Equality compare only; `null` to non-null counts as a change.
+A client that accumulates pages needs two more rules, in
+[Rendering](/basics/rendering#reconciling-updates).
 
-A client that accumulates pages needs two more rules with it — see
-[Reconciling updates](/basics/rendering#reconciling-updates).
-
-### A cursor belongs to the query that made it
-
-A cursor is a position in the stream **this** query produced — its scope, its
-filters, its mode. Send it back with the same query. Applied to a different
-candidate set it does not error and does not return nothing; it can **skip or
-repeat** nodes, which surfaces as a feed that looks like it has a rendering bug.
-
-The trap in practice is that the first page and the later pages are often built
-in different places — a controller renders one, an endpoint serves the rest. If
-the two disagree by a single filter, the feed is wrong from the second page on,
-and nothing in the payload says so.
-
-## Conditional building
+## Conditional Building
 
 `FeedBuilder` is `Conditionable`:
 
 ```php
 Storyfeed::feed()
-    ->when($request->project, fn ($feed, $project) => $feed->context($project))
+    ->when($request->project, fn ($feed, $project) => $feed->involving($project))
     ->get();
 ```

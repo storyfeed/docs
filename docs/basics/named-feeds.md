@@ -103,7 +103,7 @@ group counts and the distinct-role counts behind `:actors and 3 others`
 recompute inside the filter. A group whose members are all excluded produces no
 node.
 
-A [`query()` callback](/basics/reading#anything-else-query) is wrapped in its
+A [`query()` callback](/basics/reading#custom-constraints-with-query) is wrapped in its
 own group, so a top-level `orWhere` inside one cannot readmit an excluded verb
 — or reach past the scope a name was entered with.
 
