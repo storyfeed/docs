@@ -30,13 +30,13 @@ const withExcerpt = activity({
 const withFields = activity({
   id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
-  actor: who.cook, object: orders.first,
-  data: { $detail: 'Storyfeed/Detail/Fields', $v: 1, rows: [
+  actor: who.cook,
+  object: { ...orders.first, data: { $detail: 'Storyfeed/Detail/Fields', $v: 1, rows: [
     { label: 'Pickup', value: '7:00 pm', mono: false, missing: null },
     { label: 'Items', value: '3', mono: false, missing: null },
     { label: 'Reference', value: 'ORD-1042-8KQ', mono: true, missing: null },
     { label: 'Table', value: null, mono: false, missing: 'not seated' },
-  ] },
+  ] } },
 })
 
 const withChange = activity({
@@ -106,7 +106,7 @@ the time.
 ## Details: a Form the Renderer Recognises
 
 Everything else goes in `data`, where a **detail** is a value with a
-conventional form. The app writes it once, at record time, and any renderer
+conventional form. The model writes it once, in `toFeed()`, and any renderer
 that recognises the form draws it with no view of yours.
 
 ```php
@@ -124,23 +124,26 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[withExcerpt]" />
 
-A detail on the **entity's** snapshot travels wherever that entity appears. A
-detail on the **activity** describes this row and no other:
+A detail on a snapshot travels wherever that entity appears, which is why the
+facts an entity carries are the entity's own to write. Nothing about them
+belongs at the line that records an activity:
 
 ```php
-// where the fact happens: a controller, an action, a listener
+// app/Models/Order.php
 use Storyfeed\Detail\Fields;
 
-Storyfeed::activity()
-    ->by($cook)
-    ->action('confirmed', $order)
-    ->data(Fields::make([ // [!code focus]
-        'Pickup' => $order->pickup_at->format('g:i a'), // [!code focus]
-        'Items' => $order->items->count(), // [!code focus]
-        'Reference' => Fields::mono($order->reference), // [!code focus]
-        'Table' => ['value' => $order->table, 'missing' => 'not seated'], // [!code focus]
-    ])) // [!code focus]
-    ->publish();
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: "Order #{$this->reference}",
+        data: Fields::make([ // [!code focus]
+            'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
+            'Items' => $this->items->count(), // [!code focus]
+            'Reference' => Fields::mono($this->reference), // [!code focus]
+            'Table' => ['value' => $this->table, 'missing' => 'not seated'], // [!code focus]
+        ]), // [!code focus]
+    );
+}
 ```
 
 <FeedExample :items="[withFields]" />
@@ -151,6 +154,10 @@ with `missing:`. A value that is compared rather than read, a reference or an
 address, is marked `mono` so it gets one line and an ellipsis.
 
 ## Before and After
+
+What changed is a fact of the act, not of the dish: the same dish appears in
+rows that changed nothing, so this one rides the activity rather than a
+snapshot.
 
 ```php
 // where the fact happens: a controller, an action, a listener
