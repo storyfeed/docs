@@ -1,4 +1,4 @@
-# The rail
+# The Feed Rail
 
 The rail is the column at the left of every row. It answers one question first —
 *who did it*, or *what happened* — and which one it answers is a setting.
@@ -14,7 +14,7 @@ One surface departing from the app-wide posture says so itself:
 FeedTimeline::make('activity')->rail('activity');
 ```
 
-## The four configurations
+## The Four Configurations
 
 The rail has two slots. A **primary** — the disc — and a **secondary**, the
 badge on its lower corner. Each holds the actor, the activity, or nothing, and
@@ -64,7 +64,7 @@ const history = [
   </div>
 </div>
 
-| configuration | primary | secondary | suits |
+| Configuration | Primary | Secondary | Suits |
 |---|---|---|---|
 | `actor` | actor | activity | the default — an unscoped feed: a dashboard, a hub, a home page |
 | `activity` | activity | actor | a feed scoped to one record — an order, a document, an approval chain |
@@ -75,7 +75,7 @@ A value that is not one of the four throws where it is configured. Nothing here
 reaches a colour, a size or a shape: the disc is the same disc in every
 configuration, and the choice is which fact occupies it.
 
-## Choosing one
+## Choosing One
 
 > Flip when the feed already has a subject.
 
@@ -95,7 +95,7 @@ glyph rather than an empty circle, and a row with neither draws a plain mark —
 activities are never withheld because part of one is missing.
 :::
 
-## The glyph's intent
+## The Glyph's Intent
 
 Two of the discs above are coloured. That is `glyph_intent`, a nullable sibling
 of `glyph` on every node:
@@ -142,7 +142,7 @@ list to conform to.
 
 Intents resolve on their own registry, so a wildcard is stated once:
 
-| key | matches |
+| Key | Matches |
 |---|---|
 | `document.approve` | that verb on that object type |
 | `document.*` | every verb on that object type |

@@ -1,4 +1,4 @@
-# A live renderer
+# Live Rendering
 
 The [Blade loop](/guide/quickstart#_5-render-it) renders a page. A live feed —
 one that polls, or accumulates pages as the reader scrolls — needs three more
@@ -14,7 +14,7 @@ things, and none of them can be demonstrated by a static template:
 
 The example is Vue. Polling wiring, avatars and styling are omitted.
 
-## Types
+## The Payload Types
 
 ```ts
 // The payload contract, as much of it as a renderer needs.
@@ -69,7 +69,7 @@ Both node kinds carry all seven role keys. A group key follows the
 [payload pinning and count rule](/reference/payload#group-node); `one()` falls
 back to the exemplar when an emitted singular token needs it.
 
-## The stream
+## The Stream Component
 
 ```ts
 import { computed, ref, watch, type Ref } from 'vue'
@@ -225,7 +225,7 @@ When `needsResync` flips, refetch the first page — with Inertia that is a part
 reload of the feed prop, with a plain API it is a fetch of the uncursored
 endpoint. The watcher on `page` then rebuilds the stream.
 
-## The node
+## The Node Component
 
 ```vue
 <script setup lang="ts">
@@ -343,7 +343,7 @@ Left unset, the kit draws one face and no badge — `actor-only` — and group
 children draw the verb alone. The Filament renderer defaults to `actor`
 instead.
 
-## Verifying a renderer
+## Verifying the Renderer
 
 Run the [fallback-leak check](/basics/rendering#verifying-your-renderer) across
 every mode and axis. Real output from the showcase feed:
