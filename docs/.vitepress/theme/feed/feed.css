@@ -355,3 +355,66 @@ a.sf-entity:hover {
     color: var(--sf-faint);
 }
 .sf-thread__meta--quoted { margin-top: 0.25rem; padding-left: 0.75rem; }
+
+/* ── Detail forms ────────────────────────────────────────────────────────────
+ *
+ * Ported from the Filament adapter's views, which are the reference rendering.
+ * A detail is a block under the sentence, not a card: the wrapper carries the
+ * margin and the bound and draws nothing, because filling and bordering every
+ * one of them was what made three in a viewport read as loud.
+ */
+.sf-detail {
+    margin-top: 0.5rem;
+    max-width: 44rem;
+}
+
+.sf-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+.sf-facts__row {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 4px;
+    align-items: baseline;
+}
+.sf-facts__label { color: var(--sf-muted); max-width: 14rem; }
+.sf-facts__value { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+/* A mono value is compared, not read — an address, an id, a user agent. One
+   line and an ellipsis, with the whole string on `title`. */
+.sf-facts__value--mono {
+    font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+    font-size: 12.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sf-facts__value--absent { color: var(--sf-muted); font-style: italic; }
+
+.sf-excerpt-block { margin: 0; }
+.sf-excerpt {
+    margin: 0;
+    border-left: 2px solid var(--sf-line);
+    padding: 0 0 0 12px;
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--sf-muted);
+}
+.sf-excerpt__from { margin-top: 2px; font-size: 12.5px; color: var(--sf-muted); }
+
+.sf-change { display: flex; flex-direction: column; gap: 2px; margin: 0; font-size: 13.5px; }
+.sf-change__row { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.75rem; }
+.sf-change__field { color: var(--sf-muted); }
+.sf-change__pair { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.375rem; margin: 0; }
+.sf-change__before { text-decoration: line-through; color: var(--sf-muted); }
+.sf-change__arrow { color: var(--sf-faint); }
+
+.sf-file { margin: 0; font-size: 13.5px; color: var(--sf-muted); }
+
+/* Authored body text, shown as the source the form carries. */
+.sf-prose { margin: 0; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; }

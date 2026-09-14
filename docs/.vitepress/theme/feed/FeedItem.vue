@@ -4,6 +4,7 @@ import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedThread from './FeedThread.vue';
+import { detailsIn } from './details';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
 import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
@@ -46,6 +47,23 @@ const resolved = computed<Rail>(() => {
 
     return props.dense ? withoutSecondary(asked) : asked;
 });
+
+/**
+ * The details this node carries, activity-level first, then each entity's.
+ *
+ * A detail lands at an APP-CHOSEN key inside the app's own map, so finding one
+ * means walking `data` rather than reading a fixed key. An unrecognised form
+ * yields nothing and the activity renders as it always would, minus the block.
+ */
+const details = computed(() => [
+    ...detailsIn(props.item.data),
+    ...['object', 'target', 'context', 'actor'].flatMap((role) =>
+        detailsIn((props.item as any)[role]?.data).map((found) => ({
+            ...found,
+            entityLabel: (props.item as any)[role]?.label ?? null,
+        })),
+    ),
+]);
 
 const slots = computed(() =>
     railFor(resolved.value, {
@@ -141,6 +159,22 @@ const slots = computed(() =>
                 :actor-label="item.actor?.label"
             />
             <slot v-else name="body" :node="item" />
+
+            <!--
+                Recognised detail forms, drawn from the app's own `data`. One
+                block per detail, in the order the walk found them.
+            -->
+            <div
+                v-for="(found, index) in details"
+                :key="index"
+                class="sf-detail"
+            >
+                <component
+                    :is="found.component"
+                    :payload="found.payload"
+                    :entity-label="(found as any).entityLabel"
+                />
+            </div>
 
             <!--
                 Annotations slot: for documentation and debugging surfaces that
