@@ -131,13 +131,7 @@ member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
 
 ## 3. Publish an Activity
 
-```php
-Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
-    ->publish();
-```
+<<< @/snippets/publish.php
 
 Or in one line:
 

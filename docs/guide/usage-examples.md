@@ -1,7 +1,7 @@
 # Usage Examples
 
 <script setup>
-import { who, where, doc, note, entity, activity, group, party } from '../.vitepress/theme/samples'
+import { who, where, doc, note, entity, activity, group, party, scenes } from '../.vitepress/theme/samples'
 
 const designer = who.designer
 const reviewer = who.reviewer
@@ -68,15 +68,9 @@ const reply = activity({
 
 A user uploads a document to a project.
 
-```php
-Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
-    ->publish();
-```
+<<< @/snippets/publish.php
 
-<FeedStream :items="[upload]" :grouped="false" />
+<FeedStream :items="[scenes.upload]" :grouped="false" />
 
 ## Consecutive Activities
 

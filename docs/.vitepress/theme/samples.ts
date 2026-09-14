@@ -175,3 +175,19 @@ export function group(over: Record<string, any>) {
     children_truncated: over.children_truncated ?? false,
   }
 }
+
+/**
+ * ── The standard example ─────────────────────────────────────────────────────
+ *
+ * The one activity the elementary snippet (`docs/snippets/publish.php`) records,
+ * as the feed shows it. A page that embeds the snippet renders this beneath it,
+ * so the standard example is chosen in two files and nowhere else.
+ */
+export const scenes = {
+  upload: activity({
+    id: 'scene-upload', verb: 'upload', glyph: 'file-up',
+    published_at: '2026-08-14T14:30:00.000000Z',
+    headline_template: ':actor uploaded :object to :target',
+    actor: who.designer, object: doc.report, target: where.main,
+  }),
+}

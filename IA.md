@@ -135,7 +135,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 21. **Elementary form first.** The first snippet on any page is
     `Storyfeed::activity()->by()->action()->to()->publish()` or the plainest
     equivalent for the concept; typed and decorated forms (enums, Story
-    classes, `PublishesToFeed`) arrive as a second step. (Sharpens rule 12.)
+    classes, `PublishesToFeed`) arrive as a second step. Every later snippet
+    on the page keeps the same form; a typed form is a clearly secondary
+    example, after the concept is shown. **The standard example is single-
+    sourced:** the chain lives in `docs/snippets/publish.php`, embedded with
+    `<<< @/snippets/publish.php`, and its node is `scenes.upload` in
+    `samples.ts`. A page whose variant genuinely differs (a listener reading
+    `$event->user`) writes it inline and is the exception. (Sharpens rule 12.)
 22. **Bite-sized, focused snippets.** One idea per snippet, and
     `// [!code focus]` on the lines that changed since the previous snippet.
     A page is a sequence of small deltas, not one large listing — except the
