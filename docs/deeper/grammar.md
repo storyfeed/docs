@@ -1,9 +1,12 @@
 # Grammar
 
-A group of activities reads as one sentence, and that sentence is a template
-too. Aggregate grammar is the registry of templates for group headlines,
-keyed by the axis the group formed on and the verb. When you are done, every
-group your feed can form has a sentence that is true of every member.
+Grammar is the registry of headline templates, and it has two halves.
+[Headlines](/basics/headlines) covers the first, `Storyfeed::grammar()`, which
+holds the sentence for one activity. This page is the second: a group of
+activities reads as one sentence too, and `Storyfeed::aggregateGrammar()`
+holds that one, keyed by the axis the group formed on and the verb. When you
+are done, every group your feed can form has a sentence that is true of every
+member.
 
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'

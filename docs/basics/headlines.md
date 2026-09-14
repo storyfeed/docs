@@ -1,8 +1,9 @@
 # Headlines
 
 A headline is the sentence the feed prints for an activity. It is a template,
-registered once per verb, and the feed fills in the entities. When you are
-done, every verb your app records reads as a sentence.
+registered once per verb in the **grammar** registry, and the feed fills in
+the entities. When you are done, every verb your app records reads as a
+sentence.
 
 <script setup>
 import { activity, scenes } from '../.vitepress/theme/samples'
