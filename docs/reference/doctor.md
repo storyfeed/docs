@@ -45,7 +45,7 @@ The `feeds` check reports five findings:
 | finding | severity | means |
 |---|---|---|
 | `feeds.unclassified` | warning | a verb is named by no restricted feed, so nobody decided who may see it. Names no feed — it is the absence of one |
-| `feeds.unrestricted` | info | a verb is named by no restricted feed, and some feed declared [`unrestricted()`](/basics/named-feeds#unrestricted). Reported on every run; the declaration does not decide the verb, it lowers the severity |
+| `feeds.unrestricted` | info | a verb is named by no restricted feed, and some feed declared [`unrestricted()`](#declaring-an-unrestricted-feed). Reported on every run; the declaration does not decide the verb, it lowers the severity |
 | `feeds.unknown_verb` | warning; info until the app registers its own verbs | a feed names a verb that is neither registered nor recorded. Usually a typo, and a typo in an allowlist drops the real verb from that feed |
 | `feeds.none_restricted` | info | feeds are registered, but none restricts anything |
 | `feeds.preset_failed` | warning | a preset threw while doctor inspected it, so the verbs it decides are unchecked. A `define()` reading constructor state lands here |
@@ -58,6 +58,28 @@ this check.
 
 Findings that name a feed end with where it was declared, file and line, for
 classes and closures alike.
+
+### Declaring an Unrestricted Feed
+
+```php
+'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
+```
+
+A feed that carries every verb, declared. It changes no query: the feed reads
+the same rows as an open one, and a call site can still narrow it with
+`only()` or `except()`. What changes is the finding: a verb covered only by
+this feed is `feeds.unrestricted` at info, not `feeds.unclassified` at
+warning. It still reports on every run, so a verb recorded next year still
+surfaces.
+
+```php
+'portal' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->unrestricted(), // throws FeedMisconfigured
+Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
+```
+
+One declaration cannot both filter and carry everything, and `verb()` counts
+as a filter. Narrowing after the declaration is the call-site path and is not
+checked.
 
 ## Entities
 

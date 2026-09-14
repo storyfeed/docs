@@ -1,46 +1,41 @@
-# Named feeds
+# Named Feeds
 
-A feed shown to a customer and a feed shown to an admin are not the same feed.
-Declare each one once, by name, and enter it by that name:
+A feed shown to a client and a feed shown to the team are not the same feed.
+Declare each one once, by name, and enter it by that name. When you are done,
+every surface reads exactly the verbs it should, and nothing else.
 
-```php
-Storyfeed::feed('customer')->involving($order)->get();
-```
+<script setup>
+import { who, where, doc, note, job, activity } from '../.vitepress/theme/samples'
 
-## A declaration has two halves
+const team = [
+  activity({ id: 'nf1', verb: 'approve', glyph: 'circle-check',
+    published_at: '2026-08-14T14:40:00.000000Z',
+    headline_template: ':actor approved :object',
+    actor: who.marcus, object: doc.annualReportV3 }),
+  activity({ id: 'nf2', verb: 'comment', glyph: 'message-circle',
+    published_at: '2026-08-14T14:35:00.000000Z',
+    headline_template: ':actor commented on :target',
+    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+  activity({ id: 'nf3', verb: 'upload', glyph: 'file-up',
+    published_at: '2026-08-14T14:30:00.000000Z',
+    headline_template: ':actor uploaded :object to :target',
+    actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown }),
+  activity({ id: 'nf4', verb: 'complete', glyph: 'square-check',
+    published_at: '2026-08-14T14:25:00.000000Z',
+    headline_template: ':actor completed :object',
+    actor: who.marcus, object: job.simplifyWordmark }),
+  activity({ id: 'nf5', verb: 'create', glyph: 'folder',
+    published_at: '2026-08-12T09:00:00.000000Z',
+    headline_template: ':actor created the project :object',
+    actor: who.jasper, object: where.passwordCrackdown }),
+]
 
-```php
-Storyfeed::feed('customer')->get();                     // every order in the system
-Storyfeed::feed('customer')->involving($order)->get();  // this order
-```
+const client = team.filter(node => ['upload', 'approve', 'complete'].includes(node.verb))
+</script>
 
-A name carries the **verbs**. It does not carry the **scope** — which rows the
-surface may read is still `involving()` / `context()` / `query()`, exactly as on
-any other builder.
+## Declaring a Feed
 
-The two halves fail in opposite directions:
-
-| left out | what the reader gets |
-|---|---|
-| the verb allowlist | too little — a missing event in a visibly incomplete timeline |
-| the scope | every order in the system, correctly verb-filtered and entirely plausible |
-
-::: danger The scope is the half with no symptom
-The first line below returns a complete, correct-looking customer timeline built
-from other people's orders.
-
-```php
-Storyfeed::feed('customer')->get();                     // unscoped
-Storyfeed::feed('customer')->involving($order)->get();  // scoped
-```
-
-[Feed classes](#feed-classes) move the scope into the declaration, so the
-unscoped line cannot be written.
-:::
-
-## Declaring presets
-
-A preset is a closure over the builder, registered at boot:
+A feed is a closure over the builder, registered at boot:
 
 ```php
 // AppServiceProvider::boot()
@@ -48,275 +43,175 @@ use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
-    'customer' => fn (FeedBuilder $feed) => $feed->only([
-        'order.placed', 'order.confirmed', 'order.ready',
-        'order.out_for_delivery', 'order.delivered', 'order.paid',
-    ])->log(),
-
-    'kitchen' => fn (FeedBuilder $feed) => $feed->only(['order.*', 'photo.*'])->live(),
-
-    'admin' => fn (FeedBuilder $feed) => $feed,
+    'client' => fn (FeedBuilder $feed) => $feed->only(['upload', 'approve', 'complete'])->log(),
+    'team' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```
 
-Two entry points, both taking the name:
+Enter it by name, from the facade or from the model:
 
 ```php
-Storyfeed::feed('customer')->involving($order)->get();
-$order->storyfeed('customer')->get();
+Storyfeed::feed('team')->involving($project)->get();
 ```
 
-An unknown name throws `UnknownFeed`. A typo does not fall back to the
-unfiltered feed.
+<FeedStream :items="team" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
 
-The allowlist binds; the mode does not. `->log()` in a preset is a presentation
-default, and any call site may override it with `->summary()`.
+```php
+$project->storyfeed('client')->get();
+```
+
+<FeedStream :items="client" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
+
+An unknown name throws `UnknownFeed`. A typo does not fall back to the
+unfiltered feed. The verb list binds; the mode does not: `->log()` in a
+declaration is a default any call site may override.
+
+## Verbs and Scope
+
+A name carries the **verbs**. It does not carry the **scope**: which rows the
+surface may read is still `involving()`, `context()` or `query()`, as on any
+builder.
+
+```php
+Storyfeed::feed('client')->get();                       // every project in the system
+Storyfeed::feed('client')->involving($project)->get();  // this project
+```
+
+::: danger The scope is the half with no symptom
+The first line returns a complete, correct-looking client timeline built from
+other people's projects. [Feed classes](#feed-classes) move the scope into the
+declaration, so the unscoped line cannot be written.
+:::
 
 ## `only()` and `except()`
 
-The primitives work on any builder, with or without a name:
+Both work on any builder, with or without a name:
 
 ```php
-Storyfeed::feed()->only(['order.placed', 'order.delivered'])->get();
-Storyfeed::feed()->only(['order.*', OrderVerb::Paid])->get();
-Storyfeed::feed()->except(['order.margin_note'])->get();
+Storyfeed::feed()->only(['upload', 'approve'])->get();
+Storyfeed::feed()->only(['document.*', ActivityVerb::Approve])->get();
+Storyfeed::feed()->except(['note'])->get();
 ```
 
 | | |
 |---|---|
-| accepts | verb strings, `FeedVerb` cases and backed enum cases, mixed in one list |
-| `order.*` | trailing `*` is a prefix wildcard |
-| an unrecognised verb | never throws — verbs are free-form strings, so an allowlist naming a verb nobody records is a query matching nothing. `storyfeed:doctor` reports it |
-| `only([])` | throws. An empty allowlist renders as a feed saying nothing happened |
+| accepts | verb strings and enum cases, mixed in one list |
+| `document.*` | a trailing `*` is a prefix wildcard |
+| an unrecognised verb | never throws; a verb nobody records is a query matching nothing |
+| `only([])` | throws |
 | repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
 
-Intersection is what makes a name unwidenable downstream — a call site can add
-`->only()` on top of a preset and only ever cut further:
+Intersection means a call site can only ever cut further:
 
 ```php
-// still just order.placed: the preset's allowlist is a floor
-Storyfeed::feed('customer')->only(['order.placed', 'order.margin_note'])->get();
+// still just uploads: the declared list is a floor
+Storyfeed::feed('client')->only(['upload', 'note'])->get();
 ```
 
-Excluded verbs are excluded from the query the whole read is built from, so
-group counts and the distinct-role counts behind `:actors and 3 others`
-recompute inside the filter. A group whose members are all excluded produces no
-node.
+Excluded verbs leave the query the whole read is built from, so group counts
+recompute inside the filter, and a group whose members are all excluded
+produces no node.
 
-A [`query()` callback](/basics/reading#custom-constraints-with-query) is wrapped in its
-own group, so a top-level `orWhere` inside one cannot readmit an excluded verb
-— or reach past the scope a name was entered with.
+## Feed Classes
 
-## `unrestricted()`
-
-```php
-'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
-```
-
-A feed that carries every verb, declared. It changes no query — the feed reads
-the same rows as an open one, and a call site can still narrow it with
-`only()` or `except()`. What changes is what `storyfeed:doctor` reports: a
-verb covered only by this feed is `feeds.unrestricted` at info severity, not
-`feeds.unclassified` at warning. It still reports on every run, so a verb
-recorded next year still surfaces. See
-[Doctor](/reference/doctor#feed-coverage).
-
-```php
-'portal' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->unrestricted(), // throws FeedMisconfigured
-Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
-```
-
-One declaration cannot both filter and carry everything, and `verb()` counts as
-a filter. Narrowing after the declaration is the call-site path and is not
-checked.
-
-## Feed classes
-
-A closure runs at boot, before any order exists, so it can carry verbs but not a
-subject. A class takes its subject as a constructor argument:
+A closure runs at boot, before any project exists, so it can carry verbs but
+not a subject. A class takes its subject as a constructor argument:
 
 ```php
 namespace App\Feeds;
 
-use App\Models\Order;
+use App\Models\Project;
 use Storyfeed\Feed;
 use Storyfeed\FeedBuilder;
 
-class CustomerFeed extends Feed
+class ClientFeed extends Feed
 {
-    public function __construct(protected Order $order) {}
+    public function __construct(protected Project $project) {}
 
     public function define(FeedBuilder $feed): void
     {
-        $feed->only([
-            'order.placed', 'order.confirmed', 'order.ready',
-            'order.out_for_delivery', 'order.delivered', 'order.paid',
-        ])->log();
+        $feed->only(['upload', 'approve', 'complete'])->log();
     }
 
     protected function scope(FeedBuilder $feed): void
     {
-        $feed->context($this->order);
+        $feed->involving($this->project);
     }
 }
 ```
 
 ```php
-CustomerFeed::make($order)->get();
+ClientFeed::make($project)->get();
 ```
 
-Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
+<FeedStream :items="client" :grouped="false">
+  <template #body="{ node }"><FeedBody :node="node" /></template>
+</FeedStream>
 
-`make()` is `new static(...)`, so the subject is a typed constructor argument
-and the language does the work: `CustomerFeed::make()` is an
-`ArgumentCountError` and `CustomerFeed::make($user)` a `TypeError`. Both fail on
-the first call, unconditionally.
+Generate one with `php artisan make:feed Client --subject=App\Models\Project`.
 
-They also fail in CI. `make()` forwards variadically to a constructor that
-varies by subclass, which is what an analyser sees — so the package ships a
-PHPStan rule that resolves the call against the constructor it will actually
-reach and checks the arity where the call is written:
-
-```
-CustomerFeed::make() invoked with 0 arguments, 1 required —
-CustomerFeed::__construct() declares ($customer). A Feed takes its subject
-through the constructor, so this is an unscoped feed: it would throw
-ArgumentCountError on the first call.
-```
-
-It arrives with the package through `phpstan/extension-installer`, with no
-configuration. Arity only — argument types are already PHPStan's business — and
-it stays quiet where it cannot be certain: spread arguments, named arguments,
-`static::make()`, abstract classes.
-
-A class that takes a subject has no unscoped entry, including by name:
-
-```php
-CustomerFeed::make($order)->get();   // the only way in
-Storyfeed::feed('customer');         // throws — this feed takes constructor arguments
-```
-
-### The two hooks
-
-| hook | declares | may read constructor state |
+| Hook | Declares | May Read Constructor State |
 |---|---|---|
-| `define()` | what the feed is about — verbs, mode, limit | no |
+| `define()` | what the feed is about: verbs, mode, limit | no |
 | `scope()` | the values only a request supplies | yes |
 
-`storyfeed:doctor` reads a customer feed's allowlist without having an order to
-give it, so it runs `define()` against an instance built without the
-constructor. A `define()` that reaches for `$this->order` produces a
-`feeds.preset_failed` finding for that feed.
-
-### Declared scope is locked
-
-A role filter is a single-slot assignment — a second `involving()` replaces the
-first — so the role a `scope()` binds cannot be rebound:
+`ClientFeed::make()` without its subject is an `ArgumentCountError`, and the
+role `scope()` binds cannot be rebound at a call site:
 
 ```php
-CustomerFeed::make($order)->context($other);                     // throws FeedMisconfigured
-CustomerFeed::make($order)->only(['order.placed'])->summary();   // fine
+ClientFeed::make($project)->involving($other);                   // throws FeedMisconfigured
+ClientFeed::make($project)->only(['upload'])->summary();         // fine: narrowing
 ```
-
-Narrowing stays open: another role, `only()`, `query()`, a different mode. Only
-`Feed` classes lock anything — `Storyfeed::feed()`, presets and
-`$model->storyfeed()` behave as they always did.
-
-A class that takes a subject and never binds it throws when built, so
-hand-writing the file keeps the guarantee that `make:feed` writes:
-
-```php
-class CustomerFeed extends Feed
-{
-    public function __construct(protected Order $order) {}
-    // ...and no scope(), so CustomerFeed::make($order) throws
-}
-```
-
-### Global feeds
 
 A feed with no subject declares no constructor and no `scope()`:
 
 ```php
-class AdminFeed extends Feed
+class TeamFeed extends Feed
 {
     public function define(FeedBuilder $feed): void
     {
-        $feed->except(['order.margin_note'])->summary();
+        $feed->except(['note'])->summary();
     }
 }
 
-AdminFeed::make()->get();
+TeamFeed::make()->get();
 ```
 
-### Registration
+Register classes and closures in one list:
 
 ```php
 Storyfeed::feeds([
-    'customer' => CustomerFeed::class,     // named explicitly
-    AdminFeed::class,                      // name derived: 'admin'
+    'client' => ClientFeed::class,     // named explicitly
+    TeamFeed::class,                   // name derived: 'team'
     'kitchen' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->live(),
 ]);
 ```
 
-Both forms compile to one registry and nothing downstream can tell them apart.
-`CustomerFeed::make($order)` works with an empty registry — registering is what
-lets `storyfeed:doctor` check the feed.
+`ClientFeed::make($project)` works with an empty registry; registering is what
+lets the package inspect the feed.
 
-Feeds hold closures and bound models rather than data, so they never enter the
-compiled manifest and `storyfeed:cache` is a no-op for them.
+## What a Feed Does Not Do
 
-## What a name is not
+A feed is a query filter you route a surface through. It selects rows; it
+never hides an activity, and the read path has no visibility layer underneath
+it.
 
-A feed is a query filter you route a surface through. It selects rows; it never
-hides an activity, and the read path has no visibility layer underneath it.
-
-- It does not know **who is asking**. `CustomerFeed::make($order)` is the same
-  feed whichever customer requests it — that *this* customer may see *this*
-  order is a policy question, in the controller where it always was.
-- **It filters events, not fields.** An internal detail carried in a
-  customer-visible verb's `data` bag is still in the payload. What keeps it out
-  is what you record.
+- It does not know **who is asking**. `ClientFeed::make($project)` is the same
+  feed whichever client requests it. That *this* client may see *this* project
+  is a policy question, in the controller where it always was.
+- **It filters events, not fields.** An internal detail in a client-visible
+  verb's `data` is still in the payload. What keeps it out is what you record.
 - **The write path is untouched.** Recording an internal verb stays legal.
-- **Composite parents are not special-cased.** An allowlist admitting a story's
-  member verbs but not the story's own verb drops the parent node, and the
-  members read as solo items.
-- **The [AS2.0 controller](/deeper/activity-streams) builds its own query** and
-  is not filtered by a name. It ships disabled.
+- **Composite parents are not special-cased.** A list admitting a story's
+  member verbs but not its own verb drops the parent node, and the members
+  read as solo items.
+- **The [Activity Streams controller](/deeper/activity-streams) builds its own
+  query** and is not filtered by a name.
 
-There is no `authorize()` hook on `Feed`.
-
-## Coverage
-
-`storyfeed:doctor` asserts that every verb is **decided** — named in the
-allowlist or the denylist of at least one restricted feed:
-
-```
-⚠ Verb `order.margin_note` is named by no restricted feed, so nobody decided who
-  may see it. Name it in the allowlist or the denylist of a feed.
-```
-
-The vocabulary it checks is your registered verbs plus the verbs actually
-recorded, so a verb added carelessly six months from now becomes a
-`--fail-on=warning` CI failure. An open feed — one calling neither `only()` nor
-`except()` — decides nothing and contributes nothing; a feed declared
-[`unrestricted()`](#unrestricted) decides nothing either, and lowers that
-finding to info. An app that never calls `feeds()` gets no findings from the
-check. See [Doctor](/reference/doctor#feed-coverage) for every finding it
-reports.
-
-Two things weaken it, both worth knowing before you rely on it:
-
-- **A wildcard admits verbs that do not exist yet.** `only(['order.*'])` takes
-  `order.margin_note` the day someone records it, and the check counts it
-  decided. Wildcards suit feeds allowed to grow; enumerate the feed you are
-  defending.
-- **`except()` admits tomorrow's verb** unless someone adds it. Prefer `only()`
-  for a customer-facing surface.
-
-```php
-// the customer feed, enumerated
-'customer' => fn (FeedBuilder $feed) => $feed->only([
-    'order.placed', 'order.delivered', 'order.paid',
-]),
-```
+Prefer `only()` for a client-facing surface: `except()` admits tomorrow's verb
+unless someone adds it, and a wildcard admits a verb the day someone records
+it.

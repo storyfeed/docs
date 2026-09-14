@@ -76,3 +76,21 @@ php artisan storyfeed:doctor --json
 
 Exit status and structured findings make doctor usable as a CI gate. See
 [Doctor](/reference/doctor).
+
+## Static Analysis
+
+`Feed::make()` forwards variadically to a constructor that varies by subclass,
+which is what an analyser sees. The package ships a PHPStan rule that resolves
+the call against the constructor it will reach and checks the arity where the
+call is written:
+
+```
+ClientFeed::make() invoked with 0 arguments, 1 required —
+ClientFeed::__construct() declares ($project). A Feed takes its subject
+through the constructor, so this is an unscoped feed: it would throw
+ArgumentCountError on the first call.
+```
+
+It arrives through `phpstan/extension-installer` with no configuration. Arity
+only, and it stays quiet where it cannot be certain: spread arguments, named
+arguments, `static::make()`, abstract classes.
