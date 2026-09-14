@@ -85,16 +85,23 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     is its body. No `Str::limit`, no ellipsis, no CSS clipping; a long value
     wraps or takes its own row. Where the demo app truncates for its UI, the
     docs diverge and the divergence is deliberate.
-14. **Examples are rendered by the real components, from payload-shaped data.**
-    A feed in the docs is the ported kit reading node-shaped samples — never a
-    mocked blockquote, never prose pretending to be output. Sample data carries
-    the contract's full entity shape (an inline subset is how the comment
-    preview silently broke), and every mock name and string lives in ONE
-    manifest (`theme/manifest.ts`) so recasting the docs is one edit. Manifest
-    keys are handles (`who.designer`, `doc.report`), never names, and prose that
-    names the cast interpolates the manifest (`{{ who.designer.label }}`);
-    `npm run test:cast` fails the build when a manifest value appears literally
-    in prose.
+14. **Examples are rendered by the real components, from payload-shaped data,
+    and a reader can see that data.** A feed in the docs is the ported kit
+    reading node-shaped samples — never a mocked blockquote, never prose
+    pretending to be output. Sample data carries the contract's full entity
+    shape (an inline subset is how the comment preview silently broke), and
+    every mock name and string lives in ONE manifest (`theme/manifest.ts`) so
+    recasting the docs is one edit. Manifest keys are handles (`who.designer`,
+    `doc.report`), never names, and prose that names the cast interpolates the
+    manifest (`{{ who.designer.label }}`); `npm run test:cast` fails the build
+    when a manifest value appears literally in prose.
+
+    **`<FeedExample :items="…" />` draws the feed and offers "View payload"**,
+    serialised from the SAME nodes it drew — never hand-written beside it,
+    which is the block that eventually disagrees with the picture above it. It
+    caught its first drift within a minute of existing: a sample still
+    carrying a verb the prose had renamed.
+
 15. **Snippet, then its output.** What a code block produces is shown directly
     beneath it, rendered, in a well that lines up with the code block (same
     radius and rhythm, page-coloured inside a ring, muted `output` corner tag).

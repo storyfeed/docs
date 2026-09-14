@@ -116,12 +116,12 @@ export const party: Record<string, any> = build(PARTIES, (id, label) => entity('
  * nothing. Null is the honest answer and the common one.
  */
 export const INTENTS: Record<string, string> = {
-  '*.order.completed': 'success',
-  '*.payment.received': 'success',
+  'order.completed': 'success',
+  'order.paid': 'success',
   '*.moderation.photo_approved': 'success',
-  '*.order.cancelled': 'danger',
+  'order.cancelled': 'danger',
   '*.menu.dish_off': 'danger',
-  '*.order.placed': 'pending',
+  'order.placed': 'pending',
 }
 
 /** Core's resolution ladder, ported: `type.verb`, `type.*`, `*.verb`, `*.*`. */
@@ -198,7 +198,7 @@ export function group(over: Record<string, any>) {
  */
 export const scenes = {
   order: activity({
-    id: 'scene-order', verb: 'order.placed', glyph: 'shopping-bag',
+    id: 'scene-order', verb: 'placed', glyph: 'shopping-bag',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen,

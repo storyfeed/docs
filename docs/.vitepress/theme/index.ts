@@ -8,6 +8,7 @@ import FeedBody from './components/FeedBody.vue'
 import Annotation from './components/Annotation.vue'
 import StabilityBanner from './components/StabilityBanner.vue'
 import RowAnatomy from './components/RowAnatomy.vue'
+import FeedExample from './components/FeedExample.vue'
 import { FEED_NOW } from './feed/keys'
 import './feed/feed.css'
 import './custom.css'
@@ -42,6 +43,7 @@ export default {
     app.component('FeedBody', FeedBody)
     app.component('Annotation', Annotation)
     app.component('RowAnatomy', RowAnatomy)
+    app.component('FeedExample', FeedExample)
     app.provide(FEED_NOW, DOCS_NOW)
   },
 } satisfies Theme

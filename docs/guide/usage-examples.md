@@ -101,7 +101,7 @@ const priced = activity({
 
 <<< @/snippets/publish.php
 
-<FeedStream :items="[scenes.order]" :grouped="false" />
+<FeedExample :items="[scenes.order]" />
 
 ## Three in a Row, One Line
 
@@ -117,7 +117,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedStream :items="[burst]" :grouped="false" />
+<FeedExample :items="[burst]" />
 
 Read as a plain timeline instead, the same three activities are three rows:
 
