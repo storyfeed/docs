@@ -1,7 +1,7 @@
 # Quickstart
 
-Three steps until your app is recording activities. The example is a customer
-placing an order with a kitchen.
+Three steps until your app is recording activities, and a look at what comes
+back. The example is a customer placing an order with a kitchen.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -53,6 +53,55 @@ That is the activity, and this is it on a feed:
 
 Call it wherever the fact becomes true: an action, an observer, an event
 listener.
+
+## 4. See the Feed
+
+One call returns everything the kitchen took part in:
+
+```php
+// a controller, or wherever the feed is read
+$page = Storyfeed::feed()->involving($kitchen)->get();
+```
+
+<FeedStream :items="[scenes.order]" :grouped="false" />
+
+Each node carries its own sentence with the entities already in it, so drawing
+one needs no knowledge of your app. [Reading Feeds](/basics/reading) covers
+what else that call can ask for, and [Rendering](/basics/rendering) covers
+drawing it.
+
+::: details What the markup looks like
+```vue
+<!-- resources/js/Pages/Kitchen/Feed.vue -->
+<script setup>
+defineProps({ page: Object })
+</script>
+
+<template>
+    <ol class="feed">
+        <FeedRow v-for="node in page.items" :key="node.id" :node="node" />
+    </ol>
+</template>
+```
+
+```vue
+<!-- resources/js/Components/Feed/FeedRow.vue -->
+<script setup>
+defineProps({ node: Object })
+</script>
+
+<template>
+    <li>
+        <FeedGlyph :token="node.glyph" />
+        <FeedHeadline :node="node" />
+        <FeedTime :at="node.published_at" />
+    </li>
+</template>
+```
+
+`FeedHeadline` substitutes the tokens, `FeedTime` formats one timestamp, and
+neither knows what an order is. That is the whole shape of a renderer.
+:::
 
 ## Check Your Work
 
