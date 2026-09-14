@@ -350,6 +350,15 @@ so nobody documents it as public API.
   deleted on 2026-09-14 for breaking this — Setting Up a New Consumer, and The
   Feed Rail, whose four configurations were the plugin's (its core half, the
   glyph's intent, moved to Headlines).
+
+  **Naming the boundary is not the same as teaching across it.** Where the
+  package stops, say so in a `::: tip` titled with the limit itself — "This
+  package ships no renderer", "This package ships no icons", "This package
+  makes no images", "Drawing a detail is the renderer's", "These rules are
+  yours to implement". A reader is then told plainly that the next step is
+  theirs, and the one callout that has somewhere to send them may name the
+  other packages as options without documenting either. Five of these exist;
+  a sixth needs a boundary the others do not already cover.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
   package exists. When the `storyfeed/filament` page lands it is a **pricing and
   install** page — what it costs, the licence key, the private Composer endpoint

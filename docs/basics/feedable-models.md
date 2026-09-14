@@ -248,5 +248,11 @@ class MenuItem extends Model implements Feedable
 
 <FeedStream :items="[scoped[2]]" :grouped="false" />
 
+::: tip This package makes no images
+`FeedImage` carries a location and its dimensions. Generating a thumbnail,
+storing it, and knowing its URL are your app's, exactly as they were before
+the feed existed — the resolver just says where the current one is.
+:::
+
 Images, attachments, the live model, and every argument each method accepts
 are in the [Feedable API](/reference/feedable) reference.

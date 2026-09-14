@@ -14,6 +14,13 @@ things, and none of them can be demonstrated by a static template:
 
 The example is Vue. Polling wiring, avatars and styling are omitted.
 
+::: tip These rules are yours to implement
+Nothing in `storyfeed/storyfeed` reconciles a client's accumulated pages —
+the package cannot see them. What it provides is what the rules need: stable
+node ids, `children`, `distinct`, and a `sync_token` that changes when settled
+history is rewritten.
+:::
+
 ## The Payload Types
 
 ```ts

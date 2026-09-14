@@ -32,6 +32,13 @@ const degraded = activity({ id: 'rn4', verb: 'order.placed', glyph: 'shopping-ba
   actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })
 </script>
 
+::: tip This package ships no renderer
+`storyfeed/storyfeed` ends at the payload. Drawing it is yours, and this page
+shows how. If you would rather not write one, `storyfeed/ui` draws these nodes
+for Vue, Inertia and Blade, and `storyfeed/filament` is a Filament plugin —
+neither is required, and neither is documented here.
+:::
+
 ## The Smallest Loop That Draws Something
 
 A node's `headline_template` is a sentence with tokens where the entities go.
