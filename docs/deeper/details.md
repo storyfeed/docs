@@ -155,19 +155,34 @@ sees the current form and no view branches on `$v`.
 | an entity's snapshot | `FeedEntity::make(data: …)` in `toFeed()` | the noun — the same preview wherever that entity appears |
 | an activity | `->data(…)` | the act — this row and no other |
 
-A detail sits alongside the app's own keys, so a reader finds one by walking
-`data` rather than by reading a fixed key. Keep it near the top: core's `details`
-check stops looking four levels in, and a renderer should not look deeper.
+What goes on the activity is what the act knows and the noun does not — where
+a download came from, which channel a message took. A fact the entity owns is
+the entity's to write, however convenient the publishing line looks:
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('download', $document)
-    // A nested Arrayable is NOT converted — only the argument itself is. Call
-    // ->toArray() on a detail that sits inside a map, or the column stores {}.
-    ->data(['ip' => $ip, 'attachment' => Attachment::make(size: 240128)->toArray()])
+    ->data(['ip' => $ip])
     ->publish();
+```
+
+A detail sits alongside the app's own keys, so a reader finds one by walking
+`data` rather than by reading a fixed key. Keep it near the top: core's `details`
+check stops looking four levels in, and a renderer should not look deeper.
+
+```php
+// app/Models/Document.php
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: $this->title,
+        // Only the argument itself is converted. A form INSIDE a map needs
+        // ->toArray(), or the column stores {}.
+        data: ['status' => $this->status, 'file' => File::make(size: $this->bytes)->toArray()],
+    );
+}
 ```
 
 ## Forms Core Owns
