@@ -11,8 +11,8 @@ const inside = activity({
   id: 'cx1', verb: 'comment', glyph: 'message-circle',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor commented on :target in :context',
-  actor: who.priya, object: note.overflow, target: job.kerningPassPricingTable,
-  context: where.portMigration,
+  actor: who.reviewer, object: note.second, target: job.kerningPricing,
+  context: where.other,
 })
 </script>
 

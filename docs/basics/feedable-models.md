@@ -7,20 +7,20 @@ model has a label the feed can print and a link the feed can follow.
 <script setup>
 import { who, where, doc, note, activity, group } from '../.vitepress/theme/samples'
 
-const unlinked = { ...doc.annualReportV3, url: null }
+const unlinked = { ...doc.report, url: null }
 
 const withSnapshot = [
   activity({ id: 'fm1', verb: 'upload', glyph: 'file-up',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor uploaded :object to :target',
-    actor: who.ines, object: unlinked, target: where.passwordCrackdown }),
+    actor: who.designer, object: unlinked, target: where.main }),
 ]
 
 const withLink = [
   activity({ id: 'fm2', verb: 'upload', glyph: 'file-up',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor uploaded :object to :target',
-    actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown }),
+    actor: who.designer, object: doc.report, target: where.main }),
 ]
 
 // The project's own feed: activities where it is the target, and the one that
@@ -29,17 +29,17 @@ const scoped = [
   group({ id: 'fm3', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor uploaded :count files to :target',
-    actors: [who.ines], targets: [where.passwordCrackdown],
-    objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+    actors: [who.designer], targets: [where.main],
+    objects: [doc.report, doc.signage, doc.pricing],
     distinct: { actors: 1, objects: 3, targets: 1 } }),
   activity({ id: 'fm4', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+    actor: who.reviewer, object: note.second, target: doc.report }),
   activity({ id: 'fm5', verb: 'create', glyph: 'folder',
     published_at: '2026-08-12T09:00:00.000000Z',
     headline_template: ':actor created the project :object',
-    actor: who.jasper, object: where.passwordCrackdown }),
+    actor: who.owner, object: where.main }),
 ]
 </script>
 

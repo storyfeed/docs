@@ -1,12 +1,12 @@
 # Usage Examples
 
 <script setup>
-import { who, where, doc, note, entity, activity, group } from '../.vitepress/theme/samples'
+import { who, where, doc, note, entity, activity, group, party } from '../.vitepress/theme/samples'
 
-const designer = who.ines
-const reviewer = who.priya
-const crackdown = where.passwordCrackdown
-const report = doc.annualReportV3
+const designer = who.designer
+const reviewer = who.reviewer
+const crackdown = where.main
+const report = doc.report
 
 const upload = activity({
   id: 'i1', verb: 'upload', glyph: 'file-up',
@@ -22,8 +22,8 @@ const burst = group({
   actors: [designer], targets: [crackdown],
   objects: [
     report,
-    doc.signagePlanRevB,
-    doc.pricingTableFinal,
+    doc.signage,
+    doc.pricing,
   ],
   distinct: { actors: 1, objects: 7, targets: 1 },
 })
@@ -32,7 +32,7 @@ const crowd = group({
   id: 'i7', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
   published_at: '2026-08-14T14:31:00.000000Z',
   headline_template: ':actors uploaded :count files to :target',
-  actors: [who.ines, who.marcus, who.priya], targets: [crackdown],
+  actors: [who.designer, who.lead, who.reviewer], targets: [crackdown],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 
@@ -40,8 +40,8 @@ const story = group({
   id: 'i8', verb: 'approve', axis: 'composite', count: 2, glyph: 'file-check',
   published_at: '2026-08-14T14:20:00.000000Z',
   headline_template: ':actor approved :count files in :context',
-  actors: [who.tomas], contexts: [where.portMigration],
-  objects: [doc.wordmarkV3, doc.heroMobileRevA],
+  actors: [who.approver], contexts: [where.other],
+  objects: [doc.wordmark, doc.heroMobile],
   distinct: { actors: 1, objects: 2, contexts: 1 },
 })
 
@@ -49,8 +49,8 @@ const external = activity({
   id: 'i9', verb: 'sync', glyph: 'refresh-cw',
   published_at: '2026-08-14T13:55:00.000000Z',
   headline_template: ':actor synced :object to :target',
-  actor: entity('storyfeed.party', '1', 'Concur Web Service', null),
-  object: doc.expenseReportQ3, target: crackdown,
+  actor: party.service,
+  object: doc.expenses, target: crackdown,
 })
 
 const reply = activity({
@@ -58,7 +58,7 @@ const reply = activity({
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
   actor: reviewer,
-  object: note.overflow,
+  object: note.second,
   target: report,
 })
 

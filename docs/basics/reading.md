@@ -10,32 +10,32 @@ const scoped = [
   group({ id: 'rd1', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor uploaded :count files to :target',
-    actors: [who.ines], targets: [where.passwordCrackdown],
-    objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+    actors: [who.designer], targets: [where.main],
+    objects: [doc.report, doc.signage, doc.pricing],
     distinct: { actors: 1, objects: 3, targets: 1 } }),
   activity({ id: 'rd2', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+    actor: who.reviewer, object: note.second, target: doc.report }),
   activity({ id: 'rd3', verb: 'create', glyph: 'folder',
     published_at: '2026-08-12T09:00:00.000000Z',
     headline_template: ':actor created the project :object',
-    actor: who.jasper, object: where.passwordCrackdown }),
+    actor: who.owner, object: where.main }),
 ]
 
 const upload = (id, at, object) => activity({ id, verb: 'upload', glyph: 'file-up',
   published_at: at,
   headline_template: ':actor uploaded :object to :target',
-  actor: who.ines, object, target: where.passwordCrackdown })
+  actor: who.designer, object, target: where.main })
 
 const log = [
-  upload('rd4', '2026-08-14T14:30:00.000000Z', doc.pricingTableFinal),
-  upload('rd5', '2026-08-14T14:29:00.000000Z', doc.signagePlanRevB),
-  upload('rd6', '2026-08-14T14:27:00.000000Z', doc.annualReportV3),
+  upload('rd4', '2026-08-14T14:30:00.000000Z', doc.pricing),
+  upload('rd5', '2026-08-14T14:29:00.000000Z', doc.signage),
+  upload('rd6', '2026-08-14T14:27:00.000000Z', doc.report),
   activity({ id: 'rd7', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T14:20:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+    actor: who.reviewer, object: note.second, target: doc.report }),
 ]
 
 const summary = [scoped[0], log[3]]

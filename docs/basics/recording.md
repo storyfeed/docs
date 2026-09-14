@@ -12,7 +12,7 @@ const created = activity({
   id: 'r1', verb: 'create', glyph: 'folder',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor created the project :object for :target',
-  actor: who.ines, object: where.birdRemoval, target: firm.chirp,
+  actor: who.designer, object: where.created, target: firm.main,
 })
 
 const system = entity('party', 'system', 'System', null)
@@ -21,14 +21,14 @@ const synced = activity({
   id: 'r2', verb: 'sync', glyph: 'activity',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor synced :object',
-  actor: system, object: doc.expenseReportQ3,
+  actor: system, object: doc.expenses,
 })
 
 const saved = activity({
   id: 'r3', verb: 'save', glyph: 'file-pen',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor saved :object',
-  actor: who.marcus, object: doc.wireframesWip,
+  actor: who.lead, object: doc.wireframes,
 })
 </script>
 

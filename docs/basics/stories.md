@@ -13,30 +13,30 @@ const at = '2026-08-14T14:30:00.000000Z'
 const uploaded = activity({ id: 's1', verb: 'upload',
   published_at: at,
   headline_template: ':actor uploaded :object to :target',
-  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown })
+  actor: who.designer, object: doc.report, target: where.main })
 
 const uploadedWithIcon = activity({ ...uploaded, id: 's2', glyph: 'file-up' })
 
 const grouped = group({ id: 's3', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
   published_at: at,
   headline_template: ':actor uploaded :count files to :target',
-  actors: [who.ines], targets: [where.passwordCrackdown],
-  objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+  actors: [who.designer], targets: [where.main],
+  objects: [doc.report, doc.signage, doc.pricing],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 
 const examples = [
   activity({ id: 's4', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor commented on :target',
-    actor: who.priya, object: note.overflow, target: doc.annualReportV3 }),
+    actor: who.reviewer, object: note.second, target: doc.report }),
   activity({ id: 's5', verb: 'complete', glyph: 'square-check',
     published_at: '2026-08-14T14:25:00.000000Z',
     headline_template: ':actor completed :object',
-    actor: who.marcus, object: job.simplifyWordmark }),
+    actor: who.lead, object: job.simplify }),
   activity({ id: 's6', verb: 'create', glyph: 'folder',
     published_at: '2026-08-14T14:20:00.000000Z',
     headline_template: ':actor created the project :object for :target',
-    actor: who.ines, object: where.birdRemoval, target: firm.chirp }),
+    actor: who.designer, object: where.created, target: firm.main }),
 ]
 </script>
 

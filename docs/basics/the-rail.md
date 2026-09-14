@@ -28,19 +28,19 @@ const history = [
     id: 'r1', verb: 'approve', glyph: 'circle-check',
     published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor approved :object',
-    actor: who.marcus, object: doc.annualReportV3,
+    actor: who.lead, object: doc.report,
   }),
   activity({
     id: 'r2', verb: 'submit', glyph: 'file-check',
     published_at: '2026-08-14T14:20:00.000000Z',
     headline_template: ':actor submitted :object to :target',
-    actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
+    actor: who.designer, object: doc.report, target: where.main,
   }),
   activity({
     id: 'r3', verb: 'comment', glyph: 'message-circle',
     published_at: '2026-08-14T13:05:00.000000Z',
     headline_template: ':actor commented on :object',
-    actor: who.bob, object: doc.annualReportV3,
+    actor: who.commenter, object: doc.report,
   }),
 ]
 </script>

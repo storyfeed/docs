@@ -66,7 +66,7 @@ const reply = activity({
   id: 'ck7', verb: 'comment', glyph: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor commented on :target',
-  actor: who.priya, object: note.overflow, target: doc.annualReportV3,
+  actor: who.reviewer, object: note.second, target: doc.report,
 })
 </script>
 

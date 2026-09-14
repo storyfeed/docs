@@ -25,14 +25,14 @@ const submitted = activity({
   id: 'ck6a', verb: 'submit', glyph: 'file-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor submitted :object to :target',
-  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
+  actor: who.designer, object: doc.report, target: where.main,
 })
 
 const anonymous = activity({
   id: 'ck6b', verb: 'submit', glyph: 'file-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor submitted :object to :target',
-  actor: null, object: doc.annualReportV3, target: where.passwordCrackdown,
+  actor: null, object: doc.report, target: where.main,
 })
 
 const signed = activity({
@@ -40,14 +40,14 @@ const signed = activity({
   published_at: '2026-08-14T16:10:00.000000Z',
   headline_template: ':actor reported :object signed for :target',
   actor: entity('storyfeed.party', '2', 'DocuSign', null),
-  object: doc.pricingTableFinal, target: where.passwordCrackdown,
+  object: doc.pricing, target: where.main,
 })
 
 const expired = activity({
   id: 'ck6d', verb: 'expire', glyph: 'archive',
   published_at: '2026-08-21T00:00:00.000000Z',
   headline_template: ':object expired in :target',
-  actor: null, object: doc.motionTestClientCopy, target: where.passwordCrackdown,
+  actor: null, object: doc.motionTestCopy, target: where.main,
 })
 </script>
 

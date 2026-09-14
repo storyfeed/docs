@@ -7,7 +7,7 @@ const uploaded = activity({
   id: 'v1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
-  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
+  actor: who.designer, object: doc.report, target: where.main,
 })
 </script>
 

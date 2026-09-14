@@ -9,13 +9,13 @@ import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
 const single = activity({ id: 'g1', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
-  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown })
+  actor: who.designer, object: doc.report, target: where.main })
 
 const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
-  actors: [who.ines], targets: [where.passwordCrackdown],
-  objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+  actors: [who.designer], targets: [where.main],
+  objects: [doc.report, doc.signage, doc.pricing],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 </script>
 

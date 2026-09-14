@@ -25,15 +25,15 @@ const one = activity({
   id: 'ck5a', verb: 'upload', glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor uploaded :object to :target',
-  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown,
+  actor: who.designer, object: doc.report, target: where.main,
 })
 
 const burst = group({
   id: 'ck5b', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
   published_at: '2026-08-14T14:33:00.000000Z',
   headline_template: ':actor uploaded :count files to :target',
-  actors: [who.ines], targets: [where.passwordCrackdown],
-  objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+  actors: [who.designer], targets: [where.main],
+  objects: [doc.report, doc.signage, doc.pricing],
   distinct: { actors: 1, objects: 3, targets: 1 },
 })
 
@@ -41,7 +41,7 @@ const crowd = group({
   id: 'ck5c', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
   published_at: '2026-08-14T14:35:00.000000Z',
   headline_template: ':actors uploaded :count files to :target',
-  actors: [who.ines, who.marcus, who.priya], targets: [where.passwordCrackdown],
+  actors: [who.designer, who.lead, who.reviewer], targets: [where.main],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 </script>

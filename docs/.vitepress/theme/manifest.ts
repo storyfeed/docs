@@ -10,9 +10,11 @@
  *
  * Two things worth knowing:
  *
- * - Rename a person and you will want to rename their key too. Both live on the
- *   same line, so it is one edit, but a page importing `who.ines` will keep
- *   working and keep saying `ines` until you do.
+ * - Keys are HANDLES, never names: `designer`, `reviewer`, `report`, `main`. A
+ *   page imports a part in the story, so renaming a person or a file is one
+ *   value here and no page changes. The cast was once keyed by first name, and
+ *   a recast meant a search across the site; that is why the keys are what
+ *   they are.
  * - These are not a copy of the demo app's payloads. The person type here is
  *   `user` where the app emits its own model's alias, and comment labels are not
  *   truncated the way the app truncates them. Regenerating any of this from real
@@ -24,67 +26,72 @@
 
 /** People. Rendered as `user` entities linking to /users/{id}. */
 export const USERS = {
-  jasper: 'Jasper Tey',
-  bob:    'Bruce Wayne',
-  sally:  'Sally Nguyen',
-  marcus: 'Marcus Webb',
-  ines:   'Nancy Wheeler',
-  deja:   'Deja Williams',
-  priya:  'Priya Raman',
-  aiko:   'Aiko Tanaka',
-  tomas:  'Tomás Rivera',
+  owner:  'Jasper Tey',
+  commenter: 'Bruce Wayne',
+  editor: 'Sally Nguyen',
+  lead:   'Marcus Webb',
+  designer: 'Nancy Wheeler',
+  producer: 'Deja Williams',
+  reviewer: 'Priya Raman',
+  illustrator: 'Aiko Tanaka',
+  approver: 'Tomás Rivera',
 }
 
 /** Projects — the usual container an activity happens in. */
 export const PROJECTS = {
-  portMigration:     'Port Migration',
-  passwordCrackdown: 'Password Crackdown',
-  metaversePivot:    'Metaverse Pivot',
-  birdRemoval:       'Bird Removal',
-  verificationTiers: 'Verification Tiers',
+  other:             'Port Migration',
+  main:              'Password Crackdown',
+  third:             'Metaverse Pivot',
+  created:           'Bird Removal',
+  fourth:            'Verification Tiers',
 }
 
 /** Clients, one level above a project. */
 export const CLIENTS = {
-  chirp: 'Chirp',
+  main:  'Chirp',
 }
 
 /** Files. The label is the filename, which is what a real snapshot stores. */
 export const DOCUMENTS = {
-  annualReportV3:        'annual-report-v3.fig',
-  styleTileRevA:          'style-tile-rev-a.sketch',
-  pricingTableFinal:     'pricing-table-final.docx',
-  signagePlanRevB:       'signage-plan-rev-b.fig',
-  signagePlanClientCopy: 'signage-plan-client-copy.fig',
-  wireframesWip:         'wireframes-wip.sketch',
-  motionTestRevB:        'motion-test-rev-b.docx',
-  motionTestClientCopy:  'motion-test-client-copy.pdf',
-  heroDesktopRevB:       'hero-desktop-rev-b.docx',
-  heroMobileRevA:         'hero-mobile-rev-a.fig',
-  colourTokensV1:        'colour-tokens-v1.fig',
-  colourTokensFinal2:    'colour-tokens-final-2.sketch',
-  proofSheetFinal2:      'proof-sheet-final-2.png',
-  wordmarkV3:            'wordmark-v3.png',
-  expenseReportQ3:       'expense-report-q3.pdf',
-  spacingScaleThread:    'the spacing scale thread',
+  report:                'annual-report-v3.fig',
+  styleTile:              'style-tile-rev-a.sketch',
+  pricing:               'pricing-table-final.docx',
+  signage:               'signage-plan-rev-b.fig',
+  signageCopy:           'signage-plan-client-copy.fig',
+  wireframes:            'wireframes-wip.sketch',
+  motionTest:            'motion-test-rev-b.docx',
+  motionTestCopy:        'motion-test-client-copy.pdf',
+  heroDesktop:           'hero-desktop-rev-b.docx',
+  heroMobile:             'hero-mobile-rev-a.fig',
+  tokens:                'colour-tokens-v1.fig',
+  tokensFinal:           'colour-tokens-final-2.sketch',
+  proofSheet:            'proof-sheet-final-2.png',
+  wordmark:              'wordmark-v3.png',
+  expenses:              'expense-report-q3.pdf',
+  thread:                'the spacing scale thread',
 }
 
 /** Tasks. The label is the task title. */
 export const TASKS = {
-  storyboardIconLibrary:   'Storyboard the icon library',
-  simplifyWordmark:        'Simplify the wordmark',
-  rebuildAltText:          'Rebuild the alt text',
-  kerningPassMotionTests:  'Kerning pass on the motion tests',
-  kerningPassPricingTable: 'Kerning pass on the pricing table',
-  auditColourTokens:       'Audit the colour tokens',
-  rewriteHeroImages:       'Rewrite the hero images',
-  rewritePrintSpecimen:    'Rewrite the print specimen',
-  redrawSignageMockUps:    'Redraw the signage mock-ups',
+  storyboard:              'Storyboard the icon library',
+  simplify:                'Simplify the wordmark',
+  altText:                 'Rebuild the alt text',
+  kerningMotion:           'Kerning pass on the motion tests',
+  kerningPricing:          'Kerning pass on the pricing table',
+  audit:                   'Audit the colour tokens',
+  rewriteHero:             'Rewrite the hero images',
+  rewritePrint:            'Rewrite the print specimen',
+  redraw:                  'Redraw the signage mock-ups',
+}
+
+/** Parties: named participants with no model in the app. */
+export const PARTIES = {
+  service: 'Concur Web Service',
 }
 
 /** Comment bodies. A comment has no name, so its label is its text —
  * truncated to 80 characters the way the demo app's Comment::toFeed() does. */
 export const COMMENTS = {
-  breakpoint: 'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?',
-  overflow:   'Second page still overflows on the print stylesheet.',
+  first:      'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?',
+  second:     'Second page still overflows on the print stylesheet.',
 }

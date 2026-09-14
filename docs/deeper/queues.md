@@ -12,14 +12,14 @@ const late = [
     id: 'qu1', verb: 'submit', glyph: 'file-check',
     published_at: '2026-08-14T12:05:00.000000Z',
     headline_template: ':actor submitted :object to :target',
-    actor: who.ines, object: doc.pricingTableFinal, target: where.passwordCrackdown,
+    actor: who.designer, object: doc.pricing, target: where.main,
   }),
   group({
     id: 'qu2', verb: 'submit', axis: 'repeat', count: 2, glyph: 'file-check',
     published_at: '2026-08-13T12:55:00.000000Z',
     headline_template: ':actor submitted :count documents to :target',
-    actors: [who.ines], targets: [where.passwordCrackdown],
-    objects: [doc.annualReportV3, doc.styleTileRevA],
+    actors: [who.designer], targets: [where.main],
+    objects: [doc.report, doc.styleTile],
     distinct: { actors: 1, objects: 2, targets: 1 },
   }),
 ]
@@ -29,8 +29,8 @@ const dated = [
     id: 'qu3', verb: 'submit', axis: 'repeat', count: 3, glyph: 'file-check',
     published_at: '2026-08-13T12:58:00.000000Z',
     headline_template: ':actor submitted :count documents to :target',
-    actors: [who.ines], targets: [where.passwordCrackdown],
-    objects: [doc.annualReportV3, doc.styleTileRevA, doc.pricingTableFinal],
+    actors: [who.designer], targets: [where.main],
+    objects: [doc.report, doc.styleTile, doc.pricing],
     distinct: { actors: 1, objects: 3, targets: 1 },
   }),
 ]

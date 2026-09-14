@@ -1,4 +1,4 @@
-import { USERS, PROJECTS, CLIENTS, DOCUMENTS, TASKS, COMMENTS } from './manifest'
+import { USERS, PROJECTS, CLIENTS, DOCUMENTS, TASKS, COMMENTS, PARTIES } from './manifest'
 
 /**
  * Payload-shaped sample data for the docs.
@@ -59,8 +59,8 @@ export const comment = (id: string, body: string) =>
  * The cast, built from the manifest. Ids come from position in the manifest, so a
  * page only ever names a key.
  *
- *   who.ines · where.portMigration · firm.chirp · doc.annualReportV3 ·
- *   job.simplifyWordmark · note.breakpoint
+ *   who.designer · where.main · firm.main · doc.report · job.simplify ·
+ *   note.first · party.service
  */
 const build = (source: Record<string, string>, make: (id: string, label: string) => any) =>
   Object.fromEntries(
@@ -73,6 +73,9 @@ export const firm: Record<string, any> = build(CLIENTS, client)
 export const doc: Record<string, any> = build(DOCUMENTS, document)
 export const job: Record<string, any> = build(TASKS, task)
 export const note: Record<string, any> = build(COMMENTS, comment)
+
+/** A party has no page of its own. */
+export const party: Record<string, any> = build(PARTIES, (id, label) => entity('storyfeed.party', id, label, null))
 
 /**
  * ── The demo app's glyph intents ─────────────────────────────────────────────
