@@ -4,7 +4,8 @@
  * loop. Reads the order from the VitePress config so the folder always matches
  * the site; refuses to overwrite an annotated file (print-pdf.mjs does that).
  *
- * Usage: npm run build && npx vitepress preview docs --port 5174 & node scripts/print-spine.mjs
+ * Usage: npm run build && npm run preview & node scripts/print-spine.mjs
+ * (preview is on 5175; the dev server keeps 5174.)
  */
 import { readFileSync, readdirSync, unlinkSync, existsSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'

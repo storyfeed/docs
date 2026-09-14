@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
     "build": "node --test scripts/cast.test.mjs && node scripts/llms.mjs && vitepress build docs",
-    "preview": "vitepress preview docs --port 5174",
+    "preview": "vitepress preview docs --port 5175",
     "drift": "node scripts/drift-detector/index.mjs",
     "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
     "test:cast": "node --test scripts/cast.test.mjs",

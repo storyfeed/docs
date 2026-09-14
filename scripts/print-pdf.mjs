@@ -2,6 +2,10 @@
 /**
  * Print a built docs page to PDF, for the review loop.
  *
+ * PORT 5175, NOT 5174. The dev server lives on 5174 and the owner keeps it
+ * open while reviewing; a preview bound to the same port either fails to
+ * start or, worse, gets killed along with it. `PDF_PORT` overrides.
+ *
  * These pages are read on an iPad, annotated in ink, and handed back. That loop
  * had no script behind it: the PDFs in the review folder were produced ad hoc
  * and whatever produced them was not kept, so the next person to need one went
@@ -14,7 +18,7 @@
  *
  * Usage:
  *   npm run build
- *   npx vitepress preview docs --port 5174 &
+ *   npx vitepress preview docs --port 5175 &
  *   node scripts/print-pdf.mjs guide/usage-examples "05 Getting started — Usage examples"
  *
  * The second argument is the file name, and it carries the spine number the
@@ -66,7 +70,7 @@ execFileSync(CHROME, [
   '--no-pdf-header-footer',
   `--print-to-pdf=${out}`,
   '--virtual-time-budget=15000',
-  `http://localhost:5174/${route}.html`,
+  `http://localhost:${process.env.PDF_PORT ?? 5175}/${route}.html`,
 ], { stdio: ['ignore', 'inherit', 'ignore'] })
 
 console.log(`wrote ${out}`)
