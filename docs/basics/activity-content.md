@@ -6,17 +6,15 @@ carries what the reader needs without your renderer knowing anything about
 your app.
 
 <script setup>
-import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme/samples'
+import { who, orders, dishes, notes, scenes, activity } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:32:00.000000Z'
 
 const base = {
   verb: 'noted', glyph: 'message-circle', published_at: at,
   headline_template: ':actor sent a note about :object',
-  actor: who.regular, target: where.kitchen,
+  actor: who.regular,
 }
-
-const plain = activity({ ...base, id: 'ac1', object: orders.first })
 
 const withThread = activity({
   ...base, id: 'ac2', object: orders.first,
@@ -75,16 +73,9 @@ const withFile = activity({
 
 Most activities need nothing more. The sentence is the whole row:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($customer)
-    ->action('noted', $order)
-    ->to($kitchen)
-    ->publish();
-```
+<<< @/snippets/publish.php
 
-<FeedExample context :items="[plain]" />
+<FeedExample context :items="[scenes.order]" />
 
 Everything below is for the rows where it is not enough. Add one thing at a
 time, and only where a reader would ask for it.
@@ -101,7 +92,6 @@ use Storyfeed\FeedThread;
 Storyfeed::activity()
     ->by($customer)
     ->action('noted', $order)
-    ->to($kitchen)
     ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code focus]
     ->publish();
 ```
