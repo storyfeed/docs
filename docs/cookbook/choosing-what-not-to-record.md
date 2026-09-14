@@ -19,7 +19,7 @@ public function toFeedActivity(): ?PendingActivity
 ```
 
 Returning `null` publishes nothing. See
-[Publishing from events](/deeper/events).
+[Publishing from Events](/deeper/events).
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

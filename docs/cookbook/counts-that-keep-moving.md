@@ -96,7 +96,7 @@ about:
 
 If yes, resolve on read.
 
-## Why the Answer Changes without the Code Changing
+## Counts That Change After Publish
 
 A recorded count is correct until someone adds an affordance the node's author
 never saw. A feed that only displayed discussions is right to record the count;
@@ -115,19 +115,3 @@ is the wrong trade.
 Worse, it fights itself: a healer comparing a recorded count against a live one
 finds a difference on every pass, and rewrites the same story forever. Storing
 `null` is what keeps a healer idempotent here.
-
-## Where This Came from
-
-Not a design. The rule was written by a consumer solving a different problem
-entirely: a recorded count made a **healer** replace stories that had not
-changed, every pass, forever, because the stored count and the live one always
-disagreed. Storing `null` was what made healing idempotent.
-
-Months later that same app gave one of its feed surfaces an inline reply box —
-and the rule already protected it from a trap nobody had considered when it was
-written. Nothing on that screen could make a recorded count stale, because no
-count was recorded.
-
-That is the argument for the rule, better than any clean design story: **it held
-against a case its author never saw.** Which is what you want from a rule about
-facts that keep moving.

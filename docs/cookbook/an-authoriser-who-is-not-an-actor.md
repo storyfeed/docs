@@ -37,7 +37,7 @@ someone else releases. The requirement is always the same sentence:
 
 Two halves that pull against each other, which is why the obvious answers fail.
 
-## First, Check Whether You Already Have It
+## Checking for an Existing Record
 
 Before adding a row, look for the fact where it would naturally live. An approval
 usually happens *to* something — a photo, a document, a draft — and that thing

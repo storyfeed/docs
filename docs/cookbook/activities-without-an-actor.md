@@ -14,9 +14,9 @@ class DocumentSubmitted implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return PendingActivity::inline('submit')
+        return Storyfeed::activity()
             ->by($this->user)                    // the actor travels on the event
-            ->object($this->document)
+            ->action('submit', $this->document)
             ->to($this->document->project);
     }
 }
@@ -133,7 +133,7 @@ also override `Storyfeed::as(...)`. The one-call `Storyfeed::record(...,
 actor: null)` still uses ambient resolution; use an anonymous builder when
 null is intentional.
 
-## Who Acted Decides the Sentence
+## One Sentence per Kind of Actor
 
 | The Act Was Performed by | The Actor Is | The Sentence |
 |---|---|---|
@@ -162,7 +162,7 @@ A job that publishes many activities scopes the block with
 `Storyfeed::as('System', …)` instead of naming the party on each call; see
 [Scoped attribution](/deeper/parties#scoped-attribution).
 
-## Nobody Acted
+## No Actor at All
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
