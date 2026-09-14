@@ -1,21 +1,14 @@
 # Quickstart
 
 Five steps: make a model feedable, give its verb a headline, publish an
-activity, read the feed, render it. The example is a document being uploaded to a project.
+activity, read the feed, render it. The example is a customer placing an order with a kitchen.
 
 <script setup>
-import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
+import { scenes } from '../.vitepress/theme/samples'
 
 // The same names the snippets use, so the rendered result is this page's example
 // and not a different one.
-const published = activity({
-  id: 'q1', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer,
-  object: doc.report,
-  target: where.main,
-})
+const published = scenes.order
 </script>
 
 
@@ -36,22 +29,22 @@ use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
-class Document extends Model implements Feedable
+class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make(
-            label: $this->name,
-            data: ['id' => $this->id, 'project_id' => $this->project_id],
+            label: "Order #{$this->reference}",
+            data: ['ulid' => $this->ulid],
         );
     }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
         // Reads what toFeed() cached above; a key it did not cache reads as null.
-        return FeedMedia::make(url: route('documents.show', $context->data('id')));
+        return FeedMedia::make(url: route('orders.show', $context->data('ulid')));
     }
 }
 ```
@@ -66,7 +59,7 @@ you need to build the URL in `toFeed()`. A thrown exception is reported,
 and the entity degrades to `url: null` and `media: null`.
 :::
 
-`Project` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
+`Kitchen` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
 `feedMedia()` that returns null, and an unlinked entity still renders at full
 weight. [Feedable Models](/basics/feedable-models) covers a link per feed; the
 [Feedable API](/reference/feedable) covers images and the rest.
@@ -76,8 +69,8 @@ Storyfeed stores morph aliases, never class names, so enforce a morph map:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Relation::enforceMorphMap([
-    'document' => Document::class,
-    'project' => Project::class,
+    'order' => Order::class,
+    'kitchen' => Kitchen::class,
     // Aliases are permanent: an activity whose role alias stops resolving
     // still shows, with a placeholder; the trickle counts it, never deletes it.
     'user' => User::class,
@@ -86,20 +79,20 @@ Relation::enforceMorphMap([
 
 ## 2. Give It a Headline
 
-The sentence the feed prints for an upload, registered once:
+The sentence the feed prints for a placed order, registered once:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'document.upload' => ':actor uploaded :object to :target',
+    '*.order.placed' => ':actor placed :object with :target',
 ]);
 
 Storyfeed::icons([
-    'document.upload' => 'file-up',
+    '*.order.placed' => 'shopping-bag',
 ]);
 ```
 
-The key is the object's morph alias and the verb. The template names roles,
+The key is the object's morph alias and the verb; `*` matches any object type, which suits a verb that already names its subject. The template names roles,
 `:actor`, `:object`, `:target`, and the feed fills in the entities.
 
 ## 3. Publish an Activity
@@ -110,7 +103,7 @@ Or in one line:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('upload', $document, actor: $user, target: $project);
+Storyfeed::record('order.placed', $order, actor: $customer, target: $kitchen);
 ```
 
 Call it wherever the fact becomes true — an action, an observer, an event
@@ -121,16 +114,16 @@ listener.
 ```php
 // a controller, or wherever the feed is read
 $page = Storyfeed::feed()
-    ->involving($project)
+    ->involving($kitchen)
     ->limit(20)
     ->get();
 ```
 
 <FeedStream :items="[published]" :grouped="false" />
 
-That is the activity from step 3, read back. `involving()` matches the project in
-any role, so it finds this one whether the project was the target, the context or
-the object — including the activity that created the project itself.
+That is the activity from step 3, read back. `involving()` matches the kitchen in
+any role, so it finds this one whether the kitchen was the target, the context or
+the object — including the activity that opened the kitchen itself.
 
 `$page` is the payload envelope — `payload_version`, `items`, `next_cursor`,
 `sync_token` — and is `Responsable`, so an API endpoint is one line:
@@ -154,8 +147,8 @@ visibility twice — by what it records, and by the scope and verbs each surface
 reads through:
 
 ```php
-// the same project, for the client it belongs to
-$page = Storyfeed::feed('client')->involving($project)->limit(20)->get();
+// the same order, for the customer who placed it
+$page = Storyfeed::feed('customer')->involving($order)->limit(20)->get();
 ```
 
 [Named Feeds](/basics/named-feeds) declare that per audience, once, before the

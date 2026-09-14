@@ -8,66 +8,65 @@ system performed, and a sentence with no `:actor` when nobody did.
 
 namespace App\Events;
 
-class DocumentSubmitted implements PublishesToFeed
+class OrderPlaced implements PublishesToFeed
 {
-    public function __construct(public Document $document, public User $user) {}
+    public function __construct(public Order $order, public User $customer) {}
 
     public function toFeedActivity(): ?PendingActivity
     {
         return Storyfeed::activity()
-            ->by($this->user)                    // the actor travels on the event
-            ->action('submit', $this->document)
-            ->to($this->document->project);
+            ->by($this->customer)                    // the actor travels on the event
+            ->action('order.placed', $this->order)
+            ->to($this->order->kitchen);
     }
 }
 ```
 
 <script setup>
-import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
+import { who, where, orders, party, activity } from '../.vitepress/theme/samples'
 
-const submitted = activity({
-  id: 'ck6a', verb: 'submit', glyph: 'file-check',
+const placed = activity({
+  id: 'ck6a', verb: 'order.placed', glyph: 'shopping-bag',
   published_at: '2026-08-14T15:02:00.000000Z',
-  headline_template: ':actor submitted :object to :target',
-  actor: who.designer, object: doc.report, target: where.main,
+  headline_template: ':actor placed :object with :target',
+  actor: who.regular, object: orders.first, target: where.kitchen,
 })
 
 const anonymous = activity({
-  id: 'ck6b', verb: 'submit', glyph: 'file-check',
+  id: 'ck6b', verb: 'order.placed', glyph: 'shopping-bag',
   published_at: '2026-08-14T15:02:00.000000Z',
-  headline_template: ':actor submitted :object to :target',
-  actor: null, object: doc.report, target: where.main,
+  headline_template: ':actor placed :object with :target',
+  actor: null, object: orders.first, target: where.kitchen,
 })
 
-const signed = activity({
-  id: 'ck6c', verb: 'sign', glyph: 'file-check',
+const paid = activity({
+  id: 'ck6c', verb: 'payment.received', glyph: 'credit-card',
   published_at: '2026-08-14T16:10:00.000000Z',
-  headline_template: ':actor reported :object signed for :target',
-  actor: entity('storyfeed.party', '2', 'DocuSign', null),
-  object: doc.pricing, target: where.main,
+  headline_template: ':actor marked :object paid',
+  actor: party.service, object: orders.second,
 })
 
 const expired = activity({
-  id: 'ck6d', verb: 'expire', glyph: 'archive',
+  id: 'ck6d', verb: 'order.expired', glyph: 'circle-x',
   published_at: '2026-08-21T00:00:00.000000Z',
-  headline_template: ':object expired in :target',
-  actor: null, object: doc.motionTestCopy, target: where.main,
+  headline_template: ':object expired at :target',
+  actor: null, object: orders.fifth, target: where.kitchen,
 })
 </script>
 
-<FeedStream :items="[submitted]" :grouped="false" />
+<FeedStream :items="[placed]" :grouped="false" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'submit' => ActivityType::Offer,
-    'sign' => ActivityType::Accept,
-    'expire' => ActivityType::Remove,
+    'order.placed' => ActivityType::Create,
+    'payment.received' => ActivityType::Accept,
+    'order.expired' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
-    'document.submit' => ':actor submitted :object to :target',
-    'document.sign' => ':actor reported :object signed for :target',
+    '*.order.placed' => ':actor placed :object with :target',
+    '*.payment.received' => ':actor marked :object paid',
 ]);
 ```
 
@@ -84,13 +83,13 @@ namespace App\Listeners;
 
 class RecordSubmission implements ShouldQueue
 {
-    public function __construct(public Document $document) {}
+    public function __construct(public Order $order) {}
 
     public function handle(): void
     {
         Storyfeed::activity()
-            ->action('submit', $this->document)     // assumes no custom resolver or fallback party
-            ->to($this->document->project)
+            ->action('order.placed', $this->order)     // assumes no custom resolver or fallback party
+            ->to($this->order->kitchen)
             ->publish();
     }
 }
@@ -100,7 +99,7 @@ class RecordSubmission implements ShouldQueue
 
 Under those defaults the row is published with `actor: null`. To retain the
 known author, use
-`->by($this->user)`, with the user passed into the job the way the event above
+`->by($this->customer)`, with the user passed into the job the way the event above
 carries it. For a known system use a [party](/deeper/parties#parties); when the
 actor is genuinely absent, [actorless voice](/deeper/parties#actorless-voice)
 provides a separate sentence for the same verb.
@@ -111,8 +110,8 @@ provides a separate sentence for the same verb.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($knownAuthor) // User|null: null explicitly means anonymous
-    ->action('submit', $document)
-    ->to($project)
+    ->action('order.placed', $order)
+    ->to($kitchen)
     ->publish();
 ```
 
@@ -137,24 +136,23 @@ null is intentional.
 
 | The Act Was Performed by | The Actor Is | The Sentence |
 |---|---|---|
-| a user | the user, passed from the event or the action | `:actor submitted :object to :target` |
-| a job, a command, an integration | a party, named | `:actor reported :object signed for :target` |
-| nobody | none | `:object expired in :target` |
+| a user | the user, passed from the event or the action | `:actor placed :object with :target` |
+| a job, a command, an integration | a party, named | `:actor marked :object paid` |
+| nobody | none | `:object expired at :target` |
 
 ## A System Is a Party
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by('DocuSign')
-    ->action('sign', $document)
-    ->to($project)
+    ->by('Stripe')
+    ->action('payment.received', $order)
     ->publish();
 ```
 
-<FeedStream :items="[signed]" :grouped="false" />
+<FeedStream :items="[paid]" :grouped="false" />
 
-`by('DocuSign')` names a party; `by(null)` explicitly records an anonymous
+`by('Stripe')` names a party; `by(null)` explicitly records an anonymous
 actor. The difference is in
 [Parties & anonymous actors](/deeper/parties).
 
@@ -167,12 +165,12 @@ A job that publishes many activities scopes the block with
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'document.expire' => ':object expired in :target',   // no :actor, on purpose
+    'order.expired' => ':object expired at :target',   // no :actor, on purpose
 ]);
 
 Storyfeed::anonymous() // bypass actor resolution even inside an attributed scope
-    ->action('expire', $document)
-    ->to($project)
+    ->action('order.expired', $order)
+    ->to($kitchen)
     ->publish();
 ```
 

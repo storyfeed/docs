@@ -6,55 +6,50 @@ for one activity.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'upload' => ActivityType::Add,
+    'order.placed' => ActivityType::Create,
 ]);
 
 Storyfeed::grammar([
-    'document.upload' => ':actor uploaded :object to :target',
+    '*.order.placed' => ':actor placed :object with :target',
 ]);
 
 Storyfeed::aggregateGrammar([
-    'repeat.upload' => ':actor uploaded :count files to :target',
-    'actors.upload' => ':actors uploaded :count files to :target',
+    'repeat.order.placed' => ':actor placed :count orders with :target',
+    'actors.order.placed' => ':actors placed :count orders with :target',
 ]);
 ```
 
 <script setup>
-import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
 
-const one = activity({
-  id: 'ck5a', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer, object: doc.report, target: where.main,
-})
+const one = scenes.order
 
 const burst = group({
-  id: 'ck5b', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+  id: 'ck5b', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:33:00.000000Z',
-  headline_template: ':actor uploaded :count files to :target',
-  actors: [who.designer], targets: [where.main],
-  objects: [doc.report, doc.signage, doc.pricing],
+  headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 },
 })
 
 const crowd = group({
-  id: 'ck5c', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
+  id: 'ck5c', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors uploaded :count files to :target',
-  actors: [who.designer, who.lead, who.reviewer], targets: [where.main],
+  headline_template: ':actors placed :count orders with :target',
+  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 </script>
 
-*A user uploads a document to a project.*
+*A customer places an order with the kitchen.*
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $annualReport)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $firstOrder)
+    ->to($kitchen)
     ->publish();
 ```
 
@@ -65,9 +60,9 @@ Storyfeed::activity()
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $signagePlan)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $secondOrder)
+    ->to($kitchen)
     ->publish();
 ```
 
@@ -76,17 +71,17 @@ Storyfeed::activity()
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $pricingTable)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $thirdOrder)
+    ->to($kitchen)
     ->publish();
 ```
 
-These are three different documents, each uploaded once. Read with grouping:
+These are three different orders, each placed once. Read with grouping:
 
 ```php
 // a controller, or wherever the feed is read
-$feed = Storyfeed::feed()->involving($project)->live()->get();
+$feed = Storyfeed::feed()->involving($kitchen)->live()->get();
 ```
 
 With the default grouping strategy, these activities share the same actor,
@@ -101,14 +96,14 @@ names a group; it does not create one. The five-user example below needs
 `summary()` and an eligible `actors` bucket (at least three distinct actors
 under the default policy). See [Aggregation](/deeper/aggregation).
 
-*five users, five different documents, five requests, the same project*
+*five customers, five different orders, five requests, the same kitchen*
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
 Without an aggregate template, a group has no authored sentence and falls back.
 The fallback is described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
 
-If changing the target stops a `repeat` group from forming, the built-in
+If ordering from a different kitchen stops a `repeat` group from forming, the built-in
 [`targets` axis](/deeper/aggregation#the-built-in-axes) leaves target free;
 `repeat` includes its id in the key.
 
@@ -118,17 +113,17 @@ If changing the target stops a `repeat` group from forming, the built-in
 
 | Axis | The Members Are | Sentence |
 |---|---|---|
-| `repeat` | one actor, one verb, one target, one kind of object | `:actor uploaded :count files to :target` |
-| `actors` | several actors' acts on one target | `:actors uploaded :count files to :target` |
-| `object` | repeated acts on one object | `:actor made :count revisions to :object` |
-| `targets` | one actor's acts across targets | `:actor commented :count times in :targets` |
+| `repeat` | one actor, one verb, one target, one kind of object | `:actor placed :count orders with :target` |
+| `actors` | several actors' acts on one target | `:actors placed :count orders with :target` |
+| `object` | repeated acts on one object | `:actor changed the price of :object :count times` |
+| `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` |
 
-The file wording above assumes one upload per distinct document. If the same
-document can be uploaded repeatedly, count “uploads” instead: `:count` does
-not count distinct documents.
+The wording above assumes one order per distinct row. If the same order can
+be placed repeatedly, count “placements” instead: `:count` does not count
+distinct orders.
 
 On the `object` axis a member is one more act on one thing, so the count is of
-revisions or times, never of documents.
+changes or times, never of dishes.
 
 Which tokens each axis allows in the singular is in
 [Aggregation](/deeper/aggregation).
@@ -153,22 +148,22 @@ Both sentences live in one class, singular first:
 
 namespace App\Stories;
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 
     public function groups(): array
     {
         return [
-            Group::repeat()->headline(':actor uploaded :count files to :target'),
-            Group::byActors()->headline(':actors uploaded :count files to :target'),
+            Group::repeat()->headline(':actor placed :count orders with :target'),
+            Group::byActors()->headline(':actors placed :count orders with :target'),
         ];
     }
 }

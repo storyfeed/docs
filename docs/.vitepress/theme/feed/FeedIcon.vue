@@ -12,6 +12,16 @@ import {
     MessageCircle,
     SquareCheck,
     UserPlus,
+    ShoppingBag,
+    ChefHat,
+    Utensils,
+    Bike,
+    Receipt,
+    CreditCard,
+    Image,
+    Tablet,
+    Tag,
+    CircleX,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { Component } from 'vue';
@@ -54,6 +64,16 @@ const ICONS: Record<string, Component> = {
     'message-circle': MessageCircle,
     'square-check': SquareCheck,
     'user-plus': UserPlus,
+    'shopping-bag': ShoppingBag,
+    'chef-hat': ChefHat,
+    utensils: Utensils,
+    bike: Bike,
+    receipt: Receipt,
+    'credit-card': CreditCard,
+    image: Image,
+    tablet: Tablet,
+    tag: Tag,
+    'circle-x': CircleX,
 };
 
 const component = computed<Component>(

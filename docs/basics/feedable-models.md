@@ -5,41 +5,38 @@ actor, object, target or context, implements `Feedable`. When you are done, the
 model has a label the feed can print and a link the feed can follow.
 
 <script setup>
-import { who, where, doc, note, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
 
-const unlinked = { ...doc.report, url: null }
+const unlinked = { ...orders.first, url: null }
+const at = '2026-08-14T14:30:00.000000Z'
 
 const withSnapshot = [
-  activity({ id: 'fm1', verb: 'upload', glyph: 'file-up',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: who.designer, object: unlinked, target: where.main }),
+  activity({ id: 'fm1', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: unlinked, target: where.kitchen }),
 ]
 
 const withLink = [
-  activity({ id: 'fm2', verb: 'upload', glyph: 'file-up',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: who.designer, object: doc.report, target: where.main }),
+  activity({ id: 'fm2', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.first, target: where.kitchen }),
 ]
 
-// The project's own feed: activities where it is the target, and the one that
-// created it, where it is the object.
+// The kitchen's own feed: orders placed with it, and the dish it put live.
 const scoped = [
-  group({ id: 'fm3', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :count files to :target',
-    actors: [who.designer], targets: [where.main],
-    objects: [doc.report, doc.signage, doc.pricing],
-    distinct: { actors: 1, objects: 3, targets: 1 } }),
-  activity({ id: 'fm4', verb: 'comment', glyph: 'message-circle',
+  group({ id: 'fm3', verb: 'order.placed', axis: 'actors', count: 3, glyph: 'shopping-bag', published_at: at,
+    headline_template: ':actors placed :count orders with :target',
+    actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
+    objects: [orders.first, orders.second, orders.third],
+    distinct: { actors: 3, objects: 3, targets: 1 } }),
+  activity({ id: 'fm4', verb: 'discussion.asked', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
-    headline_template: ':actor commented on :target',
-    actor: who.reviewer, object: note.second, target: doc.report }),
-  activity({ id: 'fm5', verb: 'create', glyph: 'folder',
-    published_at: '2026-08-12T09:00:00.000000Z',
-    headline_template: ':actor created the project :object',
-    actor: who.owner, object: where.main }),
+    headline_template: ':actor asked about :target',
+    actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
+  activity({ id: 'fm5', verb: 'menu.dish_live', glyph: 'chef-hat',
+    published_at: '2026-08-14T09:00:00.000000Z',
+    headline_template: ':actor put :object on the menu',
+    actor: who.cook, object: dishes.chickenCurry }),
 ]
 </script>
 
@@ -58,15 +55,15 @@ use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Document extends Model implements Feedable
+class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity // [!code focus]
     { // [!code focus]
         return FeedEntity::make( // [!code focus]
-            label: $this->name, // [!code focus]
-            data: ['id' => $this->id, 'project_id' => $this->project_id], // [!code focus]
+            label: "Order #{$this->reference}", // [!code focus]
+            data: ['ulid' => $this->ulid], // [!code focus]
         ); // [!code focus]
     } // [!code focus]
 }
@@ -96,22 +93,22 @@ use Storyfeed\FeedContext; // [!code focus]
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia; // [!code focus]
 
-class Document extends Model implements Feedable
+class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make(
-            label: $this->name,
-            data: ['id' => $this->id, 'project_id' => $this->project_id],
+            label: "Order #{$this->reference}",
+            data: ['ulid' => $this->ulid],
         );
     }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
     { // [!code focus]
         // Reads what toFeed() stored; a key it did not store reads as null. // [!code focus]
-        return FeedMedia::make(url: route('documents.show', $context->data('id'))); // [!code focus]
+        return FeedMedia::make(url: route('orders.show', $context->data('ulid'))); // [!code focus]
     } // [!code focus]
 }
 ```
@@ -126,21 +123,21 @@ stale link in the feed.
 
 `$context->feed()` is the name the feed was
 [registered](/basics/named-feeds) under, so one snapshot can link somewhere
-different on each surface, or nowhere.
+different on each surface, or nowhere. The kitchen's ticket and the
+customer's status page are different pages about the same order:
 
 ```php
-// app/Models/Document.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return match ($context->feed()) { // [!code focus]
-        'admin' => FeedMedia::make(url: route('admin.documents.show', $context->data('id'))), // [!code focus]
-        'client' => FeedMedia::make(url: route('documents.show', $context->data('id'))), // [!code focus]
+        'kitchen' => FeedMedia::make(url: route('kitchen.ticket', $context->data('ulid'))), // [!code focus]
+        'customer' => FeedMedia::make(url: route('orders.status', $context->data('ulid'))), // [!code focus]
         default => null, // an ad-hoc feed reports no name; without this arm the match throws // [!code focus]
     }; // [!code focus]
 }
 ```
 
-On the `admin` feed:
+On the `kitchen` feed:
 
 <FeedStream :items="withLink" :grouped="false" />
 
@@ -158,14 +155,14 @@ test.
 
 ```php
 // a controller, or wherever the feed is read
-$project->storyfeed()->get();
+$kitchen->storyfeed()->get();
 ```
 
 <FeedStream :items="scoped" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
-That is `Storyfeed::feed()->involving($project)->get()` with the argument
+That is `Storyfeed::feed()->involving($kitchen)->get()` with the argument
 filled in: the same builder, so everything in
 [Reading Feeds](/basics/reading) applies.
 
@@ -177,8 +174,9 @@ namespace refactor. Enforce a map:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Relation::enforceMorphMap([
-    'document' => Document::class,
-    'project' => Project::class,
+    'order' => Order::class,
+    'menu_item' => MenuItem::class,
+    'kitchen' => Kitchen::class,
     // Aliases are permanent: an activity whose alias no longer resolves still
     // shows, with a placeholder. Renaming a key means keeping the old one
     // pointed somewhere.
@@ -205,20 +203,19 @@ use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
 use Storyfeed\FeedMedia;
 
-class Document extends Model implements Feedable
+class MenuItem extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make(
-            label: $this->name,
+            label: "{$this->code} {$this->name}",   // how the kitchen names a dish
             data: [
                 'id' => $this->id,
-                'project_id' => $this->project_id,
-                'mediaType' => $this->mime_type,   // the intrinsic facts a thumbnail needs,
-                'width' => $this->width,           // stored once, read on every render
-                'height' => $this->height,
+                'mediaType' => $this->photo_mime,    // the intrinsic facts a thumbnail needs,
+                'width' => $this->photo_width,       // stored once, read on every render
+                'height' => $this->photo_height,
             ],
         );
     }
@@ -232,11 +229,11 @@ class Document extends Model implements Feedable
         }
 
         return match ($context->feed()) {
-            'admin' => FeedMedia::make(url: route('admin.documents.show', $id)),
-            'client' => FeedMedia::make(
-                url: route('documents.show', $id),
+            'kitchen' => FeedMedia::make(url: route('kitchen.menu.edit', $id)),
+            'customer' => FeedMedia::make(
+                url: route('menu.show', $id),
                 preview: FeedImage::make(
-                    src: route('documents.thumbnail', $id),
+                    src: route('menu.photo', $id),
                     mediaType: $context->data('mediaType'),
                     width: $context->data('width'),
                     height: $context->data('height'),
@@ -249,7 +246,7 @@ class Document extends Model implements Feedable
 }
 ```
 
-<FeedStream :items="withLink" :grouped="false" />
+<FeedStream :items="[scoped[2]]" :grouped="false" />
 
 Images, attachments, the live model, and every argument each method accepts
 are in the [Feedable API](/reference/feedable) reference.

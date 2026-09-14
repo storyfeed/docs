@@ -6,29 +6,20 @@ listener. When you are done, each fact your app cares about is one call that
 reads like the sentence it produces.
 
 <script setup>
-import { who, where, firm, doc, entity, activity } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, party, activity, scenes } from '../.vitepress/theme/samples'
 
-const created = activity({
-  id: 'r1', verb: 'create', glyph: 'folder',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor created the project :object for :target',
-  actor: who.designer, object: where.created, target: firm.main,
+const paid = activity({
+  id: 'r2', verb: 'payment.received', glyph: 'credit-card',
+  published_at: '2026-08-14T14:32:00.000000Z',
+  headline_template: ':actor marked :object paid',
+  actor: party.service, object: orders.first,
 })
 
-const system = entity('party', 'system', 'System', null)
-
-const synced = activity({
-  id: 'r2', verb: 'sync', glyph: 'activity',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor synced :object',
-  actor: system, object: doc.expenses,
-})
-
-const saved = activity({
-  id: 'r3', verb: 'save', glyph: 'file-pen',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor saved :object',
-  actor: who.lead, object: doc.wireframes,
+const priced = activity({
+  id: 'r3', verb: 'menu.price_changed', glyph: 'tag',
+  published_at: '2026-08-14T09:10:00.000000Z',
+  headline_template: ':actor changed the price of :object',
+  actor: who.cook, object: dishes.kottu,
 })
 </script>
 
@@ -36,43 +27,36 @@ const saved = activity({
 
 The builder reads in the order of the headline it produces:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('create', $project)
-    ->for($client)
-    ->publish();
-```
+<<< @/snippets/publish.php
 
-<FeedStream :items="[created]" :grouped="false" />
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
 The same activity in one call, when everything is in hand:
 
 ```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::record('create', $project, actor: $user, target: $client);
+// where the order is placed: a controller, an action, a listener
+Storyfeed::record('order.placed', $order, actor: $customer, target: $kitchen);
 ```
 
 ## Roles
 
 | Role | Question It Answers | Example |
 |---|---|---|
-| `actor` | who did it | the user |
-| `object` | what it was done to | the document |
-| `target` | what the act was directed at | the project |
+| `actor` | who did it | the customer |
+| `object` | what it was done to | the order |
+| `target` | what the act was directed at | the kitchen |
 | `context` | where it happened | the surrounding container |
 | `origin` | where it came from | the source of an accepted invitation |
-| `result` | what it produced | a diff record or a generated artifact |
-| `instrument` | what it happened via | an integration used to import a record |
+| `result` | what it produced | a receipt, a generated artifact |
+| `instrument` | what it happened via | the device an order was taken on |
 
 ::: tip
 `origin`, `result` and `instrument` are not in a tagged release. An install
 pinned to v0.9.0 or earlier has the first four roles.
 :::
 
-Direction decides the role. The same integration is a `target` for an upload
-**to** it and an `instrument` for a record sourced **via** it.
+Direction decides the role. The same tablet is a `target` for an order sent
+**to** it and an `instrument` for an order taken **on** it.
 
 ## Reading as a Sentence
 
@@ -93,17 +77,18 @@ An alias and its setter record identical rows. `context` is set only by
 
 ## The Actor
 
-Omit the actor and the authenticated user is recorded. In a job or a command
-there is no authenticated user, so name one for the block:
+Omit the actor and the authenticated user is recorded. When a webhook or a
+job records the fact, there is no authenticated user, so name the actor:
 
 ```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::as('System', function () {
-    Storyfeed::record('sync', object: $invoice);
-});
+// app/Http/Controllers/StripeWebhookController.php
+Storyfeed::activity()
+    ->by('Stripe')
+    ->action('payment.received', $order)
+    ->publish();
 ```
 
-<FeedStream :items="[synced]" :grouped="false" />
+<FeedStream :items="[paid]" :grouped="false" />
 
 A string actor is a [party](/deeper/parties): a named participant with no
 model. When nothing names an actor the activity is published with none, which
@@ -114,29 +99,32 @@ means the actor is genuinely unknown.
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->action('upload', $document)
-    ->data(['size' => $bytes])      // activity-level payload, arrives in the node
-    ->publishedAt($importedAt)      // backdate: imports, backfills
+    ->by($cook)
+    ->action('menu.price_changed', $dish)
+    ->data(['from' => 1450, 'to' => 1550])   // activity-level payload, arrives in the node
+    ->publishedAt($changedAt)                // backdate: imports, backfills
     ->publish();
 ```
+
+<FeedStream :items="[priced]" :grouped="false" />
 
 `Storyfeed::record()` takes the same as named arguments: `data:`,
 `publishedAt:`, `replace:`, `objects:` and `thread:`.
 
 ## Replacing Instead of Appending
 
-A draft saved five times is one fact, not five. `->replace()` supersedes the
-earlier row with the same object and verb:
+A price edited five times before the menu goes live is one fact, not five.
+`->replace()` supersedes the earlier row with the same object and verb:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::activity()->action('save', $draft)->replace()->publish();
+Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();
 
 // a minute later, another request
-Storyfeed::activity()->action('save', $draft)->replace()->publish();
+Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();
 ```
 
-<FeedStream :items="[saved]" :grouped="false" />
+<FeedStream :items="[priced]" :grouped="false" />
 
 The key is the object and the verb; `data` is not part of it. Which verbs
 should replace and which should append is worked through in
@@ -149,8 +137,8 @@ builder:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-ActivityVerb::Comment->by($user)->object($comment)->to($project)->publish();
-ActivityVerb::Confirm->publish($delivery);
+OrderActivity::Placed->by($customer)->object($order)->to($kitchen)->publish();
+OrderActivity::Ready->publish($order);
 ```
 
 The enum is set up in [Activity Types & Verbs](/basics/activity-types-and-verbs).
@@ -161,7 +149,7 @@ Pass `objects:` (or `->objects()`) to record one activity about many objects:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('upload', objects: $files, actor: $user, target: $project);
+Storyfeed::record('menu.dish_live', objects: $dishes, actor: $cook);
 ```
 
 [Composites](/deeper/composites) covers how that activity reads and groups.

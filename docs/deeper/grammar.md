@@ -6,13 +6,13 @@ keyed by the axis the group formed on and the verb. When you are done, every
 group your feed can form has a sentence that is true of every member.
 
 <script setup>
-import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
-const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+const repeated = group({ id: 'g2', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :count files to :target',
-  actors: [who.designer], targets: [where.main],
-  objects: [doc.report, doc.signage, doc.pricing],
+  headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 </script>
 
@@ -21,8 +21,8 @@ const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, gly
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar([
-    'repeat.upload' => ':actor uploaded :count files to :target',    // {axis}.{verb}
-    'actors.upload' => ':actors uploaded :count files to :target',
+    'repeat.order.placed' => ':actor placed :count orders with :target',    // {axis}.{verb}
+    'actors.order.placed' => ':actors placed :count orders with :target',
 ]);
 ```
 
@@ -55,10 +55,10 @@ singular role token is allowed only where the [axis pins it](/deeper/aggregation
 plural tokens are allowed everywhere, because a list of one is still true.
 
 ```php
-// repeat = one actor, many documents
-'repeat.revise' => ':actor made :count revisions to :object'   // ✗ which document?
-'repeat.revise' => ':actor made :count revisions'              // ✓
-'repeat.revise' => ':actor made :count revisions in :targets'  // ✓ a list is true of every member
+// repeat = one cook, many dishes
+'repeat.menu.price_changed' => ':actor changed the price of :object :count times'  // ✗ which dish?
+'repeat.menu.price_changed' => ':actor changed :count prices'                      // ✓
+'repeat.menu.price_changed' => ':actor changed :count prices on :targets'          // ✓ a list is true of every member
 ```
 
 `storyfeed:doctor` reports unsafe tokens as warnings; run it with
@@ -77,8 +77,8 @@ Register the noun forms by morph alias:
 use Storyfeed\FeedNoun;
 
 Storyfeed::nouns([
-    'document' => 'document|documents', // morph alias, not a class name
-    'clause' => FeedNoun::trans('nouns.clause'),
+    'menu_item' => 'dish|dishes', // morph alias, not a class name
+    'order' => FeedNoun::trans('nouns.order'),
 ]);
 ```
 
@@ -87,9 +87,9 @@ Supply both forms; Storyfeed never inflects. Translation keys are wrapped in
 segments. Without a registered noun, the fallback uses `item|items`.
 
 The distinct entity count selects the form but is not printed:
-`FeedNoun::form('document|documents', 7)` returns `documents`. Core substitutes
-that text before returning the template, so `:actor uploaded :object` can arrive
-as `:actor uploaded documents`. The substituted noun is plain text, with no
+`FeedNoun::form('dish|dishes', 7)` returns `dishes`. Core substitutes
+that text before returning the template, so `:actor put :object on the menu`
+can arrive as `:actor put dishes on the menu`. The substituted noun is plain text, with no
 single entity to link to; `:actor` remains a linkable token.
 
 ## Members That Did Not Fill a Role
@@ -103,8 +103,8 @@ towards `:count` and contributes no exemplar.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
-'targets.comment' => ':actor commented on :count projects'  // ✗ five members, two projects
-'targets.comment' => ':actor commented in :targets'         // ✓ names the two there are
+'targets.discussion.asked' => ':actor asked about :count dishes'  // ✗ five members, two dishes
+'targets.discussion.asked' => ':actor asked about :targets'       // ✓ names the two there are
 ```
 
 Both lines are token-safe; the defect is in the noun the template puts beside
@@ -118,8 +118,8 @@ Both of these are token-safe; only one is readable:
 
 ```php
 // actors axis — pins :target
-':actors uploaded :objects in :targets'    // ✗ three lists, 180 characters of names
-':actors uploaded :count files in :target' // ✓ one list, one count, one pinned role
+':actors placed :objects with :targets'    // ✗ three lists, 180 characters of names
+':actors placed :count orders with :target' // ✓ one list, one count, one pinned role
 ```
 
 Two rules meet here and only one is enforced. Token safety is semantic: doctor
@@ -140,8 +140,8 @@ blank. Author both:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files to :target']);
-Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
+Storyfeed::aggregateGrammar(['composite.menu.dish_live' => ':actor put :count dishes on the menu']);
+Storyfeed::grammar(['*.menu.dish_live' => ':actor put dishes on the menu']);
 ```
 
 `'*.*'` matches everything, including the gaps you would want reported.
@@ -150,8 +150,8 @@ Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 ## Verbs Spanning Multiple Types
 
 Aggregate grammar is keyed by **axis and verb**, while a Story is per
-`(objectType, verb)`. When one verb spans several types — `create` on projects,
-tasks, and clients — its aggregate keys have no single owner: whichever Story
+`(objectType, verb)`. When one verb spans several types — `discussion.asked` on dishes,
+orders and categories — its aggregate keys have no single owner: whichever Story
 declares `groups()` for `create` owns them all, and nothing indicates that to a
 reader of the other Stories.
 

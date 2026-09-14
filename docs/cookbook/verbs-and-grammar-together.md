@@ -12,20 +12,20 @@ import { scenes } from '../.vitepress/theme/samples'
 
 namespace App\Stories;
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 
     public function icon(): ?string
     {
-        return 'file-up';
+        return 'shopping-bag';
     }
 }
 ```
@@ -34,13 +34,13 @@ The class is the one place the verb string is written. Publish through it:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-DocumentWasUploaded::activity($document)
-    ->by($user)
-    ->to($project)
+OrderWasPlaced::activity($order)
+    ->by($customer)
+    ->to($kitchen)
     ->publish();
 ```
 
-<FeedStream :items="[scenes.upload]" :grouped="false" />
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
 Registration is in [Story Classes](/deeper/stories).
 
@@ -77,13 +77,13 @@ stays registered:
 
 namespace App\Stories;
 
-class DocumentWasPrinted extends Story
+class OrderWasPrinted extends Story
 {
     // Nothing publishes `print` any more. Registered so rows recorded under it
     // keep their headline.
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'print';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.printed';
 
     public function headline(): string
     {

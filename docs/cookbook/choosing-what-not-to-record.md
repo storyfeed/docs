@@ -4,17 +4,17 @@ A publish site only where a reader would want the row. A feed with fewer
 verbs than your app has events.
 
 ```php
-// app/Events/DocumentUploaded.php
+// app/Events/OrderPlaced.php
 public function toFeedActivity(): ?PendingActivity
 {
-    if ($this->document->status === 'draft') {
+    if ($this->order->status === 'draft') {
         return null;                                 // not an activity
     }
 
     return Storyfeed::activity()
-        ->by($this->user)
-        ->action('submit', $this->document)
-        ->to($this->document->project);
+        ->by($this->customer)
+        ->action('order.placed', $this->order)
+        ->to($this->order->kitchen);
 }
 ```
 
@@ -24,12 +24,12 @@ Returning `null` publishes nothing. See
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'submit' => ActivityType::Offer,
-    'comment' => ActivityType::Create,
+    'order.placed' => ActivityType::Create,
+    'discussion.asked' => ActivityType::Create,
 ]);
 
 Storyfeed::grammar([
-    'document.submit' => ':actor submitted :object to :target',
+    '*.order.placed' => ':actor placed :object with :target',
 ]);
 ```
 
@@ -39,45 +39,45 @@ Storyfeed::grammar([
 |---|---|---|
 | a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| the text of a comment edited | no | the comment is the story; its edit is not |
+| the text of a note edited | no | the note is the story; its edit is not |
 | a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
 | a field-level audit row | no | an audit log is its own surface |
 | a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| a comment posted | yes | the sentence names what was commented on |
-| a document uploaded | yes | |
+| a question asked about a dish | yes | the sentence names what was asked about |
+| an order placed | yes | |
 
-## A Comment Is an Activity About Its Target
+## A Note Is an Activity About Its Target
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'comment.comment' => ':actor commented on :target',   // names the document, never the comment
+    '*.discussion.asked' => ':actor asked about :target',   // names the dish, never the note
 ]);
 
 Storyfeed::activity()
     ->by($user)
-    ->action('comment', $comment)
-    ->on($document)
+    ->action('discussion.asked', $note)
+    ->on($dish)
     ->publish();
 ```
 
 <script setup>
-import { who, doc, note, activity } from '../.vitepress/theme/samples'
+import { who, dishes, notes, activity } from '../.vitepress/theme/samples'
 
-const reply = activity({
-  id: 'ck7', verb: 'comment', glyph: 'message-circle',
+const question = activity({
+  id: 'ck7', verb: 'discussion.asked', glyph: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
-  headline_template: ':actor commented on :target',
-  actor: who.reviewer, object: note.second, target: doc.report,
+  headline_template: ':actor asked about :target',
+  actor: who.customer4, object: notes.spice, target: dishes.chickenCurry,
 })
 </script>
 
-<FeedStream :items="[reply]" :grouped="false">
+<FeedStream :items="[question]" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
-The quote above comes from the comment's snapshot. Give the Comment model
-this contract (and register its `comment` morph alias as in
+The quote above comes from the note's snapshot. Give the Note model
+this contract (and register its `note` morph alias as in
 [Feedable models](/basics/feedable-models)):
 
 ```php
@@ -90,7 +90,7 @@ use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Comment extends Model implements Feedable
+class Note extends Model implements Feedable
 {
     use InteractsWithFeed;
 
@@ -111,7 +111,7 @@ class Comment extends Model implements Feedable
 and data; your renderer supplies the component.
 
 Saving this model with recording enabled refreshes its shared snapshot through
-`InteractsWithFeed`. All rows referencing the comment then show its edited
+`InteractsWithFeed`. All rows referencing the note then show its edited
 text, without publishing another activity. Implementing `Feedable` without
 the trait requires an explicit snapshot refresh.
 
@@ -123,9 +123,9 @@ use Storyfeed\FeedThread;
 
 Storyfeed::activity()
     ->by($user)
-    ->action('comment', $comment)
-    ->on($document)
-    ->thread(FeedThread::make(text: $comment->body))
+    ->action('discussion.asked', $note)
+    ->on($dish)
+    ->thread(FeedThread::make(text: $note->body))
     ->publish();
 ```
 
@@ -150,12 +150,12 @@ Storyfeed::verbs(['reply' => ActivityType::Create]);
 Storyfeed::activity()
     ->by($user)
     ->action('reply', $discussion)
-    ->on($document)
+    ->on($dish)
     ->thread(FeedThread::make(text: $reply->body))
     ->publish();
 ```
 
-Editing a comment or discussion snapshot does not refresh an existing
+Editing a note or discussion snapshot does not refresh an existing
 `FeedThread`: its text is stored on that activity. Choose whether your app
 keeps the captured words or explicitly updates the activity when speech is
 edited. A latest-reply pulse can replace by discussion and verb; that retention

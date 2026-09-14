@@ -5,32 +5,32 @@ job records the moment the fact happened and the person who caused it. When
 you are done, a worker publishes the same activity a request would have.
 
 <script setup>
-import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
 const late = [
   activity({
-    id: 'qu1', verb: 'submit', glyph: 'file-check',
+    id: 'qu1', verb: 'order.placed', glyph: 'shopping-bag',
     published_at: '2026-08-14T12:05:00.000000Z',
-    headline_template: ':actor submitted :object to :target',
-    actor: who.designer, object: doc.pricing, target: where.main,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.third, target: where.kitchen,
   }),
   group({
-    id: 'qu2', verb: 'submit', axis: 'repeat', count: 2, glyph: 'file-check',
+    id: 'qu2', verb: 'order.placed', axis: 'repeat', count: 2, glyph: 'shopping-bag',
     published_at: '2026-08-13T12:55:00.000000Z',
-    headline_template: ':actor submitted :count documents to :target',
-    actors: [who.designer], targets: [where.main],
-    objects: [doc.report, doc.styleTile],
+    headline_template: ':actor placed :count orders with :target',
+    actors: [who.regular], targets: [where.kitchen],
+    objects: [orders.first, orders.second],
     distinct: { actors: 1, objects: 2, targets: 1 },
   }),
 ]
 
 const dated = [
   group({
-    id: 'qu3', verb: 'submit', axis: 'repeat', count: 3, glyph: 'file-check',
+    id: 'qu3', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
     published_at: '2026-08-13T12:58:00.000000Z',
-    headline_template: ':actor submitted :count documents to :target',
-    actors: [who.designer], targets: [where.main],
-    objects: [doc.report, doc.styleTile, doc.pricing],
+    headline_template: ':actor placed :count orders with :target',
+    actors: [who.regular], targets: [where.kitchen],
+    objects: [orders.first, orders.second, orders.third],
     distinct: { actors: 1, objects: 3, targets: 1 },
   }),
 ]
@@ -62,7 +62,7 @@ class BroadcastActivity implements ShouldQueue
     {
         $activity = $event->activity;        // an ActivitySnapshot: plain values, not a model
 
-        $activity->verb;                     // 'submit'
+        $activity->verb;                     // 'order.placed'
         $activity->object['label'];          // 'pricing-table-final.docx', as it read at publish
         $activity->published_at;             // '2026-08-13T23:58:00+00:00'
         $activity->toPayload();              // the whole snapshot as an array
@@ -106,13 +106,13 @@ does. A listener that needs the fact has it already.
 
 ```php
 // where the fact happens: a controller, an action, a listener
-DB::transaction(function () use ($document, $user) {
-    $document->update(['status' => 'submitted']);
+DB::transaction(function () use ($order, $customer) {
+    $order->update(['status' => 'placed']);
 
     Storyfeed::activity()
         ->by($user)
-        ->action('submit', $document)
-        ->to($document->project)
+        ->action('order.placed', $order)
+        ->to($order->kitchen)
         ->publish();                          // nothing reaches the queue yet
 
     // …a throw here rolls back the activity and pushes no job
@@ -147,7 +147,7 @@ class RecordSubmission implements ShouldQueue
 
     public Carbon $occurredAt;
 
-    public function __construct(public Document $document, public User $user)
+    public function __construct(public Order $order, public User $customer)
     {
         $this->occurredAt = now();            // the fact's time, captured where the fact happened
     }
@@ -155,9 +155,9 @@ class RecordSubmission implements ShouldQueue
     public function handle(): void
     {
         Storyfeed::activity()
-            ->by($this->user)
-            ->action('submit', $this->document)
-            ->to($this->document->project)
+            ->by($this->customer)
+            ->action('order.placed', $this->order)
+            ->to($this->order->project)
             ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran
             ->publish();
     }
@@ -169,7 +169,7 @@ class RecordSubmission implements ShouldQueue
 `publish()` stamps `published_at` with `now()` when nothing else was given.
 In a job that is the moment the worker got to it.
 
-*A user submits two documents at 23:52 and 23:55. A third submission at 23:58
+*A user places two orders at 23:52 and 23:55. A third order at 23:58
 sits in a backlog, and its job runs at 00:05. Without `publishedAt()`:*
 
 <FeedStream :items="late" />
@@ -198,9 +198,9 @@ client.
 
 The entity's snapshot reads the model as it is when the job runs.
 `SerializesModels` puts an identifier on the queue and the worker re-fetches
-the row, so a document renamed between dispatch and execution publishes under
+the row, so an order renamed between dispatch and execution publishes under
 its new name, with the old time. That is the same label the feed shows for
-every other activity about that document: a snapshot is one row per entity,
+every other activity about that order: a snapshot is one row per entity,
 rewritten on every save.
 
 A value the fact needs to keep travels in `data`:
@@ -208,9 +208,9 @@ A value the fact needs to keep travels in `data`:
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($this->user)
-    ->action('submit', $this->document)
-    ->to($this->document->project)
+    ->by($this->customer)
+    ->action('order.placed', $this->order)
+    ->to($this->order->project)
     ->data(['version' => $this->version])     // captured in the constructor, not read in handle()
     ->publishedAt($this->occurredAt)
     ->publish();
@@ -240,9 +240,9 @@ namespace App\Listeners;
 
 class NotifyTeam implements ShouldQueue
 {
-    public function handle(DocumentSubmitted $event): void
+    public function handle(OrderPlaced $event): void
     {
-        Storyfeed::record('submit', object: $event->document);   // names the user who submitted
+        Storyfeed::record('order.placed', object: $event->order);   // names the customer who placed it
     }
 }
 ```
@@ -301,9 +301,9 @@ inline and `Storyfeed::fake()` sees its publish:
 it('records the submission', function () {
     Storyfeed::fake();
 
-    event(new DocumentSubmitted($document, $user));
+    event(new OrderPlaced($order, $customer));
 
-    Storyfeed::assertPublished('submit', $document);
+    Storyfeed::assertPublished('order.placed', $order);
 });
 ```
 
@@ -316,7 +316,7 @@ it('records the submission', function () {
     Storyfeed::fake();
     Queue::fake();
 
-    event(new DocumentSubmitted($document, $user));
+    event(new OrderPlaced($order, $customer));
 
     Queue::assertPushed(CallQueuedListener::class);
     Storyfeed::assertNothingPublished();                  // the job is on the queue, unrun
@@ -324,7 +324,7 @@ it('records the submission', function () {
     $job = Queue::pushed(CallQueuedListener::class)->first();
     app($job->class)->{$job->method}(...$job->data);      // run the listener
 
-    Storyfeed::assertPublished('submit', $document);
+    Storyfeed::assertPublished('order.placed', $order);
 });
 ```
 

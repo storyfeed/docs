@@ -26,72 +26,64 @@
 
 /** People. Rendered as `user` entities linking to /users/{id}. */
 export const USERS = {
-  owner:  'Jasper Tey',
-  commenter: 'Bruce Wayne',
-  editor: 'Sally Nguyen',
-  lead:   'Marcus Webb',
-  designer: 'Nancy Wheeler',
-  producer: 'Deja Williams',
-  reviewer: 'Priya Raman',
-  illustrator: 'Aiko Tanaka',
-  approver: 'Tomás Rivera',
+  cook:      'Nancy Wheeler',
+  owner:     'Jasper Tey',
+  runner:    'Jonathan Byers',
+  regular:   'Steve Harrington',
+  customer2: 'Robin Buckley',
+  customer3: 'Dustin Henderson',
+  customer4: 'Max Mayfield',
+  customer5: 'Lucas Sinclair',
+  newcomer:  'Joyce Byers',
 }
 
-/** Projects — the usual container an activity happens in. */
-export const PROJECTS = {
-  other:             'Port Migration',
-  main:              'Password Crackdown',
-  third:             'Metaverse Pivot',
-  created:           'Bird Removal',
-  fourth:            'Verification Tiers',
+/** Places: the containers an activity happens in. */
+export const PLACES = {
+  kitchen: "Nancy's Kitchen",
+  table:   'the Saturday table',
+  menu:    'the dinner menu',
 }
 
-/** Clients, one level above a project. */
-export const CLIENTS = {
-  main:  'Chirp',
+/** Dishes. The label is the app's own form: code, then name. */
+export const DISHES = {
+  chickenCurry: 'N101 Chicken Curry',
+  dhal:         'N102 Dhal Curry',
+  friedRice:    'N201 Vegetable Fried Rice',
+  kottu:        'N203 Chicken Kottu',
+  cutlets:      'N301 Fish Cutlets',
+  roti:         'N302 Coconut Roti',
+  lassi:        'N401 Mango Lassi',
 }
 
-/** Files. The label is the filename, which is what a real snapshot stores. */
-export const DOCUMENTS = {
-  report:                'annual-report-v3.fig',
-  styleTile:              'style-tile-rev-a.sketch',
-  pricing:               'pricing-table-final.docx',
-  signage:               'signage-plan-rev-b.fig',
-  signageCopy:           'signage-plan-client-copy.fig',
-  wireframes:            'wireframes-wip.sketch',
-  motionTest:            'motion-test-rev-b.docx',
-  motionTestCopy:        'motion-test-client-copy.pdf',
-  heroDesktop:           'hero-desktop-rev-b.docx',
-  heroMobile:             'hero-mobile-rev-a.fig',
-  tokens:                'colour-tokens-v1.fig',
-  tokensFinal:           'colour-tokens-final-2.sketch',
-  proofSheet:            'proof-sheet-final-2.png',
-  wordmark:              'wordmark-v3.png',
-  expenses:              'expense-report-q3.pdf',
-  thread:                'the spacing scale thread',
+/** Orders. The label is what the app prints on a ticket. */
+export const ORDERS = {
+  first:  'Order #1042',
+  second: 'Order #1043',
+  third:  'Order #1044',
+  fourth: 'Order #1045',
+  fifth:  'Order #1046',
 }
 
-/** Tasks. The label is the task title. */
-export const TASKS = {
-  storyboard:              'Storyboard the icon library',
-  simplify:                'Simplify the wordmark',
-  altText:                 'Rebuild the alt text',
-  kerningMotion:           'Kerning pass on the motion tests',
-  kerningPricing:          'Kerning pass on the pricing table',
-  audit:                   'Audit the colour tokens',
-  rewriteHero:             'Rewrite the hero images',
-  rewritePrint:            'Rewrite the print specimen',
-  redraw:                  'Redraw the signage mock-ups',
+/** Kitchen devices. */
+export const DEVICES = {
+  ipad:    "Nancy's iPad",
+  display: 'Kitchen display',
+}
+
+/** Photos. The label is the file name, which is what a snapshot stores. */
+export const PHOTOS = {
+  curry: 'chicken-curry.jpg',
+  kottu: 'chicken-kottu.jpg',
 }
 
 /** Parties: named participants with no model in the app. */
 export const PARTIES = {
-  service: 'Concur Web Service',
+  service: 'Stripe',
 }
 
-/** Comment bodies. A comment has no name, so its label is its text —
- * truncated to 80 characters the way the demo app's Comment::toFeed() does. */
-export const COMMENTS = {
-  first:      'The mobile breakpoint eats the caption — the older version handled this better. Can we go back to the two-line treatment?',
-  second:     'Second page still overflows on the print stylesheet.',
+/** Notes: what a customer or the cook wrote on an order or a dish. A note has
+ * no name, so its label is its text. */
+export const NOTES = {
+  spice:  'Less chili in the chicken curry next time? It was perfect otherwise.',
+  pickup: 'Can I pick this up at six instead of seven?',
 }

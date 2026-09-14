@@ -1,127 +1,100 @@
 # Usage Examples
 
 <script setup>
-import { who, where, doc, note, entity, activity, group, party, scenes } from '../.vitepress/theme/samples'
-
-const designer = who.designer
-const reviewer = who.reviewer
-const crackdown = where.main
-const report = doc.report
-
-const upload = activity({
-  id: 'i1', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: designer, object: report, target: crackdown,
-})
+import { who, where, orders, dishes, party, activity, group, scenes } from '../.vitepress/theme/samples'
 
 const burst = group({
-  id: 'i2', verb: 'upload', axis: 'repeat', count: 7, glyph: 'file-up',
+  id: 'i2', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :count files to :target',
-  actors: [designer], targets: [crackdown],
-  objects: [
-    report,
-    doc.signage,
-    doc.pricing,
-  ],
-  distinct: { actors: 1, objects: 7, targets: 1 },
+  headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
+  distinct: { actors: 1, objects: 3, targets: 1 },
 })
 
 const crowd = group({
-  id: 'i7', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
-  published_at: '2026-08-14T14:31:00.000000Z',
-  headline_template: ':actors uploaded :count files to :target',
-  actors: [who.designer, who.lead, who.reviewer], targets: [crackdown],
+  id: 'i7', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+  published_at: '2026-08-14T14:35:00.000000Z',
+  headline_template: ':actors placed :count orders with :target',
+  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 
-const story = group({
-  id: 'i8', verb: 'approve', axis: 'composite', count: 2, glyph: 'file-check',
-  published_at: '2026-08-14T14:20:00.000000Z',
-  headline_template: ':actor approved :count files in :context',
-  actors: [who.approver], contexts: [where.other],
-  objects: [doc.wordmark, doc.heroMobile],
-  distinct: { actors: 1, objects: 2, contexts: 1 },
+const menu = group({
+  id: 'i8', verb: 'menu.dish_live', axis: 'composite', count: 2, glyph: 'chef-hat',
+  published_at: '2026-08-14T09:20:00.000000Z',
+  headline_template: ':actor put :count dishes on the menu',
+  actors: [who.cook],
+  objects: [dishes.cutlets, dishes.roti],
+  distinct: { actors: 1, objects: 2 },
 })
 
-const external = activity({
-  id: 'i9', verb: 'sync', glyph: 'refresh-cw',
-  published_at: '2026-08-14T13:55:00.000000Z',
-  headline_template: ':actor synced :object to :target',
-  actor: party.service,
-  object: doc.expenses, target: crackdown,
+const paid = activity({
+  id: 'i9', verb: 'payment.received', glyph: 'credit-card',
+  published_at: '2026-08-14T14:32:00.000000Z',
+  headline_template: ':actor marked :object paid',
+  actor: party.service, object: orders.first,
 })
-
-const reply = activity({
-  id: 'i3', verb: 'comment', glyph: 'message-circle',
-  published_at: '2026-08-14T14:28:00.000000Z',
-  headline_template: ':actor commented on :target',
-  actor: reviewer,
-  object: note.second,
-  target: report,
-})
-
 </script>
 
 ## A Single Activity
 
-A user uploads a document to a project.
+A customer places an order with the kitchen.
 
 <<< @/snippets/publish.php
 
-<FeedStream :items="[scenes.upload]" :grouped="false" />
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
 ## Consecutive Activities
 
-The same user uploads seven documents to that project, one after another.
+The same customer places three orders, one after another.
 
 ```php
-// where the fact happens: a controller, an action, a listener
-foreach ($documents as $document) {
+// where the order is placed: a controller, an action, a listener
+foreach ($orders as $order) {
     Storyfeed::activity()
-        ->by($user)
-        ->action('upload', $document)
-        ->to($project)
+        ->by($customer)
+        ->action('order.placed', $order)
+        ->to($kitchen)
         ->publish();
 }
 ```
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## Concurrent Activities on One Project
+## Concurrent Activities in One Kitchen
 
-Five users upload to the same project, each from their own request, minutes apart.
-Nothing coordinates them.
+Five customers order from the same kitchen, each from their own request,
+minutes apart. Nothing coordinates them.
 
 ```php
-// Ines, 14:31
+// Steve, 14:31
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $order)
+    ->to($kitchen)
     ->publish();
 ```
 
 *a minute later, another request*
 
 ```php
-// Marcus, 14:32
+// Robin, 14:32
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $order)
+    ->to($kitchen)
     ->publish();
 ```
 
 *three minutes later, another request*
 
 ```php
-// Priya, 14:35
+// Dustin, 14:35
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $order)
+    ->to($kitchen)
     ->publish();
 ```
 
@@ -131,22 +104,19 @@ Each call knows only its own activity. On the feed:
 
 ## One Activity About Several Objects
 
-A user approves two documents at once.
+The cook puts two dishes on the menu at once.
 
 ```php
-// app/Http/Controllers/ApproveDocumentsController.php
-public function store(Request $request, Project $project)
+// app/Http/Controllers/PublishDishesController.php
+public function store(Request $request)
 {
-    $documents = $project->documents()
-        ->whereIn('id', $request->array('documents'))
-        ->get();
+    $dishes = MenuItem::whereIn('id', $request->array('dishes'))->get();
 
-    // Two documents, one decision, one row.
+    // Two dishes, one decision, one row.
     Storyfeed::activity()
         ->by($request->user())
-        ->action('approve')
-        ->objects($documents)
-        ->context($project)
+        ->action('menu.dish_live')
+        ->objects($dishes)
         ->publish();
 
     return back();
@@ -154,40 +124,39 @@ public function store(Request $request, Project $project)
 ```
 
 `objects()` takes several models for **one** activity. That is the difference
-between this and the loop further up: seven `publish()` calls are seven
+between this and the loop further up: three `publish()` calls are three
 activities that a reader sees collapsed, while this is a single activity that
-happens to name two documents. Approving two files in one click is one fact.
+happens to name two dishes. Publishing two dishes in one click is one fact.
 
-<FeedStream :items="[story]" :grouped="false" />
+<FeedStream :items="[menu]" :grouped="false" />
 
 ## A Participant With No Model
 
-An external service pushes a document into a project, and it has no row in your
-database to point at.
+A payment provider reports an order paid, and it has no row in your database
+to point at.
 
 ```php
-// where the fact happens: a controller, an action, a listener
+// app/Http/Controllers/StripeWebhookController.php
 Storyfeed::activity()
-    ->by('Concur Web Service')
-    ->action('sync', $document)
-    ->to($project)
+    ->by('Stripe')
+    ->action('payment.received', $order)
     ->publish();
 ```
 
-<FeedStream :items="[external]" :grouped="false" />
+<FeedStream :items="[paid]" :grouped="false" />
 
 ## Choosing the Preposition
 
-Say the sentence out loud first. You comment **on** a document, share it
-**with** someone, move it **into** a folder, upload it **to** a project, create
-a project **for** a client. The code takes the same word:
+Say the sentence out loud first. You place an order **with** a kitchen, ask
+**about** a dish, send a note **about** an order, pair a device **to** a
+display, add a dish **to** the menu. The code takes the same word:
 
 ```php
-->by($user)->action('comment', $comment)->on($document)
-->by($user)->action('share', $document)->with($teammate)
-->by($user)->action('move', $document)->into($folder)
-->by($user)->action('upload', $document)->to($project)
-->by($user)->action('create', $project)->for($client)
+->by($customer)->action('order.placed', $order)->with($kitchen)
+->by($customer)->action('discussion.asked', $note)->on($dish)
+->by($cook)->action('device.paired', $ipad)->to($display)
+->by($cook)->action('menu.dish_added', $dish)->into($menu)
+->by($customer)->action('people.joined')->in($table)
 ```
 
 **All five prepositions do exactly the same thing.** They set the last
@@ -198,51 +167,10 @@ can write the line that matches what you would say.
 Here is the first line with nothing dressed up. It stores a byte-identical row:
 
 ```php
-->actor($user)->verb('comment', $comment)->target($document)
+->actor($customer)->verb('order.placed', $order)->target($kitchen)
 ```
 
-Neither is the correct one. Use whichever you would rather read in six months —
+Neither is the correct one. Use whichever you would rather read in six months,
 and if no preposition fits your verb, `target()` always does.
 
-[Recording](/basics/recording) lists every role and every word for it.
-
-## A Body Supplied by the Object
-
-Everything above is one call. This one is two places, and that is the point: the
-activity records *what happened*, and the model says *what it looks like when
-something reads it back*.
-
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('comment', $comment)
-    ->on($document)
-    ->publish();
-```
-
-Nothing there mentions the comment's text. The text arrives because the comment
-model answers for itself:
-
-```php
-// app/Models/Comment.php
-public function toFeed(): FeedEntity
-{
-    return FeedEntity::make(
-        label: $this->body,
-        component: 'Note',
-        data: ['excerpt' => $this->body],
-    );
-}
-```
-
-`component` names a body component your renderer resolves; `data` is yours and
-core never reads it. So the row below draws the comment without the recording
-call having carried a word of it:
-
-<FeedStream :items="[reply]" :grouped="false">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedStream>
-
-Worth knowing rather than doing on day one — a feed works without it, and every
-other example on this page does.
+[Recording Activities](/basics/recording) lists every role and every word for it.

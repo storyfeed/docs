@@ -1,6 +1,6 @@
-// where the upload happens: a controller, an action, a listener
+// where the order is placed: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document)
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $order)
+    ->to($kitchen)
     ->publish();

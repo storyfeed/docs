@@ -1,28 +1,23 @@
 # Activity Types & Verbs
 
 <script setup>
-import { who, where, doc, activity } from '../.vitepress/theme/samples'
+import { scenes } from '../.vitepress/theme/samples'
 
-const uploaded = activity({
-  id: 'v1', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer, object: doc.report, target: where.main,
-})
+const placed = scenes.order
 </script>
 
 Activity types are a way to classify activities, and are usually expressed as verbs denoting the action that occurred.
 
 ## Using Strings
 
-<FeedStream :items="[uploaded]" :grouped="false" />
+<FeedStream :items="[placed]" :grouped="false" />
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload', $document) // [!code focus]
-    ->to($project)
+    ->by($customer)
+    ->action('order.placed', $order) // [!code focus]
+    ->to($kitchen)
     ->publish();
 ```
 
@@ -38,11 +33,11 @@ common pattern is to define your verbs within an enum,
 
 namespace App\Enums;
 
-enum ActivityVerb: string
+enum OrderActivity: string
 {
-    case Upload = 'upload';
-    case Comment = 'comment';
-    case Confirm = 'confirm';
+    case Placed = 'order.placed';
+    case Confirmed = 'order.confirmed';
+    case Ready = 'order.ready';
 }
 ```
 
@@ -56,13 +51,13 @@ namespace App\Enums;
 use Storyfeed\Concerns\AsFeedVerb; // [!code focus]
 use Storyfeed\Contracts\FeedVerb; // [!code focus]
 
-enum ActivityVerb: string implements FeedVerb // [!code focus]
+enum OrderActivity: string implements FeedVerb // [!code focus]
 {
     use AsFeedVerb; // [!code focus]
 
-    case Upload = 'upload';
-    case Comment = 'comment';
-    case Confirm = 'confirm';
+    case Placed = 'order.placed';
+    case Confirmed = 'order.confirmed';
+    case Ready = 'order.ready';
 }
 ```
 
@@ -70,8 +65,8 @@ to allow fluent recording of activities using the enum:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-ActivityVerb::Comment->by($user)
-    ->object($comment)
-    ->to($project)
+OrderActivity::Placed->by($customer)
+    ->object($order)
+    ->to($kitchen)
     ->publish();
 ```

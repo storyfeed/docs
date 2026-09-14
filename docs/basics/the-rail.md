@@ -21,26 +21,26 @@ badge on its lower corner. Each holds the actor, the activity, or nothing, and
 the two never hold the same thing.
 
 <script setup>
-import { who, where, doc, note, activity } from '../.vitepress/theme/samples'
+import { who, where, orders, notes, activity } from '../.vitepress/theme/samples'
 
 const history = [
   activity({
-    id: 'r1', verb: 'approve', glyph: 'circle-check',
+    id: 'r1', verb: 'order.completed', glyph: 'receipt',
     published_at: '2026-08-14T14:40:00.000000Z',
-    headline_template: ':actor approved :object',
-    actor: who.lead, object: doc.report,
+    headline_template: ':actor completed :object',
+    actor: who.cook, object: orders.first,
   }),
   activity({
-    id: 'r2', verb: 'submit', glyph: 'file-check',
+    id: 'r2', verb: 'order.placed', glyph: 'shopping-bag',
     published_at: '2026-08-14T14:20:00.000000Z',
-    headline_template: ':actor submitted :object to :target',
-    actor: who.designer, object: doc.report, target: where.main,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.first, target: where.kitchen,
   }),
   activity({
-    id: 'r3', verb: 'comment', glyph: 'message-circle',
+    id: 'r3', verb: 'order.noted', glyph: 'message-circle',
     published_at: '2026-08-14T13:05:00.000000Z',
-    headline_template: ':actor commented on :object',
-    actor: who.commenter, object: doc.report,
+    headline_template: ':actor sent a note about :object',
+    actor: who.regular, object: orders.first,
   }),
 ]
 </script>
@@ -67,7 +67,7 @@ const history = [
 | Configuration | Primary | Secondary | Suits |
 |---|---|---|---|
 | `actor` | actor | activity | the default — an unscoped feed: a dashboard, a hub, a home page |
-| `activity` | activity | actor | a feed scoped to one record — an order, a document, an approval chain |
+| `activity` | activity | actor | a feed scoped to one record — an order, a dish, a customer |
 | `activity-only` | activity | none | a feed whose actor is effectively constant — one person's own history, an import log |
 | `actor-only` | actor | none | a feed with no useful glyph — a comment thread, a single-verb feed |
 
@@ -79,7 +79,7 @@ configuration, and the choice is which fact occupies it.
 
 > Flip when the feed already has a subject.
 
-A document's history is scoped to one document. The reader knows the subject
+An order's history is scoped to one order. The reader knows the subject
 before they start, so the varying fact is what happened and the activity is what
 they scan for — `activity`. A dashboard has no subject, and the actor is how a
 reader orients in it — `actor`, which is why `actor` is the default.
@@ -102,8 +102,8 @@ of `glyph` on every node:
 
 ```json
 {
-  "verb": "approve",
-  "glyph": "circle-check",
+  "verb": "order.completed",
+  "glyph": "receipt",
   "glyph_intent": "success"
 }
 ```
@@ -119,9 +119,9 @@ allowed, resolved most-specific first:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::glyphIntents([
-    '*.approve' => 'success',   // the app's own word, not the package's
-    '*.submit'  => 'pending',
-    '*.expire'  => 'danger',
+    '*.order.completed' => 'success',   // the app's own word, not the package's
+    '*.order.placed'    => 'pending',
+    '*.order.cancelled' => 'danger',
 ]);
 ```
 
@@ -146,12 +146,12 @@ Intents resolve on their own registry, so a wildcard is stated once:
 
 | Key | Matches |
 |---|---|
-| `document.approve` | that verb on that object type |
-| `document.*` | every verb on that object type |
-| `*.approve` | that verb on any object type |
+| `order.order.completed` | that verb on that object type |
+| `order.*` | every verb on that object type |
+| `*.order.completed` | that verb on any object type |
 | `*.*` | everything with no more specific entry |
 
-Most verbs have no intent, and that is the common case. An upload is not a
+Most verbs have no intent, and that is the common case. A placed order is not yet a
 success or a failure, so `glyph_intent` is `null` and the disc renders plain —
 which is what every node carries until an app registers its first intent.
 

@@ -2,41 +2,37 @@
 
 A Story is the blueprint for one type of activity: its verb, its headline, its
 icon and how it groups, in one class. Publishing through it produces the
-activity. When you are done, each activity type your app records has one class
-that says everything about it.
+activity. Nothing about a feed requires one; a Story is where an app with
+many verbs keeps each verb's facts together.
 
 <script setup>
-import { who, where, doc, note, firm, job, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:30:00.000000Z'
 
-const uploaded = activity({ id: 's1', verb: 'upload',
-  published_at: at,
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer, object: doc.report, target: where.main })
+const placed = activity({ ...scenes.order, id: 's1', glyph: null })
+const placedWithIcon = scenes.order
 
-const uploadedWithIcon = activity({ ...uploaded, id: 's2', glyph: 'file-up' })
-
-const grouped = group({ id: 's3', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+const grouped = group({ id: 's3', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: at,
-  headline_template: ':actor uploaded :count files to :target',
-  actors: [who.designer], targets: [where.main],
-  objects: [doc.report, doc.signage, doc.pricing],
+  headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 
 const examples = [
-  activity({ id: 's4', verb: 'comment', glyph: 'message-circle',
+  activity({ id: 's4', verb: 'discussion.asked', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
-    headline_template: ':actor commented on :target',
-    actor: who.reviewer, object: note.second, target: doc.report }),
-  activity({ id: 's5', verb: 'complete', glyph: 'square-check',
+    headline_template: ':actor asked about :target',
+    actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
+  activity({ id: 's5', verb: 'order.completed', glyph: 'receipt',
     published_at: '2026-08-14T14:25:00.000000Z',
     headline_template: ':actor completed :object',
-    actor: who.lead, object: job.simplify }),
-  activity({ id: 's6', verb: 'create', glyph: 'folder',
-    published_at: '2026-08-14T14:20:00.000000Z',
-    headline_template: ':actor created the project :object for :target',
-    actor: who.designer, object: where.created, target: firm.main }),
+    actor: who.cook, object: orders.first }),
+  activity({ id: 's6', verb: 'menu.dish_live', glyph: 'chef-hat',
+    published_at: '2026-08-14T09:00:00.000000Z',
+    headline_template: ':actor put :object on the menu',
+    actor: who.cook, object: dishes.kottu }),
 ]
 </script>
 
@@ -49,19 +45,19 @@ The verb and the headline it renders with, in one class:
 
 namespace App\Stories;
 
-use App\Models\Document;
+use App\Models\Order;
 use Storyfeed\Contracts\FeedVerb;
 use Storyfeed\Story;
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 }
 ```
@@ -69,14 +65,14 @@ class DocumentWasUploaded extends Story
 Publish through it and the activity arrives with its headline:
 
 ```php
-// where the fact happens: a controller, an action, a listener
-DocumentWasUploaded::activity($document)
-    ->by($user)
-    ->to($project)
+// where the order is placed: a controller, an action, a listener
+OrderWasPlaced::activity($order)
+    ->by($customer)
+    ->to($kitchen)
     ->publish();
 ```
 
-<FeedStream :items="[uploaded]" :grouped="false" />
+<FeedStream :items="[placed]" :grouped="false" />
 
 The tokens name roles, never models: `:actor`, `:object`, `:target`,
 `:context`. Each becomes the label of the entity in that role.
@@ -84,13 +80,13 @@ The tokens name roles, never models: `:actor`, `:object`, `:target`,
 ## Generating and Registering
 
 ```bash
-php artisan make:story DocumentWasUploaded
+php artisan make:story OrderWasPlaced
 ```
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::stories([
-    DocumentWasUploaded::class,
+    OrderWasPlaced::class,
 ]);
 ```
 
@@ -101,31 +97,31 @@ Storyfeed::stories([
 
 namespace App\Stories;
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 
     public function icon(): ?string // [!code focus]
     { // [!code focus]
-        return 'file-up'; // [!code focus]
+        return 'shopping-bag'; // [!code focus]
     } // [!code focus]
 }
 ```
 
-<FeedStream :items="[uploadedWithIcon]" :grouped="false" />
+<FeedStream :items="[placedWithIcon]" :grouped="false" />
 
 The icon is a token; your renderer maps it onto an icon set it owns.
 
 ## Grouping Repeats
 
-Three uploads in a row read better as one line. `groups()` gives the story a
+Three orders in a row read better as one line. `groups()` gives the story a
 plural headline for that case:
 
 ```php
@@ -135,26 +131,26 @@ namespace App\Stories;
 
 use Storyfeed\Grouping\Group; // [!code focus]
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 
     public function icon(): ?string
     {
-        return 'file-up';
+        return 'shopping-bag';
     }
 
     public function groups(): array // [!code focus]
     { // [!code focus]
         return [ // [!code focus]
-            Group::repeat()->headline(':actor uploaded :count files to :target'), // [!code focus]
+            Group::repeat()->headline(':actor placed :count orders with :target'), // [!code focus]
         ]; // [!code focus]
     } // [!code focus]
 }
@@ -168,7 +164,7 @@ group.
 
 ## Anatomy
 
-| Member | Required |  |
+| Member | Required | |
 |---|---|---|
 | `$objectType` | yes | a model class (recommended), a morph alias, an array of either, or `'*'` for object-less activities |
 | `$verb` | yes | a verb string or a `FeedVerb` enum case |
@@ -182,16 +178,16 @@ explicit; the name is for the reader.
 
 ::: tip Naming
 `{Object}Was{Verbed}` reads well when the object is the patient
-(`DocumentWasUploaded`). For reflexive activities, write what happened:
-`MemberJoined`, not `MemberWasJoined`.
+(`OrderWasPlaced`). For reflexive activities, write what happened:
+`CustomerJoined`, not `CustomerWasJoined`.
 :::
 
 ## Examples
 
-Three stories in the shapes production apps use. Which role the sentence names
-is the decision each one makes.
+Three stories in the shapes a production kitchen app uses. Which role the
+sentence names is the decision each one makes.
 
-The object is the comment, but its label is the comment text, so the sentence
+The object is the note, but its label is the note's text, so the sentence
 names the target:
 
 ```php
@@ -199,15 +195,19 @@ names the target:
 
 namespace App\Stories;
 
-class CommentWasLeft extends Story
-{
-    public string|array|null $objectType = Comment::class;
+use App\Models\Note;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Story;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'comment';
+class QuestionWasAsked extends Story
+{
+    public string|array|null $objectType = Note::class;
+
+    public string|FeedVerb|BackedEnum|null $verb = 'discussion.asked';
 
     public function headline(): string
     {
-        return ':actor commented on :target';
+        return ':actor asked about :target';
     }
 
     public function icon(): ?string
@@ -217,18 +217,22 @@ class CommentWasLeft extends Story
 }
 ```
 
-A task has no target; the sentence ends at the object:
+A completed order has no target; the sentence ends at the object:
 
 ```php
 <?php
 
 namespace App\Stories;
 
-class TaskWasCompleted extends Story
-{
-    public string|array|null $objectType = Task::class;
+use App\Models\Order;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Story;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'complete';
+class OrderWasCompleted extends Story
+{
+    public string|array|null $objectType = Order::class;
+
+    public string|FeedVerb|BackedEnum|null $verb = 'order.completed';
 
     public function headline(): string
     {
@@ -237,32 +241,37 @@ class TaskWasCompleted extends Story
 
     public function icon(): ?string
     {
-        return 'square-check';
+        return 'receipt';
     }
 }
 ```
 
-A project is created for a client, so the client is the target:
+A dish goes on the menu, and the menu is a fixed word in the sentence rather
+than a role:
 
 ```php
 <?php
 
 namespace App\Stories;
 
-class ProjectWasCreated extends Story
-{
-    public string|array|null $objectType = Project::class;
+use App\Models\MenuItem;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Story;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'create';
+class DishWentLive extends Story
+{
+    public string|array|null $objectType = MenuItem::class;
+
+    public string|FeedVerb|BackedEnum|null $verb = 'menu.dish_live';
 
     public function headline(): string
     {
-        return ':actor created the project :object for :target';
+        return ':actor put :object on the menu';
     }
 
     public function icon(): ?string
     {
-        return 'folder';
+        return 'chef-hat';
     }
 }
 ```

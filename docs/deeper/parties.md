@@ -1,14 +1,14 @@
 # Parties & Anonymous Actors
 
 <script setup>
-import { who, where, doc, entity, activity, party } from '../.vitepress/theme/samples'
+import { orders, party, activity } from '../.vitepress/theme/samples'
 
-const synced = activity({
-  id: 'pt1', verb: 'sync', glyph: 'refresh-cw',
-  published_at: '2026-08-14T13:55:00.000000Z',
-  headline_template: ':actor synced :object to :target',
+const paid = activity({
+  id: 'pt1', verb: 'payment.received', glyph: 'credit-card',
+  published_at: '2026-08-14T14:32:00.000000Z',
+  headline_template: ':actor marked :object paid',
   actor: party.service,
-  object: doc.expenses, target: where.main,
+  object: orders.first,
 })
 </script>
 
@@ -25,18 +25,18 @@ Two different things that both look like "not a user":
 // where the fact happens: a controller, an action, a listener
 $party = Storyfeed::party('Stripe');
 
-Storyfeed::record('sync', $invoice, actor: $party);
+Storyfeed::record('payment.received', $order, actor: $party);
 ```
 
-<FeedStream :items="[synced]" :grouped="false" />
+<FeedStream :items="[paid]" :grouped="false" />
 
 Parties work in **any** role — actor, object, target, context, origin, result, or instrument:
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->action('notify', $invoice)
-    ->to(Storyfeed::party('Accounts Payable'))
+    ->action('order.on_the_way', $order)
+    ->to(Storyfeed::party('Front desk'))
     ->publish();
 ```
 
@@ -49,7 +49,7 @@ Inside a job or console command there is no authenticated user. Scope a block:
 ```php
 // a job, or a console command
 Storyfeed::as('System', function () {
-    Storyfeed::record('sync', object: $invoice);
+    Storyfeed::record('order.cancelled', object: $order);
 });
 ```
 
@@ -80,7 +80,7 @@ earlier resolves ordinary grammar for an actorless activity.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::actorlessGrammar([
-    'confirm' => ':object was confirmed', // exact verb, not objectType.verb
+    'order.confirmed' => ':object was confirmed', // exact verb, not objectType.verb
 ]);
 ```
 

@@ -2,14 +2,14 @@
 
 namespace App\Listeners;
 
-class RecordUpload
+class RecordOrderPlaced
 {
-    public function handle(DocumentUploaded $event): void
+    public function handle(OrderPlaced $event): void
     {
         Storyfeed::activity()
-            ->by($event->user)
-            ->action('upload', $event->document)
-            ->to($event->document->project)
+            ->by($event->customer)
+            ->action('order.placed', $event->order)
+            ->to($event->order->kitchen)
             ->publish();
     }
 }

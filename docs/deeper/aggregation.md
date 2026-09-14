@@ -6,35 +6,35 @@ one line reads as. When you are done, bursts of activity arrive as group nodes
 with headlines you authored.
 
 <script setup>
-import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:30:00.000000Z'
-const upload = (id, actor, object) => activity({ id, verb: 'upload', glyph: 'file-up',
-  published_at: at, headline_template: ':actor uploaded :object to :target',
-  actor, object, target: where.main })
+const placed = (id, actor, object) => activity({ id, verb: 'order.placed', glyph: 'shopping-bag',
+  published_at: at, headline_template: ':actor placed :object with :target',
+  actor, object, target: where.kitchen })
 
 const log = [
-  upload('ag1', who.designer, doc.pricing),
-  upload('ag2', who.designer, doc.signage),
-  upload('ag3', who.designer, doc.report),
+  placed('ag1', who.regular, orders.third),
+  placed('ag2', who.regular, orders.second),
+  placed('ag3', who.regular, orders.first),
 ]
 
-const repeat = group({ id: 'ag4', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
-  published_at: at, headline_template: ':actor uploaded :count files to :target',
-  actors: [who.designer], targets: [where.main],
-  objects: [doc.pricing, doc.signage, doc.report],
+const repeat = group({ id: 'ag4', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+  published_at: at, headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 
-const actors = group({ id: 'ag5', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
-  published_at: at, headline_template: ':actors uploaded :count files to :target',
-  actors: [who.designer, who.lead, who.reviewer], targets: [where.main],
-  objects: [doc.pricing, doc.signage, doc.report],
+const actors = group({ id: 'ag5', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+  published_at: at, headline_template: ':actors placed :count orders with :target',
+  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
+  objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 5, objects: 5, targets: 1 } })
 </script>
 
 ## Grouping Repeats
 
-Three uploads by one person, minutes apart, as a log:
+Three orders from one customer, minutes apart, as a log:
 
 <FeedStream :items="log" :grouped="false" />
 
@@ -45,25 +45,25 @@ A Story's `groups()` says how they read as one:
 
 namespace App\Stories;
 
-use App\Models\Document;
+use App\Models\Order;
 use Storyfeed\Grouping\Group; // [!code focus]
 use Storyfeed\Story;
 
-class DocumentWasUploaded extends Story
+class OrderWasPlaced extends Story
 {
-    public string|array|null $objectType = Document::class;
+    public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
 
     public function headline(): string
     {
-        return ':actor uploaded :object to :target';
+        return ':actor placed :object with :target';
     }
 
     public function groups(): array // [!code focus]
     { // [!code focus]
         return [ // [!code focus]
-            Group::repeat()->headline(':actor uploaded :count files to :target'), // [!code focus]
+            Group::repeat()->headline(':actor placed :count orders with :target'), // [!code focus]
         ]; // [!code focus]
     } // [!code focus]
 }
@@ -73,15 +73,15 @@ class DocumentWasUploaded extends Story
 
 ## Grouping Along Another Axis
 
-Five people uploading to the same project is a different shape, and a
+Five customers ordering from the same kitchen is a different shape, and a
 different sentence. Each `Group` names an **axis**, the dimension it collapses:
 
 ```php
 public function groups(): array
 {
     return [
-        Group::byActors()->headline(':actors uploaded :count files to :target'), // [!code focus]
-        Group::repeat()->headline(':actor uploaded :count files to :target'),
+        Group::byActors()->headline(':actors placed :count orders with :target'), // [!code focus]
+        Group::repeat()->headline(':actor placed :count orders with :target'),
     ];
 }
 ```
@@ -95,10 +95,10 @@ when the activity is published, never per request.
 
 | Axis | Collapses | Pins (Safe Singular Tokens) | Example Headline |
 |---|---|---|---|
-| `repeat` | one actor repeating a verb | `:actor` `:target` | ":actor uploaded :count files to :target" |
-| `actors` | many actors, same verb and target | `:target` | ":actors uploaded :count files to :target" |
-| `targets` | one actor across targets | `:actor` | ":actor commented in :targets" |
-| `object` | many actions on one object | `:actor` `:object` | ":actor made :count revisions to :object" |
+| `repeat` | one actor repeating a verb | `:actor` `:target` | ":actor placed :count orders with :target" |
+| `actors` | many actors, same verb and target | `:target` | ":actors placed :count orders with :target" |
+| `targets` | one actor across targets | `:actor` | ":actor asked about :targets" |
+| `object` | many actions on one object | `:actor` `:object` | ":actor changed the price of :object :count times" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
 
 A singular token is safe on an axis only where the axis pins that role; the
@@ -123,7 +123,7 @@ Below threshold, activities stay atomic. Thresholds apply at publish time, so
 a change is not retroactive; `storyfeed:curate` re-applies it, rewriting
 settled history and bumping the `sync_token`.
 
-If uploads to different targets do not group under `repeat`, that is the axis
+If orders placed with different kitchens do not group under `repeat`, that is the axis
 working: `repeat` keys on the target, and `targets` is the axis that leaves it
 free. A role a key leaves free may also be absent on some members, which is
 what a plural token [does and does not promise](/deeper/grammar#members-that-did-not-fill-a-role).

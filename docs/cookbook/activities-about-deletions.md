@@ -6,33 +6,33 @@ A removal story that still renders after the row it is about is gone.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('document.remove', $project)     // object: the parent, which survives
-    ->data(['name' => $document->name])       // the removed thing travels as text
+    ->action('menu.dish_removed', $menu)      // object: the parent, which survives
+    ->data(['name' => $dish->name])           // the removed thing travels as text
     ->publish();
 
-$document->delete();
+$dish->delete();
 ```
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'document.remove' => ActivityType::Remove,
+    'menu.dish_removed' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
-    'project.document.remove' => ':actor removed a document from :object',
+    '*.menu.dish_removed' => ':actor removed a dish from :object',
 ]);
 ```
 
 <script setup>
-import { who, where, doc, activity } from '../.vitepress/theme/samples'
+import { who, where, dishes, activity } from '../.vitepress/theme/samples'
 
 const removed = activity({
-  id: 'ck8', verb: 'document.remove', glyph: 'archive',
+  id: 'ck8', verb: 'menu.dish_removed', glyph: 'circle-x',
   published_at: '2026-08-14T17:05:00.000000Z',
-  headline_template: ':actor removed a document from :object',
-  actor: who.designer, object: where.main,
-  data: { name: doc.report.label },
+  headline_template: ':actor removed a dish from :object',
+  actor: who.cook, object: where.menu,
+  data: { name: dishes.cutlets.label },
 })
 </script>
 
@@ -59,7 +59,7 @@ around a media or discussion row does not receive the underlying model’s
 delete events automatically. Decide whether those activities should survive
 and wire any cleanup explicitly.
 
-Bulk query deletes, such as `Document::where(...)->delete()`, do not dispatch
+Bulk query deletes, such as `MenuItem::where(...)->delete()`, do not dispatch
 individual model events and therefore do not run this cascade.
 
 The lifecycle hooks are in
@@ -67,5 +67,5 @@ The lifecycle hooks are in
 
 ## A Soft Delete Is a Delete
 
-`$document->delete()` on a soft-deleting model using the trait fires the same
+`$dish->delete()` on a soft-deleting model using the trait fires the same
 hook and soft-deletes the activities. Restoring the model does not restore them.

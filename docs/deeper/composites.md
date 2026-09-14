@@ -1,30 +1,29 @@
 # Composites
 
 <script setup>
-import { who, where, doc, group } from '../.vitepress/theme/samples'
+import { who, dishes, group } from '../.vitepress/theme/samples'
 
 const authored = group({
-  id: 'cp1', verb: 'upload', axis: 'composite', count: 2, glyph: 'file-up',
-  published_at: '2026-08-14T14:20:00.000000Z',
-  headline_template: ':actor uploaded :count files to :target',
-  actors: [who.approver], targets: [where.other],
-  objects: [doc.wordmark, doc.heroMobile],
-  distinct: { actors: 1, objects: 2, targets: 1 },
+  id: 'cp1', verb: 'menu.dish_live', axis: 'composite', count: 2, glyph: 'chef-hat',
+  published_at: '2026-08-14T09:20:00.000000Z',
+  headline_template: ':actor put :count dishes on the menu',
+  actors: [who.cook],
+  objects: [dishes.cutlets, dishes.roti],
+  distinct: { actors: 1, objects: 2 },
 })
 </script>
 
 A composite is one authored story whose object is a **collection** — several
-files uploaded as a single activity, not several grouped ones.
+dishes put on the menu as a single activity, not several grouped ones.
 
 ## Explicit
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($user)
-    ->action('upload')
-    ->objects($files)
-    ->to($project)
+    ->by($cook)
+    ->action('menu.dish_live')
+    ->objects($dishes)
     ->publish();
 ```
 
@@ -47,7 +46,7 @@ namespace App\Models;
 
 use Storyfeed\Contracts\Bundleable;
 
-class Document extends Model implements Feedable, Bundleable
+class MenuItem extends Model implements Feedable, Bundleable
 {
     // …
 }
@@ -55,7 +54,7 @@ class Document extends Model implements Feedable, Bundleable
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::bundleables(['document']);
+Storyfeed::bundleables(['menu_item']);
 ```
 
 ```php
@@ -95,7 +94,7 @@ composites at close.
 
 ::: tip
 Composites are bursts by construction, so a composite's span is minutes. This
-is the mechanism that turns "10 upload rows" into one readable story.
+is the mechanism that turns "10 dish rows" into one readable story.
 :::
 
 ## Grammar for Composites
@@ -105,8 +104,8 @@ Two registries, both required — see
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files to :target']);
-Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
+Storyfeed::aggregateGrammar(['composite.menu.dish_live' => ':actor put :count dishes on the menu']);
+Storyfeed::grammar(['*.menu.dish_live' => ':actor put dishes on the menu']);
 ```
 
 The parent has no object of its own, so it resolves through `*.{verb}`.

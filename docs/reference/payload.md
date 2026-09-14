@@ -108,7 +108,7 @@ one feed's authority to another's audience.
   "published_at": "2026-08-10T14:03:22Z",
   "headline_template": ":actor confirmed :object for :target",
   "headline": null,                     // pre-rendered fallback; see below
-  "glyph": "file-check",
+  "glyph": "circle-check",
   "glyph_intent": null,                 // the app's own word for what the glyph means
   "actor": { /* entity */ },
   "object": { /* entity */ },
@@ -131,11 +131,11 @@ one feed's authority to another's audience.
   "id": "grp_01J1K2…",                 // stable within its window
   "axis": "actors",                     // unknown values: render as a generic group
   "count": 5,                           // true total members
-  "verb": "upload",
+  "verb": "order.placed",
   "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
-  "headline_template": ":actors uploaded :count files to :target",
+  "headline_template": ":actors placed :count orders with :target",
   "headline": null,
-  "glyph": "file-up",
+  "glyph": "shopping-bag",
   "glyph_intent": null,
   "actor": null,
   "object": null,

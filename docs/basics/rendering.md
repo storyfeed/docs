@@ -6,19 +6,19 @@ activity type you add next year renders with no frontend change. When you are
 done, one loop renders every feed your app reads.
 
 <script setup>
-import { who, where, doc, note, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
 
 const items = [
-  group({ id: 'rn1', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
+  group({ id: 'rn1', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
     published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actors uploaded :count files to :target',
-    actors: [who.designer, who.lead, who.reviewer, who.producer], targets: [where.main],
-    objects: [doc.report, doc.signage, doc.pricing],
+    headline_template: ':actors placed :count orders with :target',
+    actors: [who.regular, who.customer2, who.customer3, who.customer4], targets: [where.kitchen],
+    objects: [orders.first, orders.second, orders.third],
     distinct: { actors: 4, objects: 5, targets: 1 } }),
-  activity({ id: 'rn2', verb: 'comment', glyph: 'message-circle',
+  activity({ id: 'rn2', verb: 'discussion.asked', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
-    headline_template: ':actor commented on :target',
-    actor: who.reviewer, object: note.second, target: doc.report }),
+    headline_template: ':actor asked about :target',
+    actor: who.customer5, object: notes.spice, target: dishes.chickenCurry }),
 ]
 </script>
 

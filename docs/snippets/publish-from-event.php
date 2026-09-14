@@ -5,15 +5,15 @@ namespace App\Events;
 use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
 use Storyfeed\PendingActivity; // [!code focus]
 
-class DocumentUploaded implements PublishesToFeed // [!code focus]
+class OrderPlaced implements PublishesToFeed // [!code focus]
 {
-    public function __construct(public Document $document, public User $user) {}
+    public function __construct(public Order $order, public User $customer) {}
 
     public function toFeedActivity(): ?PendingActivity // [!code focus]
     { // [!code focus]
         return Storyfeed::activity() // [!code focus]
-            ->by($this->user) // [!code focus]
-            ->action('upload', $this->document) // [!code focus]
-            ->to($this->document->project); // [!code focus]
+            ->by($this->customer) // [!code focus]
+            ->action('order.placed', $this->order) // [!code focus]
+            ->to($this->order->kitchen); // [!code focus]
     } // [!code focus]
 }

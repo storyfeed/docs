@@ -1,4 +1,4 @@
-import { USERS, PROJECTS, CLIENTS, DOCUMENTS, TASKS, COMMENTS, PARTIES } from './manifest'
+import { USERS, PLACES, DISHES, ORDERS, DEVICES, PHOTOS, PARTIES, NOTES } from './manifest'
 
 /**
  * Payload-shaped sample data for the docs.
@@ -37,30 +37,25 @@ export function entity(
 }
 
 export const user = (id: string, label: string) => entity('user', id, label, `/users/${id}`)
-export const project = (id: string, label: string) => entity('project', id, label, `/projects/${id}`)
-export const client = (id: string, label: string) => entity('client', id, label, `/clients/${id}`)
-export const document = (id: string, label: string) => entity('document', id, label, `/documents/${id}`)
-export const task = (id: string, label: string) => entity('task', id, label, `/tasks/${id}`)
+export const place = (id: string, label: string) => entity('kitchen', id, label, `/kitchens/${id}`)
+export const dish = (id: string, label: string) => entity('menu_item', id, label, `/menu/${id}`)
+export const order = (id: string, label: string) => entity('order', id, label, `/orders/${id}`)
+export const device = (id: string, label: string) => entity('kitchen_device', id, label, null)
+export const photo = (id: string, label: string) => entity('photo', id, label, `/photos/${id}`)
 
 /**
- * A comment has no page of its own, so its url is null and its label is its body.
- * Shown whole, not clipped: the demo app truncates at 80 characters, but these are
- * docs and a reader should see the text the example is talking about.
- *
+ * A note has no page of its own, so its url is null and its label is its text.
  * `component` names the body component the renderer resolves for the preview.
  */
-export const comment = (id: string, body: string) =>
-  entity('comment', id, body, null, {
-    component: 'Note',
-    data: { excerpt: body },
-  })
+export const note = (id: string, body: string) =>
+  entity('note', id, body, null, { component: 'Note', data: { excerpt: body } })
 
 /**
  * The cast, built from the manifest. Ids come from position in the manifest, so a
- * page only ever names a key.
+ * page only ever names a handle:
  *
- *   who.designer · where.main · firm.main · doc.report · job.simplify ·
- *   note.first · party.service
+ *   who.cook · where.kitchen · dishes.chickenCurry · orders.first · devices.ipad ·
+ *   photos.curry · notes.spice · party.service
  */
 const build = (source: Record<string, string>, make: (id: string, label: string) => any) =>
   Object.fromEntries(
@@ -68,12 +63,12 @@ const build = (source: Record<string, string>, make: (id: string, label: string)
   )
 
 export const who: Record<string, any> = build(USERS, user)
-export const where: Record<string, any> = build(PROJECTS, project)
-export const firm: Record<string, any> = build(CLIENTS, client)
-export const doc: Record<string, any> = build(DOCUMENTS, document)
-export const job: Record<string, any> = build(TASKS, task)
-export const note: Record<string, any> = build(COMMENTS, comment)
-
+export const where: Record<string, any> = build(PLACES, place)
+export const dishes: Record<string, any> = build(DISHES, dish)
+export const orders: Record<string, any> = build(ORDERS, order)
+export const devices: Record<string, any> = build(DEVICES, device)
+export const photos: Record<string, any> = build(PHOTOS, photo)
+export const notes: Record<string, any> = build(NOTES, note)
 /** A party has no page of its own. */
 export const party: Record<string, any> = build(PARTIES, (id, label) => entity('storyfeed.party', id, label, null))
 
@@ -103,12 +98,12 @@ export const party: Record<string, any> = build(PARTIES, (id, label) => entity('
  * nothing. Null is the honest answer and the common one.
  */
 export const INTENTS: Record<string, string> = {
-  '*.approve': 'success',
-  '*.complete': 'success',
-  '*.sign': 'success',
-  '*.expire': 'danger',
-  '*.document.remove': 'danger',
-  '*.submit': 'pending',
+  '*.order.completed': 'success',
+  '*.payment.received': 'success',
+  '*.moderation.photo_approved': 'success',
+  '*.order.cancelled': 'danger',
+  '*.menu.dish_off': 'danger',
+  '*.order.placed': 'pending',
 }
 
 /** Core's resolution ladder, ported: `type.verb`, `type.*`, `*.verb`, `*.*`. */
@@ -184,10 +179,10 @@ export function group(over: Record<string, any>) {
  * so the standard example is chosen in two files and nowhere else.
  */
 export const scenes = {
-  upload: activity({
-    id: 'scene-upload', verb: 'upload', glyph: 'file-up',
+  order: activity({
+    id: 'scene-order', verb: 'order.placed', glyph: 'shopping-bag',
     published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor uploaded :object to :target',
-    actor: who.designer, object: doc.report, target: where.main,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.first, target: where.kitchen,
   }),
 }

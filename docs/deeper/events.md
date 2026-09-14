@@ -4,12 +4,7 @@ When a fact is already an event, the activity can be published from it. When
 you are done, dispatching the event is what puts the activity on the feed.
 
 <script setup>
-import { who, where, doc, activity } from '../.vitepress/theme/samples'
-
-const uploaded = activity({ id: 'ev1', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer, object: doc.report, target: where.main })
+import { scenes } from '../.vitepress/theme/samples'
 </script>
 
 ## From a Listener
@@ -19,15 +14,15 @@ const uploaded = activity({ id: 'ev1', verb: 'upload', glyph: 'file-up',
 
 namespace App\Events;
 
-class DocumentUploaded
+class OrderPlaced
 {
-    public function __construct(public Document $document, public User $user) {}
+    public function __construct(public Order $order, public User $customer) {}
 }
 ```
 
 <<< @/snippets/publish-from-listener.php
 
-<FeedStream :items="[uploaded]" :grouped="false" />
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
 ## From the Event Itself
 
@@ -36,28 +31,29 @@ Return it without publishing; dispatching the event publishes it:
 
 <<< @/snippets/publish-from-event.php
 
-<FeedStream :items="[uploaded]" :grouped="false" />
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
-Return `null` to publish nothing, when only some instances belong on the feed:
+Dispatch the event and the activity is published. Return `null` to publish
+nothing, when only some instances belong on the feed:
 
 ```php
-// app/Events/DocumentUploaded.php
+// app/Events/OrderPlaced.php
 public function toFeedActivity(): ?PendingActivity
 {
-    if ($this->document->isDraft()) { // [!code focus]
+    if ($this->order->isTest()) { // [!code focus]
         return null; // [!code focus]
     } // [!code focus]
 
     return Storyfeed::activity()
-        ->by($this->user)
-        ->action('upload', $this->document)
-        ->to($this->document->project);
+        ->by($this->customer)
+        ->action('order.placed', $this->order)
+        ->to($this->order->kitchen);
 }
 ```
 
 ::: tip
-The name is `toFeedActivity()`, not `toFeed()`, so a model can be both `Feedable`
-and publishing without a collision.
+The name is `toFeedActivity()`, not `toFeed()`, so a model can be both
+`Feedable` and publishing without a collision.
 :::
 
 ## Events Storyfeed Emits
