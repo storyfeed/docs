@@ -15,19 +15,21 @@ const withoutIcon = activity({ ...scenes.order, id: 'hl1', glyph: null })
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    '*.order.placed' => ':actor placed :object with :target',
+    'order.placed' => ':actor placed :object with :target',
 ]);
 ```
 
 <FeedStream :items="[withoutIcon]" :grouped="false" />
 
-The key is the object's morph alias and the verb, `{objectType}.{verb}`. A
-`*` for the object type matches any, which suits a verb that already names its
-subject, as `order.placed` does. The template names roles, never models:
+Read the key as two parts: the object's morph alias, a dot, and the verb.
+`order.placed` is the verb `placed`, recorded about an `order`. The dot
+belongs to the key; the verb you recorded is still `placed`.
+
+The template names roles, never models:
 
 ```php
-'*.order.placed' => ':customer placed :order with :kitchen',   // ✗ not tokens: these render as text
-'*.order.placed' => ':actor placed :object with :target',      // ✓
+'order.placed' => ':customer placed :order with :kitchen',   // ✗ not tokens: these render as text
+'order.placed' => ':actor placed :object with :target',      // ✓
 ```
 
 ## Tokens
@@ -52,16 +54,16 @@ carries.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::icons([
-    '*.order.placed' => 'shopping-bag',
-    '*.order.completed' => 'receipt',
-    '*.menu.dish_live' => 'chef-hat',
+    'order.placed' => 'shopping-bag',
+    'order.completed' => 'receipt',
+    '*.menu.dish_live' => 'chef-hat',   // any object type
 ]);
 ```
 
 <FeedStream :items="[scenes.order]" :grouped="false" />
 
-Keys resolve most-specific first: `order.order.placed`, then `order.*`, then
-`*.order.placed`, then `*.*`.
+Keys resolve most-specific first: `order.placed`, then `order.*`, then
+`*.placed`, then `*.*`.
 
 ::: headless it ships no icons
 `shopping-bag` is a name you chose, carried to your renderer verbatim. Mapping
@@ -76,7 +78,7 @@ beside it on every node:
 
 ```json
 {
-  "verb": "order.completed",
+  "verb": "completed",
   "glyph": "receipt",
   "glyph_intent": "success"
 }
@@ -92,9 +94,9 @@ allowed, resolved most-specific first:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::glyphIntents([
-    '*.order.completed' => 'success',   // the app's own word, not the package's
-    '*.order.placed'    => 'pending',
-    '*.order.cancelled' => 'danger',
+    'order.completed' => 'success',   // the app's own word, not the package's
+    'order.placed'    => 'pending',
+    'order.cancelled' => 'danger',
 ]);
 ```
 
@@ -119,9 +121,9 @@ Intents resolve on their own registry, so a wildcard is stated once:
 
 | Key | Matches |
 |---|---|
-| `order.order.completed` | that verb on that object type |
+| `order.completed` | that verb on that object type |
 | `order.*` | every verb on that object type |
-| `*.order.completed` | that verb on any object type |
+| `*.completed` | that verb on any object type |
 | `*.*` | everything with no more specific entry |
 
 Most verbs have no intent, and that is the common case. A placed order is not yet a
@@ -139,7 +141,7 @@ Templates are plain strings, so they translate:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    '*.order.placed' => __('feed.order_placed'),
+    'order.placed' => __('feed.order_placed'),
 ]);
 ```
 

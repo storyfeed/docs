@@ -9,7 +9,7 @@ import { who, where, orders, dishes, photos, notes, party, activity, group, scen
 const at = '2026-08-14T14:30:00.000000Z'
 
 const burst = group({
-  id: 'i2', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+  id: 'i2', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: at,
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -18,19 +18,19 @@ const burst = group({
 })
 
 const expanded = [
-  activity({ id: 'i2a', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
+  activity({ id: 'i2a', verb: 'placed', glyph: 'shopping-bag', published_at: at,
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.third, target: where.kitchen }),
-  activity({ id: 'i2b', verb: 'order.placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:29:00.000000Z',
+  activity({ id: 'i2b', verb: 'placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:29:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.second, target: where.kitchen }),
-  activity({ id: 'i2c', verb: 'order.placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:27:00.000000Z',
+  activity({ id: 'i2c', verb: 'placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:27:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
 ]
 
 const crowd = group({
-  id: 'i7', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+  id: 'i7', verb: 'placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:35:00.000000Z',
   headline_template: ':actors placed :count orders with :target',
   actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
@@ -39,14 +39,14 @@ const crowd = group({
 
 
 const paid = activity({
-  id: 'i9', verb: 'payment.received', glyph: 'credit-card',
+  id: 'i9', verb: 'paid', glyph: 'credit-card',
   published_at: '2026-08-14T14:32:00.000000Z',
   headline_template: ':actor marked :object paid',
   actor: party.service, object: orders.first,
 })
 
 const noted = activity({
-  id: 'i10', verb: 'order.noted', glyph: 'message-circle',
+  id: 'i10', verb: 'noted', glyph: 'message-circle',
   published_at: '2026-08-14T14:34:00.000000Z',
   headline_template: ':actor sent a note about :object',
   actor: who.regular, object: orders.first,
@@ -112,7 +112,7 @@ three requests.
 // where the order is placed: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.placed', $order)
+    ->action('placed', $order)
     ->to($kitchen)
     ->publish();
 ```
@@ -142,7 +142,7 @@ A payment provider reports an order paid, and it has no row in your database.
 // app/Http/Controllers/StripeWebhookController.php
 Storyfeed::activity()
     ->by('Stripe')
-    ->action('payment.received', $order)
+    ->action('paid', $order)
     ->publish();
 ```
 
@@ -156,7 +156,7 @@ Storyfeed::activity()
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.noted', $order)
+    ->action('noted', $order)
     ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
     ->publish();
 ```

@@ -9,7 +9,7 @@ reads like the sentence it produces.
 import { who, where, orders, dishes, party, activity, scenes } from '../.vitepress/theme/samples'
 
 const paid = activity({
-  id: 'r2', verb: 'payment.received', glyph: 'credit-card',
+  id: 'r2', verb: 'paid', glyph: 'credit-card',
   published_at: '2026-08-14T14:32:00.000000Z',
   headline_template: ':actor marked :object paid',
   actor: party.service, object: orders.first,
@@ -32,16 +32,15 @@ The builder reads in the order of the headline it produces:
 <FeedStream :items="[scenes.order]" :grouped="false" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
-happened. `order.placed` is this app's own word, not one the package knows —
-verbs are free-form, and nothing has to be registered before you record one.
-A dot is just a character in the string; it groups a vocabulary for a reader,
-and for the wildcards a later page uses.
+happened. `placed` is this app's own word, not one the package knows. Verbs
+are free-form, nothing has to be registered before you record one, and the
+package never parses one — it stores the string and hands it back.
 
 The same activity in one call, when everything is in hand:
 
 ```php
 // where the order is placed: a controller, an action, a listener
-Storyfeed::record('order.placed', $order, actor: $customer, target: $kitchen);
+Storyfeed::record('placed', $order, actor: $customer, target: $kitchen);
 ```
 
 ## Roles
@@ -85,7 +84,7 @@ job records the fact, there is no authenticated user, so name the actor:
 // app/Http/Controllers/StripeWebhookController.php
 Storyfeed::activity()
     ->by('Stripe')
-    ->action('payment.received', $order)
+    ->action('paid', $order)
     ->publish();
 ```
 

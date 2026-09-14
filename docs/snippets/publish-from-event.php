@@ -13,7 +13,7 @@ class OrderPlaced implements PublishesToFeed // [!code focus]
     { // [!code focus]
         return Storyfeed::activity() // [!code focus]
             ->by($this->customer) // [!code focus]
-            ->action('order.placed', $this->order) // [!code focus]
+            ->action('placed', $this->order) // [!code focus]
             ->to($this->order->kitchen); // [!code focus]
     } // [!code focus]
 }

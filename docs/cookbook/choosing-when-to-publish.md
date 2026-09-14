@@ -17,8 +17,8 @@ class OrderObserver
         }
 
         $verb = match ($order->status) {
-            'confirmed' => 'order.confirmed',
-            'ready' => 'order.ready',
+            'confirmed' => 'confirmed',
+            'ready' => 'ready',
             'archived' => 'archive',
             default => null,                         // a draft is not news either
         };
@@ -38,7 +38,7 @@ class OrderObserver
 import { who, where, orders, activity } from '../.vitepress/theme/samples'
 
 const confirmed = activity({
-  id: 'ck2', verb: 'order.confirmed', glyph: 'circle-check',
+  id: 'ck2', verb: 'confirmed', glyph: 'circle-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor confirmed :object',
   actor: who.cook, object: orders.first,
@@ -52,15 +52,15 @@ const confirmed = activity({
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'order.confirmed' => ActivityType::Accept,
-    'order.ready' => ActivityType::Update,
+    'confirmed' => ActivityType::Accept,
+    'ready' => ActivityType::Update,
     'archive' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
-    '*.order.confirmed' => ':actor confirmed :object',
-    '*.order.ready' => ':actor marked :object ready',
-    '*.order.completed' => ':actor completed :object',
+    'order.confirmed' => ':actor confirmed :object',
+    'order.ready' => ':actor marked :object ready',
+    'order.completed' => ':actor completed :object',
 ]);
 ```
 
@@ -70,11 +70,11 @@ Storyfeed::grammar([
 |---|---|---|
 | created as a draft | no | |
 | saved with no status change | no | |
-| placed → confirmed | yes | `order.confirmed` |
-| confirmed → ready | yes | `order.ready` |
-| ready → completed | yes | `order.completed` |
+| placed → confirmed | yes | `confirmed` |
+| confirmed → ready | yes | `ready` |
+| ready → completed | yes | `completed` |
 
-A verb names one transition. `order.confirmed`, `order.ready` and `order.completed` are three
+A verb names one transition. `confirmed`, `ready` and `completed` are three
 verbs, not one `status` verb carrying the new state in `data`. The reason is
 in [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
@@ -95,7 +95,7 @@ class OrderConfirmed implements PublishesToFeed
     {
         return Storyfeed::activity()
             ->by($this->cook)
-            ->action('order.confirmed', $this->order);
+            ->action('confirmed', $this->order);
     }
 }
 ```

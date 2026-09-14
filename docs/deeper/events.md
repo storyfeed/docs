@@ -46,7 +46,7 @@ public function toFeedActivity(): ?PendingActivity
 
     return Storyfeed::activity()
         ->by($this->customer)
-        ->action('order.placed', $this->order)
+        ->action('placed', $this->order)
         ->to($this->order->kitchen);
 }
 ```

@@ -6,7 +6,7 @@ from a route. When you are done, one line reads the feed a surface wants.
 <script setup>
 import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
 
-const placed = (id, at, actor, object) => activity({ id, verb: 'order.placed', glyph: 'shopping-bag',
+const placed = (id, at, actor, object) => activity({ id, verb: 'placed', glyph: 'shopping-bag',
   published_at: at, headline_template: ':actor placed :object with :target',
   actor, object, target: where.kitchen })
 
@@ -20,7 +20,7 @@ const log = [
     actor: who.cook, object: dishes.kottu }),
 ]
 
-const repeat = group({ id: 'rd1', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const repeat = group({ id: 'rd1', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -112,7 +112,7 @@ The narrower filters answer narrower questions:
 | `->context($kitchen)` | only activities recorded inside that container |
 | `->actor($customer)` | only what that customer did |
 | `->object($order)` / `->target($kitchen)` | only that exact role |
-| `->verb('order.placed')` | one verb |
+| `->verb('placed')` | one verb |
 
 Scopes combine. Group counts are recomputed within the scope: a group of four
 whose two members fall inside the kitchen arrives as a group of two on that
@@ -133,7 +133,7 @@ activity query for anything they cannot express:
 // a controller, or wherever the feed is read
 // everything except notes
 $kitchen->storyfeed()
-    ->query(fn (ActivityBuilder $q) => $q->whereNot('verb', 'order.noted'))
+    ->query(fn (ActivityBuilder $q) => $q->whereNot('verb', 'noted'))
     ->get();
 
 // tonight's service

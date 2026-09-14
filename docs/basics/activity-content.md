@@ -11,7 +11,7 @@ import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme
 const at = '2026-08-14T14:32:00.000000Z'
 
 const base = {
-  verb: 'order.noted', glyph: 'message-circle', published_at: at,
+  verb: 'noted', glyph: 'message-circle', published_at: at,
   headline_template: ':actor sent a note about :object',
   actor: who.regular, target: where.kitchen,
 }
@@ -30,7 +30,7 @@ const withExcerpt = activity({
 })
 
 const withFields = activity({
-  id: 'ac4', verb: 'order.confirmed', glyph: 'circle-check', published_at: at,
+  id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
   actor: who.cook, object: orders.first,
   data: { $detail: 'Storyfeed/Detail/Fields', $v: 1, rows: [
@@ -70,7 +70,7 @@ Most activities need nothing more. The sentence is the whole row:
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.noted', $order)
+    ->action('noted', $order)
     ->to($kitchen)
     ->publish();
 ```
@@ -91,7 +91,7 @@ use Storyfeed\FeedThread;
 
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.noted', $order)
+    ->action('noted', $order)
     ->to($kitchen)
     ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code focus]
     ->publish();
@@ -133,7 +133,7 @@ use Storyfeed\Detail\Fields;
 
 Storyfeed::activity()
     ->by($cook)
-    ->action('order.confirmed', $order)
+    ->action('confirmed', $order)
     ->data(Fields::make([ // [!code focus]
         'Pickup' => $order->pickup_at->format('g:i a'), // [!code focus]
         'Items' => $order->items->count(), // [!code focus]

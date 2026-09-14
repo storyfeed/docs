@@ -16,7 +16,7 @@ Activity types are a way to classify activities, and are usually expressed as ve
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.placed', $order) // [!code focus]
+    ->action('placed', $order) // [!code focus]
     ->to($kitchen)
     ->publish();
 ```
@@ -35,9 +35,9 @@ namespace App\Enums;
 
 enum OrderActivity: string
 {
-    case Placed = 'order.placed';
-    case Confirmed = 'order.confirmed';
-    case Ready = 'order.ready';
+    case Placed = 'placed';
+    case Confirmed = 'confirmed';
+    case Ready = 'ready';
 }
 ```
 
@@ -55,9 +55,9 @@ enum OrderActivity: string implements FeedVerb // [!code focus]
 {
     use AsFeedVerb; // [!code focus]
 
-    case Placed = 'order.placed';
-    case Confirmed = 'order.confirmed';
-    case Ready = 'order.ready';
+    case Placed = 'placed';
+    case Confirmed = 'confirmed';
+    case Ready = 'ready';
 }
 ```
 

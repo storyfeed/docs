@@ -13,7 +13,7 @@ const at = '2026-08-14T14:30:00.000000Z'
 const placed = activity({ ...scenes.order, id: 's1', glyph: null })
 const placedWithIcon = scenes.order
 
-const grouped = group({ id: 's3', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const grouped = group({ id: 's3', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: at,
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -25,7 +25,7 @@ const examples = [
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 's5', verb: 'order.completed', glyph: 'receipt',
+  activity({ id: 's5', verb: 'completed', glyph: 'receipt',
     published_at: '2026-08-14T14:25:00.000000Z',
     headline_template: ':actor completed :object',
     actor: who.cook, object: orders.first }),
@@ -53,7 +53,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {
@@ -101,7 +101,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {
@@ -135,7 +135,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {
@@ -232,7 +232,7 @@ class OrderWasCompleted extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.completed';
+    public string|FeedVerb|BackedEnum|null $verb = 'completed';
 
     public function headline(): string
     {

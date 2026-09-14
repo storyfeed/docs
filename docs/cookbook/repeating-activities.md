@@ -15,9 +15,9 @@ const pricedTwice = [
 ]
 
 const timeline = [
-  on('rp3', 'order.placed', 'shopping-bag', '2026-08-14T14:40:00.000000Z', who.regular, orders.first, ':actor placed :object'),
-  on('rp4', 'order.confirmed', 'circle-check', '2026-08-14T14:30:00.000000Z', who.cook, orders.first, ':actor confirmed :object'),
-  on('rp5', 'order.placed', 'shopping-bag', '2026-08-14T14:20:00.000000Z', who.regular, orders.first, ':actor placed :object'),
+  on('rp3', 'placed', 'shopping-bag', '2026-08-14T14:40:00.000000Z', who.regular, orders.first, ':actor placed :object'),
+  on('rp4', 'confirmed', 'circle-check', '2026-08-14T14:30:00.000000Z', who.cook, orders.first, ':actor confirmed :object'),
+  on('rp5', 'placed', 'shopping-bag', '2026-08-14T14:20:00.000000Z', who.regular, orders.first, ':actor placed :object'),
 ]
 
 const pulse = [timeline[0], timeline[1]]
@@ -38,15 +38,15 @@ After one new dish and two price changes:
 Storyfeed::verbs([
     'menu.price_changed' => ActivityType::Update,
     'menu.dish_added' => ActivityType::Add,
-    'order.placed' => ActivityType::Create,
-    'order.confirmed' => ActivityType::Accept,
+    'placed' => ActivityType::Create,
+    'confirmed' => ActivityType::Accept,
 ]);
 
 Storyfeed::grammar([
     '*.menu.price_changed' => ':actor changed the price of :object',
     '*.menu.dish_added' => ':actor added a new dish, :object',
-    '*.order.placed' => ':actor placed :object',
-    '*.order.confirmed' => ':actor confirmed :object',
+    'order.placed' => ':actor placed :object',
+    'order.confirmed' => ':actor confirmed :object',
 ]);
 ```
 
@@ -74,15 +74,15 @@ alternative recording policies for the same sequence:
 
 | Request | Full Timeline | Latest-state Pulse, per Verb |
 |---|---|---|
-| first placement | append `order.placed` | replace `order.placed` |
-| confirmation | append `order.confirmed` | replace `order.confirmed` |
-| placed again after an amendment | append another `order.placed` | replace the earlier `order.placed` |
+| first placement | append `placed` | replace `placed` |
+| confirmation | append `confirmed` | replace `confirmed` |
+| placed again after an amendment | append another `placed` | replace the earlier `placed` |
 | visible rows afterward | first placement, confirmation, second placement | confirmation, second placement |
 
 For the full timeline, each transition request runs this with its verb:
 
 ```php
-// $verb is 'order.placed' or 'order.confirmed'; the app guards retries by occurrence id.
+// $verb is 'placed' or 'confirmed'; the app guards retries by occurrence id.
 Storyfeed::activity()->by($user)->action($verb, $order)->publish();
 
 $timeline = Storyfeed::feed()->involving($order)->log()->get();

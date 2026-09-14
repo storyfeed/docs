@@ -13,20 +13,20 @@ const at = '2026-08-14T14:30:00.000000Z'
 const bare = { ...scenes.order, id: 'rn0', glyph: null }
 const one = scenes.order
 
-const grouped = group({ id: 'rn2', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+const grouped = group({ id: 'rn2', verb: 'placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: at,
   headline_template: ':actors placed :count orders with :target',
   actors: [who.regular, who.customer2, who.customer3, who.customer4], targets: [where.kitchen],
   objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 4, objects: 5, targets: 1 } })
 
-const unnamed = group({ id: 'rn3', verb: 'order.noted', axis: 'targets', count: 6, glyph: 'message-circle',
+const unnamed = group({ id: 'rn3', verb: 'noted', axis: 'targets', count: 6, glyph: 'message-circle',
   published_at: '2026-08-14T14:10:00.000000Z',
   headline_template: null, headline: null,
   actors: [who.regular, who.customer2], targets: [],
   distinct: { actors: 2, targets: 0 } })
 
-const degraded = activity({ id: 'rn4', verb: 'order.placed', glyph: 'shopping-bag',
+const degraded = activity({ id: 'rn4', verb: 'placed', glyph: 'shopping-bag',
   published_at: '2026-08-14T14:05:00.000000Z',
   headline_template: ':actor placed :object with :target',
   actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })

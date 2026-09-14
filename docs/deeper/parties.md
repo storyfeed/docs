@@ -4,7 +4,7 @@
 import { orders, party, activity } from '../.vitepress/theme/samples'
 
 const paid = activity({
-  id: 'pt1', verb: 'payment.received', glyph: 'credit-card',
+  id: 'pt1', verb: 'paid', glyph: 'credit-card',
   published_at: '2026-08-14T14:32:00.000000Z',
   headline_template: ':actor marked :object paid',
   actor: party.service,
@@ -25,7 +25,7 @@ Two different things that both look like "not a user":
 // where the fact happens: a controller, an action, a listener
 $party = Storyfeed::party('Stripe');
 
-Storyfeed::record('payment.received', $order, actor: $party);
+Storyfeed::record('paid', $order, actor: $party);
 ```
 
 <FeedStream :items="[paid]" :grouped="false" />
@@ -35,7 +35,7 @@ Parties work in **any** role — actor, object, target, context, origin, result,
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->action('order.on_the_way', $order)
+    ->action('on_the_way', $order)
     ->to(Storyfeed::party('Front desk'))
     ->publish();
 ```
@@ -49,7 +49,7 @@ Inside a job or console command there is no authenticated user. Scope a block:
 ```php
 // a job, or a console command
 Storyfeed::as('System', function () {
-    Storyfeed::record('order.cancelled', object: $order);
+    Storyfeed::record('cancelled', object: $order);
 });
 ```
 
@@ -75,7 +75,7 @@ With no fallback, unresolvable publishes are anonymous.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::actorlessGrammar([
-    'order.confirmed' => ':object was confirmed', // exact verb, not objectType.verb
+    'confirmed' => ':object was confirmed', // exact verb, not objectType.verb
 ]);
 ```
 

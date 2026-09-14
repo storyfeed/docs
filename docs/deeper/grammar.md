@@ -8,7 +8,7 @@ group your feed can form has a sentence that is true of every member.
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
-const repeated = group({ id: 'g2', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const repeated = group({ id: 'g2', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -21,8 +21,8 @@ const repeated = group({ id: 'g2', verb: 'order.placed', axis: 'repeat', count: 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar([
-    'repeat.order.placed' => ':actor placed :count orders with :target',    // {axis}.{verb}
-    'actors.order.placed' => ':actors placed :count orders with :target',
+    'repeat.placed' => ':actor placed :count orders with :target',    // {axis}.{verb}
+    'actors.placed' => ':actors placed :count orders with :target',
 ]);
 ```
 

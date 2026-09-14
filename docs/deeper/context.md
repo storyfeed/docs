@@ -46,7 +46,7 @@ is complete:
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('order.placed', $order)
+    ->action('placed', $order)
     ->to($kitchen)
     ->publish();
 ```

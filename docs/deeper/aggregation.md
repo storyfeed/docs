@@ -9,7 +9,7 @@ with headlines you authored.
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:30:00.000000Z'
-const placed = (id, actor, object) => activity({ id, verb: 'order.placed', glyph: 'shopping-bag',
+const placed = (id, actor, object) => activity({ id, verb: 'placed', glyph: 'shopping-bag',
   published_at: at, headline_template: ':actor placed :object with :target',
   actor, object, target: where.kitchen })
 
@@ -19,13 +19,13 @@ const log = [
   placed('ag3', who.regular, orders.first),
 ]
 
-const repeat = group({ id: 'ag4', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const repeat = group({ id: 'ag4', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: at, headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
   objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 } })
 
-const actors = group({ id: 'ag5', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+const actors = group({ id: 'ag5', verb: 'placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: at, headline_template: ':actors placed :count orders with :target',
   actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
   objects: [orders.first, orders.second, orders.third],
@@ -53,7 +53,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {

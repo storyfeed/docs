@@ -16,7 +16,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {

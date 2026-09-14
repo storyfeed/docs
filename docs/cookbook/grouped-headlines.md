@@ -6,16 +6,16 @@ for one activity.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'order.placed' => ActivityType::Create,
+    'placed' => ActivityType::Create,
 ]);
 
 Storyfeed::grammar([
-    '*.order.placed' => ':actor placed :object with :target',
+    'order.placed' => ':actor placed :object with :target',
 ]);
 
 Storyfeed::aggregateGrammar([
-    'repeat.order.placed' => ':actor placed :count orders with :target',
-    'actors.order.placed' => ':actors placed :count orders with :target',
+    'repeat.placed' => ':actor placed :count orders with :target',
+    'actors.placed' => ':actors placed :count orders with :target',
 ]);
 ```
 
@@ -25,7 +25,7 @@ import { who, where, orders, activity, group, scenes } from '../.vitepress/theme
 const one = scenes.order
 
 const burst = group({
-  id: 'ck5b', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+  id: 'ck5b', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:33:00.000000Z',
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -34,7 +34,7 @@ const burst = group({
 })
 
 const crowd = group({
-  id: 'ck5c', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
+  id: 'ck5c', verb: 'placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:35:00.000000Z',
   headline_template: ':actors placed :count orders with :target',
   actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
@@ -48,7 +48,7 @@ const crowd = group({
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.placed', $firstOrder)
+    ->action('placed', $firstOrder)
     ->to($kitchen)
     ->publish();
 ```
@@ -61,7 +61,7 @@ Storyfeed::activity()
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.placed', $secondOrder)
+    ->action('placed', $secondOrder)
     ->to($kitchen)
     ->publish();
 ```
@@ -72,7 +72,7 @@ Storyfeed::activity()
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('order.placed', $thirdOrder)
+    ->action('placed', $thirdOrder)
     ->to($kitchen)
     ->publish();
 ```
@@ -152,7 +152,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'placed';
 
     public function headline(): string
     {

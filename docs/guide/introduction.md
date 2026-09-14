@@ -13,24 +13,24 @@ import { who, where, orders, dishes, devices, notes, activity, group } from '../
 
 // Eight minutes of a dinner service, 18:44–18:52.
 const log = [
-  ['18:52:02','order.ready','utensils',':actor marked :object ready', who.cook, orders.third, null, null],
-  ['18:51:02','order.on_the_way','bike',':actor is on the way with :object', who.runner, orders.second, null, null],
-  ['18:50:02','order.confirmed','circle-check',':actor confirmed :object', who.cook, orders.fifth, null, null],
-  ['18:49:02','order.placed','shopping-bag',':actor placed :object with :target', who.customer5, orders.fifth, where.kitchen, null],
+  ['18:52:02','ready','utensils',':actor marked :object ready', who.cook, orders.third, null, null],
+  ['18:51:02','on_the_way','bike',':actor is on the way with :object', who.runner, orders.second, null, null],
+  ['18:50:02','confirmed','circle-check',':actor confirmed :object', who.cook, orders.fifth, null, null],
+  ['18:49:02','placed','shopping-bag',':actor placed :object with :target', who.customer5, orders.fifth, where.kitchen, null],
   ['18:49:02','discussion.asked','message-circle',':actor asked about :target', who.customer4, notes.spice, dishes.chickenCurry, null],
-  ['18:48:15','order.confirmed','circle-check',':actor confirmed :object', who.cook, orders.fourth, null, null],
-  ['18:48:02','order.placed','shopping-bag',':actor placed :object with :target', who.customer4, orders.fourth, where.kitchen, null],
-  ['18:48:00','order.on_the_way','bike',':actor is on the way with :object', who.runner, orders.first, null, null],
-  ['18:47:02','order.confirmed','circle-check',':actor confirmed :object', who.cook, orders.third, null, null],
-  ['18:46:56','order.placed','shopping-bag',':actor placed :object with :target', who.customer3, orders.third, where.kitchen, null],
-  ['18:46:02','order.ready','utensils',':actor marked :object ready', who.cook, orders.second, null, null],
-  ['18:45:46','order.noted','message-circle',':actor sent a note about :object', who.customer2, orders.second, null, null],
-  ['18:45:37','order.confirmed','circle-check',':actor confirmed :object', who.cook, orders.second, null, null],
-  ['18:45:08','order.placed','shopping-bag',':actor placed :object with :target', who.customer2, orders.second, where.kitchen, null],
-  ['18:45:02','order.ready','utensils',':actor marked :object ready', who.cook, orders.first, null, null],
+  ['18:48:15','confirmed','circle-check',':actor confirmed :object', who.cook, orders.fourth, null, null],
+  ['18:48:02','placed','shopping-bag',':actor placed :object with :target', who.customer4, orders.fourth, where.kitchen, null],
+  ['18:48:00','on_the_way','bike',':actor is on the way with :object', who.runner, orders.first, null, null],
+  ['18:47:02','confirmed','circle-check',':actor confirmed :object', who.cook, orders.third, null, null],
+  ['18:46:56','placed','shopping-bag',':actor placed :object with :target', who.customer3, orders.third, where.kitchen, null],
+  ['18:46:02','ready','utensils',':actor marked :object ready', who.cook, orders.second, null, null],
+  ['18:45:46','noted','message-circle',':actor sent a note about :object', who.customer2, orders.second, null, null],
+  ['18:45:37','confirmed','circle-check',':actor confirmed :object', who.cook, orders.second, null, null],
+  ['18:45:08','placed','shopping-bag',':actor placed :object with :target', who.customer2, orders.second, where.kitchen, null],
+  ['18:45:02','ready','utensils',':actor marked :object ready', who.cook, orders.first, null, null],
   ['18:45:02','menu.dish_live','chef-hat',':actor put :object on the menu', who.cook, dishes.lassi, null, null],
-  ['18:44:02','order.confirmed','circle-check',':actor confirmed :object', who.cook, orders.first, null, null],
-  ['18:44:02','order.placed','shopping-bag',':actor placed :object with :target', who.regular, orders.first, where.kitchen, null],
+  ['18:44:02','confirmed','circle-check',':actor confirmed :object', who.cook, orders.first, null, null],
+  ['18:44:02','placed','shopping-bag',':actor placed :object with :target', who.regular, orders.first, where.kitchen, null],
 ].map(([time, verb, glyph, tpl, actor, object, target, context], i) => activity({
   id: `l${i}`, verb, glyph, headline_template: tpl,
   published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
@@ -38,15 +38,15 @@ const log = [
 
 // The same window, collapsed. Counts reach back past 18:44 — see the note below.
 const summary = [
-  group({ id: 'g1', verb: 'order.ready', axis: 'repeat', count: 9, glyph: 'utensils',
+  group({ id: 'g1', verb: 'ready', axis: 'repeat', count: 9, glyph: 'utensils',
     published_at: '2026-08-14T18:52:02.000000Z',
     headline_template: ':actor marked :count orders ready',
     actors: [who.cook], distinct: { actors: 1, objects: 9 } }),
-  group({ id: 'g2', verb: 'order.on_the_way', axis: 'repeat', count: 4, glyph: 'bike',
+  group({ id: 'g2', verb: 'on_the_way', axis: 'repeat', count: 4, glyph: 'bike',
     published_at: '2026-08-14T18:51:02.000000Z',
     headline_template: ':actor is on the way with :count orders',
     actors: [who.runner], objects: [orders.second, orders.first], distinct: { actors: 1, objects: 4 } }),
-  group({ id: 'g3', verb: 'order.placed', axis: 'actors', count: 12, glyph: 'shopping-bag',
+  group({ id: 'g3', verb: 'placed', axis: 'actors', count: 12, glyph: 'shopping-bag',
     published_at: '2026-08-14T18:49:02.000000Z',
     headline_template: ':actors placed :count orders with :target',
     actors: [who.customer5, who.customer4, who.customer3], targets: [where.kitchen],
@@ -69,7 +69,7 @@ const oneActivity = [
   activity({ id: 'a6', verb: 'discussion.asked', glyph: 'message-circle', published_at: '2026-08-14T18:49:02.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'a5', verb: 'order.placed', glyph: 'shopping-bag', published_at: '2026-08-14T18:44:02.000000Z',
+  activity({ id: 'a5', verb: 'placed', glyph: 'shopping-bag', published_at: '2026-08-14T18:44:02.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
   activity({ id: 'a4', verb: 'menu.dish_live', glyph: 'chef-hat', published_at: '2026-08-14T12:00:00.000000Z',
@@ -110,7 +110,7 @@ The summary headline of the activity may take different forms, but the underlyin
 
 > **{{ where.kitchen.label }}** received **{{ orders.first.label }}** from **{{ who.regular.label }}**
 
-The recorded action is still **order.placed**, despite it being described differently under
+The recorded action is still **placed**, despite it being described differently under
 each published headline.
 
 

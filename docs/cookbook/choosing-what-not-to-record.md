@@ -13,7 +13,7 @@ public function toFeedActivity(): ?PendingActivity
 
     return Storyfeed::activity()
         ->by($this->customer)
-        ->action('order.placed', $this->order)
+        ->action('placed', $this->order)
         ->to($this->order->kitchen);
 }
 ```
@@ -24,12 +24,12 @@ Returning `null` publishes nothing. See
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'order.placed' => ActivityType::Create,
+    'placed' => ActivityType::Create,
     'discussion.asked' => ActivityType::Create,
 ]);
 
 Storyfeed::grammar([
-    '*.order.placed' => ':actor placed :object with :target',
+    'order.placed' => ':actor placed :object with :target',
 ]);
 ```
 

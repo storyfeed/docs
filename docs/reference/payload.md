@@ -131,7 +131,7 @@ one feed's authority to another's audience.
   "id": "grp_01J1K2…",                 // stable within its window
   "axis": "actors",                     // unknown values: render as a generic group
   "count": 5,                           // true total members
-  "verb": "order.placed",
+  "verb": "placed",
   "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
   "headline_template": ":actors placed :count orders with :target",
   "headline": null,
