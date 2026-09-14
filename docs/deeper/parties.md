@@ -72,11 +72,6 @@ With no fallback, unresolvable publishes are anonymous.
 
 ## Actorless Voice
 
-::: tip
-`actorlessGrammar()` is not in a tagged release. An install pinned to v0.9.0 or
-earlier resolves ordinary grammar for an actorless activity.
-:::
-
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::actorlessGrammar([

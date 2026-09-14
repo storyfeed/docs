@@ -12,5 +12,4 @@ CI runs PHP 8.4/8.5 × Laravel 12/13 × prefer-lowest/stable.
 
 ## Stability Before 1.0
 
-Storyfeed is under active development. Every change that affects an install
-lands in the [upgrade notes](/guide/upgrading) with its replacement.
+Storyfeed is under active development.

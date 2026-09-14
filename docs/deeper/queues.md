@@ -40,12 +40,6 @@ Storyfeed never queues anything itself. `publish()` runs inline, in one
 transaction, and the queue is yours: a listener you mark `ShouldQueue`, or a
 job that publishes when it runs. This page is about both sides.
 
-::: tip
-This page describes `dev-main`. Tagged releases through v0.9.0 pass Eloquent
-models to `ActivityPublished`, `ActivityDeleted` and `BatchClosed`, and
-dispatch them before your outermost transaction commits.
-:::
-
 ## A Queued Listener
 
 ```php

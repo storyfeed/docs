@@ -56,11 +56,6 @@ Storyfeed::record('order.placed', $order, actor: $customer, target: $kitchen);
 | `result` | what it produced | a receipt, a generated artifact |
 | `instrument` | what it happened via | the device an order was taken on |
 
-::: tip
-`origin`, `result` and `instrument` are not in a tagged release. An install
-pinned to v0.9.0 or earlier has the first four roles.
-:::
-
 Direction decides the role. The same tablet is a `target` for an order sent
 **to** it and an `instrument` for an order taken **on** it.
 

@@ -154,11 +154,12 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     in the feed after this snippet is rendered directly beneath it, by the
     real components. Now mandatory on every concept page, not only on
     showcases. (Sharpens rule 15.)
-25. **No history, no promises.** Nothing about removed APIs, prior names,
-    reversals, stability guarantees, licensing, or risk. A reader who arrives
-    at 1.0 does not know or care. Pre-1.0 status is one phrase: "under active
-    development". History lives on the upgrade guide and nowhere else.
-    (Sharpens rule 11.)
+25. **The docs are written for the v1 reader. Nothing that existed before v1
+    exists.** No removed APIs, prior names, reversals, stability guarantees,
+    licensing, or risk; no "not in a tagged release" callouts, no per-version
+    notes, no upgrade guide — a reader who arrives at 1.0 installs 1.0 and has
+    all of it. Today's pre-1.0 status is chrome (`StabilityBanner`), never page
+    content. (Sharpens rule 11.)
 26. **No forward references.** A page never names a tool or a term a later
     page introduces — the doctor, aggregation, axes — and never closes with a
     pointer to the next concept. (Rule 18, generalised to prose.)
@@ -273,7 +274,7 @@ In the order a reader meets the problem.
 Vocabulary, then what you type, then the shapes, then the policy pages.
 
 - ✅ Glossary · Configuration · Commands · Doctor · Feedable API · The Payload Contract ·
-  Schema · Compatibility · Upgrade Guide (moved here from Getting Started: a new reader has nothing to upgrade)
+  Schema · Compatibility
 
 ## Pending coverage
 
@@ -307,13 +308,12 @@ source.
   exists; the guidance does not. Three surfaces, the mode each wants, one
   sentence of why. The load-bearing sentence is that mode is chosen per
   **surface**, not per app.
-- ⬜ **Upgrade notes for v0.8.0 and v0.9.0.** Neither release has a section, and
-  both are tagged. The v0.8.0 content is largely written under the
-  `v0.8.0-alpha.2` heading already, so that half is re-attribution.
-- ⬜ **The published-language-file upgrade trap** (`storyfeed/filament`): the
-  `verb_activities` line changed shape, and an app that published the plugin's
-  language files keeps the old string, so the new rendering never appears. Same
-  species as the published-migration rule. Nothing about it is on the site.
+
+### Void under rule 25
+
+Upgrade notes for v0.8.0 and v0.9.0, and the `storyfeed/filament`
+published-language-file trap. All three describe moving from one pre-v1
+release to another, which no reader of these docs is doing.
 
 ### Closed by the 2026-09-14 sweep
 
@@ -336,11 +336,10 @@ so nobody documents it as public API.
 - **The pre-1.0 status is chrome, not a page.** A reader arrives from a search
   engine on a deep page and never sees the introduction, so the status rides in
   `layout-top` on every route (`theme/components/StabilityBanner.vue`) and
-  points at its one canonical home, Compatibility → Stability before 1.0. It
-  does not replace a per-page version callout: the banner answers "how settled
-  is any of this", a page callout answers "does this snippet run on the install
-  the site documents", and only the second can name an API. A page documenting
-  something not in the current tag still carries its own callout.
+  points at its one canonical home, Compatibility → Stability before 1.0. It is
+  the ONLY place a version is named: per-page version callouts were removed on
+  2026-09-14 under rule 25, because a page that says "not in a tagged release"
+  is written for a reader of a pre-v1 release.
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that

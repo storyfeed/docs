@@ -58,22 +58,6 @@ Package-owned bookkeeping — the sync token lives here.
 
 Migrations are **published into your app**, which has one consequence worth
 internalizing: any change to a create stub is invisible to every install that
-already ran it.
+already ran it. So schema changes ship as **additive, guarded `add_*`
+migrations**, never edits to a create stub.
 
-So until 1.0, schema changes ship as **additive, guarded `add_*` migrations**,
-never edits to a create stub. There will be exactly one consolidation at 1.0,
-with an explicit upgrade step.
-
-### If You Published Before v0.5
-
-::: warning
-Early versions folded a column into its create stub. If you published
-migrations before that fold and later republish, you can end up with both the
-folded stub *and* your standalone `add_*` migration — and `migrate:fresh` dies
-mid-run on the duplicate column. Delete the orphaned `add_*` file, then run a
-full rebuild to confirm.
-
-Verify a republish with `php artisan migrate:fresh` locally **before** deploying
-it. Applies to installs that published before v0.5; the 1.0 consolidation
-resolves it.
-:::

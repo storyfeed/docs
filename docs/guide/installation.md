@@ -16,9 +16,8 @@ composer require storyfeed/storyfeed:dev-main
 
 The service provider and `Storyfeed` facade register via package discovery.
 
-The current package is installed from `dev-main`. Commit `composer.lock` to
-pin the resolved revision. Before updating, read the [upgrade
-notes](/guide/upgrading) and run `storyfeed:doctor` after the update.
+Commit `composer.lock` to pin the resolved revision, and run
+`storyfeed:doctor` after an update.
 
 ## Migrations
 
@@ -38,9 +37,9 @@ php artisan migrate
 | `feed_meta` | package bookkeeping |
 
 ::: warning
-Schema changes ship as **additive** `add_*` migrations — never edits to create
-stubs you already ran. When an upgrade note says to republish, publish and
-migrate; never delete a migration you have already run.
+Schema changes ship as **additive** `add_*` migrations, never edits to create
+stubs you already ran. Publish and migrate; never delete a migration you have
+already run.
 :::
 
 ## Configuration

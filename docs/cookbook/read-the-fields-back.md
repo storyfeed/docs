@@ -98,11 +98,6 @@ activities carry.
 
 ## Check Recorded Repetitions
 
-::: tip
-`reflexive` is not in a tagged release. An install pinned to v0.9.0 or earlier
-does not have this check.
-:::
-
 ```sh
 php artisan storyfeed:doctor --only=reflexive
 ```

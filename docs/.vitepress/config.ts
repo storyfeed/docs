@@ -129,7 +129,6 @@ export default defineConfig({
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
           { text: 'Compatibility', link: '/reference/compatibility' },
-          { text: 'Upgrade Guide', link: '/guide/upgrading' },
         ],
       },
     ],
