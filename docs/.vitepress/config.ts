@@ -104,6 +104,7 @@ export default defineConfig({
           { text: 'Headlines', link: '/basics/headlines' },
           { text: 'What an Activity Shows', link: '/basics/activity-content' },
           { text: 'Reading Feeds', link: '/basics/reading' },
+          { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
           { text: 'Rendering', link: '/basics/rendering' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'Live Rendering', link: '/basics/live-renderer' },
