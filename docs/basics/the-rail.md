@@ -117,6 +117,7 @@ Register intents the way you register icons — keyed `type.verb`, wildcards
 allowed, resolved most-specific first:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::glyphIntents([
     '*.approve' => 'success',   // the app's own word, not the package's
     '*.submit'  => 'pending',
@@ -127,6 +128,7 @@ Storyfeed::glyphIntents([
 Or on a story class:
 
 ```php
+// app/Stories/DocumentWasUploaded.php
 public function intent(): ?string
 {
     return 'success';

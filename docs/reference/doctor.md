@@ -62,6 +62,7 @@ classes and closures alike.
 ### Declaring an Unrestricted Feed
 
 ```php
+// config/storyfeed.php
 'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
 ```
 
@@ -73,6 +74,7 @@ warning. It still reports on every run, so a verb recorded next year still
 surfaces.
 
 ```php
+// config/storyfeed.php
 'portal' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->unrestricted(), // throws FeedMisconfigured
 Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
 ```

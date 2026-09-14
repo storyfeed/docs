@@ -15,6 +15,7 @@ can change it, do not record it — resolve it on read.**
 ## Recording It
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('discussion.replied', $discussion)

@@ -158,6 +158,7 @@ A detail sits alongside the app's own keys, so a reader finds one by walking
 check and the Filament adapter both stop looking four levels in.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('download', $document)

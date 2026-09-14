@@ -20,6 +20,7 @@ const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, gly
 </script>
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     'document.upload' => ':actor uploaded :object to :target',   // {objectType}.{verb}
 ]);
@@ -39,6 +40,7 @@ The key names the type; the template names the role. Your model names belong in
 the key, never in the template:
 
 ```php
+// config/storyfeed.php
 'document.upload' => ':user uploaded :document to :project',   // ✗ not tokens — these render as text
 'document.upload' => ':actor uploaded :object to :target',     // ✓
 ```
@@ -87,6 +89,7 @@ fields are null and [your renderer handles it](/basics/rendering#null-headline-g
 Register the noun forms by morph alias:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\FeedNoun;
 
 Storyfeed::nouns([
@@ -152,6 +155,7 @@ through the wildcard — authoring only `composite.{verb}` leaves the parent
 blank. Author both:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files to :target']);
 Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 ```
@@ -173,6 +177,7 @@ Pick one owner deliberately, or register the shared aggregate keys directly with
 ## Icons
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::icons([
     'document.upload' => 'file-up',
     '*.comment' => 'message-circle',
@@ -187,6 +192,7 @@ yours — the payload ships whatever token you registered.
 Templates are plain strings, so they translate:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     'document.upload' => __('feed.document_uploaded'),
 ]);

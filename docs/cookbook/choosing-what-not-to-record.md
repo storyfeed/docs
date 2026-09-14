@@ -4,6 +4,7 @@ A publish site only where a reader would want the row. A feed with fewer
 verbs than your app has events.
 
 ```php
+// app/Events/DocumentUploaded.php
 public function toFeedStory(): ?PendingStory
 {
     if ($this->document->status === 'draft') {
@@ -48,6 +49,7 @@ Storyfeed::grammar([
 ## A Comment Is an Activity About Its Target
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     'comment.comment' => ':actor commented on :target',   // names the document, never the comment
 ]);
@@ -114,6 +116,7 @@ the trait requires an explicit snapshot refresh.
 ## A Quote Belonging to One Activity
 
 ```php
+// where the fact happens: a controller, an action, a listener
 use Storyfeed\FeedThread;
 
 Storyfeed::activity()
@@ -135,6 +138,7 @@ When the object is the discussion itself, each activity can still carry the
 particular reply it is about:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     'discussion.reply' => ':actor replied about :target',
 ]);

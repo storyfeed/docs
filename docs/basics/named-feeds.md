@@ -51,6 +51,7 @@ Storyfeed::feeds([
 Enter it by name, from the facade or from the model:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed('team')->involving($project)->get();
 ```
 
@@ -59,6 +60,7 @@ Storyfeed::feed('team')->involving($project)->get();
 </FeedStream>
 
 ```php
+// a controller, or wherever the feed is read
 $project->storyfeed('client')->get();
 ```
 
@@ -77,6 +79,7 @@ surface may read is still `involving()`, `context()` or `query()`, as on any
 builder.
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed('client')->get();                       // every project in the system
 Storyfeed::feed('client')->involving($project)->get();  // this project
 ```
@@ -92,6 +95,7 @@ declaration, so the unscoped line cannot be written.
 Both work on any builder, with or without a name:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->only(['upload', 'approve'])->get();
 Storyfeed::feed()->only(['document.*', ActivityVerb::Approve])->get();
 Storyfeed::feed()->except(['note'])->get();
@@ -145,6 +149,7 @@ class ClientFeed extends Feed
 ```
 
 ```php
+// a controller, or wherever the feed is read
 ClientFeed::make($project)->get();
 ```
 
@@ -186,6 +191,7 @@ TeamFeed::make()->get();
 Register classes and closures in one list:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::feeds([
     'client' => ClientFeed::class,     // named explicitly
     TeamFeed::class,                   // name derived: 'team'

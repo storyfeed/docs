@@ -125,6 +125,7 @@ stale link in the feed.
 different on each surface, or nowhere.
 
 ```php
+// app/Models/Document.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return match ($context->feed()) { // [!code focus]
@@ -152,6 +153,7 @@ test.
 `InteractsWithFeed` also gives the model a feed of everything it took part in:
 
 ```php
+// a controller, or wherever the feed is read
 $project->storyfeed()->get();
 ```
 
@@ -169,6 +171,7 @@ Storyfeed stores morph aliases, never class names, so entities survive a
 namespace refactor. Enforce a map:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Relation::enforceMorphMap([
     'document' => Document::class,
     'project' => Project::class,

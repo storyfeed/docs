@@ -39,6 +39,7 @@ Return it without publishing; dispatching the event publishes it:
 Return `null` to publish nothing, when only some instances belong on the feed:
 
 ```php
+// app/Events/DocumentUploaded.php
 public function toFeedStory(): ?PendingActivity
 {
     if ($this->document->isDraft()) { // [!code focus]

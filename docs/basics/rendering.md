@@ -25,6 +25,7 @@ const items = [
 ## The Loop
 
 ```blade
+{{-- resources/views/feed.blade.php --}}
 @php
     // One entity becomes a linked label. A null label means the snapshot is
     // not written yet; the activity still renders, degraded.

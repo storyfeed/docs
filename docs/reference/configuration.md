@@ -63,6 +63,7 @@ before changing thresholds: `repeat` pins the target id, while `targets` does no
 what the payload has always emitted. Raise one where a surface leans on it:
 
 ```php
+// config/storyfeed.php
 'exemplar_limits' => [
     'object' => 6,  // this feed shows the objects' pictures
     // everything else stays at 3

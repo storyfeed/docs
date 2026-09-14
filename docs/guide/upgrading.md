@@ -92,6 +92,7 @@ activities and the IRI from you, so the query is yours to scope.
 [Current scoping](/basics/reading#scoping) covers all seven roles:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->for($project);        // → ->involving($project)
 ```
 
@@ -122,12 +123,14 @@ records the project as the object, not the context.
 default is `summary`; `curated` is reserved for a future relevance-ranked view.
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->flat();      // → ->log()
 Storyfeed::feed()->grouped();   // → ->live()
 Storyfeed::feed()->curated();   // → ->summary()
 ```
 
 ```php
+// config/storyfeed.php
 'grouping' => ['default' => 'summary'],   // 'curated' now throws
 ```
 

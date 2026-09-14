@@ -44,6 +44,7 @@ const summary = [scoped[0], log[3]]
 ## The Builder
 
 ```php
+// a controller, or wherever the feed is read
 $page = Storyfeed::feed()
     ->involving($project)
     ->limit(20)
@@ -57,6 +58,7 @@ $page = Storyfeed::feed()
 `$page` is a `FeedPage`: the payload envelope, ready to return from a route.
 
 ```php
+// routes/web.php
 Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 ```
 
@@ -83,6 +85,7 @@ Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 The same four activities as a log:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->involving($project)->log()->get();
 ```
 
@@ -93,6 +96,7 @@ Storyfeed::feed()->involving($project)->log()->get();
 And as a summary:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->involving($project)->summary()->get();
 ```
 
@@ -110,6 +114,7 @@ An entity's own page wants `involving()`: every activity that mentions it, in
 any role.
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()->involving($project)->get();
 $project->storyfeed()->get();   // the same read, from the model
 ```
@@ -196,6 +201,7 @@ A client that accumulates pages needs two more rules, in
 `FeedBuilder` is `Conditionable`:
 
 ```php
+// a controller, or wherever the feed is read
 Storyfeed::feed()
     ->when($request->project, fn ($feed, $project) => $feed->involving($project))
     ->get();

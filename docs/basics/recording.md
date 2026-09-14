@@ -37,6 +37,7 @@ const saved = activity({
 The builder reads in the order of the headline it produces:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('create', $project)
@@ -49,6 +50,7 @@ Storyfeed::activity()
 The same activity in one call, when everything is in hand:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::record('create', $project, actor: $user, target: $client);
 ```
 
@@ -95,6 +97,7 @@ Omit the actor and the authenticated user is recorded. In a job or a command
 there is no authenticated user, so name one for the block:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::as('System', function () {
     Storyfeed::record('sync', object: $invoice);
 });
@@ -109,6 +112,7 @@ means the actor is genuinely unknown.
 ## Extra Data and Backdating
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->action('upload', $document)
     ->data(['size' => $bytes])      // activity-level payload, arrives in the node
@@ -125,6 +129,7 @@ A draft saved five times is one fact, not five. `->replace()` supersedes the
 earlier row with the same object and verb:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()->action('save', $draft)->replace()->publish();
 
 // a minute later, another request
@@ -143,6 +148,7 @@ If your verbs live in an enum using the `AsFeedVerb` trait, every case is a
 builder:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 ActivityVerb::Comment->by($user)->object($comment)->to($project)->publish();
 ActivityVerb::Confirm->publish($delivery);
 ```
@@ -154,6 +160,7 @@ The enum is set up in [Activity Types & Verbs](/basics/activity-types-and-verbs)
 Pass `objects:` (or `->objects()`) to record one activity about many objects:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::record('upload', objects: $files, actor: $user, target: $project);
 ```
 

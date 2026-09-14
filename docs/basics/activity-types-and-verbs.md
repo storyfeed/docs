@@ -18,6 +18,7 @@ Activity types are a way to classify activities, and are usually expressed as ve
 <FeedStream :items="[uploaded]" :grouped="false" />
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload', $document) // [!code focus]
@@ -64,6 +65,7 @@ enum ActivityVerb: string implements FeedVerb // [!code focus]
 to allow fluent recording of activities using the enum:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 ActivityVerb::Comment->by($user)
     ->object($comment)
     ->to($project)

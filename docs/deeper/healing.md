@@ -89,6 +89,7 @@ activity; it does not lock an absent source or make a restorable source permanen
 Register the healer beside your feeds:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 use App\Storyfeed\AssetHealer;
 use Storyfeed\Facades\Storyfeed;
 
@@ -202,6 +203,7 @@ With an `AssetHealer` registered and two existing activity fixtures, one backed
 by a present asset and the other by a permanently deleted asset:
 
 ```php
+// tests/Feature/FeedTest.php
 $this->artisan('storyfeed:heal', ['--dry-run' => true, '--only' => ['assets']])
     ->assertSuccessful();
 

@@ -19,6 +19,7 @@ groups — grouping cannot be varied per request.
 A Story opts into axes via `groups()`:
 
 ```php
+// app/Stories/DocumentWasUploaded.php
 public function groups(): array
 {
     return [
@@ -42,6 +43,7 @@ assume any particular grouping behaviour.
 ## Thresholds
 
 ```php
+// config/storyfeed.php
 'grouping' => [
     'policy' => [
         'min_actors' => 3,          // actors axis needs 3+ distinct actors
@@ -72,6 +74,7 @@ re-apply, which rewrites settled history and bumps the `sync_token`.
 An axis is a key recipe plus eligibility — no package edits required:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\Grouping\Axis;
 
 Storyfeed::axes([
@@ -112,6 +115,7 @@ A new axis registers at the **lowest** priority. If it should outrank a
 built-in, say so explicitly:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::axes([$scene], before: 'repeat');
 ```
 :::

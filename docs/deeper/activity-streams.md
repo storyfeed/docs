@@ -8,6 +8,7 @@ This is a document serialization surface, not a general AS2 importer.
 One read-only endpoint, off by default:
 
 ```php
+// config/storyfeed.php
 'routes' => [
     'enabled' => false,
     'prefix' => 'storyfeed',
@@ -120,6 +121,7 @@ reconstruct every storage attribute or reproduce the whole document.
 Per-story:
 
 ```php
+// app/Stories/DocumentWasUploaded.php
 public ActivityType|string|null $type = ActivityType::Add;
 ```
 

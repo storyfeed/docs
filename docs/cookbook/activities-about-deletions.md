@@ -3,6 +3,7 @@
 A removal story that still renders after the row it is about is gone.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('document.remove', $project)     // object: the parent, which survives
@@ -13,6 +14,7 @@ $document->delete();
 ```
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'document.remove' => ActivityType::Remove,
 ]);

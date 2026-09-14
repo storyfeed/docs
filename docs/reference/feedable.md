@@ -104,6 +104,7 @@ meaning:
 | `url` | a `FeedImage` in place of a string when the resource itself is an image |
 
 ```php
+// app/Models/Document.php
 use Storyfeed\FeedImage;
 
 public static function feedMedia(FeedContext $context): ?FeedMedia
@@ -157,6 +158,7 @@ placeholder. Activities are never hidden by the read path.
 ## The Model's Own Feed
 
 ```php
+// a controller, or wherever the feed is read
 $project->storyfeed()->get();
 ```
 

@@ -17,6 +17,7 @@ const inside = activity({
 </script>
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('comment', $comment)
@@ -42,6 +43,7 @@ When the target is itself the container, `target` carries it, and the record
 is complete:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload', $document)
@@ -72,6 +74,7 @@ sentence:
 The axis is the one that cannot be had any other way:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Axis::make('scene')
     ->key('v:ca!:cid!:d')                 // verb + context identity + day
     ->eligibleWhenDistinct('actor', min: 2);

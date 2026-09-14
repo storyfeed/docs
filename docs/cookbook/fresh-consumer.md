@@ -4,6 +4,7 @@ Keep your app’s verbs, grammar, and icons. Remove Filament overrides that only
 repeat the defaults.
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Filament\FeedRendering;

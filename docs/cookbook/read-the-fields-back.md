@@ -81,6 +81,7 @@ Sam · archived · document · —   coherent — nothing was aimed at
 ```
 
 ```php
+// config/storyfeed.php
 'document.archive' => ':actor archived :object from :target'   // ✗ nothing fills :target
 ```
 

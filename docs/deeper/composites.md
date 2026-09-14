@@ -19,6 +19,7 @@ files uploaded as a single activity, not several grouped ones.
 ## Explicit
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload')
@@ -51,10 +52,12 @@ class Document extends Model implements Feedable, Collectable
 ```
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::collectables(['document']);
 ```
 
 ```php
+// config/storyfeed.php
 'composite' => [
     'auto' => true,
     'min_objects' => 2,   // smallest distinct object count that mints a story
@@ -69,6 +72,7 @@ A batch is a burst of activity by one actor, inferred by a sliding quiet
 window — recorded automatically, invisible to your recording code.
 
 ```php
+// config/storyfeed.php
 'batch' => [
     'enabled' => true,
     'quiet_minutes' => 10,
@@ -79,6 +83,7 @@ A stale batch closes lazily at that actor's next publish. Schedule the command
 so it closes promptly instead:
 
 ```php
+// routes/console.php
 Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
 ```
 
@@ -97,6 +102,7 @@ Two registries, both required — see
 [Grammar](/deeper/grammar#composite-parents):
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files to :target']);
 Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 ```

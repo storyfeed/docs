@@ -104,6 +104,7 @@ provides a separate sentence for the same verb.
 ## An Explicitly Unknown Actor
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($knownAuthor) // User|null: null explicitly means anonymous
     ->action('submit', $document)
@@ -139,6 +140,7 @@ null is intentional.
 ## A System Is a Party
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by('DocuSign')
     ->action('sign', $document)
@@ -159,6 +161,7 @@ A job that publishes many activities scopes the block with
 ## Nobody Acted
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     'document.expire' => ':object expired in :target',   // no :actor, on purpose
 ]);

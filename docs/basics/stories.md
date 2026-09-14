@@ -67,6 +67,7 @@ class DocumentWasUploaded extends Story
 Publish through it and the activity arrives with its headline:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 DocumentWasUploaded::activity($document)
     ->by($user)
     ->to($project)
@@ -85,6 +86,7 @@ php artisan make:story DocumentWasUploaded
 ```
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::stories([
     DocumentWasUploaded::class,
 ]);

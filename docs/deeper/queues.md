@@ -103,6 +103,7 @@ does. A listener that needs the fact has it already.
 ### Inside a Transaction
 
 ```php
+// where the fact happens: a controller, an action, a listener
 DB::transaction(function () use ($document, $user) {
     $document->update(['status' => 'submitted']);
 
@@ -201,6 +202,7 @@ rewritten on every save.
 A value the fact needs to keep travels in `data`:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($this->user)
     ->action('submit', $this->document)
@@ -289,6 +291,7 @@ Under the `sync` driver, the default in a test suite, a queued listener runs
 inline and `Storyfeed::fake()` sees its publish:
 
 ```php
+// tests/Feature/FeedTest.php
 it('records the submission', function () {
     Storyfeed::fake();
 
@@ -302,6 +305,7 @@ With `Queue::fake()` as well, nothing is recorded until the handler runs.
 Queue acceptance is not evidence of a publish:
 
 ```php
+// tests/Feature/FeedTest.php
 it('records the submission', function () {
     Storyfeed::fake();
     Queue::fake();

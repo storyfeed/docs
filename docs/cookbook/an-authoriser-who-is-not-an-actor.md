@@ -19,6 +19,7 @@ Storyfeed::activity()
 ```
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::feeds([
     'kitchen' => fn (FeedBuilder $feed) => $feed
         ->only(['photo.published', 'menu.changed'])

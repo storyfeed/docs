@@ -27,6 +27,7 @@ class DocumentWasUploaded extends Story
 The class is the one place the verb string is written. Publish through it:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 DocumentWasUploaded::activity($document)
     ->by($user)
     ->to($project)
@@ -36,6 +37,7 @@ DocumentWasUploaded::activity($document)
 From an event, name the class:
 
 ```php
+// app/Events/DocumentUploaded.php
 public function toFeedStory(): ?PendingStory
 {
     return PendingStory::of(DocumentWasUploaded::class)

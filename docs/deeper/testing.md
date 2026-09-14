@@ -3,6 +3,7 @@
 ## Faking the Feed
 
 ```php
+// tests/Feature/FeedTest.php
 Storyfeed::fake();
 
 // … exercise your code …
@@ -30,6 +31,7 @@ These fail your suite when the grammar stops keeping up with the app — the
 failure mode where a feed silently renders blank lines for new activity types.
 
 ```php
+// tests/Feature/FeedTest.php
 use Storyfeed\Testing\GrammarCoverage;
 
 GrammarCoverage::assertCoversRecorded();          // every verb/type pair in the DB has grammar
@@ -48,6 +50,7 @@ what your registered axes *could* produce, so it catches gaps before traffic
 finds them. The matrix variant is for asserting a specific grid deliberately.
 
 ```php
+// tests/Feature/FeedTest.php
 use Storyfeed\Testing\StorySurface;
 
 StorySurface::assertNoUnwiredSurface();

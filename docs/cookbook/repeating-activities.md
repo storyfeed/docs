@@ -4,6 +4,7 @@ Keep every occurrence in a timeline, or retain only the latest occurrence of
 a verb on an object. Choose what the reader needs to revisit.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()->by($user)->action('rename', $document)->replace()->publish();   // replaces the earlier rename row
 Storyfeed::activity()->by($user)->action('upload', $document)->publish();              // every upload is its own row
 ```

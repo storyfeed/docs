@@ -22,6 +22,7 @@ Two different things that both look like "not a user":
 ## Parties
 
 ```php
+// where the fact happens: a controller, an action, a listener
 $party = Storyfeed::party('Stripe');
 
 Storyfeed::record('sync', $invoice, actor: $party);
@@ -32,6 +33,7 @@ Storyfeed::record('sync', $invoice, actor: $party);
 Parties work in **any** role — actor, object, target, context, origin, result, or instrument:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->action('notify', $invoice)
     ->to(Storyfeed::party('Accounts Payable'))
@@ -45,6 +47,7 @@ Storyfeed::activity()
 Inside a job or console command there is no authenticated user. Scope a block:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::as('System', function () {
     Storyfeed::record('sync', object: $invoice);
 });
@@ -57,6 +60,7 @@ callback throws.
 ## App-wide Fallbacks
 
 ```php
+// config/storyfeed.php
 'parties' => [
     'fallback' => null,      // e.g. 'System' — a name for otherwise-anonymous publishes
 ],

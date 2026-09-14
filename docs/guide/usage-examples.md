@@ -77,6 +77,7 @@ A user uploads a document to a project.
 The same user uploads seven documents to that project, one after another.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 foreach ($documents as $document) {
     Storyfeed::activity()
         ->by($user)
@@ -165,6 +166,7 @@ An external service pushes a document into a project, and it has no row in your
 database to point at.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by('Concur Web Service')
     ->action('sync', $document)
@@ -211,6 +213,7 @@ activity records *what happened*, and the model says *what it looks like when
 something reads it back*.
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('comment', $comment)

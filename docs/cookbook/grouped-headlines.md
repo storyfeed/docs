@@ -4,6 +4,7 @@ A group that reads as one sentence, written on the lines next to the sentence
 for one activity.
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'upload' => ActivityType::Add,
 ]);
@@ -49,6 +50,7 @@ const crowd = group({
 *A user uploads a document to a project.*
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload', $annualReport)
@@ -61,6 +63,7 @@ Storyfeed::activity()
 *a minute later, another request*
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload', $signagePlan)
@@ -71,6 +74,7 @@ Storyfeed::activity()
 *another minute later, a third request*
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
     ->action('upload', $pricingTable)
@@ -81,6 +85,7 @@ Storyfeed::activity()
 These are three different documents, each uploaded once. Read with grouping:
 
 ```php
+// a controller, or wherever the feed is read
 $feed = Storyfeed::feed()->involving($project)->live()->get();
 ```
 

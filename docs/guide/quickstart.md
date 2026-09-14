@@ -72,6 +72,7 @@ weight. [Feedable Models](/basics/feedable-models) covers a link per feed; the
 Storyfeed stores morph aliases, never class names, so enforce a morph map:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Relation::enforceMorphMap([
     'document' => Document::class,
     'project' => Project::class,
@@ -123,6 +124,7 @@ class DocumentWasUploaded extends Story
 Generate one with `php artisan make:story DocumentWasUploaded`, then register:
 
 ```php
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::stories([
     DocumentWasUploaded::class,
 ]);
@@ -140,6 +142,7 @@ member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
 Or in one line:
 
 ```php
+// where the fact happens: a controller, an action, a listener
 Storyfeed::record('upload', $document, actor: $user, target: $project);
 ```
 
@@ -149,6 +152,7 @@ listener.
 ## 4. Read It Back
 
 ```php
+// a controller, or wherever the feed is read
 $page = Storyfeed::feed()
     ->involving($project)
     ->limit(20)
@@ -165,6 +169,7 @@ the object — including the activity that created the project itself.
 `sync_token` — and is `Responsable`, so an API endpoint is one line:
 
 ```php
+// routes/web.php
 Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 ```
 
@@ -204,6 +209,7 @@ $page = Storyfeed::feed()->cursor($cursor)->get();
 Every item is self-describing, so this is the whole renderer, in plain Blade:
 
 ```blade
+{{-- resources/views/feed.blade.php --}}
 @php
     // One entity → a linked label. A null label means the snapshot isn't
     // written yet; the activity still renders, degraded.

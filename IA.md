@@ -184,6 +184,12 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     `App\Stories`, feeds under `App\Feeds`, events, listeners, observers and
     enums under their Laravel-conventional namespaces; a package type under
     its real one. The namespace line precedes the `use` block.
+    **A snippet that is not a class opens with a comment naming where it
+    goes:** `// config/storyfeed.php`, `// app/Providers/AppServiceProvider.php,
+    boot()`, `// routes/console.php`, `// where the fact happens: a controller,
+    an action, a listener`, `{{-- resources/views/feed.blade.php --}}`. A reader
+    of any snippet must never have to ask "where do I put this?". Exempt: an
+    API fragment on a Reference page (an argument list, a chain segment).
 
 ### When a callout is earned — Silent / Unguarded / In-Hand
 
