@@ -154,12 +154,14 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     in the feed after this snippet is rendered directly beneath it, by the
     real components. Now mandatory on every concept page, not only on
     showcases. (Sharpens rule 15.)
-25. **The docs are written for the v1 reader. Nothing that existed before v1
-    exists.** No removed APIs, prior names, reversals, stability guarantees,
-    licensing, or risk; no "not in a tagged release" callouts, no per-version
-    notes, no upgrade guide — a reader who arrives at 1.0 installs 1.0 and has
-    all of it. Today's pre-1.0 status is chrome (`StabilityBanner`), never page
-    content. (Sharpens rule 11.)
+25. **The docs describe `dev-main` as it is now, with no history behind it.**
+    One moment in time. No removed APIs, prior names, reversals, stability
+    guarantees, licensing or risk; no "not in a tagged release" callouts, no
+    per-version notes, no upgrade guide. A page never says what something used
+    to be, and never says which release it arrived in — the reader installs
+    what the install page installs, and that is the only version in play.
+    Today's pre-1.0 status is chrome (`StabilityBanner`), never page content.
+    (Sharpens rule 11.)
 26. **No forward references.** A page never names a tool or a term a later
     page introduces — the doctor, aggregation, axes — and never closes with a
     pointer to the next concept. (Rule 18, generalised to prose.)
@@ -312,8 +314,8 @@ source.
 ### Void under rule 25
 
 Upgrade notes for v0.8.0 and v0.9.0, and the `storyfeed/filament`
-published-language-file trap. All three describe moving from one pre-v1
-release to another, which no reader of these docs is doing.
+published-language-file trap. All three describe moving between releases, and
+these pages describe one: `dev-main`, as it is now.
 
 ### Closed by the 2026-09-14 sweep
 
@@ -339,7 +341,7 @@ so nobody documents it as public API.
   points at its one canonical home, Compatibility → Stability before 1.0. It is
   the ONLY place a version is named: per-page version callouts were removed on
   2026-09-14 under rule 25, because a page that says "not in a tagged release"
-  is written for a reader of a pre-v1 release.
+  is describing a release, and these pages describe `dev-main`.
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
