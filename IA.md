@@ -223,7 +223,7 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 - ✅ Introduction — `guide/introduction`
 - ✅ Usage Examples — the showcase: a snippet, the feed it renders, and the page that teaches it
 - ✅ Installation — `guide/installation`
-- ✅ Quickstart — five short steps to one activity on screen; everything else defers to The Basics
+- ✅ Quickstart — three steps until the app is recording; reading and drawing are choices, not setup
 
 ### The Basics
 

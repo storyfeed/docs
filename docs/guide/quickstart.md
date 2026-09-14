@@ -1,7 +1,7 @@
 # Quickstart
 
-One activity on the feed, in five steps. A customer places an order with a
-kitchen.
+Three steps until your app is recording activities. The example is a customer
+placing an order with a kitchen.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -47,32 +47,12 @@ Storyfeed::grammar([
 
 <<< @/snippets/publish.php
 
-## 4. Read It Back
-
-```php
-// a controller, or wherever the feed is read
-$page = Storyfeed::feed()->involving($kitchen)->limit(20)->get();
-```
-
-`$page` is the payload envelope, and it is `Responsable`, so an endpoint is
-one line:
-
-```php
-// routes/web.php
-Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
-```
-
-## 5. Show It
-
-Every node carries its own sentence with the entities already in it, so
-drawing one needs no knowledge of your app:
+That is the activity, and this is it on a feed:
 
 <FeedStream :items="[scenes.order]" :grouped="false" />
 
-How you draw it is open. A few lines of Blade, a Vue component, Livewire,
-React, or a renderer package that draws it for you.
-[Rendering](/basics/rendering) starts with the smallest loop that produces the
-row above.
+Call it wherever the fact becomes true: an action, an observer, an event
+listener.
 
 ## Check Your Work
 
@@ -84,7 +64,9 @@ Doctor reads your registries and your actual traffic, and names each problem
 with its fix: a verb with no headline, a group that would arrive unnamed, a
 model in the feed that nothing publishes about.
 
-That is a working feed. [The Basics](/basics/feedable-models) takes each of
-these five steps in turn: linking an entity, the roles an activity can carry,
-what a row can show beneath its sentence, reading modes and audiences, and
-drawing it all.
+## Where to Go Next
+
+Your app is recording. Everything else is a choice you have not had to make
+yet: which activities each surface shows, how bursts of them collapse into one
+line, what a row carries beneath its sentence, and how any of it is drawn.
+[The Basics](/basics/feedable-models) takes them in order.
