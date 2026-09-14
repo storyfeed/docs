@@ -215,7 +215,7 @@ bookmark otherwise falls through to the default.
 - **Null-headline groups became reachable.** A group with no safe headline now
   arrives with both `headline_template` and `headline` null. A last-resort branch
   that composes prose from node entities will name one actor over a many-actor
-  group — see [Rendering](/basics/rendering#null-headline-groups).
+  group — see [Rendering](/basics/rendering#a-group-with-no-sentence).
 - **`sync_token`** added to the envelope. Store and compare it; on change, drop
   accumulated nodes and refetch.
 

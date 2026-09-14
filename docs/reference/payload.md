@@ -199,7 +199,7 @@ non-null, `headline` is null **by design**, so a test asserting a non-null
 
 Both null on a group node means the group cannot be honestly summarized.
 Renderers **must** handle it — see
-[Rendering](/basics/rendering#null-headline-groups).
+[Rendering](/basics/rendering#a-group-with-no-sentence).
 
 Token availability per axis is in
 [Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s

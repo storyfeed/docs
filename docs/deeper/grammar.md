@@ -45,7 +45,7 @@ entries. `:count` is the member count.
 | `:instrument` | `:instruments` | the tool or service used |
 
 A singular token resolves to one entity label. A plural token resolves to the
-group's exemplars with an overflow count. [Rendering](/basics/rendering#headline-templates)
+group's exemplars with an overflow count. [Rendering](/basics/rendering#groups)
 covers substitution and the `:count` and `:others` tokens.
 
 ## Tokens a Group Headline May Use
@@ -68,7 +68,7 @@ When no aggregate grammar resolves, the group tries the head member's singular
 template. Pinned tokens keep their links. An unpinned role with one distinct
 entity can also keep its token; with several entities, it can become a plain
 noun when the axis pins their type. If neither fallback is safe, both headline
-fields are null and [your renderer handles it](/basics/rendering#null-headline-groups).
+fields are null and [your renderer handles it](/basics/rendering#a-group-with-no-sentence).
 
 Register the noun forms by morph alias:
 

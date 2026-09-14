@@ -266,7 +266,7 @@ when you adapt this. [Rendering](/basics/rendering) covers the token rules in
 full.
 
 A feed that polls or accumulates pages also needs
-[reconciliation](/basics/rendering#reconciling-updates) — without it, a
+[reconciliation](/basics/rendering#feeds-that-keep-moving) — without it, a
 regrouped node duplicates activities on the next poll.
 
 ## Check Your Work

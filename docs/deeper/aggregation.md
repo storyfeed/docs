@@ -179,4 +179,4 @@ which groups form (axes, thresholds, windows) is server-side policy and free
 to evolve, so a renderer never assumes a particular grouping. Within any read
 mode every activity appears in exactly one node, atomic or grouped, never
 both, which is what makes the member-identity
-[reconciliation rule](/basics/rendering#reconciling-updates) sound.
+[reconciliation rule](/basics/rendering#feeds-that-keep-moving) sound.
