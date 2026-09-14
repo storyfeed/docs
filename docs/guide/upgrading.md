@@ -1,4 +1,4 @@
-# Upgrading
+# Upgrade Guide
 
 Storyfeed is pre-1.0. Breaking changes are named here with their replacement.
 
@@ -23,7 +23,9 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
-## Unreleased — `Collectable` Is Now `Bundleable`
+## Unreleased
+
+### `Collectable` Is Now `Bundleable`
 
 `Storyfeed\Contracts\Collectable` is now **`Bundleable`**, with
 `Storyfeed::collectables()` → `bundleables()` and `isCollectable()` →
@@ -54,7 +56,7 @@ Storyfeed::collectables(['document']); // [!code --]
 Storyfeed::bundleables(['document']); // [!code ++]
 ```
 
-## Unreleased — Events Return a `PendingActivity`
+### Events Return a `PendingActivity`
 
 `PublishesToFeed::toFeedStory()` is now **`toFeedActivity()`**, and
 `Storyfeed\PendingStory` is gone: its `of()` and `inline()` constructors live

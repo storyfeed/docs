@@ -1,4 +1,4 @@
-# What a Fresh Consumer Writes Today
+# Setting Up a New Consumer
 
 Keep your app’s verbs, grammar, and icons. Remove Filament overrides that only
 repeat the defaults.

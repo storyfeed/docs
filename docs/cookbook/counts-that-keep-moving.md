@@ -1,4 +1,4 @@
-# Counts That Keep Moving
+# Counts That Keep Changing
 
 A node quoting "3 replies" is stating a fact about the moment it was recorded.
 Nothing recomputes it — not `storyfeed:rebuild`, not `curate --rehash`, not the

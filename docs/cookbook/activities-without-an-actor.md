@@ -1,4 +1,4 @@
-# Activities without an Actor
+# Activities Without an Actor
 
 An actor on every activity somebody performed, a party on every activity a
 system performed, and a sentence with no `:actor` when nobody did.

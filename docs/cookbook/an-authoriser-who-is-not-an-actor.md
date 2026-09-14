@@ -1,4 +1,4 @@
-# An Authoriser Who Is Not an Actor
+# Recording an Authoriser
 
 Someone does a thing; someone else permits it. The doer belongs in the sentence.
 The authoriser belongs in the record, and usually nowhere else.
