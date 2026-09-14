@@ -109,14 +109,14 @@ Without an aggregate template, a group has no authored sentence and falls back.
 The fallback is described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
 
 If changing the target stops a `repeat` group from forming, the built-in
-[`targets` axis](/deeper/aggregation#axis-registry) leaves target free;
+[`targets` axis](/deeper/aggregation#the-built-in-axes) leaves target free;
 `repeat` includes its id in the key.
 
 ## One Entry per Axis the Verb Can Group on
 
 `:count` is always the member count; the noun after it names what a member is.
 
-| axis | the members are | sentence |
+| Axis | The Members Are | Sentence |
 |---|---|---|
 | `repeat` | one actor, one verb, one target, one kind of object | `:actor uploaded :count files to :target` |
 | `actors` | several actors' acts on one target | `:actors uploaded :count files to :target` |

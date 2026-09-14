@@ -2,7 +2,7 @@
 
 ## Scheduled
 
-| command | does | suggested |
+| Command | Does | Suggested |
 |---|---|---|
 | `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |
 | `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, mints composites. `--quiet-minutes=` | every 5 minutes |
@@ -17,7 +17,7 @@ Schedule::command('storyfeed:prune')->daily();
 
 ## Diagnostics
 
-| command | does |
+| Command | Does |
 |---|---|
 | `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`, `--stubs`, `--only=`, `--list` names the checks `--only=` accepts, `--fail-on=warning\|error` exits non-zero |
 | `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
@@ -27,7 +27,7 @@ See [Doctor](/reference/doctor) for the checks.
 
 ## Maintenance
 
-| command | does |
+| Command | Does |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
 | `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=` |
@@ -79,7 +79,7 @@ reimplementing.
 
 ## Manifest
 
-| command | does |
+| Command | Does |
 |---|---|
 | `storyfeed:cache` | compiles registered stories into a cached manifest — also runs on `php artisan optimize` |
 | `storyfeed:clear` | removes the cached manifest |
@@ -89,7 +89,7 @@ reimplementing.
 
 ## Generators
 
-| command | does |
+| Command | Does |
 |---|---|
 | `make:story` | creates a story class. `--from-doctor` generates a stub per gap doctor found |
 | `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()` |

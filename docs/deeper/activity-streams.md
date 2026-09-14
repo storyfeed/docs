@@ -16,7 +16,7 @@ One read-only endpoint, off by default:
 ],
 ```
 
-| route | serves |
+| Route | Serves |
 |---|---|
 | `GET /{prefix}/activities/{uid}` | a single `Activity` document, addressed by its ULID |
 
@@ -25,7 +25,7 @@ Exposing an activity is an app decision — add auth or throttling via
 
 ## Source, Outcome and Means
 
-| role | AS2 meaning |
+| Role | AS2 Meaning |
 |---|---|
 | [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
 | [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |

@@ -52,7 +52,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 Optional — every value in `config/storyfeed.php` has a working default. The
 ones you are most likely to touch first:
 
-| Key | Default | |
+| Key | Default |  |
 |---|---|---|
 | `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, or `'summary'` |
 | `grouping.batch.quiet_minutes` | `10` | idle time before an actor's burst is considered finished |

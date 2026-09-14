@@ -48,7 +48,7 @@ model-instance delete soft-deletes every activity it took part in, in any
 role. A `forceDeleted` event hard-deletes them. The table assumes these
 model events run.
 
-| the removal story references | after the delete |
+| The Removal Story References | After the Delete |
 |---|---|
 | the deleted model, in any role, published before the delete | deleted with the model's other activities |
 | the deleted model, published after the delete | the snapshot renders; its link points at a record that is gone |

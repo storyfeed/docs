@@ -32,7 +32,7 @@ Core does not read it, strip it, upgrade it, count it, or name it in a payload
 key. An activity recorded from a detail is byte-identical to one recorded from
 the array that detail produces.
 
-| a detail is | a detail is **not** |
+| A Detail Is | A Detail Is **Not** |
 |---|---|
 | a typed block beneath the sentence | part of the headline — that is a [grammar](/deeper/grammar) template |
 | the app's value, at the app's key | a key core owns, or a key core validates |
@@ -100,7 +100,7 @@ to add something that belongs in storage and not on the node.
 
 ### The Two Reserved Keys
 
-| key | constant | holds |
+| Key | Constant | Holds |
 |---|---|---|
 | `$detail` | `FeedDetail::KEY` | the form's name, verbatim |
 | `$v` | `FeedDetail::VERSION` | the version that wrote the row |
@@ -150,7 +150,7 @@ sees the current form and no view branches on `$v`.
 
 ## Where a Detail Lives
 
-| on | recorded with | describes |
+| On | Recorded with | Describes |
 |---|---|---|
 | an entity's snapshot | `FeedEntity::make(data: …)` in `toFeed()` | the noun — the same preview wherever that entity appears |
 | an activity | `->data(…)` | the act — this row and no other |
@@ -175,7 +175,7 @@ Storyfeed::activity()
 Two values in the same `data` column follow opposite versioning postures, and
 the branch is one question: **does core own the key?**
 
-| key | node key | who upgrades | does `$v` reach the renderer? |
+| Key | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
 |---|---|---|---|
 | `$thread` | `thread` | core, on read | no |
 | `$change` | `change` | core, on read | no |
@@ -201,7 +201,7 @@ rather than one renderer's furniture — `storyfeed/filament` registers them for
 its own views, and any other renderer may recognise the same names. An app
 writing its own owes nothing to any of them.
 
-| name | is | keys |
+| Name | Is | Keys |
 |---|---|---|
 | `Storyfeed/Fields` | labelled rows | `rows[]` of `label`, `value`, `mono`, `missing` |
 | `Storyfeed/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |

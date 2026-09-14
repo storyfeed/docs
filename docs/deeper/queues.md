@@ -75,7 +75,7 @@ class BroadcastActivity implements ShouldQueue
 snapshots. Both are `readonly` and hold only arrays, scalars and null, so the
 job payload is the same whether the listener runs now or in an hour.
 
-| property | type | |
+| Property | Type |  |
 |---|---|---|
 | `id`, `uid` | `int`, `string` | the activity's identity |
 | `verb` | `string` | the verb as stored |
@@ -90,7 +90,7 @@ from the entity's snapshot at publish.
 
 ### What Survives the Round Trip
 
-| | on the worker |
+|  | On the Worker |
 |---|---|
 | the role's alias, key and label | as they were at publish |
 | the entity's snapshot `data` | as it was at publish |
@@ -182,7 +182,7 @@ Grouping is cut by day on `published_at`, so the late row with the default
 stamp lands on the next day and does not join the group its two siblings
 formed. With the captured time it joins, and the group counts three.
 
-| `published_at` decides | keyed on |
+| `published_at` Decides | Keyed on |
 |---|---|
 | the grouping day, and so which group a row can join | `published_at`, in `app.timezone` |
 | the batch an actor's row joins | `published_at`; a row arriving after its window closed opens a separate batch and never reopens a closed one |
@@ -222,7 +222,7 @@ so a copy older than the current snapshot leaves the snapshot alone.
 
 ### Retries and the Recording Switch
 
-| the job | do |
+| The Job | Do |
 |---|---|
 | publishes, then fails, then retries | publish last, after the step that can fail: `publish()` has no idempotency key |
 | repeats a verb on the same object (a status tick, a re-sync) | `->replace()`: the newest row supersedes every earlier `(object, verb)` |
@@ -257,7 +257,7 @@ the same identity.
 
 The transported identity speaks only where nothing else has an opinion:
 
-| decided first | example | the transported identity |
+| Decided First | Example | The Transported Identity |
 |---|---|---|
 | an explicit actor | `->by($user)`, `->by('Nightly Import')` | ignored |
 | explicit anonymity | `->anonymously()`, `->by(null)` | ignored |
@@ -279,7 +279,7 @@ A worker with no request context at all, a job dispatched from a console
 command or a schedule, records nothing unless told. The four ways of telling it
 are distinct, and each was checked on a real queue:
 
-| the job says | actor recorded | batched |
+| The Job Says | Actor Recorded | Batched |
 |---|---|---|
 | `->by('Nightly Import')` | the party *Nightly Import* | yes |
 | nothing, with `'parties' => ['fallback' => 'Nightly Import']` | the party *Nightly Import* | yes |
@@ -336,7 +336,7 @@ one against the real manager with `Queue::fake()` alone.
 
 Two workers publishing at the same moment hold, in the exercised cases:
 
-| | how |
+|  | How |
 |---|---|
 | one batch per actor per burst | the actor's open batch row is read `lockForUpdate()` inside the publish transaction |
 | one `BatchClosed` per batch | the close is a conditional update on the open row; a second sweeper affects zero rows and announces nothing |
@@ -370,7 +370,7 @@ that must not show it can run `storyfeed:curate` on a shorter schedule.
 Everything above marked as checked ran as real serialized jobs on the
 `database` queue driver, popped and fired by Laravel's own worker code.
 
-| demonstrated | |
+| Demonstrated |  |
 |---|---|
 | snapshot events survive the queue, and survive the trickle pruning their activity | database driver |
 | jobs are pushed after the outermost commit; a rollback pushes nothing | database driver |
@@ -381,7 +381,7 @@ Everything above marked as checked ran as real serialized jobs on the
 | the stale curation winner above | two processes, PostgreSQL 18 and MariaDB 10.11 |
 | a worker renders the feed and resolves `feedMedia()` with no request | database driver |
 
-| not demonstrated | |
+| Not Demonstrated |  |
 |---|---|
 | MySQL | no run; MariaDB's `REPEATABLE READ` behaviour above is the closest evidence |
 | two first-ever publishes by one actor at the same moment | no open batch row exists yet to lock; the shared snapshot row serialized the exercised case, and a case with no shared row has not been run |

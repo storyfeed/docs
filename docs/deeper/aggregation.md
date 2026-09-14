@@ -1,44 +1,109 @@
 # Aggregation
 
-Activities group along **axes** — each axis collapses one dimension.
-These built-in axes are registered by default:
+Several activities that belong together read as one line. Aggregation is how
+the feed decides which activities belong together, and a Story says what the
+one line reads as. When you are done, bursts of activity arrive as group nodes
+with headlines you authored.
 
-## Axis Registry
+<script setup>
+import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
 
-| axis | collapses | pins (safe singular tokens) | example headline |
-|---|---|---|---|
-| `repeat` | one actor repeating a verb | `:actor` `:target` | ":actor uploaded :count files to :target" |
-| `actors` | many actors, same verb + target | `:target` | ":actors uploaded :count files to :target" |
-| `targets` | one actor across targets | `:actor` | ":actor commented in :targets" |
-| `object` | many actions on one object | `:actor` `:object` | ":actor made :count revisions to :object" |
-| `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
+const at = '2026-08-14T14:30:00.000000Z'
+const upload = (id, actor, object) => activity({ id, verb: 'upload', glyph: 'file-up',
+  published_at: at, headline_template: ':actor uploaded :object to :target',
+  actor, object, target: where.main })
 
-Each activity ends up in exactly one axis per read mode. The read path never
-groups — grouping cannot be varied per request.
+const log = [
+  upload('ag1', who.designer, doc.pricing),
+  upload('ag2', who.designer, doc.signage),
+  upload('ag3', who.designer, doc.report),
+]
 
-A Story opts into axes via `groups()`:
+const repeat = group({ id: 'ag4', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+  published_at: at, headline_template: ':actor uploaded :count files to :target',
+  actors: [who.designer], targets: [where.main],
+  objects: [doc.pricing, doc.signage, doc.report],
+  distinct: { actors: 1, objects: 3, targets: 1 } })
+
+const actors = group({ id: 'ag5', verb: 'upload', axis: 'actors', count: 5, glyph: 'file-up',
+  published_at: at, headline_template: ':actors uploaded :count files to :target',
+  actors: [who.designer, who.lead, who.reviewer], targets: [where.main],
+  objects: [doc.pricing, doc.signage, doc.report],
+  distinct: { actors: 5, objects: 5, targets: 1 } })
+</script>
+
+## Grouping Repeats
+
+Three uploads by one person, minutes apart, as a log:
+
+<FeedStream :items="log" :grouped="false" />
+
+A Story's `groups()` says how they read as one:
 
 ```php
-// app/Stories/DocumentWasUploaded.php
+<?php
+
+namespace App\Stories;
+
+use App\Models\Document;
+use Storyfeed\Grouping\Group; // [!code focus]
+use Storyfeed\Story;
+
+class DocumentWasUploaded extends Story
+{
+    public string|array|null $objectType = Document::class;
+
+    public string|FeedVerb|BackedEnum|null $verb = 'upload';
+
+    public function headline(): string
+    {
+        return ':actor uploaded :object to :target';
+    }
+
+    public function groups(): array // [!code focus]
+    { // [!code focus]
+        return [ // [!code focus]
+            Group::repeat()->headline(':actor uploaded :count files to :target'), // [!code focus]
+        ]; // [!code focus]
+    } // [!code focus]
+}
+```
+
+<FeedStream :items="[repeat]" :grouped="false" />
+
+## Grouping Along Another Axis
+
+Five people uploading to the same project is a different shape, and a
+different sentence. Each `Group` names an **axis**, the dimension it collapses:
+
+```php
 public function groups(): array
 {
     return [
-        Group::byActors()->headline(':actors uploaded :count files to :target'),
+        Group::byActors()->headline(':actors uploaded :count files to :target'), // [!code focus]
         Group::repeat()->headline(':actor uploaded :count files to :target'),
     ];
 }
 ```
 
-`Group::on('scene')` targets a custom axis; `Group::any()` matches whichever
-axis wins.
+<FeedStream :items="[actors]" :grouped="false" />
 
-## Group Nodes
+Each activity lands in exactly one axis per read mode. Grouping is decided
+when the activity is published, never per request.
 
-An aggregate arrives as one **group node** — see the
-[payload contract](/reference/payload#group-node) for the exact shape. The
-node's shape is frozen contract; **which** groups form (axes, thresholds,
-windows) is server-side policy, explicitly free to evolve. Renderers must not
-assume any particular grouping behaviour.
+## The Built-in Axes
+
+| Axis | Collapses | Pins (Safe Singular Tokens) | Example Headline |
+|---|---|---|---|
+| `repeat` | one actor repeating a verb | `:actor` `:target` | ":actor uploaded :count files to :target" |
+| `actors` | many actors, same verb and target | `:target` | ":actors uploaded :count files to :target" |
+| `targets` | one actor across targets | `:actor` | ":actor commented in :targets" |
+| `object` | many actions on one object | `:actor` `:object` | ":actor made :count revisions to :object" |
+| `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
+
+A singular token is safe on an axis only where the axis pins that role; the
+plural token is safe everywhere. `Group::on('scene')` targets a custom axis,
+and `Group::any()` matches whichever axis wins.
 
 ## Thresholds
 
@@ -54,24 +119,18 @@ assume any particular grouping behaviour.
 ],
 ```
 
-If activities across different targets do not group under `repeat`, check the
-[axis registry](#axis-registry): `repeat` includes target type and id in its
-key; `targets` pins actor identity, verb, and day while leaving target free.
+Below threshold, activities stay atomic. Thresholds apply at publish time, so
+a change is not retroactive; `storyfeed:curate` re-applies it, rewriting
+settled history and bumping the `sync_token`.
 
-A role a key leaves free may also be absent, so a `targets` bucket can hold
-members carrying no target at all — which is what a plural token
-[does and does not promise](/deeper/grammar#members-that-did-not-fill-a-role).
-
-Below threshold, activities stay atomic. Disable grouping entirely with
-`NullStrategy`.
-
-Thresholds apply at publish time, so changing them is **not retroactive** —
-existing activities keep the grouping they were given. Run `storyfeed:curate` to
-re-apply, which rewrites settled history and bumps the `sync_token`.
+If uploads to different targets do not group under `repeat`, that is the axis
+working: `repeat` keys on the target, and `targets` is the axis that leaves it
+free. A role a key leaves free may also be absent on some members, which is
+what a plural token [does and does not promise](/deeper/grammar#members-that-did-not-fill-a-role).
 
 ## Custom Axes
 
-An axis is a key recipe plus eligibility — no package edits required:
+An axis is a key recipe plus an eligibility rule:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -84,12 +143,11 @@ Storyfeed::axes([
 ]);
 ```
 
-Recipe fields name the dimensions that must match for two activities to share
-a group; `!` marks fields whose absence disqualifies. Token safety is derived
-from the recipe — a singular role token is allowed exactly when the role's
-identity is part of the key.
+Recipe fields name the dimensions two activities must share to group; `!`
+marks a field whose absence disqualifies. A singular role token is safe
+exactly when both of the role's fields are in the key.
 
-| role | type field | id field |
+| Role | Type Field | Id Field |
 |---|---|---|
 | `actor` | `aa` | `aid` |
 | `object` | `oa` | `oid` |
@@ -99,32 +157,26 @@ identity is part of the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-Use both fields to pin a role. `v` adds the verb and `d` adds the day.
-`eligibleWhenDistinct()` accepts any of these seven role names. The built-in
-axes do not pin `origin`, `result` or `instrument`; a custom axis can. Their
-plural tokens are available on every axis.
+`v` adds the verb and `d` adds the day. Aggregate grammar is keyed
+`axis.verb`, so leaving `v` out opts the axis out of per-verb grammar: its
+groups may span verbs, and only a verb-agnostic key (`scene.*`) can be true of
+one.
 
-`v` is the one field with a consequence outside the key. Aggregate grammar is
-keyed `axis.verb`, so **leaving `v` out opts the axis out of per-verb grammar** —
-its groups may span several verbs, and only a verb-agnostic key (`scene.*`, or
-`*.*`) can be true of one. `storyfeed:doctor --only=axes` says so as soon as the
-axis is registered, before any group has formed.
-
-::: warning Priority
-A new axis registers at the **lowest** priority. If it should outrank a
-built-in, say so explicitly:
+A new axis registers at the lowest priority. To outrank a built-in, say so:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::axes([$scene], before: 'repeat');
 ```
-:::
 
-Then author `scene.{verb}` templates in the aggregate grammar, and run
-`storyfeed:doctor` — coverage audits include every registered axis.
+Then author `scene.{verb}` templates in the [grammar](/deeper/grammar).
 
-## One Story per Fact, per Mode
+## Group Nodes
 
-Within any read mode, every activity appears in exactly one node — atomic or
-grouped, never both. This is what makes the member-identity
+A group arrives as one node whose shape is in the
+[payload contract](/reference/payload#group-node). The shape is frozen;
+which groups form (axes, thresholds, windows) is server-side policy and free
+to evolve, so a renderer never assumes a particular grouping. Within any read
+mode every activity appears in exactly one node, atomic or grouped, never
+both, which is what makes the member-identity
 [reconciliation rule](/basics/rendering#reconciling-updates) sound.

@@ -32,7 +32,7 @@ The [quickstart](/guide/quickstart) covers the models, recording, and reads.
 
 ## Delete These, Keep Those
 
-| existing configuration | what to write today | why |
+| Existing Configuration | What to Write Today | Why |
 |---|---|---|
 | `FeedRendering::timestamps(...)` reproducing a standard timestamp | remove it | the default is locale-aware: relative today, yesterday with a time, then a date and time, adding the year outside the current year |
 | `days` set to match the surface | omit it | `null` gives a stream day headings and a record timeline none; a short timeline needs its rows more than repeated headings |
@@ -78,7 +78,7 @@ The config twin is `storyfeed-filament.timezone`, set from
 closure evaluated per render, for a zone chosen from the current tenant or
 location.
 
-| priority | source |
+| Priority | Source |
 |---|---|
 | 1 | the component’s `->timezone(...)` override |
 | 2 | `FeedRendering::timezone(...)` |

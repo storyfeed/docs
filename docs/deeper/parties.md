@@ -14,7 +14,7 @@ const synced = activity({
 
 Two different things that both look like "not a user":
 
-| | means | in the payload |
+|  | Means | In the Payload |
 |---|---|---|
 | **anonymous** | the actor is genuinely unknown | `actor: null` — actorless grammar or a renderer fallback |
 | **party** | a named participant with no model in your app | an ordinary entity, `type: "storyfeed.party"`, real `label`, `url: null` |
@@ -47,7 +47,7 @@ Storyfeed::activity()
 Inside a job or console command there is no authenticated user. Scope a block:
 
 ```php
-// where the fact happens: a controller, an action, a listener
+// a job, or a console command
 Storyfeed::as('System', function () {
     Storyfeed::record('sync', object: $invoice);
 });
@@ -78,7 +78,7 @@ earlier resolves ordinary grammar for an actorless activity.
 :::
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::actorlessGrammar([
     'confirm' => ':object was confirmed', // exact verb, not objectType.verb
 ]);

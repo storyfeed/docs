@@ -67,7 +67,7 @@ Storyfeed::grammar([
 
 ## What Publishes
 
-| what happened | activity | verb |
+| What Happened | Activity | Verb |
 |---|---|---|
 | created as a draft | no | |
 | saved with no status change | no | |

@@ -28,7 +28,7 @@ Storyfeed::grammar([
 
 ## Which Verbs Replace
 
-| decision | question | consequence |
+| Decision | Question | Consequence |
 |---|---|---|
 | occurrence | is this a retry of the same fact, or a new act? | a second submission after reopening is a new occurrence |
 | identity | should all occurrences share one object/verb pair? | `replace()` matches object type, object id, and verb; actor, target, context, and `data` do not distinguish occurrences |
@@ -48,7 +48,7 @@ retry guard if delivery can repeat.
 The document is submitted, approved, reopened, and submitted again. These are
 two alternative recording policies for the same sequence:
 
-| request | full timeline | latest-state pulse, per verb |
+| Request | Full Timeline | Latest-state Pulse, per Verb |
 |---|---|---|
 | first submission | append `submit` | replace `submit` |
 | approval | append `approve` | replace `approve` |

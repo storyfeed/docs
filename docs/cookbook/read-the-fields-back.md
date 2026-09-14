@@ -22,7 +22,7 @@ Sam    · accepted · invitation · table  coherent
 The event is an invitee accepting an invitation to a table. The inviter sent
 the invitation earlier; they did not perform the acceptance.
 
-| Composition | What the fields say |
+| Composition | What the Fields Say |
 |---|---|
 | Inviter · joined · invitee · — | The inviter occupies the actor field, although they did not act in this event. |
 | Invitee · joined · invitee · — | Correcting the actor still leaves the invitee repeated as the object. The fields do not identify what they joined. |
@@ -30,7 +30,7 @@ the invitation earlier; they did not perform the acceptance.
 
 ## Three Things to Look for
 
-| Failure mode | Inspect each field for |
+| Failure Mode | Inspect Each Field for |
 |---|---|
 | A bystander | Someone who did not participate in this event. |
 | A repetition | The same entity occupying two fields. Check whether both roles are intended. |

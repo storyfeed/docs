@@ -120,7 +120,7 @@ assets   Asset story 81   retire      {"reason":"source permanently absent"}
 assets   Asset story 82   unchanged   {"reason":"source permanently absent"}
 ```
 
-| outcome | when | applying the request |
+| Outcome | When | Applying the Request |
 |---|---|---|
 | `retire` | the activity is live and the predicate confirms permanent source absence | soft-delete that activity and bump `sync_token` in the same transaction |
 | `unchanged` | the activity is deleted or gone, or the predicate is false | nothing |
@@ -158,7 +158,7 @@ table holds. A `null` therefore means a story is live, or nothing was ever
 recorded there. A `Removal` means the key is empty because something removed it.
 An activity without an object has no key; asking about one throws.
 
-| what happened on the key | evidence |
+| What Happened on the Key | Evidence |
 |---|---|
 | `delete()` or `forceDelete()` on the last live story | written |
 | a `Feedable` deleted or force-deleted, for every key it empties | written |

@@ -14,7 +14,7 @@ Storyfeed::assertNotPublished('delete');
 Storyfeed::assertNothingPublished();
 ```
 
-| method | |
+| Method |  |
 |---|---|
 | `assertPublished($verb, $object = null)` | a matching activity was published |
 | `assertNotPublished($verb, $object = null)` | none was |

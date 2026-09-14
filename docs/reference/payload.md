@@ -68,7 +68,7 @@ non-null; an empty `content` string is preserved.
 }
 ```
 
-| value | meaning |
+| Value | Meaning |
 |---|---|
 | `media: null` | the entity has no media; the common case |
 | `media: {…}` | all four image keys present, each an image object or `null`, plus `attachment` when set |

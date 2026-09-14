@@ -120,7 +120,7 @@ Storyfeed::activity()
 and fallback party. It does not borrow the current operator's identity when
 the carried author is unknown.
 
-| spelling | actor behavior |
+| Spelling | Actor Behavior |
 |---|---|
 | omit `by()` | resolve the ambient actor |
 | `->by(null)` or `->actor(null)` | explicitly anonymous |
@@ -135,7 +135,7 @@ null is intentional.
 
 ## Who Acted Decides the Sentence
 
-| the act was performed by | the actor is | the sentence |
+| The Act Was Performed by | The Actor Is | The Sentence |
 |---|---|---|
 | a user | the user, passed from the event or the action | `:actor submitted :object to :target` |
 | a job, a command, an integration | a party, named | `:actor reported :object signed for :target` |

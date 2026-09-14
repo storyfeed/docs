@@ -110,7 +110,7 @@ because they recomputed against the same widened set.
 
 Every callback is now wrapped in its own group. What that does to your SQL:
 
-| your feed | change |
+| Your Feed | Change |
 |---|---|
 | no `query()` callback | byte-identical |
 | callbacks that only `AND` | form only — `and not "verb" = ?` becomes `and (not "verb" = ?)` |

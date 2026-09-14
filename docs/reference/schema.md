@@ -7,7 +7,7 @@ indexes and retention.
 
 The atomic timeline.
 
-| column | |
+| Column |  |
 |---|---|
 | `id` | internal PK; event snapshots carry it, feed nodes use `uid` |
 | `uid` | public ULID — the id in the payload, and the durable address of a fact |

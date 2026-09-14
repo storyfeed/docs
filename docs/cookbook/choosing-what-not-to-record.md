@@ -35,7 +35,7 @@ Storyfeed::grammar([
 
 ## What Stays Out
 
-| what happened | activity | because |
+| What Happened | Activity | Because |
 |---|---|---|
 | a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |

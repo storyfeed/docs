@@ -168,7 +168,7 @@ group.
 
 ## Anatomy
 
-| Member | Required | |
+| Member | Required |  |
 |---|---|---|
 | `$objectType` | yes | a model class (recommended), a morph alias, an array of either, or `'*'` for object-less activities |
 | `$verb` | yes | a verb string or a `FeedVerb` enum case |

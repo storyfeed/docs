@@ -6,7 +6,7 @@ neighbours are usually what you actually wanted.
 
 ## The Activity
 
-| term | it is | it is **not** |
+| Term | It Is | It Is **Not** |
 |---|---|---|
 | **activity** | one recorded fact | a log entry — you choose what gets recorded |
 | **verb** | what happened, as a string | a closed set; enums are convenience |
@@ -18,7 +18,7 @@ neighbours are usually what you actually wanted.
 
 ## Grouping
 
-| term | it is | it is **not** |
+| Term | It Is | It Is **Not** |
 |---|---|---|
 | **axis** | the question you group by | a sort order, or a display label |
 | **curation** | choosing the winning axis at write time | editorial judgement, or anything at read time |
@@ -29,7 +29,7 @@ neighbours are usually what you actually wanted.
 
 ## Rendering
 
-| term | it is | it is **not** |
+| Term | It Is | It Is **Not** |
 |---|---|---|
 | **[grammar](/deeper/grammar)** | the registry of headline templates | rendered prose |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
@@ -38,7 +38,7 @@ neighbours are usually what you actually wanted.
 
 ## Reading
 
-| term | it is | it is **not** |
+| Term | It Is | It Is **Not** |
 |---|---|---|
 | **[named feed](/basics/named-feeds)** | an audience's scope and verb allowlist, declared once | a filter applied at read time |
 | **read mode** | how collapsed the reader wants it | a filter |
@@ -47,7 +47,7 @@ neighbours are usually what you actually wanted.
 
 ## Storage & Maintenance
 
-| term | it is | it is **not** |
+| Term | It Is | It Is **Not** |
 |---|---|---|
 | **snapshot** | cached label, data, and body fields per entity | a copy of your model |
 | **trickle** | the sweep that fills snapshots recording could not | a cache warmer you must run to read |

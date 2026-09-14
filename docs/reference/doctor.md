@@ -12,7 +12,7 @@ your feed. Findings name the fix, not just the fault.
 
 ## Checks
 
-| check | asks |
+| Check | Asks |
 |---|---|
 | `grammar` | does every verb/type pair in the feed have a headline? |
 | `aggregates` | does every group that formed — or *could* form — have aggregate grammar? |
@@ -42,7 +42,7 @@ your feed. Findings name the fix, not just the fault.
 
 The `feeds` check reports five findings:
 
-| finding | severity | means |
+| Finding | Severity | Means |
 |---|---|---|
 | `feeds.unclassified` | warning | a verb is named by no restricted feed, so nobody decided who may see it. Names no feed — it is the absence of one |
 | `feeds.unrestricted` | info | a verb is named by no restricted feed, and some feed declared [`unrestricted()`](#declaring-an-unrestricted-feed). Reported on every run; the declaration does not decide the verb, it lowers the severity |
@@ -90,7 +90,7 @@ object, target, context — and asks whether it resolves. Each finding names the
 role, the alias, the class, how many activities carry it, and example activity
 ids to look at.
 
-| finding | severity | means |
+| Finding | Severity | Means |
 |---|---|---|
 | `entities.auth_model` | warning | the authentication model does not implement `Feedable`. The actor role is filled from the authenticated user, so every request-time publish carries an actor that never resolves. Needs no traffic; skipped when `actor_resolver` is set |
 | `entities.unresolvable` | warning | the alias resolves to no class: no morph map entry, and no class by that name |
@@ -111,7 +111,7 @@ with no feed. A resolver that asks for `$context->model()` is recorded, and no
 query runs. Candidates are the `Feedable` models under `discovery.paths` plus
 any class filling a role in recorded activities.
 
-| finding | severity | means |
+| Finding | Severity | Means |
 |---|---|---|
 | `hydration.model` | info | the class loads its model in `feedMedia()`, and under which feeds: one query per class on every page it appears on, batched across the page. Says so when `hydration.enabled` is off and the call answers `null` instead |
 | `hydration.page` | info | how many hydrating classes the 30 most recent activities carry, so how many queries that page pays on top of its own |

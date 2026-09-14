@@ -30,7 +30,7 @@ Storyfeed::activity()
 
 ## The Difference Between Target and Context
 
-| role | holds | in the sentence |
+| Role | Holds | In the Sentence |
 |---|---|---|
 | `target` | what the preposition points at | commented **on** the task |
 | `context` | the container the act happened inside | …**in** the project |
@@ -64,7 +64,7 @@ grouping and the AS2 document.
 Whether an activity needs `context` is decided by what reads it, not by the
 sentence:
 
-| you want | why it needs `context` |
+| You Want | Why It Needs `context` |
 |---|---|
 | a group like "three people commented in the same project today" | axes key on roles, so the container has to *be* a role; no built-in axis keys on `context`, so this is a [custom axis](/deeper/aggregation#custom-axes) |
 | `feed()->context($project)` | the scope reads the `context` column |
@@ -94,7 +94,7 @@ project's own creation and archival — those record the project as the
 A folder name, a source system, a mailbox: when the room is a value rather than
 an entity, it has three homes.
 
-| home | in the headline | groups by it | in the AS2 document | cost |
+| Home | In the Headline | Groups by It | In the AS2 Document | Cost |
 |---|---|---|---|---|
 | `->context('Q3 invoices')` | yes, as `:context` | yes | yes, as a [party](/deeper/parties) | one party per distinct string |
 | `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
@@ -102,6 +102,6 @@ an entity, it has three homes.
 
 ## Roles Are Set at Publish, and Never Backfilled
 
-Roles are [never backfilled](/basics/recording#roles): a `context` axis
-registered later groups only the activities that were recorded with a
+Roles are set when the activity is published and never backfilled: a
+`context` axis registered later groups only the activities that were recorded with a
 `context`. If the room is a model you have at publish time, record it.
