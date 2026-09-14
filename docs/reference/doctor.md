@@ -125,8 +125,10 @@ empty one is not reported.
 
 ## From Findings to Code
 
-`--stubs` closes the loop: doctor tells you what's missing, and prints the
-story class that fixes it.
+`--stubs` prints the story class that fixes a finding, for the findings a
+class can fix. Two do not emit one, deliberately: the remedy for `roles` is
+authorial, and a stub for a pair no surface can read would be exactly the
+unrenderable code that finding exists to prevent.
 
 ```bash
 php artisan storyfeed:doctor --stubs   # only the findings that name a registry edit
