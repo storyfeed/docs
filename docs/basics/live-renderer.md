@@ -1,6 +1,6 @@
 # Live Rendering
 
-The [Blade loop](/guide/quickstart#_5-render-it) renders a page. A live feed —
+The [Blade loop](/basics/rendering) renders a page. A live feed —
 one that polls, or accumulates pages as the reader scrolls — needs three more
 things, and none of them can be demonstrated by a static template:
 
