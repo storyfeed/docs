@@ -27,6 +27,7 @@ const label = computed(() => {
         :is="linkComponent"
         v-if="entity?.url"
         :href="entity.url"
+        :modal="entity.modal || undefined"
         v-bind="entity.attributes"
         class="sf-entity"
     >

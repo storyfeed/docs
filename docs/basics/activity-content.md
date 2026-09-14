@@ -51,6 +51,15 @@ const withChange = activity({
   } },
 })
 
+const openInPlace = activity({
+  id: 'ac7', verb: 'menu.photo_published', glyph: 'image',
+  published_at: '2026-08-14T10:05:00.000000Z',
+  headline_template: ':actor added :object to :target',
+  actor: who.cook, target: dishes.chickenCurry,
+  object: { type: 'photo', id: '9', label: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
+    attributes: {}, modal: true, component: null, data: {}, media: null },
+})
+
 const withFile = activity({
   id: 'ac6', verb: 'menu.photo_published', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
   headline_template: ':actor added a photo of :target',
@@ -191,6 +200,33 @@ public function toFeed(): FeedEntity
 `File` says what an artefact is, never where it lives: the URL is
 [`feedMedia()`](/basics/feedable-models#the-link)'s job, and it is minted at
 read time so it cannot go stale.
+
+## A Link That Opens in Place
+
+Some entities are better opened than navigated to: a photograph, a document
+preview, anything whose destination is the resource rather than a page about
+it. `FeedMedia::modal()` says so, and the hint rides on the entity as
+`modal: true`.
+
+```php
+// app/Models/Photo.php
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::modal(route('photos.show', $context->data('id'))); // [!code focus]
+}
+```
+
+<FeedExample :items="[openInPlace]" />
+
+Open the payload and the difference is one boolean. Click the file name and
+this site opens a panel instead of leaving the page — that is this renderer's
+answer to the hint, not the package's.
+
+::: headless it ships no modal
+There is no dialog, no lightbox and no stylesheet for one. `modal` is a
+boolean the payload carries, and a renderer that ignores it is not broken —
+the same rule as an unknown glyph or an unrecognised detail form.
+:::
 
 ## The Forms Core Ships
 
