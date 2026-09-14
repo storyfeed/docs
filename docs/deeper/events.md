@@ -21,19 +21,7 @@ class DocumentUploaded
 }
 ```
 
-```php
-class RecordUpload
-{
-    public function handle(DocumentUploaded $event): void
-    {
-        Storyfeed::activity()
-            ->by($event->user)
-            ->action('upload', $event->document)
-            ->to($event->document->project)
-            ->publish();
-    }
-}
-```
+<<< @/snippets/publish-from-listener.php
 
 <FeedStream :items="[uploaded]" :grouped="false" />
 
@@ -42,23 +30,7 @@ class RecordUpload
 An event can build the same activity itself, with no listener to register.
 Return it without publishing; dispatching the event publishes it:
 
-```php
-use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
-use Storyfeed\PendingActivity; // [!code focus]
-
-class DocumentUploaded implements PublishesToFeed // [!code focus]
-{
-    public function __construct(public Document $document, public User $user) {}
-
-    public function toFeedStory(): ?PendingActivity // [!code focus]
-    { // [!code focus]
-        return Storyfeed::activity() // [!code focus]
-            ->by($this->user) // [!code focus]
-            ->action('upload', $this->document) // [!code focus]
-            ->to($this->document->project); // [!code focus]
-    } // [!code focus]
-}
-```
+<<< @/snippets/publish-from-event.php
 
 <FeedStream :items="[uploaded]" :grouped="false" />
 

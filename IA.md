@@ -138,10 +138,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     classes, `PublishesToFeed`) arrive as a second step. Every later snippet
     on the page keeps the same form; a typed form is a clearly secondary
     example, after the concept is shown. **The standard example is single-
-    sourced:** the chain lives in `docs/snippets/publish.php`, embedded with
-    `<<< @/snippets/publish.php`, and its node is `scenes.upload` in
-    `samples.ts`. A page whose variant genuinely differs (a listener reading
-    `$event->user`) writes it inline and is the exception. (Sharpens rule 12.)
+    sourced:** it lives in `docs/snippets/`, one explicit file per context
+    (`publish.php`, `publish-from-listener.php`, `publish-from-event.php`),
+    embedded with `<<< @/snippets/<file>`, and its node is `scenes.upload` in
+    `samples.ts`. No templating: a new context is a new file, named for it. (Sharpens rule 12.)
 22. **Bite-sized, focused snippets.** One idea per snippet, and
     `// [!code focus]` on the lines that changed since the previous snippet.
     A page is a sequence of small deltas, not one large listing — except the
