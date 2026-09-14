@@ -2,20 +2,10 @@
 
 A read returns one JSON document, and that document is everything the package
 produces. No HTML, no view names, no knowledge of your app beyond what you
-recorded. When you are done, you know exactly what a renderer receives.
+recorded.
 
-<script setup>
-import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
-
-const crowd = group({
-  id: 'pl1', verb: 'placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors placed :count orders with :target',
-  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 5, objects: 5, targets: 1 },
-})
-</script>
+The feeds you have been looking at are that document, drawn. Here they are as
+data: the same examples from [Usage Examples](/guide/usage-examples), dissected.
 
 ## The Envelope
 
@@ -33,16 +23,14 @@ $page = Storyfeed::feed()->involving($kitchen)->get();
 }
 ```
 
-Four keys, and two of them are strings you store and hand back rather than
-read. [Reading Feeds](/basics/reading#pagination) covers what to do with them.
+Two of those four keys are strings you store and hand back rather than read.
+[Reading Feeds](/basics/reading#pagination) covers what to do with them.
 
 ## One Activity
 
-This row:
-
-<FeedStream :items="[scenes.order]" :grouped="false" />
-
-is this node:
+A customer places an order. Nothing is elided here: every key a node carries
+is present, because a renderer reads a missing value as `null` rather than as
+an undefined index.
 
 ```json
 {
@@ -94,16 +82,153 @@ is this node:
 ```
 
 The sentence arrives with its tokens still in it, and the entities arrive
-beside it fully described: a type, a label, a link. Substituting one into the
-other is all a renderer does, which is why it needs no knowledge of orders or
-kitchens.
+beside it fully described. Substituting one into the other is all a renderer
+does, which is why it needs no knowledge of orders or kitchens.
 
-`headline` is the pre-rendered fallback, and it is null whenever
-`headline_template` is set.
+Every node below is the same shape. Only the keys that carry the difference
+are shown.
 
-## An Entity
+## Three in a Row
 
-The same object appears in every role, and always in this shape:
+One customer, three orders, one line. A group node, not an activity:
+
+```jsonc
+{
+  "kind": "group",
+  "axis": "repeat",
+  "count": 3,
+  "verb": "placed",
+  "headline_template": ":actor placed :count orders with :target",
+  "actor": { "type": "user", "label": "Steve Harrington", … },  // one actor, so the key is filled
+  "object": null,                                               // three of them
+  "exemplars": {
+    "actors": [ /* him */ ],
+    "objects": [ /* up to three orders, to name */ ],
+    "targets": [ /* the kitchen */ ]
+  },
+  "distinct": { "actors": 1, "objects": 3, "targets": 1 },
+  "children": [ /* the three activity nodes */ ],
+  "children_truncated": false
+}
+```
+
+## A Crowd
+
+Five customers, the same kitchen. The difference is one key:
+
+```jsonc
+{
+  "axis": "actors",
+  "count": 5,
+  "headline_template": ":actors placed :count orders with :target",
+  "actor": null,                       // five of them; there is no single answer
+  "target": { /* the kitchen they share */ },
+  "distinct": { "actors": 5, "objects": 5, "targets": 1 }
+}
+```
+
+A group carries a singular role key only where it genuinely has one entity in
+that role. `distinct` is the true total from the query, so it is what a
+renderer counts with, never the length of the exemplar list it was handed.
+
+## Someone Who Is Not a User
+
+A payment provider marks an order paid. It is an ordinary entity with no page
+of its own:
+
+```jsonc
+{
+  "verb": "paid",
+  "headline_template": ":actor marked :object paid",
+  "actor": {
+    "type": "storyfeed.party",
+    "id": "1",
+    "label": "Stripe",
+    "url": null,                       // a party has nowhere to link
+    "data": {},
+    "media": null
+  }
+}
+```
+
+And when nobody acted at all, `actor` is `null` and the template never names
+one.
+
+## The Words Someone Wrote
+
+```jsonc
+{
+  "verb": "noted",
+  "headline_template": ":actor sent a note about :object",
+  "thread": {
+    "text": "Can I pick this up at six instead of seven?",
+    "by": "Steve Harrington",
+    "kind": "note",
+    "replies": null,                   // null means nobody counted
+    "truncated": false
+  }
+}
+```
+
+## The Facts Behind a Change
+
+A detail sits inside the app's own `data`, at a key the app chose, marked by
+two reserved keys:
+
+```jsonc
+{
+  "verb": "menu.price_changed",
+  "headline_template": ":actor changed the price of :object",
+  "data": {
+    "$detail": "Storyfeed/Detail/Change",
+    "$v": 1,
+    "changes": {
+      "Price": ["$14.50", "$15.50"],
+      "On the menu": [false, true]
+    }
+  }
+}
+```
+
+`$v` travels all the way to the renderer, which upgrades the block before
+drawing it. [What an Activity Shows](/basics/activity-content) covers the
+forms.
+
+## A Photograph
+
+The picture is on the entity, minted at read time, never stored:
+
+```jsonc
+{
+  "verb": "menu.photo_published",
+  "headline_template": ":actor added a photo of :target",
+  "object": {
+    "type": "photo",
+    "label": "chicken-curry.jpg",
+    "url": "/media/chicken-curry.jpg",
+    "media": {
+      "icon": null,
+      "image": null,
+      "preview": {                     // the derivative a feed paints
+        "src": "/media/chicken-curry-400.jpg",
+        "mediaType": "image/jpeg",
+        "width": 400,
+        "height": 300,
+        "alt": null
+      },
+      "url": {                         // the resource itself IS an image
+        "src": "/media/chicken-curry.jpg",
+        "mediaType": "image/jpeg",
+        "width": 4032,
+        "height": 3024,
+        "alt": null
+      }
+    }
+  }
+}
+```
+
+## An Entity, in Every Role
 
 | Key | Holds |
 |---|---|
@@ -114,45 +239,8 @@ The same object appears in every role, and always in this shape:
 | `attributes` | anything the resolver attached to the link |
 | `modal` | a hint that the link opens in place |
 | `component` | a frontend component the app named |
-| `data` | the app's own map, including any [detail](/basics/activity-content) |
+| `data` | the app's own map, including any detail |
 | `media` | the images the resolver minted, or null |
-
-Every key is always present. A renderer reads a missing value as `null`, never
-as an undefined index.
-
-## One Group
-
-<FeedStream :items="[crowd]" :grouped="false" />
-
-```jsonc
-{
-  "kind": "group",
-  "id": "grp_01K3M8QF4T7Z2YB6N1D9V0XA5C",
-  "axis": "actors",
-  "count": 5,
-  "verb": "placed",
-  "published_at": "2026-08-14T14:35:00.000000Z",
-  "headline_template": ":actors placed :count orders with :target",
-  "headline": null,
-  "glyph": "shopping-bag",
-  "glyph_intent": null,
-  "target": { /* the one kitchen they share */ },
-  "actor": null,                       // five of them; there is no single answer
-  "exemplars": {
-    "actors": [ /* up to three, to name */ ],
-    "objects": [ /* up to three */ ],
-    "targets": [ /* the shared kitchen */ ]
-  },
-  "distinct": { "actors": 5, "objects": 5, "targets": 1 },
-  "children": [ /* member activity nodes, newest first */ ],
-  "children_truncated": false
-}
-```
-
-A group carries a singular role key only where the group genuinely has one
-entity in that role, and `null` everywhere else, because there is no single
-answer to give. `distinct` is the true total from the query, so it is what a
-renderer counts with — not the length of the exemplar list it was handed.
 
 ## What Is Not in It
 
