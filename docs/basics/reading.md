@@ -93,6 +93,18 @@ The app-wide default is `grouping.default` in the config; a call always
 overrides it. Mode names never appear in the payload: which mode a surface
 uses is a server-side choice a renderer knows nothing about.
 
+**A mode is chosen per surface, not per app.** One app wanting all three at
+once is the normal case:
+
+| Surface | Mode | Why |
+|---|---|---|
+| an audit or support view | `log()` | every row is evidence, and collapsing two of them into one loses the thing being looked for |
+| a screen someone watches while working | `live()` | bursts collapse as they form, and nothing reshuffles under a reader who is mid-glance |
+| a page opened once, days later | `summary()` | the reader wants the shape of what happened, not every keystroke that made it |
+
+[Which axes each mode reads](/deeper/aggregation#which-axes-each-mode-reads)
+covers what changes underneath.
+
 ## Scoping
 
 An entity's own page wants `involving()`: every activity that mentions it, in

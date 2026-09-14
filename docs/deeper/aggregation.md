@@ -91,6 +91,28 @@ public function groups(): array
 Each activity lands in exactly one axis per read mode. Grouping is decided
 when the activity is published, never per request.
 
+## Which Axes Each Mode Reads
+
+A mode does not change how activities grouped; it changes which groupings the
+read is willing to show.
+
+| Mode | Reads |
+|---|---|
+| `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
+| `live()` | `repeat`, plus authored composites. No other axis, because `live` excludes inference and keeps declarations |
+| `summary()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner |
+
+Two consequences worth carrying:
+
+- **Authoring grammar for an axis your surfaces never read produces templates
+  that can never render.** That is what `storyfeed:doctor` reports as
+  `aggregates.latent`, at info and with no fix stub.
+- **`object` pins the specific object where `repeat` pins only its type**,
+  which is why the better-reading rows exist only under `summary()`.
+
+An app that has never run `storyfeed:curate` reads as repeat-only under
+`summary()`, because the fallback is what answers when no winner is stamped.
+
 ## The Built-in Axes
 
 | Axis | Collapses | Pins (Safe Singular Tokens) | Example Headline |

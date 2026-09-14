@@ -12,31 +12,31 @@ your feed. Findings name the fix, not just the fault.
 
 ## Checks
 
-| Check | Asks |
-|---|---|
-| `grammar` | does every verb/type pair in the feed have a headline? |
-| `aggregates` | does every group that formed — or *could* form — have aggregate grammar? |
-| `tokens` | does any aggregate template use a token its axis doesn't pin? (the anti-lie rule) |
-| `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key can be true of one — answered from the registry alone, before any group has formed |
-| `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) |
-| `surface` | models that appear in the feed but that nothing publishes about |
-| `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? |
-| `parties` | party rows whose morph alias no longer resolves |
-| `participants` | activities missing from the index `involving()` reads (an install that upgraded into it) |
-| `tables` | are the package tables present? |
-| `columns` | are write-path columns present? (catches schema drift after an upgrade) |
-| `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it |
-| `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info |
-| `grouping` | activities with no grouping row that today's axes would group — an import that ran `storyfeed:rebuild` before `storyfeed:trickle` |
-| `entities` | a model filling a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the row is gone. See [Entities](#entities) |
-| `hydration` | which `Feedable` models load their live model in `feedMedia()`, and what a page pays for it. See [Hydration](#hydration) |
-| `shapes` | snapshot fingerprints that no longer match current output (DTO drift) |
-| `hashes` | grouping hash lengths consistent with the current axis recipes |
-| `backlog` | activities still awaiting snapshots — is the trickle keeping up? |
-| `manifest` | is the cached story manifest stale relative to your code? |
-| `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one |
-| `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares |
-| `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces |
+| Check | Asks | Reports |
+|---|---|---|
+| `grammar` | does every verb/type pair in the feed have a headline? | error · warning · info |
+| `aggregates` | does every group that formed — or *could* form — have aggregate grammar? | error · info |
+| `tokens` | does any aggregate template use a token its axis doesn't pin? (the anti-lie rule) | warning · info |
+| `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key can be true of one — answered from the registry alone, before any group has formed | warning |
+| `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) | warning · info |
+| `surface` | models that appear in the feed but that nothing publishes about | warning · info |
+| `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? | warning · info |
+| `parties` | party rows whose morph alias no longer resolves | info |
+| `participants` | activities missing from the index `involving()` reads (an install that upgraded into it) | warning |
+| `tables` | are the package tables present? | error |
+| `columns` | are write-path columns present? (catches schema drift after an upgrade) | error |
+| `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it | error · info |
+| `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info | error · info |
+| `grouping` | activities with no grouping row that today's axes would group — an import that ran `storyfeed:rebuild` before `storyfeed:trickle` | warning |
+| `entities` | a model filling a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the row is gone. See [Entities](#entities) | error · warning · info |
+| `hydration` | which `Feedable` models load their live model in `feedMedia()`, and what a page pays for it. See [Hydration](#hydration) | info |
+| `shapes` | snapshot fingerprints that no longer match current output (DTO drift) | warning · info |
+| `hashes` | grouping hash lengths consistent with the current axis recipes | warning |
+| `backlog` | activities still awaiting snapshots — is the trickle keeping up? | warning |
+| `manifest` | is the cached story manifest stale relative to your code? | error |
+| `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
+| `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares | warning · info |
+| `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces | info |
 
 ## Feed Coverage
 
@@ -82,6 +82,34 @@ Storyfeed::feed('portal')->only(['order.*'])->get();                            
 One declaration cannot both filter and carry everything, and `verb()` counts
 as a filter. Narrowing after the declaration is the call-site path and is not
 checked.
+
+### Groups No Surface Can Read
+
+`aggregates` has three findings, and two of them are not gaps.
+
+`aggregates.missing` is the real one, at **error**: a pair clusters, has no
+aggregate grammar, and some registered feed's mode reads that axis. Those group
+nodes fall back to the singular headline where its tokens are safe, and
+otherwise arrive with no headline at all.
+
+`aggregates.latent` is the same pair when **no** registered feed can read the
+axis, at **info** and carrying no fix stub. Authoring grammar for it today
+changes nothing on any screen, so a stub would be code that cannot render. It
+becomes a real gap the moment a surface reads it, and a call site can override
+a declared mode without touching the feed, so it is reported rather than
+hidden.
+
+`aggregates.reachability_unknown` is doctor saying what it does not know, at
+**info**: either no feeds are registered, or one threw while being inspected.
+Both leave every pair on the plain error, because a missing answer must never
+downgrade a real one. Registering your feeds is what lets this check tell a
+real gap from a latent one.
+
+::: warning Latent is info, so `--fail-on=warning` will not trip on it
+That is deliberate — CI should not fail over a sentence nothing can print —
+but it means a pair can sit latent for a long time and become a gap the day a
+surface starts reading its axis.
+:::
 
 ## Entities
 
