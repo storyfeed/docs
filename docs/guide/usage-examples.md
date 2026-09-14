@@ -1,16 +1,33 @@
 # Usage Examples
 
+What the package produces, before how. Each example is a snippet and the feed
+it renders. The pages that teach them are linked underneath.
+
 <script setup>
-import { who, where, orders, dishes, party, activity, group, scenes } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
+
+const at = '2026-08-14T14:30:00.000000Z'
 
 const burst = group({
   id: 'i2', verb: 'order.placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:30:00.000000Z',
+  published_at: at,
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
   objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 1, objects: 3, targets: 1 },
 })
+
+const expanded = [
+  activity({ id: 'i2a', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.third, target: where.kitchen }),
+  activity({ id: 'i2b', verb: 'order.placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:29:00.000000Z',
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.second, target: where.kitchen }),
+  activity({ id: 'i2c', verb: 'order.placed', glyph: 'shopping-bag', published_at: '2026-08-14T14:27:00.000000Z',
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.first, target: where.kitchen }),
+]
 
 const crowd = group({
   id: 'i7', verb: 'order.placed', axis: 'actors', count: 5, glyph: 'shopping-bag',
@@ -24,8 +41,7 @@ const menu = group({
   id: 'i8', verb: 'menu.dish_live', axis: 'composite', count: 2, glyph: 'chef-hat',
   published_at: '2026-08-14T09:20:00.000000Z',
   headline_template: ':actor put :count dishes on the menu',
-  actors: [who.cook],
-  objects: [dishes.cutlets, dishes.roti],
+  actors: [who.cook], objects: [dishes.cutlets, dishes.roti],
   distinct: { actors: 1, objects: 2 },
 })
 
@@ -35,105 +51,102 @@ const paid = activity({
   headline_template: ':actor marked :object paid',
   actor: party.service, object: orders.first,
 })
+
+const noted = activity({
+  id: 'i10', verb: 'order.noted', glyph: 'message-circle',
+  published_at: '2026-08-14T14:34:00.000000Z',
+  headline_template: ':actor sent a note about :object',
+  actor: who.regular, object: orders.first,
+  thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false },
+})
+
+const priced = activity({
+  id: 'i11', verb: 'menu.price_changed', glyph: 'tag',
+  published_at: '2026-08-14T09:10:00.000000Z',
+  headline_template: ':actor changed the price of :object',
+  actor: who.cook, object: dishes.kottu,
+  data: { $detail: 'Storyfeed/Detail/Change', $v: 1, changes: {
+    Price: ['$14.50', '$15.50'], 'On the menu': [false, true] } },
+})
+
+const kitchenFeed = [
+  activity({ id: 'i12a', verb: 'order.ready', glyph: 'utensils', published_at: '2026-08-14T14:50:00.000000Z',
+    headline_template: ':actor marked :object ready', actor: who.cook, object: orders.first }),
+  activity({ id: 'i12b', verb: 'menu.price_changed', glyph: 'tag', published_at: '2026-08-14T14:45:00.000000Z',
+    headline_template: ':actor changed the price of :object', actor: who.cook, object: dishes.kottu }),
+  activity({ id: 'i12c', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
+    headline_template: ':actor placed :object with :target',
+    actor: who.regular, object: orders.first, target: where.kitchen }),
+]
+
+const customerFeed = [kitchenFeed[0], kitchenFeed[2]]
+
+const anonymous = activity({
+  id: 'i13', verb: 'order.expired', glyph: 'circle-x',
+  published_at: '2026-08-21T00:00:00.000000Z',
+  headline_template: ':object expired at :target',
+  actor: null, object: orders.fifth, target: where.kitchen,
+})
 </script>
 
-## A Single Activity
-
-A customer places an order with the kitchen.
+## One Activity
 
 <<< @/snippets/publish.php
 
 <FeedStream :items="[scenes.order]" :grouped="false" />
 
-## Consecutive Activities
+## Three in a Row, One Line
 
-The same customer places three orders, one after another.
+The same customer orders three times in a few minutes. Nothing coordinates the
+three requests.
 
 ```php
 // where the order is placed: a controller, an action, a listener
-foreach ($orders as $order) {
-    Storyfeed::activity()
-        ->by($customer)
-        ->action('order.placed', $order)
-        ->to($kitchen)
-        ->publish();
-}
+Storyfeed::activity()
+    ->by($customer)
+    ->action('order.placed', $order)
+    ->to($kitchen)
+    ->publish();
 ```
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## Concurrent Activities in One Kitchen
+Read as a plain timeline instead, the same three activities are three rows:
 
-Five customers order from the same kitchen, each from their own request,
-minutes apart. Nothing coordinates them.
+<FeedStream :items="expanded" :grouped="false" />
 
-```php
-// Steve, 14:31
-Storyfeed::activity()
-    ->by($customer)
-    ->action('order.placed', $order)
-    ->to($kitchen)
-    ->publish();
-```
+[Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
+decides the grouping.
 
-*a minute later, another request*
+## A Crowd, One Line
 
-```php
-// Robin, 14:32
-Storyfeed::activity()
-    ->by($customer)
-    ->action('order.placed', $order)
-    ->to($kitchen)
-    ->publish();
-```
-
-*three minutes later, another request*
-
-```php
-// Dustin, 14:35
-Storyfeed::activity()
-    ->by($customer)
-    ->action('order.placed', $order)
-    ->to($kitchen)
-    ->publish();
-```
-
-Each call knows only its own activity. On the feed:
+Five customers, five orders, five separate requests.
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
-## One Activity About Several Objects
+[Aggregation](/deeper/aggregation) covers the axes and what each one may say.
 
-The cook puts two dishes on the menu at once.
+## Several Objects, One Fact
+
+The cook publishes two dishes in one click. That is one decision, so it is one
+activity, not two.
 
 ```php
-// app/Http/Controllers/PublishDishesController.php
-public function store(Request $request)
-{
-    $dishes = MenuItem::whereIn('id', $request->array('dishes'))->get();
-
-    // Two dishes, one decision, one row.
-    Storyfeed::activity()
-        ->by($request->user())
-        ->action('menu.dish_live')
-        ->objects($dishes)
-        ->publish();
-
-    return back();
-}
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($cook)
+    ->action('menu.dish_live')
+    ->objects($dishes)
+    ->publish();
 ```
-
-`objects()` takes several models for **one** activity. That is the difference
-between this and the loop further up: three `publish()` calls are three
-activities that a reader sees collapsed, while this is a single activity that
-happens to name two dishes. Publishing two dishes in one click is one fact.
 
 <FeedStream :items="[menu]" :grouped="false" />
 
-## A Participant With No Model
+[Composites](/deeper/composites).
 
-A payment provider reports an order paid, and it has no row in your database
-to point at.
+## Someone Who Is Not a User
+
+A payment provider reports an order paid, and it has no row in your database.
 
 ```php
 // app/Http/Controllers/StripeWebhookController.php
@@ -145,32 +158,62 @@ Storyfeed::activity()
 
 <FeedStream :items="[paid]" :grouped="false" />
 
-## Choosing the Preposition
+And when nobody acted at all, the sentence can leave the actor out:
 
-Say the sentence out loud first. You place an order **with** a kitchen, ask
-**about** a dish, send a note **about** an order, pair a device **to** a
-display, add a dish **to** the menu. The code takes the same word:
+<FeedStream :items="[anonymous]" :grouped="false" />
 
-```php
-->by($customer)->action('order.placed', $order)->with($kitchen)
-->by($customer)->action('discussion.asked', $note)->on($dish)
-->by($cook)->action('device.paired', $ipad)->to($display)
-->by($cook)->action('menu.dish_added', $dish)->into($menu)
-->by($customer)->action('people.joined')->in($table)
-```
+[Parties & Anonymous Actors](/deeper/parties).
 
-**All five prepositions do exactly the same thing.** They set the last
-participant, whose real name is the *target*. `on()`, `with()`, `into()`,
-`to()`, `for()`, `in()` and `from()` are one method wearing seven words, so you
-can write the line that matches what you would say.
-
-Here is the first line with nothing dressed up. It stores a byte-identical row:
+## The Words Someone Wrote
 
 ```php
-->actor($customer)->verb('order.placed', $order)->target($kitchen)
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($customer)
+    ->action('order.noted', $order)
+    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
+    ->publish();
 ```
 
-Neither is the correct one. Use whichever you would rather read in six months,
-and if no preposition fits your verb, `target()` always does.
+<FeedStream :items="[noted]" :grouped="false" />
 
-[Recording Activities](/basics/recording) lists every role and every word for it.
+## The Facts Behind a Change
+
+```php
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($cook)
+    ->action('menu.price_changed', $dish)
+    ->data(Change::make([
+        'Price' => ['$14.50', '$15.50'],
+        'On the menu' => [false, true],
+    ]))
+    ->publish();
+```
+
+<FeedStream :items="[priced]" :grouped="false" />
+
+[What an Activity Shows](/basics/activity-content) covers the forms a row can
+carry.
+
+## Two Audiences, One History
+
+The kitchen sees everything it did:
+
+```php
+// a controller, or wherever the feed is read
+Storyfeed::feed('kitchen')->involving($kitchen)->get();
+```
+
+<FeedStream :items="kitchenFeed" :grouped="false" />
+
+The customer sees their own order, and only the verbs that concern them:
+
+```php
+// a controller, or wherever the feed is read
+Storyfeed::feed('customer')->involving($order)->get();
+```
+
+<FeedStream :items="customerFeed" :grouped="false" />
+
+[Named Feeds](/basics/named-feeds) declares each audience once.
