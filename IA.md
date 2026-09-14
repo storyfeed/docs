@@ -221,9 +221,9 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 ### Getting Started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Usage Examples — six showcases, each snippet with its feed
+- ✅ Usage Examples — the showcase: a snippet, the feed it renders, and the page that teaches it
 - ✅ Installation — `guide/installation`
-- ✅ Quickstart — `guide/quickstart`: feedable model, headline, publish, read, render
+- ✅ Quickstart — five short steps to one activity on screen; everything else defers to The Basics
 
 ### The Basics
 

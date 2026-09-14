@@ -1,21 +1,15 @@
 # Quickstart
 
-Five steps: make a model feedable, give its verb a headline, publish an
-activity, read the feed, render it. The example is a customer placing an order with a kitchen.
+One activity on screen, in five steps. A customer places an order with a
+kitchen.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
-
-// The same names the snippets use, so the rendered result is this page's example
-// and not a different one.
-const published = scenes.order
 </script>
 
+## 1. Make the Models Feedable
 
-## 1. Make Your Models Feedable
-
-Anything that appears in the feed — actor, object, target, context, origin, result, or instrument —
-implements `Feedable`:
+A model that appears in the feed says how it should read:
 
 ```php
 <?php
@@ -25,9 +19,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia;
 
 class Order extends Model implements Feedable
 {
@@ -35,221 +27,52 @@ class Order extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-            data: ['ulid' => $this->ulid],
-        );
-    }
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        // Reads what toFeed() cached above; a key it did not cache reads as null.
-        return FeedMedia::make(url: route('orders.show', $context->data('ulid')));
+        return FeedEntity::make(label: "Order #{$this->reference}");
     }
 }
 ```
 
-`toFeed()` is a snapshot, written at publish time and refreshed on save.
-`feedMedia()` is static and runs at read time from that snapshot, so labels stay
-fast and URLs never go stale.
+`Kitchen` and `User` get the same treatment, each returning its own label.
 
-::: tip
-`feedMedia()` reads cached values through `$context->data()` — include the key
-you need to build the URL in `toFeed()`. A thrown exception is reported,
-and the entity degrades to `url: null` and `media: null`.
-:::
-
-`Kitchen` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
-`feedMedia()` that returns null, and an unlinked entity still renders at full
-weight. [Feedable Models](/basics/feedable-models) covers a link per feed; the
-[Feedable API](/reference/feedable) covers images and the rest.
-
-Storyfeed stores morph aliases, never class names, so enforce a morph map:
-
-```php
-// app/Providers/AppServiceProvider.php, boot()
-Relation::enforceMorphMap([
-    'order' => Order::class,
-    'kitchen' => Kitchen::class,
-    // Aliases are permanent: an activity whose role alias stops resolving
-    // still shows, with a placeholder; the trickle counts it, never deletes it.
-    'user' => User::class,
-]);
-```
-
-## 2. Give It a Headline
-
-The sentence the feed prints for a placed order, registered once:
+## 2. Give the Verb a Headline
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
     '*.order.placed' => ':actor placed :object with :target',
 ]);
-
-Storyfeed::icons([
-    '*.order.placed' => 'shopping-bag',
-]);
 ```
-
-The key is the object's morph alias and the verb; `*` matches any object type, which suits a verb that already names its subject. The template names roles,
-`:actor`, `:object`, `:target`, and the feed fills in the entities.
 
 ## 3. Publish an Activity
 
 <<< @/snippets/publish.php
 
-Or in one line:
-
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::record('order.placed', $order, actor: $customer, target: $kitchen);
-```
-
-Call it wherever the fact becomes true — an action, an observer, an event
-listener.
-
 ## 4. Read It Back
 
 ```php
 // a controller, or wherever the feed is read
-$page = Storyfeed::feed()
-    ->involving($kitchen)
-    ->limit(20)
-    ->get();
+$page = Storyfeed::feed()->involving($kitchen)->limit(20)->get();
 ```
 
-<FeedStream :items="[published]" :grouped="false" />
-
-That is the activity from step 3, read back. `involving()` matches the kitchen in
-any role, so it finds this one whether the kitchen was the target, the context or
-the object — including the activity that opened the kitchen itself.
-
-`$page` is the payload envelope — `payload_version`, `items`, `next_cursor`,
-`sync_token` — and is `Responsable`, so an API endpoint is one line:
+`$page` is the payload envelope, and it is `Responsable`, so an endpoint is
+one line:
 
 ```php
 // routes/web.php
 Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 ```
 
-Three read modes:
-
-| Call | Returns |
-|---|---|
-| `->log()` | the atomic timeline, one node per activity |
-| `->live()` | mechanical grouping over the active window |
-| `->summary()` | the collapsed best-axis view — **the default** |
-
-A read selects; it never hides. Nothing beneath the read path filters an
-activity out for a viewer, so an app with more than one audience decides
-visibility twice — by what it records, and by the scope and verbs each surface
-reads through:
-
-```php
-// the same order, for the customer who placed it
-$page = Storyfeed::feed('customer')->involving($order)->limit(20)->get();
-```
-
-[Named Feeds](/basics/named-feeds) declare that per audience, once, before the
-second audience exists.
-
-Paginate by handing `next_cursor` back:
-
-```php
-// Cursors are opaque — store them, don't parse them.
-// End of feed is next_cursor === null. An empty items array is NOT the end:
-// a page can lose every node to a rewrite and still carry a usable cursor,
-// so follow it while empty, bounded to a few hops.
-$page = Storyfeed::feed()->cursor($cursor)->get();
-```
-
 ## 5. Render It
-
-Every item is self-describing, so this is the whole renderer, in plain Blade:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
-@php
-    // One entity → a linked label. A null label means the snapshot isn't
-    // written yet; the activity still renders, degraded.
-    $entity = function (?array $e, string $fallback = 'Something') {
-        if ($e === null) {
-            return e($fallback);
-        }
-        $label = e($e['label'] ?? $fallback);
-
-        return $e['url']
-            ? '<a href="'.e($e['url']).'">'.$label.'</a>'
-            : $label;
-    };
-
-    // Resolve the emitted singular token from its role key, then exemplars.
-    // A group key is null unless the axis pins it and its distinct count is 1 —
-    // so only recover one from the exemplars when the group really has one.
-    // `distinct` is the true total; a one-item list is not on its own proof.
-    $one = function (array $node, string $role, string $fallback) use ($entity) {
-        $shown = $node['exemplars'][$role.'s'] ?? [];
-
-        return $entity(
-            $node[$role] ?? (count($shown) === 1 && ($node['distinct'][$role.'s'] ?? 0) === 1
-                ? $shown[0]
-                : null),
-            $fallback,
-        );
-    };
-
-    // How many members a role has BEYOND the exemplars named. Exemplars are
-    // capped at 3, so this is distinct minus however many were shown — never
-    // "minus one".
-    $overflow = fn (array $node, string $role) => max(
-        ($node['distinct'][$role] ?? 0) - count($node['exemplars'][$role] ?? []),
-        0,
-    );
-
-    // A plural token: joined exemplars, with the overflow appended.
-    $list = function (array $node, string $role) use ($entity, $overflow) {
-        $shown = array_map(fn ($e) => $entity($e), $node['exemplars'][$role] ?? []);
-        $more = $overflow($node, $role);
-
-        return implode(', ', $shown).($more > 0 ? " and {$more} more" : '');
-    };
-@endphp
-
 @foreach ($page['items'] as $node)
     <article>
-        <i class="{{ $node['glyph'] }}"></i>
-
-        @if ($node['headline_template'])
-            {!! strtr($node['headline_template'], [
-                ':actor'    => $one($node, 'actor', 'Someone'),
-                ':object'   => $one($node, 'object', 'Something'),
-                ':target'   => $one($node, 'target', 'Something'),
-                ':context'  => $one($node, 'context', 'Something'),
-                ':actors'   => $list($node, 'actors'),
-                ':objects'  => $list($node, 'objects'),
-                ':targets'  => $list($node, 'targets'),
-                ':contexts' => $list($node, 'contexts'),
-                ':origin' => $one($node, 'origin', 'Something'),
-                ':origins' => $list($node, 'origins'),
-                ':result' => $one($node, 'result', 'Something'),
-                ':results' => $list($node, 'results'),
-                ':instrument' => $one($node, 'instrument', 'Something'),
-                ':instruments' => $list($node, 'instruments'),
-                ':count'    => $node['count'] ?? 1,
-                ':others'   => $overflow($node, 'actors').' others',
-            ]) !!}
-        @elseif ($node['headline'])
-            {{ $node['headline'] }}
-        @elseif ($node['kind'] === 'group')
-            {{-- Both headline fields null: the server could not summarise this
-                 group honestly. Render the count, ideally with the members
-                 visible. Composing actor + verb + object here would name one
-                 actor over a many-actor group. --}}
-            {{ $node['count'] }} activities
-        @else
-            {{ $node['verb'] }}
-        @endif
+        {{ strtr($node['headline_template'], [
+            ':actor' => $node['actor']['label'] ?? 'Someone',
+            ':object' => $node['object']['label'] ?? 'Something',
+            ':target' => $node['target']['label'] ?? 'Something',
+        ]) }}
 
         <time datetime="{{ $node['published_at'] }}">
             {{ \Carbon\Carbon::parse($node['published_at'])->diffForHumans() }}
@@ -258,16 +81,7 @@ Every item is self-describing, so this is the whole renderer, in plain Blade:
 @endforeach
 ```
 
-For a named system or an absent actor, use [Parties and actorless voice](/deeper/parties);
-for Filament timestamp formatting, see [display timezone](/cookbook/fresh-consumer#display-timezone).
-
-The comments on `$one`, `$overflow` and the group branch are the parts to keep
-when you adapt this. [Rendering](/basics/rendering) covers the token rules in
-full.
-
-A feed that polls or accumulates pages also needs
-[reconciliation](/basics/rendering#feeds-that-keep-moving) — without it, a
-regrouped node duplicates activities on the next poll.
+<FeedStream :items="[scenes.order]" :grouped="false" />
 
 ## Check Your Work
 
@@ -275,6 +89,11 @@ regrouped node duplicates activities on the next poll.
 php artisan storyfeed:doctor
 ```
 
-Doctor reads your registries and your actual traffic: a verb with no grammar, a
-group that would arrive unnamed, a model in the feed that nothing publishes
-about.
+Doctor reads your registries and your actual traffic, and names each problem
+with its fix: a verb with no headline, a group that would arrive unnamed, a
+model in the feed that nothing publishes about.
+
+That is a working feed. [The Basics](/basics/feedable-models) takes each of
+these five steps in turn: linking an entity, the roles an activity can carry,
+what a row can show beneath its sentence, reading modes and audiences, and
+drawing it all.
