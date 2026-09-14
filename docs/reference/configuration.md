@@ -41,6 +41,22 @@ For named system attribution or a sentence without an actor slot, see
 |---|---|---|
 | `verbs.strict` | `null` | throw on a verb with no registry entry. `null` = strict in local/testing only |
 
+The registry is the vocabulary the app declares, on top of the package's
+built-in verbs:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+Storyfeed::verbs(ActivityVerb::class); // a backed enum implementing FeedVerb
+Storyfeed::verbs(['confirm' => ActivityType::Update]); // or a verb => type map
+```
+
+Registering a verb declares it: `verbs.strict` then throws on any verb outside
+the declared vocabulary, `storyfeed:verbs --used` and the doctor report recorded
+verbs that were never declared and declared verbs never recorded, and the case's
+Activity Streams 2.0 type is what the serializer emits. A registered story class
+declares its verb the same way, so an app that records only through stories has
+nothing to register.
+
 ## Grouping
 
 | key | default | |
