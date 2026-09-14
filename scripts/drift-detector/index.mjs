@@ -32,6 +32,9 @@ export function documents(root, ref) {
   if (ref) return git(root, 'ls-tree', '-r', '--name-only', ref, '--', 'docs').split('\n').filter(p => p.endsWith('.md') && !excluded.test(p)).map(file => ({ file, text: git(root, 'show', `${ref}:${file}`) }));
   return walk(resolve(root, 'docs')).filter(p => p.endsWith('.md')).map(p => ({ file: relative(root, p), text: readFileSync(p, 'utf8') }));
 }
+// Hints only ever attach to an identifier already proven stale. `FeedLink` is a
+// live class again since the name was taken back, so its hint reaches only the
+// 2026-09-05 spelling — historical docs refs and the tests' retirement fixture.
 const hints = { toFeedLink: 'feedMedia', FeedLink: 'FeedMedia', Noun: 'FeedNoun', 'Noun::phrase': 'FeedNoun::of / FeedNoun::trans' };
 const short = n => n.split('\\').at(-1);
 function regions(text) {

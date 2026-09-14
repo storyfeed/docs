@@ -9,19 +9,26 @@ import { analyze, surface, documents, defaultCore } from './index.mjs';
 const here = dirname(fileURLToPath(import.meta.url)), root = resolve(here, '../..');
 const core = process.env.STORYFEED_CORE || defaultCore;
 const api = surface(core);
-const scan = text => analyze(api, [{file:'docs/test.md', text}]);
+// `FeedLink` is a live class again — the name was taken back on 2026-09-08 for a
+// different value object — and the Unreleased section has long since moved past
+// the `toFeedLink()` removal. The retirement fixture pins that bygone moment so
+// the regressions keep testing the detector rather than today's core surface.
+const { 'Storyfeed\\FeedLink': _live, ...withoutFeedLink } = api.classes;
+const retired = { ...api, classes: withoutFeedLink, removed: [...api.removed, 'Storyfeed\\FeedLink'], changelog: api.changelog + '\n- `Feedable::toFeedLink()` was removed.\n' };
+const scan = (text, a = api) => analyze(a, [{file:'docs/test.md', text}]);
 const php = code => '```php\n' + code + '\n```';
 
 test('real main regression, pinned before the correction: all four pages and eight removed-method references', () => {
-  const r = analyze(api, documents(root, '244a79e'));
+  const r = analyze(retired, documents(root, '244a79e'));
   assert.equal(r.stale.filter(s => s.identifier === 'toFeedLink').length, 8);
   assert.ok(r.stale.some(s => s.identifier.includes('FeedLink')));
-  assert.equal(new Set(r.stale.map(s => s.file)).size, 4);
-  assert.ok(r.stale.every(s => /FeedLink/.test(s.identifier)));
+  assert.equal(new Set(r.stale.filter(s => /FeedLink/.test(s.identifier)).map(s => s.file)).size, 4);
+  // Everything else stale on that ref is a later rename the detector also catches.
+  for (const id of ['Collectable', 'PendingStory']) assert.ok(r.stale.some(s => s.identifier.includes(id)), id);
 });
 test('contract-refresh committed docs no longer teach either removed identifier', t => {
   if (spawnSync('git', ['-C', root, 'rev-parse', '--verify', 'contract-refresh'], {stdio:'ignore'}).status !== 0) { t.skip('contract-refresh unavailable; pinned main regression still runs'); return; }
-  const r = analyze(api, documents(root, 'contract-refresh'));
+  const r = analyze(retired, documents(root, 'contract-refresh'));
   assert.equal(r.stale.filter(s => /(?:toFeedLink|FeedLink)/.test(s.identifier)).length, 0);
 });
 test('removed Noun::phrase and Support\\Noun in a synthetic page; no docs edits', () => {
@@ -45,7 +52,7 @@ test('framework, inherited, trait, facade and constant members are not stale', (
   assert.ok(r.unresolved.some(s => s.identifier === 'Activity::where'));
 });
 test('application imports and declarations shadow retired short names', () => {
-  for (const code of ['use App\\FeedLink; FeedLink::make();', 'class FeedLink {} FeedLink::make();', 'class Thing { public static function toFeedLink() {} }', 'function toFeedLink() {} toFeedLink();', 'use App\\Noun; Noun::phrase(2);']) assert.equal(scan(php(code)).stale.length, 0, code);
+  for (const code of ['use App\\FeedLink; FeedLink::make();', 'class FeedLink {} FeedLink::make();', 'class Thing { public static function toFeedLink() {} }', 'function toFeedLink() {} toFeedLink();', 'use App\\Noun; Noun::phrase(2);']) assert.equal(scan(php(code), retired).stale.length, 0, code);
 });
 test('explicit missing package imports and closed-class methods are stale', () => {
   const r = scan(php('use Storyfeed\\DefinitelyMissing; FeedImage::notHere();'));
@@ -65,7 +72,7 @@ test('only explicit absent config lookups are stale; route/view/translation name
   assert.ok(r.unresolved.some(s => s.identifier === 'storyfeed.party'));
 });
 test('comments, prose and non-PHP fences do not introduce stale code; line numbers survive', () => {
-  const r = scan('FeedLink in plain prose.\n```js\nFeedLink::make()\n```\n```php\n// FeedLink::make()\n```\n`FeedLink`');
+  const r = scan('FeedLink in plain prose.\n```js\nFeedLink::make()\n```\n```php\n// FeedLink::make()\n```\n`FeedLink`', retired);
   assert.deepEqual(r.stale.map(s => s.line), [8]);
 });
 test('tokenizer does not mistake comments or private members for public API and captures promoted properties', () => {
@@ -87,7 +94,7 @@ test('missing is informational, prioritizes Unreleased, and excludes removed cla
   const r = scan('');
   assert.equal(r.stale.length, 0); assert.equal(r.missing[0].source, 'Unreleased');
   assert.ok(r.missing.some(s => s.identifier === 'Storyfeed\\FeedContext'));
-  assert.ok(!r.missing.some(s => s.identifier === 'Storyfeed\\FeedLink'));
+  assert.ok(!r.missing.some(s => s.identifier === 'Storyfeed\\Support\\Noun'));
 });
 test('CLI exits 1 on stale, 0 on only missing/unresolved, 2 on operational errors', () => {
   const tmp = mkdtempSync(resolve(tmpdir(), 'drift-cli-'));
@@ -102,7 +109,7 @@ test('CLI exits 1 on stale, 0 on only missing/unresolved, 2 on operational error
 });
 test('conflicting page aliases and application grouped imports stay unresolved', () => {
   for (const text of [php('use App\\FeedLink; FeedLink::make();') + '\n' + php('use Storyfeed\\FeedLink; FeedLink::make();'), php('use App\\{Noun, FeedLink}; Noun::phrase(); FeedLink::make();')]) {
-    const r = scan(text);
+    const r = scan(text, retired);
     assert.ok(!r.stale.some(s => ['FeedLink::make', 'Noun::phrase'].includes(s.identifier)));
   }
 });
@@ -111,7 +118,7 @@ test('block comments and string contents do not teach PHP class references', () 
   assert.equal(r.stale.length, 0);
 });
 test('application static removed-method homonyms and namespace prefixes are unresolved', () => {
-  const r = scan(php('use App\\Thing; Thing::toFeedLink();') + '\n`Storyfeed\\Support`');
+  const r = scan(php('use App\\Thing; Thing::toFeedLink();') + '\n`Storyfeed\\Support`', retired);
   assert.equal(r.stale.length, 0);
   assert.ok(r.unresolved.some(s => s.identifier === 'Thing::toFeedLink'));
 });
