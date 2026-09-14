@@ -119,6 +119,7 @@ export default defineConfig({
         items: [
           { text: 'Glossary', link: '/reference/glossary' },
           { text: 'The Payload Contract', link: '/reference/payload' },
+          { text: 'Feedable API', link: '/reference/feedable' },
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
           { text: 'Doctor', link: '/reference/doctor' },
