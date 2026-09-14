@@ -178,6 +178,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     "The X Rule"; no "What a Y Is Not". Cookbook entries follow the same rule
     in task shape ("Recording Deletions", "Headlines for Grouped Activities").
 
+32. **Every class snippet opens with its namespace.** `namespace App\Events;`
+    is what tells a reader that `DocumentUploaded` is an event; without it the
+    class is a name and nothing else. Models under `App\Models`, stories under
+    `App\Stories`, feeds under `App\Feeds`, events, listeners, observers and
+    enums under their Laravel-conventional namespaces; a package type under
+    its real one. The namespace line precedes the `use` block.
+
 ### When a callout is earned — Silent / Unguarded / In-Hand
 
 All three must hold:

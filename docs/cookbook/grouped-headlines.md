@@ -144,6 +144,8 @@ An aggregate sentence alone cannot preserve each member's content.
 Both sentences live in one class, singular first:
 
 ```php
+namespace App\Stories;
+
 class DocumentWasUploaded extends Story
 {
     public string|array|null $objectType = Document::class;

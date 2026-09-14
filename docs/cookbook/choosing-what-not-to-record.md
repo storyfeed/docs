@@ -79,6 +79,8 @@ this contract (and register its `comment` morph alias as in
 [Feedable models](/basics/feedable-models)):
 
 ```php
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;

@@ -25,6 +25,8 @@ Anything that appears in the feed — actor, object, target, context, origin, re
 implements `Feedable`:
 
 ```php
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
@@ -85,6 +87,8 @@ One class per meaningful activity type — the verb, the headline, the icon, and
 how it groups:
 
 ```php
+namespace App\Stories;
+
 use App\Models\Document;
 use Storyfeed\Contracts\FeedVerb;
 use Storyfeed\Grouping\Group;

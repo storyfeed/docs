@@ -7,6 +7,8 @@ common path; this page lists all of it.
 ## The Contract
 
 ```php
+namespace Storyfeed\Contracts;
+
 interface Feedable
 {
     public function toFeed(): FeedEntity;

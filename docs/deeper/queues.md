@@ -49,6 +49,8 @@ dispatch them before your outermost transaction commits.
 ## A Queued Listener
 
 ```php
+namespace App\Listeners;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Storyfeed\Events\ActivityPublished;
 
@@ -127,6 +129,8 @@ declares its own boundary, so the behaviour is readable from the event class.
 ## A Job That Publishes
 
 ```php
+namespace App\Listeners;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -224,6 +228,8 @@ worker the process is every job that worker runs from then on.
 ## The Actor
 
 ```php
+namespace App\Listeners;
+
 class NotifyTeam implements ShouldQueue
 {
     public function handle(DocumentSubmitted $event): void

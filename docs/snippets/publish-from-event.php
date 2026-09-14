@@ -1,3 +1,5 @@
+namespace App\Events;
+
 use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
 use Storyfeed\PendingActivity; // [!code focus]
 

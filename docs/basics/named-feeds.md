@@ -170,6 +170,8 @@ ClientFeed::make($project)->only(['upload'])->summary();         // fine: narrow
 A feed with no subject declares no constructor and no `scope()`:
 
 ```php
+namespace App\Feeds;
+
 class TeamFeed extends Feed
 {
     public function define(FeedBuilder $feed): void

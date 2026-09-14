@@ -49,6 +49,8 @@ const scoped = [
 a link will need later.
 
 ```php
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
@@ -81,6 +83,8 @@ entity renders at full weight with no link.
 entity links.
 
 ```php
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
@@ -182,6 +186,8 @@ snapshot carries the key and the facts a link needs, and the resolver links
 per surface and never throws.
 
 ```php
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;

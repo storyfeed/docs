@@ -46,6 +46,8 @@ enum ActivityVerb: string
 which can then be decorated with Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface,
 
 ```php
+namespace App\Enums;
+
 use Storyfeed\Concerns\AsFeedVerb; // [!code focus]
 use Storyfeed\Contracts\FeedVerb; // [!code focus]
 

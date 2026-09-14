@@ -1,3 +1,5 @@
+namespace App\Listeners;
+
 class RecordUpload
 {
     public function handle(DocumentUploaded $event): void
