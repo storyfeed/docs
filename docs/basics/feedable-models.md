@@ -69,7 +69,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-<FeedExample :items="withSnapshot" />
+<FeedExample context :items="withSnapshot" />
 
 The snapshot is taken when an activity is published and refreshed every time
 the model saves. The feed reads the snapshot, never the model, so a page of a

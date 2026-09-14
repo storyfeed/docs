@@ -72,7 +72,7 @@ const question = activity({
 })
 </script>
 
-<FeedExample :items="[question]">
+<FeedExample context :items="[question]">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 

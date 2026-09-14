@@ -72,7 +72,7 @@ OrderWasPlaced::activity($order)
     ->publish();
 ```
 
-<FeedExample :items="[placed]" />
+<FeedExample context :items="[placed]" />
 
 The tokens name roles, never models: `:actor`, `:object`, `:target`,
 `:context`. Each becomes the label of the entity in that role.

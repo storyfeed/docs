@@ -9,7 +9,8 @@ import Annotation from './components/Annotation.vue'
 import StabilityBanner from './components/StabilityBanner.vue'
 import RowAnatomy from './components/RowAnatomy.vue'
 import FeedExample from './components/FeedExample.vue'
-import { FEED_NOW } from './feed/keys'
+import SampleLink from './components/SampleLink.vue'
+import { FEED_LINK, FEED_NOW } from './feed/keys'
 import './feed/feed.css'
 import './custom.css'
 
@@ -45,5 +46,9 @@ export default {
     app.component('RowAnatomy', RowAnatomy)
     app.component('FeedExample', FeedExample)
     app.provide(FEED_NOW, DOCS_NOW)
+    // Sample URLs are real-looking and this site has no such routes, so an
+    // entity keeps a link's appearance and loses its destination. See the
+    // component for why the URL still matters.
+    app.provide(FEED_LINK, SampleLink)
   },
 } satisfies Theme

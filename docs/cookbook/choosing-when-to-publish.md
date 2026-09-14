@@ -47,7 +47,7 @@ const confirmed = activity({
 
 *The cook moves an order from placed to confirmed.*
 
-<FeedExample :items="[confirmed]" />
+<FeedExample context :items="[confirmed]" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

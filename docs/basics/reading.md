@@ -42,7 +42,7 @@ $page = Storyfeed::feed()
     ->get();
 ```
 
-<FeedExample :items="scoped" />
+<FeedExample context :items="scoped" />
 
 `$page` is a `FeedPage`: the payload envelope, ready to return from a route.
 

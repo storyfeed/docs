@@ -12,7 +12,7 @@ eventually wants them typed.
 
 ## Using Strings
 
-<FeedExample :items="[placed]" />
+<FeedExample context :items="[placed]" />
 
 ```php
 // where the fact happens: a controller, an action, a listener

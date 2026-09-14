@@ -116,7 +116,7 @@ each published headline.
 
 ## Examples of Activities
 
-<FeedExample :items="oneActivity">
+<FeedExample context :items="oneActivity">
   <template #annotations="{ node }">
     <Annotation><SlotMapping :node="node" :slots="['actor', 'verb', 'object', 'target']" /></Annotation>
   </template>

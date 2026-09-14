@@ -55,7 +55,7 @@ Enter it by name, from the facade or from the model:
 Storyfeed::feed('kitchen')->involving($kitchen)->get();
 ```
 
-<FeedExample :items="kitchen">
+<FeedExample context :items="kitchen">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 

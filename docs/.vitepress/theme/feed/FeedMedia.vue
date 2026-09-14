@@ -12,12 +12,19 @@
  * picture does not navigate — the payload's `entity.url` for a photo IS the
  * full file, so tapping one would leave the feed for a raw image.
  */
+import { inject } from 'vue'
+import { FEED_LINK } from './keys'
+
 defineProps<{ image: Record<string, any>; href?: string | null }>()
+
+// The same seam an entity link uses, so a docs page can make a tile inert and
+// an app can hand it a router component.
+const linkComponent = inject(FEED_LINK, 'a')
 </script>
 
 <template>
     <component
-        :is="href ? 'a' : 'div'"
+        :is="href ? linkComponent : 'div'"
         :href="href || undefined"
         class="sf-media"
         :style="image.width && image.height ? { aspectRatio: `${image.width} / ${image.height}` } : undefined"

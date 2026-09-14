@@ -36,7 +36,7 @@ const actors = group({ id: 'ag5', verb: 'placed', axis: 'actors', count: 5, glyp
 
 Three orders from one customer, minutes apart, as a log:
 
-<FeedExample :items="log" />
+<FeedExample context :items="log" />
 
 A Story's `groups()` says how they read as one:
 

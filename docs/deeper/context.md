@@ -26,7 +26,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedExample :items="[inside]" />
+<FeedExample context :items="[inside]" />
 
 ## The Difference Between Target and Context
 

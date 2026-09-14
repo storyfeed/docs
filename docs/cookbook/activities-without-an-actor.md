@@ -54,7 +54,7 @@ const expired = activity({
 })
 </script>
 
-<FeedExample :items="[placed]" />
+<FeedExample context :items="[placed]" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

@@ -166,7 +166,7 @@ In a job that is the moment the worker got to it.
 *A user places two orders at 23:52 and 23:55. A third order at 23:58
 sits in a backlog, and its job runs at 00:05. Without `publishedAt()`:*
 
-<FeedExample :items="late" />
+<FeedExample context :items="late" />
 
 *The same job, with `publishedAt($this->occurredAt)`:*
 

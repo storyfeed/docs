@@ -31,7 +31,7 @@ Storyfeed::activity()->by($cook)->action('menu.dish_added', $dish)->publish();  
 
 After one new dish and two price changes:
 
-<FeedExample :items="pricedTwice" />
+<FeedExample context :items="pricedTwice" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

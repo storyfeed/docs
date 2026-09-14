@@ -48,6 +48,12 @@ const json = computed(() => JSON.stringify(props.items, null, 2))
  * appear in it.
  */
 const pad = computed(() => {
+    // AN ANNOTATED EXAMPLE IS NEVER PADDED. The annotations slot runs for every
+    // node the stream draws, so surrounding rows would be annotated too — and
+    // an annotation maps the vocabulary a section has introduced, which those
+    // rows have nothing to do with.
+    if (slots.annotations) return 0
+
     if (props.context === false) return 0
     if (typeof props.context === 'number') return Math.min(Math.max(props.context, 0), 3)
 

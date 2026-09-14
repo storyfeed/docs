@@ -20,7 +20,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-<FeedExample :items="[withoutIcon]" />
+<FeedExample context :items="[withoutIcon]" />
 
 Read the key as two parts: the object's morph alias, a dot, and the verb.
 `order.placed` is the verb `placed`, recorded about an `order`. The dot

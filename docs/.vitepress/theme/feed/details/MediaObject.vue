@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
+import { FEED_LINK } from '../keys'
 import FeedMedia from '../FeedMedia.vue'
 
 /**
@@ -19,6 +20,8 @@ const props = defineProps<{
     entityLabel?: string | null
     entityMedia?: Record<string, any> | null
 }>()
+
+const linkComponent = inject(FEED_LINK, 'a')
 
 const subject = computed(() => {
     const value = props.payload.subject
@@ -41,7 +44,7 @@ const footnote = computed(() => {
 <template>
     <div class="sf-media-object">
         <p v-if="subject" class="sf-media-object__subject">
-            <a v-if="subject.href" :href="subject.href">{{ subject.label }}</a>
+            <component :is="linkComponent" v-if="subject.href" :href="subject.href">{{ subject.label }}</component>
             <template v-else>{{ subject.label }}</template>
         </p>
 
@@ -50,12 +53,12 @@ const footnote = computed(() => {
         <FeedMedia v-if="picture" :image="picture" />
 
         <p v-for="(file, i) in payload.attachments ?? []" :key="i" class="sf-file">
-            <a :href="file.href">{{ file.name ?? file.href }}</a>
+            <component :is="linkComponent" :href="file.href">{{ file.name ?? file.href }}</component>
             <span v-if="file.mediaType"> · {{ file.mediaType }}</span>
         </p>
 
         <p v-if="footnote" class="sf-media-object__footnote">
-            <a v-if="footnote.href" :href="footnote.href">{{ footnote.label }}</a>
+            <component :is="linkComponent" v-if="footnote.href" :href="footnote.href">{{ footnote.label }}</component>
             <template v-else>{{ footnote.label }}</template>
         </p>
     </div>

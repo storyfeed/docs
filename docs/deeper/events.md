@@ -22,7 +22,7 @@ class OrderPlaced
 
 <<< @/snippets/publish-from-listener.php
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample context :items="[scenes.order]" />
 
 ## From the Event Itself
 

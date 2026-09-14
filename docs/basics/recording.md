@@ -29,7 +29,7 @@ The builder reads in the order of the headline it produces:
 
 <<< @/snippets/publish.php
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample context :items="[scenes.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
 happened. `placed` is this app's own word, not one the package knows. Verbs

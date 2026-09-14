@@ -49,7 +49,7 @@ Storyfeed::grammar([
 
 That is the activity, and this is it on a feed:
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample context :items="[scenes.order]" />
 
 Call it wherever the fact becomes true: an action, an observer, an event
 listener.

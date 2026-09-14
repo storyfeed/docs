@@ -53,7 +53,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedExample :items="[one]" />
+<FeedExample context :items="[one]" />
 
 *a minute later, another request*
 

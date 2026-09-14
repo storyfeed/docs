@@ -75,7 +75,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedExample :items="[plain]" />
+<FeedExample context :items="[plain]" />
 
 Everything below is for the rows where it is not enough. Add one thing at a
 time, and only where a reader would ask for it.
