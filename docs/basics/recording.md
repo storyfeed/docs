@@ -31,6 +31,12 @@ The builder reads in the order of the headline it produces:
 
 <FeedStream :items="[scenes.order]" :grouped="false" />
 
+The first argument to `action()` is the **verb**: a plain string naming what
+happened. `order.placed` is this app's own word, not one the package knows —
+verbs are free-form, and nothing has to be registered before you record one.
+A dot is just a character in the string; it groups a vocabulary for a reader,
+and for the wildcards a later page uses.
+
 The same activity in one call, when everything is in hand:
 
 ```php
@@ -129,19 +135,6 @@ Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()
 The key is the object and the verb; `data` is not part of it. Which verbs
 should replace and which should append is worked through in
 [Repeating Activities](/cookbook/repeating-activities).
-
-## Recording from an Enum
-
-If your verbs live in an enum using the `AsFeedVerb` trait, every case is a
-builder:
-
-```php
-// where the fact happens: a controller, an action, a listener
-OrderActivity::Placed->by($customer)->object($order)->to($kitchen)->publish();
-OrderActivity::Ready->publish($order);
-```
-
-The enum is set up in [Activity Types & Verbs](/basics/activity-types-and-verbs).
 
 ## Recording Many Objects at Once
 

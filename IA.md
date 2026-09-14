@@ -232,10 +232,10 @@ After that, simple to complex: the elementary act, the typed layer over it,
 reading and drawing, a second audience, then renderer-specific pages.
 
 - ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
-- ✅ Recording Activities — the builder, roles, the actor, extras, replace
-- ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
-- ✅ Activity Types & Verbs — strings, then the `FeedVerb` enum (owner's page)
+- ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
+- ✅ Activity Types & Verbs — the same verb typed, as a `FeedVerb` enum (owner's page)
 - ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, translation
+- ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ Rendering — the smallest loop, links, degraded entities, groups, details, resync
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
