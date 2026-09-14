@@ -39,37 +39,54 @@ class RecordUpload
 
 ## From the Event Itself
 
-An event can declare what it puts on the feed, with no listener to register:
+An event can build the same activity itself, with no listener to register.
+Return it without publishing; dispatching the event publishes it:
 
 ```php
 use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
-use Storyfeed\PendingStory; // [!code focus]
+use Storyfeed\PendingActivity; // [!code focus]
 
 class DocumentUploaded implements PublishesToFeed // [!code focus]
 {
     public function __construct(public Document $document, public User $user) {}
 
-    public function toFeedStory(): ?PendingStory // [!code focus]
+    public function toFeedStory(): ?PendingActivity // [!code focus]
     { // [!code focus]
-        return PendingStory::of(DocumentWasUploaded::class) // [!code focus]
-            ->object($this->document) // [!code focus]
-            ->actor($this->user) // [!code focus]
-            ->target($this->document->project); // [!code focus]
+        return Storyfeed::activity() // [!code focus]
+            ->by($this->user) // [!code focus]
+            ->action('upload', $this->document) // [!code focus]
+            ->to($this->document->project); // [!code focus]
     } // [!code focus]
 }
 ```
 
 <FeedStream :items="[uploaded]" :grouped="false" />
 
-Dispatch the event and the activity is published. Return `null` to publish
-nothing, when only some instances belong on the feed:
+Return `null` to publish nothing, when only some instances belong on the feed:
 
 ```php
-public function toFeedStory(): ?PendingStory
+public function toFeedStory(): ?PendingActivity
 {
-    return $this->document->isDraft() // [!code focus]
-        ? null // [!code focus]
-        : PendingStory::of(DocumentWasUploaded::class)->object($this->document);
+    if ($this->document->isDraft()) { // [!code focus]
+        return null; // [!code focus]
+    } // [!code focus]
+
+    return Storyfeed::activity()
+        ->by($this->user)
+        ->action('upload', $this->document)
+        ->to($this->document->project);
+}
+```
+
+Any unpublished activity can be returned. If the activity has a
+[Story class](/basics/stories), its builder is one:
+
+```php
+public function toFeedStory(): ?PendingActivity
+{
+    return DocumentWasUploaded::activity($this->document) // [!code focus]
+        ->by($this->user)
+        ->to($this->document->project);
 }
 ```
 
