@@ -6,25 +6,25 @@ carries what the reader needs without your renderer knowing anything about
 your app.
 
 <script setup>
-import { who, orders, dishes, notes, scenes, activity } from '../.vitepress/theme/samples'
+import { who, orders, dishes, notes, scenes, activity, INSTRUCTIONS } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:32:00.000000Z'
 
-const base = {
-  verb: 'noted', glyph: 'message-circle', published_at: at,
-  headline_template: ':actor sent a note about :object',
-  actor: who.regular,
-}
-
+// The note is the thing posted; the order is what it was posted on.
 const withThread = activity({
-  ...base, id: 'ac2', object: orders.first,
+  id: 'ac2', verb: 'post', glyph: 'message-circle', published_at: at,
+  headline_template: ':actor sent a note about :target',
+  actor: who.regular, object: notes.pickup, target: orders.first,
   thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false },
 })
 
+// A different activity, the same order entity: the excerpt travels with it.
 const withExcerpt = activity({
-  ...base, id: 'ac3',
+  id: 'ac3', verb: 'ready', glyph: 'utensils', published_at: at,
+  headline_template: ':actor marked :object ready',
+  actor: who.cook,
   object: { ...orders.first, data: { $detail: 'Storyfeed/Detail/Excerpt', $v: 1,
-    text: notes.pickup.label, from: 'Note on the order', truncated: false } },
+    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false } },
 })
 
 const withFields = activity({
@@ -91,7 +91,8 @@ use Storyfeed\FeedThread;
 
 Storyfeed::activity()
     ->by($customer)
-    ->action('noted', $order)
+    ->action('post', $note)
+    ->on($order)
     ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code focus]
     ->publish();
 ```
@@ -116,7 +117,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: "Order #{$this->reference}",
-        data: Excerpt::make($this->note, from: 'Note on the order'), // [!code focus]
+        data: Excerpt::make($this->instructions, from: 'Instructions'), // [!code focus]
     );
 }
 ```

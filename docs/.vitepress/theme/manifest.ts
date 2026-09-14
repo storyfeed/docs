@@ -96,3 +96,9 @@ export const NOTES = {
   spice:  'Less chili in the chicken curry next time? It was perfect otherwise.',
   pickup: 'Can I pick this up at six instead of seven?',
 }
+
+/** Instructions: what a customer typed into the order itself at checkout. Not
+ * a note — it belongs to the order, and travels wherever the order appears. */
+export const INSTRUCTIONS = {
+  first: 'Ring the bell twice, the gate sticks.',
+}

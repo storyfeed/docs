@@ -87,6 +87,8 @@ export const orders: Record<string, any> = build(ORDERS, order)
 export const devices: Record<string, any> = build(DEVICES, device)
 export const photos: Record<string, any> = build(PHOTOS, photo)
 export const notes: Record<string, any> = build(NOTES, note)
+/** Plain strings, not entities: an order's own text, carried on its snapshot. */
+export { INSTRUCTIONS } from './manifest'
 /** A party has no page of its own. */
 export const party: Record<string, any> = build(PARTIES, (id, label) => entity('storyfeed.party', id, label, null))
 
