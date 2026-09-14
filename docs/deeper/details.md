@@ -112,8 +112,8 @@ untouched, which is what lets `$detail` survive the read path.
 
 ### Names
 
-`Vocabulary/Form` — namespaced to whoever defines the vocabulary, both halves in
-PascalCase: `Storyfeed/MediaObject`, `Acme/Attachment`. The name outlives every
+`Vocabulary/Form` — namespaced to whoever defines the vocabulary, every segment
+in PascalCase: `Storyfeed/Detail/MediaObject`, `Acme/Attachment`. The name outlives every
 class that writes it, and two libraries that both wanted the word "change" do
 not collide in a column.
 
@@ -196,22 +196,22 @@ never a rendered diff.
 
 ## Existing Forms
 
-`storyfeed/ui` ships six. They are MIT and free, and they are the vocabulary
-rather than one renderer's furniture — `storyfeed/filament` registers them for
-its own views, and any other renderer may recognise the same names. An app
-writing its own owes nothing to any of them.
+Core ships six under `Storyfeed\Detail`. They are the vocabulary rather than
+one renderer's furniture: `storyfeed/filament` registers them for its own
+views, and any other renderer may recognise the same names. An app writing its
+own owes nothing to any of them, and core reads none of them.
 
 | Name | Is | Keys |
 |---|---|---|
-| `Storyfeed/Fields` | labelled rows | `rows[]` of `label`, `value`, `mono`, `missing` |
-| `Storyfeed/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Storyfeed/Change` | before → after, for one field or several | `changes[]` of `label`, `before`, `after` |
-| `Storyfeed/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
-| `Storyfeed/Markdown` | authored body text, as source | `content`, `mediaType` |
-| `Storyfeed/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `Storyfeed/Detail/Fields` | labelled rows | `rows[]` of `label`, `value`, `mono`, `missing` |
+| `Storyfeed/Detail/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
+| `Storyfeed/Detail/Change` | before → after, for one field or several | `changes[]` of `label`, `before`, `after` |
+| `Storyfeed/Detail/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
+| `Storyfeed/Detail/Markdown` | authored body text, as source | `content`, `mediaType` |
+| `Storyfeed/Detail/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
 
-A row written under an earlier form name keeps that name;
-`storyfeed:rename-details` reshapes it to the current vocabulary.
+A row written under an earlier form name keeps that name, and an unrecognised
+name draws nothing, so a stale row is a blank space rather than an error.
 
 ## Unknown Forms in a Renderer
 
