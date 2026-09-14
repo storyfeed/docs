@@ -321,29 +321,9 @@ source.
 
 ### Still open
 
-- ⬜ **`reference/doctor.md` overclaims in "From findings to code".** It says
-  `--stubs` closes the loop; neither `roles` nor `aggregates.latent` emits one,
-  both deliberately — the remedy for `roles` is authorial, and for latent an
-  unrenderable stub is the exact harm the check closes. **Live and wrong on the
-  deployed site.**
-- ⬜ **`reference/doctor.md` — read-mode reachability.** `aggregates.latent`
-  (clusters, has no grammar, and no registered feed's mode can read it) at Info,
-  carrying no fix stub, plus `aggregates.reachability_unknown`. CI-affecting:
-  Info means `--fail-on=warning` no longer trips on those pairs, so it needs an
-  upgrade note, and registering named feeds gains a concrete payoff worth a
-  pointer on `basics/named-feeds.md`. Not on the site at all today.
-- ⬜ **The Checks table has no severity column.** With Info load-bearing in two
-  places — `aggregates.latent`, and `roles` on `:actor` — it likely needs one.
-- ⬜ **`deeper/aggregation.md` — which axes each mode reads.** A matrix: `log`
-  reads no axis; `live` reads `repeat` plus authored composites; `summary` reads
-  the winner on any bucket, with a `repeat` fallback. The page still says only
-  that each activity ends up in exactly one axis per read mode and never says
-  which, which was the original cause of four consumer complaints in one
-  afternoon.
-- ⬜ **`basics/reading.md` — choosing a mode per surface.** The modes table
-  exists; the guidance does not. Three surfaces, the mode each wants, one
-  sentence of why. The load-bearing sentence is that mode is chosen per
-  **surface**, not per app.
+Nothing. Re-audited 2026-09-14 after the sweep; every item below is on the
+deployed site. Ask the package lead rather than reading the source when the
+next gap arrives.
 
 ### Void under rule 25
 
@@ -352,6 +332,22 @@ published-language-file trap. All three describe moving between releases, and
 these pages describe one: `dev-main`, as it is now.
 
 ### Closed by the 2026-09-14 sweep
+
+- ✅ `reference/doctor.md` no longer overclaims in "From Findings to Code": it
+  names the two findings that emit no stub, `roles` and `aggregates.latent`,
+  and says why each is deliberate.
+- ✅ Read-mode reachability is on the site: `aggregates.latent` at Info with no
+  fix stub, and `aggregates.reachability_unknown`, both on `reference/doctor.md`.
+  The upgrade note it asked for is void under rule 25.
+- ✅ The Checks table carries a severity column, so Info being load-bearing on
+  `aggregates.latent` and on `roles` over `:actor` is visible without reading
+  the prose.
+- ✅ `deeper/aggregation.md` says which axes each mode reads, as a matrix:
+  `log()` no axis, `live()` repeat plus authored composites, `summary()` the
+  winning axis with a repeat fallback.
+- ✅ `basics/reading.md` chooses a mode per surface, as a table of three
+  surfaces with the reason for each, under the sentence that mode is chosen per
+  surface and not per app.
 
 - ✅ The install line pinned a pre-release; `guide/installation.md` installs
   `dev-main`.
