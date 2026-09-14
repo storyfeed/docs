@@ -213,7 +213,7 @@ Ordered by NEED, matching the quickstart. Recording a non-`Feedable` object does
 not error — it produces an activity whose entity never snapshots — so teaching
 recording first fails silently rather than loudly.
 
-- ✅ Feedable Models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
+- ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
 - ✅ Activity Types & Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
 - ✅ Story Classes — anatomy, `make:story`, registration, compilation
 - ✅ Recording Activities — `record()`, the fluent builder, roles, `replace:`
@@ -240,6 +240,7 @@ recording first fails silently rather than loudly.
 ### Reference
 
 - ✅ The Payload Contract — envelope, entity objects, activity/group nodes, cursors, sync token
+- ✅ Feedable API — every argument of `FeedEntity`, `FeedContext`, `FeedMedia`, `FeedImage`; snapshot maintenance
 - ✅ Configuration — every key in `config/storyfeed.php`
 - ✅ Commands — the full `storyfeed:*` reference
 - ✅ Doctor — every check, what it means, how to act on it
