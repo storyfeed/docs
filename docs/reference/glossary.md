@@ -12,7 +12,7 @@ neighbours are usually what you actually wanted.
 | **verb** | what happened, as a string | a closed set; enums are convenience |
 | **actor / object / target / context** | the roles a sentence needs; [Recording](/basics/recording#roles) covers all seven | interchangeable; target ≠ context |
 | **party** | a [named participant with no model](/deeper/parties) | a null actor (that means *unknown*; see [actorless voice](/deeper/parties#actorless-voice)) |
-| **[story class](/basics/stories)** | a verb with its grammar and roles declared in one place | a required abstraction — a string verb is always enough |
+| **[story class](/deeper/stories)** | a verb with its grammar and roles declared in one place | a required abstraction — a string verb is always enough |
 | **[composite](/deeper/composites)** | one authored story about many objects | a derived group |
 | **batch** | a burst-detection window | anything a reader sees |
 

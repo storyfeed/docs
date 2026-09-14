@@ -42,7 +42,7 @@ DocumentWasUploaded::activity($document)
 
 <FeedStream :items="[scenes.upload]" :grouped="false" />
 
-Registration is in [Story Classes](/basics/stories).
+Registration is in [Story Classes](/deeper/stories).
 
 ## Where Drift Comes from
 

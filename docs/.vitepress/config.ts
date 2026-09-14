@@ -61,70 +61,74 @@ export default defineConfig({
           { text: 'Usage Examples', link: '/guide/usage-examples' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Quickstart', link: '/guide/quickstart' },
-          { text: 'Upgrading', link: '/guide/upgrading' },
         ],
       },
       {
-        // Order follows the order of NEED, matching the quickstart: a model
-        // must be feedable before recording it is useful. Recording a
-        // non-Feedable object does not error — it produces an activity whose
-        // entity never snapshots — so the wrong order fails silently.
+        // Feedable Models stays first: a model must be feedable before recording
+        // does anything, and the failure is silent. After that, simple to complex:
+        // the elementary act, then the typed layer over it, then reading and
+        // drawing, then a second audience, then renderer-specific pages.
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
-          { text: 'Activity Types & Verbs', link: '/basics/activity-types-and-verbs' },
-          { text: 'Story Classes', link: '/basics/stories' },
           { text: 'Recording Activities', link: '/basics/recording' },
+          { text: 'Activity Types & Verbs', link: '/basics/activity-types-and-verbs' },
+          { text: 'Headlines', link: '/basics/headlines' },
           { text: 'Reading Feeds', link: '/basics/reading' },
-          { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'Rendering', link: '/basics/rendering' },
-          { text: 'The Feed Rail', link: '/basics/the-rail' },
+          { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'Live Rendering', link: '/basics/live-renderer' },
+          { text: 'The Feed Rail', link: '/basics/the-rail' },
         ],
       },
       {
+        // Recording depth, then payload depth, then grouping, then operations.
         text: 'Digging Deeper',
         items: [
+          { text: 'Publishing from Events', link: '/deeper/events' },
+          { text: 'Containers & Context', link: '/deeper/context' },
+          { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
+          { text: 'Story Classes', link: '/deeper/stories' },
+          { text: 'Activity Details', link: '/deeper/details' },
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Grammar', link: '/deeper/grammar' },
           { text: 'Composites', link: '/deeper/composites' },
-          { text: 'Activity Details', link: '/deeper/details' },
-          { text: 'Publishing from Events', link: '/deeper/events' },
           { text: 'Queues', link: '/deeper/queues' },
-          { text: 'Containers & Context', link: '/deeper/context' },
-          { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
+          { text: 'Testing', link: '/deeper/testing' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
-          { text: 'Testing', link: '/deeper/testing' },
         ],
       },
       {
+        // In the order a reader meets the problem.
         text: 'Cookbook',
         items: [
-          { text: 'Reading Detail Fields Back', link: '/cookbook/read-the-fields-back' },
-          { text: 'Setting Up a New Consumer', link: '/cookbook/fresh-consumer' },
+          { text: 'Composing a Coherent Activity', link: '/cookbook/read-the-fields-back' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
-          { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
-          { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
-          { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
+          { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
           { text: 'Recording Deletions', link: '/cookbook/activities-about-deletions' },
+          { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
+          { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
           { text: 'Keeping Verbs and Grammar Together', link: '/cookbook/verbs-and-grammar-together' },
+          { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
+          { text: 'Setting Up a New Consumer', link: '/cookbook/fresh-consumer' },
         ],
       },
       {
+        // Vocabulary, then what you type, then the shapes, then the policy pages.
         text: 'Reference',
         items: [
           { text: 'Glossary', link: '/reference/glossary' },
-          { text: 'The Payload Contract', link: '/reference/payload' },
-          { text: 'Feedable API', link: '/reference/feedable' },
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
           { text: 'Doctor', link: '/reference/doctor' },
+          { text: 'Feedable API', link: '/reference/feedable' },
+          { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
           { text: 'Compatibility', link: '/reference/compatibility' },
+          { text: 'Upgrade Guide', link: '/guide/upgrading' },
         ],
       },
     ],

@@ -1,4 +1,4 @@
-# Read the Fields Back
+# Composing a Coherent Activity
 
 Check an activity's composition before recording it: **read the recorded fields
 back. Do they cohere?**

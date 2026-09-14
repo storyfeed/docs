@@ -1,7 +1,7 @@
 # Quickstart
 
-Five steps: make a model feedable, author a story, publish an activity, read
-the feed, render it. The example is a document being uploaded to a project.
+Five steps: make a model feedable, give its verb a headline, publish an
+activity, read the feed, render it. The example is a document being uploaded to a project.
 
 <script setup>
 import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
@@ -84,60 +84,23 @@ Relation::enforceMorphMap([
 ]);
 ```
 
-## 2. Author a Story
+## 2. Give It a Headline
 
-One class per meaningful activity type — the verb, the headline, the icon, and
-how it groups:
-
-```php
-<?php
-
-namespace App\Stories;
-
-use App\Models\Document;
-use Storyfeed\Contracts\FeedVerb;
-use Storyfeed\Grouping\Group;
-use Storyfeed\Story;
-
-class DocumentWasUploaded extends Story
-{
-    public string|array|null $objectType = Document::class;
-
-    public string|FeedVerb|BackedEnum|null $verb = 'upload';
-
-    public function headline(): string
-    {
-        return ':actor uploaded :object to :target';
-    }
-
-    public function icon(): ?string
-    {
-        return 'file-up';
-    }
-
-    public function groups(): array
-    {
-        return [
-            Group::byActors()->headline(':actors uploaded :count files to :target'),
-            Group::repeat()->headline(':actor uploaded :count files to :target'),
-        ];
-    }
-}
-```
-
-Generate one with `php artisan make:story DocumentWasUploaded`, then register:
+The sentence the feed prints for an upload, registered once:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::stories([
-    DocumentWasUploaded::class,
+Storyfeed::grammar([
+    'document.upload' => ':actor uploaded :object to :target',
+]);
+
+Storyfeed::icons([
+    'document.upload' => 'file-up',
 ]);
 ```
 
-Headlines are **templates**, substituted by the renderer — translatable, and a
-label can stay a link. A group headline may only use tokens true of *every*
-member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
-`storyfeed:doctor` reports a token a group cannot make true of every member.
+The key is the object's morph alias and the verb. The template names roles,
+`:actor`, `:object`, `:target`, and the feed fills in the entities.
 
 ## 3. Publish an Activity
 

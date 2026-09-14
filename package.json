@@ -11,7 +11,8 @@
     "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
     "test:cast": "node --test scripts/cast.test.mjs",
     "llms": "node scripts/llms.mjs",
-    "pdf": "node scripts/print-pdf.mjs"
+    "pdf": "node scripts/print-pdf.mjs",
+    "pdf:spine": "node scripts/print-spine.mjs"
   },
   "devDependencies": {
     "vitepress": "^2.0.0-alpha.19"

@@ -218,54 +218,61 @@ Spatie package docs (one page per capability, ruthless brevity), Inertia
 Laravel-style grouping: a reader goes Getting started → The basics →
 Digging deeper → Reference, and can stop at any tier with a working feed.
 
-### Getting started
+### Getting Started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Anatomy of an Activity Stream — the vocabulary preface, plain English, one
-  burst carried through every section, glossary with a "what it is NOT" column
+- ✅ Usage Examples — six showcases, each snippet with its feed
 - ✅ Installation — `guide/installation`
-- ✅ Your First Feed — `guide/quickstart`
-- ✅ Upgrade Guide — per-version notes, including the published-migration rule
+- ✅ Quickstart — `guide/quickstart`: feedable model, headline, publish, read, render
 
-### The basics
+### The Basics
 
-Ordered by NEED, matching the quickstart. Recording a non-`Feedable` object does
-not error — it produces an activity whose entity never snapshots — so teaching
-recording first fails silently rather than loudly.
+Feedable Models first, because recording a non-`Feedable` object fails silently.
+After that, simple to complex: the elementary act, the typed layer over it,
+reading and drawing, a second audience, then renderer-specific pages.
 
 - ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
-- ✅ Activity Types & Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
-- ✅ Story Classes — anatomy, `make:story`, registration, compilation
-- ✅ Recording Activities — `record()`, the fluent builder, roles, `replace:`
-- ✅ Reading Feeds — the builder, scoping, read modes, pagination
-- ✅ Named Feeds — `Storyfeed::feeds()`, `only()`/`except()`, `Feed` classes,
-  `make:feed`, and what a name is not. Sits directly after Reading because it is
-  the same builder and the reader needs the scope half in hand before a second
-  audience exists; the doctor findings it produces live in Reference, not here
-- ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines; reconciliation
+- ✅ Recording Activities — the builder, roles, the actor, extras, replace
+- ✅ Activity Types & Verbs — strings, then the `FeedVerb` enum (owner's page)
+- ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, translation
+- ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
+- ✅ Rendering — the loop, templates, degraded entities, reconciliation
+- ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
 - ✅ Live Rendering — Vue: reconciliation in code, sync_token, bounded empty-page loop
-  (written by the Newsroom agent against production; the parts a static template cannot show)
+- ✅ The Feed Rail — the four configurations, choosing one, the glyph's intent
 
-### Digging deeper
+### Digging Deeper
 
-- ✅ Aggregation — axes, the winning axis, group nodes, custom axes
-- ✅ Grammar — aggregate templates, token safety, the anti-lie rule
-- ✅ Composites — `->objects()`, `Collectable`, batches and the quiet window
-- ✅ Publishing from Events — `PublishesToFeed`, the single listener
-- ✅ Containers & Context — the fourth role: grouping by place, container queries, AS2
+Recording depth, then payload depth, then grouping, then operations.
+
+- ✅ Publishing from Events — the listener, `PublishesToFeed`, events core emits
+- ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
-- ✅ Activity Streams 2.0 — conformance, routes, the `@context`, extension types
-- ✅ Testing — `Storyfeed::fake()`, coverage assertions
+- ✅ Story Classes — the blueprint: headline, icon and grouping in one class (not required to get a feed going)
+- ✅ Activity Details — typed blocks in `data`, forms, versions
+- ✅ Aggregation — grouping repeats, axes, thresholds, custom axes
+- ✅ Grammar — group headlines, plural tokens, the tokens a group may use, nouns, wildcards
+- ✅ Composites — `->objects()`, `Bundleable`, batches
+- ✅ Queues — queued listeners and jobs, the actor on a worker
+- ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
+- ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
+- ✅ Healing a Feed — retiring stories whose source is permanently gone
+
+### Cookbook
+
+In the order a reader meets the problem.
+
+- ✅ Composing a Coherent Activity · Choosing When to Publish · Choosing What Not to Record ·
+  Repeating Activities · Recording Deletions · Activities Without an Actor · Recording an
+  Authoriser · Headlines for Grouped Activities · Keeping Verbs and Grammar Together ·
+  Counts That Keep Changing · Setting Up a New Consumer (Filament; last until a Filament section exists)
 
 ### Reference
 
-- ✅ The Payload Contract — envelope, entity objects, activity/group nodes, cursors, sync token
-- ✅ Feedable API — every argument of `FeedEntity`, `FeedContext`, `FeedMedia`, `FeedImage`; snapshot maintenance
-- ✅ Configuration — every key in `config/storyfeed.php`
-- ✅ Commands — the full `storyfeed:*` reference
-- ✅ Doctor — every check, what it means, how to act on it
-- ✅ Schema — the tables and their columns
-- ✅ Compatibility — PHP/Laravel support policy
+Vocabulary, then what you type, then the shapes, then the policy pages.
+
+- ✅ Glossary · Configuration · Commands · Doctor · Feedable API · The Payload Contract ·
+  Schema · Compatibility · Upgrade Guide (moved here from Getting Started: a new reader has nothing to upgrade)
 
 ## Pending coverage
 

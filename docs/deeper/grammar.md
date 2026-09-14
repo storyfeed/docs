@@ -1,15 +1,12 @@
 # Grammar
 
-Grammar is the registry of templates the feed uses to render its activities'
-headlines. A Story's `headline()` and `groups()` fill it; the direct form is:
+A group of activities reads as one sentence, and that sentence is a template
+too. Aggregate grammar is the registry of templates for group headlines,
+keyed by the axis the group formed on and the verb. When you are done, every
+group your feed can form has a sentence that is true of every member.
 
 <script setup>
 import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
-
-const single = activity({ id: 'g1', verb: 'upload', glyph: 'file-up',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor uploaded :object to :target',
-  actor: who.designer, object: doc.report, target: where.main })
 
 const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
   published_at: '2026-08-14T14:30:00.000000Z',
@@ -19,36 +16,23 @@ const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, gly
   distinct: { actors: 1, objects: 3, targets: 1 } })
 </script>
 
+## Registering a Group Headline
+
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::grammar([
-    'document.upload' => ':actor uploaded :object to :target',   // {objectType}.{verb}
-]);
-
 Storyfeed::aggregateGrammar([
-    'actors.upload' => ':actors uploaded :count files to :target', // {axis}.{verb}
-    'repeat.upload' => ':actor uploaded :count files to :target',
+    'repeat.upload' => ':actor uploaded :count files to :target',    // {axis}.{verb}
+    'actors.upload' => ':actors uploaded :count files to :target',
 ]);
 ```
 
-<FeedStream :items="[single, repeated]" :grouped="false" />
+<FeedStream :items="[repeated]" :grouped="false" />
 
-Note the two key shapes: singular grammar is keyed by **object type and verb**;
-aggregate grammar by **axis and verb**.
+A singular [headline](/basics/headlines) is keyed by object type and verb; a
+group headline by **axis and verb**. A Story's `groups()` writes the same
+entries. `:count` is the member count.
 
-The key names the type; the template names the role. Your model names belong in
-the key, never in the template:
-
-```php
-// config/storyfeed.php
-'document.upload' => ':user uploaded :document to :project',   // ✗ not tokens — these render as text
-'document.upload' => ':actor uploaded :object to :target',     // ✓
-```
-
-For singular activities with no recorded actor, register a separate
-[actorless voice](/deeper/parties#actorless-voice) keyed by exact verb.
-
-## Tokens
+## Plural Tokens
 
 | Singular Token | Plural Token | Entity Role |
 |---|---|---|
@@ -60,8 +44,8 @@ For singular activities with no recorded actor, register a separate
 | `:result` | `:results` | the produced entity |
 | `:instrument` | `:instruments` | the tool or service used |
 
-Singular tokens resolve to one entity label. Plural tokens resolve to group
-exemplars with overflow. [Rendering](/basics/rendering#headline-templates)
+A singular token resolves to one entity label. A plural token resolves to the
+group's exemplars with an overflow count. [Rendering](/basics/rendering#headline-templates)
 covers substitution and the `:count` and `:others` tokens.
 
 ## Tokens a Group Headline May Use
@@ -173,30 +157,3 @@ reader of the other Stories.
 
 Pick one owner deliberately, or register the shared aggregate keys directly with
 `aggregateGrammar()` where their scope is obvious.
-
-## Icons
-
-```php
-// app/Providers/AppServiceProvider.php, boot()
-Storyfeed::icons([
-    'document.upload' => 'file-up',
-    '*.comment' => 'message-circle',
-]);
-```
-
-Same resolution order, resolved server-side. The icon vocabulary is entirely
-yours — the payload ships whatever token you registered.
-
-## Translation
-
-Templates are plain strings, so they translate:
-
-```php
-// app/Providers/AppServiceProvider.php, boot()
-Storyfeed::grammar([
-    'document.upload' => __('feed.document_uploaded'),
-]);
-```
-
-Because tokens are substituted by the renderer, word order stays the
-translator's decision.
