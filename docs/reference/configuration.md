@@ -102,7 +102,7 @@ node's *shape* is frozen.
 |---|---|---|
 | `grouping.batch.enabled` | `true` | infer bursts by one actor |
 | `grouping.batch.quiet_minutes` | `10` | idle time before a burst is considered finished |
-| `grouping.composite.auto` | `true` | bundle `Collectable` runs at batch close |
+| `grouping.composite.auto` | `true` | bundle `Bundleable` runs at batch close |
 | `grouping.composite.min_objects` | `2` | smallest distinct object count that mints a composite |
 
 ## Hydration

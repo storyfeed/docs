@@ -23,6 +23,37 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
+## Unreleased — `Collectable` Is Now `Bundleable`
+
+`Storyfeed\Contracts\Collectable` is now **`Bundleable`**, with
+`Storyfeed::collectables()` → `bundleables()` and `isCollectable()` →
+`isBundleable()`. The old name read as "can become a Laravel Collection". What
+the marker means is that runs of the model bundle into one composite activity
+when the actor's batch closes, so it is named for what happens. Config is
+unchanged. The old symbols are removed, not aliased.
+
+```php
+<?php
+
+namespace App\Models;
+
+use Storyfeed\Contracts\Bundleable; // [!code ++]
+use Storyfeed\Contracts\Collectable; // [!code --]
+use Storyfeed\Contracts\Feedable;
+
+class Document extends Model implements Feedable, Collectable // [!code --]
+class Document extends Model implements Feedable, Bundleable // [!code ++]
+{
+    // …
+}
+```
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+Storyfeed::collectables(['document']); // [!code --]
+Storyfeed::bundleables(['document']); // [!code ++]
+```
+
 ## Unreleased — Events Return a `PendingActivity`
 
 `PublishesToFeed::toFeedStory()` is now **`toFeedActivity()`**, and
@@ -178,7 +209,7 @@ bookmark otherwise falls through to the default.
 
 - **Axes formalized.** Custom axes need no package edits; hashes are unchanged
   for the built-ins, so no payload change.
-- **Composites.** `Collectable` models bundle at batch close. Author **both**
+- **Composites.** `Collectable` models (now `Bundleable`) bundle at batch close. Author **both**
   `composite.{verb}` aggregate grammar and `*.{verb}` singular grammar for the
   parent — see [Grammar](/deeper/grammar#composite-parents).
 - **Null-headline groups became reachable.** A group with no safe headline now

@@ -38,16 +38,16 @@ node with `axis: 'composite'`. Serialized to
 
 ## Automatic
 
-Mark a model `Collectable` and runs of it bundle themselves:
+Mark a model `Bundleable` and runs of it bundle themselves:
 
 ```php
 <?php
 
 namespace App\Models;
 
-use Storyfeed\Contracts\Collectable;
+use Storyfeed\Contracts\Bundleable;
 
-class Document extends Model implements Feedable, Collectable
+class Document extends Model implements Feedable, Bundleable
 {
     // …
 }
@@ -55,7 +55,7 @@ class Document extends Model implements Feedable, Collectable
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::collectables(['document']);
+Storyfeed::bundleables(['document']);
 ```
 
 ```php
@@ -113,7 +113,7 @@ The parent has no object of its own, so it resolves through `*.{verb}`.
 
 ## Backfilling
 
-Adopting `Collectable` affects future activity only. To bundle history:
+Adopting `Bundleable` affects future activity only. To bundle history:
 
 ```bash
 php artisan storyfeed:bundle
