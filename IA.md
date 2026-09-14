@@ -124,6 +124,50 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     headings ("on the same project", not "on a shared target") — role
     vocabulary starts where it is taught.
 
+20. **The Basics teaches only what is needed to start building feeds.**
+    Strict modes, config keys, commands, the doctor, caching, AS2 mapping,
+    event and snapshot internals: none of it belongs in The Basics. It moves
+    to Digging deeper or Reference, or is cut. (Sharpens rule 8.)
+21. **Elementary form first.** The first snippet on any page is
+    `Storyfeed::activity()->by()->action()->to()->publish()` or the plainest
+    equivalent for the concept; typed and decorated forms (enums, Story
+    classes, `PublishesToFeed`) arrive as a second step. (Sharpens rule 12.)
+22. **Bite-sized, focused snippets.** One idea per snippet, and
+    `// [!code focus]` on the lines that changed since the previous snippet.
+    A page is a sequence of small deltas, not one large listing — except the
+    one representative example per concept (rule 23).
+23. **One representative example per concept, from a real app.** A class
+    example that exhausts the feature within reason and self-documents for
+    the savvy reader. Drawn from the owner's own apps, never an imagined
+    scenario; public prose still frames the source collectively.
+24. **Every snippet has a purpose and a feed outcome.** What the reader sees
+    in the feed after this snippet is rendered directly beneath it, by the
+    real components. Now mandatory on every concept page, not only on
+    showcases. (Sharpens rule 15.)
+25. **No history, no promises.** Nothing about removed APIs, prior names,
+    reversals, stability guarantees, licensing, or risk. A reader who arrives
+    at 1.0 does not know or care. Pre-1.0 status is one phrase: "under active
+    development". History lives on the upgrade guide and nowhere else.
+    (Sharpens rule 11.)
+26. **No forward references.** A page never names a tool or a term a later
+    page introduces — the doctor, aggregation, axes — and never closes with a
+    pointer to the next concept. (Rule 18, generalised to prose.)
+27. **Plain words over coined phrases.** No "anti-lie rule", no "the axis
+    pins it", no "immutable snapshots live in…". Where a name is useful the
+    plain sentence comes first and the name is optional. (Sharpens rule 3.)
+28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
+    site", "when to…") live in the cookbook, not on the concept page.
+29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
+    Is X?", "Using X", "Examples of X".
+30. **Story is the blueprint, Activity is the published fact.** A Story class
+    produces an Activity; prose never uses one word for the other.
+31. **Both spines are a table of contents.** A sidebar entry names the
+    capability its page covers; an H2/H3 names what its section covers. Read
+    either spine top to bottom with no page content and it must describe the
+    site, or the page. No evocative, clever, or sentence-shaped titles; no
+    "The X Rule"; no "What a Y Is Not". Cookbook entries follow the same rule
+    in task shape ("Recording Deletions", "Headlines for Grouped Activities").
+
 ### When a callout is earned — Silent / Unguarded / In-Hand
 
 All three must hold:
@@ -153,11 +197,11 @@ Digging deeper → Reference, and can stop at any tier with a working feed.
 ### Getting started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Anatomy of an activity stream — the vocabulary preface, plain English, one
+- ✅ Anatomy of an Activity Stream — the vocabulary preface, plain English, one
   burst carried through every section, glossary with a "what it is NOT" column
 - ✅ Installation — `guide/installation`
-- ✅ Your first feed — `guide/quickstart`
-- ✅ Upgrade guide — per-version notes, including the published-migration rule
+- ✅ Your First Feed — `guide/quickstart`
+- ✅ Upgrade Guide — per-version notes, including the published-migration rule
 
 ### The basics
 
@@ -165,17 +209,17 @@ Ordered by NEED, matching the quickstart. Recording a non-`Feedable` object does
 not error — it produces an activity whose entity never snapshots — so teaching
 recording first fails silently rather than loudly.
 
-- ✅ Feedable models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
-- ✅ Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
-- ✅ Story classes — anatomy, `make:story`, registration, compilation
-- ✅ Recording activities — `record()`, the fluent builder, roles, `replace:`
-- ✅ Reading feeds — the builder, scoping, read modes, pagination
-- ✅ Named feeds — `Storyfeed::feeds()`, `only()`/`except()`, `Feed` classes,
+- ✅ Feedable Models — `toFeed()` / `toFeedLink()`, snapshots, degradation, morph aliases
+- ✅ Activity Types & Verbs — strings, the `FeedVerb` enum, `verbs.strict`, `storyfeed:verbs`
+- ✅ Story Classes — anatomy, `make:story`, registration, compilation
+- ✅ Recording Activities — `record()`, the fluent builder, roles, `replace:`
+- ✅ Reading Feeds — the builder, scoping, read modes, pagination
+- ✅ Named Feeds — `Storyfeed::feeds()`, `only()`/`except()`, `Feed` classes,
   `make:feed`, and what a name is not. Sits directly after Reading because it is
   the same builder and the reader needs the scope half in hand before a second
   audience exists; the doctor findings it produces live in Reference, not here
 - ✅ Rendering — the Blade loop expanded; tokens; degraded entities; null headlines; reconciliation
-- ✅ A live renderer — Vue: reconciliation in code, sync_token, bounded empty-page loop
+- ✅ Live Rendering — Vue: reconciliation in code, sync_token, bounded empty-page loop
   (written by the Newsroom agent against production; the parts a static template cannot show)
 
 ### Digging deeper
@@ -183,15 +227,15 @@ recording first fails silently rather than loudly.
 - ✅ Aggregation — axes, the winning axis, group nodes, custom axes
 - ✅ Grammar — aggregate templates, token safety, the anti-lie rule
 - ✅ Composites — `->objects()`, `Collectable`, batches and the quiet window
-- ✅ Publishing from events — `PublishesToFeed`, the single listener
-- ✅ Containers & context — the fourth role: grouping by place, container queries, AS2
-- ✅ Parties & anonymous actors — null actor vs named non-model participant
+- ✅ Publishing from Events — `PublishesToFeed`, the single listener
+- ✅ Containers & Context — the fourth role: grouping by place, container queries, AS2
+- ✅ Parties & Anonymous Actors — null actor vs named non-model participant
 - ✅ Activity Streams 2.0 — conformance, routes, the `@context`, extension types
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions
 
 ### Reference
 
-- ✅ The payload contract — envelope, entity objects, activity/group nodes, cursors, sync token
+- ✅ The Payload Contract — envelope, entity objects, activity/group nodes, cursors, sync token
 - ✅ Configuration — every key in `config/storyfeed.php`
 - ✅ Commands — the full `storyfeed:*` reference
 - ✅ Doctor — every check, what it means, how to act on it
