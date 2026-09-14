@@ -78,18 +78,6 @@ public function toFeedStory(): ?PendingActivity
 }
 ```
 
-Any unpublished activity can be returned. If the activity has a
-[Story class](/basics/stories), its builder is one:
-
-```php
-public function toFeedStory(): ?PendingActivity
-{
-    return DocumentWasUploaded::activity($this->document) // [!code focus]
-        ->by($this->user)
-        ->to($this->document->project);
-}
-```
-
 ::: tip
 The name is `toFeedStory()`, not `toFeed()`, so a model can be both `Feedable`
 and publishing without a collision.
