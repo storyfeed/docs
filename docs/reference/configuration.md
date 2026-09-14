@@ -92,7 +92,7 @@ node's *shape* is frozen.
 
 | key | default | |
 |---|---|---|
-| `hydration.enabled` | `true` | whether [`$context->model()`](/basics/feedable-models#the-live-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
+| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
 
 ## AS2.0 routes
 

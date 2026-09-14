@@ -21,7 +21,7 @@ The atomic timeline.
 ## `feed_snapshots`
 
 Denormalized entity labels, data, and optional body fields. Reads use these
-snapshots unless a [media resolver](/basics/feedable-models#snapshots-and-links)
+snapshots unless a [media resolver](/reference/feedable#the-contract)
 opts into a live model lookup.
 Written at publish, refreshed on model save, backfilled by `storyfeed:trickle`.
 

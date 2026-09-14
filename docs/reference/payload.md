@@ -39,7 +39,7 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
 with the snapshot. `label` comes from the snapshot unless the resolver supplies
 an override. `type`, `id`, `component` and `data` come from the snapshot.
-[Feedable models](/basics/feedable-models#snapshots-and-media) covers the resolver.
+[Feedable API](/reference/feedable#feedcontext) covers the resolver.
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when

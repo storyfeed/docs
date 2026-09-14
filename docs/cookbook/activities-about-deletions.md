@@ -61,7 +61,7 @@ Bulk query deletes, such as `Document::where(...)->delete()`, do not dispatch
 individual model events and therefore do not run this cascade.
 
 The lifecycle hooks are in
-[Feedable models](/basics/feedable-models#keeping-snapshots-fresh).
+[Feedable API](/reference/feedable#snapshot-maintenance).
 
 ## A soft delete is a delete
 
