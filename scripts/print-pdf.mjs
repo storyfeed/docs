@@ -51,8 +51,10 @@ if (!existsSync(CHROME)) {
  */
 if (existsSync(out)) {
   const { readFileSync } = await import('node:fs')
-  const bytes = readFileSync(out)
-  if (bytes.includes('/Annot')) {
+  // Chrome writes /Link annotations for every hyperlink, so the test is for
+  // markup subtypes: the iPad writes ink as /Stamp (Markup) or /Ink.
+  const bytes = readFileSync(out).toString('latin1')
+  if (/\/Subtype\s*\/(Ink|Stamp|FreeText|Highlight|Underline|StrikeOut|Squiggly)\b/.test(bytes)) {
     console.error(`${out}\ncarries annotations. Move it to ../Annotated first; refusing to overwrite.`)
     process.exit(1)
   }

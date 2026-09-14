@@ -27,7 +27,8 @@ for (const line of sidebar.split('\n')) {
 // Clear unannotated copies so renumbering leaves no stale file behind.
 for (const f of readdirSync(DOCS)) {
   const path = join(DOCS, f)
-  if (f.endsWith('.pdf') && !readFileSync(path).includes('/Annot')) unlinkSync(path)
+  const inked = /\/Subtype\s*\/(Ink|Stamp|FreeText|Highlight|Underline|StrikeOut|Squiggly)\b/
+  if (f.endsWith('.pdf') && !inked.test(readFileSync(path).toString('latin1'))) unlinkSync(path)
 }
 
 pages.forEach(({ section, title, route }, i) => {
