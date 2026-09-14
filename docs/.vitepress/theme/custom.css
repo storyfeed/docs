@@ -87,6 +87,23 @@
   user-select: none;
 }
 
+/* INSIDE AN EXAMPLE CARD, THE WELL IS THE CARD. `FeedExample` already draws
+   the ring, the radius and the rhythm, and puts the payload in the same frame;
+   a well inside it is a fence inside a fence, which is the crowding the detail
+   block spent a day removing one package over. The corner label goes too — the
+   card's own "Payload" bar names the halves. */
+.vp-doc .sf-example .sf-feed {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.vp-doc .sf-example .sf-feed::before {
+  content: none;
+}
+
 /* A heading straight before a feed needs the air a heading before a paragraph
    gets — VitePress styles its own elements and knows nothing about ours. */
 .vp-doc h2 + .sf-feed,

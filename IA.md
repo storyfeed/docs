@@ -96,12 +96,19 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     manifest (`{{ who.designer.label }}`); `npm run test:cast` fails the build
     when a manifest value appears literally in prose.
 
-    **Every rendered feed is `<FeedExample :items="…" />`**, which draws it and
-    offers "View payload", serialised from the SAME nodes it drew — never
-    hand-written beside it, which is the block that eventually disagrees with
-    the picture above it. It caught its first drift within a minute of
-    existing: a sample still carrying a verb the prose had renamed. Use
-    `FeedStream` directly only where a page is showing a consumer's own markup.
+    **Every rendered feed is `<FeedExample :items="…" />`** — one card holding
+    the feed and, under it, a collapsible `Payload` bar with a copy button,
+    serialised from the SAME nodes it drew. Never hand-written beside it,
+    which is the block that eventually disagrees with the picture above it; it
+    caught its first drift within a minute of existing, a sample still
+    carrying a verb the prose had renamed.
+
+    Collapsed by default, because most pages teach the sentence rather than
+    the shape. Add `expanded` where the data IS the lesson. The card is the
+    well: a feed inside one drops its own ring and corner label, because a
+    fence inside a fence is the crowding the detail block spent a day removing
+    one package over. Use `FeedStream` directly only where a page is showing a
+    consumer's own markup.
 
 15. **Snippet, then its output.** What a code block produces is shown directly
     beneath it, rendered, in a well that lines up with the code block (same
