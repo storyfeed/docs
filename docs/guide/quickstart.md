@@ -71,37 +71,43 @@ what else that call can ask for, and [Rendering](/basics/rendering) covers
 drawing it.
 
 ::: details What the markup looks like
+
+A page hands the payload to a composable and the composable to the stream.
+This is a production call site, with the names changed:
+
 ```vue
 <!-- resources/js/Pages/Kitchen/Feed.vue -->
-<script setup>
-defineProps({ page: Object })
+<script setup lang="ts">
+import { usePoll } from '@inertiajs/vue3'
+import { toRef } from 'vue'
+import FeedStream from '@/components/feed/FeedStream.vue'
+import { useFeedStream } from '@/composables/useFeedStream'
+
+const props = defineProps<{ feed: FeedPayload }>()
+
+const { items, nextCursor, loadingMore, loadMore } = useFeedStream(
+    toRef(() => props.feed),
+    (cursor) => feedPage.url({ query: { kitchen: props.kitchen.id, cursor } }),
+)
+
+usePoll(10_000, { only: ['feed'] })
 </script>
 
 <template>
-    <ol class="feed">
-        <FeedRow v-for="node in page.items" :key="node.id" :node="node" />
-    </ol>
+    <FeedStream
+        :items="items"
+        :next-cursor="nextCursor"
+        :loading-more="loadingMore"
+        @load-more="loadMore"
+    />
 </template>
 ```
 
-```vue
-<!-- resources/js/Components/Feed/FeedRow.vue -->
-<script setup>
-defineProps({ node: Object })
-</script>
-
-<template>
-    <li>
-        <FeedGlyph :token="node.glyph" />
-        <FeedHeadline :node="node" />
-        <FeedTime :at="node.published_at" />
-    </li>
-</template>
-```
-
-`FeedHeadline` substitutes the tokens, `FeedTime` formats one timestamp, and
-neither knows what an order is. That is the whole shape of a renderer.
+Nothing there knows what an order is. The composable holds the paging and the
+reconciliation rules, the stream draws nodes, and the page supplies a payload
+and a URL to ask for more of it.
 :::
+
 
 ## Check Your Work
 
