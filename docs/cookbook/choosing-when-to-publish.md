@@ -73,7 +73,7 @@ Storyfeed::grammar([
 
 A verb names one transition. `submit`, `approve` and `archive` are three
 verbs, not one `status` verb carrying the new state in `data`. The reason is
-in [Recording](/basics/recording#what-replace-matches-on).
+in [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
 ## The transition from the event
 

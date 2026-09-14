@@ -81,9 +81,24 @@ after replacement cannot recover the full timeline. If both surfaces need to
 coexist, retain the complete history separately or build the pulse from the
 retained occurrences without replacing them. Superseded rows are soft-deleted
 by default; `storyfeed.replace.delete = 'force'` hard-deletes them. See
-[Recording](/basics/recording#what-replace-matches-on).
+[Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
 ## A save-shaped verb that is not published at all
 
 A save that changes nothing a reader would notice has no row, replaced or
 otherwise. See [Choosing when to publish](/cookbook/choosing-when-to-publish).
+
+## What `->replace()` Matches On
+
+The object and the verb. `data` is not part of the key, so a single
+`status.changed` verb carrying `data: ['from' => …, 'to' => …]` supersedes its
+own previous transition: seven states in, one row out. A verb per transition
+keeps each one idempotent against itself and inert toward its neighbours.
+
+The superseded rows are soft-deleted by default. They leave every feed read
+but stay in storage with `deleted_at` set until `storyfeed:prune` removes them.
+Set `storyfeed.replace.delete` to `'force'` to delete them, with their grouping
+and participant rows, inside the publish transaction. Participant rows go in
+either mode.
+
+`->publishAndReplace()` is `->replace()->publish()` in one call.

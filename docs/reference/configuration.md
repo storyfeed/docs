@@ -33,7 +33,7 @@ For named system attribution or a sentence without an actor slot, see
 | key | default | |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `replace.delete` | `'soft'` | what [`->replace()`](/basics/recording#what-replace-matches-on) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
+| `replace.delete` | `'soft'` | what [`->replace()`](/cookbook/repeating-activities#what-replace-matches-on) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
 
 ## Verbs
 

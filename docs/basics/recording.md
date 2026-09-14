@@ -1,7 +1,12 @@
-# Recording activities
+# Recording Activities
+
+An activity is a verb plus the entities in its roles. Recording one is an
+explicit call from wherever the fact happens: an action, an observer, an event
+listener. When you are done, each fact your app cares about is one call that
+reads like the sentence it produces.
 
 <script setup>
-import { who, where, firm, activity } from '../.vitepress/theme/samples'
+import { who, where, firm, doc, entity, activity } from '../.vitepress/theme/samples'
 
 const created = activity({
   id: 'r1', verb: 'create', glyph: 'folder',
@@ -9,10 +14,27 @@ const created = activity({
   headline_template: ':actor created the project :object for :target',
   actor: who.ines, object: where.birdRemoval, target: firm.chirp,
 })
+
+const system = entity('party', 'system', 'System', null)
+
+const synced = activity({
+  id: 'r2', verb: 'sync', glyph: 'activity',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor synced :object',
+  actor: system, object: doc.expenseReportQ3,
+})
+
+const saved = activity({
+  id: 'r3', verb: 'save', glyph: 'file-pen',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor saved :object',
+  actor: who.marcus, object: doc.wireframesWip,
+})
 </script>
 
-An activity is a verb plus up to seven entity roles. The builder reads in the
-order of the headline it produces:
+## The Builder
+
+The builder reads in the order of the headline it produces:
 
 ```php
 Storyfeed::activity()
@@ -24,26 +46,23 @@ Storyfeed::activity()
 
 <FeedStream :items="[created]" :grouped="false" />
 
-The same thing in one line, when you have everything up front:
+The same activity in one call, when everything is in hand:
 
 ```php
 Storyfeed::record('create', $project, actor: $user, target: $client);
 ```
 
-Recording is always an explicit call — from an action, an observer, an event
-listener. There is no model spying.
-
 ## Roles
 
-| role | question it answers | example |
+| Role | Question It Answers | Example |
 |---|---|---|
 | `actor` | who did it | the user |
 | `object` | what it was done to | the document |
 | `target` | what the act was directed at | the project |
 | `context` | where it happened | the surrounding container |
 | `origin` | where it came from | the source of an accepted invitation |
-| `result` | what it produced | a diff record or generated artifact, including output too large for `data` |
-| `instrument` | what it happened via | an integration used to import a record, or an agent a person acted through |
+| `result` | what it produced | a diff record or a generated artifact |
+| `instrument` | what it happened via | an integration used to import a record |
 
 ::: tip
 `origin`, `result` and `instrument` are not in a tagged release. An install
@@ -52,37 +71,28 @@ pinned to v0.9.0 or earlier has the first four roles.
 
 Direction decides the role. The same integration is a `target` for an upload
 **to** it and an `instrument` for a record sourced **via** it.
-See [Containers & context](/deeper/context) for the surrounding container.
+
+## Reading as a Sentence
 
 Each role has a setter named for it: `actor()`, `object()`, `target()`,
-`context()`, `origin()`, `result()` and `instrument()`. `verb()` sets the verb.
+`context()`, `origin()`, `result()` and `instrument()`; `verb()` sets the verb.
 Aliases let the call site read as the sentence:
 
-| alias | sets | reads as |
+| Alias | Sets | Reads As |
 |---|---|---|
 | `->by()` | `actor` | who acted |
-| `->action()` | `verb` | what they did |
+| `->action()` | `verb` and `object` | what they did, to what |
 | `->using()` | `instrument` | what they acted via |
 | `->resulting()` | `result` | what they produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
 
-An alias and its setter record identical rows — pick whichever reads at your
-call site. `context` is set only by `->context()`; note that `->in()` and
-`->from()` predate the context role and set the **target**, not the container
-and not a source. Use `->origin($source)` for the source.
+An alias and its setter record identical rows. `context` is set only by
+`->context()`; `->in()` and `->from()` set the target, not the container.
 
-Roles are set at publish and **never backfilled** — `storyfeed:rebuild` rebuilds
-snapshots, `storyfeed:curate` re-selects axes, and neither can populate a role
-that was never recorded.
+## The Actor
 
-For reading an entity's own page you usually want
-[`involving()`](/basics/reading#scoping) rather than any single role — it spans
-all seven roles.
-
-## The default actor
-
-Omit `->actor()` and the authenticated user is used. To attribute activities
-in a job or command, scope a block with `as()`:
+Omit the actor and the authenticated user is recorded. In a job or a command
+there is no authenticated user, so name one for the block:
 
 ```php
 Storyfeed::as('System', function () {
@@ -90,143 +100,44 @@ Storyfeed::as('System', function () {
 });
 ```
 
-A string actor becomes a [party](/deeper/parties) — a named participant with no
-model. An explicit `->actor()` inside the scope still wins, and the previous
-resolver is always restored, even if the callback throws.
+<FeedStream :items="[synced]" :grouped="false" />
 
-You can also set an app-wide `actor_resolver` in the config, or a
-`parties.fallback` name for queue/console publishes. When nothing resolves, the
-activity is published as anonymous — a null actor means genuinely unknown.
-Use [actorless voice](/deeper/parties#actorless-voice) when that activity should
-read without an actor slot.
+A string actor is a [party](/deeper/parties): a named participant with no
+model. When nothing names an actor the activity is published with none, which
+means the actor is genuinely unknown.
 
-### The actor survives the queue
-
-A listener that publishes is often queued, and `Auth::user()` on a worker is
-null. Storyfeed captures the authenticated user's identity into Laravel's
-[Context](https://laravel.com/docs/context) when the job payload is written, and
-applies it on the worker — so an activity recorded from a queued listener names
-the person who caused it, not nobody.
-
-```php
-class NotifyTeam implements ShouldQueue
-{
-    public function handle(DocumentUploaded $event): void
-    {
-        // Records the user who uploaded, though this runs minutes later
-        // on a worker with no session.
-        Storyfeed::record('upload', object: $event->document);
-    }
-}
-```
-
-Nothing you have configured changes. An explicit `->actor()` and
-`->anonymously()` are both decided first, and your own `actor_resolver` or
-`as()` scope keeps its authority. The transported identity speaks only where
-nothing else has an opinion — and there it speaks *ahead of*
-`parties.fallback`, because someone who is known should not be recorded as
-"System" merely because the worker has no session.
-
-Only a morph alias and a primary key travel, never the model, so the identity is
-recorded even if that user has since been deleted. To opt a scope out:
-
-```php
-Context::addHidden(\Storyfeed\Support\QueuedActor::KEY, null);
-```
-
-## Extras
+## Extra Data and Backdating
 
 ```php
 Storyfeed::activity()
     ->action('upload', $document)
-    ->data(['size' => $bytes])          // activity-level payload, arrives in the node
-    ->publishedAt($importedAt)          // backdate (imports, backfills)
+    ->data(['size' => $bytes])      // activity-level payload, arrives in the node
+    ->publishedAt($importedAt)      // backdate: imports, backfills
     ->publish();
 ```
 
-`Storyfeed::record()` also accepts named `data:`, `publishedAt:`, `replace:`,
-`objects:`, and `thread:` arguments. Story subclasses expose the same options
-through `YourStory::record()`, without the verb argument. `thread:` accepts a
-`Storyfeed\FeedThread`; use named arguments because the parameter order differs.
+`Storyfeed::record()` takes the same as named arguments: `data:`,
+`publishedAt:`, `replace:`, `objects:` and `thread:`.
 
-`->replace()` upserts instead of appending — publishing the same activity again
-replaces the earlier row rather than duplicating it:
+## Replacing Instead of Appending
+
+A draft saved five times is one fact, not five. `->replace()` supersedes the
+earlier row with the same object and verb:
 
 ```php
 Storyfeed::activity()->action('save', $draft)->replace()->publish();
+
+// a minute later, another request
+Storyfeed::activity()->action('save', $draft)->replace()->publish();
 ```
 
-### What `->replace()` matches on
+<FeedStream :items="[saved]" :grouped="false" />
 
-**The object and the verb — `data` is not part of the key**, and the superseded
-rows are soft-deleted by default. They disappear from normal feed reads but
-remain in storage with `deleted_at` set. No cursor, read mode, or curated view
-brings them back. `storyfeed:prune` permanently removes them when pruning is
-enabled and they fall outside the retention window. Set
-`storyfeed.replace.delete` to `'force'` to permanently delete them and their
-grouping and participant rows inside the publish transaction. Participant rows
-are removed in either mode; soft deletion keeps the grouping rows until pruning.
+The key is the object and the verb; `data` is not part of it. Which verbs
+should replace and which should append is worked through in
+[Repeating Activities](/cookbook/repeating-activities).
 
-`->publishAndReplace()` is the same thing in one call; everything below applies
-to it identically.
-
-That makes one plausible-looking shape hide earlier transitions: a single `updateStatus` verb
-carrying `data: ['from' => …, 'to' => …]` supersedes its *own* previous
-transition, because every transition shares the same object and verb. Seven
-states in, one line out, and the survivor is whichever fired last.
-
-For a lifecycle, use **a verb per transition, and keep `->replace()`**:
-
-```php
-Storyfeed::activity()->action('order.confirmed', $order)->replace()->publish();
-Storyfeed::activity()->action('order.cooking', $order)->replace()->publish();
-Storyfeed::activity()->action('order.ready', $order)->replace()->publish();
-```
-
-Distinct verbs never collide, so each transition stays idempotent against itself
-— a double-clicked button or a retried webhook still collapses — and inert
-toward its neighbours. The narrative survives in full, and you keep the tooling:
-[grammar](/deeper/grammar) templates and icons are registered per verb, and
-`storyfeed:verbs` and doctor's `verbs` check key on the verb too. One verb for a
-seven-state machine gives all of them one thing to say about seven facts.
-
-### The qualification: lifecycles that cycle
-
-"Distinct verbs never collide" holds while the lifecycle only moves **forward**.
-It stops holding the moment an object can re-enter a state it has already been
-in — a ticket closed, reopened and closed again; an order marked ready, cancelled
-and made ready again; anything that can be un-done and re-done.
-
-There, `order.ready` fires twice on the same object, and `->replace()` does
-precisely what it promises: the second occurrence supersedes the first. The
-collapse you wanted between a double-clicked button and its retry is the same
-collapse you did not want between March and September. **The row survives; the
-first time it happened does not.**
-
-The key is the object and the verb, and a cycle repeats both. Nothing in the
-package can tell the two cases apart, because from storage they are identical.
-
-So the rule is narrower than it first reads:
-
-- **Monotonic lifecycle** — each state entered at most once. Verb per
-  transition, keep `->replace()`. This is most lifecycles.
-- **Cycling lifecycle** — a state can recur, and each recurrence is a fact a
-  reader would want. **Drop `->replace()`** and let the occurrences append.
-
-Dropping it costs the idempotency: a retried webhook now writes a second row.
-If that matters, guard at the boundary you already have — the transition itself
-should be recording once, and a lifecycle that can cycle usually has a
-transition record to hang that on.
-
-If you are unsure which kind you have, ask whether *"this happened again"* is
-information. For `save` on a draft it is not. For a reopened ticket it is the
-most interesting thing on the row.
-
-One verb plus `->replace()` is still the right answer where the past instances
-are genuinely noise: `save` on a draft, `viewed`, a heartbeat, "location
-updated". Latest-wins state, not a story anyone reads.
-
-## Recording from the verb enum
+## Recording from an Enum
 
 If your verbs live in an enum using the `AsFeedVerb` trait, every case is a
 builder:
@@ -236,13 +147,14 @@ ActivityVerb::Comment->by($user)->object($comment)->to($project)->publish();
 ActivityVerb::Confirm->publish($delivery);
 ```
 
-See [Activity Types & Verbs](/basics/activity-types-and-verbs) for the enum setup.
+The enum is set up in [Activity Types & Verbs](/basics/activity-types-and-verbs).
 
-## Collections
+## Recording Many Objects at Once
 
-Pass `objects:` (or `->objects()`) to record one story about many objects — a
-[composite](/deeper/composites):
+Pass `objects:` (or `->objects()`) to record one activity about many objects:
 
 ```php
 Storyfeed::record('upload', objects: $files, actor: $user, target: $project);
 ```
+
+[Composites](/deeper/composites) covers how that activity reads and groups.

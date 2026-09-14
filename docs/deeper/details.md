@@ -184,7 +184,7 @@ them, strip them out of `data` and emit one shape forever. A detail lands at an
 it — which is why `$v` travels all the way to the renderer and the renderer
 calls `upgrade()` before it draws.
 
-`FeedThread` — set with [`->thread()`](/basics/recording#extras) — carries the
+`FeedThread` — set with [`->thread()`](/basics/recording#extra-data-and-backdating) — carries the
 utterance a row is about and the size of the conversation around it. It does not
 truncate: the consumer caps `text` at
 whatever boundary its domain wants, and `truncated` only tells a renderer
