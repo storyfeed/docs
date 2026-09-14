@@ -117,6 +117,14 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     one package over. Use `FeedStream` directly only where a page is showing a
     consumer's own markup.
 
+    **A feed link stays a link and refuses to navigate.** Sample payloads carry
+    real-looking URLs, because null urls would teach that entities have none,
+    and this site has no such routes. `SampleLink`, provided through the kit's
+    `FEED_LINK` seam, keeps the anchor — the colour, the hover underline and
+    the status bar are the affordance, and a span loses all three — and
+    prevents `click` and `auxclick`. The URL moves to the tooltip, which turns
+    the dead end into the lesson.
+
 15. **Snippet, then its output.** What a code block produces is shown directly
     beneath it, rendered, in a well that lines up with the code block (same
     radius and rhythm, page-coloured inside a ring, muted `output` corner tag).

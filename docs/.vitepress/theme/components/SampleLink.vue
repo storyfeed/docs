@@ -1,35 +1,35 @@
 <script setup lang="ts">
 /**
- * An entity link on a docs page, which must not navigate.
+ * An entity link on a docs page: a real link that does not leave the page.
  *
  * The sample payloads carry real-looking URLs — `/orders/1`, `/users/4` —
- * because a payload with null urls would teach that entities have none. But
- * this site has no such routes, so following one lands on a 404 and the
- * example has lied about where it goes.
+ * because a payload with null urls would teach that entities have none. This
+ * site has no such routes, so following one landed on a 404 and the example
+ * had lied about where it goes.
  *
- * So the link keeps its appearance and loses its destination: no href, no
- * middle-click, no open-in-new-tab. Where it WOULD go is on `title`, which
- * turns the dead end into the lesson — that URL was minted by `feedMedia()`
- * at read time, and it is in the payload under this card.
+ * It stays an `<a href>` on purpose: the colour, the hover underline and the
+ * URL in the browser's status bar are the affordance, and a span loses all
+ * three — the link styling a reader sees here is VitePress's own, which only
+ * an anchor gets. What it loses is the navigation. `auxclick` is prevented
+ * alongside `click` so a middle-click cannot open the 404 in a tab either.
  *
- * Provided through the kit's own `FEED_LINK` seam rather than by forking
- * `EntityLink`, which is the seam a consumer uses for Inertia or a router.
+ * The URL moves to the tooltip, which turns the dead end into the lesson: that
+ * address was minted by `feedMedia()` at read time, and it is in the payload
+ * under the same card.
+ *
+ * Provided through the kit's own `FEED_LINK` seam — the one a consumer uses to
+ * hand the feed an Inertia or router link — rather than by forking EntityLink.
  */
 defineProps<{ href?: string }>()
 </script>
 
 <template>
-    <span class="sf-sample-link" :title="href ? `Links to ${href} in the app that recorded this` : undefined">
+    <a
+        :href="href"
+        :title="href ? `${href} — a link in the app that recorded this; the docs stay put` : undefined"
+        @click.prevent
+        @auxclick.prevent
+    >
         <slot />
-    </span>
+    </a>
 </template>
-
-<style scoped>
-.sf-sample-link {
-    /* The affordance of a link without its promise: same colour and underline
-       as `.sf-entity`, but the cursor says it is not going anywhere. */
-    cursor: help;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
-}
-</style>
