@@ -324,9 +324,8 @@ const sentence = computed(() => {
 </template>
 ```
 
-For a named system or a genuinely absent actor, see [Parties and actorless voice](/deeper/parties); if you use
-the Filament renderer, its [display timezone](/cookbook/fresh-consumer#display-timezone)
-settings handle timestamp conversion and formatting.
+For a named system or a genuinely absent actor, see
+[Parties and actorless voice](/deeper/parties).
 
 `FeedNode` recurses into itself for group children. A single-file component can
 refer to itself by filename; outside the SFC compiler, add

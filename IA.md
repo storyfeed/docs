@@ -269,7 +269,7 @@ In the order a reader meets the problem.
 - ✅ Composing a Coherent Activity · Choosing When to Publish · Choosing What Not to Record ·
   Repeating Activities · Recording Deletions · Activities Without an Actor · Recording an
   Authoriser · Headlines for Grouped Activities · Keeping Verbs and Grammar Together ·
-  Counts That Keep Changing · Setting Up a New Consumer (Filament; last until a Filament section exists)
+  Counts That Keep Changing
 
 ### Reference
 

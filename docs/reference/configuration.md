@@ -6,9 +6,6 @@ Every key in `config/storyfeed.php`. All have working defaults.
 php artisan vendor:publish --tag="storyfeed-config"
 ```
 
-For provider registrations and Filament view props that can be removed, see
-[What a fresh consumer writes today](/cookbook/fresh-consumer).
-
 ## Tables & Models
 
 | Key | Default |  |

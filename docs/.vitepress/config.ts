@@ -114,7 +114,6 @@ export default defineConfig({
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
           { text: 'Keeping Verbs and Grammar Together', link: '/cookbook/verbs-and-grammar-together' },
           { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
-          { text: 'Setting Up a New Consumer', link: '/cookbook/fresh-consumer' },
         ],
       },
       {
