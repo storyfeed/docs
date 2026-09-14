@@ -243,6 +243,7 @@ reading and drawing, a second audience, then renderer-specific pages.
 - ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, glyph intents, translation
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
+- ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
 - ✅ Anatomy of a Row — the wireframe: every zone, what fills it, and the taste rules a renderer pays for otherwise
 - ✅ Rendering — the smallest loop, links, degraded entities, groups, details, resync
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
