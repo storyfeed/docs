@@ -37,13 +37,6 @@ const crowd = group({
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 
-const menu = group({
-  id: 'i8', verb: 'menu.dish_live', axis: 'composite', count: 2, glyph: 'chef-hat',
-  published_at: '2026-08-14T09:20:00.000000Z',
-  headline_template: ':actor put :count dishes on the menu',
-  actors: [who.cook], objects: [dishes.cutlets, dishes.roti],
-  distinct: { actors: 1, objects: 2 },
-})
 
 const paid = activity({
   id: 'i9', verb: 'payment.received', glyph: 'credit-card',
@@ -69,24 +62,8 @@ const priced = activity({
     Price: ['$14.50', '$15.50'], 'On the menu': [false, true] } },
 })
 
-const kitchenFeed = [
-  activity({ id: 'i12a', verb: 'order.ready', glyph: 'utensils', published_at: '2026-08-14T14:50:00.000000Z',
-    headline_template: ':actor marked :object ready', actor: who.cook, object: orders.first }),
-  activity({ id: 'i12b', verb: 'menu.price_changed', glyph: 'tag', published_at: '2026-08-14T14:45:00.000000Z',
-    headline_template: ':actor changed the price of :object', actor: who.cook, object: dishes.kottu }),
-  activity({ id: 'i12c', verb: 'order.placed', glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.first, target: where.kitchen }),
-]
 
-const customerFeed = [kitchenFeed[0], kitchenFeed[2]]
 
-const anonymous = activity({
-  id: 'i13', verb: 'order.expired', glyph: 'circle-x',
-  published_at: '2026-08-21T00:00:00.000000Z',
-  headline_template: ':object expired at :target',
-  actor: null, object: orders.fifth, target: where.kitchen,
-})
 </script>
 
 ## One Activity
@@ -126,24 +103,6 @@ Five customers, five orders, five separate requests.
 
 [Aggregation](/deeper/aggregation) covers the axes and what each one may say.
 
-## Several Objects, One Fact
-
-The cook publishes two dishes in one click. That is one decision, so it is one
-activity, not two.
-
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($cook)
-    ->action('menu.dish_live')
-    ->objects($dishes)
-    ->publish();
-```
-
-<FeedStream :items="[menu]" :grouped="false" />
-
-[Composites](/deeper/composites).
-
 ## Someone Who Is Not a User
 
 A payment provider reports an order paid, and it has no row in your database.
@@ -157,10 +116,6 @@ Storyfeed::activity()
 ```
 
 <FeedStream :items="[paid]" :grouped="false" />
-
-And when nobody acted at all, the sentence can leave the actor out:
-
-<FeedStream :items="[anonymous]" :grouped="false" />
 
 [Parties & Anonymous Actors](/deeper/parties).
 
@@ -196,24 +151,11 @@ Storyfeed::activity()
 [What an Activity Shows](/basics/activity-content) covers the forms a row can
 carry.
 
-## Two Audiences, One History
+## And Many More
 
-The kitchen sees everything it did:
+A feed can group by whoever you like, tell one history to several audiences,
+bundle a burst of work into one story, publish itself from an event, keep
+working when a row it names is gone, and serialize to
+[Activity Streams 2.0](/deeper/activity-streams).
 
-```php
-// a controller, or wherever the feed is read
-Storyfeed::feed('kitchen')->involving($kitchen)->get();
-```
-
-<FeedStream :items="kitchenFeed" :grouped="false" />
-
-The customer sees their own order, and only the verbs that concern them:
-
-```php
-// a controller, or wherever the feed is read
-Storyfeed::feed('customer')->involving($order)->get();
-```
-
-<FeedStream :items="customerFeed" :grouped="false" />
-
-[Named Feeds](/basics/named-feeds) declares each audience once.
+[The Basics](/basics/feedable-models) is the shortest way through.
