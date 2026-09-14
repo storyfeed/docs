@@ -1,6 +1,6 @@
 # Quickstart
 
-One activity on screen, in five steps. A customer places an order with a
+One activity on the feed, in five steps. A customer places an order with a
 kitchen.
 
 <script setup>
@@ -62,26 +62,17 @@ one line:
 Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 ```
 
-## 5. Render It
+## 5. Show It
 
-```blade
-{{-- resources/views/feed.blade.php --}}
-@foreach ($page['items'] as $node)
-    <article>
-        {{ strtr($node['headline_template'], [
-            ':actor' => $node['actor']['label'] ?? 'Someone',
-            ':object' => $node['object']['label'] ?? 'Something',
-            ':target' => $node['target']['label'] ?? 'Something',
-        ]) }}
-
-        <time datetime="{{ $node['published_at'] }}">
-            {{ \Carbon\Carbon::parse($node['published_at'])->diffForHumans() }}
-        </time>
-    </article>
-@endforeach
-```
+Every node carries its own sentence with the entities already in it, so
+drawing one needs no knowledge of your app:
 
 <FeedStream :items="[scenes.order]" :grouped="false" />
+
+How you draw it is open. A few lines of Blade, a Vue component, Livewire,
+React, or a renderer package that draws it for you.
+[Rendering](/basics/rendering) starts with the smallest loop that produces the
+row above.
 
 ## Check Your Work
 
