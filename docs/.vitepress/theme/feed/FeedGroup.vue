@@ -4,6 +4,7 @@ import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedItem from './FeedItem.vue';
+import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor } from './rail';
 import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
@@ -74,6 +75,26 @@ const entities = computed(() => ({
     target: singular('target'),
     context: singular('context'),
 }));
+
+/**
+ * A collapsed group shows a SAMPLE of its members' photographs, and says how
+ * many entities it is not showing. A tile stands for an entity, so it keeps
+ * that entity's link; the overflow reads `distinct`, not `count`, because the
+ * number is entities not shown rather than members.
+ *
+ * The strip hides when the members themselves are visible — a sample of a list
+ * you are already looking at is noise.
+ */
+const strip = computed(() => {
+    const tiles = (props.item.exemplars.objects ?? [])
+        .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
+        .filter((t: any) => t.image !== null);
+
+    return {
+        tiles,
+        overflow: Math.max((props.item.distinct.objects ?? tiles.length) - tiles.length, 0),
+    };
+});
 
 // `count` is the TRUE total and `children` is capped by the server, so the
 // remainder has to be stated rather than implied by the list length.
@@ -149,6 +170,12 @@ const hiddenBeyondChildren = computed(
                 activity does — otherwise a documentation surface can annotate
                 every kind of node except the interesting one.
             -->
+            <FeedMediaStrip
+                v-if="!expanded && strip.tiles.length"
+                :tiles="strip.tiles"
+                :overflow="strip.overflow"
+            />
+
             <slot name="body" :node="item" />
 
             <slot name="annotations" :node="item" />

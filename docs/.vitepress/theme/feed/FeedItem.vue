@@ -5,6 +5,8 @@ import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedThread from './FeedThread.vue';
 import { detailsIn } from './details';
+import FeedMedia from './FeedMedia.vue';
+import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
 import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
@@ -48,6 +50,22 @@ const resolved = computed<Rail>(() => {
     return props.dense ? withoutSecondary(asked) : asked;
 });
 
+
+/**
+ * A collapsed group shows a SAMPLE of its members' photographs. A tile stands
+ * for an entity, so it keeps that entity's link, and the overflow counts the
+ * entities not shown rather than the members.
+ */
+const strip = computed(() => {
+    const exemplars = (props.item as any).exemplars?.objects ?? [];
+    const tiles = exemplars
+        .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
+        .filter((t: any) => t.image !== null);
+    const distinct = (props.item as any).distinct?.objects ?? tiles.length;
+
+    return { tiles, overflow: Math.max(distinct - tiles.length, 0) };
+});
+
 /**
  * The details this node carries, activity-level first, then each entity's.
  *
@@ -61,9 +79,30 @@ const details = computed(() => [
         detailsIn((props.item as any)[role]?.data).map((found) => ({
             ...found,
             entityLabel: (props.item as any)[role]?.label ?? null,
+            entityMedia: (props.item as any)[role]?.media ?? null,
         })),
     ),
 ]);
+
+/**
+ * The row's own picture: the object's preview, or the object itself when the
+ * resource IS an image. Never `icon`, which is representational rather than a
+ * look at the thing.
+ */
+const media = computed(() => {
+    const slots = (props.item as any).object?.media;
+
+    if (!slots) return null;
+
+    // A FORM THAT NAMES A SLOT OWNS IT. `MediaObject` stores `image: "preview"`
+    // and draws that slot itself, so the row must not paint the same picture
+    // above it — one photograph, in the place the form put it.
+    const claimed = details.value.map((found: any) => found.payload?.image).filter(Boolean);
+
+    if (claimed.includes('preview') || claimed.includes('url')) return null;
+
+    return slots.preview ?? slots.url ?? null;
+});
 
 const slots = computed(() =>
     railFor(resolved.value, {
@@ -160,6 +199,14 @@ const slots = computed(() =>
             />
             <slot v-else name="body" :node="item" />
 
+            <FeedMedia v-if="media" :image="media" />
+
+            <FeedMediaStrip
+                v-else-if="strip.tiles.length"
+                :tiles="strip.tiles"
+                :overflow="strip.overflow"
+            />
+
             <!--
                 Recognised detail forms, drawn from the app's own `data`. One
                 block per detail, in the order the walk found them.
@@ -173,6 +220,7 @@ const slots = computed(() =>
                     :is="found.component"
                     :payload="found.payload"
                     :entity-label="(found as any).entityLabel"
+                    :entity-media="(found as any).entityMedia"
                 />
             </div>
 

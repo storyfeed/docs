@@ -4,7 +4,7 @@ What the package produces, before how. Each example is a snippet and the feed
 it renders. The pages that teach them are linked underneath.
 
 <script setup>
-import { who, where, orders, dishes, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, photos, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
 
 const at = '2026-08-14T14:30:00.000000Z'
 
@@ -51,6 +51,37 @@ const noted = activity({
   headline_template: ':actor sent a note about :object',
   actor: who.regular, object: orders.first,
   thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false },
+})
+
+const photographed = activity({
+  id: 'i14', verb: 'menu.photo_published', glyph: 'image',
+  published_at: '2026-08-14T11:20:00.000000Z',
+  headline_template: ':actor added a photo of :target',
+  actor: who.cook, object: photos.curry, target: dishes.chickenCurry,
+})
+
+const photoBurst = group({
+  id: 'i15', verb: 'menu.photo_published', axis: 'repeat', count: 6, glyph: 'image',
+  published_at: '2026-08-14T11:30:00.000000Z',
+  headline_template: ':actor added :count photos',
+  actors: [who.cook],
+  objects: [photos.curry, photos.kottu, photos.cutlets, photos.roti, photos.lassi],
+  distinct: { actors: 1, objects: 6 },
+})
+
+const posted = activity({
+  id: 'i16', verb: 'menu.dish_added', glyph: 'chef-hat',
+  published_at: '2026-08-14T09:00:00.000000Z',
+  headline_template: ':actor added a new dish',
+  actor: who.cook,
+  object: { ...dishes.chickenCurry,
+    media: { icon: null, image: null,
+      preview: { src: '/media/chicken-curry.svg', mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
+      url: null },
+    data: { $detail: 'Storyfeed/Detail/MediaObject', $v: 1,
+      subject: { label: 'Chicken Curry', href: '/menu/1' },
+      content: 'Slow-cooked with roasted curry powder and coconut milk. Mild, unless you ask.',
+      image: 'preview', attachments: [], footnote: 'Photographed by Nancy' } },
 })
 
 const priced = activity({
@@ -150,6 +181,45 @@ Storyfeed::activity()
 
 [What an Activity Shows](/basics/activity-content) covers the forms a row can
 carry.
+
+## A Photograph
+
+```php
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($cook)
+    ->action('menu.photo_published', $photo)
+    ->to($dish)
+    ->publish();
+```
+
+<FeedStream :items="[photographed]" :grouped="false" />
+
+## Six Photographs, One Row
+
+The cook uploads a set, one request each.
+
+```php
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($cook)
+    ->action('menu.photo_published', $photo)
+    ->publish();
+```
+
+<FeedStream :items="[photoBurst]" :grouped="false" />
+
+## A Dish, as a Post
+
+```php
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()
+    ->by($cook)
+    ->action('menu.dish_added', $dish)
+    ->publish();
+```
+
+<FeedStream :items="[posted]" :grouped="false" />
 
 ## And Many More
 

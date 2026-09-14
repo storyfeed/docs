@@ -4,6 +4,7 @@ import Excerpt from './Excerpt.vue'
 import Change from './Change.vue'
 import File from './File.vue'
 import Markdown from './Markdown.vue'
+import MediaObject from './MediaObject.vue'
 
 /**
  * The detail forms this kit draws, by the name a row carries.
@@ -20,6 +21,7 @@ const FORMS: Record<string, Component> = {
     'Storyfeed/Detail/Change': Change,
     'Storyfeed/Detail/File': File,
     'Storyfeed/Detail/Markdown': Markdown,
+    'Storyfeed/Detail/MediaObject': MediaObject,
 }
 
 export type ResolvedDetail = { component: Component; payload: Record<string, any> }

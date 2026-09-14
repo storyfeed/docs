@@ -41,7 +41,25 @@ export const place = (id: string, label: string) => entity('kitchen', id, label,
 export const dish = (id: string, label: string) => entity('menu_item', id, label, `/menu/${id}`)
 export const order = (id: string, label: string) => entity('order', id, label, `/orders/${id}`)
 export const device = (id: string, label: string) => entity('kitchen_device', id, label, null)
-export const photo = (id: string, label: string) => entity('photo', id, label, `/photos/${id}`)
+/**
+ * A photo entity, carrying the media a resolver minted for it.
+ *
+ * `preview` is the derivative a feed paints and `url` is the resource itself,
+ * which for a photograph IS an image — the payload's own distinction, and the
+ * reason `entity.url` and `media.url` hold the same location.
+ */
+export const photo = (id: string, label: string) => {
+    const file = label.replace(/\.jpg$/, '')
+
+    return entity('photo', id, label, `/media/${file}.svg`, {
+        media: {
+            icon: null,
+            image: null,
+            preview: { src: `/media/${file}.svg`, mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
+            url: { src: `/media/${file}.svg`, mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
+        },
+    })
+}
 
 /**
  * A note has no page of its own, so its url is null and its label is its text.

@@ -70,10 +70,19 @@ export const DEVICES = {
   display: 'Kitchen display',
 }
 
-/** Photos. The label is the file name, which is what a snapshot stores. */
+/**
+ * Photos. The label is the file name, which is what a snapshot stores; the
+ * picture itself is minted at read time and lives in `docs/public/media`.
+ * These stand-ins are generated rather than a pilot app's real photographs,
+ * which are not this repository's to publish.
+ */
 export const PHOTOS = {
-  curry: 'chicken-curry.jpg',
-  kottu: 'chicken-kottu.jpg',
+  curry:    'chicken-curry.jpg',
+  kottu:    'chicken-kottu.jpg',
+  cutlets:  'fish-cutlets.jpg',
+  roti:     'coconut-roti.jpg',
+  lassi:    'mango-lassi.jpg',
+  dhal:     'dhal-curry.jpg',
 }
 
 /** Parties: named participants with no model in the app. */
