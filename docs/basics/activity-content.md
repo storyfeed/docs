@@ -39,16 +39,6 @@ const withFields = activity({
   ] } },
 })
 
-const withChange = activity({
-  id: 'ac5', verb: 'menu.price_changed', glyph: 'tag', published_at: '2026-08-14T09:10:00.000000Z',
-  headline_template: ':actor changed the price of :object',
-  actor: who.cook, object: dishes.kottu,
-  data: { $detail: 'Storyfeed/Detail/Change', $v: 1, changes: {
-    Price: ['$14.50', '$15.50'],
-    'On the menu': [false, true],
-  } },
-})
-
 const openInPlace = activity({
   id: 'ac7', verb: 'menu.photo_published', glyph: 'image',
   published_at: '2026-08-14T10:05:00.000000Z',
@@ -152,31 +142,6 @@ A value the row has no answer for is **silent by default**. Give it a word
 only where the emptiness is itself the answer, per row or for the whole block
 with `missing:`. A value that is compared rather than read, a reference or an
 address, is marked `mono` so it gets one line and an ellipsis.
-
-## Before and After
-
-What changed is a fact of the act, not of the dish: the same dish appears in
-rows that changed nothing, so this one rides the activity rather than a
-snapshot.
-
-```php
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Detail\Change;
-
-Storyfeed::activity()
-    ->by($cook)
-    ->action('menu.price_changed', $dish)
-    ->data(Change::make([ // [!code focus]
-        'Price' => ['$14.50', '$15.50'], // [!code focus]
-        'On the menu' => [false, true], // [!code focus]
-    ])) // [!code focus]
-    ->publish();
-```
-
-<FeedExample :items="[withChange]" />
-
-Both sides are kept, never a rendered diff. Omit an index for a field that was
-added or removed; a `null` is a value that is present and empty.
 
 ## What a File Is
 

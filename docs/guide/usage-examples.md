@@ -84,15 +84,6 @@ const posted = activity({
       image: 'preview', attachments: [], footnote: 'Photographed by Nancy' } },
 })
 
-const priced = activity({
-  id: 'i11', verb: 'menu.price_changed', glyph: 'tag',
-  published_at: '2026-08-14T09:10:00.000000Z',
-  headline_template: ':actor changed the price of :object',
-  actor: who.cook, object: dishes.kottu,
-  data: { $detail: 'Storyfeed/Detail/Change', $v: 1, changes: {
-    Price: ['$14.50', '$15.50'], 'On the menu': [false, true] } },
-})
-
 
 
 </script>
@@ -162,25 +153,6 @@ Storyfeed::activity()
 ```
 
 <FeedExample :items="[noted]" />
-
-## The Facts Behind a Change
-
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($cook)
-    ->action('menu.price_changed', $dish)
-    ->data(Change::make([
-        'Price' => ['$14.50', '$15.50'],
-        'On the menu' => [false, true],
-    ]))
-    ->publish();
-```
-
-<FeedExample :items="[priced]" />
-
-[What an Activity Shows](/basics/activity-content) covers the forms a row can
-carry.
 
 ## A Photograph
 

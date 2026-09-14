@@ -170,22 +170,21 @@ one.
 }
 ```
 
-## The Facts Behind a Change
+## A Form Inside `data`
 
 A detail sits inside the app's own `data`, at a key the app chose, marked by
 two reserved keys:
 
 ```jsonc
 {
-  "verb": "menu.price_changed",
-  "headline_template": ":actor changed the price of :object",
+  "verb": "order.placed",
+  "headline_template": ":actor placed :object with :target",
   "data": {
-    "$detail": "Storyfeed/Detail/Change",
+    "$detail": "Storyfeed/Detail/Excerpt",
     "$v": 1,
-    "changes": {
-      "Price": ["$14.50", "$15.50"],
-      "On the menu": [false, true]
-    }
+    "text": "Ring the bell twice, the gate sticks.",
+    "from": "Instructions",
+    "truncated": false
   }
 }
 ```
