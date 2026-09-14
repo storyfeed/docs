@@ -3,11 +3,35 @@
 Keep every occurrence in a timeline, or retain only the latest occurrence of
 a verb on an object. Choose what the reader needs to revisit.
 
+<script setup>
+import { who, where, doc, activity } from '../.vitepress/theme/samples'
+
+const on = (id, verb, glyph, at, object, template) => activity({ id, verb, glyph,
+  published_at: at, headline_template: template, actor: who.lead, object, target: where.main })
+
+const renamedTwice = [
+  on('rp1', 'rename', 'file-pen', '2026-08-14T14:32:00.000000Z', doc.wireframes, ':actor renamed :object'),
+  on('rp2', 'upload', 'file-up', '2026-08-14T14:20:00.000000Z', doc.wireframes, ':actor uploaded :object'),
+]
+
+const timeline = [
+  on('rp3', 'submit', 'file-check', '2026-08-14T14:40:00.000000Z', doc.report, ':actor submitted :object'),
+  on('rp4', 'approve', 'circle-check', '2026-08-14T14:30:00.000000Z', doc.report, ':actor approved :object'),
+  on('rp5', 'submit', 'file-check', '2026-08-14T14:20:00.000000Z', doc.report, ':actor submitted :object'),
+]
+
+const pulse = [timeline[0], timeline[1]]
+</script>
+
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()->by($user)->action('rename', $document)->replace()->publish();   // replaces the earlier rename row
 Storyfeed::activity()->by($user)->action('upload', $document)->publish();              // every upload is its own row
 ```
+
+After one upload and two renames:
+
+<FeedStream :items="renamedTwice" :grouped="false" />
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -64,6 +88,8 @@ Storyfeed::activity()->by($user)->action($verb, $document)->publish();
 $timeline = Storyfeed::feed()->involving($document)->log()->get();
 ```
 
+<FeedStream :items="timeline" :grouped="false" />
+
 For the pulse, each transition request instead runs:
 
 ```php
@@ -72,6 +98,8 @@ Storyfeed::activity()->by($user)->action($verb, $document)->replace()->publish()
 
 $pulse = Storyfeed::feed()->involving($document)->live()->get();
 ```
+
+<FeedStream :items="pulse" :grouped="false" />
 
 The pulse keeps the latest approval as well as the latest submission; it is
 not a single current-status row. The second submission is new news, even

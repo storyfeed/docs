@@ -3,6 +3,10 @@
 Every verb the app publishes has a headline, every headline has a publisher,
 and both are declared in the same file.
 
+<script setup>
+import { scenes } from '../.vitepress/theme/samples'
+</script>
+
 ```php
 <?php
 
@@ -36,21 +40,9 @@ DocumentWasUploaded::activity($document)
     ->publish();
 ```
 
-From an event, name the class:
+<FeedStream :items="[scenes.upload]" :grouped="false" />
 
-```php
-// app/Events/DocumentUploaded.php
-public function toFeedActivity(): ?PendingActivity
-{
-    return PendingActivity::of(DocumentWasUploaded::class)
-        ->by($this->user)
-        ->object($this->document)
-        ->to($this->document->project);
-}
-```
-
-`PendingActivity::of()` throws for a class that is not registered. Registration
-is in [Story classes](/basics/stories).
+Registration is in [Story Classes](/basics/stories).
 
 ## Where Drift Comes from
 

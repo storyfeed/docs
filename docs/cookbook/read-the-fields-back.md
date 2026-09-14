@@ -14,9 +14,9 @@ composition before writing its headline.
 ## An Invitation Accepted
 
 ```text
-Nayani · joined   · Sam        · —      incoherent
-Sam    · joined   · Sam        · —      incoherent
-Sam    · accepted · invitation · table  coherent
+inviter · joined   · invitee    · —        incoherent
+invitee · joined   · invitee    · —        incoherent
+invitee · accepted · invitation · project  coherent
 ```
 
 The event is an invitee accepting an invitation to a table. The inviter sent
@@ -26,7 +26,7 @@ the invitation earlier; they did not perform the acceptance.
 |---|---|
 | Inviter · joined · invitee · — | The inviter occupies the actor field, although they did not act in this event. |
 | Invitee · joined · invitee · — | Correcting the actor still leaves the invitee repeated as the object. The fields do not identify what they joined. |
-| Invitee · accepted · invitation · table | The fields identify who accepted, what they accepted, and which table the invitation was for. |
+| Invitee · accepted · invitation · project | The fields identify who accepted, what they accepted, and which project the invitation was for. |
 
 ## Three Things to Look for
 
@@ -43,7 +43,7 @@ describes the event.
 ## Coherence and Completeness
 
 ```text
-Sam · moved · file · List B
+user · moved · document · folder B
 ```
 
 This record coheres: it identifies who moved the file and its destination.
