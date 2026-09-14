@@ -63,7 +63,7 @@ Storyfeed::icons([
 Keys resolve most-specific first: `order.order.placed`, then `order.*`, then
 `*.order.placed`, then `*.*`.
 
-::: tip This package ships no icons
+::: headless it ships no icons
 `shopping-bag` is a name you chose, carried to your renderer verbatim. Mapping
 it to a drawing is the renderer's job, with whichever icon set it already has.
 The package validates nothing here and has no list to validate against.

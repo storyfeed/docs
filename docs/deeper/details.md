@@ -212,11 +212,11 @@ writing its own form owes nothing to them, and core reads none of them.
 A row written under an earlier form name keeps that name, and an unrecognised
 name draws nothing, so a stale row is a blank space rather than an error.
 
-::: tip Drawing a detail is the renderer's
-Core stores the block and hands it back byte-identical. It reads no detail,
-upgrades none, and ships no view for one: `upgrade()` runs in the renderer,
-before it draws. A renderer that recognises none of these forms is not broken,
-it is a renderer that draws headlines.
+::: headless it draws no detail
+The package stores the block and hands it back byte-identical. It reads no
+detail, upgrades none, and ships no view for one: `upgrade()` runs in the
+renderer, before it draws. A renderer that recognises none of these forms is
+not broken, it is a renderer that draws headlines.
 :::
 
 ## Unknown Forms in a Renderer

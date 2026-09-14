@@ -256,3 +256,23 @@
         margin: 16mm 14mm 18mm;
     }
 }
+
+/*
+ * `::: headless` — where the package stops.
+ *
+ * Deliberately quieter than `tip`: this is a standing fact about what
+ * Storyfeed is, met on several pages, not a thing to act on. A reader who has
+ * seen it once should be able to skip it by its shape.
+ */
+.sf-headless {
+    border: 1px solid var(--vp-c-divider);
+    border-left: 3px solid var(--vp-c-text-3);
+    background: var(--vp-c-bg-soft);
+}
+.sf-headless .custom-block-title {
+    color: var(--vp-c-text-2);
+    font-weight: 600;
+}
+.sf-headless__body p:last-child {
+    margin-bottom: 0;
+}

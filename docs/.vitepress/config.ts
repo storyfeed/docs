@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -18,6 +19,33 @@ export default defineConfig({
   // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
   // convention somebody can defeat with `git add -f`.
   srcExclude: ['briefs/**'],
+
+  markdown: {
+    config(md) {
+      /*
+       * `::: headless <the limit>` — one device for the boundary of a headless
+       * package, so that "Storyfeed does not do this part" reads identically
+       * wherever a reader meets it.
+       *
+       * The standing half of the sentence is written HERE and not in the
+       * markdown: it appeared on five pages and would have drifted on the
+       * sixth. The page supplies only what this particular limit is, which is
+       * the half that differs.
+       *
+       * A container rather than a Vue component, because house rule 9 allows
+       * exactly one spelling of a callout and it is the container spelling.
+       */
+      md.use(container, 'headless', {
+        render: (tokens: any[], idx: number) => {
+          if (tokens[idx].nesting !== 1) return '</div></div>\n'
+
+          const limit = tokens[idx].info.trim().slice('headless'.length).trim()
+
+          return `<div class="sf-headless custom-block"><p class="custom-block-title">Storyfeed is headless${limit ? ': ' + md.utils.escapeHtml(limit) : ''}</p><div class="sf-headless__body">`
+        },
+      })
+    },
+  },
 
   sitemap: {
     hostname: 'https://docs.storyfeed.dev',
