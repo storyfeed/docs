@@ -7,7 +7,7 @@ trickle. It lives in `data`, and core hands `data` back exactly as you wrote it.
 That is correct for a count of something finished, and wrong for a count of
 something still happening.
 
-## The Rule
+## When a Count Can Be Recorded
 
 **A count in a payload is recorded at publish time. If anything on the surface
 can change it, do not record it — resolve it on read.**

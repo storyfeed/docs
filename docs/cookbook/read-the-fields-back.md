@@ -28,7 +28,7 @@ the invitation earlier; they did not perform the acceptance.
 | Invitee · joined · invitee · — | Correcting the actor still leaves the invitee repeated as the object. The fields do not identify what they joined. |
 | Invitee · accepted · invitation · project | The fields identify who accepted, what they accepted, and which project the invitation was for. |
 
-## Three Things to Look for
+## What to Look For
 
 | Failure Mode | Inspect Each Field for |
 |---|---|
@@ -54,7 +54,7 @@ The test does not require a grammatical sentence or prepositions between the
 fields. The summary can change at any time while the record remains. Read the
 stored values independently of the prose used to display them.
 
-## Two Failures the Litmus Passes
+## What Reading One Row Cannot Catch
 
 It reads one tuple. Two mistakes live outside one tuple, and both look correct
 inside it.
@@ -96,7 +96,7 @@ php artisan storyfeed:doctor --only=roles
 The `roles` check reports a singular template naming a role none of its
 activities carry.
 
-## Check Recorded Repetitions
+## Repeated Rows
 
 ```sh
 php artisan storyfeed:doctor --only=reflexive

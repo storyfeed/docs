@@ -32,7 +32,7 @@ const summary = [repeat, log[3]]
 const scoped = [repeat, log[3]]
 </script>
 
-## The Builder
+## Reading a Feed
 
 ```php
 // a controller, or wherever the feed is read

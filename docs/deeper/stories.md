@@ -162,7 +162,7 @@ class OrderWasPlaced extends Story
 the actor. [Aggregation](/deeper/aggregation) covers the other ways activities
 group.
 
-## Anatomy
+## What a Story Declares
 
 | Member | Required | |
 |---|---|---|

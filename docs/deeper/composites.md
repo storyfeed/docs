@@ -16,7 +16,7 @@ const authored = group({
 A composite is one authored story whose object is a **collection** — several
 dishes put on the menu as a single activity, not several grouped ones.
 
-## Explicit
+## Recording One Yourself
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -35,7 +35,7 @@ node with `axis: 'composite'`. Serialized to
 [Activity Streams 2.0](/deeper/activity-streams), the object is an
 `OrderedCollection`.
 
-## Automatic
+## Bundling a Burst Automatically
 
 Mark a model `Bundleable` and runs of it bundle themselves:
 

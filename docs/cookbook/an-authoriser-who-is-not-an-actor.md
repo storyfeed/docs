@@ -35,7 +35,8 @@ someone else releases. The requirement is always the same sentence:
 
 > **Recorded and queryable, not in the sentence.**
 
-Two halves that pull against each other, which is why the obvious answers fail.
+Two halves that pull against each other: a role would put the approver in the
+sentence, and a `data` key would keep them out of the index.
 
 ## Checking for an Existing Record
 
@@ -48,44 +49,11 @@ If it does, use that. The recipe below is for approvals with **no natural home**
 a change applied to a menu, a release with no record of its own, an authorisation
 that sits between two entities rather than on one.
 
-This is easy to miss in exactly the way the rest of this page is about. A design
-conversation can be entirely correct and still answer a question nobody needed
-answered — nothing false is said, which is what makes it harder to catch than a
-wrong claim.
+## Recording It as Its Own Activity
 
-## Why Not a Role
-
-Activity Streams gives an activity seven roles, and none of them means
-*authorised by*. The vocabulary models the act and its direct participants; an
-authorisation that is deliberately not an act has no term.
-
-`attributedTo` is legal on an activity and "entities responsible for" arguably
-covers an approver — but it already carries the contributor on the object, and a
-reader cannot tell which meaning was intended. One word, two meanings.
-
-## Why Not a Tag
-
-`tag` is the near-miss, and it is instructive because it is *nearly* right. A
-`Person` is a legal tag, tags are annotations by construction, and it renders
-quietly. It would work.
-
-It means **associated with** and nothing more. So the record says a person is
-connected to this photo without saying how — which reads as tidy on the day you
-write it and fails on the day the approval becomes a **consent** fact, or an
-audit one, and somebody needs to know what that person actually did.
-Under-specification is the wrong failure for a fact you are keeping because it
-might be needed.
-
-## Why Not a `data` Key
-
-`data` is the app's opaque bag, and an entity in it is invisible to
-[`involving()`](/basics/reading#scoping). The participant index covers the seven roles and nothing else, so `'approved_by' =>
-$user->id` is recorded and **not** queryable — it fails the first half of the
-requirement while looking like it satisfies both.
-
-## Why an Activity Nobody Reads
-
-Because it satisfies both halves with mechanisms that already ship.
+Record the approval as a real activity whose actor is the approver, and admit
+its verb to no feed. That satisfies both halves with mechanisms that already
+ship.
 
 **Queryable.** The approver is the *actor* of a real row, so the participant
 index has them. The footnote is a lookup:

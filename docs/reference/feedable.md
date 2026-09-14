@@ -159,29 +159,28 @@ placeholder. Activities are never hidden by the read path.
 
 ## The Model's Own Feed
 
-```php
-// a controller, or wherever the feed is read
-$project->storyfeed()->get();
-```
-
-Identical to `Storyfeed::feed()->involving($project)->get()`, and the same
-builder, so read modes, verbs, limits, cursors and `query()` all apply.
-
-Both read `feed_participants`. A fresh install gets it from the migration; an
-existing one runs [`storyfeed:participants`](/reference/commands) once.
+`$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
+argument filled in, and takes an optional feed name:
+`$model->storyfeed('customer')`. Both read `feed_participants`; an install
+that predates the index runs `storyfeed:participants` once.
 
 `storyfeed()` on a model is not the `storyfeed()` helper, which returns the
-manager, or a pending activity when given a verb. Inside a model class both are
-reachable: `storyfeed()` is the function, `$this->storyfeed()` is this.
+manager, or a pending activity when given a verb. Inside a model class both
+are reachable: `storyfeed()` is the function, `$this->storyfeed()` is this.
 
 ## Morph Aliases
 
-Storyfeed stores morph aliases, never class names. Register them with
-`Relation::enforceMorphMap()` or under `morph_map` in `config/storyfeed.php`,
-which merges into the app's map at boot. Aliases are permanent: an activity
-whose role alias no longer resolves still shows, with a placeholder, and the
-trickle counts it as unresolved rather than deleting it. Renaming a key means
-keeping the old one pointed somewhere.
+Aliases are read from the app's morph map, or from `morph_map` in
+`config/storyfeed.php`, which merges into it at boot. Package-owned aliases
+resolve through `Support\MorphResolver`, independently of the app's map, so a
+package type is readable whether or not the app registered it.
+
+An activity whose role alias no longer resolves still shows, with a
+placeholder. The trickle counts it as unresolved and soft-deletes it only when
+`storyfeed.trickle.prune` is enabled or `storyfeed:trickle --prune` is used.
+
+[Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
+map.
 
 ## Rich Rendering
 

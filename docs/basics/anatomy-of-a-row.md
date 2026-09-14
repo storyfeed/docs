@@ -89,14 +89,10 @@ six originals in a document nobody asked to see.
 
 ## An Unknown Form Draws Nothing
 
-Never an error. The same rule the read path applies to an unknown verb and to
-an Activity Streams extension type. It covers version skew too: an app on a
-newer vocabulary than the renderer reading it is a blank space, not a broken
-feed.
-
-That is what lets an app add a form without waiting for a renderer to learn it,
-and it is why a renderer that recognises none of them is not broken. It is a
-renderer that draws headlines.
+Never an error, which is what lets an app add a form without waiting for a
+renderer to learn it. A renderer that recognises none of them is not broken; it
+is a renderer that draws headlines. See
+[Activity Details](/deeper/details#unknown-forms-in-a-renderer).
 
 ## Where to Go From Here
 
