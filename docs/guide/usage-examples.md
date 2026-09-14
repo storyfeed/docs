@@ -101,7 +101,7 @@ const priced = activity({
 
 <<< @/snippets/publish.php
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample context :items="[scenes.order]" />
 
 ## Three in a Row, One Line
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useSlots } from 'vue'
+import { surrounding } from '../samples'
 
 /**
  * A rendered feed and the payload behind it, in one card.
@@ -13,8 +14,14 @@ import { computed, ref, useSlots } from 'vue'
  * lesson.
  */
 const props = withDefaults(
-    defineProps<{ items: any[]; expanded?: boolean; label?: string }>(),
-    { expanded: false, label: 'Payload' },
+    defineProps<{
+        items: any[]
+        expanded?: boolean
+        label?: string
+        /** Sit the example inside a running feed, so the rail reads as a line. */
+        context?: boolean
+    }>(),
+    { expanded: false, label: 'Payload', context: false },
 )
 
 const slots = useSlots()
@@ -22,6 +29,36 @@ const open = ref(props.expanded)
 const copied = ref(false)
 
 const json = computed(() => JSON.stringify(props.items, null, 2))
+
+/**
+ * Two rows above and two below, minted around the example's own timestamps so
+ * the feed stays newest-first. They are dimmed by the card, never hidden: the
+ * point is that the example is one row in a real feed.
+ *
+ * The payload above is serialised from `items` alone, so nothing here can
+ * appear in it.
+ */
+// The payload's own precision is microseconds, so a shifted timestamp keeps
+// that shape rather than JavaScript's milliseconds.
+const shift = (at: string, minutes: number) =>
+    new Date(Date.parse(at) + minutes * 60_000)
+        .toISOString()
+        .replace(/\.\d{3}Z$/, '.000000Z')
+
+const drawn = computed(() => {
+    if (!props.context || props.items.length === 0) return props.items
+
+    const first = props.items[0].published_at
+    const last = props.items[props.items.length - 1].published_at
+
+    return [
+        surrounding(0, shift(first, 11), 'ctx-a'),
+        surrounding(1, shift(first, 4), 'ctx-b'),
+        ...props.items,
+        surrounding(2, shift(last, -6), 'ctx-c'),
+        surrounding(3, shift(last, -14), 'ctx-d'),
+    ]
+})
 
 /**
  * A small highlighter, because the payload is built at runtime and never
@@ -54,9 +91,9 @@ async function copy() {
 </script>
 
 <template>
-    <div class="sf-example">
+    <div class="sf-example" :class="{ 'sf-example--context': context }">
         <div class="sf-example__preview">
-            <FeedStream :items="items" :grouped="false" v-bind="$attrs">
+            <FeedStream :items="drawn" :grouped="false" v-bind="$attrs">
                 <template v-for="(_, name) in slots" #[name]="slotProps">
                     <slot :name="name" v-bind="slotProps as any" />
                 </template>
@@ -163,4 +200,16 @@ async function copy() {
 .sf-example__source :deep(.j-str) { color: var(--vp-c-green-2); }
 .sf-example__source :deep(.j-lit) { color: var(--vp-c-purple-2); }
 .sf-example__source :deep(.j-num) { color: var(--vp-c-yellow-2); }
+
+/*
+ * THE ROWS AROUND THE EXAMPLE. Blurred rather than greyed, because grey reads
+ * as a disabled state and blur reads as depth of field — the eye lands on the
+ * sharp row without being told which one matters.
+ */
+.sf-example--context :deep([role='listitem']:nth-child(-n + 2)),
+.sf-example--context :deep([role='listitem']:nth-last-child(-n + 2)) {
+    filter: blur(1.6px);
+    opacity: 0.4;
+    user-select: none;
+}
 </style>

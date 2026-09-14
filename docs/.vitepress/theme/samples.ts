@@ -204,3 +204,40 @@ export const scenes = {
     actor: who.regular, object: orders.first, target: where.kitchen,
   }),
 }
+
+/**
+ * ── Rows to sit around an example ────────────────────────────────────────────
+ *
+ * `<FeedExample context>` puts an example inside a running feed, so the rail
+ * reads as a line through the day rather than a mark beside one row. These are
+ * ordinary activities from the same kitchen, not chrome: they are dimmed by
+ * the card, but a reader who looks at them finds real rows.
+ *
+ * Their timestamps are assigned at render time, around whatever they surround.
+ */
+export const SURROUNDING = [
+  { verb: 'ready', glyph: 'utensils', headline_template: ':actor marked :object ready',
+    actor: () => who.cook, object: () => orders.fourth },
+  { verb: 'discussion.asked', glyph: 'message-circle', headline_template: ':actor asked about :target',
+    actor: () => who.customer3, object: () => notes.spice, target: () => dishes.chickenCurry },
+  { verb: 'confirmed', glyph: 'circle-check', headline_template: ':actor confirmed :object',
+    actor: () => who.cook, object: () => orders.fifth },
+  { verb: 'paid', glyph: 'credit-card', headline_template: ':actor marked :object paid',
+    actor: () => party.service, object: () => orders.second },
+]
+
+/** One surrounding row, minted at an offset from the activity it sits beside. */
+export function surrounding(index: number, at: string, id: string) {
+  const spec = SURROUNDING[index % SURROUNDING.length]
+
+  return activity({
+    id,
+    verb: spec.verb,
+    glyph: spec.glyph,
+    published_at: at,
+    headline_template: spec.headline_template,
+    actor: spec.actor(),
+    object: spec.object?.(),
+    target: spec.target?.(),
+  })
+}

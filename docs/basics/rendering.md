@@ -61,7 +61,7 @@ Substitute the entity labels and you have a row:
 @endforeach
 ```
 
-<FeedExample expanded :items="[bare]" />
+<FeedExample expanded context :items="[bare]" />
 
 That is a working feed. Everything below makes it better, one thing at a time.
 
