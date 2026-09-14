@@ -1,4 +1,4 @@
-# Containers & context
+# Containers & Context
 
 `context` is the fourth role: the container an activity happened **inside**.
 With it recorded, a feed can be scoped to the container and an axis can group
@@ -27,7 +27,7 @@ Storyfeed::activity()
 
 <FeedStream :items="[inside]" :grouped="false" />
 
-## The difference between target and context
+## The Difference Between Target and Context
 
 | role | holds | in the sentence |
 |---|---|---|
@@ -57,7 +57,7 @@ Fill each role with what is true and available. The template decides which
 roles the sentence names; a role it leaves out is still there for scoping,
 grouping and the AS2 document.
 
-## When to set it
+## When to Set It
 
 Whether an activity needs `context` is decided by what reads it, not by the
 sentence:
@@ -79,14 +79,14 @@ Axis::make('scene')
 
 A filter can narrow a feed to a container; only a role can group by one.
 
-## The container query
+## The Container Query
 
 `feed()->context($project)` returns what happened inside the project. It is
 narrower than [`involving()`](/basics/reading#scoping), which also matches the
 project's own creation and archival — those record the project as the
 `object`.
 
-## A container that is not a model
+## A Container That Is Not a Model
 
 A folder name, a source system, a mailbox: when the room is a value rather than
 an entity, it has three homes.
@@ -97,7 +97,7 @@ an entity, it has three homes.
 | `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
 | a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
 
-## Roles are set at publish, and never backfilled
+## Roles Are Set at Publish, and Never Backfilled
 
 Roles are [never backfilled](/basics/recording#roles): a `context` axis
 registered later groups only the activities that were recorded with a

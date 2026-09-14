@@ -1,4 +1,4 @@
-# Choosing when to publish
+# Choosing When to Publish
 
 A publish site that fires when a status changes and stays silent on every
 other save. A feed that reads as what happened, not as what was edited.
@@ -61,7 +61,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## What publishes
+## What Publishes
 
 | what happened | activity | verb |
 |---|---|---|
@@ -75,7 +75,7 @@ A verb names one transition. `submit`, `approve` and `archive` are three
 verbs, not one `status` verb carrying the new state in `data`. The reason is
 in [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
-## The transition from the event
+## The Transition from the Event
 
 When the transition already has a domain event, the event publishes it:
 
@@ -99,3 +99,14 @@ return. See [Publishing from events](/deeper/events).
 
 A feed that publishes every save, with the field diff attached, is an audit
 log and reads as one.
+
+## Where to Publish From
+
+| Site | Good For |
+|---|---|
+| an action or service class | the common case: the fact and the record in one place |
+| a domain event via `PublishesToFeed` | when several things already react to the event |
+| a model observer | lifecycle facts (created, deleted) with no domain event |
+
+All three are explicit calls. Whichever you choose, the pairs they record show
+up in `storyfeed:stories`, including ones the package never wired.

@@ -1,4 +1,4 @@
-# What a fresh consumer writes today
+# What a Fresh Consumer Writes Today
 
 Keep your app’s verbs, grammar, and icons. Remove Filament overrides that only
 repeat the defaults.
@@ -29,7 +29,7 @@ Register your app’s verbs as described in
 [Activity Types & Verbs](/basics/activity-types-and-verbs), and keep its [aggregate grammar](/cookbook/grouped-headlines).
 The [quickstart](/guide/quickstart) covers the models, recording, and reads.
 
-## Delete these, keep those
+## Delete These, Keep Those
 
 | existing configuration | what to write today | why |
 |---|---|---|
@@ -44,7 +44,7 @@ Keep an override when it expresses a choice that differs from these defaults.
 A custom `FeedRendering::timestamps()` callback still replaces the whole
 formatting ladder; its timestamp arrives already converted to the display zone.
 
-## A surface without controls
+## A Surface without Controls
 
 ```blade
 {{-- $items are render-ready arrays from FeedPresenter, not raw payload nodes. --}}
@@ -63,7 +63,7 @@ An ambient display that only needs summaries can also set `collapsed: true`.
 That closes groups without offering a control to open them; a node requesting
 expansion still wins. The print stylesheet opens groups on paper.
 
-## Display timezone
+## Display Timezone
 
 ```php
 use Storyfeed\Filament\FeedRendering;

@@ -1,4 +1,4 @@
-# Activities about deletions
+# Activities About Deletions
 
 A removal story that still renders after the row it is about is gone.
 
@@ -39,7 +39,7 @@ const removed = activity({
 The node's `data` carries the name for your renderer to show beneath the
 headline.
 
-## What a removal story may reference
+## What a Removal Story May Reference
 
 For an Eloquent model using `Storyfeed\Concerns\InteractsWithFeed`, a
 model-instance delete soft-deletes every activity it took part in, in any
@@ -63,7 +63,7 @@ individual model events and therefore do not run this cascade.
 The lifecycle hooks are in
 [Feedable API](/reference/feedable#snapshot-maintenance).
 
-## A soft delete is a delete
+## A Soft Delete Is a Delete
 
 `$document->delete()` on a soft-deleting model using the trait fires the same
 hook and soft-deletes the activities. Restoring the model does not restore them.

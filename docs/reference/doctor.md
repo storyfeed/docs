@@ -38,7 +38,7 @@ your feed. Findings name the fix, not just the fault.
 | `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces |
 
-## Feed coverage
+## Feed Coverage
 
 The `feeds` check reports five findings:
 
@@ -121,7 +121,7 @@ that hydrates only under an unregistered feed name, or only for an older
 snapshot shape, is not seen. A class with no snapshot yet that throws on an
 empty one is not reported.
 
-## From findings to code
+## From Findings to Code
 
 `--stubs` closes the loop: doctor tells you what's missing, and prints the
 story class that fixes it.
@@ -147,7 +147,7 @@ is the opt-in gate that makes CI fail. Pair it with the
 [coverage assertions](/deeper/testing#coverage-assertions): the assertions fail
 fast in the suite, doctor reports against real traffic.
 
-## On a fresh install
+## On a Fresh Install
 
 With no data, doctor reports nothing to diagnose rather than reporting your app
 as unwired.

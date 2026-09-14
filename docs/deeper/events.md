@@ -1,36 +1,75 @@
-# Publishing from events
+# Publishing from Events
 
-An event can declare what it puts in the feed by implementing
-`PublishesToFeed`:
+When a fact is already an event, the activity can be published from it. When
+you are done, dispatching the event is what puts the activity on the feed.
+
+<script setup>
+import { who, where, doc, activity } from '../.vitepress/theme/samples'
+
+const uploaded = activity({ id: 'ev1', verb: 'upload', glyph: 'file-up',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor uploaded :object to :target',
+  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown })
+</script>
+
+## From a Listener
 
 ```php
-use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\PendingStory;
-
-class DeliveryConfirmed implements PublishesToFeed
+class DocumentUploaded
 {
-    public function __construct(public Delivery $delivery, public User $user) {}
+    public function __construct(public Document $document, public User $user) {}
+}
+```
 
-    public function toFeedStory(): ?PendingStory
+```php
+class RecordUpload
+{
+    public function handle(DocumentUploaded $event): void
     {
-        return PendingStory::of(DeliveryWasConfirmed::class)
-            ->object($this->delivery)
-            ->actor($this->user);
+        Storyfeed::activity()
+            ->by($event->user)
+            ->action('upload', $event->document)
+            ->to($event->document->project)
+            ->publish();
     }
 }
 ```
 
-Dispatch the event; the activity is published. No listener registration.
+<FeedStream :items="[uploaded]" :grouped="false" />
 
-Return `null` to publish nothing — useful when only some instances are
-feed-worthy:
+## From the Event Itself
+
+An event can declare what it puts on the feed, with no listener to register:
+
+```php
+use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
+use Storyfeed\PendingStory; // [!code focus]
+
+class DocumentUploaded implements PublishesToFeed // [!code focus]
+{
+    public function __construct(public Document $document, public User $user) {}
+
+    public function toFeedStory(): ?PendingStory // [!code focus]
+    { // [!code focus]
+        return PendingStory::of(DocumentWasUploaded::class) // [!code focus]
+            ->object($this->document) // [!code focus]
+            ->actor($this->user) // [!code focus]
+            ->target($this->document->project); // [!code focus]
+    } // [!code focus]
+}
+```
+
+<FeedStream :items="[uploaded]" :grouped="false" />
+
+Dispatch the event and the activity is published. Return `null` to publish
+nothing, when only some instances belong on the feed:
 
 ```php
 public function toFeedStory(): ?PendingStory
 {
-    return $this->delivery->isInternal()
-        ? null
-        : PendingStory::of(DeliveryWasConfirmed::class)->object($this->delivery);
+    return $this->document->isDraft() // [!code focus]
+        ? null // [!code focus]
+        : PendingStory::of(DocumentWasUploaded::class)->object($this->document);
 }
 ```
 
@@ -39,31 +78,16 @@ The name is `toFeedStory()`, not `toFeed()`, so a model can be both `Feedable`
 and publishing without a collision.
 :::
 
-## Choosing a publish site
+## Events Storyfeed Emits
 
-| site | good for |
+| Event | Payload |
 |---|---|
-| action / service class | the common case — the fact and the record in one place |
-| domain event via `PublishesToFeed` | when several things already react to the event |
-| model observer | lifecycle facts (created, deleted) with no domain event |
+| `Storyfeed\Events\ActivityPublished` | `$event->activity`: the published activity's facts |
+| `Storyfeed\Events\ActivityDeleted` | `$event->activity`: the deleted activity's facts |
+| `Storyfeed\Events\BatchClosed` | `$event->batch`: the closed batch, with its activities |
 
-All three are explicit calls. Whichever you choose, the pairs they record show
-up in [`storyfeed:stories`](/reference/commands), including ones the
-package never wired.
-
-## Events emitted by Storyfeed
-
-| event | payload |
-|---|---|
-| `Storyfeed\Events\ActivityPublished` | `$event->activity`: `ActivitySnapshot` |
-| `Storyfeed\Events\ActivityDeleted` | `$event->activity`: `ActivitySnapshot` |
-| `Storyfeed\Events\BatchClosed` | `$event->batch`: `BatchSnapshot`, including its activity snapshots |
-
-These immutable snapshots live in `Storyfeed\Events\Snapshots`. They preserve
-event-time facts; they are not Eloquent models. Events are delivered after the
-outermost transaction commits, and a rollback delivers nothing. Queued listeners
-receive the same captured facts as synchronous listeners. Batch members are
-captured at close, before automatic bundling.
-
-A listener on any of the three can be `ShouldQueue`. What the snapshot
-carries onto a worker, and when the job is pushed, is in [Queues](/deeper/queues).
+Each carries a snapshot of the facts at event time, not a model. Events are
+delivered after the outermost transaction commits, and a rollback delivers
+nothing. A listener on any of the three can be `ShouldQueue` and receives the
+same facts on the worker. [Queues](/deeper/queues) covers what travels and
+when the job is pushed.

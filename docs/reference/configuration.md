@@ -9,7 +9,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 For provider registrations and Filament view props that can be removed, see
 [What a fresh consumer writes today](/cookbook/fresh-consumer).
 
-## Tables & models
+## Tables & Models
 
 | key | default | |
 |---|---|---|
@@ -79,7 +79,7 @@ Curation policy is not payload contract — change these freely. Only the group
 node's *shape* is frozen.
 :::
 
-## Batches & composites
+## Batches & Composites
 
 | key | default | |
 |---|---|---|
@@ -94,7 +94,7 @@ node's *shape* is frozen.
 |---|---|---|
 | `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
 
-## AS2.0 routes
+## AS2.0 Routes
 
 | key | default | |
 |---|---|---|

@@ -46,7 +46,7 @@ models to `ActivityPublished`, `ActivityDeleted` and `BatchClosed`, and
 dispatch them before your outermost transaction commits.
 :::
 
-## A queued listener
+## A Queued Listener
 
 ```php
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -84,7 +84,7 @@ Each role array has the same keys: `type` and `id` (the morph alias and key),
 `label`, `component`, `data`, `content`, `mediaType` and `attributedTo`, read
 from the entity's snapshot at publish.
 
-### What survives the round trip
+### What Survives the Round Trip
 
 | | on the worker |
 |---|---|
@@ -98,7 +98,7 @@ from the entity's snapshot at publish.
 A listener that needs the current state reads the feed the way a controller
 does. A listener that needs the fact has it already.
 
-### Inside a transaction
+### Inside a Transaction
 
 ```php
 DB::transaction(function () use ($document, $user) {
@@ -124,7 +124,7 @@ events.
 There is no global `after_commit` setting in `config/storyfeed.php`. Each event
 declares its own boundary, so the behaviour is readable from the event class.
 
-## A job that publishes
+## A Job That Publishes
 
 ```php
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -155,7 +155,7 @@ class RecordSubmission implements ShouldQueue
 }
 ```
 
-### Event time and job time
+### Event Time and Job Time
 
 `publish()` stamps `published_at` with `now()` when nothing else was given.
 In a job that is the moment the worker got to it.
@@ -185,7 +185,7 @@ next "load more" does not reach it; a fresh read of the head does. This is the
 reconciliation the [payload contract](/reference/payload) already asks of a
 client.
 
-### What `publishedAt()` does not carry
+### What `publishedAt()` Does Not Carry
 
 The entity's snapshot reads the model as it is when the job runs.
 `SerializesModels` puts an identifier on the queue and the worker re-fetches
@@ -210,7 +210,7 @@ A job that carries the model without `SerializesModels` publishes from a copy
 frozen at dispatch. The snapshot upsert compares `updated_at` before it writes,
 so a copy older than the current snapshot leaves the snapshot alone.
 
-### Retries and the recording switch
+### Retries and the Recording Switch
 
 | the job | do |
 |---|---|
@@ -221,7 +221,7 @@ so a copy older than the current snapshot leaves the snapshot alone.
 `stopRecording()` sets a flag on the manager for the rest of the process. In a
 worker the process is every job that worker runs from then on.
 
-## The actor
+## The Actor
 
 ```php
 class NotifyTeam implements ShouldQueue
@@ -259,7 +259,7 @@ use Storyfeed\Support\QueuedActor;
 Context::addHidden(QueuedActor::KEY, null);
 ```
 
-### Anonymous is not system
+### Anonymous Versus System
 
 A worker with no request context at all, a job dispatched from a console
 command or a schedule, records nothing unless told. The four ways of telling it
@@ -277,7 +277,7 @@ The fallback names the system for every publish that would otherwise be
 unknown; `->anonymously()` says this one is unknown on purpose, and wins over
 the fallback. See [Parties & anonymous actors](/deeper/parties).
 
-## Testing a queued publish
+## Testing a Queued Publish
 
 Under the `sync` driver, the default in a test suite, a queued listener runs
 inline and `Storyfeed::fake()` sees its publish:
@@ -316,7 +316,7 @@ it('records the submission', function () {
 Storyfeed cannot assert that a listener on that event was pushed. Assert that
 one against the real manager with `Queue::fake()` alone.
 
-## Two workers at once
+## Two Workers at Once
 
 Two workers publishing at the same moment hold, in the exercised cases:
 
@@ -327,7 +327,7 @@ Two workers publishing at the same moment hold, in the exercised cases:
 | a snapshot never regresses | the upsert compares the model's `updated_at` under the row lock before writing |
 | the publish is one transaction | snapshot, groupings, batch and curation commit together, or not at all |
 
-### A stale curation winner
+### A Stale Curation Winner
 
 One case is characterised and not fixed. Two workers publishing into the same
 cluster at the same moment, where the cluster crosses a grouping threshold
@@ -349,7 +349,7 @@ publishes serialized on a shared `feed_snapshots` row when the members had a
 did not. A group that is wrong for up to an hour is the cost today; a feed
 that must not show it can run `storyfeed:curate` on a shorter schedule.
 
-## What has been demonstrated
+## Demonstrated Behaviour
 
 Everything above marked as checked ran as real serialized jobs on the
 `database` queue driver, popped and fired by Laravel's own worker code.

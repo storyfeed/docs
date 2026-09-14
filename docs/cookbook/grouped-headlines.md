@@ -1,4 +1,4 @@
-# Headlines for grouped activities
+# Headlines for Grouped Activities
 
 A group that reads as one sentence, written on the lines next to the sentence
 for one activity.
@@ -101,13 +101,13 @@ under the default policy). See [Aggregation](/deeper/aggregation).
 <FeedStream :items="[crowd]" :grouped="false" />
 
 Without an aggregate template, a group has no authored sentence and falls back.
-The fallback is described in [Grammar](/deeper/grammar#the-anti-lie-rule).
+The fallback is described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
 
 If changing the target stops a `repeat` group from forming, the built-in
 [`targets` axis](/deeper/aggregation#axis-registry) leaves target free;
 `repeat` includes its id in the key.
 
-## One entry per axis the verb can group on
+## One Entry per Axis the Verb Can Group on
 
 `:count` is always the member count; the noun after it names what a member is.
 
@@ -128,7 +128,7 @@ revisions or times, never of documents.
 Which tokens each axis allows in the singular is in
 [Aggregation](/deeper/aggregation).
 
-## When the content is the news
+## When the Content Is the News
 
 A group has children, but no group-level `thread` quote. Quotes and media on
 individual activities remain on those children; a closed group can hide the
@@ -139,7 +139,7 @@ some are omitted. The headline's count still covers the whole group.
 Use `log()` for a surface where each decision or comment must remain visible.
 An aggregate sentence alone cannot preserve each member's content.
 
-## The same pair in a Story
+## The Same Pair in a Story
 
 Both sentences live in one class, singular first:
 

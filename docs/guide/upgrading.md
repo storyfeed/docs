@@ -2,17 +2,17 @@
 
 Storyfeed is pre-1.0. Breaking changes are named here with their replacement.
 
-## Before you upgrade
+## Before You Upgrade
 
 ```bash
-# The current development version; commit composer.lock to pin the resolved revision.
+# The Current Development Version; Commit Composer.lock to Pin the Resolved Revision.
 composer require storyfeed/storyfeed:dev-main
 php artisan vendor:publish --tag="storyfeed-migrations"
 php artisan migrate
 php artisan storyfeed:doctor
 
-# If you verify with your test suite, clear cached config first — it overrides
-# phpunit.xml and can drop a seeded database.
+# If You Verify with Your Test Suite, Clear Cached Config First — It Overrides
+# Phpunit.xml and Can Drop a Seeded Database.
 php artisan optimize:clear
 ```
 
@@ -23,12 +23,12 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
-## v0.8.0-alpha.2 — `query()` callbacks are nested
+## v0.8.0-alpha.2 — `query()` Callbacks Are Nested
 
 Two behaviour changes. Neither has a rename to chase; both change what a read
 returns.
 
-### A `query()` callback can no longer widen a feed
+### A `query()` Callback Can No Longer Widen a Feed
 
 Callbacks used to be applied at the top level of the candidate query. Because
 `AND` binds tighter than `OR`, a callback whose first move was `orWhere` became
@@ -60,7 +60,7 @@ or a callback that names it inside its own closure.
 whether a callback was confined depended on whether something else in the feed
 had called `only()`. It is unconditional now.
 
-### A `Feed` class locks the role it binds
+### A `Feed` Class Locks the Role It Binds
 
 Rebinding the subject of a scoped [feed class](/basics/named-feeds#feed-classes)
 throws `FeedMisconfigured` instead of silently replacing it:
@@ -75,7 +75,7 @@ it won quietly, in the one dimension that fails open. Narrowing is untouched.
 This reaches only `Feed` classes: plain builders, closure presets and
 `$model->storyfeed()` behave as they always did.
 
-### The AS2.0 collection route is gone
+### The AS2.0 Collection Route Is Gone
 
 `GET /{prefix}/feed` is **removed**, not deprecated. It served every published
 activity in the system, unscoped and with no verb allowlist, so an app that
@@ -86,7 +86,7 @@ If you were serving it, the collection **shape** is unchanged and still
 available: `CollectionSerializer::collection($page, $iri, $cursor)` takes the
 activities and the IRI from you, so the query is yours to scope.
 
-## v0.7 — scoped feeds: `involving()`
+## v0.7 — Scoped Feeds: `involving()`
 
 `FeedBuilder::for()` is now **`involving()`**, and at this release it spans actor, object, target and context.
 [Current scoping](/basics/reading#scoping) covers all seven roles:
@@ -116,7 +116,7 @@ Worth re-checking your entity pages while you are here: if one scopes by
 `context()`, it is omitting that entity's own lifecycle — "project created"
 records the project as the object, not the context.
 
-## v0.7 — read modes renamed
+## v0.7 — Read Modes Renamed
 
 `flat` / `grouped` / `curated` → **`log`** / **`live`** / **`summary`**. The
 default is `summary`; `curated` is reserved for a future relevance-ranked view.
@@ -138,13 +138,13 @@ falling back to a default.
 If your UI exposes modes in a query string, translate old values; a stale
 bookmark otherwise falls through to the default.
 
-## v0.6 — aggregation
+## v0.6 — Aggregation
 
 - **Axes formalized.** Custom axes need no package edits; hashes are unchanged
   for the built-ins, so no payload change.
 - **Composites.** `Collectable` models bundle at batch close. Author **both**
   `composite.{verb}` aggregate grammar and `*.{verb}` singular grammar for the
-  parent — see [Grammar](/deeper/grammar#composite-parents-need-verb).
+  parent — see [Grammar](/deeper/grammar#composite-parents).
 - **Null-headline groups became reachable.** A group with no safe headline now
   arrives with both `headline_template` and `headline` null. A last-resort branch
   that composes prose from node entities will name one actor over a many-actor
@@ -152,7 +152,7 @@ bookmark otherwise falls through to the default.
 - **`sync_token`** added to the envelope. Store and compare it; on change, drop
   accumulated nodes and refetch.
 
-## v0.5 — the Story layer
+## v0.5 — The Story Layer
 
 `Storyfeed\Story` classes and `make:story` replace hand-authoring seven
 registries per activity type. The registries remain supported — Stories compile

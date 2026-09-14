@@ -3,7 +3,7 @@
 Activities group along **axes** — each axis collapses one dimension.
 These built-in axes are registered by default:
 
-## Axis registry
+## Axis Registry
 
 | axis | collapses | pins (safe singular tokens) | example headline |
 |---|---|---|---|
@@ -31,7 +31,7 @@ public function groups(): array
 `Group::on('scene')` targets a custom axis; `Group::any()` matches whichever
 axis wins.
 
-## Group nodes
+## Group Nodes
 
 An aggregate arrives as one **group node** — see the
 [payload contract](/reference/payload#group-node) for the exact shape. The
@@ -58,7 +58,7 @@ key; `targets` pins actor identity, verb, and day while leaving target free.
 
 A role a key leaves free may also be absent, so a `targets` bucket can hold
 members carrying no target at all — which is what a plural token
-[does and does not promise](/deeper/grammar#a-plural-token-lists-the-members-that-filled-the-role).
+[does and does not promise](/deeper/grammar#members-that-did-not-fill-a-role).
 
 Below threshold, activities stay atomic. Disable grouping entirely with
 `NullStrategy`.
@@ -67,7 +67,7 @@ Thresholds apply at publish time, so changing them is **not retroactive** —
 existing activities keep the grouping they were given. Run `storyfeed:curate` to
 re-apply, which rewrites settled history and bumps the `sync_token`.
 
-## Custom axes
+## Custom Axes
 
 An axis is a key recipe plus eligibility — no package edits required:
 
@@ -119,7 +119,7 @@ Storyfeed::axes([$scene], before: 'repeat');
 Then author `scene.{verb}` templates in the aggregate grammar, and run
 `storyfeed:doctor` — coverage audits include every registered axis.
 
-## One story per fact, per mode
+## One Story per Fact, per Mode
 
 Within any read mode, every activity appears in exactly one node — atomic or
 grouped, never both. This is what makes the member-identity

@@ -27,7 +27,7 @@ php artisan vendor:publish --tag="storyfeed-migrations"
 php artisan migrate
 ```
 
-| table | holds |
+| Table | Holds |
 |---|---|
 | `feed_activities` | the activities — the atomic timeline |
 | `feed_snapshots` | cached entity labels and data |
@@ -52,14 +52,14 @@ php artisan vendor:publish --tag="storyfeed-config"
 Optional — every value in `config/storyfeed.php` has a working default. The
 ones you are most likely to touch first:
 
-| key | default | |
+| Key | Default | |
 |---|---|---|
 | `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, or `'summary'` |
 | `grouping.batch.quiet_minutes` | `10` | idle time before an actor's burst is considered finished |
 | `prune.after_days` | `null` | retention; `null` keeps everything |
 
 For a Filament app’s provider and view defaults, see
-[What a fresh consumer writes today](/cookbook/fresh-consumer).
+[Setting Up a New Consumer](/cookbook/fresh-consumer).
 
 ## Scheduling
 
@@ -85,7 +85,3 @@ php artisan storyfeed:doctor
 Doctor inspects your registries, schema, and actual feed traffic, and names each
 problem with its fix. On a fresh install it reports that there is nothing to
 diagnose yet.
-
-## Next
-
-[Quickstart](/guide/quickstart) — record, read, render.

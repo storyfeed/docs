@@ -1,6 +1,6 @@
 # Testing
 
-## Faking the feed
+## Faking the Feed
 
 ```php
 Storyfeed::fake();
@@ -24,7 +24,7 @@ Storyfeed::assertNothingPublished();
 Each accepts a closure instead of a verb for arbitrary matching. The fake
 inherits your real registries, so grammar and axes behave as configured.
 
-## Coverage assertions
+## Coverage Assertions
 
 These fail your suite when the grammar stops keeping up with the app — the
 failure mode where a feed silently renders blank lines for new activity types.
@@ -57,7 +57,7 @@ StorySurface::assertNoUnwiredSurface(except: [Client::class]);
 That one flags models that appear in your feed but that nothing publishes
 about. It is fake-aware, and with no data it reports nothing to diagnose.
 
-## `optimize` before a test run wipes a seeded database
+## `optimize` Before a Test Run Wipes a Seeded Database
 
 ::: warning
 `php artisan optimize` caches config, and cached config overrides

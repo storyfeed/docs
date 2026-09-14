@@ -1,4 +1,4 @@
-# Usage examples
+# Usage Examples
 
 <script setup>
 import { who, where, doc, note, entity, activity, group } from '../.vitepress/theme/samples'
@@ -64,7 +64,7 @@ const reply = activity({
 
 </script>
 
-## Single activity
+## A Single Activity
 
 A user uploads a document to a project.
 
@@ -78,7 +78,7 @@ Storyfeed::activity()
 
 <FeedStream :items="[upload]" :grouped="false" />
 
-## Consecutive activities
+## Consecutive Activities
 
 The same user uploads seven documents to that project, one after another.
 
@@ -94,7 +94,7 @@ foreach ($documents as $document) {
 
 <FeedStream :items="[burst]" :grouped="false" />
 
-## Concurrent actions on the same project
+## Concurrent Activities on One Project
 
 Five users upload to the same project, each from their own request, minutes apart.
 Nothing coordinates them.
@@ -134,7 +134,7 @@ Each call knows only its own activity. On the feed:
 
 <FeedStream :items="[crowd]" :grouped="false" />
 
-## A story you author yourself
+## One Activity About Several Objects
 
 A user approves two documents at once.
 
@@ -165,7 +165,7 @@ happens to name two documents. Approving two files in one click is one fact.
 
 <FeedStream :items="[story]" :grouped="false" />
 
-## A participant with no model
+## A Participant With No Model
 
 An external service pushes a document into a project, and it has no row in your
 database to point at.
@@ -180,7 +180,7 @@ Storyfeed::activity()
 
 <FeedStream :items="[external]" :grouped="false" />
 
-## Pick the word that reads true
+## Choosing the Preposition
 
 Say the sentence out loud first. You comment **on** a document, share it
 **with** someone, move it **into** a folder, upload it **to** a project, create
@@ -210,7 +210,7 @@ and if no preposition fits your verb, `target()` always does.
 
 [Recording](/basics/recording) lists every role and every word for it.
 
-## When the object brings its own body
+## A Body Supplied by the Object
 
 Everything above is one call. This one is two places, and that is the point: the
 activity records *what happened*, and the model says *what it looks like when

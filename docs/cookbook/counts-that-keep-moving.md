@@ -1,4 +1,4 @@
-# Counts that keep moving
+# Counts That Keep Moving
 
 A node quoting "3 replies" is stating a fact about the moment it was recorded.
 Nothing recomputes it — not `storyfeed:rebuild`, not `curate --rehash`, not the
@@ -7,12 +7,12 @@ trickle. It lives in `data`, and core hands `data` back exactly as you wrote it.
 That is correct for a count of something finished, and wrong for a count of
 something still happening.
 
-## The rule
+## The Rule
 
 **A count in a payload is recorded at publish time. If anything on the surface
 can change it, do not record it — resolve it on read.**
 
-## Recording it
+## Recording It
 
 ```php
 Storyfeed::activity()
@@ -32,7 +32,7 @@ On a read-only surface nobody notices. On a surface with a reply box, the node
 starts lying the moment somebody uses it — including the node directly above the
 box they just typed into.
 
-## Resolving it instead
+## Resolving It Instead
 
 Three parts. All three are load-bearing.
 
@@ -82,7 +82,7 @@ surface that resolves counts perfectly and then shows them where they do not
 belong.
 :::
 
-## Which counts this covers
+## Which Counts This Covers
 
 Any aggregate a node quotes about something that keeps living after the node was
 written: replies, unread items, "3 photos waiting", members of an open
@@ -95,7 +95,7 @@ about:
 
 If yes, resolve on read.
 
-## Why the answer changes without the code changing
+## Why the Answer Changes without the Code Changing
 
 A recorded count is correct until someone adds an affordance the node's author
 never saw. A feed that only displayed discussions is right to record the count;
@@ -104,7 +104,7 @@ reviewing that change will connect a new button to an old number.
 
 Resolving on read survives that. Recording does not.
 
-## What a healer can and cannot do here
+## What a Healer Can and Cannot Do Here
 
 A healer re-derives stories from their sources, so it can correct a recorded
 count — but only by **replacing** the activity, which supersedes the row and
@@ -115,7 +115,7 @@ Worse, it fights itself: a healer comparing a recorded count against a live one
 finds a difference on every pass, and rewrites the same story forever. Storing
 `null` is what keeps a healer idempotent here.
 
-## Where this came from
+## Where This Came from
 
 Not a design. The rule was written by a consumer solving a different problem
 entirely: a recorded count made a **healer** replace stories that had not

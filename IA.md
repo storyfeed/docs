@@ -515,8 +515,8 @@ for free. A reader needs no knowledge of it for the code to work.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
   package exists. When the `storyfeed/filament` page lands it is a **pricing and
   install** page — what it costs, the licence key, the private Composer endpoint
-  — not a normal package page; the free-versus-paid model and its reasoning stay
-  on Compatibility. Nothing about keeping a feed safe to show belongs on it:
+  — not a normal package page. Licensing and the free-versus-paid reasoning live
+  on the splash site, not on Compatibility (cut 2026-09-14: no promises before v1). Nothing about keeping a feed safe to show belongs on it:
   audience scoping is in the MIT core, and pricing copy must never imply
   otherwise.
 - The 2023 scaffold's sidebar anticipated much of this structure; what it got

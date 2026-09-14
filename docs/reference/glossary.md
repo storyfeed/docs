@@ -4,7 +4,7 @@ Every word the rest of this site assumes, with the thing it is most often
 mistaken for. Grouped by where you meet them rather than alphabetically — the
 neighbours are usually what you actually wanted.
 
-## The activity
+## The Activity
 
 | term | it is | it is **not** |
 |---|---|---|
@@ -45,7 +45,7 @@ neighbours are usually what you actually wanted.
 | **cursor** | an opaque page position | an offset, or something to parse |
 | **sync_token** | "history was rewritten, resync" | a cursor, or optional metadata |
 
-## Storage & maintenance
+## Storage & Maintenance
 
 | term | it is | it is **not** |
 |---|---|---|

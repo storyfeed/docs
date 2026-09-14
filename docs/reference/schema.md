@@ -54,7 +54,7 @@ columns. Written in the publish transaction; backfilled by
 
 Package-owned bookkeeping — the sync token lives here.
 
-## Migration policy
+## Migration Policy
 
 Migrations are **published into your app**, which has one consequence worth
 internalizing: any change to a create stub is invisible to every install that
@@ -64,7 +64,7 @@ So until 1.0, schema changes ship as **additive, guarded `add_*` migrations**,
 never edits to a create stub. There will be exactly one consolidation at 1.0,
 with an explicit upgrade step.
 
-### If you published before v0.5
+### If You Published Before v0.5
 
 ::: warning
 Early versions folded a column into its create stub. If you published

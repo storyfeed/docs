@@ -1,4 +1,4 @@
-# Read the fields back
+# Read the Fields Back
 
 Check an activity's composition before recording it: **read the recorded fields
 back. Do they cohere?**
@@ -11,7 +11,7 @@ Substitute the values you plan to record. Use `—` for an empty field. Can a
 reader reconstruct the event from those values alone? Apply this to each new
 composition before writing its headline.
 
-## An invitation accepted
+## An Invitation Accepted
 
 ```text
 Nayani · joined   · Sam        · —      incoherent
@@ -28,7 +28,7 @@ the invitation earlier; they did not perform the acceptance.
 | Invitee · joined · invitee · — | Correcting the actor still leaves the invitee repeated as the object. The fields do not identify what they joined. |
 | Invitee · accepted · invitation · table | The fields identify who accepted, what they accepted, and which table the invitation was for. |
 
-## Three things to look for
+## Three Things to Look for
 
 | Failure mode | Inspect each field for |
 |---|---|
@@ -40,7 +40,7 @@ A repetition can be legitimate: someone editing their own profile may be both
 actor and object. Read the fields together to decide whether the repetition
 describes the event.
 
-## Coherence and completeness
+## Coherence and Completeness
 
 ```text
 Sam · moved · file · List B
@@ -54,12 +54,12 @@ The test does not require a grammatical sentence or prepositions between the
 fields. The summary can change at any time while the record remains. Read the
 stored values independently of the prose used to display them.
 
-## Two failures the litmus passes
+## Two Failures the Litmus Passes
 
 It reads one tuple. Two mistakes live outside one tuple, and both look correct
 inside it.
 
-### Whether the event happened once
+### Whether the Event Happened Once
 
 ```text
 Sam · revised · proposal · —   coherent
@@ -74,7 +74,7 @@ window of rows for the verb rather than one composition:
 call belongs, and [Repeating activities](/cookbook/repeating-activities) covers
 collapsing the ones that stay.
 
-### Whether every token has a publisher
+### Whether Every Token Has a Publisher
 
 ```text
 Sam · archived · document · —   coherent — nothing was aimed at
@@ -95,7 +95,7 @@ php artisan storyfeed:doctor --only=roles
 The `roles` check reports a singular template naming a role none of its
 activities carry.
 
-## Check recorded repetitions
+## Check Recorded Repetitions
 
 ::: tip
 `reflexive` is not in a tagged release. An install pinned to v0.9.0 or earlier

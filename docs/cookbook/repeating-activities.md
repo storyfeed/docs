@@ -1,4 +1,4 @@
-# Repeating activities
+# Repeating Activities
 
 Keep every occurrence in a timeline, or retain only the latest occurrence of
 a verb on an object. Choose what the reader needs to revisit.
@@ -25,7 +25,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## Which verbs replace
+## Which Verbs Replace
 
 | decision | question | consequence |
 |---|---|---|
@@ -42,7 +42,7 @@ object id. It does not detect retries or preserve the original row's id and
 time. An append-only publisher needs its own durable occurrence identity and
 retry guard if delivery can repeat.
 
-## A full timeline beside a latest-state pulse
+## A Full Timeline Beside a Latest-state Pulse
 
 The document is submitted, approved, reopened, and submitted again. These are
 two alternative recording policies for the same sequence:
@@ -83,7 +83,7 @@ retained occurrences without replacing them. Superseded rows are soft-deleted
 by default; `storyfeed.replace.delete = 'force'` hard-deletes them. See
 [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
-## A save-shaped verb that is not published at all
+## A Save-shaped Verb That Is Not Published at All
 
 A save that changes nothing a reader would notice has no row, replaced or
 otherwise. See [Choosing when to publish](/cookbook/choosing-when-to-publish).

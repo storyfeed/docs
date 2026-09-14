@@ -1,4 +1,4 @@
-# Keeping verbs and grammar together
+# Keeping Verbs and Grammar Together
 
 Every verb the app publishes has a headline, every headline has a publisher,
 and both are declared in the same file.
@@ -46,7 +46,7 @@ public function toFeedStory(): ?PendingStory
 `PendingStory::of()` throws for a class that is not registered. Registration
 is in [Story classes](/basics/stories).
 
-## Where drift comes from
+## Where Drift Comes from
 
 | verb written in | headline written in | drifts when |
 |---|---|---|
@@ -54,7 +54,7 @@ is in [Story classes](/basics/stories).
 | an enum | a grammar array | a case's value changes |
 | a Story class | the same Story class | nothing |
 
-## Catching it
+## Catching It
 
 ```bash
 php artisan storyfeed:doctor --only=grammar   # published pairs with no headline
@@ -69,7 +69,7 @@ locations.
 `grammar.strict` throws at the publish call in `local` and `testing` when the
 pair has no headline. It is in [Configuration](/reference/configuration).
 
-## A verb nothing publishes any more
+## A Verb Nothing Publishes Any More
 
 Rows recorded under a retired verb keep their sentence only while the verb
 stays registered:

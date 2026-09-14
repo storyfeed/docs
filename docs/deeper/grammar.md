@@ -1,7 +1,23 @@
 # Grammar
 
-Grammar is the registry of headline templates. Stories compile into it; you can
-also write it directly:
+Grammar is the registry of templates the feed uses to render its activities'
+headlines. A Story's `headline()` and `groups()` fill it; the direct form is:
+
+<script setup>
+import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
+
+const single = activity({ id: 'g1', verb: 'upload', glyph: 'file-up',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor uploaded :object to :target',
+  actor: who.ines, object: doc.annualReportV3, target: where.passwordCrackdown })
+
+const repeated = group({ id: 'g2', verb: 'upload', axis: 'repeat', count: 3, glyph: 'file-up',
+  published_at: '2026-08-14T14:30:00.000000Z',
+  headline_template: ':actor uploaded :count files to :target',
+  actors: [who.ines], targets: [where.passwordCrackdown],
+  objects: [doc.annualReportV3, doc.signagePlanRevB, doc.pricingTableFinal],
+  distinct: { actors: 1, objects: 3, targets: 1 } })
+</script>
 
 ```php
 Storyfeed::grammar([
@@ -13,6 +29,8 @@ Storyfeed::aggregateGrammar([
     'repeat.upload' => ':actor uploaded :count files to :target',
 ]);
 ```
+
+<FeedStream :items="[single, repeated]" :grouped="false" />
 
 Note the two key shapes: singular grammar is keyed by **object type and verb**;
 aggregate grammar by **axis and verb**.
@@ -30,7 +48,7 @@ For singular activities with no recorded actor, register a separate
 
 ## Tokens
 
-| singular token | plural token | entity role |
+| Singular Token | Plural Token | Entity Role |
 |---|---|---|
 | `:actor` | `:actors` | who acted |
 | `:object` | `:objects` | what the activity acted on |
@@ -44,7 +62,7 @@ Singular tokens resolve to one entity label. Plural tokens resolve to group
 exemplars with overflow. [Rendering](/basics/rendering#headline-templates)
 covers substitution and the `:count` and `:others` tokens.
 
-## The anti-lie rule
+## Tokens a Group Headline May Use
 
 A group headline may only use tokens that are true of **every** member. A
 singular role token is allowed only where the [axis pins it](/deeper/aggregation);
@@ -52,9 +70,9 @@ plural tokens are allowed everywhere, because a list of one is still true.
 
 ```php
 // repeat = one actor, many documents
-'repeat.revise' => ':actor made :count revisions to :object'   // ✗ lies: which document?
+'repeat.revise' => ':actor made :count revisions to :object'   // ✗ which document?
 'repeat.revise' => ':actor made :count revisions'              // ✓
-'repeat.revise' => ':actor made :count revisions in :targets'  // ✓ plural is honest
+'repeat.revise' => ':actor made :count revisions in :targets'  // ✓ a list is true of every member
 ```
 
 `storyfeed:doctor` reports unsafe tokens as warnings; run it with
@@ -87,9 +105,9 @@ that text before returning the template, so `:actor uploaded :object` can arrive
 as `:actor uploaded documents`. The substituted noun is plain text, with no
 single entity to link to; `:actor` remains a linkable token.
 
-## A plural token lists the members that filled the role
+## Members That Did Not Fill a Role
 
-It does not promise every member filled it. An axis pins what its key names, and
+A plural token lists the members that filled the role. It does not promise every member filled it. An axis pins what its key names, and
 a role outside the key is free to be absent on some members.
 
 `targets` is keyed on actor, verb and day — target is not in the key at all. So
@@ -98,16 +116,16 @@ towards `:count` and contributes no exemplar.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
-'targets.comment' => ':actor commented on :count projects'  // ✗ says five projects
+'targets.comment' => ':actor commented on :count projects'  // ✗ five members, two projects
 'targets.comment' => ':actor commented in :targets'         // ✓ names the two there are
 ```
 
-Both lines are token-safe — the lie is in the noun the template puts beside
+Both lines are token-safe; the defect is in the noun the template puts beside
 `:count`, which nothing validates. `node.count` is the member total;
 `node.distinct.targets` counts only the members that filled the role. Where the
 two disagree, some members filled no target.
 
-## One plural list per template
+## One List per Template
 
 Both of these are token-safe; only one is readable:
 
@@ -126,7 +144,7 @@ nothing reports it, and the fix is to collapse every dimension but one to
 
 Resolution falls back `{type}.{verb}` → `{type}.*` → `*.{verb}` → `*.*`.
 
-### Composite parents need `*.{verb}`
+### Composite Parents
 
 ::: warning
 A composite's parent activity has **no object of its own**, so it resolves
@@ -141,7 +159,7 @@ Storyfeed::grammar(['*.upload' => ':actor uploaded files to :target']);
 `'*.*'` matches everything, including the gaps you would want reported.
 :::
 
-## Verbs spanning multiple types
+## Verbs Spanning Multiple Types
 
 Aggregate grammar is keyed by **axis and verb**, while a Story is per
 `(objectType, verb)`. When one verb spans several types — `create` on projects,

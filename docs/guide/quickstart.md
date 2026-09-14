@@ -19,7 +19,7 @@ const published = activity({
 </script>
 
 
-## 1. Make your models feedable
+## 1. Make Your Models Feedable
 
 Anything that appears in the feed — actor, object, target, context, origin, result, or instrument —
 implements `Feedable`:
@@ -64,8 +64,8 @@ and the entity degrades to `url: null` and `media: null`.
 
 `Project` and `User` need only `toFeed()`. `InteractsWithFeed` supplies a
 `feedMedia()` that returns null, and an unlinked entity still renders at full
-weight. [Feedable models](/basics/feedable-models) covers the context, a URL per
-feed, and images.
+weight. [Feedable Models](/basics/feedable-models) covers a link per feed; the
+[Feedable API](/reference/feedable) covers images and the rest.
 
 Storyfeed stores morph aliases, never class names, so enforce a morph map:
 
@@ -79,7 +79,7 @@ Relation::enforceMorphMap([
 ]);
 ```
 
-## 2. Author a story
+## 2. Author a Story
 
 One class per meaningful activity type — the verb, the headline, the icon, and
 how it groups:
@@ -127,9 +127,9 @@ Storyfeed::stories([
 Headlines are **templates**, substituted by the renderer — translatable, and a
 label can stay a link. A group headline may only use tokens true of *every*
 member: `repeat` can say `:actor` (one actor, many uploads) but not `:object`.
-`storyfeed:doctor` reports templates that would lie.
+`storyfeed:doctor` reports a token a group cannot make true of every member.
 
-## 3. Publish an activity
+## 3. Publish an Activity
 
 ```php
 Storyfeed::activity()
@@ -148,7 +148,7 @@ Storyfeed::record('upload', $document, actor: $user, target: $project);
 Call it wherever the fact becomes true — an action, an observer, an event
 listener.
 
-## 4. Read it back
+## 4. Read It Back
 
 ```php
 $page = Storyfeed::feed()
@@ -172,7 +172,7 @@ Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
 
 Three read modes:
 
-| call | returns |
+| Call | Returns |
 |---|---|
 | `->log()` | the atomic timeline, one node per activity |
 | `->live()` | mechanical grouping over the active window |
@@ -184,11 +184,11 @@ visibility twice — by what it records, and by the scope and verbs each surface
 reads through:
 
 ```php
-// the same order, for the customer who placed it
-$page = Storyfeed::feed('customer')->involving($order)->limit(20)->get();
+// the same project, for the client it belongs to
+$page = Storyfeed::feed('client')->involving($project)->limit(20)->get();
 ```
 
-[Named feeds](/basics/named-feeds) declare that per audience, once, before the
+[Named Feeds](/basics/named-feeds) declare that per audience, once, before the
 second audience exists.
 
 Paginate by handing `next_cursor` back:
@@ -201,7 +201,7 @@ Paginate by handing `next_cursor` back:
 $page = Storyfeed::feed()->cursor($cursor)->get();
 ```
 
-## 5. Render it
+## 5. Render It
 
 Every item is self-describing, so this is the whole renderer, in plain Blade:
 
@@ -305,7 +305,7 @@ A feed that polls or accumulates pages also needs
 [reconciliation](/basics/rendering#reconciling-updates) — without it, a
 regrouped node duplicates activities on the next poll.
 
-## Check your work
+## Check Your Work
 
 ```bash
 php artisan storyfeed:doctor

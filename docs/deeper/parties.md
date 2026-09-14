@@ -1,4 +1,4 @@
-# Parties & anonymous actors
+# Parties & Anonymous Actors
 
 <script setup>
 import { who, where, doc, entity, activity } from '../.vitepress/theme/samples'
@@ -40,7 +40,7 @@ Storyfeed::activity()
 
 `party()` resolves-or-creates by name, so repeated calls reuse the row.
 
-## Scoped attribution
+## Scoped Attribution
 
 Inside a job or console command there is no authenticated user. Scope a block:
 
@@ -54,7 +54,7 @@ A string becomes a party; a model is used directly. An explicit `->actor()`
 still wins inside the scope, and the previous resolver is restored even if the
 callback throws.
 
-## App-wide fallbacks
+## App-wide Fallbacks
 
 ```php
 'parties' => [
@@ -66,7 +66,7 @@ callback throws.
 
 With no fallback, unresolvable publishes are anonymous.
 
-## Actorless voice
+## Actorless Voice
 
 ::: tip
 `actorlessGrammar()` is not in a tagged release. An install pinned to v0.9.0 or

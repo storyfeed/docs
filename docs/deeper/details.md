@@ -4,7 +4,7 @@ A detail is app data with a conventional form. The app writes its own block once
 at record time; any renderer that recognises the form draws it beneath the
 headline, with no view of yours.
 
-## Recording one
+## Recording One
 
 ```php
 // app/Models/Document.php
@@ -39,7 +39,7 @@ the array that detail produces.
 | a form: an encoding, a pair, a passage | a component, or a place for markup |
 | a leaf | nestable — a detail never contains another |
 
-## Writing a form
+## Writing a Form
 
 ```php
 namespace App\Feed;
@@ -96,7 +96,7 @@ final class Attachment implements FeedDetail
 `HasPayload` supplies `toArray()` from `toPayload()`. Override `toArray()` only
 to add something that belongs in storage and not on the node.
 
-### The two reserved keys
+### The Two Reserved Keys
 
 | key | constant | holds |
 |---|---|---|
@@ -130,7 +130,7 @@ autoloads from it, and it need not resolve to any class at all.
 Free-form, like verbs. Core never validates a name against anything, and has no
 list to validate against.
 
-### Versions are add-only
+### Versions Are Add-only
 
 A row recorded today outlives the class that recorded it, so `version()` starts
 at 1 on the first commit rather than the day a second shape appears — by then
@@ -146,7 +146,7 @@ nothing to notice it.
 `upgrade()` runs at **read** time and is never written back, so every renderer
 sees the current form and no view branches on `$v`.
 
-## Where a detail lives
+## Where a Detail Lives
 
 | on | recorded with | describes |
 |---|---|---|
@@ -167,7 +167,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-## The forms core owns
+## Forms Core Owns
 
 Two values in the same `data` column follow opposite versioning postures, and
 the branch is one question: **does core own the key?**
@@ -191,7 +191,7 @@ whatever boundary its domain wants, and `truncated` only tells a renderer
 whether to mark it. `FeedChange` carries before/after facts, both sides kept,
 never a rendered diff.
 
-## Forms that already exist
+## Existing Forms
 
 `storyfeed/ui` ships six. They are MIT and free, and they are the vocabulary
 rather than one renderer's furniture — `storyfeed/filament` registers them for
@@ -213,7 +213,7 @@ graduated. **A row already written carries the old name**, which is what
 two vocabularies both had a `change`, and they stored different shapes, so a
 rename alone would have blanked every change row.
 
-## What a renderer does with an unknown form
+## Unknown Forms in a Renderer
 
 Draws nothing, and never an error — the same rule the read path already applies
 to unknown verbs and to Activity Streams extension types. It covers version skew
@@ -223,7 +223,7 @@ not a broken feed.
 So a renderer that finds a `$detail` it does not recognise skips it, and the
 activity renders as it always would, minus the block.
 
-## Seeing what is in the column
+## Inspecting the Column
 
 ```bash
 php artisan storyfeed:doctor --only=details

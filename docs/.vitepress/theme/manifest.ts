@@ -25,10 +25,10 @@
 /** People. Rendered as `user` entities linking to /users/{id}. */
 export const USERS = {
   jasper: 'Jasper Tey',
-  bob:    'Bob Callahan',
+  bob:    'Bruce Wayne',
   sally:  'Sally Nguyen',
   marcus: 'Marcus Webb',
-  ines:   'Ines Duarte',
+  ines:   'Nancy Wheeler',
   deja:   'Deja Williams',
   priya:  'Priya Raman',
   aiko:   'Aiko Tanaka',

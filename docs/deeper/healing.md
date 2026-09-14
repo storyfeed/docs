@@ -4,7 +4,7 @@ A **healer** lets an app retire an existing story when its source is permanently
 absent. The app describes the policy; core rechecks it against the current row
 before applying a soft deletion.
 
-## Before adopting
+## Before Adopting
 
 This version supports **permanent source absence only**: the source cannot return
 with the same identity. A hard-deleted asset whose replacement gets a new ID fits
@@ -32,7 +32,7 @@ Preview first, prefer a quiet period, and avoid a fixed reading window. Core doe
 not schedule healers.
 :::
 
-## A healer
+## A Healer
 
 Enumerate existing stories, including those whose sources have disappeared.
 This example uses a synthetic `asset_reference` object backed by a hard-deleting
@@ -99,7 +99,7 @@ Classes resolve through the container. Instances are also accepted. The healer's
 `key()` names it for selection; later registration of the same key replaces the
 earlier registration. Use `merge: false` to replace the whole registry.
 
-## Running it
+## Running It
 
 ```bash
 php artisan storyfeed:heal --dry-run
@@ -132,7 +132,7 @@ no run record or retirement reason. An applied retirement soft-deletes through
 the model, so it writes the same
 [removal evidence](#removal-evidence-outlives-the-row) as any other deletion.
 
-## Removal evidence outlives the row
+## Removal Evidence Outlives the Row
 
 A story's key is its verb plus its object: the identity `->replace()` supersedes
 on. When the last live story on a key is deleted, core records the key in
@@ -172,7 +172,7 @@ adds two statements. A prune sweep writes nothing to the table, however many
 rows it removes. Nothing in core deletes from `feed_removals`: the evidence has
 no retention window. The cost is one small row per removed key.
 
-### The retention watermark
+### The Retention Watermark
 
 A story older than the retention window is absent because it expired. Every
 `storyfeed:prune` sweep records its cutoff after it completes, and a later sweep
@@ -192,7 +192,7 @@ soft-deleted before that carries none, and pruning it afterwards leaves the key
 looking never recorded. A deletion that bypasses the model and the package's own
 paths, such as raw SQL, writes nothing.
 
-## Testing a healer
+## Testing a Healer
 
 Exercise the registered command, rather than trying to run the `FeedHealer`
 interface. Its methods are `key()` and `candidates()`; it has no `run()` method or

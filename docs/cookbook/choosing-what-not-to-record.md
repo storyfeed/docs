@@ -1,4 +1,4 @@
-# Choosing what not to record
+# Choosing What Not to Record
 
 A publish site only where a reader would want the row. A feed with fewer
 verbs than your app has events.
@@ -32,7 +32,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## What stays out
+## What Stays Out
 
 | what happened | activity | because |
 |---|---|---|
@@ -45,7 +45,7 @@ Storyfeed::grammar([
 | a comment posted | yes | the sentence names what was commented on |
 | a document uploaded | yes | |
 
-## A comment is an activity about its target
+## A Comment Is an Activity About Its Target
 
 ```php
 Storyfeed::grammar([
@@ -109,7 +109,7 @@ Saving this model with recording enabled refreshes its shared snapshot through
 text, without publishing another activity. Implementing `Feedable` without
 the trait requires an explicit snapshot refresh.
 
-## A quote belonging to one activity
+## A Quote Belonging to One Activity
 
 ```php
 use Storyfeed\FeedThread;
@@ -158,7 +158,7 @@ rendered with its provenance. It is not the human utterance in `FeedThread`.
 For a non-conversational passage attached to an entity, the Filament adapter's
 `Detail\Excerpt` provides an excerpt and its source.
 
-## Grammar with no publisher
+## Grammar with No Publisher
 
 `storyfeed:verbs --used` and doctor's `verbs` check compare declared verbs
 with distinct stored verbs. A declared verb absent from storage is reported;

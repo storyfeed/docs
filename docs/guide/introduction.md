@@ -91,7 +91,7 @@ const oneActivity = [
 ]
 </script>
 
-## What is an activity?
+## What Is an Activity?
 
 An activity is a recorded fact, shaped like a sentence with named roles:
 
@@ -108,7 +108,7 @@ what the action was aimed at.
 **Ines** is the party that initiated an **upload** of the file **annual-report-v3.fig**, into the **Password Crackdown** project.
 The summary headline of the activity may take different forms, but the underlying fact is always the same.
 
-> **Ines** submited the file **annual-report-v3.fig** to **Password Crackdown**
+> **Ines** submitted the file **annual-report-v3.fig** to **Password Crackdown**
 
 > A new file **annual-report-v3.fig** was added to **Password Crackdown** by **Ines**
 
@@ -118,7 +118,7 @@ The recorded action is still an **upload**, despite it being described different
 each published headline.
 
 
-## Examples of activities
+## Examples of Activities
 
 <FeedStream :items="oneActivity" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
@@ -133,13 +133,13 @@ comment text. The document it was left on is what the sentence needs.
 
 ## Sample Feed
 
-### As a linear log
+### As a Linear Log
 
 <FeedStream :items="log" :grouped="false">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedStream>
 
-### As a grouped summary
+### As a Grouped Summary
 
 <FeedStream :items="summary" :grouped="false">
   <template #annotations="{ node }">

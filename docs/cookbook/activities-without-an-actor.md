@@ -1,4 +1,4 @@
-# Activities without an actor
+# Activities without an Actor
 
 An actor on every activity somebody performed, a party on every activity a
 system performed, and a sentence with no `:actor` when nobody did.
@@ -67,7 +67,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## The actor read from the request
+## The Actor Read from the Request
 
 An activity that omits `by()` uses ambient actor resolution. With the default
 configuration this is the authenticated user; a queue worker with no
@@ -97,7 +97,7 @@ carries it. For a known system use a [party](/deeper/parties#parties); when the
 actor is genuinely absent, [actorless voice](/deeper/parties#actorless-voice)
 provides a separate sentence for the same verb.
 
-## An explicitly unknown actor
+## An Explicitly Unknown Actor
 
 ```php
 Storyfeed::activity()
@@ -124,7 +124,7 @@ also override `Storyfeed::as(...)`. The one-call `Storyfeed::record(...,
 actor: null)` still uses ambient resolution; use an anonymous builder when
 null is intentional.
 
-## Who acted decides the sentence
+## Who Acted Decides the Sentence
 
 | the act was performed by | the actor is | the sentence |
 |---|---|---|
@@ -132,7 +132,7 @@ null is intentional.
 | a job, a command, an integration | a party, named | `:actor reported :object signed for :target` |
 | nobody | none | `:object expired in :target` |
 
-## A system is a party
+## A System Is a Party
 
 ```php
 Storyfeed::activity()
@@ -152,7 +152,7 @@ A job that publishes many activities scopes the block with
 `Storyfeed::as('System', …)` instead of naming the party on each call; see
 [Scoped attribution](/deeper/parties#scoped-attribution).
 
-## Nobody acted
+## Nobody Acted
 
 ```php
 Storyfeed::grammar([

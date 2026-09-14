@@ -1,4 +1,4 @@
-# An authoriser who is not an actor
+# An Authoriser Who Is Not an Actor
 
 Someone does a thing; someone else permits it. The doer belongs in the sentence.
 The authoriser belongs in the record, and usually nowhere else.
@@ -26,7 +26,7 @@ Storyfeed::feeds([
 ]);
 ```
 
-## The shape
+## The Shape
 
 This turns up wherever a system has both a person who does something and a person
 who permits it: moderation queues, dual control, four-eyes approval, a draft
@@ -36,7 +36,7 @@ someone else releases. The requirement is always the same sentence:
 
 Two halves that pull against each other, which is why the obvious answers fail.
 
-## First, check whether you already have it
+## First, Check Whether You Already Have It
 
 Before adding a row, look for the fact where it would naturally live. An approval
 usually happens *to* something — a photo, a document, a draft — and that thing
@@ -52,7 +52,7 @@ conversation can be entirely correct and still answer a question nobody needed
 answered — nothing false is said, which is what makes it harder to catch than a
 wrong claim.
 
-## Why not a role
+## Why Not a Role
 
 Activity Streams gives an activity seven roles, and none of them means
 *authorised by*. The vocabulary models the act and its direct participants; an
@@ -62,7 +62,7 @@ authorisation that is deliberately not an act has no term.
 covers an approver — but it already carries the contributor on the object, and a
 reader cannot tell which meaning was intended. One word, two meanings.
 
-## Why not a tag
+## Why Not a Tag
 
 `tag` is the near-miss, and it is instructive because it is *nearly* right. A
 `Person` is a legal tag, tags are annotations by construction, and it renders
@@ -75,14 +75,14 @@ audit one, and somebody needs to know what that person actually did.
 Under-specification is the wrong failure for a fact you are keeping because it
 might be needed.
 
-## Why not a `data` key
+## Why Not a `data` Key
 
 `data` is the app's opaque bag, and an entity in it is invisible to
 [`involving()`](/basics/reading#scoping). The participant index covers the seven roles and nothing else, so `'approved_by' =>
 $user->id` is recorded and **not** queryable — it fails the first half of the
 requirement while looking like it satisfies both.
 
-## Why an activity nobody reads
+## Why an Activity Nobody Reads
 
 Because it satisfies both halves with mechanisms that already ship.
 
@@ -120,7 +120,7 @@ decision somewhere tooling can see, so the next person to look finds *somebody
 decided this* instead of a gap that invites repair.
 :::
 
-## When the second query is too much
+## When the Second Query Is Too Much
 
 On a single record's timeline, or one photo's detail page, the lookup is one
 query on a page already doing several. On a dense list it is not.
@@ -130,7 +130,7 @@ at publish time **as well** — and keep the activity as the record of truth. Th
 `data` copy is a rendering convenience that may go stale; the activity is the
 thing `involving()` can still find, and the thing an audit answers from.
 
-## What the reader sees
+## What the Reader Sees
 
 Nothing, unless you draw it. The approval carries no headline template because it
 appears in no feed. The footnote is your renderer's, from the lookup above, and

@@ -1,4 +1,4 @@
-# The payload contract
+# The Payload Contract
 
 Payload **v1**. Every item arrives fully described, so a renderer holds zero
 domain knowledge. The payload is versioned independently of the package: no
@@ -17,7 +17,7 @@ serializers with the old ones maintained.
 }
 ```
 
-## Entity object
+## Entity Object
 
 Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`) is `null` or:
 
@@ -45,7 +45,7 @@ an override. `type`, `id`, `component` and `data` come from the snapshot.
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
 non-null; an empty `content` string is preserved.
 
-### Entity media
+### Entity Media
 
 ```jsonc
 "media": {
@@ -84,7 +84,7 @@ Group `exemplars` are ordinary entity objects and carry `media` the same way.
 An optional `attachment` carries `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Its default type is `Document`.
 
-### One payload, one feed
+### One Payload, One Feed
 
 A resolver's URL is authority for the feed named in its context and for no
 other. The name is declared by the feed registry, never read from the request,
@@ -98,7 +98,7 @@ a cache keyed only by cursor, a digest that reuses one feed's page for another
 audience, or a renderer that memoises entities across feeds by `type:id` serves
 one feed's authority to another's audience.
 
-## Activity node
+## Activity Node
 
 ```jsonc
 {
@@ -123,7 +123,7 @@ one feed's authority to another's audience.
 }
 ```
 
-## Group node
+## Group Node
 
 ```jsonc
 {
@@ -203,14 +203,14 @@ Renderers **must** handle it — see
 
 Token availability per axis is in
 [Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s
-pinned roles; the [singular fallback](/deeper/grammar#the-anti-lie-rule) can also
+pinned roles; the [singular fallback](/deeper/grammar#tokens-a-group-headline-may-use) can also
 keep a role token when the group contains exactly one distinct entity.
 
 The emitted template belongs to the node. Noun substitution can change it even
 when the grammar key is the same; cache rendered results by node rather than
 assuming one emitted template per grammar key.
 
-## Cursor semantics
+## Cursor Semantics
 
 - Opaque. Store and return them; they are not parseable.
 - Ordered by `published_at`, newest first.
@@ -218,7 +218,7 @@ assuming one emitted template per grammar key.
   `next_cursor` is. Follow while empty, bounded to a small hop count (five is a
   reasonable bound).
 
-## Sync token
+## Sync Token
 
 Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
@@ -230,7 +230,7 @@ moves a group past a live cursor and the next page is empty. Check the token
 before treating that response as the end of the feed. A client that ignores a
 changed token does not conform to the payload contract.
 
-## Degraded entities
+## Degraded Entities
 
 An entity with no snapshot arrives with `label: null` and `url: null` rather
 than being omitted. Activities are never withheld from the payload because an

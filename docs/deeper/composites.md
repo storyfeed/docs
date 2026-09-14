@@ -89,10 +89,10 @@ Composites are bursts by construction, so a composite's span is minutes. This
 is the mechanism that turns "10 upload rows" into one readable story.
 :::
 
-## Grammar for composites
+## Grammar for Composites
 
 Two registries, both required — see
-[Grammar](/deeper/grammar#composite-parents-need-verb):
+[Grammar](/deeper/grammar#composite-parents):
 
 ```php
 Storyfeed::aggregateGrammar(['composite.upload' => ':actor uploaded :count files to :target']);

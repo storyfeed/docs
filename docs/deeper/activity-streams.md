@@ -22,7 +22,7 @@ One read-only endpoint, off by default:
 Exposing an activity is an app decision — add auth or throttling via
 `middleware`.
 
-## Source, outcome and means
+## Source, Outcome and Means
 
 | role | AS2 meaning |
 |---|---|
@@ -32,7 +32,7 @@ Exposing an activity is an app decision — add auth or throttling via
 
 [Recording](/basics/recording#roles) shows how direction determines the role.
 
-## Serving a collection
+## Serving a Collection
 
 There is no collection route. `GET /{prefix}/feed` was removed in
 `v0.8.0-alpha.2`: it served every published activity in the system, unscoped and
@@ -64,10 +64,33 @@ before you publish anything externally.
 Documents reference `https://ns.storyfeed.dev`, which defines the package's own
 terms (currently `sf:verb`). It is add-only.
 
-## Verb mapping
+## Verb Mapping
 
-Verbs map to AS2 types via your enum's `activityType()` — see
-[Activity Types & Verbs](/basics/activity-types-and-verbs#activity-streams-types). The rules that matter:
+Each verb can map to an Activity Streams type, carried by the verb enum:
+
+```php
+use Storyfeed\ActivityStreams\ActivityType;
+
+enum ActivityVerb: string implements FeedVerb
+{
+    use AsFeedVerb;
+
+    case Upload = 'upload';
+    case Comment = 'comment';
+    case Confirm = 'confirm';
+
+    public function activityType(): ActivityType|string|null // [!code focus]
+    { // [!code focus]
+        return match ($this) { // [!code focus]
+            self::Upload => ActivityType::Add, // [!code focus]
+            self::Comment => ActivityType::Create, // [!code focus]
+            default => null, // [!code focus]
+        }; // [!code focus]
+    } // [!code focus]
+}
+```
+
+The rules that matter:
 
 - Mapping is **vocabulary transcription only**. It never throws and never gates
   recording or validation.
@@ -90,7 +113,7 @@ unchanged, or return `null` when absent. That is the round-trip subset:
 top-level `summary` and `replies` are dropped, and the reader does not
 reconstruct every storage attribute or reproduce the whole document.
 
-## Type overrides
+## Type Overrides
 
 Per-story:
 
