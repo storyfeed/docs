@@ -1,4 +1,4 @@
-# Activity Types & Verbs
+# Verbs
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -6,7 +6,9 @@ import { scenes } from '../.vitepress/theme/samples'
 const placed = scenes.order
 </script>
 
-Activity types are a way to classify activities, and are usually expressed as verbs denoting the action that occurred.
+A verb classifies an activity: it is the word your app uses for what happened.
+Recording one takes a plain string, and an app with a growing vocabulary
+eventually wants them typed.
 
 ## Using Strings
 

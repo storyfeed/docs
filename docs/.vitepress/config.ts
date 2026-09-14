@@ -100,7 +100,7 @@ export default defineConfig({
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
           { text: 'Recording Activities', link: '/basics/recording' },
-          { text: 'Activity Types & Verbs', link: '/basics/activity-types-and-verbs' },
+          { text: 'Verbs', link: '/basics/verbs' },
           { text: 'Headlines', link: '/basics/headlines' },
           { text: 'What an Activity Shows', link: '/basics/activity-content' },
           { text: 'Reading Feeds', link: '/basics/reading' },

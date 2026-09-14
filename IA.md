@@ -236,7 +236,10 @@ reading and drawing, a second audience, then renderer-specific pages.
 
 - ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
 - ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
-- ✅ Activity Types & Verbs — the same verb typed, as a `FeedVerb` enum (owner's page)
+- ✅ Verbs — the same verb typed, as a `FeedVerb` enum (owner's page). Named
+  `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
+  a definition Recording Activities now gives, and AS2.0 has no term "verb"
+  while every reader of an activity feed does
 - ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, glyph intents, translation
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
