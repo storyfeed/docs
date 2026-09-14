@@ -9,7 +9,7 @@ class DocumentUploaded implements PublishesToFeed // [!code focus]
 {
     public function __construct(public Document $document, public User $user) {}
 
-    public function toFeedStory(): ?PendingActivity // [!code focus]
+    public function toFeedActivity(): ?PendingActivity // [!code focus]
     { // [!code focus]
         return Storyfeed::activity() // [!code focus]
             ->by($this->user) // [!code focus]

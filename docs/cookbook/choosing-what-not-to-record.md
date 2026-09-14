@@ -5,13 +5,13 @@ verbs than your app has events.
 
 ```php
 // app/Events/DocumentUploaded.php
-public function toFeedStory(): ?PendingStory
+public function toFeedActivity(): ?PendingActivity
 {
     if ($this->document->status === 'draft') {
         return null;                                 // not an activity
     }
 
-    return PendingStory::inline('submit')
+    return PendingActivity::inline('submit')
         ->by($this->user)
         ->object($this->document)
         ->to($this->document->project);

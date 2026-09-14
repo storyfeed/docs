@@ -12,9 +12,9 @@ class DocumentSubmitted implements PublishesToFeed
 {
     public function __construct(public Document $document, public User $user) {}
 
-    public function toFeedStory(): ?PendingStory
+    public function toFeedActivity(): ?PendingActivity
     {
-        return PendingStory::inline('submit')
+        return PendingActivity::inline('submit')
             ->by($this->user)                    // the actor travels on the event
             ->object($this->document)
             ->to($this->document->project);

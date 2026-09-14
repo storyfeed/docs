@@ -23,6 +23,39 @@ If you published before v0.5, check for a duplicate column migration and
 deploying. Verify with `migrate:fresh` locally, never on the deploy.
 :::
 
+## Unreleased — Events Return a `PendingActivity`
+
+`PublishesToFeed::toFeedStory()` is now **`toFeedActivity()`**, and
+`Storyfeed\PendingStory` is gone: its `of()` and `inline()` constructors live
+on `PendingActivity`, which is what `Storyfeed::activity()` returns. A Story is
+the blueprint; what an event puts on the feed is an activity, so the method and
+the type are named for what they return, and neither old name has an alias.
+
+```php
+<?php
+
+namespace App\Events;
+
+use Storyfeed\Contracts\PublishesToFeed;
+use Storyfeed\PendingActivity;
+use Storyfeed\PendingStory; // [!code --]
+
+class DocumentUploaded implements PublishesToFeed
+{
+    public function __construct(public Document $document, public User $user) {}
+
+    public function toFeedStory(): ?PendingStory // [!code --]
+    public function toFeedActivity(): ?PendingActivity // [!code ++]
+    {
+        return PendingStory::of(DocumentWasUploaded::class) // [!code --]
+        return PendingActivity::of(DocumentWasUploaded::class) // [!code ++]
+            ->by($this->user)
+            ->object($this->document)
+            ->to($this->document->project);
+    }
+}
+```
+
 ## v0.8.0-alpha.2 — `query()` Callbacks Are Nested
 
 Two behaviour changes. Neither has a rename to chase; both change what a read

@@ -40,16 +40,16 @@ From an event, name the class:
 
 ```php
 // app/Events/DocumentUploaded.php
-public function toFeedStory(): ?PendingStory
+public function toFeedActivity(): ?PendingActivity
 {
-    return PendingStory::of(DocumentWasUploaded::class)
+    return PendingActivity::of(DocumentWasUploaded::class)
         ->by($this->user)
         ->object($this->document)
         ->to($this->document->project);
 }
 ```
 
-`PendingStory::of()` throws for a class that is not registered. Registration
+`PendingActivity::of()` throws for a class that is not registered. Registration
 is in [Story classes](/basics/stories).
 
 ## Where Drift Comes from

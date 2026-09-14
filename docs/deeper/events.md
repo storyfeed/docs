@@ -42,7 +42,7 @@ Return `null` to publish nothing, when only some instances belong on the feed:
 
 ```php
 // app/Events/DocumentUploaded.php
-public function toFeedStory(): ?PendingActivity
+public function toFeedActivity(): ?PendingActivity
 {
     if ($this->document->isDraft()) { // [!code focus]
         return null; // [!code focus]
@@ -56,7 +56,7 @@ public function toFeedStory(): ?PendingActivity
 ```
 
 ::: tip
-The name is `toFeedStory()`, not `toFeed()`, so a model can be both `Feedable`
+The name is `toFeedActivity()`, not `toFeed()`, so a model can be both `Feedable`
 and publishing without a collision.
 :::
 
