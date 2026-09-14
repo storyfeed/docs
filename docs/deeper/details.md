@@ -1,4 +1,4 @@
-# Details
+# Activity Details
 
 A detail is app data with a conventional form. The app writes its own block once,
 at record time; any renderer that recognises the form draws it beneath the
@@ -210,11 +210,8 @@ writing its own owes nothing to any of them.
 | `Storyfeed/Markdown` | authored body text, as source | `content`, `mediaType` |
 | `Storyfeed/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
 
-They lived in `storyfeed/filament` under `storyfeed-filament/*` names until they
-graduated. **A row already written carries the old name**, which is what
-`storyfeed:rename-details` exists for — and why it reshapes rather than renames:
-two vocabularies both had a `change`, and they stored different shapes, so a
-rename alone would have blanked every change row.
+A row written under an earlier form name keeps that name;
+`storyfeed:rename-details` reshapes it to the current vocabulary.
 
 ## Unknown Forms in a Renderer
 

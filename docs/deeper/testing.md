@@ -60,7 +60,7 @@ StorySurface::assertNoUnwiredSurface(except: [Client::class]);
 That one flags models that appear in your feed but that nothing publishes
 about. It is fake-aware, and with no data it reports nothing to diagnose.
 
-## `optimize` Before a Test Run Wipes a Seeded Database
+## Clearing the Cached Manifest Before Tests
 
 ::: warning
 `php artisan optimize` caches config, and cached config overrides

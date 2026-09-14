@@ -10,7 +10,7 @@ Storyfeed::activity()->by($user)->action('upload', $document)->publish();       
 ```
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'rename' => ActivityType::Update,
     'upload' => ActivityType::Add,

@@ -85,7 +85,7 @@ reimplementing.
 | `storyfeed:clear` | removes the cached manifest |
 
 `optimize` caches config, which can drop a seeded database on the next test run
-— see [Testing](/deeper/testing#optimize-before-a-test-run-wipes-a-seeded-database).
+— see [Testing](/deeper/testing#clearing-the-cached-manifest-before-tests).
 
 ## Generators
 

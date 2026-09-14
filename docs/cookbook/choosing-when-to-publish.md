@@ -51,7 +51,7 @@ const submitted = activity({
 <FeedStream :items="[submitted]" :grouped="false" />
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'submit' => ActivityType::Offer,
     'approve' => ActivityType::Accept,
@@ -94,9 +94,9 @@ class DocumentApproved implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return PendingActivity::inline('approve')
+        return Storyfeed::activity()
             ->by($this->user)
-            ->object($this->document)
+            ->action('approve', $this->document)
             ->to($this->document->project);
     }
 }

@@ -11,9 +11,9 @@ public function toFeedActivity(): ?PendingActivity
         return null;                                 // not an activity
     }
 
-    return PendingActivity::inline('submit')
+    return Storyfeed::activity()
         ->by($this->user)
-        ->object($this->document)
+        ->action('submit', $this->document)
         ->to($this->document->project);
 }
 ```
@@ -22,7 +22,7 @@ Returning `null` publishes nothing. See
 [Publishing from events](/deeper/events).
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'submit' => ActivityType::Offer,
     'comment' => ActivityType::Create,

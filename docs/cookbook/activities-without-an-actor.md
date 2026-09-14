@@ -58,7 +58,7 @@ const expired = activity({
 <FeedStream :items="[submitted]" :grouped="false" />
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
     'submit' => ActivityType::Offer,
     'sign' => ActivityType::Accept,

@@ -1,8 +1,8 @@
 # Queues
 
-A queued listener that receives frozen facts after the commit, a queued job
-that records the moment the fact happened and the person who caused it, and a
-list of what has been demonstrated on a real queue and what has not.
+A queued listener receives the facts as they were at commit time. A queued
+job records the moment the fact happened and the person who caused it. When
+you are done, a worker publishes the same activity a request would have.
 
 <script setup>
 import { who, where, doc, activity, group } from '../.vitepress/theme/samples'
@@ -364,28 +364,3 @@ publishes serialized on a shared `feed_snapshots` row when the members had a
 `Feedable` participant in common, and the stale result appeared only when they
 did not. A group that is wrong for up to an hour is the cost today; a feed
 that must not show it can run `storyfeed:curate` on a shorter schedule.
-
-## Demonstrated Behaviour
-
-Everything above marked as checked ran as real serialized jobs on the
-`database` queue driver, popped and fired by Laravel's own worker code.
-
-| Demonstrated |  |
-|---|---|
-| snapshot events survive the queue, and survive the trickle pruning their activity | database driver |
-| jobs are pushed after the outermost commit; a rollback pushes nothing | database driver |
-| the transported actor, its precedence, its opt-out, and no leak between two jobs on one worker | database driver, one worker process |
-| a party, the fallback and `->anonymously()` stay distinct on a worker | database driver |
-| the grouping day follows `published_at`, and the object's label follows the job | database driver |
-| one batch per burst and one `BatchClosed` per batch across two overlapping workers | two processes, PostgreSQL 18; batches also on MariaDB 10.11 |
-| the stale curation winner above | two processes, PostgreSQL 18 and MariaDB 10.11 |
-| a worker renders the feed and resolves `feedMedia()` with no request | database driver |
-
-| Not Demonstrated |  |
-|---|---|
-| MySQL | no run; MariaDB's `REPEATABLE READ` behaviour above is the closest evidence |
-| two first-ever publishes by one actor at the same moment | no open batch row exists yet to lock; the shared snapshot row serialized the exercised case, and a case with no shared row has not been run |
-| a publish overlapping a batch close | not run |
-| Redis, SQS, Horizon | the serialized payload is driver-independent, but only the database driver has been run |
-| a long-lived `queue:work` daemon across many jobs | the two-job isolation check ran in one process from a CLI harness, not a separately booted daemon |
-| exactly-once delivery | not a property of any queue; a retried job publishes again, as the table under retries says |

@@ -38,7 +38,7 @@ const client = team.filter(node => ['upload', 'approve', 'complete'].includes(no
 A feed is a closure over the builder, registered at boot:
 
 ```php
-// AppServiceProvider::boot()
+// app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 

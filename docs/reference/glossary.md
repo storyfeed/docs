@@ -52,7 +52,6 @@ neighbours are usually what you actually wanted.
 | **snapshot** | cached label, data, and body fields per entity | a copy of your model |
 | **trickle** | the sweep that fills snapshots recording could not | a cache warmer you must run to read |
 | **[healer](/deeper/healing)** | an app-declared policy retiring stories whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
-| **removal evidence** | a record that a verb-plus-object key was emptied on purpose | a copy of what was removed |
 
 ::: tip One word, one meaning
 Two pairs are kept deliberately apart, and mixing them is the commonest way to

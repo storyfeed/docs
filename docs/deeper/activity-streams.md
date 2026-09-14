@@ -35,25 +35,17 @@ Exposing an activity is an app decision — add auth or throttling via
 
 ## Serving a Collection
 
-There is no collection route. `GET /{prefix}/feed` was removed in
-`v0.8.0-alpha.2`: it served every published activity in the system, unscoped and
-with no verb allowlist, which is the opposite of what a
-[named feed](/basics/named-feeds) is for. It returns when a named feed can back
-it.
-
-The collection **shape** is unaffected: `CollectionSerializer::collection()`
-still emits `OrderedCollection` / `OrderedCollectionPage` with `partOf`, an
-opaque `next` cursor and no `totalItems`. It builds no query and owns no IRI —
-both are arguments:
+There is no collection route: which activities a collection contains is a
+[named feed](/basics/named-feeds)'s decision, not an endpoint's.
+`CollectionSerializer::collection()` emits the shape, `OrderedCollection` /
+`OrderedCollectionPage` with `partOf`, an opaque `next` cursor and no
+`totalItems`. It builds no query and owns no IRI; both are arguments:
 
 ```php
 collection(CursorPaginator $page, string $iri, ?string $cursor = null): array
 ```
 
-A cursor-paginated set of activities, and the IRI they live at. Which activities
-is the caller's decision, which is why the route was removed rather than
-rescoped: nothing yet hands a named feed's activities to a serializer, and until
-something does, the choice would be made by an endpoint rather than by a feed.
+A cursor-paginated set of activities, and the IRI they live at.
 
 ::: warning
 The prefix mints activity IRIs, so changing it changes document ids. Pick one
