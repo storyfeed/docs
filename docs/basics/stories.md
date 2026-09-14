@@ -45,6 +45,8 @@ const examples = [
 The verb and the headline it renders with, in one class:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 use App\Models\Document;
@@ -95,6 +97,8 @@ Storyfeed::stories([
 ## Adding an Icon
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class DocumentWasUploaded extends Story
@@ -125,6 +129,8 @@ Three uploads in a row read better as one line. `groups()` gives the story a
 plural headline for that case:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 use Storyfeed\Grouping\Group; // [!code focus]
@@ -189,6 +195,8 @@ The object is the comment, but its label is the comment text, so the sentence
 names the target:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class CommentWasLeft extends Story
@@ -212,6 +220,8 @@ class CommentWasLeft extends Story
 A task has no target; the sentence ends at the object:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class TaskWasCompleted extends Story
@@ -235,6 +245,8 @@ class TaskWasCompleted extends Story
 A project is created for a client, so the client is the target:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class ProjectWasCreated extends Story

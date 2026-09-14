@@ -34,6 +34,8 @@ In practice, passing loose strings may lead to typos and drift as an application
 common pattern is to define your verbs within an enum,
 
 ```php
+<?php
+
 namespace App\Enums;
 
 enum ActivityVerb: string
@@ -47,6 +49,8 @@ enum ActivityVerb: string
 which can then be decorated with Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface,
 
 ```php
+<?php
+
 namespace App\Enums;
 
 use Storyfeed\Concerns\AsFeedVerb; // [!code focus]

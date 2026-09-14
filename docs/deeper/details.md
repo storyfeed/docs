@@ -42,6 +42,8 @@ the array that detail produces.
 ## Writing a Form
 
 ```php
+<?php
+
 namespace App\Feed;
 
 use Storyfeed\Concerns\HasPayload;

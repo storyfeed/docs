@@ -4,6 +4,8 @@ An actor on every activity somebody performed, a party on every activity a
 system performed, and a sentence with no `:actor` when nobody did.
 
 ```php
+<?php
+
 namespace App\Events;
 
 class DocumentSubmitted implements PublishesToFeed
@@ -76,6 +78,8 @@ configuration this is the authenticated user; a queue worker with no
 authenticated user, custom resolver, or fallback party resolves to null:
 
 ```php
+<?php
+
 namespace App\Listeners;
 
 class RecordSubmission implements ShouldQueue

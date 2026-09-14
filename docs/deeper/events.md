@@ -15,6 +15,8 @@ const uploaded = activity({ id: 'ev1', verb: 'upload', glyph: 'file-up',
 ## From a Listener
 
 ```php
+<?php
+
 namespace App\Events;
 
 class DocumentUploaded

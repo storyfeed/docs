@@ -70,6 +70,8 @@ terms (currently `sf:verb`). It is add-only.
 Each verb can map to an Activity Streams type, carried by the verb enum:
 
 ```php
+<?php
+
 namespace App\Enums;
 
 use Storyfeed\ActivityStreams\ActivityType;

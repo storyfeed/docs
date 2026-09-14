@@ -4,6 +4,8 @@ Every verb the app publishes has a headline, every headline has a publisher,
 and both are declared in the same file.
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class DocumentWasUploaded extends Story
@@ -79,6 +81,8 @@ Rows recorded under a retired verb keep their sentence only while the verb
 stays registered:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class DocumentWasPrinted extends Story

@@ -149,6 +149,8 @@ An aggregate sentence alone cannot preserve each member's content.
 Both sentences live in one class, singular first:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 class DocumentWasUploaded extends Story

@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Listeners;
 
 class RecordUpload

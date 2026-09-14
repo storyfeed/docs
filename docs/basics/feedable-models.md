@@ -49,6 +49,8 @@ const scoped = [
 a link will need later.
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -83,6 +85,8 @@ entity renders at full weight with no link.
 entity links.
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -189,6 +193,8 @@ snapshot carries the key and the facts a link needs, and the resolver links
 per surface and never throws.
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;

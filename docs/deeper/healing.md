@@ -39,6 +39,8 @@ This example uses a synthetic `asset_reference` object backed by a hard-deleting
 `assets` table. The alias and the source lookup are app-owned.
 
 ```php
+<?php
+
 namespace App\Storyfeed;
 
 use Illuminate\Support\Facades\DB;

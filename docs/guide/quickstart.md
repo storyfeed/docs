@@ -25,6 +25,8 @@ Anything that appears in the feed — actor, object, target, context, origin, re
 implements `Feedable`:
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -88,6 +90,8 @@ One class per meaningful activity type — the verb, the headline, the icon, and
 how it groups:
 
 ```php
+<?php
+
 namespace App\Stories;
 
 use App\Models\Document;

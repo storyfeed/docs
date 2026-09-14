@@ -126,6 +126,8 @@ A closure runs at boot, before any project exists, so it can carry verbs but
 not a subject. A class takes its subject as a constructor argument:
 
 ```php
+<?php
+
 namespace App\Feeds;
 
 use App\Models\Project;
@@ -175,6 +177,8 @@ ClientFeed::make($project)->only(['upload'])->summary();         // fine: narrow
 A feed with no subject declares no constructor and no `scope()`:
 
 ```php
+<?php
+
 namespace App\Feeds;
 
 class TeamFeed extends Feed

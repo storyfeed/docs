@@ -4,6 +4,8 @@ A publish site that fires when a status changes and stays silent on every
 other save. A feed that reads as what happened, not as what was edited.
 
 ```php
+<?php
+
 namespace App\Observers;
 
 class DocumentObserver
@@ -82,6 +84,8 @@ in [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on
 When the transition already has a domain event, the event publishes it:
 
 ```php
+<?php
+
 namespace App\Events;
 
 class DocumentApproved implements PublishesToFeed

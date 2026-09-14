@@ -81,6 +81,8 @@ this contract (and register its `comment` morph alias as in
 [Feedable models](/basics/feedable-models)):
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;

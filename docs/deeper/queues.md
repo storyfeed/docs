@@ -49,6 +49,8 @@ dispatch them before your outermost transaction commits.
 ## A Queued Listener
 
 ```php
+<?php
+
 namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -130,6 +132,8 @@ declares its own boundary, so the behaviour is readable from the event class.
 ## A Job That Publishes
 
 ```php
+<?php
+
 namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -230,6 +234,8 @@ worker the process is every job that worker runs from then on.
 ## The Actor
 
 ```php
+<?php
+
 namespace App\Listeners;
 
 class NotifyTeam implements ShouldQueue

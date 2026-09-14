@@ -41,6 +41,8 @@ node with `axis: 'composite'`. Serialized to
 Mark a model `Collectable` and runs of it bundle themselves:
 
 ```php
+<?php
+
 namespace App\Models;
 
 use Storyfeed\Contracts\Collectable;

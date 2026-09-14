@@ -183,7 +183,8 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     class is a name and nothing else. Models under `App\Models`, stories under
     `App\Stories`, feeds under `App\Feeds`, events, listeners, observers and
     enums under their Laravel-conventional namespaces; a package type under
-    its real one. The namespace line precedes the `use` block.
+    its real one. The snippet opens with `<?php`, then the namespace, then the
+    `use` block, so it reads as the file it is.
     **A snippet that is not a class opens with a comment naming where it
     goes:** `// config/storyfeed.php`, `// app/Providers/AppServiceProvider.php,
     boot()`, `// routes/console.php`, `// where the fact happens: a controller,
