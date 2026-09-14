@@ -67,21 +67,26 @@ const strip = computed(() => {
 });
 
 /**
- * The details this node carries, activity-level first, then each entity's.
+ * The details this node carries: the activity's own, then the object's.
  *
  * A detail lands at an APP-CHOSEN key inside the app's own map, so finding one
  * means walking `data` rather than reading a fixed key. An unrecognised form
  * yields nothing and the activity renders as it always would, minus the block.
+ *
+ * THE OBJECT IS THE ONLY ROLE READ, and that is a renderer's choice rather than
+ * a rule of the payload — every entity may carry a detail, whatever role it
+ * fills. Reading them all is what this did until the cost showed itself: an
+ * actor's detail draws again under every row that person acts in, so one cook
+ * and fifty rows is the same card fifty times. The object is what a row is
+ * about, so its detail is the one that belongs beneath the sentence.
  */
 const details = computed(() => [
     ...detailsIn(props.item.data),
-    ...['object', 'target', 'context', 'actor'].flatMap((role) =>
-        detailsIn((props.item as any)[role]?.data).map((found) => ({
-            ...found,
-            entityLabel: (props.item as any)[role]?.label ?? null,
-            entityMedia: (props.item as any)[role]?.media ?? null,
-        })),
-    ),
+    ...detailsIn((props.item as any).object?.data).map((found) => ({
+        ...found,
+        entityLabel: (props.item as any).object?.label ?? null,
+        entityMedia: (props.item as any).object?.media ?? null,
+    })),
 ]);
 
 /**
