@@ -47,7 +47,7 @@ written. Start with the plainest version, a line of text:
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: "Order #{$this->reference}",
+        label: "Order #{$this->reference}",
         body: $this->summary(),
     );
 }
@@ -65,7 +65,7 @@ use Storyfeed\Body\Excerpt;
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: "Order #{$this->reference}",
+        label: "Order #{$this->reference}",
         body: Excerpt::make($this->summary(), from: 'Ticket'),
     );
 }
@@ -73,18 +73,18 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[asExcerpt]" />
 
-Those are lines to a reader and one string to a renderer. `Fields` keeps them
+Those are lines to a reader and one string to a renderer. `KeyValue` keeps them
 apart as data:
 
 ```php
 // app/Models/Order.php
-use Storyfeed\Body\Fields;
+use Storyfeed\Body\KeyValue;
 
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: "Order #{$this->reference}",
-        body: Fields::make($this->lines
+        label: "Order #{$this->reference}",
+        body: KeyValue::make($this->lines
             ->mapWithKeys(fn (OrderLine $line) => [
                 "{$line->quantity} × {$line->item->name}" => $line->total->format(),
             ])
@@ -198,7 +198,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         key: $this->name,
-        body: [Excerpt::make($this->description), Fields::make(['Station' => $this->station])],
+        body: [Excerpt::make($this->description), KeyValue::make(['Station' => $this->station])],
     );
 }
 ```
@@ -222,7 +222,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
         url: route('menu.show', $context->data('id')),
-        body: Fields::make(['Portions left' => $context->model()?->portions_left]),
+        body: KeyValue::make(['Portions left' => $context->model()?->portions_left]),
     );
 }
 ```
@@ -236,7 +236,7 @@ A resolver runs for the url whether or not a body is wanted, so a body that
 costs something is better handed over unbuilt:
 
 ```php
-body: fn () => Fields::make(['Portions left' => $context->model()?->portions_left]),
+body: fn () => KeyValue::make(['Portions left' => $context->model()?->portions_left]),
 ```
 
 A closure is called only on a read that draws bodies, and not at all on one that
@@ -245,7 +245,7 @@ the same one query per class as everything else and never a query per row. A
 closure that throws is reported once and its body is absent, exactly as a
 resolver that throws leaves the url null.
 
-Hand over a value when it is free and a closure when it is not. A `Fields` block
+Hand over a value when it is free and a closure when it is not. A `KeyValue` block
 built from the snapshot costs nothing to build eagerly; one that reaches for the
 live row does not.
 

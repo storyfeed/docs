@@ -27,7 +27,7 @@ const withExcerpt = activity({
     text: INSTRUCTIONS.first, from: 'Instructions', truncated: false }] },
 })
 
-const withFields = activity({
+const withKeyValue = activity({
   id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
   actor: who.cook,
@@ -106,8 +106,8 @@ use Storyfeed\Body\Excerpt;
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: "Order #{$this->reference}",
-        data: Excerpt::make($this->instructions, from: 'Instructions'), // [!code focus]
+        label: "Order #{$this->reference}",
+        body: Excerpt::make($this->instructions, from: 'Instructions'), // [!code focus]
     );
 }
 ```
@@ -120,23 +120,23 @@ belongs at the line that records an activity:
 
 ```php
 // app/Models/Order.php
-use Storyfeed\Body\Fields;
+use Storyfeed\Body\KeyValue;
 
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: "Order #{$this->reference}",
-        data: Fields::make([ // [!code focus]
+        label: "Order #{$this->reference}",
+        body: KeyValue::make([ // [!code focus]
             'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
             'Items' => $this->items->count(), // [!code focus]
-            'Reference' => Fields::verbatim($this->reference), // [!code focus]
+            'Reference' => KeyValue::verbatim($this->reference), // [!code focus]
             'Table' => ['value' => $this->table, 'missing' => 'not seated'], // [!code focus]
         ]), // [!code focus]
     );
 }
 ```
 
-<FeedExample :items="[withFields]" />
+<FeedExample :items="[withKeyValue]" />
 
 A value the row has no answer for is **silent by default**. Give it a word
 only where the emptiness is itself the answer, per row or for the whole block
@@ -153,7 +153,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         key: $this->name,
-        data: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name), // [!code focus]
+        body: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name), // [!code focus]
     );
 }
 ```
@@ -195,7 +195,7 @@ the same rule as an unknown glyph or an unrecognised detail form.
 
 | Form | Shows |
 |---|---|
-| `Fields` | labelled rows |
+| `KeyValue` | labelled pairs |
 | `Excerpt` | a passage, and where it came from |
 | `Change` | before and after, for one field or several |
 | `File` | what an artefact is and how big |
