@@ -410,7 +410,7 @@ a.sf-entity:hover {
 }
 /* A mono value is compared, not read — an address, an id, a user agent. One
    line and an ellipsis, with the whole string on `title`. */
-.sf-facts__value--mono {
+.sf-facts__value--verbatim {
     font-family: var(--vp-font-family-mono, ui-monospace, monospace);
     font-size: 12.5px;
     overflow: hidden;

@@ -1,4 +1,4 @@
-import { USERS, PLACES, DISHES, ORDERS, DEVICES, PHOTOS, PARTIES, NOTES } from './manifest'
+import { USERS, PLACES, DISHES, ORDERS, DEVICES, PHOTOS, PARTIES, NOTES, TICKET } from './manifest'
 
 /**
  * Payload-shaped sample data for the docs.
@@ -89,6 +89,51 @@ export const photos: Record<string, any> = build(PHOTOS, photo)
 export const notes: Record<string, any> = build(NOTES, note)
 /** Plain strings, not entities: an order's own text, carried on its snapshot. */
 export { INSTRUCTIONS } from './manifest'
+
+/**
+ * An order's lines as `Storyfeed/Detail/Fields` rows, priced and totalled.
+ *
+ * Built from the manifest rather than written into a page, so renaming a dish
+ * moves every ticket on the site with it.
+ */
+/**
+ * The same lines as authored text, one per line.
+ *
+ * A reader sees a ticket; a renderer sees one string. That gap is the whole
+ * argument for a structured form, so the text version is written as well as
+ * text can be written rather than deliberately badly.
+ */
+export function ticketText(key: string) {
+  const money = (amount: number) => `$${amount.toFixed(2)}`
+  const lines = TICKET[key] ?? []
+
+  return [
+    ...lines.map(
+      (line) => `${line.qty} × ${DISHES[line.dish as keyof typeof DISHES]} — ${money(line.qty * line.unit)}`,
+    ),
+    `Total — ${money(lines.reduce((sum, line) => sum + line.qty * line.unit, 0))}`,
+  ].join('\n')
+}
+
+export function ticketRows(key: string) {
+  const money = (amount: number) => `$${amount.toFixed(2)}`
+  const lines = TICKET[key] ?? []
+
+  return [
+    ...lines.map((line) => ({
+      label: `${line.qty} × ${DISHES[line.dish as keyof typeof DISHES]}`,
+      value: money(line.qty * line.unit),
+      verbatim: false,
+      missing: null,
+    })),
+    {
+      label: 'Total',
+      value: money(lines.reduce((sum, line) => sum + line.qty * line.unit, 0)),
+      verbatim: false,
+      missing: null,
+    },
+  ]
+}
 /** A party has no page of its own. */
 export const party: Record<string, any> = build(PARTIES, (id, label) => entity('storyfeed.party', id, label, null))
 

@@ -32,10 +32,10 @@ const withFields = activity({
   headline_template: ':actor confirmed :object',
   actor: who.cook,
   object: { ...orders.first, data: { $detail: 'Storyfeed/Detail/Fields', $v: 1, rows: [
-    { label: 'Pickup', value: '7:00 pm', mono: false, missing: null },
-    { label: 'Items', value: '3', mono: false, missing: null },
-    { label: 'Reference', value: 'ORD-1042-8KQ', mono: true, missing: null },
-    { label: 'Table', value: null, mono: false, missing: 'not seated' },
+    { label: 'Pickup', value: '7:00 pm', verbatim: false, missing: null },
+    { label: 'Items', value: '3', verbatim: false, missing: null },
+    { label: 'Reference', value: 'ORD-1042-8KQ', verbatim: true, missing: null },
+    { label: 'Table', value: null, verbatim: false, missing: 'not seated' },
   ] } },
 })
 
@@ -129,7 +129,7 @@ public function toFeed(): FeedEntity
         data: Fields::make([ // [!code focus]
             'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
             'Items' => $this->items->count(), // [!code focus]
-            'Reference' => Fields::mono($this->reference), // [!code focus]
+            'Reference' => Fields::verbatim($this->reference), // [!code focus]
             'Table' => ['value' => $this->table, 'missing' => 'not seated'], // [!code focus]
         ]), // [!code focus]
     );
@@ -141,7 +141,7 @@ public function toFeed(): FeedEntity
 A value the row has no answer for is **silent by default**. Give it a word
 only where the emptiness is itself the answer, per row or for the whole block
 with `missing:`. A value that is compared rather than read, a reference or an
-address, is marked `mono` so it gets one line and an ellipsis.
+address, is marked `verbatim` so it gets one line and an ellipsis.
 
 ## What a File Is
 

@@ -20,8 +20,8 @@ const text = (value: unknown) => (typeof value === 'boolean' ? (value ? 'Yes' : 
             <dt class="sf-facts__label">{{ row.label }}</dt>
             <dd
                 class="sf-facts__value"
-                :class="{ 'sf-facts__value--mono': row.mono }"
-                :title="row.mono && typeof row.value === 'string' ? row.value : undefined"
+                :class="{ 'sf-facts__value--verbatim': row.verbatim }"
+                :title="row.verbatim && typeof row.value === 'string' ? row.value : undefined"
             >
                 <span v-if="row.value === null || row.value === ''" class="sf-facts__value--absent">{{ row.missing }}</span>
                 <template v-else>{{ text(row.value) }}</template>
