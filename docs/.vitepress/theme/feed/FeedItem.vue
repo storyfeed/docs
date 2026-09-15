@@ -4,7 +4,7 @@ import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedThread from './FeedThread.vue';
-import { formsIn } from './body';
+import { formsIn, resolve } from './body';
 import FeedMedia from './FeedMedia.vue';
 import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
@@ -80,14 +80,25 @@ const strip = computed(() => {
  * and fifty rows is the same card fifty times. The object is what a row is
  * about, so its detail is the one that belongs beneath the sentence.
  */
-const forms = computed(() => [
-    ...formsIn(props.item.data),
-    ...formsIn((props.item as any).object?.data).map((found) => ({
+const forms = computed(() => {
+    const object = (props.item as any).object;
+
+    const attributed = (found: any) => ({
         ...found,
-        entityLabel: (props.item as any).object?.label ?? null,
-        entityMedia: (props.item as any).object?.media ?? null,
-    })),
-]);
+        entityLabel: object?.label ?? null,
+        entityMedia: object?.media ?? null,
+    });
+
+    return [
+        // The activity's own map, still walked: an app may put a form at a key
+        // of its own and this kit will find it.
+        ...formsIn(props.item.data),
+        // The object's `body` — the slot — read directly, because that is the
+        // whole point of it being a slot and not a key somebody chose.
+        ...resolve(object?.body).map(attributed),
+        ...formsIn(object?.data).map(attributed),
+    ];
+});
 
 /**
  * The row's own picture: the object's preview, or the object itself when the

@@ -49,3 +49,21 @@ export function formsIn(data: unknown, depth = 4): ResolvedDetail[] {
 
     return Object.values(map).flatMap((value) => formsIn(value, depth - 1))
 }
+
+/**
+ * The forms in an entity's `body` slot, in the order the payload carries them.
+ *
+ * Unlike {@link formsIn} there is no walking: `body` is core's slot and holds
+ * a list of forms, so a renderer reads it rather than searching for it. An
+ * unrecognised name still draws nothing, which is the same rule and the same
+ * reason.
+ */
+export function resolve(body: unknown): ResolvedDetail[] {
+    if (!Array.isArray(body)) return []
+
+    return body.flatMap((form) => {
+        const component = FORMS[(form ?? {})['$body']]
+
+        return component ? [{ component, payload: form }] : []
+    })
+}

@@ -23,20 +23,20 @@ const withExcerpt = activity({
   id: 'ac3', verb: 'ready', glyph: 'utensils', published_at: at,
   headline_template: ':actor marked :object ready',
   actor: who.cook,
-  object: { ...orders.first, data: { $body: 'Storyfeed/Body/Excerpt', $v: 1,
-    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false } },
+  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
+    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false }] },
 })
 
 const withFields = activity({
   id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
   actor: who.cook,
-  object: { ...orders.first, data: { $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
     { key: 'Pickup', value: '7:00 pm', verbatim: false, missing: null },
     { key: 'Items', value: '3', verbatim: false, missing: null },
     { key: 'Reference', value: 'ORD-1042-8KQ', verbatim: true, missing: null },
     { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
-  ] } },
+  ] }] },
 })
 
 const openInPlace = activity({
@@ -44,7 +44,7 @@ const openInPlace = activity({
   published_at: '2026-08-14T10:05:00.000000Z',
   headline_template: ':actor added :object to :target',
   actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '9', key: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
+  object: { type: 'photo', id: '9', label: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
     attributes: {}, modal: true, component: null, data: {}, media: null },
 })
 
@@ -52,10 +52,10 @@ const withFile = activity({
   id: 'ac6', verb: 'menu.photo_published', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
   headline_template: ':actor added a photo of :target',
   actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '1', key: 'chicken-curry.jpg', url: '/photos/1',
+  object: { type: 'photo', id: '1', label: 'chicken-curry.jpg', url: '/photos/1',
     attributes: {}, modal: false, component: null, media: null,
-    data: { $body: 'Storyfeed/Body/File', $v: 1,
-      name: 'chicken-curry.jpg', size: 284160, mediaType: 'image/jpeg' } },
+    body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+      name: 'chicken-curry.jpg', size: 284160, mediaType: 'image/jpeg' }] },
 })
 </script>
 

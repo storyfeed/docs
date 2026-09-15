@@ -32,6 +32,7 @@ export function entity(
     component: null,
     data: {},
     media: null,
+    body: null,
     ...over,
   }
 }
