@@ -20,7 +20,7 @@ rule below was paid for by a renderer that got it wrong first.
 | time | `published_at` | one timestamp, in the reader's zone |
 | thread | `thread` | what someone said, quoted on this activity |
 | media | `object.media.preview`, `object.media.url` | the object's picture, at the feed's scale |
-| detail | a `$detail` key anywhere in `data` | one recognised form, drawn by whatever draws that form |
+| detail | a `$body` key anywhere in `data` | one recognised form, drawn by whatever draws that form |
 | tiles | a group's `exemplars`, `distinct` | a sample of a collapsed group's pictures |
 | members | `children`, `count` | the group's own rows, when a reader opens it |
 

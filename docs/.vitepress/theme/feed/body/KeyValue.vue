@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-/** `Storyfeed/Detail/Fields` — labelled rows. A row with no value is dropped
+/** `Storyfeed/Body/KeyValue` — labelled rows. A row with no value is dropped
  * unless the form supplied a word for its absence. */
 const props = defineProps<{ payload: Record<string, any> }>()
 
 const rows = computed(() =>
-    (props.payload.rows ?? []).filter(
+    (props.payload.items ?? []).filter(
         (row: any) => !(row.value === null || row.value === '') || row.missing != null,
     ),
 )
@@ -16,8 +16,8 @@ const text = (value: unknown) => (typeof value === 'boolean' ? (value ? 'Yes' : 
 
 <template>
     <dl v-if="rows.length" class="sf-facts">
-        <div v-for="row in rows" :key="row.label" class="sf-facts__row">
-            <dt class="sf-facts__label">{{ row.label }}</dt>
+        <div v-for="row in rows" :key="row.key" class="sf-facts__row">
+            <dt class="sf-facts__label">{{ row.key }}</dt>
             <dd
                 class="sf-facts__value"
                 :class="{ 'sf-facts__value--verbatim': row.verbatim }"

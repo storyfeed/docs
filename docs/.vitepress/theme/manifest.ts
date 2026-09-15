@@ -97,6 +97,17 @@ export const NOTES = {
   pickup: 'Can I pick this up at six instead of seven?',
 }
 
+/** The ticket: what was ordered, by dish key, with the unit price the order was
+ * placed at. Settled when the order was placed and never moved since, which is
+ * why it belongs on the snapshot rather than the resolver. */
+export const TICKET: Record<string, { dish: string; qty: number; unit: number }[]> = {
+  first: [
+    { dish: 'chickenCurry', qty: 1, unit: 14.5 },
+    { dish: 'kottu', qty: 1, unit: 15.5 },
+    { dish: 'roti', qty: 2, unit: 3 },
+  ],
+}
+
 /** Instructions: what a customer typed into the order itself at checkout. Not
  * a note — it belongs to the order, and travels wherever the order appears. */
 export const INSTRUCTIONS = {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** `Storyfeed/Detail/Excerpt` — a passage, and where it came from. */
+/** `Storyfeed/Body/Excerpt` — a passage, and where it came from. */
 defineProps<{ payload: Record<string, any> }>()
 </script>
 

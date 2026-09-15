@@ -4,7 +4,7 @@ import { FEED_LINK } from '../keys'
 import FeedMedia from '../FeedMedia.vue'
 
 /**
- * `Storyfeed/Detail/MediaObject` — the shape of a post: a title line, some
+ * `Storyfeed/Body/MediaObject` — the shape of a post: a title line, some
  * prose, one picture, the files it names, and a line of small print.
  *
  * THE DETAIL STORES NO IMAGE. `image` is a slot NAME — icon, preview or image

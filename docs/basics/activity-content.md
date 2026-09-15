@@ -23,7 +23,7 @@ const withExcerpt = activity({
   id: 'ac3', verb: 'ready', glyph: 'utensils', published_at: at,
   headline_template: ':actor marked :object ready',
   actor: who.cook,
-  object: { ...orders.first, data: { $detail: 'Storyfeed/Detail/Excerpt', $v: 1,
+  object: { ...orders.first, data: { $body: 'Storyfeed/Body/Excerpt', $v: 1,
     text: INSTRUCTIONS.first, from: 'Instructions', truncated: false } },
 })
 
@@ -31,11 +31,11 @@ const withFields = activity({
   id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
   actor: who.cook,
-  object: { ...orders.first, data: { $detail: 'Storyfeed/Detail/Fields', $v: 1, rows: [
-    { label: 'Pickup', value: '7:00 pm', verbatim: false, missing: null },
-    { label: 'Items', value: '3', verbatim: false, missing: null },
-    { label: 'Reference', value: 'ORD-1042-8KQ', verbatim: true, missing: null },
-    { label: 'Table', value: null, verbatim: false, missing: 'not seated' },
+  object: { ...orders.first, data: { $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+    { key: 'Pickup', value: '7:00 pm', verbatim: false, missing: null },
+    { key: 'Items', value: '3', verbatim: false, missing: null },
+    { key: 'Reference', value: 'ORD-1042-8KQ', verbatim: true, missing: null },
+    { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
   ] } },
 })
 
@@ -44,7 +44,7 @@ const openInPlace = activity({
   published_at: '2026-08-14T10:05:00.000000Z',
   headline_template: ':actor added :object to :target',
   actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '9', label: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
+  object: { type: 'photo', id: '9', key: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
     attributes: {}, modal: true, component: null, data: {}, media: null },
 })
 
@@ -52,9 +52,9 @@ const withFile = activity({
   id: 'ac6', verb: 'menu.photo_published', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
   headline_template: ':actor added a photo of :target',
   actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '1', label: 'chicken-curry.jpg', url: '/photos/1',
+  object: { type: 'photo', id: '1', key: 'chicken-curry.jpg', url: '/photos/1',
     attributes: {}, modal: false, component: null, media: null,
-    data: { $detail: 'Storyfeed/Detail/File', $v: 1,
+    data: { $body: 'Storyfeed/Body/File', $v: 1,
       name: 'chicken-curry.jpg', size: 284160, mediaType: 'image/jpeg' } },
 })
 </script>
@@ -101,12 +101,12 @@ that recognises the form draws it with no view of yours.
 
 ```php
 // app/Models/Order.php
-use Storyfeed\Detail\Excerpt;
+use Storyfeed\Body\Excerpt;
 
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        label: "Order #{$this->reference}",
+        key: "Order #{$this->reference}",
         data: Excerpt::make($this->instructions, from: 'Instructions'), // [!code focus]
     );
 }
@@ -120,12 +120,12 @@ belongs at the line that records an activity:
 
 ```php
 // app/Models/Order.php
-use Storyfeed\Detail\Fields;
+use Storyfeed\Body\Fields;
 
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        label: "Order #{$this->reference}",
+        key: "Order #{$this->reference}",
         data: Fields::make([ // [!code focus]
             'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
             'Items' => $this->items->count(), // [!code focus]
@@ -147,12 +147,12 @@ address, is marked `verbatim` so it gets one line and an ellipsis.
 
 ```php
 // app/Models/Photo.php
-use Storyfeed\Detail\File;
+use Storyfeed\Body\File;
 
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        label: $this->name,
+        key: $this->name,
         data: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name), // [!code focus]
     );
 }
@@ -202,7 +202,7 @@ the same rule as an unknown glyph or an unrecognised detail form.
 | `Markdown` | authored body text, as source |
 | `MediaObject` | a title, some prose, one picture, the files |
 
-They live in `Storyfeed\Detail`, and every one carries its own version so a
+They live in `Storyfeed\Body`, and every one carries its own version so a
 renderer can upgrade an old row before drawing it. An app may write its own
 form and owe these nothing: a detail a renderer does not recognise draws
 nothing, and the activity renders as it always would, minus the block.

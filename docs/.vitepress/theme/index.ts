@@ -7,6 +7,7 @@ import SlotMapping from './components/SlotMapping.vue'
 import FeedBody from './components/FeedBody.vue'
 import Annotation from './components/Annotation.vue'
 import StabilityBanner from './components/StabilityBanner.vue'
+import BodyPlaceholder from './components/BodyPlaceholder.vue'
 import RowAnatomy from './components/RowAnatomy.vue'
 import FeedExample from './components/FeedExample.vue'
 import SampleLink from './components/SampleLink.vue'
@@ -43,6 +44,7 @@ export default {
     app.component('SlotMapping', SlotMapping)
     app.component('FeedBody', FeedBody)
     app.component('Annotation', Annotation)
+    app.component('BodyPlaceholder', BodyPlaceholder)
     app.component('RowAnatomy', RowAnatomy)
     app.component('FeedExample', FeedExample)
     app.provide(FEED_NOW, DOCS_NOW)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * `Storyfeed/Detail/Markdown` — authored body text, carried as SOURCE.
+ * `Storyfeed/Body/Markdown` — authored body text, carried as SOURCE.
  *
  * The form stores what the author wrote; turning it into HTML is the
  * renderer's job and its choice of parser. This kit shows the source as a

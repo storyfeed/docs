@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 /**
- * `Storyfeed/Detail/Change` — before and after, for one field or several.
+ * `Storyfeed/Body/Change` — before and after, for one field or several.
  *
  * An OMITTED index means that side did not exist (a field added or removed);
  * a null is a present but empty value, drawn as a word rather than a blank

@@ -91,7 +91,7 @@ export const notes: Record<string, any> = build(NOTES, note)
 export { INSTRUCTIONS } from './manifest'
 
 /**
- * An order's lines as `Storyfeed/Detail/Fields` rows, priced and totalled.
+ * An order's lines as `Storyfeed/Body/KeyValue` rows, priced and totalled.
  *
  * Built from the manifest rather than written into a page, so renaming a dish
  * moves every ticket on the site with it.
@@ -121,13 +121,13 @@ export function ticketRows(key: string) {
 
   return [
     ...lines.map((line) => ({
-      label: `${line.qty} × ${DISHES[line.dish as keyof typeof DISHES]}`,
+      key: `${line.qty} × ${DISHES[line.dish as keyof typeof DISHES]}`,
       value: money(line.qty * line.unit),
       verbatim: false,
       missing: null,
     })),
     {
-      label: 'Total',
+      key: 'Total',
       value: money(lines.reduce((sum, line) => sum + line.qty * line.unit, 0)),
       verbatim: false,
       missing: null,

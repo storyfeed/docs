@@ -164,7 +164,7 @@ template is present it is null, so support both and let the template win.
 
 Beneath the sentence, a row can carry an utterance or a
 [detail](/basics/activity-content): a value in the app's own `data` with a
-conventional form. A renderer finds one by walking `data` for a `$detail` key,
+conventional form. A renderer finds one by walking `data` for a `$body` key,
 drawing the forms it recognises and **nothing** for the ones it does not.
 
 That rule is what lets an app add a form without waiting for a renderer to

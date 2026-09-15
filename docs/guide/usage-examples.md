@@ -78,7 +78,7 @@ const posted = activity({
     media: { icon: null, image: null,
       preview: { src: '/media/chicken-curry.svg', mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
       url: null },
-    data: { $detail: 'Storyfeed/Detail/MediaObject', $v: 1,
+    data: { $body: 'Storyfeed/Body/MediaObject', $v: 1,
       subject: { label: 'Chicken Curry', href: '/menu/1' },
       content: 'Slow-cooked with roasted curry powder and coconut milk. Mild, unless you ask.',
       image: 'preview', attachments: [], footnote: 'Photographed by Nancy' } },

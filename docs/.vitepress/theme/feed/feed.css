@@ -363,7 +363,7 @@ a.sf-entity:hover {
  * margin and the bound and draws nothing, because filling and bordering every
  * one of them was what made three in a viewport read as loud.
  */
-.sf-detail {
+.sf-body {
     margin-top: 0.5rem;
     max-width: 44rem;
 }

@@ -4,7 +4,7 @@ import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedThread from './FeedThread.vue';
-import { detailsIn } from './details';
+import { formsIn } from './body';
 import FeedMedia from './FeedMedia.vue';
 import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
@@ -67,7 +67,7 @@ const strip = computed(() => {
 });
 
 /**
- * The details this node carries: the activity's own, then the object's.
+ * The forms this node carries: the activity's own, then the object's.
  *
  * A detail lands at an APP-CHOSEN key inside the app's own map, so finding one
  * means walking `data` rather than reading a fixed key. An unrecognised form
@@ -80,9 +80,9 @@ const strip = computed(() => {
  * and fifty rows is the same card fifty times. The object is what a row is
  * about, so its detail is the one that belongs beneath the sentence.
  */
-const details = computed(() => [
-    ...detailsIn(props.item.data),
-    ...detailsIn((props.item as any).object?.data).map((found) => ({
+const forms = computed(() => [
+    ...formsIn(props.item.data),
+    ...formsIn((props.item as any).object?.data).map((found) => ({
         ...found,
         entityLabel: (props.item as any).object?.label ?? null,
         entityMedia: (props.item as any).object?.media ?? null,
@@ -102,7 +102,7 @@ const media = computed(() => {
     // A FORM THAT NAMES A SLOT OWNS IT. `MediaObject` stores `image: "preview"`
     // and draws that slot itself, so the row must not paint the same picture
     // above it — one photograph, in the place the form put it.
-    const claimed = details.value.map((found: any) => found.payload?.image).filter(Boolean);
+    const claimed = forms.value.map((found: any) => found.payload?.image).filter(Boolean);
 
     if (claimed.includes('preview') || claimed.includes('url')) return null;
 
@@ -217,9 +217,9 @@ const slots = computed(() =>
                 block per detail, in the order the walk found them.
             -->
             <div
-                v-for="(found, index) in details"
+                v-for="(found, index) in forms"
                 :key="index"
-                class="sf-detail"
+                class="sf-body"
             >
                 <component
                     :is="found.component"

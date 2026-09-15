@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import Fields from './Fields.vue'
+import KeyValue from './KeyValue.vue'
 import Excerpt from './Excerpt.vue'
 import Change from './Change.vue'
 import File from './File.vue'
@@ -9,19 +9,19 @@ import MediaObject from './MediaObject.vue'
 /**
  * The detail forms this kit draws, by the name a row carries.
  *
- * The map is the whole mechanism: a renderer finds `$detail` inside the app's
+ * The map is the whole mechanism: a renderer finds `$body` inside the app's
  * own `data`, looks the name up here, and draws nothing when it does not
  * recognise it — the same rule the read path applies to an unknown verb. The
- * names are core's vocabulary (`Storyfeed\Detail`), matched EXACTLY, so the
+ * names are core's vocabulary (`Storyfeed\Body`), matched EXACTLY, so the
  * casing is part of the name.
  */
 const FORMS: Record<string, Component> = {
-    'Storyfeed/Detail/Fields': Fields,
-    'Storyfeed/Detail/Excerpt': Excerpt,
-    'Storyfeed/Detail/Change': Change,
-    'Storyfeed/Detail/File': File,
-    'Storyfeed/Detail/Markdown': Markdown,
-    'Storyfeed/Detail/MediaObject': MediaObject,
+    'Storyfeed/Body/KeyValue': KeyValue,
+    'Storyfeed/Body/Excerpt': Excerpt,
+    'Storyfeed/Body/Change': Change,
+    'Storyfeed/Body/File': File,
+    'Storyfeed/Body/Markdown': Markdown,
+    'Storyfeed/Body/MediaObject': MediaObject,
 }
 
 export type ResolvedDetail = { component: Component; payload: Record<string, any> }
@@ -33,11 +33,11 @@ export type ResolvedDetail = { component: Component; payload: Record<string, any
  * so finding one means walking. Details never nest, so the walk stops at the
  * first one on a branch; the depth bound matches core's own `details` check.
  */
-export function detailsIn(data: unknown, depth = 4): ResolvedDetail[] {
+export function formsIn(data: unknown, depth = 4): ResolvedDetail[] {
     if (depth < 0 || data === null || typeof data !== 'object') return []
 
     const map = data as Record<string, any>
-    const name = map.$detail
+    const name = map.$body
 
     if (typeof name === 'string') {
         const component = FORMS[name]
@@ -45,5 +45,5 @@ export function detailsIn(data: unknown, depth = 4): ResolvedDetail[] {
         return component ? [{ component, payload: map }] : []
     }
 
-    return Object.values(map).flatMap((value) => detailsIn(value, depth - 1))
+    return Object.values(map).flatMap((value) => formsIn(value, depth - 1))
 }

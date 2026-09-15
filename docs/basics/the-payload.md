@@ -180,7 +180,7 @@ two reserved keys:
   "verb": "order.placed",
   "headline_template": ":actor placed :object with :target",
   "data": {
-    "$detail": "Storyfeed/Detail/Excerpt",
+    "$body": "Storyfeed/Body/Excerpt",
     "$v": 1,
     "text": "Ring the bell twice, the gate sticks.",
     "from": "Instructions",
