@@ -404,6 +404,10 @@ a.sf-entity:hover {
     font-size: 13.5px;
     font-style: italic;
     color: var(--sf-muted);
+    /* Authored text keeps the breaks its author typed, as .sf-prose does.
+       Both forms carry what somebody wrote; collapsing one and not the
+       other made the same passage read differently by form. */
+    white-space: pre-wrap;
 }
 .sf-excerpt__from { margin-top: 2px; font-size: 12.5px; color: var(--sf-muted); }
 
