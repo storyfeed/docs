@@ -495,3 +495,46 @@ a.sf-entity:hover {
 .sf-media-object { display: flex; flex-direction: column; gap: 4px; }
 .sf-media-object__subject { margin: 0; font-weight: 600; font-size: 13.5px; }
 .sf-media-object__footnote { margin: 2px 0 0; font-size: 12.5px; color: var(--sf-faint); }
+
+/* PROSE AND VERBATIM. `verbatim` is a fact about the text — reproduced
+   exactly — and fixed width is this renderer's conclusion from it, not an
+   instruction the payload gave. A renderer that set a serif face for a
+   verbatim quotation would not be wrong. */
+.sf-prose-block { margin: 0; }
+.sf-prose__title {
+    margin-bottom: 4px;
+    font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+    font-size: 12px;
+    color: var(--sf-muted);
+}
+.sf-verbatim {
+    margin: 0;
+    max-width: 32rem;
+    padding: 8px 12px;
+    border: 1px solid var(--sf-line);
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+    font-size: 12.5px;
+    line-height: 1.55;
+}
+.sf-verbatim code { font: inherit; }
+
+/* ITEM LIST. The numbering answers `ordered`, which is a fact about whether
+   the sequence means anything — not a bullet style the app chose. */
+.sf-list-block { margin: 0; }
+.sf-list__title { margin-bottom: 4px; font-size: 13px; color: var(--sf-text); }
+.sf-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+.sf-list__item { margin: 0; }
+.sf-list__more {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--sf-muted);
+}

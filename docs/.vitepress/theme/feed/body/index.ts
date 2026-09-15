@@ -3,11 +3,12 @@ import KeyValue from './KeyValue.vue'
 import Excerpt from './Excerpt.vue'
 import Change from './Change.vue'
 import File from './File.vue'
-import Markdown from './Markdown.vue'
+import Prose from './Prose.vue'
+import ItemList from './ItemList.vue'
 import MediaObject from './MediaObject.vue'
 
 /**
- * The detail forms this kit draws, by the name a row carries.
+ * The body forms this kit draws, by the name a row carries.
  *
  * The map is the whole mechanism: a renderer finds `$body` inside the app's
  * own `data`, looks the name up here, and draws nothing when it does not
@@ -20,7 +21,8 @@ const FORMS: Record<string, Component> = {
     'Storyfeed/Body/Excerpt': Excerpt,
     'Storyfeed/Body/Change': Change,
     'Storyfeed/Body/File': File,
-    'Storyfeed/Body/Markdown': Markdown,
+    'Storyfeed/Body/Prose': Prose,
+    'Storyfeed/Body/ItemList': ItemList,
     'Storyfeed/Body/MediaObject': MediaObject,
 }
 
