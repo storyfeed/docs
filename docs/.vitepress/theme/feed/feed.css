@@ -368,10 +368,19 @@ a.sf-entity:hover {
     max-width: 44rem;
 }
 
+/* A CARD, AT PROSE WIDTH. Labelled facts are a block a reader stops on, so
+   they get an edge to stop at. Left to the row's full width the columns drift
+   so far apart that the eye loses which value belongs to which term, which is
+   the failure a wide table always has; capping the measure keeps the pair
+   readable as a pair. */
 .sf-facts {
     display: flex;
     flex-direction: column;
+    max-width: 32rem;
     margin: 0;
+    padding: 6px 12px;
+    border: 1px solid var(--sf-line);
+    border-radius: 8px;
     font-size: 13.5px;
     line-height: 1.5;
 }
