@@ -1,9 +1,16 @@
 # Verbs
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { activity, scenes } from '../.vitepress/theme/samples'
 
 const placed = scenes.order
+const confirmed = activity({
+  ...scenes.order,
+  id: 'verb-confirm',
+  verb: 'confirm',
+  glyph: 'circle-check',
+  headline_template: ':actor confirmed :object',
+})
 </script>
 
 A verb classifies an activity: it is the word your app uses for what happened.
@@ -24,6 +31,25 @@ Storyfeed::activity()
 ```
 
 These verbs are free-form strings, and can be anything at all.
+
+## Using Storyfeed's Verbs
+
+Storyfeed ships the common verbs as `Storyfeed\Verb`, so an application does
+not have to invent a word for an ordinary act.
+
+<FeedExample context :items="[confirmed]" />
+
+```php
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Verb; // [!code focus]
+
+Verb::Confirm->by($cook) // [!code focus]
+    ->object($order)
+    ->publish();
+```
+
+The stored verb is the case's value, `confirm`, so the row is the same as one
+recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.
 
 ## Using Enums
 
