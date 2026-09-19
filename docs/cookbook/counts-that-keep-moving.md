@@ -18,7 +18,7 @@ can change it, do not record it — resolve it on read.**
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('discussion.replied', $discussion)
+    ->action('reply', $discussion)
     ->data(['$thread' => FeedThread::make($excerpt)
         ->replies($discussion->comments()->count())   // ← evaluated now, stored forever
         ->toArray()])
@@ -67,7 +67,7 @@ A settled discussion is the case to think about: its reply count is not news, an
 quoting a number on a closed conversation invites a reader to reopen it.
 
 ```php
-$node['thread']['replies'] = $node['verb'] === 'discussion.settled'
+$node['thread']['replies'] = $node['verb'] === 'settle'
     ? null
     : $counts[$subjectId] ?? null;
 ```

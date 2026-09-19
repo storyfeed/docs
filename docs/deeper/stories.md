@@ -13,7 +13,7 @@ const at = '2026-08-14T14:30:00.000000Z'
 const placed = activity({ ...scenes.order, id: 's1', glyph: null })
 const placedWithIcon = scenes.order
 
-const grouped = group({ id: 's3', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const grouped = group({ id: 's3', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: at,
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -21,15 +21,15 @@ const grouped = group({ id: 's3', verb: 'placed', axis: 'repeat', count: 3, glyp
   distinct: { actors: 1, objects: 3, targets: 1 } })
 
 const examples = [
-  activity({ id: 's4', verb: 'discussion.asked', glyph: 'message-circle',
+  activity({ id: 's4', verb: 'ask', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 's5', verb: 'completed', glyph: 'receipt',
+  activity({ id: 's5', verb: 'complete', glyph: 'receipt',
     published_at: '2026-08-14T14:25:00.000000Z',
     headline_template: ':actor completed :object',
     actor: who.cook, object: orders.first }),
-  activity({ id: 's6', verb: 'menu.dish_live', glyph: 'chef-hat',
+  activity({ id: 's6', verb: 'publish', glyph: 'chef-hat',
     published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor put :object on the menu',
     actor: who.cook, object: dishes.kottu }),
@@ -53,7 +53,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'place';
 
     public function headline(): string
     {
@@ -101,7 +101,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'place';
 
     public function headline(): string
     {
@@ -135,7 +135,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'place';
 
     public function headline(): string
     {
@@ -203,7 +203,7 @@ class QuestionWasAsked extends Story
 {
     public string|array|null $objectType = Note::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'discussion.asked';
+    public string|FeedVerb|BackedEnum|null $verb = 'ask';
 
     public function headline(): string
     {
@@ -232,7 +232,7 @@ class OrderWasCompleted extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'completed';
+    public string|FeedVerb|BackedEnum|null $verb = 'complete';
 
     public function headline(): string
     {
@@ -262,7 +262,7 @@ class DishWentLive extends Story
 {
     public string|array|null $objectType = MenuItem::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'menu.dish_live';
+    public string|FeedVerb|BackedEnum|null $verb = 'publish';
 
     public function headline(): string
     {

@@ -6,7 +6,7 @@ A removal story that still renders after the row it is about is gone.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('menu.dish_removed', $menu)      // object: the parent, which survives
+    ->action('remove', $menu)      // object: the parent, which survives
     ->data(['name' => $dish->name])           // the removed thing travels as text
     ->publish();
 
@@ -16,7 +16,7 @@ $dish->delete();
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'menu.dish_removed' => ActivityType::Remove,
+    'remove' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
@@ -28,7 +28,7 @@ Storyfeed::grammar([
 import { who, where, dishes, activity } from '../.vitepress/theme/samples'
 
 const removed = activity({
-  id: 'ck8', verb: 'menu.dish_removed', glyph: 'circle-x',
+  id: 'ck8', verb: 'remove', glyph: 'circle-x',
   published_at: '2026-08-14T17:05:00.000000Z',
   headline_template: ':actor removed a dish from :object',
   actor: who.cook, object: where.menu,

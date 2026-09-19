@@ -9,13 +9,13 @@ import { who, where, orders, activity, group } from '../.vitepress/theme/samples
 
 const late = [
   activity({
-    id: 'qu1', verb: 'placed', glyph: 'shopping-bag',
+    id: 'qu1', verb: 'place', glyph: 'shopping-bag',
     published_at: '2026-08-14T12:05:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.third, target: where.kitchen,
   }),
   group({
-    id: 'qu2', verb: 'placed', axis: 'repeat', count: 2, glyph: 'shopping-bag',
+    id: 'qu2', verb: 'place', axis: 'repeat', count: 2, glyph: 'shopping-bag',
     published_at: '2026-08-13T12:55:00.000000Z',
     headline_template: ':actor placed :count orders with :target',
     actors: [who.regular], targets: [where.kitchen],
@@ -26,7 +26,7 @@ const late = [
 
 const dated = [
   group({
-    id: 'qu3', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+    id: 'qu3', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
     published_at: '2026-08-13T12:58:00.000000Z',
     headline_template: ':actor placed :count orders with :target',
     actors: [who.regular], targets: [where.kitchen],
@@ -56,7 +56,7 @@ class BroadcastActivity implements ShouldQueue
     {
         $activity = $event->activity;        // an ActivitySnapshot: plain values, not a model
 
-        $activity->verb;                     // 'placed'
+        $activity->verb;                     // 'place'
         $activity->object['label'];          // 'pricing-table-final.docx', as it read at publish
         $activity->published_at;             // '2026-08-13T23:58:00+00:00'
         $activity->toPayload();              // the whole snapshot as an array
@@ -101,11 +101,11 @@ does. A listener that needs the fact has it already.
 ```php
 // where the fact happens: a controller, an action, a listener
 DB::transaction(function () use ($order, $customer) {
-    $order->update(['status' => 'placed']);
+    $order->update(['status' => 'place']);
 
     Storyfeed::activity()
         ->by($user)
-        ->action('placed', $order)
+        ->action('place', $order)
         ->to($order->kitchen)
         ->publish();                          // nothing reaches the queue yet
 
@@ -150,7 +150,7 @@ class RecordSubmission implements ShouldQueue
     {
         Storyfeed::activity()
             ->by($this->customer)
-            ->action('placed', $this->order)
+            ->action('place', $this->order)
             ->to($this->order->project)
             ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran
             ->publish();
@@ -203,7 +203,7 @@ A value the fact needs to keep travels in `data`:
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($this->customer)
-    ->action('placed', $this->order)
+    ->action('place', $this->order)
     ->to($this->order->project)
     ->data(['version' => $this->version])     // captured in the constructor, not read in handle()
     ->publishedAt($this->occurredAt)
@@ -236,7 +236,7 @@ class NotifyTeam implements ShouldQueue
 {
     public function handle(OrderPlaced $event): void
     {
-        Storyfeed::record('placed', object: $event->order);   // names the customer who placed it
+        Storyfeed::record('place', object: $event->order);   // names the customer who placed it
     }
 }
 ```
@@ -297,7 +297,7 @@ it('records the submission', function () {
 
     event(new OrderPlaced($order, $customer));
 
-    Storyfeed::assertPublished('placed', $order);
+    Storyfeed::assertPublished('place', $order);
 });
 ```
 
@@ -318,7 +318,7 @@ it('records the submission', function () {
     $job = Queue::pushed(CallQueuedListener::class)->first();
     app($job->class)->{$job->method}(...$job->data);      // run the listener
 
-    Storyfeed::assertPublished('placed', $order);
+    Storyfeed::assertPublished('place', $order);
 });
 ```
 

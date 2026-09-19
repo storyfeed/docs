@@ -7,14 +7,14 @@ The authoriser belongs in the record, and usually nowhere else.
 // The contributor's story. Their photo, their name on it.
 Storyfeed::activity()
     ->by($customer)
-    ->action('photo.published', $photo)
+    ->action('publish', $photo)
     ->to($dish)
     ->publish();
 
 // The approval. A real activity, in no feed.
 Storyfeed::activity()
     ->by($approver)
-    ->action('moderation.approved', $photo)
+    ->action('approve', $photo)
     ->publish();
 ```
 
@@ -22,8 +22,8 @@ Storyfeed::activity()
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::feeds([
     'kitchen' => fn (FeedBuilder $feed) => $feed
-        ->only(['photo.published', 'menu.changed'])
-        ->except('moderation.approved'),        // decided, not forgotten
+        ->only(['publish', 'reprice'])
+        ->except('approve'),        // decided, not forgotten
 ]);
 ```
 
@@ -61,7 +61,7 @@ index has them. The footnote is a lookup:
 ```php
 $approval = Activity::query()
     ->involving($photo)
-    ->where('verb', 'moderation.approved')
+    ->where('verb', 'approve')
     ->latest('published_at')
     ->first();
 

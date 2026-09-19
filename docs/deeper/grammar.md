@@ -11,7 +11,7 @@ member.
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 
-const repeated = group({ id: 'g2', verb: 'placed', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+const repeated = group({ id: 'g2', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor placed :count orders with :target',
   actors: [who.regular], targets: [where.kitchen],
@@ -24,8 +24,8 @@ const repeated = group({ id: 'g2', verb: 'placed', axis: 'repeat', count: 3, gly
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar([
-    'repeat.placed' => ':actor placed :count orders with :target',    // {axis}.{verb}
-    'actors.placed' => ':actors placed :count orders with :target',
+    'repeat.place' => ':actor placed :count orders with :target',    // {axis}.{verb}
+    'actors.place' => ':actors placed :count orders with :target',
 ]);
 ```
 
@@ -59,9 +59,9 @@ plural tokens are allowed everywhere, because a list of one is still true.
 
 ```php
 // repeat = one cook, many dishes
-'repeat.menu.price_changed' => ':actor changed the price of :object :count times'  // ✗ which dish?
-'repeat.menu.price_changed' => ':actor changed :count prices'                      // ✓
-'repeat.menu.price_changed' => ':actor changed :count prices on :targets'          // ✓ a list is true of every member
+'repeat.reprice' => ':actor changed the price of :object :count times'  // ✗ which dish?
+'repeat.reprice' => ':actor changed :count prices'                      // ✓
+'repeat.reprice' => ':actor changed :count prices on :targets'          // ✓ a list is true of every member
 ```
 
 `storyfeed:doctor` reports unsafe tokens as warnings; run it with
@@ -106,8 +106,8 @@ towards `:count` and contributes no exemplar.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
-'targets.discussion.asked' => ':actor asked about :count dishes'  // ✗ five members, two dishes
-'targets.discussion.asked' => ':actor asked about :targets'       // ✓ names the two there are
+'targets.ask' => ':actor asked about :count dishes'  // ✗ five members, two dishes
+'targets.ask' => ':actor asked about :targets'       // ✓ names the two there are
 ```
 
 Both lines are token-safe; the defect is in the noun the template puts beside
@@ -142,11 +142,11 @@ php artisan storyfeed:doctor --stubs
 
 ```php
 Storyfeed::grammar([
-    'order.placed' => 'TODO :actor :object :target :context :origin :result :instrument',
+    'order.place' => 'TODO :actor :object :target :context :origin :result :instrument',
 ]);
 
 Storyfeed::aggregateGrammar([
-    'repeat.placed' => 'TODO :actor :target :count',
+    'repeat.place' => 'TODO :actor :target :count',
 ]);
 ```
 
@@ -175,7 +175,7 @@ blank. Author both:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::aggregateGrammar(['composite.menu.dish_live' => ':actor put :count dishes on the menu']);
+Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
 Storyfeed::grammar(['*.menu.dish_live' => ':actor put dishes on the menu']);
 ```
 

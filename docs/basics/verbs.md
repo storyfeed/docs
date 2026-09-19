@@ -25,7 +25,7 @@ eventually wants them typed.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('placed', $order) // [!code focus]
+    ->action('place', $order) // [!code focus]
     ->to($kitchen)
     ->publish();
 ```
@@ -63,8 +63,8 @@ namespace App\Enums;
 
 enum OrderActivity: string
 {
-    case Placed = 'placed';
-    case Confirmed = 'confirmed';
+    case Placed = 'place';
+    case Confirmed = 'confirm';
     case Ready = 'ready';
 }
 ```
@@ -83,8 +83,8 @@ enum OrderActivity: string implements FeedVerb // [!code focus]
 {
     use AsFeedVerb; // [!code focus]
 
-    case Placed = 'placed';
-    case Confirmed = 'confirmed';
+    case Placed = 'place';
+    case Confirmed = 'confirm';
     case Ready = 'ready';
 }
 ```

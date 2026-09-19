@@ -12,25 +12,25 @@ const kitchen = [
     published_at: '2026-08-14T14:50:00.000000Z',
     headline_template: ':actor marked :object ready',
     actor: who.cook, object: orders.first }),
-  activity({ id: 'nf2', verb: 'discussion.asked', glyph: 'message-circle',
+  activity({ id: 'nf2', verb: 'ask', glyph: 'message-circle',
     published_at: '2026-08-14T14:40:00.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'nf3', verb: 'confirmed', glyph: 'circle-check',
+  activity({ id: 'nf3', verb: 'confirm', glyph: 'circle-check',
     published_at: '2026-08-14T14:35:00.000000Z',
     headline_template: ':actor confirmed :object',
     actor: who.cook, object: orders.first }),
-  activity({ id: 'nf4', verb: 'placed', glyph: 'shopping-bag',
+  activity({ id: 'nf4', verb: 'place', glyph: 'shopping-bag',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
-  activity({ id: 'nf5', verb: 'menu.price_changed', glyph: 'tag',
+  activity({ id: 'nf5', verb: 'reprice', glyph: 'tag',
     published_at: '2026-08-14T09:10:00.000000Z',
     headline_template: ':actor changed the price of :object',
     actor: who.cook, object: dishes.kottu }),
 ]
 
-const customer = kitchen.filter(node => ['placed', 'confirmed', 'ready'].includes(node.verb))
+const customer = kitchen.filter(node => ['place', 'confirm', 'ready'].includes(node.verb))
 </script>
 
 ## Declaring a Feed
@@ -43,7 +43,7 @@ use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
-    'customer' => fn (FeedBuilder $feed) => $feed->only(['placed', 'confirmed', 'ready'])->log(),
+    'customer' => fn (FeedBuilder $feed) => $feed->only(['place', 'confirm', 'ready'])->log(),
     'kitchen' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```
@@ -94,9 +94,9 @@ Both work on any builder, with or without a name:
 
 ```php
 // a controller, or wherever the feed is read
-Storyfeed::feed()->only(['placed', 'ready'])->get();
+Storyfeed::feed()->only(['place', 'ready'])->get();
 Storyfeed::feed()->only(['order.*', OrderActivity::PaymentReceived])->get();
-Storyfeed::feed()->except(['noted'])->get();
+Storyfeed::feed()->except(['note'])->get();
 ```
 
 | | |
@@ -111,7 +111,7 @@ Intersection means a call site can only ever cut further:
 
 ```php
 // still just placed orders: the declared list is a floor
-Storyfeed::feed('customer')->only(['placed', 'noted'])->get();
+Storyfeed::feed('customer')->only(['place', 'note'])->get();
 ```
 
 Excluded verbs leave the query the whole read is built from, so group counts
@@ -138,7 +138,7 @@ class CustomerFeed extends Feed
 
     public function define(FeedBuilder $feed): void
     {
-        $feed->only(['placed', 'confirmed', 'ready'])->log();
+        $feed->only(['place', 'confirm', 'ready'])->log();
     }
 
     protected function scope(FeedBuilder $feed): void
@@ -167,7 +167,7 @@ role `scope()` binds cannot be rebound at a call site:
 
 ```php
 CustomerFeed::make($order)->involving($other);                   // throws FeedMisconfigured
-CustomerFeed::make($order)->only(['placed'])->summary();   // fine: narrowing
+CustomerFeed::make($order)->only(['place'])->summary();   // fine: narrowing
 ```
 
 A feed with no subject declares no constructor and no `scope()`:
@@ -184,7 +184,7 @@ class KitchenFeed extends Feed
 {
     public function define(FeedBuilder $feed): void
     {
-        $feed->except(['noted'])->summary();
+        $feed->except(['note'])->summary();
     }
 }
 ```

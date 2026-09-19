@@ -17,7 +17,7 @@ class OrderObserver
         }
 
         $verb = match ($order->status) {
-            'confirmed' => 'confirmed',
+            'confirm' => 'confirm',
             'ready' => 'ready',
             'archived' => 'archive',
             default => null,                         // a draft is not news either
@@ -38,7 +38,7 @@ class OrderObserver
 import { who, where, orders, activity } from '../.vitepress/theme/samples'
 
 const confirmed = activity({
-  id: 'ck2', verb: 'confirmed', glyph: 'circle-check',
+  id: 'ck2', verb: 'confirm', glyph: 'circle-check',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor confirmed :object',
   actor: who.cook, object: orders.first,
@@ -52,15 +52,15 @@ const confirmed = activity({
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'confirmed' => ActivityType::Accept,
+    'confirm' => ActivityType::Accept,
     'ready' => ActivityType::Update,
     'archive' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
-    'order.confirmed' => ':actor confirmed :object',
+    'order.confirm' => ':actor confirmed :object',
     'order.ready' => ':actor marked :object ready',
-    'order.completed' => ':actor completed :object',
+    'order.complete' => ':actor completed :object',
 ]);
 ```
 
@@ -95,7 +95,7 @@ class OrderConfirmed implements PublishesToFeed
     {
         return Storyfeed::activity()
             ->by($this->cook)
-            ->action('confirmed', $this->order);
+            ->action('confirm', $this->order);
     }
 }
 ```

@@ -8,7 +8,7 @@ class RecordOrderPlaced
     {
         Storyfeed::activity()
             ->by($event->customer)
-            ->action('placed', $event->order)
+            ->action('place', $event->order)
             ->to($event->order->kitchen)
             ->publish();
     }

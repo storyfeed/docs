@@ -16,7 +16,7 @@ class OrderPlaced implements PublishesToFeed
     {
         return Storyfeed::activity()
             ->by($this->customer)                    // the actor travels on the event
-            ->action('placed', $this->order)
+            ->action('place', $this->order)
             ->to($this->order->kitchen);
     }
 }
@@ -26,28 +26,28 @@ class OrderPlaced implements PublishesToFeed
 import { who, where, orders, party, activity } from '../.vitepress/theme/samples'
 
 const placed = activity({
-  id: 'ck6a', verb: 'placed', glyph: 'shopping-bag',
+  id: 'ck6a', verb: 'place', glyph: 'shopping-bag',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor placed :object with :target',
   actor: who.regular, object: orders.first, target: where.kitchen,
 })
 
 const anonymous = activity({
-  id: 'ck6b', verb: 'placed', glyph: 'shopping-bag',
+  id: 'ck6b', verb: 'place', glyph: 'shopping-bag',
   published_at: '2026-08-14T15:02:00.000000Z',
   headline_template: ':actor placed :object with :target',
   actor: null, object: orders.first, target: where.kitchen,
 })
 
 const paid = activity({
-  id: 'ck6c', verb: 'paid', glyph: 'credit-card',
+  id: 'ck6c', verb: 'pay', glyph: 'credit-card',
   published_at: '2026-08-14T16:10:00.000000Z',
   headline_template: ':actor marked :object paid',
   actor: party.service, object: orders.second,
 })
 
 const expired = activity({
-  id: 'ck6d', verb: 'expired', glyph: 'circle-x',
+  id: 'ck6d', verb: 'expire', glyph: 'circle-x',
   published_at: '2026-08-21T00:00:00.000000Z',
   headline_template: ':object expired at :target',
   actor: null, object: orders.fifth, target: where.kitchen,
@@ -59,14 +59,14 @@ const expired = activity({
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'placed' => ActivityType::Create,
-    'paid' => ActivityType::Accept,
-    'expired' => ActivityType::Remove,
+    'place' => ActivityType::Create,
+    'pay' => ActivityType::Accept,
+    'expire' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([
-    'order.placed' => ':actor placed :object with :target',
-    'order.paid' => ':actor marked :object paid',
+    'order.place' => ':actor placed :object with :target',
+    'order.pay' => ':actor marked :object paid',
 ]);
 ```
 
@@ -88,7 +88,7 @@ class RecordSubmission implements ShouldQueue
     public function handle(): void
     {
         Storyfeed::activity()
-            ->action('placed', $this->order)     // assumes no custom resolver or fallback party
+            ->action('place', $this->order)     // assumes no custom resolver or fallback party
             ->to($this->order->kitchen)
             ->publish();
     }
@@ -110,7 +110,7 @@ provides a separate sentence for the same verb.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($knownAuthor) // User|null: null explicitly means anonymous
-    ->action('placed', $order)
+    ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```
@@ -146,7 +146,7 @@ null is intentional.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by('Stripe')
-    ->action('paid', $order)
+    ->action('pay', $order)
     ->publish();
 ```
 
@@ -165,11 +165,11 @@ A job that publishes many activities scopes the block with
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.expired' => ':object expired at :target',   // no :actor, on purpose
+    'order.expire' => ':object expired at :target',   // no :actor, on purpose
 ]);
 
 Storyfeed::anonymous() // bypass actor resolution even inside an attributed scope
-    ->action('expired', $order)
+    ->action('expire', $order)
     ->to($kitchen)
     ->publish();
 ```

@@ -28,7 +28,7 @@ const withExcerpt = activity({
 })
 
 const withKeyValue = activity({
-  id: 'ac4', verb: 'confirmed', glyph: 'circle-check', published_at: at,
+  id: 'ac4', verb: 'confirm', glyph: 'circle-check', published_at: at,
   headline_template: ':actor confirmed :object',
   actor: who.cook,
   object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
@@ -40,7 +40,7 @@ const withKeyValue = activity({
 })
 
 const openInPlace = activity({
-  id: 'ac7', verb: 'menu.photo_published', glyph: 'image',
+  id: 'ac7', verb: 'publish', glyph: 'image',
   published_at: '2026-08-14T10:05:00.000000Z',
   headline_template: ':actor added :object to :target',
   actor: who.cook, target: dishes.chickenCurry,
@@ -49,7 +49,7 @@ const openInPlace = activity({
 })
 
 const withFile = activity({
-  id: 'ac6', verb: 'menu.photo_published', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
+  id: 'ac6', verb: 'publish', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
   headline_template: ':actor added a photo of :target',
   actor: who.cook, target: dishes.chickenCurry,
   object: { type: 'photo', id: '1', label: 'chicken-curry.jpg', url: '/photos/1',

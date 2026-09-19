@@ -56,14 +56,14 @@ class AssetHealer implements FeedHealer
     public function candidates(): iterable
     {
         foreach (Activity::query()
-            ->where('verb', 'asset.published')
+            ->where('verb', 'publish')
             ->where('object_type', 'asset_reference')
             ->lazyById() as $activity) {
             yield new StoryRetirement(
                 label: "Asset story {$activity->id}",
                 activityId: $activity->id,
                 whenAbsent: static fn (Activity $live): bool =>
-                    $live->verb === 'asset.published'
+                    $live->verb === 'publish'
                     && $live->object_type === 'asset_reference'
                     && ! DB::table('assets')->where('id', $live->object_id)->exists(),
                 meta: ['reason' => 'source permanently absent'],

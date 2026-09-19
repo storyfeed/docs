@@ -8,7 +8,7 @@ by it.
 import { who, where, dishes, notes, activity } from '../.vitepress/theme/samples'
 
 const inside = activity({
-  id: 'cx1', verb: 'discussion.asked', glyph: 'message-circle',
+  id: 'cx1', verb: 'ask', glyph: 'message-circle',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor asked about :target in :context',
   actor: who.customer4, object: notes.spice, target: dishes.chickenCurry,
@@ -20,7 +20,7 @@ const inside = activity({
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('discussion.asked', $note)
+    ->action('ask', $note)
     ->on($dish)               // target: what the question is about
     ->context($kitchen)       // context: the kitchen the dish belongs to
     ->publish();
@@ -46,7 +46,7 @@ is complete:
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('placed', $order)
+    ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```

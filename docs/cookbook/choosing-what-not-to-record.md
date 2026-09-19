@@ -13,7 +13,7 @@ public function toFeedActivity(): ?PendingActivity
 
     return Storyfeed::activity()
         ->by($this->customer)
-        ->action('placed', $this->order)
+        ->action('place', $this->order)
         ->to($this->order->kitchen);
 }
 ```
@@ -24,12 +24,12 @@ Returning `null` publishes nothing. See
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'placed' => ActivityType::Create,
-    'discussion.asked' => ActivityType::Create,
+    'place' => ActivityType::Create,
+    'ask' => ActivityType::Create,
 ]);
 
 Storyfeed::grammar([
-    'order.placed' => ':actor placed :object with :target',
+    'order.place' => ':actor placed :object with :target',
 ]);
 ```
 
@@ -56,7 +56,7 @@ Storyfeed::grammar([
 
 Storyfeed::activity()
     ->by($user)
-    ->action('discussion.asked', $note)
+    ->action('ask', $note)
     ->on($dish)
     ->publish();
 ```
@@ -65,7 +65,7 @@ Storyfeed::activity()
 import { who, dishes, notes, activity } from '../.vitepress/theme/samples'
 
 const question = activity({
-  id: 'ck7', verb: 'discussion.asked', glyph: 'message-circle',
+  id: 'ck7', verb: 'ask', glyph: 'message-circle',
   published_at: '2026-08-14T14:28:00.000000Z',
   headline_template: ':actor asked about :target',
   actor: who.customer4, object: notes.spice, target: dishes.chickenCurry,
@@ -123,7 +123,7 @@ use Storyfeed\FeedThread;
 
 Storyfeed::activity()
     ->by($user)
-    ->action('discussion.asked', $note)
+    ->action('ask', $note)
     ->on($dish)
     ->thread(FeedThread::make(text: $note->body))
     ->publish();
@@ -141,7 +141,7 @@ particular reply it is about:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'discussion.reply' => ':actor replied about :target',
+    'reply' => ':actor replied about :target',
 ]);
 Storyfeed::verbs(['reply' => ActivityType::Create]);
 

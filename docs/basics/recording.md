@@ -9,14 +9,14 @@ reads like the sentence it produces.
 import { who, where, orders, dishes, party, activity, scenes } from '../.vitepress/theme/samples'
 
 const paid = activity({
-  id: 'r2', verb: 'paid', glyph: 'credit-card',
+  id: 'r2', verb: 'pay', glyph: 'credit-card',
   published_at: '2026-08-14T14:32:00.000000Z',
   headline_template: ':actor marked :object paid',
   actor: party.service, object: orders.first,
 })
 
 const priced = activity({
-  id: 'r3', verb: 'menu.price_changed', glyph: 'tag',
+  id: 'r3', verb: 'reprice', glyph: 'tag',
   published_at: '2026-08-14T09:10:00.000000Z',
   headline_template: ':actor changed the price of :object',
   actor: who.cook, object: dishes.kottu,
@@ -40,7 +40,7 @@ The same activity in one call, when everything is in hand:
 
 ```php
 // where the order is placed: a controller, an action, a listener
-Storyfeed::record('placed', $order, actor: $customer, target: $kitchen);
+Storyfeed::record('place', $order, actor: $customer, target: $kitchen);
 ```
 
 ## Roles
@@ -84,7 +84,7 @@ job records the fact, there is no authenticated user, so name the actor:
 // app/Http/Controllers/StripeWebhookController.php
 Storyfeed::activity()
     ->by('Stripe')
-    ->action('paid', $order)
+    ->action('pay', $order)
     ->publish();
 ```
 
@@ -100,7 +100,7 @@ means the actor is genuinely unknown.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($cook)
-    ->action('menu.price_changed', $dish)
+    ->action('reprice', $dish)
     ->data(['from' => 1450, 'to' => 1550])   // activity-level payload, arrives in the node
     ->publishedAt($changedAt)                // backdate: imports, backfills
     ->publish();
@@ -118,10 +118,10 @@ A price edited five times before the menu goes live is one fact, not five.
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();
+Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish();
 
 // a minute later, another request
-Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();
+Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish();
 ```
 
 <FeedExample :items="[priced]" />
@@ -136,7 +136,7 @@ Pass `objects:` (or `->objects()`) to record one activity about many objects:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('menu.dish_live', objects: $dishes, actor: $cook);
+Storyfeed::record('publish', objects: $dishes, actor: $cook);
 ```
 
 [Composites](/deeper/composites) covers how that activity reads and groups.

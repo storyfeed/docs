@@ -10,14 +10,14 @@ const on = (id, verb, glyph, at, actor, object, template) => activity({ id, verb
   published_at: at, headline_template: template, actor, object, target: where.kitchen })
 
 const pricedTwice = [
-  on('rp1', 'menu.price_changed', 'tag', '2026-08-14T14:32:00.000000Z', who.cook, dishes.kottu, ':actor changed the price of :object'),
-  on('rp2', 'menu.dish_added', 'chef-hat', '2026-08-14T14:20:00.000000Z', who.cook, dishes.kottu, ':actor added a new dish, :object'),
+  on('rp1', 'reprice', 'tag', '2026-08-14T14:32:00.000000Z', who.cook, dishes.kottu, ':actor changed the price of :object'),
+  on('rp2', 'add', 'chef-hat', '2026-08-14T14:20:00.000000Z', who.cook, dishes.kottu, ':actor added a new dish, :object'),
 ]
 
 const timeline = [
-  on('rp3', 'placed', 'shopping-bag', '2026-08-14T14:40:00.000000Z', who.regular, orders.first, ':actor placed :object'),
-  on('rp4', 'confirmed', 'circle-check', '2026-08-14T14:30:00.000000Z', who.cook, orders.first, ':actor confirmed :object'),
-  on('rp5', 'placed', 'shopping-bag', '2026-08-14T14:20:00.000000Z', who.regular, orders.first, ':actor placed :object'),
+  on('rp3', 'place', 'shopping-bag', '2026-08-14T14:40:00.000000Z', who.regular, orders.first, ':actor placed :object'),
+  on('rp4', 'confirm', 'circle-check', '2026-08-14T14:30:00.000000Z', who.cook, orders.first, ':actor confirmed :object'),
+  on('rp5', 'place', 'shopping-bag', '2026-08-14T14:20:00.000000Z', who.regular, orders.first, ':actor placed :object'),
 ]
 
 const pulse = [timeline[0], timeline[1]]
@@ -25,8 +25,8 @@ const pulse = [timeline[0], timeline[1]]
 
 ```php
 // where the fact happens: a controller, an action, a listener
-Storyfeed::activity()->by($cook)->action('menu.price_changed', $dish)->replace()->publish();   // replaces the earlier price change
-Storyfeed::activity()->by($cook)->action('menu.dish_added', $dish)->publish();                // every new dish is its own row
+Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish();   // replaces the earlier price change
+Storyfeed::activity()->by($cook)->action('add', $dish)->publish();                // every new dish is its own row
 ```
 
 After one new dish and two price changes:
@@ -36,17 +36,17 @@ After one new dish and two price changes:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::verbs([
-    'menu.price_changed' => ActivityType::Update,
-    'menu.dish_added' => ActivityType::Add,
-    'placed' => ActivityType::Create,
-    'confirmed' => ActivityType::Accept,
+    'reprice' => ActivityType::Update,
+    'add' => ActivityType::Add,
+    'place' => ActivityType::Create,
+    'confirm' => ActivityType::Accept,
 ]);
 
 Storyfeed::grammar([
     '*.menu.price_changed' => ':actor changed the price of :object',
     '*.menu.dish_added' => ':actor added a new dish, :object',
-    'order.placed' => ':actor placed :object',
-    'order.confirmed' => ':actor confirmed :object',
+    'order.place' => ':actor placed :object',
+    'order.confirm' => ':actor confirmed :object',
 ]);
 ```
 
@@ -82,7 +82,7 @@ alternative recording policies for the same sequence:
 For the full timeline, each transition request runs this with its verb:
 
 ```php
-// $verb is 'placed' or 'confirmed'; the app guards retries by occurrence id.
+// $verb is 'place' or 'confirm'; the app guards retries by occurrence id.
 Storyfeed::activity()->by($user)->action($verb, $order)->publish();
 
 $timeline = Storyfeed::feed()->involving($order)->log()->get();

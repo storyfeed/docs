@@ -4,7 +4,7 @@
 import { who, dishes, group } from '../.vitepress/theme/samples'
 
 const authored = group({
-  id: 'cp1', verb: 'menu.dish_live', axis: 'composite', count: 2, glyph: 'chef-hat',
+  id: 'cp1', verb: 'publish', axis: 'composite', count: 2, glyph: 'chef-hat',
   published_at: '2026-08-14T09:20:00.000000Z',
   headline_template: ':actor put :count dishes on the menu',
   actors: [who.cook],
@@ -22,7 +22,7 @@ dishes put on the menu as a single activity, not several grouped ones.
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($cook)
-    ->action('menu.dish_live')
+    ->action('publish')
     ->objects($dishes)
     ->publish();
 ```
@@ -104,7 +104,7 @@ Two registries, both required — see
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
-Storyfeed::aggregateGrammar(['composite.menu.dish_live' => ':actor put :count dishes on the menu']);
+Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
 Storyfeed::grammar(['*.menu.dish_live' => ':actor put dishes on the menu']);
 ```
 

@@ -164,12 +164,12 @@ export const party: Record<string, any> = build(PARTIES, (id, label) => entity('
  * nothing. Null is the honest answer and the common one.
  */
 export const INTENTS: Record<string, string> = {
-  'order.completed': 'success',
-  'order.paid': 'success',
+  'order.complete': 'success',
+  'order.pay': 'success',
   '*.moderation.photo_approved': 'success',
-  'order.cancelled': 'danger',
+  'order.cancel': 'danger',
   '*.menu.dish_off': 'danger',
-  'order.placed': 'pending',
+  'order.place': 'pending',
 }
 
 /** Core's resolution ladder, ported: `type.verb`, `type.*`, `*.verb`, `*.*`. */
@@ -246,7 +246,7 @@ export function group(over: Record<string, any>) {
  */
 export const scenes = {
   order: activity({
-    id: 'scene-order', verb: 'placed', glyph: 'shopping-bag',
+    id: 'scene-order', verb: 'place', glyph: 'shopping-bag',
     published_at: '2026-08-14T14:30:00.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen,
@@ -266,11 +266,11 @@ export const scenes = {
 export const SURROUNDING = [
   { verb: 'ready', glyph: 'utensils', headline_template: ':actor marked :object ready',
     actor: () => who.cook, object: () => orders.fourth },
-  { verb: 'discussion.asked', glyph: 'message-circle', headline_template: ':actor asked about :target',
+  { verb: 'ask', glyph: 'message-circle', headline_template: ':actor asked about :target',
     actor: () => who.customer3, object: () => notes.spice, target: () => dishes.chickenCurry },
-  { verb: 'confirmed', glyph: 'circle-check', headline_template: ':actor confirmed :object',
+  { verb: 'confirm', glyph: 'circle-check', headline_template: ':actor confirmed :object',
     actor: () => who.cook, object: () => orders.fifth },
-  { verb: 'paid', glyph: 'credit-card', headline_template: ':actor marked :object paid',
+  { verb: 'pay', glyph: 'credit-card', headline_template: ':actor marked :object paid',
     actor: () => party.service, object: () => orders.second },
 ]
 

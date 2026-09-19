@@ -16,7 +16,7 @@ const withoutIcon = activity({ ...scenes.order, id: 'hl1', glyph: null })
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.placed' => ':actor placed :object with :target',
+    'order.place' => ':actor placed :object with :target',
 ]);
 ```
 
@@ -29,8 +29,8 @@ belongs to the key; the verb you recorded is still `placed`.
 The template names roles, never models:
 
 ```php
-'order.placed' => ':customer placed :order with :kitchen',   // ✗ not tokens: these render as text
-'order.placed' => ':actor placed :object with :target',      // ✓
+'order.place' => ':customer placed :order with :kitchen',   // ✗ not tokens: these render as text
+'order.place' => ':actor placed :object with :target',      // ✓
 ```
 
 ## Tokens
@@ -55,8 +55,8 @@ carries.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::icons([
-    'order.placed' => 'shopping-bag',
-    'order.completed' => 'receipt',
+    'order.place' => 'shopping-bag',
+    'order.complete' => 'receipt',
     '*.menu.dish_live' => 'chef-hat',   // any object type
 ]);
 ```
@@ -79,7 +79,7 @@ beside it on every node:
 
 ```json
 {
-  "verb": "completed",
+  "verb": "complete",
   "glyph": "receipt",
   "glyph_intent": "success"
 }
@@ -95,9 +95,9 @@ allowed, resolved most-specific first:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::glyphIntents([
-    'order.completed' => 'success',   // the app's own word, not the package's
-    'order.placed'    => 'pending',
-    'order.cancelled' => 'danger',
+    'order.complete' => 'success',   // the app's own word, not the package's
+    'order.place'    => 'pending',
+    'order.cancel' => 'danger',
 ]);
 ```
 
@@ -142,7 +142,7 @@ Templates are plain strings, so they translate:
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.placed' => __('feed.order_placed'),
+    'order.place' => __('feed.order_placed'),
 ]);
 ```
 

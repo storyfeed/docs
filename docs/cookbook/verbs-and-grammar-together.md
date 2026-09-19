@@ -16,7 +16,7 @@ class OrderWasPlaced extends Story
 {
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'placed';
+    public string|FeedVerb|BackedEnum|null $verb = 'place';
 
     public function headline(): string
     {
@@ -83,7 +83,7 @@ class OrderWasPrinted extends Story
     // keep their headline.
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.printed';
+    public string|FeedVerb|BackedEnum|null $verb = 'order.print';
 
     public function headline(): string
     {

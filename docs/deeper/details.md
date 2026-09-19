@@ -4,7 +4,7 @@
 import { who, where, orders, scenes, activity, ticketRows, ticketText } from '../.vitepress/theme/samples'
 
 const row = {
-  verb: 'placed', glyph: 'shopping-bag',
+  verb: 'place', glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
   headline_template: ':actor placed :object with :target',
   actor: who.regular, target: where.kitchen,
@@ -114,7 +114,7 @@ changed through any of it:
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
-    ->action('placed', $order)
+    ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```

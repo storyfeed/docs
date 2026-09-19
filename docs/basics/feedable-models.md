@@ -11,29 +11,29 @@ const unlinked = { ...orders.first, url: null }
 const at = '2026-08-14T14:30:00.000000Z'
 
 const withSnapshot = [
-  activity({ id: 'fm1', verb: 'placed', glyph: 'shopping-bag', published_at: at,
+  activity({ id: 'fm1', verb: 'place', glyph: 'shopping-bag', published_at: at,
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: unlinked, target: where.kitchen }),
 ]
 
 const withLink = [
-  activity({ id: 'fm2', verb: 'placed', glyph: 'shopping-bag', published_at: at,
+  activity({ id: 'fm2', verb: 'place', glyph: 'shopping-bag', published_at: at,
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
 ]
 
 // The kitchen's own feed: orders placed with it, and the dish it put live.
 const scoped = [
-  group({ id: 'fm3', verb: 'placed', axis: 'actors', count: 3, glyph: 'shopping-bag', published_at: at,
+  group({ id: 'fm3', verb: 'place', axis: 'actors', count: 3, glyph: 'shopping-bag', published_at: at,
     headline_template: ':actors placed :count orders with :target',
     actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
     objects: [orders.first, orders.second, orders.third],
     distinct: { actors: 3, objects: 3, targets: 1 } }),
-  activity({ id: 'fm4', verb: 'discussion.asked', glyph: 'message-circle',
+  activity({ id: 'fm4', verb: 'ask', glyph: 'message-circle',
     published_at: '2026-08-14T14:28:00.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'fm5', verb: 'menu.dish_live', glyph: 'chef-hat',
+  activity({ id: 'fm5', verb: 'publish', glyph: 'chef-hat',
     published_at: '2026-08-14T09:00:00.000000Z',
     headline_template: ':actor put :object on the menu',
     actor: who.cook, object: dishes.chickenCurry }),

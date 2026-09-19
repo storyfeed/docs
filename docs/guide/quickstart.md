@@ -39,7 +39,7 @@ class Order extends Model implements Feedable
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.placed' => ':actor placed :object with :target',
+    'order.place' => ':actor placed :object with :target',
 ]);
 ```
 

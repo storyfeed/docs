@@ -5,6 +5,35 @@ pair below has a test that decides it, and the answer matters beyond wording:
 the verb decides the Activity Streams type a consumer reads, and it is half of
 every grammar key.
 
+## Naming a Verb
+
+A verb says what happened. It does not say what it happened to — the object
+already does that.
+
+```php
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()->by($customer)
+    ->action('place', $order)   // not 'order.place'
+    ->to($kitchen)
+    ->publish();
+```
+
+A verb that names its object repeats itself in every grammar key, because a
+key is already the object's morph alias and the verb: `order.order.place`. It
+also stops the verb being shared — `place` reads correctly for anything an app
+places, and `order.place` reads correctly for one model.
+
+Where a verb seems to need the extra word, the word is usually a role:
+
+| Reaching for | Record |
+| --- | --- |
+| `doctrine.clause_add` | `add`, object the clause, target the doctrine |
+| `menu.dish_publish` | `publish`, object the dish, target the menu |
+
+**Write verbs in the present tense** — `place`, not `placed`. The headline is
+where a sentence reads as the past: the stored verb is the fact, and
+`:actor placed :object` is how it is shown.
+
 ## Create or Add
 
 `create` when the object did not exist before this activity. `add` when it

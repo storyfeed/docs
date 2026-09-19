@@ -36,7 +36,7 @@ an undefined index.
 {
   "kind": "activity",
   "id": "01K3M8QF4T7Z2YB6N1D9V0XA5C",
-  "verb": "placed",
+  "verb": "place",
   "published_at": "2026-08-14T14:30:00.000000Z",
   "headline_template": ":actor placed :object with :target",
   "headline": null,
@@ -97,7 +97,7 @@ One customer, three orders, one line. A group node, not an activity:
   "kind": "group",
   "axis": "repeat",
   "count": 3,
-  "verb": "placed",
+  "verb": "place",
   "headline_template": ":actor placed :count orders with :target",
   "actor": { "type": "user", "label": "Steve Harrington", … },  // one actor, so the key is filled
   "object": null,                                               // three of them
@@ -138,7 +138,7 @@ of its own:
 
 ```jsonc
 {
-  "verb": "paid",
+  "verb": "pay",
   "headline_template": ":actor marked :object paid",
   "actor": {
     "type": "storyfeed.party",
@@ -158,7 +158,7 @@ one.
 
 ```jsonc
 {
-  "verb": "noted",
+  "verb": "note",
   "headline_template": ":actor sent a note about :object",
   "thread": {
     "text": "Can I pick this up at six instead of seven?",
@@ -199,7 +199,7 @@ The picture is on the entity, minted at read time, never stored:
 
 ```jsonc
 {
-  "verb": "menu.photo_published",
+  "verb": "publish",
   "headline_template": ":actor added a photo of :target",
   "object": {
     "type": "photo",
