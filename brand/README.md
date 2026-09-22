@@ -22,9 +22,18 @@ Each entry is four parts, and they are the package's own vocabulary:
 | `mono-{light,dark}.svg` | one ink, for stamps, print and embroidery |
 | `avatar.svg`, `avatar-512.png` | contained on `#202735`, for the GitHub org avatar |
 | `storyfeed-motion-{light,dark}.svg` | the advancing carousel, 4s cadence |
+| `storyfeed-readme.{svg,png}` | 1200×320 repository banner |
+| `storyfeed-social.{svg,png}` | 1280×640 social card |
 
 `docs/public/` carries the deployed copies: `logo-light.svg`, `logo-dark.svg`,
 `favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`.
+
+**The banner wordmark is drawn as outlines, not text.** Instrument Sans is the
+site's face, it ships as woff2, and neither GitHub nor a rasteriser will resolve
+a webfont from an SVG — so the letterforms are `<path>` data and the files need
+no font installed to render correctly anywhere. Re-typesetting them means
+re-running the outline step, not editing a `<text>` node. The PNGs are 2× for
+retina.
 
 ## Rules, each of which is a mistake someone has already made
 
