@@ -1,53 +1,53 @@
-/**
- * Brand tokens — amber on ink.
+/*
+ * Brand tokens — the Carousel palette.
  *
- * The mark carries its own ink field (docs/public/logo.svg) because amber on
- * white is unreadable at 1.7:1. That has a consequence the palette has to
- * respect: the avatar amber and the LINK amber are deliberately different
- * colours. Links run at amber-700 in light mode (5.0:1 on white) and amber-300
- * in dark (11.2:1 on the dark page). Using the logo's #fbbf24 for body links
- * would look right in a screenshot and fail for a real reader.
+ * THE MARK'S COLOURS ARE NOT TEXT COLOURS. Teal `#438D98` is 3.82 on white and
+ * the yellows are worse, so links run at a darkened teal: `#356F78` (5.68 on
+ * white) in light, `#7CC3CE` (8.63 on the dark page) in dark. Using a mark
+ * colour for body text looks fine in a screenshot and fails a real reader.
  *
- * Same rule on buttons: VitePress puts white text on the brand fill by default,
- * which is 2.1:1 on amber. Button text is ink here, never white.
+ * BUTTON TEXT IS WHITE HERE, which INVERTS the rule this file used to carry.
+ * White on `#356F78` is 5.68; ink on it is 2.63. The old rule said ink-never-
+ * white, and it was right about amber for exactly the same reason it is wrong
+ * about teal. See brand/README.md rule 3.
  */
 :root {
-  --vp-c-brand-1: #b45309; /* amber-700 — links, active nav */
-  --vp-c-brand-2: #92400e; /* hover */
-  --vp-c-brand-3: #f59e0b; /* solid fills */
-  --vp-c-brand-soft: rgba(245, 158, 11, 0.14);
+  --vp-c-brand-1: #356F78; /* teal, darkened — links, active nav */
+  --vp-c-brand-2: #2B6069; /* hover */
+  --vp-c-brand-3: #438D98; /* solid fills */
+  --vp-c-brand-soft: rgba(67, 141, 152, 0.14);
 
-  --vp-button-brand-bg: #f59e0b;
-  --vp-button-brand-hover-bg: #d97706;
-  --vp-button-brand-active-bg: #b45309;
-  --vp-button-brand-text: #0f172a;
-  --vp-button-brand-hover-text: #0f172a;
-  --vp-button-brand-active-text: #0f172a;
+  --vp-button-brand-bg: #356F78;
+  --vp-button-brand-hover-bg: #2B6069;
+  --vp-button-brand-active-bg: #2B6069;
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-hover-text: #ffffff;
+  --vp-button-brand-active-text: #ffffff;
   --vp-button-brand-border: transparent;
 }
 
 .dark {
-  --vp-c-brand-1: #fbbf24; /* amber-300 — the logo's own amber, legible here */
-  --vp-c-brand-2: #f59e0b;
-  --vp-c-brand-3: #d97706;
-  --vp-c-brand-soft: rgba(251, 191, 36, 0.16);
+  --vp-c-brand-1: #7CC3CE; /* teal, lightened for the dark page */
+  --vp-c-brand-2: #6FB5C0;
+  --vp-c-brand-3: #438D98;
+  --vp-c-brand-soft: rgba(124, 195, 206, 0.16);
 
-  --vp-button-brand-bg: #f59e0b;
-  --vp-button-brand-hover-bg: #fbbf24;
-  --vp-button-brand-active-bg: #d97706;
-  --vp-button-brand-text: #0f172a;
-  --vp-button-brand-hover-text: #0f172a;
-  --vp-button-brand-active-text: #0f172a;
+  --vp-button-brand-bg: #356F78;
+  --vp-button-brand-hover-bg: #2B6069;
+  --vp-button-brand-active-bg: #2B6069;
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-hover-text: #ffffff;
+  --vp-button-brand-active-text: #ffffff;
 }
 
-/* The home hero gradient, from the same two ambers. */
+/* The home hero gradient, from the mark's own teal and yellow. */
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #b45309, #f59e0b);
+  --vp-home-hero-name-background: linear-gradient(120deg, #2B6069, #D9A008);
 }
 
 .dark {
-  --vp-home-hero-name-background: linear-gradient(120deg, #f59e0b, #fde68a);
+  --vp-home-hero-name-background: linear-gradient(120deg, #438D98, #FBBF24);
 }
 
 /* ─── Feed widgets in prose ───────────────────────────────────────────────────
