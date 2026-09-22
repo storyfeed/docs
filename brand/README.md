@@ -21,6 +21,7 @@ Each entry is four parts, and they are the package's own vocabulary:
 | `yellow-{light,dark}.svg` | single colour |
 | `mono-{light,dark}.svg` | one ink, for stamps, print and embroidery |
 | `avatar.svg`, `avatar-512.png` | contained on `#202735`, for the GitHub org avatar |
+| `avatar-transparent.svg`, `avatar-transparent-{512,1000}.png` | transparent light-surface avatar, no dark tile; PNGs for GitHub |
 | `storyfeed-motion-{light,dark}.svg` | the advancing carousel, 4s cadence |
 | `storyfeed-readme.{svg,png}` | 1200×320 repository banner |
 | `storyfeed-social.{svg,png}` | 1280×640 social card |
