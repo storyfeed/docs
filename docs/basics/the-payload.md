@@ -4,10 +4,9 @@
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
-Reading a feed returns one JSON document: the activities, newest first, each
-with everything a renderer needs to draw it. The package produces nothing else.
-Below are the examples from [Usage Examples](/guide/usage-examples) as that
-JSON.
+Reading a feed returns one JSON document: the activities, newest first, with
+everything a renderer needs to draw them. Here are the
+[Usage Examples](/guide/usage-examples) as that JSON.
 
 ## The Envelope
 
@@ -24,18 +23,17 @@ The response is the following JSON:
 
 <FeedExample payload :items="[scenes.order]" />
 
-`next_cursor` and `sync_token` are opaque: your app stores them and sends them
-back on the next read. [Reading Feeds](/basics/reading#pagination) covers both.
+Your app sends `next_cursor` back to read the next page. See
+[Reading Feeds](/basics/reading#pagination).
 
 ## One Activity
 
-A customer places an order. Every key a node carries is always present:
+A customer places an order. Every key is always present:
 
 <FeedExample expanded :items="[scenes.order]" />
 
-The sentence arrives with its tokens in it and the entities beside it. A
-renderer substitutes the labels into the sentence. The nodes below have the
-same shape and show only the keys that differ.
+A renderer puts the entities' labels into the sentence's tokens. The nodes
+below show only the keys that differ.
 
 ## Three in a Row
 
@@ -76,9 +74,8 @@ Five customers, the same kitchen:
 }
 ```
 
-A group fills a singular role key only when that role has one entity. To say
-how many entities a group holds, use `distinct`, which is the true total; the
-`sample` lists hold only a few.
+A group fills a role key like `actor` only when that role has one entity. For
+how many there are, read `distinct`; `sample` holds only a few.
 
 ## Someone Who Is Not a User
 
@@ -99,7 +96,7 @@ A payment provider marks an order paid:
 }
 ```
 
-When nobody acted, `actor` is `null` and the template names no actor.
+When nobody acted, `actor` is `null`.
 
 ## The Words Someone Wrote
 
@@ -135,12 +132,11 @@ A detail sits in the app's own `data`, marked by two reserved keys:
 }
 ```
 
-The renderer upgrades the block by `$v` before drawing it.
-[What an Activity Shows](/basics/activity-content) covers the forms.
+[What an Activity Shows](/basics/activity-content) covers these forms.
 
 ## A Photograph
 
-The picture is on the entity, minted at read time:
+The picture is on the entity:
 
 ```jsonc
 {
@@ -188,9 +184,7 @@ The picture is on the entity, minted at read time:
 
 ## What Is Not in It
 
-No markup, class names, colours, sizes or translated strings. Substituting and
-translating the template are the renderer's job. `component` is a name your
-app chose for its own renderer to resolve; the package neither ships nor
-validates one.
+No markup, class names, colours, sizes or translated strings. Filling in and
+translating the headline are the renderer's job.
 
 Every key and type: [The Payload Contract](/reference/payload).

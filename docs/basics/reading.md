@@ -1,7 +1,7 @@
 # Reading Feeds
 
-`Storyfeed::feed()` starts a read. You narrow it, choose a mode, and `get()`
-returns a page of nodes, ready to render or to return from a route.
+`Storyfeed::feed()` starts a read, and `get()` returns a page of the feed,
+ready to render or to return from a route.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
@@ -47,9 +47,8 @@ The response is the following JSON:
 
 <FeedExample payload :items="scoped" />
 
-`get()` returns a `FeedPage`. It is `Arrayable`, `JsonSerializable`,
-`Responsable` and read-only `ArrayAccess`, so in PHP `$page['items']` holds
-the same nodes as `items` in the JSON. Drawn, the same page reads:
+`get()` returns a `FeedPage`, which reads like an array in PHP:
+`$page['items']` holds the same nodes. Drawn, the page reads:
 
 <FeedExample context :items="scoped" />
 
@@ -79,11 +78,9 @@ Storyfeed::feed()->involving($kitchen)->summary()->get();
 
 <FeedExample :items="summary" />
 
-The app-wide default is `grouping.default` in the config, and a call
-overrides it. The payload does not name the mode, so a renderer draws every
-mode the same way.
-
-**A mode is chosen per surface, not per app.** One app often uses all three:
+The default is `grouping.default` in the config. The payload doesn't say which
+mode made it, so a renderer draws them all the same way. Choose a mode per
+screen, not per app:
 
 | Surface | Mode | Why |
 |---|---|---|
@@ -93,7 +90,7 @@ mode the same way.
 
 ## Scoping
 
-An entity's own page wants `involving()`: every activity that mentions it, in
+An entity's own page uses `involving()`: every activity that mentions it, in
 any role.
 
 ```php
@@ -112,20 +109,18 @@ Narrower filters:
 | `->object($order)` / `->target($kitchen)` | only that exact role |
 | `->verb('place')` | one verb |
 
-Scopes combine. Group counts are recomputed within the scope: a group of four
-whose two members fall inside the kitchen arrives as a group of two on that
-kitchen's page.
+Scopes combine. A group counts only the activities inside the scope.
 
 ::: tip The difference between involving and context
 `context()` returns only activities recorded inside a container. "Dish put on
-the menu" records the dish as the **object**, so a page scoped with `context()`
-misses it. An entity's own page uses `involving()`.
+the menu" records the dish as the **object**, so a dish's page scoped with
+`context()` misses it. `involving()` finds it.
 :::
 
 ## Custom Constraints with `query()`
 
-`query()` hands you the underlying activity query, for anything the filters
-cannot express:
+`query()` gives you the activity query, for anything the filters can't
+express:
 
 ```php
 // a controller, or wherever the feed is read
@@ -142,15 +137,10 @@ $kitchen->storyfeed()
 
 <FeedExample :items="[repeat]" />
 
-Callbacks compose, and the constraint applies to the whole read, including
-group children and group counts.
-
-- `limit()` or `offset()` inside the callback throws. Size the page with
-  `limit()` on the builder.
-- Ordering inside the callback is ignored. The read owns its ordering, because
-  the cursor encodes a position in it.
-- A callback only narrows. Each one is wrapped in its own `where` group, so an
-  `orWhere` inside it cannot reach past the scope.
+The constraint applies to the whole read, groups included. A callback can
+only narrow the read: `orWhere` can't reach past the scope, ordering is
+ignored, and `limit()` or `offset()` throws. Size the page with `limit()` on
+the builder.
 
 ## Pagination
 
@@ -165,10 +155,9 @@ Pass the previous page's `next_cursor` back:
 $page = Storyfeed::feed()->cursor($request->query('cursor'))->get();
 ```
 
-A cursor is a position in the stream **this** query produced: its scope, its
-filters, its mode. Send it back with the same query, including the same
-`query()` callbacks. Applied to a different query it does not error; it skips
-or repeats nodes.
+Send a cursor back with the same query that produced it: the same scope,
+filters, mode and `query()` callbacks. With a different query it skips or
+repeats nodes, without an error.
 
 ## Conditional Building
 
