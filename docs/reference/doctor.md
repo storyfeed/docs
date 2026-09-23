@@ -2,9 +2,15 @@
 
 ```bash
 php artisan storyfeed:doctor
-php artisan storyfeed:doctor --json          # structured, for CI
-php artisan storyfeed:doctor --stubs         # print routes/feed.php definitions for every gap
-php artisan storyfeed:doctor --only=grammar  # one check
+
+# structured, for CI
+php artisan storyfeed:doctor --json
+
+# print routes/feed.php definitions for every gap
+php artisan storyfeed:doctor --stubs
+
+# one check
+php artisan storyfeed:doctor --only=grammar
 ```
 
 Doctor checks your registries, your schema and the activities in your feed.
@@ -76,7 +82,9 @@ as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 ```php
 // config/storyfeed.php
 // throws FeedMisconfigured
-'portal' => fn (FeedBuilder $feed) => $feed->only(['place', 'ready'])->unrestricted(),
+'portal' => fn (FeedBuilder $feed) => $feed
+    ->only(['place', 'ready'])
+    ->unrestricted(),
 
 // a controller, reading the feed
 use Storyfeed\Facades\Storyfeed;
@@ -181,26 +189,35 @@ snapshot that throws on an empty one is not reported.
 ## From Findings to Code
 
 ```bash
-php artisan storyfeed:doctor --stubs            # routes/feed.php definitions, with their use lines
-php artisan storyfeed:doctor --stubs --arrays   # the same, as registry arrays for a service provider
-php artisan make:story --from-doctor            # a story class per gap
+# routes/feed.php definitions, with their use lines
+php artisan storyfeed:doctor --stubs
+
+# the same, as registry arrays for a service provider
+php artisan storyfeed:doctor --stubs --arrays
+
+# a story class per gap
+php artisan make:story --from-doctor
 ```
 
 `--stubs` prints the definitions the findings imply, ready for
-`routes/feed.php`:
+`routes/feed.php`. After one order is placed with no definition:
 
 ```php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
-use Storyfeed\Grouping\GroupBuilder;
 
-Story::for(Order::class)->verb('place')->headline('TODO :actor :object :target');
-Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat('TODO :actor :target :count'));
+Story::for(Order::class)->verb('place')->headline(':actor placed :object');
+// order.place: an icon from your app's own set; doctor cannot choose one.
+// Story::for(Order::class)->verb('place')->icon('…');
 ```
 
-Each is a headline, an icon, an actorless verb, or a group headline. Each
-`TODO` lists the tokens that are safe for that headline: paste the lines into
-`routes/feed.php` and replace each `TODO` with the sentence.
+Each is a headline, an icon, an actorless verb, or a group headline. Where
+doctor can write the sentence, the stub is live: the verb in the past tense,
+over tokens that are safe for that headline. Where it cannot, the stub is
+commented out beneath the reason and the safe tokens, and doctor keeps
+reporting the gap until you write it: an icon, a verb whose past tense it
+cannot spell for certain (`ship`), a key that covers every verb, or a group
+whose axis does not pin the verb.
 Every stub comes from what was recorded: pairs that occurred, axes the compiled
 recipes apply, tokens that are pinned. `roles` and `aggregates.latent` emit no
 stub; the first needs its sentence rewritten, the second would render nowhere.
