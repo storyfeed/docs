@@ -8,7 +8,7 @@ is a customer placing an order with a kitchen.
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
-## Make the Models Feedable
+## Making the Models Feedable
 
 A model that appears in the feed says how it should read:
 
@@ -35,7 +35,7 @@ class Order extends Model implements Feedable
 
 `Kitchen` and `User` get the same treatment, each returning its own label.
 
-## Give the Verb a Headline
+## Giving the Verb a Headline
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -44,7 +44,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## Publish an Activity
+## Publishing an Activity
 
 <<< @/snippets/publish.php
 
