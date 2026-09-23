@@ -1,8 +1,8 @@
 # Named Feeds
 
-A feed shown to a customer and a feed shown to the kitchen are not the same
-feed. Declare each one once, by name, and enter it by that name. When you are
-done, every surface reads exactly the verbs it should, and nothing else.
+A named feed is a list of verbs you declare once and read by name. A
+customer's order page and the kitchen's screen each read their own feed, and
+each shows only the verbs declared for it.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme/samples'
@@ -66,15 +66,13 @@ $order->storyfeed('customer')->get();
 
 <FeedExample :items="customer" />
 
-An unknown name throws `UnknownFeed`. A typo does not fall back to the
-unfiltered feed. The verb list binds; the mode does not: `->log()` in a
-declaration is a default any call site may override.
+An unknown name throws `UnknownFeed`. The verb list is fixed, but the mode is
+not: `->log()` in a declaration is a default any call site may override.
 
 ## Verbs and Scope
 
-A name carries the **verbs**. It does not carry the **scope**: which rows the
-surface may read is still `involving()`, `context()` or `query()`, as on any
-builder.
+A name carries the **verbs**, not the **scope**. Which rows a surface reads is
+still set by `involving()`, `context()` or `query()`:
 
 ```php
 // a controller, or wherever the feed is read
@@ -82,10 +80,10 @@ Storyfeed::feed('customer')->get();                     // every order in the sy
 Storyfeed::feed('customer')->involving($order)->get();  // this order
 ```
 
-::: danger The scope is the half with no symptom
-The first line returns a complete, correct-looking customer timeline built
-from other people's orders. [Feed classes](#feed-classes) move the scope into
-the declaration, so the unscoped line cannot be written.
+::: danger
+The first line returns a correct-looking customer timeline built from other
+people's orders. [Feed classes](#feed-classes) put the scope in the
+declaration, so the unscoped line cannot be written.
 :::
 
 ## `only()` and `except()`
@@ -107,21 +105,20 @@ Storyfeed::feed()->except(['note'])->get();
 | `only([])` | throws |
 | repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
 
-Intersection means a call site can only ever cut further:
+A call site can only narrow a declared list:
 
 ```php
-// still just placed orders: the declared list is a floor
+// reads only 'place': 'note' is not in the declared list
 Storyfeed::feed('customer')->only(['place', 'note'])->get();
 ```
 
-Excluded verbs leave the query the whole read is built from, so group counts
-recompute inside the filter, and a group whose members are all excluded
-produces no node.
+Group counts only count the verbs the filter admits, and a group whose
+members are all excluded produces no node.
 
 ## Feed Classes
 
 A closure runs at boot, before any order exists, so it can carry verbs but
-not a subject. A class takes its subject as a constructor argument:
+not a subject. A feed class takes its subject in the constructor:
 
 ```php
 <?php
@@ -162,12 +159,13 @@ Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
 | `define()` | what the feed is about: verbs, mode, limit | no |
 | `scope()` | the values only a request supplies | yes |
 
-`CustomerFeed::make()` without its subject is an `ArgumentCountError`, and the
-role `scope()` binds cannot be rebound at a call site:
+`CustomerFeed::make()` without its subject throws `ArgumentCountError`. A call
+site cannot rebind what `scope()` set, but may narrow:
 
 ```php
-CustomerFeed::make($order)->involving($other);                   // throws FeedMisconfigured
-CustomerFeed::make($order)->only(['place'])->summary();   // fine: narrowing
+// a controller, or wherever the feed is read
+CustomerFeed::make($order)->involving($other);            // throws FeedMisconfigured
+CustomerFeed::make($order)->only(['place'])->summary();   // fine
 ```
 
 A feed with no subject declares no constructor and no `scope()`:
@@ -205,27 +203,23 @@ Storyfeed::feeds([
 ]);
 ```
 
-`CustomerFeed::make($order)` works with an empty registry; registering is
-what lets the package inspect the feed.
+`CustomerFeed::make($order)` works without registering; registering lets the
+package inspect the feed.
 
-## What a Feed Does Not Do
+## Feeds and Access Control
 
-A feed is a query filter you route a surface through. It selects rows; it
-never hides an activity, and the read path has no visibility layer underneath
+A feed is a query filter. It selects rows; there is no visibility layer under
 it.
 
-- It does not know **who is asking**. `CustomerFeed::make($order)` is the same
-  feed whichever customer requests it. That *this* customer may see *this*
-  order is a policy question, in the controller where it always was.
-- **It filters events, not fields.** An internal detail in a customer-visible
-  verb's `data` is still in the payload. What keeps it out is what you record.
-- **The write path is untouched.** Recording an internal verb stays legal.
-- **Composite parents are not special-cased.** A list admitting a story's
-  member verbs but not its own verb drops the parent node, and the members
-  read as solo items.
-- **The [Activity Streams controller](/deeper/activity-streams) builds its own
-  query** and is not filtered by a name.
+- It does not know **who is asking**. Whether *this* customer may see *this*
+  order is a policy check in your controller.
+- It filters **verbs, not fields**. Anything in an admitted verb's `data` is in
+  the payload.
+- It does not restrict **recording**. Any verb can still be recorded.
+- A list that admits a composite's member verbs but not its own verb drops the
+  parent node, and the members read as single rows.
+- The [Activity Streams controller](/deeper/activity-streams) is not filtered
+  by a name.
 
-Prefer `only()` for a customer-facing surface: `except()` admits tomorrow's
-verb unless someone adds it, and a wildcard admits a verb the day someone
-records it.
+For a customer-facing surface, use `only()`: `except()` and wildcards admit
+every new verb as soon as it is recorded.
