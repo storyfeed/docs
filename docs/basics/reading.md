@@ -144,20 +144,29 @@ the builder.
 
 ## Pagination
 
-Pass the previous page's `next_cursor` back:
+Feeds are paginated with cursors, 30 activities to a page by default. Pass the
+previous page's `next_cursor` back to get the next one:
 
 ```php
-// a controller, or wherever the feed is read
-// Cursors are opaque: store them, never parse them.
-// The end of the feed is next_cursor === null. An empty items array is not the
-// end; a page can return zero items with a live cursor, so follow it while
-// empty, bounded to a few hops.
-$page = Storyfeed::feed()->cursor($request->query('cursor'))->get();
+// routes/web.php
+Route::get('/', function (Request $request) {
+    return Storyfeed::feed()
+        ->limit(20)
+        ->cursor($request->query('cursor'))
+        ->get();
+});
 ```
 
-Send a cursor back with the same query that produced it: the same scope,
-filters, mode and `query()` callbacks. With a different query it skips or
-repeats nodes, without an error.
+Each response carries what the next request needs:
+
+| Key | What to Do With It |
+|---|---|
+| `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
+| `items` | the page's activities; a page can be empty and still have a `next_cursor`, so keep going until `next_cursor` is `null` |
+| `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
+
+A cursor only works with the query that made it: the same scope, filters, mode
+and `query()` callbacks.
 
 ## Conditional Building
 

@@ -64,7 +64,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     *Exception:* a fact that contradicts a widely-held framework prior gets
     **stated** at each trigger site, not linked. A reader who doesn't know the
     fact exists will not click.
-11. **Describe the shipped API, and only Storyfeed's.** A page never says
+11. **If it can't be taught concisely to a beginner, it isn't for the docs.**
+    A large block of code offered as a suggestion ("here is a merge function")
+    is internals: either core ships something friendlier, or the page is for
+    source divers and doesn't belong on the site (ruled 2026-09-22, dropping
+    Polling and Pagination).
+
+    **Describe the shipped API, and only Storyfeed's.** A page never says
     what a renderer will or will not do ("a renderer skips…", "never
     errors"): Storyfeed has no say over someone else's frontend (ruled
     2026-09-22). No internals the public API doesn't expose, no
@@ -333,10 +339,6 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
-- ✅ Polling and Pagination — the three rules a client holding several pages
-  follows: absorbed rows, empty pages, `sync_token`. Framework-free. Replaced
-  Live Rendering (a Vue walkthrough) on 2026-09-22: teaching one frontend is
-  not a headless package's job
 
 ### Cookbook
 

@@ -131,7 +131,6 @@ export default defineConfig({
           { text: 'Testing', link: '/deeper/testing' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
-          { text: 'Polling and Pagination', link: '/deeper/polling-and-pagination' },
         ],
       },
       {
