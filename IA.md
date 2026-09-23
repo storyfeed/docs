@@ -393,32 +393,26 @@ so nobody documents it as public API.
   glyph's intent, moved to Headlines).
 
   **Naming the boundary is not the same as teaching across it.** Where the
-  package stops, use the `::: headless` container — a custom container
-  registered in `config.ts`, whose title is always "Storyfeed is headless"
-  plus the limit the page supplies: `::: headless it ships no icons`. The
-  standing half is written once in the config rather than five times in
-  markdown, because a sentence repeated across pages drifts on the sixth.
+  package stops, use the `::: headless` container. It has ONE message, written
+  once in `config.ts` (ruled 2026-09-22: "can't the single one we just refined
+  satisfy all of them?"):
+
+  > **Storyfeed is headless: it has no views**
+  > Storyfeed serializes the feed as a structured payload. Your frontend
+  > chooses how to render it to suit your application. Official Storyfeed UI
+  > components are currently in development.
+
+  A page writes `::: headless` then `:::` and nothing else; a title or a body
+  on the page fails the build. At most one per page.
 
   **The Quickstart's last step is where "headless" is first said, in prose.**
   Every `::: headless` container after it is a callback to that sentence, so
-  none may appear on a page before the Quickstart (ruled 2026-09-22). A
-  callback is short: the title carries the boundary, and the body is one plain
-  sentence saying whose job it is. No reasons, no reassurance.
+  none may appear on a page before the Quickstart.
 
-  Six exist today: it ships no renderer, it ships no icons, it makes no
-  images, it draws no form, it counts nothing for you, it reconciles nothing
-  on the client. A seventh
-  needs a boundary the others do not already cover. Only the renderer one has
-  somewhere to send a reader, so only it names `storyfeed/ui` and
-  `storyfeed/filament`, as options, with neither required nor documented here.
-
-  It is LOUDER than `::: tip`, never a warning (ruled 2026-09-22): a reader who
-  misses it builds on something the package does not do. Teal is `tip` and
-  yellow is `warning`, so it is loud by contrast: ink edges, an ink title, a
-  solid fill. Every word of every box lives in the `HEADLESS` map in
-  `config.ts`; a page writes `::: headless <key>` and nothing else, and the
-  build fails on an unknown key or a body written on the page. Rule 9's
-  one-spelling rule still holds: it is a container, not a component.
+  It is LOUDER than `::: tip`, never a warning: a reader who misses it builds
+  on something the package does not do. Teal is `tip` and yellow is
+  `warning`, so it is loud by contrast: ink edges, an ink title, a solid fill.
+  Rule 9's one-spelling rule still holds: it is a container, not a component.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
   package exists. When the `storyfeed/filament` page lands it is a **pricing and
   install** page — what it costs, the licence key, the private Composer endpoint

@@ -230,9 +230,6 @@ Anything else is a query per row. `$dish->orders()->count()` inside a resolver
 runs once for every row that names a dish. Keep a counter cache column on the
 model instead.
 
-::: headless counts
-:::
-
 A minted form is built by current code on every read, so it never needs
 upgrading. Its version still rides along for a renderer that branches on one.
 
@@ -360,7 +357,7 @@ writing its own form owes nothing to them, and core reads none of them.
 A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
 never has to handle a bare string.
 
-::: headless forms
+::: headless
 :::
 
 ## Unknown Forms in a Renderer

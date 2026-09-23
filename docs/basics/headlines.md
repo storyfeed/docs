@@ -69,7 +69,7 @@ Keys resolve most-specific first:
 | `*.place` | that verb on any object type |
 | `*.*` | everything with no more specific entry |
 
-::: headless icons
+::: headless
 :::
 
 ## What a Glyph Means

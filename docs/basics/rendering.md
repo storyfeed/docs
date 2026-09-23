@@ -32,7 +32,7 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
   actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })
 </script>
 
-::: headless renderer
+::: headless
 :::
 
 ## The Smallest Loop That Draws Something

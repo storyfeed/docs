@@ -241,7 +241,7 @@ class MenuItem extends Model implements Feedable
 
 <FeedExample :items="[scoped[2]]" />
 
-::: headless images
+::: headless
 :::
 
 Images, attachments, the live model, and every argument each method accepts

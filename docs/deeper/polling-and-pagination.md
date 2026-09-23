@@ -4,7 +4,7 @@ A feed that polls for new activities, or loads older pages as the reader
 scrolls, holds nodes from several responses at once. Three rules keep what it
 holds correct.
 
-::: headless reconcile
+::: headless
 :::
 
 <script setup>
