@@ -367,9 +367,9 @@ so nobody documents it as public API.
 
 - **The pre-1.0 status is chrome, not a page.** A reader arrives from a search
   engine on a deep page and never sees the introduction, so the status rides in
-  `layout-top` on every route (`theme/components/StabilityBanner.vue`) and
-  points at its one canonical home, Compatibility → Stability before 1.0. It is
-  the ONLY place a version is named: per-page version callouts were removed on
+  `layout-top` on every route (`theme/components/StabilityBanner.vue`), and the
+  banner is the whole statement: no page section behind it, no link (ruled
+  2026-09-22). It is the ONLY place a version is named: per-page version callouts were removed on
   2026-09-14 under rule 25, because a page that says "not in a tagged release"
   is describing a release, and these pages describe `dev-main`.
 - Guide pages describe curation **behaviour** as "how it behaves today" —

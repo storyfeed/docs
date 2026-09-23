@@ -87,9 +87,6 @@ bounds them. Each one is a resolver call: a group node listing six objects
 resolves six entities on every page. An invalid or missing limit falls back to
 `3`.
 
-These keys change which groups form and how many exemplars they list, not the
-shape of a group node, so they are safe to tune.
-
 ## Batches & Composites
 
 | Key | Default |  |

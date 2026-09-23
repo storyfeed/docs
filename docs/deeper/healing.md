@@ -21,7 +21,7 @@ policy: a source disappearing does not by itself make an activity untrue.
 Every retirement bumps the feed's `sync_token`, like `storyfeed:curate --rehash`
 and `storyfeed:bundle`, so clients that accumulate pages must discard them and
 refetch, as described under
-[`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows).
+[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
 A reader holding an earlier cursor may see an empty page before refetching.
 Preview first and run it at a quiet time. Core does not schedule healers.
 :::

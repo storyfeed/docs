@@ -71,7 +71,6 @@ export default defineConfig({
       {
         text: 'v0.x',
         items: [
-          { text: 'Stability Before 1.0', link: '/reference/compatibility#stability-before-1-0' },
           { text: 'Roadmap', link: 'https://github.com/storyfeed/storyfeed/blob/main/ROADMAP.md' },
           { text: 'Changelog', link: 'https://github.com/storyfeed/storyfeed/blob/main/CHANGELOG.md' },
         ],

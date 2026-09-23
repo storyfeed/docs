@@ -172,13 +172,8 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 <FeedExample :items="[openInPlace]" />
 
-On this site, clicking the file name opens a panel. That is this renderer's
-choice, not the package's.
-
-::: headless it ships no modal
-There is no dialog or lightbox. `modal` is a boolean in the payload, and a
-renderer may ignore it.
-:::
+`modal` is a boolean in the payload. Opening a dialog is your renderer's job;
+on this site, clicking the file name opens a panel.
 
 ## The Forms Core Ships
 

@@ -37,7 +37,7 @@ See [Doctor](/reference/doctor) for the checks.
 `bundle` and `curate` rewrite settled history and change the `sync_token`, so
 every client that accumulates nodes resyncs.
 
-### `--rehash`: When the Grouping Recipe Changes Underneath Existing Rows
+### Rehashing Existing Rows
 
 Grouping is computed at publish time from the role columns, the verb and the
 day. Existing rows keep the hash they were written with; nothing recomputes it

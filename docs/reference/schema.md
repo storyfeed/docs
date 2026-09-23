@@ -51,10 +51,3 @@ single ordered lookup. Written in the publish transaction; backfilled by
 ## `feed_meta`
 
 Package-owned bookkeeping — the sync token lives here.
-
-## Migration Policy
-
-Migrations are **published into your app**, so a changed create stub would
-never reach an install that already ran it. Schema changes therefore ship as
-**additive, guarded `add_*` migrations**.
-

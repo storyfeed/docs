@@ -1,9 +1,7 @@
 # The Payload Contract
 
 The JSON a feed returns, payload **v1**. Every item arrives fully described, so
-a renderer needs no knowledge of your domain. The payload has its own version,
-separate from the package's: nothing breaks within a payload major, and a new
-major arrives as a new serializer beside the old one.
+a renderer needs no knowledge of your domain.
 
 ## Envelope
 
@@ -219,7 +217,7 @@ Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
 from the head. Compare for equality only; `null → non-null` is a change.
 
-This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows)
+This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows)
 moves a group past a live cursor and the next page is empty. Check the token
 before treating that response as the end of the feed. A client that ignores a
 changed token does not conform to the payload contract.
