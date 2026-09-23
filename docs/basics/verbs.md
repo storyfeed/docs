@@ -13,9 +13,8 @@ const confirmed = activity({
 })
 </script>
 
-A verb classifies an activity: it is the word your app uses for what happened.
-Recording one takes a plain string, and an app with a growing vocabulary
-eventually wants them typed.
+A verb is the word your app records for what happened: a plain string, or a
+case of an enum.
 
 ## Using Strings
 
@@ -34,8 +33,7 @@ These verbs are free-form strings, and can be anything at all.
 
 ## Using Storyfeed's Verbs
 
-Storyfeed ships the common verbs as `Storyfeed\Verb`, so an application does
-not have to invent a word for an ordinary act.
+Storyfeed ships common verbs as the `Storyfeed\Verb` enum.
 
 <FeedExample context :items="[confirmed]" />
 

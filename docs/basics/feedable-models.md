@@ -1,8 +1,7 @@
 # Feedable Models
 
-Anything that could participate in the feed, directly or indirectly, as an
-actor, object, target or context, implements `Feedable`. When you are done, the
-model has a label the feed can print and a link the feed can follow.
+A model that appears in an activity, as its actor, object, target or context,
+implements `Feedable`. It gives the feed a label to print and a link to follow.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
@@ -71,10 +70,9 @@ class Order extends Model implements Feedable
 
 <FeedExample context :items="withSnapshot" />
 
-The snapshot is taken when an activity is published and refreshed every time
-the model saves. The feed reads the snapshot, never the model, so a page of a
-hundred activities is a page of a hundred labels and no model queries. The
-entity renders at full weight with no link.
+The snapshot is taken when an activity is published, and refreshed every time
+the model saves. The feed reads the snapshot, never the model, so reading a
+feed runs no model queries. Without a link, the entity renders as plain text.
 
 ## The Link
 
@@ -115,18 +113,18 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="withLink" />
 
-It is static because there is no model: `$context` carries the snapshot, and
-the URL is minted fresh on every read. A route that changes never leaves a
-stale link in the feed.
+It is static because there is no model at read time: `$context` carries the
+snapshot. The URL is built on every read, so a changed route never leaves a
+stale link.
 
 ## A Link per Feed
 
 `$context->feed()` is the name the feed was
 [registered](/basics/named-feeds) under, so one snapshot can link somewhere
-different on each surface, or nowhere. The kitchen's ticket and the
-customer's status page are different pages about the same order:
+different on each surface, or nowhere:
 
 ```php
+// app/Models/Order.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return match ($context->feed()) { // [!code focus]
@@ -145,9 +143,8 @@ On a feed with no name:
 
 <FeedExample :items="withSnapshot" />
 
-The name is stamped by the registry, never read from the request, so the same
-snapshot resolves the same way in a queued digest, in the console and in a
-test.
+The name comes from the feed's registration, not from the request, so a link
+resolves the same way in a queued job, the console and a test.
 
 ## The Model's Own Feed
 
@@ -162,14 +159,12 @@ $kitchen->storyfeed()->get();
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 
-That is `Storyfeed::feed()->involving($kitchen)->get()` with the argument
-filled in: the same builder, so everything in
-[Reading Feeds](/basics/reading) applies.
+It is the same builder as `Storyfeed::feed()->involving($kitchen)->get()`.
 
 ## Morph Aliases
 
 Storyfeed stores morph aliases, never class names, so entities survive a
-namespace refactor. Enforce a map:
+namespace change. Enforce a map:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -186,9 +181,7 @@ Relation::enforceMorphMap([
 
 ## A Complete Model
 
-Everything above in one class, the shape a production model takes: the
-snapshot carries the key and the facts a link needs, and the resolver links
-per surface and never throws.
+Everything above in one class, with a photo preview on the customer's feed:
 
 ```php
 <?php
@@ -249,9 +242,8 @@ class MenuItem extends Model implements Feedable
 <FeedExample :items="[scoped[2]]" />
 
 ::: headless it makes no images
-`FeedImage` carries a location and its dimensions. Generating a thumbnail,
-storing it, and knowing its URL are your app's, exactly as they were before
-the feed existed — the resolver just says where the current one is.
+`FeedImage` carries a location and its dimensions. Generating, storing and
+serving the image stay your app's job; the resolver says where it is.
 :::
 
 Images, attachments, the live model, and every argument each method accepts

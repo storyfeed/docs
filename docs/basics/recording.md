@@ -1,9 +1,8 @@
 # Recording Activities
 
-An activity is a verb plus the entities in its roles. Recording one is an
-explicit call from wherever the fact happens: an action, an observer, an event
-listener. When you are done, each fact your app cares about is one call that
-reads like the sentence it produces.
+An activity is a verb plus the entities in its roles. You record one with an
+explicit call, wherever the fact happens: an action, an observer, an event
+listener.
 
 <script setup>
 import { who, where, orders, dishes, party, activity, scenes } from '../.vitepress/theme/samples'
@@ -32,11 +31,10 @@ The builder reads in the order of the headline it produces:
 <FeedExample context :items="[scenes.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
-happened. `placed` is this app's own word, not one the package knows. Verbs
-are free-form, nothing has to be registered before you record one, and the
-package never parses one — it stores the string and hands it back.
+happened. `place` is this app's own word, not one the package knows. Nothing
+is registered first; the package stores the string and hands it back.
 
-The same activity in one call, when everything is in hand:
+The same activity, in one call:
 
 ```php
 // where the order is placed: a controller, an action, a listener
@@ -91,8 +89,8 @@ Storyfeed::activity()
 <FeedExample :items="[paid]" />
 
 A string actor is a [party](/deeper/parties): a named participant with no
-model. When nothing names an actor the activity is published with none, which
-means the actor is genuinely unknown.
+model. When nothing names an actor, the activity has none, and the actor is
+unknown.
 
 ## Extra Data and Backdating
 
@@ -113,7 +111,7 @@ Storyfeed::activity()
 
 ## Replacing Instead of Appending
 
-A price edited five times before the menu goes live is one fact, not five.
+A price edited five times before the menu goes live is one fact.
 `->replace()` supersedes the earlier row with the same object and verb:
 
 ```php
@@ -126,8 +124,7 @@ Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish()
 
 <FeedExample :items="[priced]" />
 
-The key is the object and the verb; `data` is not part of it. Which verbs
-should replace and which should append is worked through in
+`data` is not part of the key. Which verbs should replace is in
 [Repeating Activities](/cookbook/repeating-activities).
 
 ## Recording Many Objects at Once
