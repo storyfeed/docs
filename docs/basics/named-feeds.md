@@ -199,7 +199,7 @@ Register classes and closures in one list:
 Storyfeed::feeds([
     'customer' => CustomerFeed::class,     // named explicitly
     KitchenFeed::class,                    // name derived: 'kitchen'
-    'pulse' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->live(),
+    'pulse' => fn (FeedBuilder $feed) => $feed->only(['place', 'ready'])->live(),
 ]);
 ```
 

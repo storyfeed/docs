@@ -69,8 +69,8 @@ as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 
 ```php
 // config/storyfeed.php
-'portal' => fn (FeedBuilder $feed) => $feed->only(['order.*'])->unrestricted(), // throws FeedMisconfigured
-Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
+'portal' => fn (FeedBuilder $feed) => $feed->only(['place', 'ready'])->unrestricted(), // throws FeedMisconfigured
+Storyfeed::feed('portal')->only(['place', 'ready'])->get();                            // fine: narrowing at a call site
 ```
 
 One feed declaration cannot both filter and be `unrestricted()`, and `verb()`
