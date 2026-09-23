@@ -6,19 +6,82 @@ look it up when the feed is read.
 
 ## Recording It
 
-```php
-// where the fact happens: a controller, an action, a listener
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreCommentRequest;
+use App\Models\Discussion;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
-Storyfeed::activity()
-    ->by($user)
-    ->action('reply', $discussion)
-    ->thread(FeedThread::make(
-        text: $excerpt,
-        replies: $discussion->comments()->count(),   // evaluated now, stored forever
-    ))
-    ->publish();
+class CommentController extends Controller
+{
+    public function store(StoreCommentRequest $request, Discussion $discussion): RedirectResponse
+    {
+        $comment = $discussion->comments()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        $excerpt = Str::limit($comment->body, 140);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('reply', $discussion) // [!code focus]
+            ->thread(FeedThread::make( // [!code focus]
+                text: $excerpt, // [!code focus]
+                replies: $discussion->comments()->count(), // evaluated now, stored forever // [!code focus]
+            )) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreCommentRequest;
+use App\Models\Discussion;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+class CommentController extends Controller
+{
+    public function store(StoreCommentRequest $request, Discussion $discussion): RedirectResponse
+    {
+        $comment = $discussion->comments()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        $excerpt = Str::limit($comment->body, 140);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'reply', // [!code focus]
+            object: $discussion, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            thread: FeedThread::make( // [!code focus]
+                text: $excerpt, // [!code focus]
+                replies: $discussion->comments()->count(), // evaluated now, stored forever // [!code focus]
+            ), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 A row recorded at three replies says three. A fourth reply publishes a new
 activity with a new count, and the older row beside it still says three.
@@ -33,7 +96,7 @@ can add a reply.
 **1. Store nothing.**
 
 ```php
-// where the fact happens: a controller, an action, a listener
+// app/Http/Controllers/CommentController.php, store()
 FeedThread::make(text: $excerpt, replies: null)
 ```
 

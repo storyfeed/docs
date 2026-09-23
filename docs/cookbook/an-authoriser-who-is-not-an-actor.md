@@ -4,19 +4,73 @@ When one person does something and another approves it, the doer is the actor
 of the story. Record the approval as a separate activity that no feed shows,
 so you can still look up who approved.
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()                 // the contributor's story
-    ->by($customer)
-    ->action('publish', $photo)
-    ->to($dish)
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
 
-Storyfeed::activity()                 // the approval, in no feed
-    ->by($approver)
-    ->action('approve', $photo)
-    ->publish();
+namespace App\Http\Controllers;
+
+use App\Models\Photo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PhotoApprovalController extends Controller
+{
+    public function store(Request $request, Photo $photo): RedirectResponse
+    {
+        $photo->update(['approved_at' => now()]);
+
+        Storyfeed::activity() // the contributor's story // [!code focus]
+            ->by($photo->user) // [!code focus]
+            ->action('publish', $photo) // [!code focus]
+            ->to($photo->menuItem) // [!code focus]
+            ->publish(); // [!code focus]
+
+        Storyfeed::activity() // the approval, in no feed // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('approve', $photo) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Photo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PhotoApprovalController extends Controller
+{
+    public function store(Request $request, Photo $photo): RedirectResponse
+    {
+        $photo->update(['approved_at' => now()]);
+
+        Storyfeed::record( // the contributor's story // [!code focus]
+            verb: 'publish', // [!code focus]
+            object: $photo, // [!code focus]
+            actor: $photo->user, // [!code focus]
+            target: $photo->menuItem, // [!code focus]
+        ); // [!code focus]
+
+        Storyfeed::record( // the approval, in no feed // [!code focus]
+            verb: 'approve', // [!code focus]
+            object: $photo, // [!code focus]
+            actor: $request->user(), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

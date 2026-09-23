@@ -8,16 +8,22 @@ no actor when nobody did. Each case gets its own headline.
 
 namespace App\Events;
 
+use App\Models\Order;
+use App\Models\User;
+use Storyfeed\Contracts\PublishesToFeed;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\PendingActivity;
+
 class OrderPlaced implements PublishesToFeed
 {
     public function __construct(public Order $order, public User $customer) {}
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return Storyfeed::activity()
-            ->by($this->customer)                    // the actor travels on the event
-            ->action('place', $this->order)
-            ->to($this->order->kitchen);
+        return Storyfeed::activity() // [!code focus]
+            ->by($this->customer) // the actor travels on the event // [!code focus]
+            ->action('place', $this->order) // [!code focus]
+            ->to($this->order->kitchen); // [!code focus]
     }
 }
 ```
@@ -76,7 +82,8 @@ Without `by()`, the actor is resolved from the request: by default, the
 authenticated user. A job dispatched from a console command or the scheduler
 has no user, so with no custom resolver or fallback party the actor is `null`:
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Jobs;
@@ -91,13 +98,38 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::activity()
-            ->action('place', $this->order)     // no by(), no user: the actor is null
-            ->to($this->order->kitchen)
-            ->publish();
+        Storyfeed::activity() // [!code focus]
+            ->action('place', $this->order) // no by(), no user: the actor is null // [!code focus]
+            ->to($this->order->kitchen) // [!code focus]
+            ->publish(); // [!code focus]
     }
 }
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
+{
+    public function __construct(public Order $order) {}
+
+    public function handle(): void
+    {
+        Storyfeed::record( // [!code focus]
+            verb: 'place', // [!code focus]
+            object: $this->order, // no actor:, no user: the actor is null // [!code focus]
+            target: $this->order->kitchen, // [!code focus]
+        ); // [!code focus]
+    }
+}
+```
+:::
 
 <FeedExample :items="[anonymous]" />
 
@@ -109,12 +141,32 @@ To keep the author, pass the user into the job and call
 ## An Explicitly Unknown Actor
 
 ```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($knownAuthor)                          // User|null: null means anonymous
-    ->action('place', $order)
-    ->to($kitchen)
-    ->publish();
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    {
+        $order = $kitchen->orders()->create($request->validated());
+
+        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
+
+        Storyfeed::activity() // [!code focus]
+            ->by($knownAuthor) // User|null: null means anonymous // [!code focus]
+            ->action('place', $order) // [!code focus]
+            ->to($kitchen) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
 `by(null)` skips actor resolution entirely: no resolver, no authenticated
@@ -142,13 +194,64 @@ actor; use an anonymous builder instead.
 
 ## A System Is a Party
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by('Stripe')
-    ->action('pay', $order)
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by('Stripe') // [!code focus]
+            ->action('pay', $order) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return response()->noContent();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'pay', // [!code focus]
+            object: $order, // [!code focus]
+            actor: 'Stripe', // [!code focus]
+        ); // [!code focus]
+
+        return response()->noContent();
+    }
+}
+```
+:::
 
 <FeedExample :items="[paid]" />
 
@@ -163,12 +266,38 @@ A job that publishes many activities can wrap them in
 Storyfeed::grammar([
     'order.expire' => ':object expired at :target',   // no :actor, on purpose
 ]);
+```
 
-// where the fact happens: a controller, an action, a listener
-Storyfeed::anonymous()                          // no actor, even inside Storyfeed::as()
-    ->action('expire', $order)
-    ->to($kitchen)
-    ->publish();
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class ExpireOrders extends Command
+{
+    protected $signature = 'orders:expire';
+
+    public function handle(): void
+    {
+        $unpaid = Order::whereNull('paid_at')
+            ->whereNull('expired_at')
+            ->where('created_at', '<', now()->subWeek())
+            ->get();
+
+        foreach ($unpaid as $order) {
+            $order->update(['expired_at' => now()]);
+
+            Storyfeed::anonymous() // no actor, even inside Storyfeed::as() // [!code focus]
+                ->action('expire', $order) // [!code focus]
+                ->to($order->kitchen) // [!code focus]
+                ->publish(); // [!code focus]
+        }
+    }
+}
 ```
 
 <FeedExample :items="[expired]" />
