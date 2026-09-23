@@ -206,7 +206,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     **form** reads as an HTML form, so a `KeyValue`, `Excerpt` or `MediaObject`
     is a **body type**, and one instance is a **body**; **mint** is jargon, so
     what `feedMedia()` returns is **resolved** when the feed is read, and a
-    composite is **created**.
+    composite is **created**. Prose says **Storyfeed**, never "core": a reader who
+    installed one package has no "core" to picture. And say what the package
+    does in plain verbs ("stores it and hands it back unchanged"), not in
+    shorthand like "core never reads it".
 28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
     site", "when to…") live in the cookbook, not on the concept page.
 29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
