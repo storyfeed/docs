@@ -244,8 +244,9 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     class already shown in full, under `// app/…/File.php, method()`.
 34. **Every recording example shows both forms, as tabs** (ruled 2026-09-22).
     A `::: code-group` with `[Fluent Syntax]` first and `[Named Arguments]`
-    second: the same activity as one `Storyfeed::record()` call. One argument
-    per line, with a trailing comma, so a long call stays readable. Fluent leads
+    second: the same activity as one `Storyfeed::record()` call. Every argument
+    named (`verb:`, `object:`, `actor:` …), one per line, with a trailing
+    comma, so a long call stays readable. Fluent leads
     and is the default tab. Shared snippets get a twin file,
     `<name>.named-arguments.php`. No second tab where `record()` has no
     equivalent: a chain that returns a `PendingActivity` (`toFeedActivity()`),

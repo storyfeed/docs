@@ -14,8 +14,8 @@ class OrderController extends Controller
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::record( // [!code focus]
-            'place', // [!code focus]
-            $order, // [!code focus]
+            verb: 'place', // [!code focus]
+            object: $order, // [!code focus]
             actor: $request->user(), // [!code focus]
             target: $kitchen, // [!code focus]
         ); // [!code focus]

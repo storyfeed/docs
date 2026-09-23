@@ -126,8 +126,8 @@ class StripeWebhookController extends Controller
         $order->update(['paid_at' => now()]);
 
         Storyfeed::record( // [!code focus]
-            'pay', // [!code focus]
-            $order, // [!code focus]
+            verb: 'pay', // [!code focus]
+            object: $order, // [!code focus]
             actor: 'Stripe', // [!code focus]
         ); // [!code focus]
 
@@ -196,8 +196,8 @@ class MenuItemPriceController extends Controller
         $dish->update(['price' => $request->integer('price')]);
 
         Storyfeed::record( // [!code focus]
-            'reprice', // [!code focus]
-            $dish, // [!code focus]
+            verb: 'reprice', // [!code focus]
+            object: $dish, // [!code focus]
             actor: $request->user(), // [!code focus]
             data: ['from' => $from, 'to' => $dish->price], // [!code focus]
         ); // [!code focus]
@@ -259,8 +259,8 @@ class ImportPriceHistory extends Command
     {
         foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
             Storyfeed::record( // [!code focus]
-                'reprice', // [!code focus]
-                MenuItem::findOrFail($row['menu_item_id']), // [!code focus]
+                verb: 'reprice', // [!code focus]
+                object: MenuItem::findOrFail($row['menu_item_id']), // [!code focus]
                 actor: User::findOrFail($row['user_id']), // [!code focus]
                 data: ['from' => $row['from'], 'to' => $row['to']], // [!code focus]
                 publishedAt: $row['changed_at'], // [!code focus]
@@ -291,8 +291,8 @@ Storyfeed::activity()
 ```php [Named Arguments]
 // app/Http/Controllers/MenuItemPriceController.php, update()
 Storyfeed::record(
-    'reprice',
-    $dish,
+    verb: 'reprice',
+    object: $dish,
     actor: $request->user(),
     data: ['from' => $from, 'to' => $dish->price],
     replace: true, // [!code highlight]
@@ -358,7 +358,7 @@ class PublishMenuController extends Controller
         $dishes->each->update(['published_at' => now()]);
 
         Storyfeed::record( // [!code focus]
-            'publish', // [!code focus]
+            verb: 'publish', // [!code focus]
             objects: $dishes, // [!code focus]
             actor: $request->user(), // [!code focus]
         ); // [!code focus]

@@ -28,8 +28,8 @@ can be **anonymous**: nobody is known.
 $party = Storyfeed::party('Stripe');
 
 Storyfeed::record(
-    'pay',
-    $order,
+    verb: 'pay',
+    object: $order,
     actor: $party,
 );
 ```
@@ -56,7 +56,7 @@ Inside a job or console command there is no authenticated user. Scope a block:
 // a job, or a console command
 Storyfeed::as('System', function () {
     Storyfeed::record(
-        'cancel',
+        verb: 'cancel',
         object: $order,
     );
 });

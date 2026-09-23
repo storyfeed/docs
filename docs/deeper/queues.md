@@ -199,7 +199,7 @@ class RecordOrderPlaced implements ShouldQueue
     public function handle(OrderPlaced $event): void
     {
         Storyfeed::record(
-            'place',
+            verb: 'place',
             object: $event->order,
         );   // names the customer who placed it
     }
