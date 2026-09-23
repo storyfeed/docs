@@ -1,11 +1,9 @@
 # The Payload
 
-A read returns one JSON document, and that document is everything the package
-produces. No HTML, no view names, no knowledge of your app beyond what you
-recorded.
-
-The feeds you have been looking at are that document, drawn. Here they are as
-data: the same examples from [Usage Examples](/guide/usage-examples), dissected.
+Reading a feed returns one JSON document: the activities, newest first, each
+with everything a renderer needs to draw it. The package produces nothing else.
+Below are the examples from [Usage Examples](/guide/usage-examples) as that
+JSON.
 
 ## The Envelope
 
@@ -23,14 +21,12 @@ $page = Storyfeed::feed()->involving($kitchen)->get();
 }
 ```
 
-Two of those four keys are strings you store and hand back rather than read.
-[Reading Feeds](/basics/reading#pagination) covers what to do with them.
+`next_cursor` and `sync_token` are opaque: your app stores them and sends them
+back on the next read. [Reading Feeds](/basics/reading#pagination) covers both.
 
 ## One Activity
 
-A customer places an order. Nothing is elided here: every key a node carries
-is present, because a renderer reads a missing value as `null` rather than as
-an undefined index.
+A customer places an order. Every key a node carries is always present:
 
 ```json
 {
@@ -81,16 +77,13 @@ an undefined index.
 }
 ```
 
-The sentence arrives with its tokens still in it, and the entities arrive
-beside it fully described. Substituting one into the other is all a renderer
-does, which is why it needs no knowledge of orders or kitchens.
-
-Every node below is the same shape. Only the keys that carry the difference
-are shown.
+The sentence arrives with its tokens in it and the entities beside it. A
+renderer substitutes the labels into the sentence. The nodes below have the
+same shape and show only the keys that differ.
 
 ## Three in a Row
 
-One customer, three orders, one line. A group node, not an activity:
+One customer, three orders, one group node:
 
 ```jsonc
 {
@@ -114,7 +107,7 @@ One customer, three orders, one line. A group node, not an activity:
 
 ## A Crowd
 
-Five customers, the same kitchen. The difference is one key:
+Five customers, the same kitchen:
 
 ```jsonc
 {
@@ -127,14 +120,13 @@ Five customers, the same kitchen. The difference is one key:
 }
 ```
 
-A group carries a singular role key only where it genuinely has one entity in
-that role. `distinct` is the true total from the query, so it is what a
-renderer counts with, never the length of the exemplar list it was handed.
+A group fills a singular role key only when that role has one entity. To say
+how many entities a group holds, use `distinct`, which is the true total; the
+`exemplars` lists are only a sample.
 
 ## Someone Who Is Not a User
 
-A payment provider marks an order paid. It is an ordinary entity with no page
-of its own:
+A payment provider marks an order paid:
 
 ```jsonc
 {
@@ -151,8 +143,7 @@ of its own:
 }
 ```
 
-And when nobody acted at all, `actor` is `null` and the template never names
-one.
+When nobody acted, `actor` is `null` and the template names no actor.
 
 ## The Words Someone Wrote
 
@@ -172,12 +163,11 @@ one.
 
 ## A Form Inside `data`
 
-A detail sits inside the app's own `data`, at a key the app chose, marked by
-two reserved keys:
+A detail sits in the app's own `data`, marked by two reserved keys:
 
 ```jsonc
 {
-  "verb": "order.placed",
+  "verb": "place",
   "headline_template": ":actor placed :object with :target",
   "data": {
     "$body": "Storyfeed/Body/Excerpt",
@@ -189,13 +179,12 @@ two reserved keys:
 }
 ```
 
-`$v` travels all the way to the renderer, which upgrades the block before
-drawing it. [What an Activity Shows](/basics/activity-content) covers the
-forms.
+The renderer upgrades the block by `$v` before drawing it.
+[What an Activity Shows](/basics/activity-content) covers the forms.
 
 ## A Photograph
 
-The picture is on the entity, minted at read time, never stored:
+The picture is on the entity, minted at read time:
 
 ```jsonc
 {
@@ -243,13 +232,9 @@ The picture is on the entity, minted at read time, never stored:
 
 ## What Is Not in It
 
-No markup. No class names, no colours, no sizes. No translated strings: the
-template is what your app registered, and substituting and translating are the
-renderer's.
+No markup, class names, colours, sizes or translated strings. Substituting and
+translating the template are the renderer's job. `component` is a name your
+app chose for its own renderer to resolve; the package neither ships nor
+validates one.
 
-`component` is the one hint the payload carries, and it is a name your app
-chose for its own renderer to resolve. The package neither ships nor validates
-one.
-
-[The Payload Contract](/reference/payload) is the exhaustive version: every
-key, every type, and what may change.
+Every key and type: [The Payload Contract](/reference/payload).
