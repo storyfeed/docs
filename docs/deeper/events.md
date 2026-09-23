@@ -1,7 +1,8 @@
 # Publishing from Events
 
-When a fact is already an event, the activity can be published from it. When
-you are done, dispatching the event is what puts the activity on the feed.
+If your app already dispatches an event when something happens, you can
+publish the activity from that event: from a listener, or from the event class
+itself.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -13,6 +14,9 @@ import { scenes } from '../.vitepress/theme/samples'
 <?php
 
 namespace App\Events;
+
+use App\Models\Order;
+use App\Models\User;
 
 class OrderPlaced
 {
@@ -26,15 +30,14 @@ class OrderPlaced
 
 ## From the Event Itself
 
-An event can build the same activity itself, with no listener to register.
-Return it without publishing; dispatching the event publishes it:
+An event can build the activity itself, with no listener to register. Return
+it without calling `publish()`; dispatching the event publishes it:
 
 <<< @/snippets/publish-from-event.php
 
 <FeedExample :items="[scenes.order]" />
 
-Dispatch the event and the activity is published. Return `null` to publish
-nothing, when only some instances belong on the feed:
+Return `null` to publish nothing for this instance:
 
 ```php
 // app/Events/OrderPlaced.php
@@ -51,11 +54,6 @@ public function toFeedActivity(): ?PendingActivity
 }
 ```
 
-::: tip
-The name is `toFeedActivity()`, not `toFeed()`, so a model can be both
-`Feedable` and publishing without a collision.
-:::
-
 ## Events Storyfeed Emits
 
 | Event | Payload |
@@ -64,8 +62,6 @@ The name is `toFeedActivity()`, not `toFeed()`, so a model can be both
 | `Storyfeed\Events\ActivityDeleted` | `$event->activity`: the deleted activity's facts |
 | `Storyfeed\Events\BatchClosed` | `$event->batch`: the closed batch, with its activities |
 
-Each carries a snapshot of the facts at event time, not a model. Events are
-delivered after the outermost transaction commits, and a rollback delivers
-nothing. A listener on any of the three can be `ShouldQueue` and receives the
-same facts on the worker. [Queues](/deeper/queues) covers what travels and
-when the job is pushed.
+Each carries a snapshot of the facts, not a model, and is dispatched after the
+outermost transaction commits. [Queues](/deeper/queues) covers queued
+listeners on these events.
