@@ -29,8 +29,11 @@ const withTicket = activity({
 })
 </script>
 
-An activity draws as a sentence and, beneath it, a body. The order placed in
-[Usage Examples](/guide/usage-examples) has never had one:
+A body is what an activity shows beneath its headline: the lines of an order, a
+quoted passage, a before and after. The model writes it in `toFeed()`, and a
+renderer draws it.
+
+The order from [Usage Examples](/guide/usage-examples), with no body yet:
 
 <FeedExample :items="[scenes.order]">
   <template #body><BodyPlaceholder /></template>
@@ -38,9 +41,7 @@ An activity draws as a sentence and, beneath it, a body. The order placed in
 
 ## Defining a Body
 
-The row says an order was placed. What it does not say is what was in it — and
-the order is the only thing here that knows, so that is where the ticket is
-written. Start with the plainest version, a line of text:
+The plainest body is a line of text:
 
 ```php
 // app/Models/Order.php
@@ -55,8 +56,7 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[asText]" />
 
-Say where the words came from and it is an `Excerpt`, which gives the block a
-caption a reader can use:
+An `Excerpt` adds a caption saying where the words came from:
 
 ```php
 // app/Models/Order.php
@@ -73,8 +73,7 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[asExcerpt]" />
 
-Those are lines to a reader and one string to a renderer. `KeyValue` keeps them
-apart as data:
+A `KeyValue` keeps each line apart as data:
 
 ```php
 // app/Models/Order.php
@@ -96,19 +95,12 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[withTicket]" />
 
-**Structure is what each step buys, and a renderer is what spends it.** The text
-version is written as well as text can be, and a renderer still can do nothing
-but print it. Handed labelled lines, the same renderer can set the item against
-the price, align the column and hold the total apart from the rest.
-All three bodies are legitimate and a small feed is often better for the
-plainest, so the question is never which has the most in it — it is whether a
-renderer would use what you kept.
+A renderer can only print text. Given labelled rows, it can align each item
+against its price and set the total apart. Use the plainest form your renderer
+will make use of.
 
-**The lines were settled when the order was placed and have not moved since**,
-which is why they belong on the snapshot. A body written here is re-derived
-whenever the model is saved, so it suits facts an app has finished deciding.
-Nothing about this row needs the live model, and nothing at the publishing line
-changed through any of it:
+A body in `toFeed()` is rebuilt whenever the model is saved, so it suits facts
+the app has finished deciding. The publishing line does not change:
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -125,96 +117,72 @@ The form arrives on the node exactly as it went in:
 {
   "$body": "Storyfeed/Body/KeyValue",
   "$v": 1,
-  "rows": [
-    { "label": "1 × N101 Chicken Curry", "value": "$14.50", "verbatim": false, "missing": null }
+  "title": null,
+  "items": [
+    { "key": "1 × N101 Chicken Curry", "value": "$14.50", "verbatim": false, "missing": null }
   ]
 }
 ```
 
-Core does not read it, upgrade it, count it or validate it. A row recorded from
-a form is byte-identical to one recorded from the array that form produces.
+Core does not read, upgrade, count or validate it. A row recorded from a form is
+byte-identical to one recorded from the array that form produces.
 
-| A Form Is | A Form Is **Not** |
-|---|---|
-| a typed block beneath the sentence | part of the headline — that is a [grammar](/deeper/grammar) template |
-| the app's value, in a slot core owns | a value core reads, names or validates |
-| an encoding, a pair, a passage | a component, or a place for markup |
-| a leaf | nestable — a form never contains another |
+A form is a block beneath the headline, never part of the headline itself; that
+is a [grammar](/deeper/grammar) template. It holds values, not markup or a
+component, and a form never contains another form.
 
 ## Where a Body Lives
 
-**Nothing at a publishing line writes a body.** The line that records the order
-says who placed it and where it went, and that is all it is for. What the order
-shows is the order's to say, written where the order is defined. The activity
-still carries the app's own keys through `->data()`, which core hands over
-unread, but a form is written by a model.
-
-A noun writes its body at one of two moments:
+A publishing line never writes a body; the model does. The activity's own keys
+still go through `->data()`, which core passes on unread.
 
 | Written with | Written | The body is |
 |---|---|---|
 | `FeedEntity::make(body: …)` in `toFeed()` | every time the model is saved | stored, and follows the model |
-| `FeedMedia::make(body: …)` in `feedMedia()` | every read | minted, and never stored |
+| `FeedMedia::make(body: …)` in `feedMedia()` | every read | built on the read, and never stored |
 
-The two differ in when the value is decided. A snapshot follows its model, so a
-quote written there changes when the model is edited. A minted body is read
-fresh every time and stored nowhere.
-
-**Neither one freezes anything, and nothing needs to.** A row that must say what
-was said at the time says it by naming a model that does not change — a
-revision, a posted note, a recorded price movement. Durability comes from what
-the app kept, not from a copy taken at the moment of recording.
+Neither one freezes a value. A row that must keep what was said at the time
+names a model that does not change: a revision, a posted note, a recorded price
+movement.
 
 ## Which Role's Body a Row Shows
 
-Every `Feedable` may define a body, and it travels with that model wherever it
-appears — as an actor in one row, an object in the next.
+Every `Feedable` may define a body, and it travels with that model in whatever
+role it appears.
 
-**Compose an activity so the object is the star.** The object is what a row is
-about, so its body is the one drawn beneath the sentence. A sentence whose
-subject of interest sits in another role reads as though something is missing,
-and then shows the body of something it never named.
+The object's body is the one drawn beneath the headline, so make the thing the
+reader cares about the object. The other roles carry their bodies in the
+payload, and drawing them is the renderer's choice. Most should stay undrawn: an
+actor's body would repeat under every row that person acts in.
 
-The other roles carry their bodies into the payload all the same, and choosing
-which to draw is the renderer's. Most should stay undrawn: an actor's body would
-repeat under every row that person acts in, so a feed of fifty rows by one cook
-draws their card fifty times. A row whose outcome is the interesting part is the
-case for drawing another role, and a renderer is free to take it.
-
-A row whose object has no body draws none, and reads as a sentence and a
-timestamp. That is an ordinary row, not a deficient one.
+A row whose object has no body shows its headline and timestamp, and nothing is
+missing.
 
 ## More Than One Form
 
-One noun reaches that zone from both of its homes at once — what its snapshot
-stored and what its resolver minted — so two forms under one headline needs
-nobody to ask for it.
-
-Each slot takes one form or several:
+A slot takes one form or a list:
 
 ```php
 // app/Models/MenuItem.php
 public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
-        key: $this->name,
+        label: $this->name,
         body: [Excerpt::make($this->description), KeyValue::make(['Station' => $this->station])],
     );
 }
 ```
 
-**Arrangement is the renderer's.** Core carries the forms and says nothing about
-the order they are drawn in, the space between them, or which one leads. A
-renderer holds the taste; the app holds the facts.
+When both `toFeed()` and `feedMedia()` return a body, the row carries both: the
+stored forms first, then the minted ones.
 
-A form a renderer does not recognise draws nothing, and the rest of the body
-draws as it always would. That is per form, which is why forms sit beside each
-other rather than inside one another.
+The renderer decides the order, spacing and emphasis of the forms. A form it
+does not recognise draws nothing, and the others still draw.
 
 ## Minting a Form at Read Time
 
-`feedMedia()` mints what a snapshot cannot cache. Alongside the url and the
-image slots it takes a body, built from the model as it stands at that moment:
+`feedMedia()` can return a body too, built from the model as it is at that
+moment:
 
 ```php
 // app/Models/MenuItem.php
@@ -227,53 +195,48 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 }
 ```
 
-Nothing about a form changes because it was minted. A renderer draws it by name
-exactly as it draws a stored one.
+A renderer draws a minted form the same way as a stored one.
 
 ### Deferring the Work
 
-A resolver runs for the url whether or not a body is wanted, so a body that
-costs something is better handed over unbuilt:
+The resolver runs on every read to build the url, whether or not a body is
+drawn. Pass a closure to build the body only when it is needed:
 
 ```php
+// app/Models/MenuItem.php, feedMedia()
 body: fn () => KeyValue::make(['Portions left' => $context->model()?->portions_left]),
 ```
 
-A closure is called only on a read that draws bodies, and not at all on one that
-does not. It is called after the page's models are already gathered, so it pays
-the same one query per class as everything else and never a query per row. A
-closure that throws is reported once and its body is absent, exactly as a
-resolver that throws leaves the url null.
+The closure runs only on a read that draws bodies, after the page's models are
+loaded, so it costs one query per class and never one per row. If it throws, the
+error is reported once and the body is left out, the same as a throwing resolver
+leaves the url null.
 
-Hand over a value when it is free and a closure when it is not. A `KeyValue` block
-built from the snapshot costs nothing to build eagerly; one that reaches for the
-live row does not.
+Use a closure when the body reads the live row. A body built from the snapshot
+is cheap enough to pass directly.
 
 ## What a Minted Form May Read
 
-The resolver runs on every read, for every entity on the page — including a
-group's exemplars, which a renderer may never paint. A form built there may read
-three things, none of which cost a query per row:
+The resolver runs for every entity on the page, including a group's exemplars
+that a renderer may never draw. A form built there can read three things
+without a query per row:
 
 - the snapshot, through `$context->data()`
 - a column on the live row, through `$context->model()`, which loads every model
   of that class on the page in one query
-- a relation named in `$context->model(with: […])`, which rides the same batch
+- a relation named in `$context->model(with: […])`, loaded in the same batch
 
-What it must not do is ask a question of its own. `$dish->orders()->count()`
-inside a resolver is one query for every row that names a dish, and a feed of
-fifty rows pays it fifty times. Keep a count on the row: a counter cache column
-is free once the model is loaded.
+Anything else is a query per row. `$dish->orders()->count()` inside a resolver
+runs once for every row that names a dish. Keep a counter cache column on the
+model instead.
 
 ::: headless it counts nothing for you
-A count is the app's fact and the app's query. Core hands a minted form to the
-renderer exactly as given. It does not read the form, cache it, or check that
-the numbers in it agree with anything.
+A count is the app's fact and the app's query. Core passes a minted form to the
+renderer as given. It does not read it, cache it, or check the numbers in it.
 :::
 
-A minted form is built by today's code on every read, so it is always current.
-Its version rides along for a renderer that branches on one, and there is no
-older shape behind it to repair.
+A minted form is built by current code on every read, so it never needs
+upgrading. Its version still rides along for a renderer that branches on one.
 
 ## Writing a Form
 
@@ -311,8 +274,7 @@ final class Attachment implements FeedBody
 
     public static function upgrade(array $payload, int $from): array
     {
-        // Total: a row written by a NEWER version than this class still has to
-        // render, because the row is in the database either way. Never throw.
+        // Never throw: a row written by any version, even a newer one, still renders.
         return [
             'size' => is_int($payload['size'] ?? null) ? $payload['size'] : null,
             'mediaType' => is_string($payload['mediaType'] ?? null) ? $payload['mediaType'] : null,
@@ -332,7 +294,7 @@ final class Attachment implements FeedBody
 ```
 
 `HasPayload` supplies `toArray()` from `toPayload()`. Override `toArray()` only
-to add something that belongs in storage and not on the node.
+to store something that should not reach the node.
 
 ### The Two Reserved Keys
 
@@ -341,52 +303,33 @@ to add something that belongs in storage and not on the node.
 | `$body` | `FeedBody::KEY` | the form's name, verbatim |
 | `$v` | `FeedBody::VERSION` | the version that wrote the row |
 
-Both are `$`-prefixed so that a form nested in the app's own `data` map is
-unmistakably not the app's. Core strips the reserved keys core owns and passes
-every other key through untouched.
+The `$` prefix keeps a form inside the app's `data` map apart from the app's own
+keys. Core passes every other key through untouched.
 
 ### Names
 
-`Vocabulary/Form` — namespaced to whoever defines the vocabulary, every segment
-in PascalCase: `Storyfeed/Body/MediaObject`, `Acme/Attachment`. The name outlives every
-class that writes it, and two libraries that both wanted the word "change" do
-not collide in a column.
+A name is `Vocabulary/Form`, namespaced to whoever defines the vocabulary, with
+every segment in PascalCase: `Storyfeed/Body/MediaObject`, `Acme/Attachment`.
 
-**The namespace is the vocabulary, not the package.** A form defined by this
-project is `Storyfeed/…` wherever its PHP class happens to live — the class can
-move between packages, and rows already written cannot. Putting a package name
-in it means a row remembers which library was fashionable the year it was
-recorded.
-
-**PascalCase, because a name is not a Composer package.** It matches Activity
-Streams' own type casing, which is the vocabulary this one sits beside. A
-lowercase `vendor/name` reads as something you install, which it is not: it is a
-pure lookup key, matched by renderers EXACTLY. Nothing reflects on it, nothing
-autoloads from it, and it need not resolve to any class at all.
-
-Free-form, like verbs. Core never validates a name against anything, and has no
-list to validate against.
+Renderers match the name exactly. It is only a lookup key: nothing autoloads
+from it, and it need not match a class. Name the vocabulary, not the PHP package,
+because rows already written keep the name even if the class moves. Core never
+validates a name.
 
 ### Versions Are Add-only
 
-A row recorded today outlives the class that recorded it, so `version()` starts
-at 1 on the first commit rather than the day a second shape appears — by then
-the unversioned rows already exist.
+Start `version()` at 1 from the first commit, before a second shape exists.
 
-**A missing `$v` is version 1. That is a definition, not a fallback.** It is the
-reader's rule as much as the writer's: hand-written seeder arrays exist, and so
-do rows written before a library added its version key. Reading a missing
-version as "whatever is current" is silently right today and silently wrong the
-day a version 2 lands, because those rows would skip the 1→2 upgrade with
-nothing to notice it.
+A missing `$v` is version 1, for readers and writers alike. Reading it as the
+current version would make old rows skip the 1 → 2 upgrade once version 2
+exists.
 
-`upgrade()` runs at **read** time and is never written back, so every renderer
-sees the current form and no view branches on `$v`.
+`upgrade()` runs when the row is read and never writes back, so a renderer always
+sees the current shape.
 
 ## Who Upgrades a Form
 
-Two values follow opposite versioning postures, and the branch is one question:
-**does core read the value?**
+The rule is one question: does core read the value?
 
 | Value | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
 |---|---|---|---|
@@ -394,65 +337,51 @@ Two values follow opposite versioning postures, and the branch is one question:
 | `FeedChange` at `$change` | `change` | core, on read | no |
 | a form in a body | stays in `body` | the renderer | yes |
 
-Core reads `$thread` and `$change`, so it upgrades them, strips their versions
-and emits one shape forever. Core owns the slot a form sits in but never looks
-inside it, because looking would mean learning every form's name and shape —
-the registry this contract exists to avoid. So the version travels all the way
-to the renderer, and the renderer calls `upgrade()` before it draws.
+Core reads `$thread` and `$change`, so it upgrades them and strips their
+versions. It never reads inside a form, so the version travels to the renderer,
+which calls `upgrade()` before it draws.
 
-The branch is about the value, not the class. `FeedThread` at the reserved key
-is core's to upgrade; the same class in a body is the renderer's, like any other
-form.
+The rule follows the key, not the class: `FeedThread` in a body is the
+renderer's to upgrade, like any other form.
 
 ## Existing Forms
 
-Core ships seven under `Storyfeed\Body`. They are the vocabulary rather than
-one renderer's furniture: any renderer may recognise these names, an app
+Core ships seven under `Storyfeed\Body`. Any renderer may recognise them, an app
 writing its own form owes nothing to them, and core reads none of them.
 
 | Name | Is | Keys |
 |---|---|---|
-| `Storyfeed/Body/KeyValue` | labelled rows | `rows[]` of `label`, `value`, `verbatim`, `missing` |
+| `Storyfeed/Body/KeyValue` | labelled rows | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
 | `Storyfeed/Body/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Storyfeed/Body/Change` | before → after, for one field or several | `changes[]` of `label`, `before`, `after` |
+| `Storyfeed/Body/Change` | before → after, for one field or several | `items`, a map of field to `[before, after]` |
 | `Storyfeed/Body/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
 | `Storyfeed/Body/Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
-| `Storyfeed/Body/ItemList` | several things, each a name and maybe a link | `items[]`, `ordered`, `totalItems`, `more` |
+| `Storyfeed/Body/ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
 | `Storyfeed/Body/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
 
-A line of text handed to `->body()` is stored as `Storyfeed/Body/Prose`, so
-a renderer meets one kind of thing in a body and never branches on whether it
-found a string.
-
-A row written under an earlier form name keeps that name, and an unrecognised
-name draws nothing, so a stale row is a blank space rather than an error.
+A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
+never has to handle a bare string.
 
 ::: headless it draws no form
 The package stores the block and hands it back byte-identical. It reads no form,
-upgrades none, and ships no view for one: `upgrade()` runs in the renderer,
-before it draws. A renderer that recognises none of these forms is not broken,
-it is a renderer that draws headlines.
+upgrades none, and ships no view for one: `upgrade()` runs in the renderer. A
+renderer that recognises none of these forms still draws headlines.
 :::
 
 ## Unknown Forms in a Renderer
 
-Draws nothing, and never an error — the same rule the read path already applies
-to unknown verbs and to Activity Streams extension types. It covers version skew
-too: an app on a newer vocabulary than the renderer reading it is a blank space,
-not a broken feed.
-
-So a renderer that finds a `$body` it does not recognise skips it, and the
-rest of the row draws as it always would.
+A renderer skips a `$body` it does not recognise and draws the rest of the row.
+It never errors, as with unknown verbs and Activity Streams extension types.
+This covers an app on a newer vocabulary than its renderer, and a row stored
+under a form name the renderer no longer knows.
 
 ## Inspecting What Is Stored
 
 ```bash
-php artisan storyfeed:doctor --only=details
+php artisan storyfeed:doctor --only=body
 ```
 
-The check reports which forms are actually stored, and the two ways one goes
-quiet without anything going wrong out loud: a map carrying `$v` with no
-`$body` for a renderer to dispatch on, and a form declaring version 2 on some
-rows and nothing on others. It reports only what is knowable without a
-vocabulary — core having a vocabulary is the thing this contract exists to
-avoid. See [Doctor](/reference/doctor).
+The check lists which forms are stored, and warns about two faults that fail
+silently: a map with `$v` but no `$body`, which a renderer cannot dispatch, and
+a form that declares version 2 on some rows and no version on others. See
+[Doctor](/reference/doctor).
