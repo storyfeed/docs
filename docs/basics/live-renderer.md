@@ -1,30 +1,24 @@
 # Live Rendering
 
-The [Blade loop](/basics/rendering) renders a page. A live feed —
-one that polls, or accumulates pages as the reader scrolls — needs three more
-things, and none of them can be demonstrated by a static template:
+A live feed polls for new activities, or loads older pages as the reader
+scrolls. It needs three things the [Blade loop](/basics/rendering) does not:
 
-- **Reconciliation**, because nodes regroup underneath you. An activity you
-  rendered alone can be absorbed into a group by the next poll, and merging by
-  id renders it twice.
-- **`sync_token` handling**, for rewrites that happen where no reconciliation
-  can see them.
-- **The bounded empty-page loop**, because an empty page with a live cursor is
-  legal.
+- **Reconciliation.** An activity drawn alone can be absorbed into a group by
+  the next poll, and merging by id draws it twice.
+- **`sync_token` handling**, for rewrites below the pages you hold.
+- **Following empty pages.** A page can be empty while its cursor is not null.
 
-The example is Vue. Polling wiring, avatars and styling are omitted.
+The example is Vue, without polling, avatars or styling.
 
 ::: headless it reconciles nothing on the client
-The package cannot see a client's accumulated pages, so these three rules are
-yours to implement. What it provides is what they need: stable node ids,
-`children`, `distinct`, and a `sync_token` that changes when settled history
-is rewritten.
+The package provides stable node ids, `children`, `distinct` and a
+`sync_token`. Merging pages on the client is yours.
 :::
 
 ## The Payload Types
 
 ```ts
-// The payload contract, as much of it as a renderer needs.
+// resources/js/feed/types.ts: the payload keys a renderer reads
 export type FeedRole = 'actor' | 'object' | 'target' | 'context' | 'origin' | 'result' | 'instrument'
 
 export interface FeedEntity {
@@ -72,14 +66,16 @@ export interface FeedPayload {
 }
 ```
 
-Both node kinds carry all seven role keys. A group key follows the
-[payload pinning and count rule](/reference/payload#group-node); `one()` falls
-back to the exemplar when an emitted singular token needs it.
+Both node kinds carry all seven role keys. On a group, a singular role key is
+filled only when that role has one entity; the
+[payload contract](/reference/payload#group-node) has the rule.
 
-## The Stream Component
+## The `useFeed` Composable
 
 ```ts
+// resources/js/feed/useFeed.ts
 import { computed, ref, watch, type Ref } from 'vue'
+import type { FeedNode, FeedPayload } from './types'
 
 /** Follow at most this many consecutive empty pages before handing back control. */
 const EMPTY_PAGE_HOPS = 5
@@ -92,14 +88,12 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
   /** Flips true when a rewrite invalidates the stream. Refetch page 1. */
   const needsResync = ref(false)
 
-  /** `undefined` = no epoch yet; the first payload sets the baseline. */
+  /** `undefined` until the first payload sets it. */
   let syncToken: string | null | undefined
 
   /**
-   * `sync_token` is the server saying "settled history was rewritten" — a
-   * backfill, or a re-curation. It is a RESYNC TRIGGER, not a repair rule:
-   * the rewrite happened below the head page where no reconciliation can
-   * see it, so the only safe response is to drop everything and re-page.
+   * A changed `sync_token` means settled history was rewritten below the head
+   * page. Drop everything and page again from the head.
    */
   function epochChanged(fresh: FeedPayload): boolean {
     const token = fresh.sync_token ?? null
@@ -129,10 +123,8 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
     const headIds = new Set(fresh.items.map((item) => item.id))
     const windowStart = fresh.items.at(-1)?.published_at
 
-    // Every activity id the fresh page has claimed under some node. Curation
-    // gives each activity exactly one node per mode, so if a fresh node lists
-    // it as a child, whatever we are still holding that contains it is stale —
-    // regardless of where it falls in time.
+    // Each activity appears in one node per mode, so a held node containing
+    // an activity the fresh page lists as a child is stale.
     const claimed = new Set(
       fresh.items.flatMap((item) =>
         item.kind === 'group' ? item.children.map((child) => child.id) : [],
@@ -144,15 +136,12 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
         continue
       }
 
-      // Rule 1 — time window. Catches the common case cheaply: a node inside
-      // the fresh page's range that the fresh page no longer mentions has
-      // been regrouped.
+      // Rule 1, time window: a held node inside the fresh page's range that
+      // the fresh page no longer lists has been regrouped.
       const insideWindow = !!windowStart && node.published_at >= windowStart
 
-      // Rule 2 — member identity. Catches regrouping that lands BELOW the
-      // head page, which rule 1 cannot see. Caveat: `children` is truncated
-      // on large groups, so this is a strong signal, not a total one.
-      // Neither rule replaces the other.
+      // Rule 2, member identity: catches regrouping below the head page.
+      // `children` is truncated on large groups, so keep both rules.
       const reclaimed =
         node.kind === 'group'
           ? node.children.some((child) => claimed.has(child.id))
@@ -179,22 +168,16 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
     loadingMore.value = true
 
     try {
-      // An empty page carrying a usable cursor is legal: a page can lose every
-      // node to a rewrite between the server selecting candidates and
-      // hydrating them. End of feed is the CURSOR being null, never the page
-      // being empty — so keep following, or the reader gets a "load more"
-      // button that visibly does nothing. Bounded, so a server returning empty
-      // pages forever cannot spin the client.
+      // A page can be empty with a non-null cursor. The feed ends when the
+      // cursor is null, so follow empty pages, up to EMPTY_PAGE_HOPS.
       for (let hop = 0; hop < EMPTY_PAGE_HOPS && nextCursor.value; hop++) {
         const response = await fetch(pageUrl(nextCursor.value), {
           headers: { Accept: 'application/json' },
         })
         const older: FeedPayload = await response.json()
 
-        // A rewrite mid-scroll invalidates the cursor we are holding: it was
-        // minted in the previous epoch. epochChanged() has already dropped the
-        // accumulated nodes, so stop paging deeper — continuing would rebuild
-        // the stream from the middle, with a hole where the head used to be.
+        // A rewrite mid-scroll invalidates the held cursor. Stop, and refetch
+        // from the head.
         if (epochChanged(older)) {
           needsResync.value = true
 
@@ -216,7 +199,7 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
     }
   }
 
-  // Render by id and re-sort — never assume append-only.
+  // Re-sort on every change: pages do not only append.
   const items = computed(() =>
     [...nodes.value.values()].sort(
       (a, b) =>
@@ -228,15 +211,17 @@ export function useFeed(page: Ref<FeedPayload>, pageUrl: (cursor: string) => str
 }
 ```
 
-When `needsResync` flips, refetch the first page — with Inertia that is a partial
-reload of the feed prop, with a plain API it is a fetch of the uncursored
-endpoint. The watcher on `page` then rebuilds the stream.
+When `needsResync` flips, refetch the first page: with Inertia, a partial
+reload of the feed prop; with a plain API, the endpoint without a cursor. The
+watcher on `page` then rebuilds the stream.
 
 ## The Node Component
 
 ```vue
+<!-- resources/js/feed/FeedNode.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { FeedNode, FeedRole } from './types'
 
 const props = defineProps<{ node: FeedNode }>()
 
@@ -245,11 +230,8 @@ function one(role: FeedRole) {
   if (props.node[role]) return props.node[role]
   if (props.node.kind !== 'group') return null
 
-  // The server withholds a singular the axis does not pin. Recover one ONLY
-  // when the group genuinely has one — `distinct` is the true total, so an
-  // exemplar list of length 1 is not on its own proof. Otherwise return null
-  // and let the caller say "Something": naming exemplars[0] would make one
-  // arbitrary entity speak for several.
+  // Only when `distinct` says there is exactly one: exemplars[0] would name
+  // one entity over several.
   const shown = props.node.exemplars?.[`${role}s`] ?? []
 
   return shown.length === 1 && props.node.distinct?.[`${role}s`] === 1
@@ -259,6 +241,8 @@ function one(role: FeedRole) {
 
 /** What the server counted, minus what it gave us names for. */
 function overflow(role: FeedRole): number {
+  if (props.node.kind !== 'group') return 0
+
   const shown = props.node.exemplars?.[`${role}s`]?.length ?? 0
 
   return Math.max((props.node.distinct?.[`${role}s`] ?? 0) - shown, 0)
@@ -266,6 +250,8 @@ function overflow(role: FeedRole): number {
 
 /** "Ann, Sally and Bob" — or "Ann, Sally, Bob and 7 more" when it overflows. */
 function list(role: FeedRole): string {
+  if (props.node.kind !== 'group') return '—'
+
   const shown = (props.node.exemplars?.[`${role}s`] ?? []).map((e) => e.label ?? '—')
   const more = overflow(role)
 
@@ -297,7 +283,7 @@ const sentence = computed(() => {
       case ':origins':
       case ':results':
       case ':instruments': return list(token.slice(1, -1) as FeedRole)
-      case ':count': return String(props.node.count ?? 1)
+      case ':count': return props.node.kind === 'group' ? String(props.node.count) : '1'
       // Prefer the self-overflowing plural above; :others is kept for
       // templates that name one actor and count the rest.
       case ':others': return `${overflow('actor')} others`
@@ -311,16 +297,11 @@ const sentence = computed(() => {
   <article>
     <p v-if="sentence">{{ sentence }}</p>
 
-    <!-- Closure grammar pre-renders a string instead of a template. -->
+    <!-- grammar written as a closure arrives pre-rendered -->
     <p v-else-if="node.headline">{{ node.headline }}</p>
 
-    <!--
-      Both null means the server REFUSED to name this group: the axis does not
-      pin the roles its singular template would need, so any sentence composed
-      here would misattribute many actors' work to one. Degrade to the count,
-      never to entity-composed prose — and open it, because a group nobody can
-      name is the one whose members should be visible.
-    -->
+    <!-- no sentence: draw the count and open the group, never prose built
+         from its entities -->
     <template v-else-if="node.kind === 'group'">
       <p>{{ node.count }} activities</p>
       <FeedNode v-for="child in node.children" :key="child.id" :node="child" />
@@ -331,37 +312,14 @@ const sentence = computed(() => {
 </template>
 ```
 
-For a named system or a genuinely absent actor, see
-[Parties and actorless voice](/deeper/parties).
-
-`FeedNode` recurses into itself for group children. A single-file component can
+`FeedNode` renders group children with itself. A single-file component can
 refer to itself by filename; outside the SFC compiler, add
 `defineOptions({ name: 'FeedNode' })`.
 
-The gutter this node sits beside leads with the actor or with the activity,
-and which one is a choice. This kit takes it as a prop:
-
-```vue
-<FeedExample context :items="items" rail="activity" />
-```
-
-Left unset, the kit draws one face and no badge — `actor-only` — and group
-children draw the verb alone. This renderer defaults to `actor`
-instead.
+"Someone" stands for an actor that is null. A system that acted is a named
+party instead: see [Parties & Anonymous Actors](/deeper/parties).
 
 ## Verifying the Renderer
 
 Run the [fallback-leak check](/basics/rendering#verifying-your-renderer) across
-every mode and axis. Real output from the showcase feed:
-
-```
-activity   Priya Raman commented on Rewrite the colour tokens
-actors     Priya Raman, Marcus Webb and Sally Nguyen commented on proof-sheet-rev-a.fig
-scene      Priya Raman, Marcus Webb, Aiko Tanaka and 5 more added 12 items in Chronological Feed Restore
-composite  Tomás Rivera approved wordmark-v3.png and hero-mobile-rev-a.fig in Port Migration
-targets    Aiko Tanaka commented in hero-desktop-wip.png, Export the motion tests, colour-tokens-final-2.docx and 6 more
-repeat     Deja Williams completed Kerning pass on the motion tests, Simplify the icon library, …
-```
-
-An un-snapshotted entity has `label: null` and should render your placeholder,
-so assert on fallbacks for tokens whose entities exist.
+every mode and axis.
