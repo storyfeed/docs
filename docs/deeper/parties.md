@@ -27,7 +27,11 @@ can be **anonymous**: nobody is known.
 // where the fact happens: a controller, an action, a listener
 $party = Storyfeed::party('Stripe');
 
-Storyfeed::record('pay', $order, actor: $party);
+Storyfeed::record(
+    'pay',
+    $order,
+    actor: $party,
+);
 ```
 
 <FeedExample context :items="[paid]" />
@@ -51,7 +55,10 @@ Inside a job or console command there is no authenticated user. Scope a block:
 ```php
 // a job, or a console command
 Storyfeed::as('System', function () {
-    Storyfeed::record('cancel', object: $order);
+    Storyfeed::record(
+        'cancel',
+        object: $order,
+    );
 });
 ```
 

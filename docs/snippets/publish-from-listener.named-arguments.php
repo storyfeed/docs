@@ -9,6 +9,11 @@ class RecordOrderPlaced
 {
     public function handle(OrderPlaced $event): void
     {
-        Storyfeed::record('place', $event->order, actor: $event->customer, target: $event->order->kitchen);
+        Storyfeed::record(
+            'place',
+            $event->order,
+            actor: $event->customer,
+            target: $event->order->kitchen,
+        );
     }
 }

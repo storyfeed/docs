@@ -110,7 +110,12 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the order is placed: a controller, an action, a listener
-Storyfeed::record('place', $order, actor: $customer, target: $kitchen);
+Storyfeed::record(
+    'place',
+    $order,
+    actor: $customer,
+    target: $kitchen,
+);
 ```
 :::
 
@@ -148,7 +153,11 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // app/Http/Controllers/StripeWebhookController.php
-Storyfeed::record('pay', $order, actor: 'Stripe');
+Storyfeed::record(
+    'pay',
+    $order,
+    actor: 'Stripe',
+);
 ```
 :::
 
@@ -170,7 +179,12 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('note', $order, actor: $customer, thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'));
+Storyfeed::record(
+    'note',
+    $order,
+    actor: $customer,
+    thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'),
+);
 ```
 :::
 
@@ -190,7 +204,12 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('publish', $photo, actor: $cook, target: $dish);
+Storyfeed::record(
+    'publish',
+    $photo,
+    actor: $cook,
+    target: $dish,
+);
 ```
 :::
 
@@ -211,7 +230,11 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('publish', $photo, actor: $cook);
+Storyfeed::record(
+    'publish',
+    $photo,
+    actor: $cook,
+);
 ```
 :::
 
@@ -230,7 +253,11 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
-Storyfeed::record('add', $dish, actor: $cook);
+Storyfeed::record(
+    'add',
+    $dish,
+    actor: $cook,
+);
 ```
 :::
 

@@ -125,7 +125,11 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::record('pay', $order, actor: 'Stripe'); // [!code focus]
+        Storyfeed::record( // [!code focus]
+            'pay', // [!code focus]
+            $order, // [!code focus]
+            actor: 'Stripe', // [!code focus]
+        ); // [!code focus]
 
         return response()->noContent();
     }
@@ -191,7 +195,12 @@ class MenuItemPriceController extends Controller
 
         $dish->update(['price' => $request->integer('price')]);
 
-        Storyfeed::record('reprice', $dish, actor: $request->user(), data: ['from' => $from, 'to' => $dish->price]); // [!code focus]
+        Storyfeed::record( // [!code focus]
+            'reprice', // [!code focus]
+            $dish, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            data: ['from' => $from, 'to' => $dish->price], // [!code focus]
+        ); // [!code focus]
 
         return back();
     }
@@ -281,7 +290,13 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // app/Http/Controllers/MenuItemPriceController.php, update()
-Storyfeed::record('reprice', $dish, actor: $request->user(), data: ['from' => $from, 'to' => $dish->price], replace: true); // [!code highlight]
+Storyfeed::record(
+    'reprice',
+    $dish,
+    actor: $request->user(),
+    data: ['from' => $from, 'to' => $dish->price],
+    replace: true, // [!code highlight]
+);
 ```
 :::
 
@@ -342,7 +357,11 @@ class PublishMenuController extends Controller
 
         $dishes->each->update(['published_at' => now()]);
 
-        Storyfeed::record('publish', objects: $dishes, actor: $request->user()); // [!code focus]
+        Storyfeed::record( // [!code focus]
+            'publish', // [!code focus]
+            objects: $dishes, // [!code focus]
+            actor: $request->user(), // [!code focus]
+        ); // [!code focus]
 
         return back();
     }
