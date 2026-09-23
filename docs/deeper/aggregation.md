@@ -1,9 +1,8 @@
 # Aggregation
 
-Several activities that belong together read as one line. Aggregation is how
-the feed decides which activities belong together, and a Story says what the
-one line reads as. When you are done, bursts of activity arrive as group nodes
-with headlines you authored.
+Aggregation shows several related activities as one row: three orders from
+one customer read as one line, not three. A Story's `groups()` says which
+activities group together and what the row says.
 
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
@@ -38,7 +37,7 @@ Three orders from one customer, minutes apart, as a log:
 
 <FeedExample context :items="log" />
 
-A Story's `groups()` says how they read as one:
+The same three, grouped by the story's `groups()`:
 
 ```php
 <?php
@@ -46,6 +45,8 @@ A Story's `groups()` says how they read as one:
 namespace App\Stories;
 
 use App\Models\Order;
+use BackedEnum;
+use Storyfeed\Contracts\FeedVerb;
 use Storyfeed\Grouping\Group; // [!code focus]
 use Storyfeed\Story;
 
@@ -73,10 +74,11 @@ class OrderWasPlaced extends Story
 
 ## Grouping Along Another Axis
 
-Five customers ordering from the same kitchen is a different shape, and a
-different sentence. Each `Group` names an **axis**, the dimension it collapses:
+Five customers ordering from the same kitchen need a different sentence. Each
+`Group` names an **axis**: what its members have in common.
 
 ```php
+// app/Stories/OrderWasPlaced.php
 public function groups(): array
 {
     return [
@@ -88,30 +90,25 @@ public function groups(): array
 
 <FeedExample :items="[actors]" />
 
-Each activity lands in exactly one axis per read mode. Grouping is decided
-when the activity is published, never per request.
+In each read mode, an activity belongs to exactly one axis. Grouping is decided
+when the activity is published, not when the feed is read.
 
 ## Which Axes Each Mode Reads
 
-A mode does not change how activities grouped; it changes which groupings the
-read is willing to show.
+The read mode does not change how activities were grouped. It changes which
+groupings the read shows.
 
 | Mode | Reads |
 |---|---|
 | `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
-| `live()` | `repeat`, plus authored composites. No other axis, because `live` excludes inference and keeps declarations |
+| `live()` | `repeat`, plus authored composites |
 | `summary()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner |
 
-Two consequences worth carrying:
+A headline written for an axis that none of your reads use never renders.
+`storyfeed:doctor` reports it as `aggregates.latent`.
 
-- **Authoring grammar for an axis your surfaces never read produces templates
-  that can never render.** That is what `storyfeed:doctor` reports as
-  `aggregates.latent`, at info and with no fix stub.
-- **`object` pins the specific object where `repeat` pins only its type**,
-  which is why the better-reading rows exist only under `summary()`.
-
-An app that has never run `storyfeed:curate` reads as repeat-only under
-`summary()`, because the fallback is what answers when no winner is stamped.
+Until `storyfeed:curate` has run, `summary()` groups only by `repeat`, because
+no bucket has a winner yet.
 
 ## The Built-in Axes
 
@@ -123,9 +120,9 @@ An app that has never run `storyfeed:curate` reads as repeat-only under
 | `object` | many actions on one object | `:actor` `:object` | ":actor changed the price of :object :count times" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
 
-A singular token is safe on an axis only where the axis pins that role; the
-plural token is safe everywhere. `Group::on('scene')` targets a custom axis,
-and `Group::any()` matches whichever axis wins.
+A singular token is safe only where the axis pins that role; a plural token is
+safe everywhere. `Group::on('scene')` names a custom axis, and `Group::any()`
+matches whichever axis wins.
 
 ## Thresholds
 
@@ -141,18 +138,18 @@ and `Group::any()` matches whichever axis wins.
 ],
 ```
 
-Below threshold, activities stay atomic. Thresholds apply at publish time, so
-a change is not retroactive; `storyfeed:curate` re-applies it, rewriting
-settled history and bumping the `sync_token`.
+Below a threshold, activities stay ungrouped. Thresholds apply at publish time,
+so changing one does not regroup existing activities; `storyfeed:curate`
+re-applies them to history and bumps the `sync_token`.
 
-If orders placed with different kitchens do not group under `repeat`, that is the axis
-working: `repeat` keys on the target, and `targets` is the axis that leaves it
-free. A role a key leaves free may also be absent on some members, which is
-what a plural token [does and does not promise](/deeper/grammar#members-that-did-not-fill-a-role).
+`repeat` keys on the target, so orders placed with different kitchens do not
+group under it; `targets` is the axis for that. A role the key leaves free may
+be empty on some members, which a plural token
+[handles](/deeper/grammar#members-that-did-not-fill-a-role).
 
 ## Custom Axes
 
-An axis is a key recipe plus an eligibility rule:
+An axis is a key recipe and an eligibility rule:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -165,9 +162,9 @@ Storyfeed::axes([
 ]);
 ```
 
-Recipe fields name the dimensions two activities must share to group; `!`
-marks a field whose absence disqualifies. A singular role token is safe
-exactly when both of the role's fields are in the key.
+The recipe names the fields two activities must share to group; `!` marks a
+field that must be present. A singular role token is safe when both of the
+role's fields are in the key.
 
 | Role | Type Field | Id Field |
 |---|---|---|
@@ -179,10 +176,8 @@ exactly when both of the role's fields are in the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb and `d` adds the day. Aggregate grammar is keyed
-`axis.verb`, so leaving `v` out opts the axis out of per-verb grammar: its
-groups may span verbs, and only a verb-agnostic key (`scene.*`) can be true of
-one.
+`v` adds the verb and `d` adds the day. Without `v`, a group may span verbs,
+so only a verb-agnostic grammar key (`scene.*`) applies to it.
 
 A new axis registers at the lowest priority. To outrank a built-in, say so:
 
@@ -195,10 +190,9 @@ Then author `scene.{verb}` templates in the [grammar](/deeper/grammar).
 
 ## Group Nodes
 
-A group arrives as one node whose shape is in the
-[payload contract](/reference/payload#group-node). The shape is frozen;
-which groups form (axes, thresholds, windows) is server-side policy and free
-to evolve, so a renderer never assumes a particular grouping. Within any read
-mode every activity appears in exactly one node, atomic or grouped, never
-both, which is what makes the member-identity
-[reconciliation rule](/basics/rendering#feeds-that-keep-moving) sound.
+A group arrives as one node, shaped as in the
+[payload contract](/reference/payload#group-node). The shape is fixed; which
+groups form is server policy, so a renderer never assumes a particular
+grouping. Within a read mode every activity appears in exactly one node,
+grouped or not, which is what the
+[reconciliation rule](/basics/rendering#feeds-that-keep-moving) relies on.
