@@ -405,9 +405,10 @@ so nobody documents it as public API.
   A page writes `::: headless` then `:::` and nothing else; a title or a body
   on the page fails the build. At most one per page.
 
-  **The Quickstart's last step is where "headless" is first said, in prose.**
-  Every `::: headless` container after it is a callback to that sentence, so
-  none may appear on a page before the Quickstart.
+  **The Quickstart's closing callout is where a reader first meets it.** It
+  ends the page, after the feed is fetched, shown as a payload, drawn, and
+  sketched in Vue. Every `::: headless` after it is a callback, so none may
+  appear on a page before the Quickstart.
 
   It is LOUDER than `::: tip`, never a warning: a reader who misses it builds
   on something the package does not do. Teal is `tip` and yellow is

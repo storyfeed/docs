@@ -24,15 +24,29 @@ const props = withDefaults(
          * several; a number says how many, up to three.
          */
         context?: boolean | number
+        /**
+         * Show the payload alone, open, as the envelope a read returns: for the
+         * step that teaches the data before anything is drawn from it. Still
+         * serialised from `items`, so the drawn step below cannot disagree.
+         */
+        payload?: boolean
     }>(),
-    { expanded: false, label: 'Payload', context: false },
+    { expanded: false, label: 'Payload', context: false, payload: false },
 )
 
 const slots = useSlots()
-const open = ref(props.expanded)
+const open = ref(props.expanded || props.payload)
 const copied = ref(false)
 
-const json = computed(() => JSON.stringify(props.items, null, 2))
+const json = computed(() =>
+    JSON.stringify(
+        props.payload
+            ? { payload_version: 1, items: props.items, next_cursor: 'eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ', sync_token: '01J8Z3K4Q2V9WMX7R5T0B6N1CD', prev_cursor: null }
+            : props.items,
+        null,
+        2,
+    ),
+)
 
 /**
  * Rows above and below, minted around the example's own timestamps so the feed
@@ -116,7 +130,7 @@ async function copy() {
 
 <template>
     <div class="sf-example" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
-        <div class="sf-example__preview">
+        <div v-if="!payload" class="sf-example__preview">
             <FeedStream :items="drawn" :grouped="false" v-bind="$attrs">
                 <template v-for="(_, name) in slots" #[name]="slotProps">
                     <slot :name="name" v-bind="slotProps as any" />
@@ -124,8 +138,9 @@ async function copy() {
             </FeedStream>
         </div>
 
-        <div class="sf-example__code" :class="{ 'is-open': open }">
+        <div class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
             <button
+                v-if="!payload"
                 type="button"
                 class="sf-example__toggle"
                 :aria-expanded="open"
@@ -164,6 +179,12 @@ async function copy() {
 .sf-example__code {
     border-top: 1px solid var(--vp-c-divider);
     background: var(--vp-code-block-bg);
+}
+.sf-example__code.is-alone {
+    border-top: 0;
+}
+.sf-example__code.is-alone .sf-example__source {
+    border-top: 0;
 }
 .sf-example__toggle {
     display: flex;

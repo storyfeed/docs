@@ -5,7 +5,23 @@ feed, a headline for the verb, and one call where the fact happens. The example
 is a customer placing an order with a kitchen.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, party, scenes, activity } from '../.vitepress/theme/samples'
+
+// The homepage feed a few minutes later: the order from the previous step,
+// with what the kitchen did around it.
+const row = (id, time, verb, glyph, headline_template, roles) => activity({
+  id, verb, glyph, headline_template,
+  published_at: `2026-08-14T${time}.000000Z`, ...roles,
+})
+
+const homepage = [
+  row('hp1', '14:52:00', 'ready', 'utensils', ':actor marked :object ready', { actor: who.cook, object: orders.first }),
+  row('hp2', '14:41:00', 'pay', 'credit-card', ':actor marked :object paid', { actor: party.service, object: orders.first }),
+  row('hp3', '14:34:00', 'confirm', 'circle-check', ':actor confirmed :object', { actor: who.cook, object: orders.first }),
+  scenes.order,
+  row('hp4', '14:12:00', 'place', 'shopping-bag', ':actor placed :object with :target', { actor: who.customer2, object: orders.second, target: where.kitchen }),
+  row('hp5', '14:05:00', 'publish', 'chef-hat', ':actor put :object on the menu', { actor: who.cook, object: dishes.lassi }),
+]
 </script>
 
 ## Making the Models Feedable
@@ -52,20 +68,29 @@ On the feed:
 
 <FeedExample context :items="[scenes.order]" />
 
-## Rendering the Activities
+## Rendering the Feed
 
-This call returns everything the kitchen took part in:
+Fetch the feed where your homepage is built:
 
 ```php
 // a controller, or wherever the feed is read
-$page = Storyfeed::feed()->involving($kitchen)->get();
+$feed = Storyfeed::feed()->get();
 ```
 
-<FeedExample :items="[scenes.order]" />
+It arrives as a structured payload:
 
-Storyfeed is headless: it returns the feed as data and ships no frontend.
-Drawing it is your app's job. Each node carries its sentence with the entities
-already in it, so a renderer needs no knowledge of your app.
+<FeedExample payload :items="homepage" />
+
+### How the Frontend Might Render It
+
+Each node carries its sentence with the entities already in it. The order from
+the previous step lands among everything else the app recorded:
+
+<FeedExample :items="homepage">
+  <template #annotations="{ node }">
+    <Annotation v-if="node.id === scenes.order.id" label="Published above">The activity from the previous step</Annotation>
+  </template>
+</FeedExample>
 
 ### A Hypothetical Implementation in Vue
 
@@ -73,7 +98,7 @@ An Inertia page hands the payload to the app's own composable and stream
 component:
 
 ```vue
-<!-- resources/js/Pages/Kitchen/Feed.vue -->
+<!-- resources/js/Pages/Home.vue -->
 <script setup lang="ts">
 import { usePoll } from '@inertiajs/vue3'
 import { toRef } from 'vue'
@@ -81,11 +106,11 @@ import FeedStream from '@/feed/FeedStream.vue'   // the app's own component
 import { useFeed } from '@/feed/useFeed'         // the app's own composable
 import type { FeedPayload } from '@/feed/types'
 
-const props = defineProps<{ feed: FeedPayload, kitchen: { id: number } }>()
+const props = defineProps<{ feed: FeedPayload }>()
 
 const { items, nextCursor, loadingMore, loadMore } = useFeed(
     toRef(() => props.feed),
-    (cursor) => `/kitchens/${props.kitchen.id}/feed?cursor=${cursor}`,
+    (cursor) => `/?cursor=${cursor}`,
 )
 
 usePoll(10_000, { only: ['feed'] })
@@ -103,3 +128,6 @@ usePoll(10_000, { only: ['feed'] })
 
 The composable holds the paging, the stream draws nodes, and the page supplies
 the payload and the URL of the next page. None of it knows what an order is.
+
+::: headless
+:::
