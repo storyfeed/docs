@@ -1,12 +1,12 @@
 # Verb Vocabulary
 
-`Storyfeed\Verb` is a backed enum of common verbs. Each case declares the
-Activity Streams 2.0 activity type it serializes as, and stores its own value
-as the verb. When you are done, your activities carry ordinary English words
-and serialize to the spec's vocabulary without a mapping of your own.
+`Storyfeed\Verb` is a backed enum of common verbs you can record with instead
+of writing your own. Each case stores a plain English word as the verb, such as
+`approve`, and serializes as an Activity Streams 2.0 activity type, such as
+`Accept`, so you need no mapping of your own.
 
-Verbs remain free-form strings in storage. This enum is a convenience, never a
-closed set — an application is free to use its own words, or to use both.
+Verbs are still free-form strings in storage. An application can use its own
+words, these cases, or both.
 
 ## The Vocabulary
 
@@ -78,14 +78,14 @@ Storyfeed::verbs(Verb::only(
 ));
 ```
 
-Register the cases you record, not the whole enum: grammar coverage reports a
-registered verb with no headline, and registering all seventy-two produces one
-finding per verb an application never says.
+Register the cases you record, not the whole enum. Grammar coverage reports
+every registered verb with no headline, so registering all seventy-two produces
+a finding for each verb the application never uses.
 
 ## Using Your Own Words
 
-An application with a word Storyfeed does not ship declares it the same way it
-always has — a string, or its own enum implementing `FeedVerb`.
+A word the enum does not ship is registered as a string, or through your own
+enum implementing `FeedVerb`.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -95,8 +95,6 @@ Storyfeed::verbs([
     'plate' => ActivityType::Create,
 ]);
 ```
-
-Both kinds of verb can be registered together.
 
 ## Mixing an Enum With the Shipped Cases
 

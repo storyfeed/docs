@@ -1,9 +1,9 @@
 # The Payload Contract
 
-Payload **v1**. Every item arrives fully described, so a renderer holds zero
-domain knowledge. The payload is versioned independently of the package: no
-breaking changes within a payload major; new majors are additive new
-serializers with the old ones maintained.
+The JSON a feed returns, payload **v1**. Every item arrives fully described, so
+a renderer needs no knowledge of your domain. The payload has its own version,
+separate from the package's: nothing breaks within a payload major, and a new
+major arrives as a new serializer beside the old one.
 
 ## Envelope
 
@@ -37,8 +37,8 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 
 `url`, `attributes`, `modal` and `media` come from the model's static
 resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
-with the snapshot. `label` comes from the snapshot unless the resolver supplies
-an override. `type`, `id`, `component` and `data` come from the snapshot.
+with the snapshot. `type`, `id`, `component`, `data` and `label` come from the
+snapshot; the resolver can override `label`.
 [Feedable API](/reference/feedable#feedcontext) covers the resolver.
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
@@ -86,17 +86,16 @@ and `name` from `FeedResource`. Its default type is `Document`.
 
 ### One Payload, One Feed
 
-A resolver's URL is authority for the feed named in its context and for no
-other. The name is declared by the feed registry, never read from the request,
-so the same snapshot resolves differently on each surface and neither payload
-carries the other's URL. A kitchen feed may carry a signed operational link
-that must never appear on the customer feed.
+The resolver's context names the feed being read, so one snapshot can resolve
+to a different URL on each feed. The name comes from the feed registry, never
+from the request. A kitchen feed can carry a signed operational link that the
+customer feed never shows.
 
-That guarantee ends at the payload boundary, and the node does not say which
-feed minted it. Anything that stores or forwards a payload keys it by feed:
-a cache keyed only by cursor, a digest that reuses one feed's page for another
-audience, or a renderer that memoises entities across feeds by `type:id` serves
-one feed's authority to another's audience.
+A node does not say which feed produced it, so anything that stores or forwards
+a payload must key it by feed. A cache keyed only by cursor, a digest that
+reuses one feed's page for another audience, or a renderer that memoises
+entities across feeds by `type:id` shows one feed's links to another feed's
+audience.
 
 ## Activity Node
 
@@ -167,9 +166,9 @@ exemplar list has exactly one entry, and its distinct count is exactly one.
 Otherwise it is `null`. Each plural role has an exemplar list capped at three
 and a distinct count; an absent role has `[]` and `0`.
 
-The group node *shape* is frozen contract. The *curation policy* deciding which
-groups exist (axes, thresholds, windows) is a server-side detail and free to
-change, so a renderer can rely on the shape but not on which groups appear.
+A renderer can rely on the group node's shape, but not on which groups appear:
+the axes, thresholds and windows that decide them are server-side and can
+change.
 
 ## Glyphs
 
@@ -178,10 +177,9 @@ registry. The package ships no icon set, and an unresolved pair is `null`.
 
 `glyph_intent` is a second token beside it, from a registry of its own, saying
 what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
-Free-form and app-owned, the same posture as the verb; no vocabulary is shipped
-or validated, and unknown strings are passed through rather than dropped. It is
-`null` for every pair no intent was registered for, which is every app that has
-not opted in. See [what a glyph means](/basics/headlines#what-a-glyph-means).
+Like the verb it is free-form: no vocabulary is shipped or validated, and any
+string passes through. It is `null` for every pair with no registered intent.
+See [what a glyph means](/basics/headlines#what-a-glyph-means).
 
 Both resolve on the same ladder and independently of each other:
 `type.verb`, `type.*`, `*.verb`, `*.*`.
@@ -191,13 +189,12 @@ token, and `icon` there is an image on the entity.
 
 ## Headlines
 
-`headline_template` is primary; tokenize and substitute. `headline` is the
-pre-rendered fallback for closure-authored grammar. When the template is
-non-null, `headline` is null **by design**, so a test asserting a non-null
-`headline` will fail on a perfectly good node.
+Render from `headline_template`: tokenize it and substitute. `headline` is the
+pre-rendered fallback for closure-authored grammar, and is null whenever the
+template is non-null, so a test should not assert a non-null `headline`.
 
-Both null on a group node means the group cannot be honestly summarized.
-Renderers **must** handle it — see
+Both are null on a group node when no sentence is true of the whole group.
+Renderers **must** handle it; see
 [Rendering](/basics/rendering#a-group-with-no-sentence).
 
 Token availability per axis is in
@@ -205,9 +202,8 @@ Token availability per axis is in
 pinned roles; the [singular fallback](/deeper/grammar#tokens-a-group-headline-may-use) can also
 keep a role token when the group contains exactly one distinct entity.
 
-The emitted template belongs to the node. Noun substitution can change it even
-when the grammar key is the same; cache rendered results by node rather than
-assuming one emitted template per grammar key.
+Noun substitution can change the emitted template even for the same grammar
+key, so cache rendered headlines per node, not per grammar key.
 
 ## Cursor Semantics
 
@@ -221,8 +217,7 @@ assuming one emitted template per grammar key.
 
 Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
-from the head. Equality compare only; `null → non-null` is a change. It is a
-resync *trigger*, not a reconciliation rule.
+from the head. Compare for equality only; `null → non-null` is a change.
 
 This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows)
 moves a group past a live cursor and the next page is empty. Check the token
@@ -231,9 +226,7 @@ changed token does not conform to the payload contract.
 
 ## Degraded Entities
 
-An entity with no snapshot arrives with `label: null` and `url: null` rather
-than being omitted. Activities are never withheld from the payload because an
-entity is un-snapshotted. A resolver is never called for an entity with no
-snapshot, so `media` is `null` too. A throwing `feedMedia()` degrades to
-`url: null` and `media: null` with the exception reported server-side — a
-renderer never sees an exception artifact.
+An entity with no snapshot is not omitted, and neither is its activity. It
+arrives with `label: null`, `url: null` and `media: null`, because the resolver
+is not called without a snapshot. A throwing `feedMedia()` gives `url: null`
+and `media: null`, and the exception is reported server-side.

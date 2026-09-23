@@ -1,8 +1,7 @@
 # Glossary
 
-Every word the rest of this site assumes, with the thing it is most often
-mistaken for. Grouped by where you meet them rather than alphabetically — the
-neighbours are usually what you actually wanted.
+Every term the docs use, what it is, and what it is not. Terms are grouped by
+where you meet them.
 
 ## The Activity
 
@@ -53,10 +52,8 @@ neighbours are usually what you actually wanted.
 | **trickle** | the sweep that fills snapshots recording could not | a cache warmer you must run to read |
 | **[healer](/deeper/healing)** | an app-declared policy retiring stories whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
 
-::: tip One word, one meaning
-Two pairs are kept deliberately apart, and mixing them is the commonest way to
-misread a payload. **`glyph`** is a token naming an activity; **`icon`** is an
-image, and lives at `entity.media.icon`. **A null actor** means the actor is
-unknown; **a party** means something without a model did it. Anonymous is not
-system.
+::: tip Glyph and icon, null actor and party
+**`glyph`** is a token naming an activity; **`icon`** is an image, at
+`entity.media.icon`. **A null actor** means the actor is unknown; **a party**
+means something without a model did it.
 :::
