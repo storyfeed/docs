@@ -1,5 +1,9 @@
 # Testing
 
+`Storyfeed::fake()` captures activities instead of saving them, so a test can
+assert what was published. Coverage assertions fail the suite when an activity
+or a group has no headline.
+
 ## Faking the Feed
 
 ```php
@@ -8,8 +12,8 @@ Storyfeed::fake();
 
 // … exercise your code …
 
-Storyfeed::assertPublished('upload', $document);
-Storyfeed::assertPublishedCount(3, 'upload');
+Storyfeed::assertPublished('place', $order);
+Storyfeed::assertPublishedCount(3, 'place');
 Storyfeed::assertNotPublished('delete');
 Storyfeed::assertNothingPublished();
 ```
@@ -22,13 +26,13 @@ Storyfeed::assertNothingPublished();
 | `assertNothingPublished()` | nothing at all |
 | `published($verb = null)` | the captured activities, for custom assertions |
 
-Each accepts a closure instead of a verb for arbitrary matching. The fake
-inherits your real registries, so grammar and axes behave as configured.
+Each accepts a closure in place of the verb. The fake uses your real
+registries, so grammar and axes behave as configured.
 
 ## Coverage Assertions
 
-These fail your suite when the grammar stops keeping up with the app — the
-failure mode where a feed silently renders blank lines for new activity types.
+These fail the suite when an activity type has no headline, which would
+otherwise render as a blank line.
 
 ```php
 // tests/Feature/FeedTest.php
@@ -38,27 +42,27 @@ GrammarCoverage::assertCoversRecorded();          // every verb/type pair in the
 GrammarCoverage::assertCoversPublished();         // every pair published in this test
 GrammarCoverage::assertCoversAggregates();        // every group that formed has aggregate grammar
 GrammarCoverage::assertCoversPossibleAggregates(); // every axis that COULD form, whether it did or not
-GrammarCoverage::assertCovers([['document', 'upload']]);
+GrammarCoverage::assertCovers([['order', 'place']]);
 GrammarCoverage::assertCoversAggregateMatrix(
     axes: ['repeat', 'actors'],
-    verbs: ['upload', 'comment'],
+    verbs: ['place', 'ask'],
 );
 ```
 
-`assertCoversPossibleAggregates()` is the mechanical one to prefer: it asks
-what your registered axes *could* produce, so it catches gaps before traffic
-finds them. The matrix variant is for asserting a specific grid deliberately.
+Prefer `assertCoversPossibleAggregates()`: it checks every group your axes
+*could* form, so it catches gaps before real traffic does. The matrix variant
+asserts a grid you choose.
 
 ```php
 // tests/Feature/FeedTest.php
 use Storyfeed\Testing\StorySurface;
 
 StorySurface::assertNoUnwiredSurface();
-StorySurface::assertNoUnwiredSurface(except: [Client::class]);
+StorySurface::assertNoUnwiredSurface(except: [Kitchen::class]);
 ```
 
-That one flags models that appear in your feed but that nothing publishes
-about. It is fake-aware, and with no data it reports nothing to diagnose.
+This fails for a model that appears in your feed but that nothing publishes
+about. It works under the fake, and passes when there is no data.
 
 ## Clearing the Cached Manifest Before Tests
 
@@ -66,34 +70,31 @@ about. It is fake-aware, and with no data it reports nothing to diagnose.
 `php artisan optimize` caches config, and cached config overrides
 `phpunit.xml` — so the suite runs against your real database and
 `RefreshDatabase` drops it. The symptom is a pile of *unrelated* failures
-(auth 419s, missing notifications) that reads like a broken migration.
+(auth 419s, missing notifications) that looks like a broken migration.
 
-Run `php artisan optimize:clear` (or `storyfeed:clear`) before testing.
+Run `php artisan optimize:clear` before testing.
 :::
 
 ## Diagnostics in CI
 
 ```bash
-php artisan storyfeed:doctor --json
+php artisan storyfeed:doctor --fail-on=warning   # exits non-zero on a warning or an error
 ```
 
-Exit status and structured findings make doctor usable as a CI gate. See
-[Doctor](/reference/doctor).
+Add `--json` for structured findings. See [Doctor](/reference/doctor).
 
 ## Static Analysis
 
-`Feed::make()` forwards variadically to a constructor that varies by subclass,
-which is what an analyser sees. The package ships a PHPStan rule that resolves
-the call against the constructor it will reach and checks the arity where the
-call is written:
+The package ships a PHPStan rule that checks each `Feed::make()` call against
+the constructor of the feed class it builds:
 
 ```
-ClientFeed::make() invoked with 0 arguments, 1 required —
-ClientFeed::__construct() declares ($project). A Feed takes its subject
+CustomerFeed::make() invoked with 0 arguments, 1 required —
+CustomerFeed::__construct() declares ($order). A Feed takes its subject
 through the constructor, so this is an unscoped feed: it would throw
 ArgumentCountError on the first call.
 ```
 
-It arrives through `phpstan/extension-installer` with no configuration. Arity
-only, and it stays quiet where it cannot be certain: spread arguments, named
-arguments, `static::make()`, abstract classes.
+It installs through `phpstan/extension-installer` with no configuration. It
+checks the argument count only, and stays quiet where it cannot be certain:
+spread arguments, named arguments, `static::make()`, abstract classes.
