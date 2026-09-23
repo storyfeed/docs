@@ -1,117 +1,86 @@
 # Counts That Keep Changing
 
-A node quoting "3 replies" is stating a fact about the moment it was recorded.
-Nothing recomputes it — not `storyfeed:rebuild`, not `curate --rehash`, not the
-trickle. It lives in `data`, and core hands `data` back exactly as you wrote it.
-
-That is correct for a count of something finished, and wrong for a count of
-something still happening.
-
-## When a Count Can Be Recorded
-
-**A count in a payload is recorded at publish time. If anything on the surface
-can change it, do not record it — resolve it on read.**
+A count you record in an activity, such as "3 replies", is stored as it was at
+publish and never recomputed. If the count can still change, store nothing and
+look it up when the feed is read.
 
 ## Recording It
 
 ```php
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\FeedThread;
+
 Storyfeed::activity()
     ->by($user)
     ->action('reply', $discussion)
-    ->data(['$thread' => FeedThread::make($excerpt)
-        ->replies($discussion->comments()->count())   // ← evaluated now, stored forever
-        ->toArray()])
+    ->thread(FeedThread::make(
+        text: $excerpt,
+        replies: $discussion->comments()->count(),   // evaluated now, stored forever
+    ))
     ->publish();
 ```
 
-A row recorded when the discussion had three replies says three. A fourth reply
-publishes a **new** activity with a current count; the older node beside it on
-the same page still says three, permanently.
+A row recorded at three replies says three. A fourth reply publishes a new
+activity with a new count, and the older row beside it still says three.
+Nothing recomputes it: not `storyfeed:rebuild`, not `curate --rehash`, not the
+trickle.
 
-On a read-only surface nobody notices. On a surface with a reply box, the node
-starts lying the moment somebody uses it — including the node directly above the
-box they just typed into.
+That is right for something finished, and wrong on a surface where the reader
+can add a reply.
 
 ## Resolving It Instead
 
-Three parts. All three are load-bearing.
-
-**One — store nothing.**
+**1. Store nothing.**
 
 ```php
-FeedThread::make($excerpt)->replies(null)   // "nobody counted"
+// where the fact happens: a controller, an action, a listener
+FeedThread::make(text: $excerpt, replies: null)
 ```
 
-`replies(null)` means *nobody counted*, which is a different claim from zero and
-renders as an excerpt with no count rather than as "0 replies".
+`null` means nobody counted. It renders as an excerpt with no count, not as
+"0 replies".
 
-**Two — resolve the whole page in one query, not one per node.** This is not an
-optimisation. It is what makes read-time resolution viable at all; without it
-the rule amounts to an N+1 per page and you will go back to recording counts.
+**2. Count the whole page in one query.** One query per row is an N+1:
 
 ```php
+// where the page is assembled: a controller, before the nodes are rendered
 $counts = Comment::query()
     ->selectRaw('discussion_id, count(*) as total')
-    ->whereIn('discussion_id', $ids)      // every subject on the page, one query
+    ->whereIn('discussion_id', $ids)      // every discussion on the page
     ->groupBy('discussion_id')
     ->pluck('total', 'discussion_id');
 ```
 
-Do it where the page is assembled, keyed by each node's subject id — not inside
-a node renderer, which cannot see its siblings.
+Do this where the page is assembled, not inside a row's renderer, which cannot
+see the other rows.
 
-**Three — decide which verbs show no count at all, even after resolving.** A
-resolved count is available everywhere; that does not make it wanted everywhere.
-A settled discussion is the case to think about: its reply count is not news, and
-quoting a number on a closed conversation invites a reader to reopen it.
+**3. Decide which verbs show no count.** A settled discussion's reply count is
+not news:
 
 ```php
+// where the page is assembled, for each node
 $node['thread']['replies'] = $node['verb'] === 'settle'
     ? null
     : $counts[$subjectId] ?? null;
 ```
 
-Set it back to `null` explicitly rather than assuming storage was empty. A
-backfill, a hand-repaired row, or a future writer can put a value back, and a
-stale recorded count silently outranks your live one.
-
-::: warning This is the part that gets dropped
-Parts one and two are mechanical and people get them right. Part three is a
-product decision wearing implementation clothes, and skipping it produces a
-surface that resolves counts perfectly and then shows them where they do not
-belong.
-:::
+Set `null` explicitly. A backfill or a hand-repaired row can put a stored
+count back, and it would show in place of the live one.
 
 ## Which Counts This Covers
 
-Any aggregate a node quotes about something that keeps living after the node was
-written: replies, unread items, "3 photos waiting", members of an open
-collection.
-
-The test is one question, and it does not require knowing what the count is
-about:
+Any count about something that keeps changing after the activity: replies,
+unread items, "3 photos waiting", members of an open collection. Ask:
 
 > **Can anything on the surface this renders on change it?**
 
-If yes, resolve on read.
+If yes, resolve it when the feed is read. A feed that only displays
+discussions can record the count, but the day it gains a reply box every
+stored count goes stale.
 
-## Counts That Change After Publish
+## Healing Recorded Counts
 
-A recorded count is correct until someone adds an affordance the node's author
-never saw. A feed that only displayed discussions is right to record the count;
-the day it gains a reply box, every stored count in it becomes wrong, and nobody
-reviewing that change will connect a new button to an old number.
-
-Resolving on read survives that. Recording does not.
-
-## What a Healer Can and Cannot Do Here
-
-A healer re-derives stories from their sources, so it can correct a recorded
-count — but only by **replacing** the activity, which supersedes the row and
-bumps the feed's `sync_token`. Making every reader resync because a number moved
-is the wrong trade.
-
-Worse, it fights itself: a healer comparing a recorded count against a live one
-finds a difference on every pass, and rewrites the same story forever. Storing
-`null` is what keeps a healer idempotent here.
+A healer can correct a recorded count only by replacing the activity, which
+bumps the feed's `sync_token` and makes every reader resync. It would also
+find a difference on every pass and rewrite the same story forever. Storing
+`null` avoids both.

@@ -1,7 +1,8 @@
 # Headlines for Grouped Activities
 
-A group that reads as one sentence, written on the lines next to the sentence
-for one activity.
+When a feed groups several activities into one row, the row needs its own
+headline. Write it with `aggregateGrammar()`, next to the headline for a single
+activity.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -77,35 +78,31 @@ Storyfeed::activity()
     ->publish();
 ```
 
-These are three different orders, each placed once. Read with grouping:
+Three orders, each placed once. Read the feed with grouping:
 
 ```php
 // a controller, or wherever the feed is read
 $feed = Storyfeed::feed()->involving($kitchen)->live()->get();
 ```
 
-With the default grouping strategy, these activities share the same actor,
-verb, object type, target, and publish day, so `live()` groups them under the
-`repeat` sentence:
+They share an actor, verb, object type, target and day, so `live()` groups
+them under the `repeat` headline:
 
 <FeedExample :items="[burst]" />
 
-`log()` returns individual activities. `live()` reads repeat groups and authored
-composites; `summary()` can select other eligible axes. Aggregate grammar
-names a group; it does not create one. The five-user example below needs
-`summary()` and an eligible `actors` bucket (at least three distinct actors
-under the default policy). See [Aggregation](/deeper/aggregation).
+Aggregate grammar names a group; it does not create one. The group of five
+customers below needs `summary()` and at least three distinct actors under the
+default policy. See [Aggregation](/deeper/aggregation).
 
 *five customers, five different orders, five requests, the same kitchen*
 
 <FeedExample :items="[crowd]" />
 
-Without an aggregate template, a group has no authored sentence and falls back.
-The fallback is described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
+Without an aggregate template, a group falls back to a generic headline,
+described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
 
-If ordering from a different kitchen stops a `repeat` group from forming, the built-in
-[`targets` axis](/deeper/aggregation#the-built-in-axes) leaves target free;
-`repeat` includes its id in the key.
+`repeat` only groups orders to the same kitchen. The
+[`targets` axis](/deeper/aggregation#the-built-in-axes) groups across kitchens.
 
 ## One Entry per Axis the Verb Can Group on
 
@@ -118,35 +115,35 @@ If ordering from a different kitchen stops a `repeat` group from forming, the bu
 | `object` | repeated acts on one object | `:actor changed the price of :object :count times` |
 | `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` |
 
-The wording above assumes one order per distinct row. If the same order can
-be placed repeatedly, count “placements” instead: `:count` does not count
-distinct orders.
+`:count` counts activities, not distinct objects. If the same order can be
+placed twice, write "placements", not "orders". On the `object` axis the count
+is of times, never of dishes.
 
-On the `object` axis a member is one more act on one thing, so the count is of
-changes or times, never of dishes.
-
-Which tokens each axis allows in the singular is in
-[Aggregation](/deeper/aggregation).
+The tokens each axis allows are in [Aggregation](/deeper/aggregation).
 
 ## When the Content Is the News
 
-A group has children, but no group-level `thread` quote. Quotes and media on
-individual activities remain on those children; a closed group can hide the
-words or image the reader needed at a glance. Children are capped by
-`grouping.children_limit` (25 by default), and `children_truncated` says when
-some are omitted. The headline's count still covers the whole group.
+A group has no quote of its own. Quotes and media stay on its children, so a
+collapsed group can hide the words or image the reader needed. Children are
+capped by `grouping.children_limit` (25 by default), and `children_truncated`
+says when some are left out; the count still covers the whole group.
 
-Use `log()` for a surface where each decision or comment must remain visible.
-An aggregate sentence alone cannot preserve each member's content.
+Where every comment must stay visible, read with `log()`.
 
 ## The Same Pair in a Story
 
-Both sentences live in one class, singular first:
+A Story class holds both headlines, singular first:
 
 ```php
 <?php
 
 namespace App\Stories;
+
+use App\Models\Order;
+use BackedEnum;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Grouping\Group;
+use Storyfeed\Story;
 
 class OrderWasPlaced extends Story
 {
@@ -169,5 +166,5 @@ class OrderWasPlaced extends Story
 }
 ```
 
-A Story with `headline()` and no `groups()` is a singular with no plural.
-Writing the two methods in the same edit is the whole practice.
+Write `headline()` and `groups()` in the same edit, so no verb has a singular
+without a plural.
