@@ -1,8 +1,8 @@
 # Containers & Context
 
-`context` is the fourth role: the container an activity happened **inside**.
-With it recorded, a feed can be scoped to the container and an axis can group
-by it.
+`context` is the fourth role: the container an activity happened **inside**,
+such as the kitchen a dish belongs to. Record it, and you can read the feed for
+everything that happened inside that container.
 
 <script setup>
 import { who, where, dishes, notes, activity } from '../.vitepress/theme/samples'
@@ -35,12 +35,9 @@ Storyfeed::activity()
 | `target` | what the preposition points at | asked **about** the dish |
 | `context` | the container the act happened inside | …**in** the kitchen |
 
-They carry different facts when the target sits inside the container — a
-a question about a dish in a kitchen, a note on an order at a table. That
-is the case `context` is for.
-
-When the target is itself the container, `target` carries it, and the record
-is complete:
+`context` is for a target that sits inside a container: a question about a
+dish in a kitchen, a note on an order at a table. When the target is itself the
+container, `target` alone carries it:
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -51,18 +48,13 @@ Storyfeed::activity()
     ->publish();
 ```
 
-Setting `context` to the same kitchen as well is allowed. It records the
-kitchen twice, once in each role, and matters only when something reads the
-`context` role — an axis you registered, a container query, the AS2 document.
-
-Fill each role with what is true and available. The template decides which
-roles the sentence names; a role it leaves out is still there for scoping,
-grouping and the AS2 document.
+Setting `context` to the same kitchen as well is allowed; it records the
+kitchen in both roles. A role the headline doesn't name is still used for
+scoping, grouping and the AS2 document, so fill every role that is true.
 
 ## When to Set It
 
-Whether an activity needs `context` is decided by what reads it, not by the
-sentence:
+An activity needs `context` when something reads it:
 
 | You Want | Why It Needs `context` |
 |---|---|
@@ -71,7 +63,7 @@ sentence:
 | `:context` in a composite headline | the built-in `composite` axis pins `:actor`, `:target` and `:context` — see [Composites](/deeper/composites) |
 | `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
 
-The axis is the one that cannot be had any other way:
+Grouping by a container needs a custom axis on the `context` role:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -80,19 +72,16 @@ Axis::make('scene')
     ->eligibleWhenDistinct('actor', min: 2);
 ```
 
-A filter can narrow a feed to a container; only a role can group by one.
-
 ## The Container Query
 
 `feed()->context($kitchen)` returns what happened inside the kitchen. It is
-narrower than [`involving()`](/basics/reading#scoping), which also matches the
-kitchen's own creation and closure — those record the kitchen as the
-`object`.
+narrower than [`involving()`](/basics/reading#scoping), which also matches
+activities where the kitchen is the `object`, such as its creation.
 
 ## A Container That Is Not a Model
 
-A folder name, a source system, a mailbox: when the room is a value rather than
-an entity, it has three homes.
+When the container is a plain value, such as a folder name, a source system
+or a mailbox, record it one of three ways:
 
 | Home | In the Headline | Groups by It | In the AS2 Document | Cost |
 |---|---|---|---|---|
@@ -100,8 +89,8 @@ an entity, it has three homes.
 | `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
 | a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
 
-## Roles Are Set at Publish, and Never Backfilled
+## Recording Context at Publish
 
-Roles are set when the activity is published and never backfilled: a
-`context` axis registered later groups only the activities that were recorded with a
-`context`. If the room is a model you have at publish time, record it.
+Roles are set when the activity is published and never backfilled. A `context`
+axis registered later groups only the activities recorded with a `context`, so
+if the container is a model you have at publish time, record it.
