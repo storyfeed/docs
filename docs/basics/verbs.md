@@ -79,9 +79,106 @@ class OrderController extends Controller
 
 These verbs are free-form strings, and can be anything at all.
 
+## Using Your Own Enums
+
+In practice, passing loose strings may lead to typos and drift as an application grows. A
+common pattern is to define your verbs within an enum,
+
+```php
+<?php
+
+namespace App\Enums;
+
+enum OrderActivity: string
+{
+    case Placed = 'place';
+    case Confirmed = 'confirm';
+    case Ready = 'ready';
+}
+```
+
+which can then be decorated with Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface,
+
+```php
+<?php
+
+namespace App\Enums;
+
+use Storyfeed\Concerns\AsFeedVerb; // [!code focus]
+use Storyfeed\Contracts\FeedVerb; // [!code focus]
+
+enum OrderActivity: string implements FeedVerb // [!code focus]
+{
+    use AsFeedVerb; // [!code focus]
+
+    case Placed = 'place';
+    case Confirmed = 'confirm';
+    case Ready = 'ready';
+}
+```
+
+to allow fluent recording of activities using the enum. `Storyfeed::record()` takes the enum either way:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\OrderActivity; // [!code focus]
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+
+class OrderController extends Controller
+{
+    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    {
+        $order = $kitchen->orders()->create($request->validated());
+
+        OrderActivity::Placed->by($request->user()) // [!code focus]
+            ->object($order)
+            ->to($kitchen)
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\OrderActivity; // [!code focus]
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    {
+        $order = $kitchen->orders()->create($request->validated());
+
+        Storyfeed::record(
+            verb: OrderActivity::Placed, // [!code focus]
+            object: $order,
+            actor: $request->user(),
+            target: $kitchen,
+        );
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+:::
+
 ## Using Storyfeed's Verbs
 
-Storyfeed ships common verbs as the `Storyfeed\Verb` enum.
+Storyfeed also ships common verbs, as the `Storyfeed\Verb` enum.
 
 <FeedExample context :items="[confirmed]" />
 
@@ -142,100 +239,3 @@ class ConfirmOrderController extends Controller
 
 The stored verb is the case's value, `confirm`, so the row is the same as one
 recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.
-
-## Using Enums
-
-In practice, passing loose strings may lead to typos and drift as an application grows. A
-common pattern is to define your verbs within an enum,
-
-```php
-<?php
-
-namespace App\Enums;
-
-enum OrderActivity: string
-{
-    case Placed = 'place';
-    case Confirmed = 'confirm';
-    case Ready = 'ready';
-}
-```
-
-which can then be decorated with Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface,
-
-```php
-<?php
-
-namespace App\Enums;
-
-use Storyfeed\Concerns\AsFeedVerb; // [!code focus]
-use Storyfeed\Contracts\FeedVerb; // [!code focus]
-
-enum OrderActivity: string implements FeedVerb // [!code focus]
-{
-    use AsFeedVerb; // [!code focus]
-
-    case Placed = 'place';
-    case Confirmed = 'confirm';
-    case Ready = 'ready';
-}
-```
-
-to allow fluent recording of activities using the enum:
-
-::: code-group
-```php [Fluent Syntax]
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Enums\OrderActivity; // [!code focus]
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
-use Illuminate\Http\RedirectResponse;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
-        $order = $kitchen->orders()->create($request->validated());
-
-        OrderActivity::Placed->by($request->user()) // [!code focus]
-            ->object($order)
-            ->to($kitchen)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-
-```php [Named Arguments]
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Enums\OrderActivity; // [!code focus]
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
-        $order = $kitchen->orders()->create($request->validated());
-
-        Storyfeed::record(
-            verb: OrderActivity::Placed, // [!code focus]
-            object: $order,
-            actor: $request->user(),
-            target: $kitchen,
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-:::

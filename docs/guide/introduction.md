@@ -93,10 +93,8 @@ An activity is a recorded fact, shaped like a sentence with named roles:
 
 > {{ who.regular.label }} placed {{ orders.first.label }} with {{ where.kitchen.label }}
 
-The **actor** is the party that initiated the activity. 
-The **verb** describes the action that occurred. The **object** is
-the subject of interest from the action, and the **target** is 
-what the action was aimed at.
+The **actor** is who did it. The **verb** is what happened. The **object** is
+what it was done to, and the **target** is what it was aimed at.
 
 > **{{ who.regular.label }}** *(actor)* **placed** *(verb)* **{{ orders.first.label }}** *(object)*
 > with **{{ where.kitchen.label }}** *(target)*
@@ -110,8 +108,7 @@ The summary headline of the activity may take different forms, but the underlyin
 
 > **{{ where.kitchen.label }}** received **{{ orders.first.label }}** from **{{ who.regular.label }}**
 
-The recorded action is still **placed**, despite it being described differently under
-each published headline.
+The recorded verb is still `place`, whichever headline describes it.
 
 
 ## Examples of Activities
@@ -122,20 +119,16 @@ each published headline.
   </template>
 </FeedExample>
 
-The question is the shape worth studying: the headline names the **target** rather
-than the object, because the object is the note itself and its label is the
-note's text. The dish it was asked about is what the sentence needs.
+In the question, the headline names the **target**, not the object. The object
+is the note, and its label is the note's whole text; the dish is what the
+sentence needs.
 
-## Sample Feed
+## Examples of Feeds
 
-### As a Linear Log
+### As a Timeline
 
 <FeedExample :items="log" />
 
 ### As a Grouped Summary
 
-<FeedExample :items="summary">
-  <template #annotations="{ node }">
-    <Annotation><SlotMapping :node="node" /></Annotation>
-  </template>
-</FeedExample>
+<FeedExample :items="summary" />
