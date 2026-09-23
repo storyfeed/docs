@@ -110,13 +110,6 @@ The approval renders nowhere, because no feed admits its verb. It maps to the
 Activity Streams `Accept` type, so the serialized document needs no extension
 term. The contributor stays the actor of their own story.
 
-::: tip Exclude the verb, do not omit it
-`->except()` and leaving the verb out produce the same feed. But
-`storyfeed:doctor`'s feed coverage check counts a verb as classified when a
-feed names it, including in `except()`. An omitted verb looks like one nobody
-wired up.
-:::
-
 ## Showing the Approver on a Dense List
 
 On one photo's page, the lookup is one more query. On a long list it is one

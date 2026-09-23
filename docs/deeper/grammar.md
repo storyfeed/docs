@@ -58,8 +58,6 @@ a plural token is allowed everywhere.
 'repeat.reprice' => ':actor changed :count prices on :targets'          // ✓ a list is true of every member
 ```
 
-`storyfeed:doctor` reports unsafe tokens as warnings.
-
 With no group headline registered, a group tries the single-activity
 headline. A role that differs across the group becomes a plain noun, such as
 "dishes", when all its entities are one type. Otherwise the group has no
@@ -151,8 +149,7 @@ Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on
 Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 ```
 
-`'*.*'` would also match, but it matches every missing headline too, so doctor
-can't report them.
+`'*.*'` would also match, but it also covers every headline you forgot to write.
 :::
 
 ## Verbs Spanning Multiple Types

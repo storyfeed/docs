@@ -310,17 +310,3 @@ never has to handle a bare string.
 
 ::: headless
 :::
-
-## Unknown Body Types in a Renderer
-
-A renderer skips a body type it doesn't recognise and draws the rest of the row,
-without an error.
-
-## Inspecting What Is Stored
-
-```bash
-php artisan storyfeed:doctor --only=body
-```
-
-It lists the stored body types and warns about two silent faults: a `$v` with no
-`$body`, and a body type versioned on some rows but not others.

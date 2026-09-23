@@ -191,6 +191,4 @@ on this site, clicking the file name opens a panel.
 | `MediaObject` | a title, some prose, one picture, the files |
 
 They live in `Storyfeed\Body`. Each carries a version, so a renderer can
-upgrade an old row before drawing it. An app may write its own body types; a
-renderer draws nothing for a type it does not recognise, and the rest of the
-row renders as usual.
+upgrade an old row before drawing it. An app may write its own body types.

@@ -83,13 +83,6 @@ Storyfeed::grammar([
 The fields are fine, but the template names a role no publisher fills, so the
 headline shows a fallback where a name should be.
 
-```sh
-php artisan storyfeed:doctor --only=roles
-```
-
-The `roles` check reports a template that names a role none of its activities
-carry.
-
 ## Repeated Rows
 
 ```sh
@@ -99,4 +92,3 @@ php artisan storyfeed:doctor --only=reflexive
 The check lists activities with the same entity as `actor` and `object`,
 grouped by verb, at `info` severity. It does not find bystanders, noise, or
 repetition in other fields. Read the rows it lists back with the test above.
-See [Doctor](/reference/doctor).

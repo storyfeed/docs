@@ -344,12 +344,3 @@ only the latest reply, see [Repeating Activities](/cookbook/repeating-activities
 
 `FeedThread` is for what a person said. A quoted passage with a source is the
 [`Excerpt` form](/basics/activity-content).
-
-## Grammar with No Publisher
-
-`storyfeed:verbs --used` and the doctor's `verbs` check compare declared verbs
-with stored ones. They read storage, not code: a verb with old rows counts as
-recorded after its publisher is gone, and a grammar entry alone is not a
-declared verb, so an unused one is not reported. Keeping a retired verb on
-purpose is in
-[Keeping Verbs and Grammar Together](/cookbook/verbs-and-grammar-together#a-verb-nothing-publishes-any-more).

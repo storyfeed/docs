@@ -56,8 +56,3 @@ pictures get bigger tiles, and no row holds a single tile, so four is two and
 two. Put the tile count on the row.
 
 Each tile keeps its entity's link, and draws the preview, not the original.
-
-## Unknown Body Types
-
-A body type the renderer does not recognise draws nothing, never an error. See
-[Activity Body Content](/deeper/body#unknown-body-types-in-a-renderer).
