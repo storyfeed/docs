@@ -1,7 +1,8 @@
 # Queues
 
-When you are done, a worker publishes the same activity a request would have:
-same time, same actor.
+`publish()` records an activity immediately, in the current request. To record
+from a queue instead, publish from a queued listener or a job. The user who
+dispatched the job is still the actor; the time needs `publishedAt()`.
 
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
@@ -34,9 +35,6 @@ const dated = [
   }),
 ]
 </script>
-
-`publish()` runs inline, in one transaction. To queue, mark a listener
-`ShouldQueue` or publish from a job.
 
 ## A Queued Listener
 
