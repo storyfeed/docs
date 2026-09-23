@@ -231,8 +231,7 @@ runs once for every row that names a dish. Keep a counter cache column on the
 model instead.
 
 ::: headless it counts nothing for you
-A count is the app's fact and the app's query. Core passes a minted form to the
-renderer as given. It does not read it, cache it, or check the numbers in it.
+The count is your app's query. Core passes it through unchecked.
 :::
 
 A minted form is built by current code on every read, so it never needs
@@ -363,9 +362,8 @@ A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
 never has to handle a bare string.
 
 ::: headless it draws no form
-The package stores the block and hands it back byte-identical. It reads no form,
-upgrades none, and ships no view for one: `upgrade()` runs in the renderer. A
-renderer that recognises none of these forms still draws headlines.
+Core stores the block and returns it unchanged. Drawing and upgrading it is
+your renderer's job.
 :::
 
 ## Unknown Forms in a Renderer

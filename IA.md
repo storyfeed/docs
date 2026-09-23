@@ -401,7 +401,9 @@ so nobody documents it as public API.
 
   **The Quickstart's last step is where "headless" is first said, in prose.**
   Every `::: headless` container after it is a callback to that sentence, so
-  none may appear on a page before the Quickstart (ruled 2026-09-22).
+  none may appear on a page before the Quickstart (ruled 2026-09-22). A
+  callback is short: the title carries the boundary, and the body is one plain
+  sentence saying whose job it is. No reasons, no reassurance.
 
   Six exist today: it ships no renderer, it ships no icons, it makes no
   images, it draws no form, it counts nothing for you, it reconciles nothing

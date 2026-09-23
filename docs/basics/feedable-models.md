@@ -242,8 +242,7 @@ class MenuItem extends Model implements Feedable
 <FeedExample :items="[scoped[2]]" />
 
 ::: headless it makes no images
-`FeedImage` carries a location and its dimensions. Generating, storing and
-serving the image stay your app's job; the resolver says where it is.
+Your app generates, stores and serves the image. `FeedImage` says where it is.
 :::
 
 Images, attachments, the live model, and every argument each method accepts

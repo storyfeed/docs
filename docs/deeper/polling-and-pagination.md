@@ -5,8 +5,7 @@ scrolls, holds nodes from several responses at once. Three rules keep what it
 holds correct.
 
 ::: headless it reconciles nothing on the client
-The payload carries stable node ids, `children` and a `sync_token`. Merging
-pages is yours.
+Merging pages is your client's job.
 :::
 
 <script setup>

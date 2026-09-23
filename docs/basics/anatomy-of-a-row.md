@@ -5,7 +5,7 @@ and a few more. Each zone is filled from one part of the payload, and your
 renderer decides where each one sits.
 
 ::: headless it ships no renderer
-This is the layout to build your renderer against, not a component you install.
+This is a layout to build against, not a component to install.
 :::
 
 <RowAnatomy />

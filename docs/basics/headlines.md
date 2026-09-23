@@ -70,9 +70,7 @@ Keys resolve most-specific first:
 | `*.*` | everything with no more specific entry |
 
 ::: headless it ships no icons
-`shopping-bag` is a name you chose, carried to your renderer verbatim. Mapping
-it to a drawing is the renderer's job, with whichever icon set it already has.
-The package validates nothing here.
+`shopping-bag` is a name you chose. Your renderer maps it to an icon.
 :::
 
 ## What a Glyph Means

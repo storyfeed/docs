@@ -33,10 +33,8 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
 </script>
 
 ::: headless it ships no renderer
-The package ends at the payload, and drawing it is yours. If you would rather
-not write a renderer, `storyfeed/ui` draws these
-nodes for Vue, Inertia and Blade, and `storyfeed/filament` is a Filament
-plugin. Neither is required, and neither is documented here.
+Drawing the payload is your app's job. For a ready-made renderer, see
+`storyfeed/ui` or `storyfeed/filament`.
 :::
 
 ## The Smallest Loop That Draws Something
