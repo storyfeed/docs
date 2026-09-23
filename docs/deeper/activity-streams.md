@@ -2,8 +2,8 @@
 
 Storyfeed can serve each activity as a
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
-document. All seven [entity roles](/basics/recording#roles) appear under their
-AS2 property names. It writes AS2 documents; it does not import arbitrary ones.
+document, with all seven [roles](/basics/recording#roles) under their AS2
+names.
 
 The route is read-only and off by default:
 
@@ -30,29 +30,25 @@ Add auth or throttling through `middleware`.
 | [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
 | [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
 
-[Recording](/basics/recording#roles) shows which role to use.
-
 ## Serving a Collection
 
-There is no collection route; a [named feed](/basics/named-feeds) decides what
-a collection contains. `CollectionSerializer::collection()` turns a page of
-activities into an `OrderedCollection` or `OrderedCollectionPage`, with
-`partOf`, an opaque `next` cursor and no `totalItems`. You pass the page and
-the IRI it lives at:
+There is no collection route. `CollectionSerializer::collection()` turns a page
+of activities, such as a [named feed](/basics/named-feeds)'s, into an
+`OrderedCollection` or `OrderedCollectionPage` with a `next` cursor. Pass the
+page and its IRI:
 
 ```php
 collection(CursorPaginator $page, string $iri, ?string $cursor = null): array
 ```
 
 ::: warning
-The prefix mints activity IRIs, so changing it changes document ids. Pick one
-before you publish anything externally.
+The prefix is part of every activity's id, so changing it changes them all.
+Choose it before you share any documents.
 :::
 
 ## The `@context`
 
-Documents reference `https://ns.storyfeed.dev`, which defines the package's own
-terms (currently `sf:verb`).
+Documents reference `https://ns.storyfeed.dev`, which defines `sf:verb`.
 
 ## Verb Mapping
 
@@ -86,21 +82,17 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-- The mapping only sets the document's `type`. It never throws and never
-  affects recording or validation.
+- The mapping only sets the document's `type`.
 - An unmapped verb serializes as `"type": "Activity"`, with the verb in
-  `sf:verb`. A mapped extension type string is kept verbatim as `type`.
+  `sf:verb`.
 - Composite objects serialize as `OrderedCollection`.
-- An entity's [media slots](/reference/payload#entity-media) serialize as AS2
-  `Link` objects under `icon`, `image` and `preview`, with `mediaType`, `width`
-  and `height`. A `url` typed as an image is a `Link` too. `$context->feed()`
-  is `null` here, because a document is not read through a feed.
+- An entity's [media](/reference/payload#entity-media) serializes as AS2
+  `Link` objects under `icon`, `image` and `preview`. While serializing,
+  `$context->feed()` in `feedMedia()` is `null`.
 
-`Reader::activity()` reads a Storyfeed document back. It recovers the `uid`
-from `id`, the verb from `sf:verb`, the `type`, and `published` as
-`published_at`, to the whole second. The seven role values come back unchanged,
-or `null` when absent. Top-level `summary` and `replies` are dropped, and
-storage attributes are not rebuilt.
+`Reader::activity()` reads a Storyfeed document back: the `uid`, verb, `type`,
+roles, and `published_at` to the whole second. It drops `summary` and
+`replies`.
 
 ## Type Overrides
 
@@ -111,5 +103,4 @@ Per story:
 public ActivityType|string|null $type = ActivityType::Create;
 ```
 
-Per model, when the type belongs with the entity rather than the verb,
-implement `HasActivityStreamsType` on the model.
+Per model: implement `HasActivityStreamsType`.
