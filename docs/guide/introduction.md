@@ -36,7 +36,7 @@ const log = [
   published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
 }))
 
-// The same window, collapsed. Counts reach back past 18:44 — see the note below.
+// The same window, collapsed. Counts reach back past 18:44.
 const summary = [
   group({ id: 'g1', verb: 'ready', axis: 'repeat', count: 9, glyph: 'utensils',
     published_at: '2026-08-14T18:52:02.000000Z',

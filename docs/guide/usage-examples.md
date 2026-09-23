@@ -1,8 +1,5 @@
 # Usage Examples
 
-What the package produces, before how. Each example is a snippet and the feed
-it renders. The pages that teach them are linked underneath.
-
 <script setup>
 import { who, where, orders, dishes, photos, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
 
@@ -96,8 +93,7 @@ const posted = activity({
 
 ## Three in a Row, One Line
 
-The same customer orders three times in a few minutes. Nothing coordinates the
-three requests.
+The same customer orders three times in a few minutes, in three requests.
 
 ```php
 // where the order is placed: a controller, an action, a listener
@@ -108,9 +104,11 @@ Storyfeed::activity()
     ->publish();
 ```
 
+On the feed:
+
 <FeedExample :items="[burst]" />
 
-Read as a plain timeline instead, the same three activities are three rows:
+As a timeline:
 
 <FeedExample :items="expanded" />
 
@@ -199,5 +197,3 @@ A feed can group by whoever you like, tell one history to several audiences,
 bundle a burst of work into one story, publish itself from an event, keep
 working when a row it names is gone, and serialize to
 [Activity Streams 2.0](/deeper/activity-streams).
-
-[The Basics](/basics/feedable-models) is the shortest way through.
