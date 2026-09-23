@@ -1,8 +1,8 @@
-# Headlines
+# The Feed File
 
-A headline is the sentence the feed prints for an activity. You write a
-template once per verb in `routes/feed.php`, and the feed fills in the
-entities.
+`routes/feed.php` declares what each verb's activities say: the headline, the
+icon, and how a group of them reads, the way `routes/web.php` declares your
+routes.
 
 <script setup>
 import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
@@ -22,9 +22,6 @@ const placedAtCounter = activity({ id: 'hl3', verb: 'place', glyph: 'shopping-ba
   headline_template: ':actor placed :object',
   actor: who.customer2, object: orders.second })
 
-const french = activity({ ...scenes.order, id: 'hl4',
-  headline_template: ':actor a passé :object auprès de :target' })
-
 const rushed = activity({ id: 'hl5', verb: 'place', glyph: 'shopping-bag',
   published_at: '2026-08-14T14:32:00.000000Z',
   headline_template: ':actor rushed :object to :target',
@@ -43,17 +40,9 @@ const repeated = group({ id: 'hl7', verb: 'place', axis: 'repeat', count: 3, gly
   distinct: { actors: 1, objects: 3 } })
 </script>
 
-## The Feed File
-
-```sh
-php artisan storyfeed:install   # creates routes/feed.php; never overwrites one you have
-```
-
-`routes/feed.php` holds what your activities say, the way `routes/web.php`
-holds your routes. Storyfeed loads it once every service provider has booted,
-so your morph map is already in place.
-
 ## Registering a Headline
+
+A headline is the sentence the feed prints for an activity:
 
 ::: code-group
 
@@ -193,6 +182,29 @@ Storyfeed::icons([
 
 <FeedExample :items="[complete, scenes.order]" />
 
+`intent()` names what the icon means, in your app's own word:
+
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
+```
+
+```php [Array]
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::glyphIntents(['order.complete' => 'success']);
+```
+
+:::
+
+[Rendering](/basics/rendering#what-a-glyph-means) covers drawing it.
+
 The most specific definition wins:
 
 | Fluent Syntax | Array Key | Matches |
@@ -206,143 +218,6 @@ The same order applies to headlines and to intents.
 
 ::: headless
 :::
-
-## What a Glyph Means
-
-A glyph names a shape. `glyph_intent` says what the shape means, and sits
-beside it on every node:
-
-```json
-{
-  "verb": "complete",
-  "glyph": "receipt",
-  "glyph_intent": "success"
-}
-```
-
-::: code-group
-
-```php [Fluent Syntax]
-// routes/feed.php
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->group(function () {
-    Story::verb('place')->icon('shopping-bag')->intent('pending');   // the app's own word
-    Story::verb('complete')->icon('receipt')->intent('success');
-    Story::verb('cancel')->icon('x-circle')->intent('danger');
-});
-```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::glyphIntents([
-    'order.place' => 'pending',   // the app's own word
-    'order.complete' => 'success',
-    'order.cancel' => 'danger',
-]);
-```
-
-:::
-
-<FeedExample :items="[complete, scenes.order]" />
-
-Or on a story class:
-
-```php
-// app/Stories/OrderWasCompleted.php
-public function intent(): ?string
-{
-    return 'success';
-}
-```
-
-The value is **your** string. Storyfeed ships no intents and no colours, and
-validates nothing: `success`, `pending` and `danger` are this example's words,
-and the renderer maps them onto colours it owns.
-
-Most verbs have no intent. Their `glyph_intent` is `null`, and the glyph
-renders plain. Any string passes through unchanged; a renderer with no colour
-for it draws the plain glyph.
-
-## Translating a Headline
-
-::: code-group
-
-```php [Fluent Syntax]
-// routes/feed.php
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-use Storyfeed\FeedHeadline;
-
-Story::for(Order::class)
-    ->verb('place')
-    ->headline(FeedHeadline::trans('feed.order_placed'));
-```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedHeadline;
-
-Storyfeed::grammar([
-    'order.place' => FeedHeadline::trans('feed.order_placed'),
-]);
-```
-
-:::
-
-```php
-// lang/fr/feed.php
-return [
-    'order_placed' => ':actor a passé :object auprès de :target',
-];
-```
-
-<FeedExample :items="[french]" />
-
-The key is translated when the feed is read, in the reader's locale. Tokens are
-substituted by the renderer, so word order stays the translator's decision.
-
-## Choosing a Headline per Activity
-
-A closure receives the activity and returns a template:
-
-::: code-group
-
-```php [Fluent Syntax]
-// routes/feed.php
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-use Storyfeed\Models\Activity;
-
-Story::for(Order::class)
-    ->verb('place')
-    ->headline(fn (Activity $activity) => ($activity->data['rush'] ?? false)
-        ? ':actor rushed :object to :target'
-        : ':actor placed :object with :target');
-```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Activity;
-
-Storyfeed::grammar([
-    'order.place' => fn (Activity $activity) => ($activity->data['rush'] ?? false)
-        ? ':actor rushed :object to :target'
-        : ':actor placed :object with :target',
-]);
-```
-
-:::
-
-<FeedExample :items="[rushed, scenes.order]" />
-
-The closure runs when the feed is read. Its tokens become links, like any other
-template.
 
 ## A Model's Everyday Verbs
 
@@ -431,6 +306,44 @@ Story::for(Question::class)
 With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
 covers what the feed does when a model goes.
 
+## Choosing a Headline per Activity
+
+A closure receives the activity and returns a template:
+
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Models\Activity;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(fn (Activity $activity) => ($activity->data['rush'] ?? false)
+        ? ':actor rushed :object to :target'
+        : ':actor placed :object with :target');
+```
+
+```php [Array]
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Activity;
+
+Storyfeed::grammar([
+    'order.place' => fn (Activity $activity) => ($activity->data['rush'] ?? false)
+        ? ':actor rushed :object to :target'
+        : ':actor placed :object with :target',
+]);
+```
+
+:::
+
+<FeedExample :items="[rushed, scenes.order]" />
+
+The closure runs when the feed is read. Its tokens become links, like any other
+template.
+
 ## Naming the Verb at the Call Site
 
 A verb defined here is published by its name, the way `route()` names a route:
@@ -494,6 +407,15 @@ class CheckoutController extends Controller
 
 `story('place', $order)` is `Storyfeed::activity()->action('place', $order)`
 in one call. It is a global helper, so it needs no `use` line.
+
+## Loading the Feed File
+
+```sh
+php artisan storyfeed:install   # creates routes/feed.php; never overwrites one you have
+```
+
+Storyfeed loads `routes/feed.php` once every service provider has booted, so
+your morph map is already in place.
 
 ## Listing and Caching Definitions
 

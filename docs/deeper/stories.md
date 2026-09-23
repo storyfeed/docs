@@ -96,7 +96,7 @@ returns in `routes/feed.php`, with the same methods.
 | `place()` | `place` | `:actor placed :object[ with :target]` |
 | `complete()` | `complete` | `:actor completed :object` |
 | `confirmPayment()` | `confirm_payment` | `:actor confirmed payment for :object` |
-| none | `create`, `update`, `delete`, `restore` | the [defaults](/basics/headlines#a-model-s-everyday-verbs) |
+| none | `create`, `update`, `delete`, `restore` | the [defaults](/basics/the-feed-file#a-model-s-everyday-verbs) |
 
 To add a verb, add a method. Nothing else names it.
 

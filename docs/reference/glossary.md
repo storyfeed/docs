@@ -30,8 +30,8 @@ where you meet them.
 
 | Term | It Is | It Is **Not** |
 |---|---|---|
-| **[grammar](/basics/headlines)** | the registry of headline templates | rendered prose |
-| **[definitions file](/basics/headlines#the-feed-file)** | `routes/feed.php`, where `Story::` defines what each activity says | a route file; it defines no URLs |
+| **[grammar](/basics/the-feed-file)** | the registry of headline templates | rendered prose |
+| **[feed file](/basics/the-feed-file)** | `routes/feed.php`, where `Story::` defines what each activity says | a route file; it defines no URLs |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
 | **glyph** | a token the payload ships, e.g. `shopping-bag` | an image, or a set the package owns |
 | **[body](/deeper/body)** | a typed block beneath the sentence — an excerpt, a change, a list; its kind is its **body type** | part of the headline, or a place for markup |

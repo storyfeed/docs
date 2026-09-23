@@ -265,4 +265,4 @@ Keys are object type and verb, like the grammar's, and resolve most-specific
 first: `order.confirm`, `order.*`, `*.confirm`, `*.*`. A key with no dot is a
 verb on any type, so `'confirm'` means `*.confirm`. A template can't contain
 `:actor`. A closure works as in
-[Headlines](/basics/headlines#choosing-a-headline-per-activity).
+[The Feed File](/basics/the-feed-file#choosing-a-headline-per-activity).

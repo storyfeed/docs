@@ -248,7 +248,7 @@ registry. The package ships no icon set, and an unresolved pair is `null`.
 what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
 Like the verb it is free-form: no vocabulary is shipped or validated, and any
 string passes through. It is `null` for every pair with no registered intent.
-See [what a glyph means](/basics/headlines#what-a-glyph-means).
+See [what a glyph means](/basics/rendering#what-a-glyph-means).
 
 Both resolve on the same ladder and independently of each other:
 `type.verb`, `type.*`, `*.verb`, `*.*`.

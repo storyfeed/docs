@@ -26,6 +26,11 @@ const unnamed = group({ id: 'rn3', verb: 'note', axis: 'targets', count: 6, glyp
   actors: [who.regular, who.customer2], targets: [],
   distinct: { actors: 2, targets: 0 } })
 
+const complete = activity({ id: 'rn5', verb: 'complete', glyph: 'receipt',
+  published_at: '2026-08-14T14:35:00.000000Z',
+  headline_template: ':actor completed :object',
+  actor: who.cook, object: orders.first })
+
 const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
   published_at: '2026-08-14T14:05:00.000000Z',
   headline_template: ':actor placed :object with :target',
@@ -81,8 +86,29 @@ Each entity carries its own `url`, so a link needs no route knowledge:
 
 <FeedExample :items="[one]" />
 
+## What a Glyph Means
+
 The node's `glyph` is a token your app registered. Map it to your icon set,
-with a fallback icon for a token you don't recognise.
+with a fallback icon for a token you don't recognise. `glyph_intent` sits
+beside it and says what the shape means:
+
+```json
+{
+  "verb": "complete",
+  "glyph": "receipt",
+  "glyph_intent": "success"
+}
+```
+
+<FeedExample :items="[complete, scenes.order]" />
+
+The value is **your** string, from the verb's
+[`intent()`](/basics/the-feed-file#adding-an-icon). Storyfeed ships no intents
+and no colours, and validates nothing: `success`, `pending` and `danger` are
+this example's words. Map them onto colours your frontend owns.
+
+Most verbs have no intent. Their `glyph_intent` is `null`: draw the plain
+glyph, as you would for an intent you have no colour for.
 
 ## Degraded Entities
 

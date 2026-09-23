@@ -338,12 +338,12 @@ reading and drawing, a second audience, then renderer-specific pages.
   `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
   while every reader of an activity feed does
-- ✅ Headlines — `routes/feed.php` and the `Story` facade, tokens, optional segments, icons, glyph intents, translation, `Story::resource()`, `story()` at the call site, the feed commands
+- ✅ The Feed File (`basics/the-feed-file`) — `routes/feed.php` and the `Story` facade: headlines, tokens, optional segments, icons and intents, `Story::resource()`, group headlines, `->missing()`, `story()` at the call site, loading, listing and caching. Named `Headlines` until 2026-09-23; renamed for the file's job, as Laravel's Routing page is. Declaration only: what a glyph means moved to Rendering, translation to Localization
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
 - ✅ Anatomy of a Row — the wireframe: every zone, what fills it, and the taste rules a renderer pays for otherwise
-- ✅ Rendering — the smallest loop, links, degraded entities, groups, details, resync
+- ✅ Rendering — the smallest loop, links, what a glyph means, degraded entities, groups, details, resync
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
 
 ### Digging Deeper
@@ -357,6 +357,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, group headlines (per type or per verb), plural tokens, the tokens a group may use, nouns, thresholds, custom axes
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
+- ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
 - ✅ Queues — queued listeners and jobs, the actor on a worker
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping

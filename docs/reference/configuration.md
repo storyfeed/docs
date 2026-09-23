@@ -10,7 +10,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | Key | Default |  |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | the file that holds your [headline definitions](/basics/headlines), loaded once every service provider has booted. Another path to use another file; `false` turns loading off |
+| `definitions` | `base_path('routes/feed.php')` | the file that holds your [feed file](/basics/the-feed-file), loaded once every service provider has booted. Another path to use another file; `false` turns loading off |
 
 Once `storyfeed:cache` has run, the file isn't loaded at boot: the manifest
 holds what it defined.
