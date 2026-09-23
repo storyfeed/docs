@@ -102,14 +102,10 @@ will make use of.
 A body in `toFeed()` is rebuilt whenever the model is saved, so it suits facts
 the app has finished deciding. The publishing line does not change:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $order)
-    ->to($kitchen)
-    ->publish();
-```
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 The form arrives on the node exactly as it went in:
 

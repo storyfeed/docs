@@ -24,7 +24,10 @@ class OrderPlaced
 }
 ```
 
-<<< @/snippets/publish-from-listener.php
+::: code-group
+<<< @/snippets/publish-from-listener.php [Fluent Syntax]
+<<< @/snippets/publish-from-listener.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[scenes.order]" />
 

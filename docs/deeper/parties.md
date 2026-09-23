@@ -23,28 +23,125 @@ can be **anonymous**: nobody is known.
 
 ## Parties
 
-```php
-// where the fact happens: a controller, an action, a listener
-$party = Storyfeed::party('Stripe');
+::: code-group
+```php [Fluent Syntax]
+<?php
 
-Storyfeed::record(
-    verb: 'pay',
-    object: $order,
-    actor: $party,
-);
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        $party = Storyfeed::party('Stripe'); // [!code focus]
+
+        Storyfeed::activity() // [!code focus]
+            ->by($party) // [!code focus]
+            ->action('pay', $order) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return response()->noContent();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        $party = Storyfeed::party('Stripe'); // [!code focus]
+
+        Storyfeed::record( // [!code focus]
+            verb: 'pay', // [!code focus]
+            object: $order, // [!code focus]
+            actor: $party, // [!code focus]
+        ); // [!code focus]
+
+        return response()->noContent();
+    }
+}
+```
+:::
 
 <FeedExample context :items="[paid]" />
 
 A party can fill any role, not only the actor:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->action('dispatch', $order)
-    ->to(Storyfeed::party('Front desk'))
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DispatchOrderController extends Controller
+{
+    public function __invoke(Order $order): RedirectResponse
+    {
+        $order->update(['dispatched_at' => now()]);
+
+        Storyfeed::activity() // [!code focus]
+            ->action('dispatch', $order) // [!code focus]
+            ->to(Storyfeed::party('Front desk')) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DispatchOrderController extends Controller
+{
+    public function __invoke(Order $order): RedirectResponse
+    {
+        $order->update(['dispatched_at' => now()]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'dispatch', // [!code focus]
+            object: $order, // [!code focus]
+            target: Storyfeed::party('Front desk'), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 `party()` finds or creates the party by name, so repeated calls reuse one row.
 
@@ -52,15 +149,64 @@ Storyfeed::activity()
 
 Inside a job or console command there is no authenticated user. Scope a block:
 
-```php
-// a job, or a console command
-Storyfeed::as('System', function () {
-    Storyfeed::record(
-        verb: 'cancel',
-        object: $order,
-    );
-});
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class CancelUnpaidOrders extends Command
+{
+    protected $signature = 'orders:cancel-unpaid';
+
+    public function handle(): void
+    {
+        Storyfeed::as('System', function () { // [!code focus]
+            Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
+                $order->update(['cancelled_at' => now()]);
+
+                Storyfeed::activity() // [!code focus]
+                    ->action('cancel', $order) // [!code focus]
+                    ->publish(); // [!code focus]
+            });
+        }); // [!code focus]
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class CancelUnpaidOrders extends Command
+{
+    protected $signature = 'orders:cancel-unpaid';
+
+    public function handle(): void
+    {
+        Storyfeed::as('System', function () { // [!code focus]
+            Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
+                $order->update(['cancelled_at' => now()]);
+
+                Storyfeed::record( // [!code focus]
+                    verb: 'cancel', // [!code focus]
+                    object: $order, // [!code focus]
+                ); // [!code focus]
+            });
+        }); // [!code focus]
+    }
+}
+```
+:::
 
 A string becomes a party; a model is used directly. An explicit `->actor()`
 still wins inside the scope, and the previous resolver is restored even if the

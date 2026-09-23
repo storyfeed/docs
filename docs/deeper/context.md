@@ -16,15 +16,66 @@ const inside = activity({
 })
 </script>
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('ask', $note)
-    ->on($dish)               // target: what the question is about
-    ->context($kitchen)       // context: the kitchen the dish belongs to
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\Kitchen;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, Kitchen $kitchen, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create($request->validated());
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('ask', $note) // [!code focus]
+            ->on($dish)               // target: what the question is about // [!code focus]
+            ->context($kitchen)       // context: the kitchen the dish belongs to // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\Kitchen;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, Kitchen $kitchen, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create($request->validated());
+
+        Storyfeed::record( // [!code focus]
+            verb: 'ask', // [!code focus]
+            object: $note, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            target: $dish,            // what the question is about // [!code focus]
+            context: $kitchen,        // the kitchen the dish belongs to // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 <FeedExample context :items="[inside]" />
 
@@ -39,14 +90,10 @@ Storyfeed::activity()
 dish in a kitchen, a note on an order at a table. When the target is itself the
 container, `target` alone carries it:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('place', $order)
-    ->to($kitchen)
-    ->publish();
-```
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 Setting `context` to the same kitchen as well is allowed; it records the
 kitchen in both roles. A role the headline doesn't name is still used for

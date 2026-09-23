@@ -82,25 +82,76 @@ current state reads the feed.
 
 ### Inside a Transaction
 
-```php
-// where the fact happens: a controller, an action, a listener
-DB::transaction(function () use ($order, $customer) {
-    $order->update(['status' => 'placed']);
+::: code-group
+```php [Fluent Syntax]
+<?php
 
-    Storyfeed::activity()
-        ->by($customer)
-        ->action('place', $order)
-        ->to($order->kitchen)
-        ->publish();                          // nothing reaches the queue yet
-});                                           // the listener's job is pushed here
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Storyfeed\Facades\Storyfeed;
+
+class CheckoutController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $order) { // [!code focus]
+            $order->update(['status' => 'placed']);
+
+            Storyfeed::activity() // [!code focus]
+                ->by($request->user()) // [!code focus]
+                ->action('place', $order) // [!code focus]
+                ->to($order->kitchen) // [!code focus]
+                ->publish();                          // nothing reaches the queue yet // [!code focus]
+        });                                           // the listener's job is pushed here // [!code focus]
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Storyfeed\Facades\Storyfeed;
+
+class CheckoutController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $order) { // [!code focus]
+            $order->update(['status' => 'placed']);
+
+            Storyfeed::record( // [!code focus]
+                verb: 'place', // [!code focus]
+                object: $order, // [!code focus]
+                actor: $request->user(), // [!code focus]
+                target: $order->kitchen, // [!code focus]
+            );                                        // nothing reaches the queue yet // [!code focus]
+        });                                           // the listener's job is pushed here // [!code focus]
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+:::
 
 The events implement `ShouldDispatchAfterCommit`: the job is pushed at the
 outermost commit, and a rollback leaves no row and no job.
 
 ## A Job That Publishes
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Jobs;
@@ -126,15 +177,53 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::activity()
-            ->by($this->customer)
-            ->action('place', $this->order)
-            ->to($this->order->kitchen)
-            ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran
-            ->publish();
+        Storyfeed::activity() // [!code focus]
+            ->by($this->customer) // [!code focus]
+            ->action('place', $this->order) // [!code focus]
+            ->to($this->order->kitchen) // [!code focus]
+            ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran // [!code focus]
+            ->publish(); // [!code focus]
     }
 }
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
+{
+    use Dispatchable, SerializesModels;
+
+    public Carbon $occurredAt;
+
+    public function __construct(public Order $order, public User $customer)
+    {
+        $this->occurredAt = now();            // the fact's time, captured where it happened
+    }
+
+    public function handle(): void
+    {
+        Storyfeed::record( // [!code focus]
+            verb: 'place', // [!code focus]
+            object: $this->order, // [!code focus]
+            actor: $this->customer, // [!code focus]
+            target: $this->order->kitchen, // [!code focus]
+            publishedAt: $this->occurredAt,   // without this, the row is dated when the job ran // [!code focus]
+        ); // [!code focus]
+    }
+}
+```
+:::
 
 ### Event Time and Job Time
 
@@ -161,7 +250,8 @@ describes.
 before the job runs publishes under its new name. A value the fact must keep
 travels in `data`:
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // app/Jobs/RecordOrder.php, handle()
 Storyfeed::activity()
     ->by($this->customer)
@@ -171,6 +261,19 @@ Storyfeed::activity()
     ->publishedAt($this->occurredAt)
     ->publish();
 ```
+
+```php [Named Arguments]
+// app/Jobs/RecordOrder.php, handle()
+Storyfeed::record(
+    verb: 'place',
+    object: $this->order,
+    actor: $this->customer,
+    target: $this->order->kitchen,
+    data: ['total' => $this->total],          // captured in the constructor, not read in handle()
+    publishedAt: $this->occurredAt,
+);
+```
+:::
 
 ### Retries and Imports
 
@@ -185,7 +288,8 @@ every job it runs after.
 
 ## The Actor
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Listeners;
@@ -198,13 +302,34 @@ class RecordOrderPlaced implements ShouldQueue
 {
     public function handle(OrderPlaced $event): void
     {
-        Storyfeed::record(
-            verb: 'place',
-            object: $event->order,
-        );   // names the customer who placed it
+        Storyfeed::activity() // [!code focus]
+            ->action('place', $event->order) // [!code focus]
+            ->publish();   // names the customer who placed it // [!code focus]
     }
 }
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Listeners;
+
+use App\Events\OrderPlaced;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrderPlaced implements ShouldQueue
+{
+    public function handle(OrderPlaced $event): void
+    {
+        Storyfeed::record( // [!code focus]
+            verb: 'place', // [!code focus]
+            object: $event->order, // [!code focus]
+        );   // names the customer who placed it // [!code focus]
+    }
+}
+```
+:::
 
 The user authenticated at dispatch travels with the job, as a morph alias and
 key in Laravel's hidden [Context](https://laravel.com/docs/context), and is

@@ -18,14 +18,65 @@ put on the menu as a single activity, rather than several activities grouped.
 
 ## Recording One Yourself
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($cook)
-    ->action('publish')
-    ->objects($dishes)
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PublishMenuController extends Controller
+{
+    public function __invoke(Request $request): RedirectResponse
+    {
+        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+
+        $dishes->each->update(['published_at' => now()]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('publish') // [!code focus]
+            ->objects($dishes) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PublishMenuController extends Controller
+{
+    public function __invoke(Request $request): RedirectResponse
+    {
+        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+
+        $dishes->each->update(['published_at' => now()]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'publish', // [!code focus]
+            objects: $dishes, // [!code focus]
+            actor: $request->user(), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 <FeedExample context :items="[authored]" />
 
