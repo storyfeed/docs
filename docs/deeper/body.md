@@ -113,8 +113,8 @@ arrives on the node exactly as it went in:
 }
 ```
 
-Core stores it and never reads it. A body holds values, not markup, and never
-contains another body.
+Storyfeed stores the body and hands it back unchanged; it never looks inside.
+A body holds values, not markup, and never contains another body.
 
 ## Where a Body Lives
 
@@ -286,13 +286,14 @@ shape.
 | `FeedChange` at `$change` | `change` | core, on read | no |
 | a body type's value | stays in `body` | the renderer | yes |
 
-Core upgrades what it reads. It never reads inside a body, so the renderer
-calls `upgrade()` before drawing, even for a `FeedThread` placed in a body.
+Storyfeed upgrades `$thread` and `$change` itself, because it uses them to build
+the node. It never looks inside a body, so your renderer calls `upgrade()`
+before drawing one, even a `FeedThread` placed in a body.
 
 ## Existing Body Types
 
-Core ships seven under `Storyfeed\Body`. Renderers may recognise them; core
-reads none of them.
+Storyfeed ships seven under `Storyfeed\Body`. They're conventions a renderer
+can choose to draw; Storyfeed itself treats them like any other body.
 
 | Name | Is | Keys |
 |---|---|---|
