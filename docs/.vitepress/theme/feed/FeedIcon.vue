@@ -22,6 +22,7 @@ import {
     Tablet,
     Tag,
     CircleX,
+    Eye,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { Component } from 'vue';
@@ -74,6 +75,7 @@ const ICONS: Record<string, Component> = {
     tablet: Tablet,
     tag: Tag,
     'circle-x': CircleX,
+    eye: Eye,
 };
 
 const component = computed<Component>(

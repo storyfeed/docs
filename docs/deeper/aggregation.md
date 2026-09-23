@@ -36,36 +36,23 @@ Three orders from one customer, minutes apart, as a log:
 
 <FeedExample context :items="log" />
 
-The same three, grouped by the story's `groups()`:
+The same three, grouped by the verb's `grouped()`:
 
 ```php
 <?php
 
 namespace App\Stories;
 
-use App\Models\Order;
-use BackedEnum;
-use Storyfeed\Contracts\FeedVerb;
-use Storyfeed\Grouping\Group; // [!code focus]
-use Storyfeed\Story;
+use Storyfeed\Stories\Verb;
 
-class OrderWasPlaced extends Story
+class OrderStory
 {
-    public string|array|null $objectType = Order::class;
-
-    public string|FeedVerb|BackedEnum|null $verb = 'place';
-
-    public function headline(): string
+    public function place(Verb $verb): Verb
     {
-        return ':actor placed :object with :target';
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->grouped(fn ($group) => $group->repeat(':actor placed :count orders with :target')); // [!code focus]
     }
-
-    public function groups(): array // [!code focus]
-    { // [!code focus]
-        return [ // [!code focus]
-            Group::repeat()->headline(':actor placed :count orders with :target'), // [!code focus]
-        ]; // [!code focus]
-    } // [!code focus]
 }
 ```
 
@@ -77,13 +64,14 @@ Five customers ordering from the same kitchen need a different sentence. Each
 `Group` names an **axis**: what its activities have in common.
 
 ```php
-// app/Stories/OrderWasPlaced.php
-public function groups(): array
+// app/Stories/OrderStory.php
+public function place(Verb $verb): Verb
 {
-    return [
-        Group::byActors()->headline(':actors placed :count orders with :target'), // [!code focus]
-        Group::repeat()->headline(':actor placed :count orders with :target'),
-    ];
+    return $verb
+        ->headline(':actor placed :object with :target')
+        ->grouped(fn ($group) => $group
+            ->actors(':actors placed :count orders with :target') // [!code focus]
+            ->repeat(':actor placed :count orders with :target'));
 }
 ```
 
@@ -117,8 +105,8 @@ package schedules it hourly.
 
 Use a singular token like `:target` only where the axis pins that role, so
 every activity in the group shares it. A plural token works everywhere.
-`Group::on('scene')` names a custom axis, and `Group::any()` matches whichever
-axis wins.
+Inside `grouped()`, `$group->axis('scene', …)` names a custom axis, and
+`$group->any(…)` matches whichever axis wins.
 
 ## Thresholds
 

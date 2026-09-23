@@ -1,7 +1,8 @@
 # Keeping Verbs and Grammar Together
 
-Write a verb and its headline in one Story class, and publish through that
-class. Then the two can't get out of step.
+Declare each verb as a method on its model's Story class, with its headline in
+the same method. Call sites name the verb, and a verb nothing declares throws
+while you develop.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -12,34 +13,33 @@ import { scenes } from '../.vitepress/theme/samples'
 
 namespace App\Stories;
 
-use App\Models\Order;
-use BackedEnum;
-use Storyfeed\Contracts\FeedVerb;
-use Storyfeed\Story;
+use Storyfeed\Stories\Verb;
 
-class OrderWasPlaced extends Story
+class OrderStory
 {
-    public string|array|null $objectType = Order::class;
-
-    public string|FeedVerb|BackedEnum|null $verb = 'place';
-
-    public function headline(): string
+    public function place(Verb $verb): Verb
     {
-        return ':actor placed :object with :target';
-    }
-
-    public function icon(): ?string
-    {
-        return 'shopping-bag';
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag');
     }
 }
 ```
 
-Publish through the class:
+```php
+// routes/feed.php
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class);
+```
+
+Publish by the verb's name:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-OrderWasPlaced::activity($order)
+story('place', $order)
     ->by($customer)
     ->to($kitchen)
     ->publish();
@@ -47,7 +47,7 @@ OrderWasPlaced::activity($order)
 
 <FeedExample context :items="[scenes.order]" />
 
-Register the class as shown in [Story Classes](/deeper/stories).
+[Story Classes](/deeper/stories) covers the class.
 
 ## Where Drift Comes from
 
@@ -55,43 +55,62 @@ Register the class as shown in [Story Classes](/deeper/stories).
 |---|---|---|
 | a call site | a grammar array | a verb is added at one and not the other |
 | an enum | a grammar array | a case's value changes |
-| a Story class | the same Story class | nothing |
+| a Story class method | the same method | a call site names a verb no method declares, which throws in `local` and `testing` |
 
 ## Catching It
 
 ```bash
 php artisan storyfeed:doctor --only=grammar   # published pairs with no headline
 php artisan storyfeed:verbs --used            # registered but never recorded, and recorded but never registered
-php artisan storyfeed:stories                 # registered definitions and recorded pairs
+php artisan storyfeed:list --type=order       # every verb on orders, and the method that declares it
 ```
 
-In `local` and `testing`, the `grammar.strict` option throws when you publish
-a verb with no headline.
+In `local` and `testing`, `verbs.strict` throws when you publish a verb nothing
+declares, and `grammar.strict` throws when you publish one with no headline:
+
+```txt
+Storyfeed does not recognize the verb [plcae]. Register it with
+Storyfeed::verbs(['plcae' => ActivityType::Update]) or an enum implementing FeedVerb,
+or disable storyfeed.verbs.strict.
+```
 
 ## A Verb Nothing Publishes Any More
 
-Old rows keep their headline only while their verb stays registered:
+Old rows keep their headline only while their verb stays declared, so keep the
+method:
+
+```php
+// app/Stories/OrderStory.php
+public function print(): string   // nothing publishes `print` any more; old rows still read
+{
+    return ':actor printed :object';
+}
+```
+
+## Group Headlines in the Same Method
+
+A verb's group headline belongs beside its headline:
 
 ```php
 <?php
 
 namespace App\Stories;
 
-use App\Models\Order;
-use BackedEnum;
-use Storyfeed\Contracts\FeedVerb;
-use Storyfeed\Story;
+use Storyfeed\Stories\Verb;
 
-class OrderWasPrinted extends Story
+class OrderStory
 {
-    // Nothing publishes `print` any more. Registered so old rows keep their headline.
-    public string|array|null $objectType = Order::class;
-
-    public string|FeedVerb|BackedEnum|null $verb = 'print';
-
-    public function headline(): string
+    public function place(Verb $verb): Verb
     {
-        return ':actor printed :object';
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag')
+            ->grouped(fn ($group) => $group // [!code focus]
+                ->repeat(':actor placed :count orders with :target') // [!code focus]
+                ->actors(':actors placed :count orders with :target')); // [!code focus]
     }
 }
 ```
+
+Write both in the same edit, so no verb has a single headline without a group
+one.

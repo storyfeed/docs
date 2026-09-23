@@ -432,6 +432,70 @@ Story::for(Question::class)
 With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
 covers what the feed does when a model goes.
 
+## Naming the Verb at the Call Site
+
+A verb defined here is published by its name, the way `route()` names a route:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class CheckoutController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        story('place', $order) // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->to($order->kitchen) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class CheckoutController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'place', // [!code focus]
+            object: $order, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            target: $order->kitchen, // [!code focus]
+        ); // [!code focus]
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+:::
+
+<FeedExample context :items="[scenes.order]" />
+
+`story('place', $order)` is `Storyfeed::activity()->action('place', $order)`
+in one call. It is a global helper, so it needs no `use` line.
+
 ## Listing and Caching Definitions
 
 ```sh

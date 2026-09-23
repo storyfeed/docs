@@ -156,16 +156,16 @@ use Storyfeed\PendingTombstone;
 
 $this->feedEntity()
     ->label("Order #{$this->reference}")
-    ->tombstone(fn (PendingTombstone $tombstone) => $tombstone->keepLabel()->forgetActivities());
+    ->tombstone(fn (PendingTombstone $tombstone) => $tombstone->keepLabel());
 ```
 
 | Method | Effect |
 |---|---|
 | `keepLabel(bool $keep = true)` | the tombstone keeps the model's label, so its activities go on naming it |
-| `forgetActivities(bool $forget = true)` | on a hard delete, permanently deletes the activities where the model fills a role the verb is about; on a soft delete, nothing until the model is force-deleted |
 
-Both apply when a model event reports the delete. A tombstone made by the
-trickle or by `Storyfeed::tombstone()` keeps neither.
+It applies when a model event reports the delete. A tombstone made by the
+trickle or by `Storyfeed::tombstone()` keeps no label. Deleting a model's
+activities with it is the verb's decision, `->forgetWhenMissing()`.
 [Deleted Models](/deeper/deleted-models) covers the whole lifecycle.
 
 ## `FeedContext`

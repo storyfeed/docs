@@ -162,5 +162,6 @@ use Storyfeed\Actions\ForceDeleteFromFeed;
 (new ForceDeleteFromFeed)($photo);   // permanent
 ```
 
-To forget only the activities a model made redundant, and keep the rest, use
-`forgetActivities()` on its [tombstone](/deeper/deleted-models#forgetting-activities).
+To forget only the activities a deletion made redundant, and keep the rest,
+declare [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-activities)
+on the verbs that should go.

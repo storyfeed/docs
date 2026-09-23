@@ -95,7 +95,7 @@ const isTombstone = (entity: any) => entity?.type === 'storyfeed.tombstone'
 /**
  * Core's default for which roles a verb is about: the object, unless the verb
  * is a removal (the removal verbs these samples use).
- * A page states `redundant` itself when its verb says otherwise.
+ * A page passes `missing` when its verb says otherwise.
  */
 const REMOVALS = ['delete', 'discard', 'remove', 'restore', 'undo']
 const aboutRoles = (verb: string) => (REMOVALS.includes(verb) ? [] : ['object'])
@@ -242,12 +242,29 @@ export function activity(over: Record<string, any>) {
   }
 }
 
+/**
+ * `tombstoned`, `redundant`, and the verb's own reading once redundant.
+ *
+ * A page names the roles its verb is about with `missing` when they are not
+ * the default, as `->missing()` does. A node spread into another
+ * (`{ ...scenes.order, object: tombstone(…) }`) brings its own facts along, and
+ * they describe the roles it had, so they are always worked out again.
+ *
+ * A page passes `missing_headline_template` when its verb declares
+ * `->missingHeadline()`; core fills it only while `redundant` is true, so the
+ * sample does too, and a page cannot show one on a live row by accident.
+ */
 function tombstoneFacts(over: Record<string, any>) {
   const tombstoned = ROLES.filter((role) => isTombstone(over[role]))
+  const about: string[] = over.missing ?? aboutRoles(over.verb)
+  const derived = tombstoned.some((role) => about.includes(role))
+  const redundant = over.kind === 'activity' ? derived : over.redundant ?? derived
 
   return {
     tombstoned,
-    redundant: over.redundant ?? tombstoned.some((role) => aboutRoles(over.verb).includes(role)),
+    redundant,
+    missing_headline_template: redundant ? over.missing_headline_template ?? null : null,
+    missing_headline: redundant ? over.missing_headline ?? null : null,
   }
 }
 

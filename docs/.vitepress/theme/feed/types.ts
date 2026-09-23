@@ -94,6 +94,13 @@ interface BaseNode {
 
 export interface ActivityNode extends BaseNode {
     kind: 'activity';
+    /**
+     * The verb's own reading once `redundant` is true (additive): the app's
+     * `->missingHeadline()`, as a template or pre-rendered. Null otherwise,
+     * and null when the verb declares none. `headline_template` never swaps.
+     */
+    missing_headline_template?: string | null;
+    missing_headline?: string | null;
     data?: Record<string, unknown>;
     /** Activity-scoped passage; group children carry it normally. */
     thread?: FeedThread | null;

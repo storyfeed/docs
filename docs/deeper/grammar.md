@@ -160,6 +160,6 @@ Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 ## Verbs Spanning Multiple Types
 
 Group headlines are keyed by axis and verb, not type. When one verb spans
-several types, such as `ask` on dishes and orders, one Story's `groups()` sets
-the group headline for all of them. Choose one Story to own it, or register it
+several types, such as `ask` on dishes and orders, a group headline in one
+Story class sets it for all of them. Choose one class to own it, or register it
 with `aggregateGrammar()`.

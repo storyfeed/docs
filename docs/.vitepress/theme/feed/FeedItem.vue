@@ -30,6 +30,14 @@ const props = withDefaults(
 
 const time = useRelativeTime(toRef(() => props.item.published_at));
 
+// Once redundant, a verb may have its own reading. This kit draws it in place
+// of the headline; the ordinary one stays in the payload beside it.
+const reading = computed(() =>
+    props.item.redundant && (props.item.missing_headline_template || props.item.missing_headline)
+        ? { template: props.item.missing_headline_template ?? null, headline: props.item.missing_headline ?? null }
+        : { template: props.item.headline_template, headline: props.item.headline ?? null },
+);
+
 /**
  * THE KIT'S DEFAULT IS WHAT IT ALREADY DREW. A row with no rail asked for shows
  * one face and no badge (`actor-only`); a group child shows the verb alone
@@ -177,8 +185,8 @@ const slots = computed(() =>
         >
             <div class="sf-head">
                 <FeedHeadline
-                    :template="item.headline_template"
-                    :headline="item.headline"
+                    :template="reading.template"
+                    :headline="reading.headline"
                     :entities="{
                         actor: item.actor,
                         object: item.object,

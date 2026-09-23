@@ -159,7 +159,9 @@ audience.
   "thread": null,                      // optional FeedThread conversation metadata
   "change": null,                      // optional FeedChange before/after facts
   "tombstoned": [],                    // the roles holding a tombstone, in role order
-  "redundant": false                   // one of them is a role the verb is about
+  "redundant": false,                  // one of them is a role the verb is about
+  "missing_headline_template": null,   // the verb's reading once redundant
+  "missing_headline": null             // the same, pre-rendered
 }
 ```
 
@@ -167,9 +169,13 @@ audience.
 |---|---|
 | `tombstoned` | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
+| `missing_headline_template` | the verb's [`->missingHeadline()`](/deeper/deleted-models#a-headline-for-a-deleted-object), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
+| `missing_headline` | the pre-rendered fallback for a closure-authored `->missingHeadline()`, as `headline` is for `headline_template`; otherwise `null` |
 
-Storyfeed gives the facts, never the wording. `redundant` is the fact that the
-activity's news is gone while the activity is still true as history.
+Storyfeed gives the facts, never its own wording. `redundant` is the fact that
+the activity's news is gone while the activity is still true as history, and
+`missing_headline_template` is the app's own sentence for it, when the verb
+declares one. A renderer may show either reading.
 
 ## Group Node
 

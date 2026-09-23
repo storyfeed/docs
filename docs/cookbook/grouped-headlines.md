@@ -143,38 +143,26 @@ A group shows no quote or image of its own; those stay on the activities
 inside it. Where every comment must stay visible, read with `log()`, which
 doesn't group.
 
-## The Same Pair in a Story
+## The Same Pair in a Story Class
 
-A Story class holds both headlines:
+A verb's method holds both headlines:
 
 ```php
 <?php
 
 namespace App\Stories;
 
-use App\Models\Order;
-use BackedEnum;
-use Storyfeed\Contracts\FeedVerb;
-use Storyfeed\Grouping\Group;
-use Storyfeed\Story;
+use Storyfeed\Stories\Verb;
 
-class OrderWasPlaced extends Story
+class OrderStory
 {
-    public string|array|null $objectType = Order::class;
-
-    public string|FeedVerb|BackedEnum|null $verb = 'place';
-
-    public function headline(): string
+    public function place(Verb $verb): Verb
     {
-        return ':actor placed :object with :target';
-    }
-
-    public function groups(): array
-    {
-        return [
-            Group::repeat()->headline(':actor placed :count orders with :target'),
-            Group::byActors()->headline(':actors placed :count orders with :target'),
-        ];
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->grouped(fn ($group) => $group
+                ->repeat(':actor placed :count orders with :target')
+                ->actors(':actors placed :count orders with :target'));
     }
 }
 ```
