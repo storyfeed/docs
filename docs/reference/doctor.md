@@ -7,8 +7,8 @@ php artisan storyfeed:doctor --stubs         # print story stubs for every gap
 php artisan storyfeed:doctor --only=grammar  # one check
 ```
 
-Doctor inspects your registries, your schema, **and** the traffic actually in
-your feed. Findings name the fix, not just the fault.
+Doctor checks your registries, your schema and the activities in your feed.
+Each finding names its fix.
 
 ## Checks
 
@@ -16,13 +16,13 @@ your feed. Findings name the fix, not just the fault.
 |---|---|---|
 | `grammar` | does every verb/type pair in the feed have a headline? | error · warning · info |
 | `aggregates` | does every group that formed — or *could* form — have aggregate grammar? | error · info |
-| `tokens` | does any aggregate template use a token its axis doesn't pin? (the anti-lie rule) | warning · info |
-| `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key can be true of one — answered from the registry alone, before any group has formed | warning |
+| `tokens` | does any aggregate template use a token its axis doesn't pin? | warning · info |
+| `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key is true of one. Answered from the registry, before any group forms | warning |
 | `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) | warning · info |
 | `surface` | models that appear in the feed but that nothing publishes about | warning · info |
 | `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? | warning · info |
 | `parties` | party rows whose morph alias no longer resolves | info |
-| `participants` | activities missing from the index `involving()` reads (an install that upgraded into it) | warning |
+| `participants` | activities missing from the index `involving()` reads | warning |
 | `tables` | are the package tables present? | error |
 | `columns` | are write-path columns present? (catches schema drift after an upgrade) | error |
 | `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it | error · info |
@@ -36,7 +36,7 @@ your feed. Findings name the fix, not just the fault.
 | `manifest` | is the cached story manifest stale relative to your code? | error |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
 | `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares | warning · info |
-| `dangling` | grouping and participant rows whose activity no longer exists, trashed included — there is no database cascade from activities by design, so a bulk hard-delete that forgets to clear them leaves a count nothing else surfaces | info |
+| `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
 
 ## Feed Coverage
 
@@ -50,14 +50,11 @@ The `feeds` check reports five findings:
 | `feeds.none_restricted` | info | feeds are registered, but none restricts anything |
 | `feeds.preset_failed` | warning | a preset threw while doctor inspected it, so the verbs it decides are unchecked. A `define()` reading constructor state lands here |
 
-The verb vocabulary is your registered verbs plus the verbs actually in
-`feed_activities`, because the verb nobody declared is the one that leaks. An
-open feed — calling none of `only()`, `except()` or `verb()` — classifies
-nothing, and an app that never calls `Storyfeed::feeds()` gets no findings from
-this check.
-
-Findings that name a feed end with where it was declared, file and line, for
-classes and closures alike.
+The verbs checked are your registered verbs plus the verbs in
+`feed_activities`. An open feed (none of `only()`, `except()` or `verb()`)
+classifies nothing. An app that never calls `Storyfeed::feeds()` gets no
+findings. A finding that names a feed ends with the file and line that declared
+it.
 
 ### Declaring an Unrestricted Feed
 
@@ -66,12 +63,9 @@ classes and closures alike.
 'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
 ```
 
-A feed that carries every verb, declared. It changes no query: the feed reads
-the same rows as an open one, and a call site can still narrow it with
-`only()` or `except()`. What changes is the finding: a verb covered only by
-this feed is `feeds.unrestricted` at info, not `feeds.unclassified` at
-warning. It still reports on every run, so a verb recorded next year still
-surfaces.
+`unrestricted()` declares a feed that carries every verb. It changes no query,
+and a call site can still narrow it. A verb covered only by this feed reports
+as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 
 ```php
 // config/storyfeed.php
@@ -79,44 +73,24 @@ surfaces.
 Storyfeed::feed('portal')->only(['order.*'])->get();                            // fine: narrowing at a call site
 ```
 
-One declaration cannot both filter and carry everything, and `verb()` counts
-as a filter. Narrowing after the declaration is the call-site path and is not
-checked.
+One feed declaration cannot both filter and be `unrestricted()`, and `verb()`
+counts as a filter.
 
 ### Groups No Surface Can Read
 
-`aggregates` has three findings, and two of them are not gaps.
+| Finding | Severity | Means |
+|---|---|---|
+| `aggregates.missing` | error | a pair clusters, has no aggregate grammar, and a registered feed's mode reads that axis. Its groups fall back to the singular headline where its tokens are safe, and otherwise arrive with no headline |
+| `aggregates.latent` | info | the same pair, but no registered feed reads the axis. No fix stub, because the grammar would render nowhere. A call site can still override a feed's mode and read the axis, and `--fail-on=warning` does not trip on it |
+| `aggregates.reachability_unknown` | info | no feeds are registered, or one threw while being inspected. Every pair is then reported as `aggregates.missing`, at error |
 
-`aggregates.missing` is the real one, at **error**: a pair clusters, has no
-aggregate grammar, and some registered feed's mode reads that axis. Those group
-nodes fall back to the singular headline where its tokens are safe, and
-otherwise arrive with no headline at all.
-
-`aggregates.latent` is the same pair when **no** registered feed can read the
-axis, at **info** and carrying no fix stub. Authoring grammar for it today
-changes nothing on any screen, so a stub would be code that cannot render. It
-becomes a real gap the moment a surface reads it, and a call site can override
-a declared mode without touching the feed, so it is reported rather than
-hidden.
-
-`aggregates.reachability_unknown` is doctor saying what it does not know, at
-**info**: either no feeds are registered, or one threw while being inspected.
-Both leave every pair on the plain error, because a missing answer must never
-downgrade a real one. Registering your feeds is what lets this check tell a
-real gap from a latent one.
-
-::: warning Latent is info, so `--fail-on=warning` will not trip on it
-That is deliberate — CI should not fail over a sentence nothing can print —
-but it means a pair can sit latent for a long time and become a gap the day a
-surface starts reading its axis.
-:::
+Register your feeds so this check can tell a real gap from a latent one.
 
 ## Entities
 
-The `entities` check walks every morph alias recorded in each role — actor,
-object, target, context — and asks whether it resolves. Each finding names the
-role, the alias, the class, how many activities carry it, and example activity
-ids to look at.
+The `entities` check resolves every morph alias recorded in the actor, object,
+target and context roles. Each finding names the role, the alias, the class,
+how many activities carry it, and example activity ids.
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -127,9 +101,9 @@ ids to look at.
 | `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Sampled from the 50 most recent uncached rows per role and alias, never a scan. `storyfeed:trickle --prune` retires the activities |
 | `entities.opaque` | info | the model's table could not be queried, so nothing can be said about its rows |
 
-Every row these findings name renders without a label or a link, and the
-trickle counts it as unresolved on every run. A row that is present and merely
-uncached is `backlog`'s business, not this check's.
+The rows these findings name render without a label or a link, and the trickle
+counts them as unresolved on every run. A row that exists but is not yet cached
+is reported by `backlog`.
 
 ## Hydration
 
@@ -145,36 +119,27 @@ any class filling a role in recorded activities.
 | `hydration.page` | info | how many hydrating classes the 30 most recent activities carry, so how many queries that page pays on top of its own |
 | `hydration.opaque` | info | `feedMedia()` threw when probed with the class's latest snapshot, so whether it hydrates cannot be said |
 
-Hydrating is a choice, so the check is silent on an app where no resolver
-asks. The probe uses the newest snapshot recorded for the alias; a resolver
-that hydrates only under an unregistered feed name, or only for an older
-snapshot shape, is not seen. A class with no snapshot yet that throws on an
-empty one is not reported.
+The check is silent when no resolver hydrates. It probes with the newest
+snapshot for the alias, so a resolver that hydrates only under an unregistered
+feed name, or only for an older snapshot shape, is not seen. A class with no
+snapshot that throws on an empty one is not reported.
 
 ## From Findings to Code
 
-`--stubs` prints the registrations the findings imply — a grammar key with the
-tokens that are safe for it, an icon key, an actorless verb, an axis template —
-and `make:story --from-doctor` scaffolds a class per gap.
-
-Nothing here infers what happened. Every pair it scaffolds was actually
-recorded, every axis it lists actually applies per the compiled recipes, and
-every token it offers is actually pinned. Transcribing what the system observed
-is doctor's job; guessing what it meant is not.
-
-Two findings emit no stub, deliberately. The remedy for `roles` is authorial —
-the sentence claims a role the activities do not carry, so it is wrong rather
-than missing. And a stub for `aggregates.latent` would be exactly the
-unrenderable code that finding exists to prevent.
-
 ```bash
 php artisan storyfeed:doctor --stubs   # only the findings that name a registry edit
-php artisan make:story --from-doctor
+php artisan make:story --from-doctor   # a story class per gap
 ```
 
-It prints no headings and no counts, so its output can be piped. A run that
-prints `// Nothing to author` means no finding named a registry edit — not that
-there were no findings. Run doctor without `--stubs` for the report.
+`--stubs` prints the registrations the findings imply: a grammar key with the
+tokens that are safe for it, an icon key, an actorless verb, an axis template.
+Every stub comes from what was recorded: pairs that occurred, axes the compiled
+recipes apply, tokens that are pinned. `roles` and `aggregates.latent` emit no
+stub; the first needs its sentence rewritten, the second would render nowhere.
+
+The output has no headings or counts, so it can be piped. `// Nothing to
+author` means no finding named a registry edit, not that there were no
+findings.
 
 ## In CI
 
@@ -182,13 +147,10 @@ there were no findings. Run doctor without `--stubs` for the report.
 php artisan storyfeed:doctor --json --fail-on=warning   # or --fail-on=error
 ```
 
-Structured findings plus an exit code. Without `--fail-on` the exit code is 0
-whatever the findings say, so that doctor stays safe to run anywhere; the flag
-is the opt-in gate that makes CI fail. Pair it with the
-[coverage assertions](/deeper/testing#coverage-assertions): the assertions fail
-fast in the suite, doctor reports against real traffic.
+Without `--fail-on` the exit code is always 0. The
+[coverage assertions](/deeper/testing#coverage-assertions) fail fast in the
+suite; doctor reports against real traffic.
 
 ## On a Fresh Install
 
-With no data, doctor reports nothing to diagnose rather than reporting your app
-as unwired.
+With no data, doctor reports that there is nothing to diagnose.
