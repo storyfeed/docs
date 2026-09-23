@@ -116,14 +116,16 @@ for it draws the plain glyph.
 
 ## Translating a Headline
 
-Templates are plain strings, so they translate:
+Templates are plain strings, so an app in one language can translate them
+where they're registered:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.place' => __('feed.order_placed'),
+    'order.place' => __('feed.order_placed'),   // translated once, at boot, into the app's default locale
 ]);
 ```
 
-Tokens are substituted by the renderer, so word order stays the translator's
-decision.
+`__()` runs when the app boots, before any request sets a locale, so every
+reader sees the same language. Tokens are substituted by the renderer, so word
+order stays the translator's decision.
