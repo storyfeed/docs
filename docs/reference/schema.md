@@ -1,7 +1,6 @@
 # Schema
 
-Seven tables, created by the published migrations. Useful when reasoning about
-indexes and retention.
+Seven tables, created by the published migrations.
 
 ## `feed_activities`
 
@@ -21,9 +20,9 @@ The atomic timeline.
 ## `feed_snapshots`
 
 Denormalized entity labels, data, and optional body fields. Reads use these
-snapshots unless a [media resolver](/reference/feedable#the-contract)
-opts into a live model lookup.
-Written at publish, refreshed on model save, backfilled by `storyfeed:trickle`.
+snapshots unless a [media resolver](/reference/feedable#the-contract) loads the
+live model. Written at publish, refreshed on model save, backfilled by
+`storyfeed:trickle`.
 
 ## `feed_groupings`
 
@@ -45,9 +44,8 @@ mints composites.
 
 One row per (activity, filled role): `activity_id`, `role`, `entity_type`
 (alias), `entity_id`, and a denormalized `published_at`. Indexed
-`(entity_type, entity_id, published_at, activity_id)`, which is what makes
-`involving()` a single ordered lookup instead of an OR across the morph
-columns. Written in the publish transaction; backfilled by
+`(entity_type, entity_id, published_at, activity_id)`, so `involving()` is a
+single ordered lookup. Written in the publish transaction; backfilled by
 `storyfeed:participants`.
 
 ## `feed_meta`
@@ -56,8 +54,7 @@ Package-owned bookkeeping — the sync token lives here.
 
 ## Migration Policy
 
-Migrations are **published into your app**, which has one consequence worth
-internalizing: any change to a create stub is invisible to every install that
-already ran it. So schema changes ship as **additive, guarded `add_*`
-migrations**, never edits to a create stub.
+Migrations are **published into your app**, so a changed create stub would
+never reach an install that already ran it. Schema changes therefore ship as
+**additive, guarded `add_*` migrations**.
 

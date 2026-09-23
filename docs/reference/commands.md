@@ -34,48 +34,35 @@ See [Doctor](/reference/doctor) for the checks.
 | `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
-`bundle` and `curate` rewrite settled history and bump the `sync_token`, which
-makes every accumulating client resync.
+`bundle` and `curate` rewrite settled history and change the `sync_token`, so
+every client that accumulates nodes resyncs.
 
 ### `--rehash`: When the Grouping Recipe Changes Underneath Existing Rows
 
-Grouping is **derived at publish time** — the hash comes from the role columns,
-the verb and the day. Change what that hash would compute and **existing rows
-keep the hash they were written with.** Nothing recomputes it on read, and
-nothing warns you.
-
-Four things change it, and three of them are things this package encourages:
+Grouping is computed at publish time from the role columns, the verb and the
+day. Existing rows keep the hash they were written with; nothing recomputes it
+on read. These change what the hash would be:
 
 - registering a new axis
 - editing an axis recipe key
 - tuning `grouping.policy` thresholds
 - migrating a verb or a role on rows already published
 
-Neither `storyfeed:rebuild` nor a plain `storyfeed:curate` fixes this.
-`rebuild` rebuilds *snapshots*, which are a different kind of derived data —
-they self-heal. Plain `curate` re-picks a winner from the hashes already
-stored. Only `--rehash` re-runs the grouping strategy first, so rows adopt the
-new recipe:
+`storyfeed:rebuild` rebuilds snapshots, not hashes, and a plain
+`storyfeed:curate` re-picks a winner from the hashes already stored. Only
+`--rehash` re-runs grouping first, so existing rows adopt the new recipe:
 
 ```bash
-php artisan storyfeed:curate --rehash
+php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
 
-Use `--window=` to bound it by `published_at` rather than sweeping the table.
-
-**The hourly scheduled run never does this.** The package schedules
-`storyfeed:curate` without `--rehash`, so nothing rehashes on its own — it
-happens only when you run it deliberately. That is the answer to "could this
-fire while my users are reading?": not by itself.
+The hourly scheduled `curate` runs without `--rehash`, so rows are rehashed
+only when you run it yourself.
 
 `--rehash` can move a group past a live cursor, leaving the next page empty.
-The changed `sync_token` is the contract signal: clients must discard all
-accumulated nodes and refetch from the head, including after an empty response.
-See the [Sync token rule](/reference/payload#sync-token).
-
-If you find yourself reading `WriteGroupings` or `CurateCluster` out of
-`vendor/` to replay their invariants by hand, this command is what you are
-reimplementing.
+It changes the `sync_token`, and clients must then discard every accumulated
+node and refetch from the head, including after an empty response. See the
+[Sync token rule](/reference/payload#sync-token).
 
 ## Manifest
 
@@ -92,9 +79,4 @@ reimplementing.
 | Command | Does |
 |---|---|
 | `make:story` | creates a story class. `--from-doctor` generates a stub per gap doctor found |
-| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()` |
-
-`make:feed --from-doctor` writes one class carrying every undecided verb,
-commented out, and `only([])` throws until a human moves each one into `only()`
-or `except()`. It transcribes what doctor observed; it does not decide, and the
-file it writes cannot make the check pass on its own.
+| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |

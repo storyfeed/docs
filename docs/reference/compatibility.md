@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| PHP | **8.4 and newer.** The package leans on 8.4 idioms rather than supporting older runtimes |
+| PHP | **8.4 and newer** |
 | Laravel | **rolling current + previous major**: today, 12 and 13 |
 | Databases | MySQL, PostgreSQL, SQLite, SQL Server |
 
