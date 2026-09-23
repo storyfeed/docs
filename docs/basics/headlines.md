@@ -410,8 +410,7 @@ Storyfeed::aggregateGrammar([
 <FeedExample :items="[repeated]" />
 
 The group headline belongs to orders only. The groups a feed can form, and the
-tokens their headlines may use, are in [Aggregation](/deeper/aggregation) and
-[Grammar](/deeper/grammar).
+tokens their headlines may use, are in [Aggregation](/deeper/aggregation).
 
 ## What a Verb Is About
 

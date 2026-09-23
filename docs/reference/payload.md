@@ -268,7 +268,7 @@ Renderers **must** handle it; see
 
 Token availability per axis is in
 [Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s
-pinned roles; the [singular fallback](/deeper/grammar#tokens-a-group-headline-may-use) can also
+pinned roles; the [singular fallback](/deeper/aggregation#tokens-a-group-headline-may-use) can also
 keep a role token when the group contains exactly one distinct entity.
 
 Noun substitution can change the emitted template even for the same grammar

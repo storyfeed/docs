@@ -125,7 +125,6 @@ export default defineConfig({
           { text: 'Story Classes', link: '/deeper/stories' },
           { text: 'Activity Body Content', link: '/deeper/body' },
           { text: 'Aggregation', link: '/deeper/aggregation' },
-          { text: 'Grammar', link: '/deeper/grammar' },
           { text: 'Composites', link: '/deeper/composites' },
           { text: 'Queues', link: '/deeper/queues' },
           { text: 'Testing', link: '/deeper/testing' },

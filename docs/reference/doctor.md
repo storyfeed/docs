@@ -181,12 +181,15 @@ php artisan make:story --from-doctor            # a story class per gap
 ```php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')->headline('TODO :actor :object :target');
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat('TODO :actor :target :count'));
 ```
 
-Each is a headline with the tokens that are safe for it, an icon, an actorless
-verb, or an axis template.
+Each is a headline, an icon, an actorless verb, or a group headline. Each
+`TODO` lists the tokens that are safe for that headline: paste the lines into
+`routes/feed.php` and replace each `TODO` with the sentence.
 Every stub comes from what was recorded: pairs that occurred, axes the compiled
 recipes apply, tokens that are pinned. `roles` and `aggregates.latent` emit no
 stub; the first needs its sentence rewritten, the second would render nowhere.

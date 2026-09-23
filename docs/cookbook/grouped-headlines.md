@@ -123,7 +123,7 @@ different customers have ordered. See [Aggregation](/deeper/aggregation).
 <FeedExample :items="[crowd]" />
 
 A group with no headline of its own gets a
-[generic one](/deeper/grammar#tokens-a-group-headline-may-use).
+[generic one](/deeper/aggregation#tokens-a-group-headline-may-use).
 
 ## One Entry per Axis the Verb Can Group on
 
