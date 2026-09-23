@@ -1,8 +1,7 @@
 # Named Feeds
 
 A named feed is a list of verbs you declare once and read by name. A
-customer's order page and the kitchen's screen each read their own feed, and
-each shows only the verbs declared for it.
+customer's order page and the kitchen's screen can each read their own.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme/samples'
@@ -35,7 +34,7 @@ const customer = kitchen.filter(node => ['place', 'confirm', 'ready'].includes(n
 
 ## Declaring a Feed
 
-A feed is a closure over the builder, registered at boot:
+Register each feed as a closure over the builder:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -48,7 +47,7 @@ Storyfeed::feeds([
 ]);
 ```
 
-Enter it by name, from the facade or from the model:
+Read it by name, from the facade or from the model:
 
 ```php
 // a controller, or wherever the feed is read
@@ -66,13 +65,13 @@ $order->storyfeed('customer')->get();
 
 <FeedExample :items="customer" />
 
-An unknown name throws `UnknownFeed`. The verb list is fixed, but the mode is
-not: `->log()` in a declaration is a default any call site may override.
+An unknown name throws `UnknownFeed`. A call site may change the mode, but not
+add verbs.
 
 ## Verbs and Scope
 
-A name carries the **verbs**, not the **scope**. Which rows a surface reads is
-still set by `involving()`, `context()` or `query()`:
+A name sets the **verbs**, not the **scope**. Scope each read with
+`involving()`, `context()` or `query()`:
 
 ```php
 // a controller, or wherever the feed is read
@@ -81,14 +80,14 @@ Storyfeed::feed('customer')->involving($order)->get();  // this order
 ```
 
 ::: danger
-The first line returns a correct-looking customer timeline built from other
-people's orders. [Feed classes](#feed-classes) put the scope in the
-declaration, so the unscoped line cannot be written.
+The first line shows a customer other people's orders.
+[Feed classes](#feed-classes) put the scope in the declaration, so it can't be
+forgotten.
 :::
 
 ## `only()` and `except()`
 
-Both work on any builder, with or without a name:
+Both work on any read, named or not:
 
 ```php
 // a controller, or wherever the feed is read
@@ -105,20 +104,19 @@ Storyfeed::feed()->except(['note'])->get();
 | `only([])` | throws |
 | repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
 
-A call site can only narrow a declared list:
+On a named feed, `only()` can only narrow the declared list:
 
 ```php
 // reads only 'place': 'note' is not in the declared list
 Storyfeed::feed('customer')->only(['place', 'note'])->get();
 ```
 
-Group counts only count the verbs the filter admits, and a group whose
-members are all excluded produces no node.
+Groups count only the verbs the filter lets through.
 
 ## Feed Classes
 
-A closure runs at boot, before any order exists, so it can carry verbs but
-not a subject. A feed class takes its subject in the constructor:
+A closure can't know which order it's for. A feed class takes that subject in
+its constructor:
 
 ```php
 <?php
@@ -159,8 +157,7 @@ Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
 | `define()` | what the feed is about: verbs, mode, limit | no |
 | `scope()` | the values only a request supplies | yes |
 
-`CustomerFeed::make()` without its subject throws `ArgumentCountError`. A call
-site cannot rebind what `scope()` set, but may narrow:
+A call site can't change what `scope()` set, but may narrow the read:
 
 ```php
 // a controller, or wherever the feed is read
@@ -203,23 +200,18 @@ Storyfeed::feeds([
 ]);
 ```
 
-`CustomerFeed::make($order)` works without registering; registering lets the
-package inspect the feed.
+A feed class works without registering. Registering gives it a name.
 
 ## Feeds and Access Control
 
-A feed is a query filter. It selects rows; there is no visibility layer under
-it.
+A feed only filters rows.
 
-- It does not know **who is asking**. Whether *this* customer may see *this*
-  order is a policy check in your controller.
-- It filters **verbs, not fields**. Anything in an admitted verb's `data` is in
-  the payload.
-- It does not restrict **recording**. Any verb can still be recorded.
-- A list that admits a composite's member verbs but not its own verb drops the
-  parent node, and the members read as single rows.
-- The [Activity Streams controller](/deeper/activity-streams) is not filtered
-  by a name.
+- It doesn't know **who is asking**. Whether this customer may see this order
+  is a policy check in your controller.
+- It filters **verbs, not fields**. Everything in a shown activity's `data` is
+  in the payload.
+- The [Activity Streams controller](/deeper/activity-streams) ignores feed
+  names.
 
-For a customer-facing surface, use `only()`: `except()` and wildcards admit
-every new verb as soon as it is recorded.
+For a customer-facing screen, use `only()`. `except()` and wildcards let in
+every new verb as soon as it's recorded.
