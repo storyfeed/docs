@@ -56,7 +56,11 @@ class Order extends Model implements Feedable
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
+    'order.place' => ':actor placed :object with :target', // [!code highlight]
+    'order.confirm' => ':actor confirmed :object',
+    'order.pay' => ':actor marked :object paid',
+    'order.ready' => ':actor marked :object ready',
+    'menu_item.publish' => ':actor put :object on the menu',
 ]);
 ```
 
@@ -70,14 +74,16 @@ On the feed:
 
 ## Rendering the Feed
 
-Fetch the feed where your homepage is built:
+Return the feed from a route:
 
 ```php
-// a controller, or wherever the feed is read
-$feed = Storyfeed::feed()->get();
+// routes/web.php
+Route::get('/', function () {
+    return Storyfeed::feed()->get();
+});
 ```
 
-It arrives as a structured payload:
+The response is the following JSON:
 
 <FeedExample payload :items="homepage" />
 
@@ -94,8 +100,9 @@ the previous step lands among everything else the app recorded:
 
 ### A Hypothetical Implementation in Vue
 
-An Inertia page hands the payload to the app's own composable and stream
-component:
+With Inertia, pass the same feed as a prop instead,
+`Inertia::render('Home', ['feed' => Storyfeed::feed()->get()])`, and the page
+hands it to the app's own composable and stream component:
 
 ```vue
 <!-- resources/js/Pages/Home.vue -->
