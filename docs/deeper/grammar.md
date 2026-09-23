@@ -1,12 +1,9 @@
 # Grammar
 
-Grammar is the registry of headline templates, and it has two halves.
-[Headlines](/basics/headlines) covers the first, `Storyfeed::grammar()`, which
-holds the sentence for one activity. This page is the second: a group of
-activities reads as one sentence too, and `Storyfeed::aggregateGrammar()`
-holds that one, keyed by the axis the group formed on and the verb. When you
-are done, every group your feed can form has a sentence that is true of every
-member.
+A group of activities needs its own headline, such as "placed 3 orders".
+`Storyfeed::aggregateGrammar()` registers group headlines, keyed by the axis the
+group formed on and the verb. Headlines for a single activity are in
+[Headlines](/basics/headlines).
 
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
@@ -31,9 +28,9 @@ Storyfeed::aggregateGrammar([
 
 <FeedExample context :items="[repeated]" />
 
-A singular [headline](/basics/headlines) is keyed by object type and verb; a
-group headline by **axis and verb**. A Story's `groups()` writes the same
-entries. `:count` is the member count.
+A single activity's headline is keyed by object type and verb; a group headline
+by **axis and verb**. A Story's `groups()` writes the same entries. `:count` is
+the number of members.
 
 ## Plural Tokens
 
@@ -47,15 +44,15 @@ entries. `:count` is the member count.
 | `:result` | `:results` | the produced entity |
 | `:instrument` | `:instruments` | the tool or service used |
 
-A singular token resolves to one entity label. A plural token resolves to the
-group's exemplars with an overflow count. [Rendering](/basics/rendering#groups)
+A singular token becomes one entity's label. A plural token becomes the group's
+exemplars and an overflow count. [Rendering](/basics/rendering#groups)
 covers substitution and the `:count` and `:others` tokens.
 
 ## Tokens a Group Headline May Use
 
 A group headline may only use tokens that are true of **every** member. A
 singular role token is allowed only where the [axis pins it](/deeper/aggregation);
-plural tokens are allowed everywhere, because a list of one is still true.
+a plural token is allowed everywhere.
 
 ```php
 // repeat = one cook, many dishes
@@ -90,19 +87,19 @@ Supply both forms; Storyfeed never inflects. Translation keys are wrapped in
 segments. Without a registered noun, the fallback uses `item|items`.
 
 The distinct entity count selects the form but is not printed:
-`FeedNoun::form('dish|dishes', 7)` returns `dishes`. Core substitutes
-that text before returning the template, so `:actor put :object on the menu`
-can arrive as `:actor put dishes on the menu`. The substituted noun is plain text, with no
-single entity to link to; `:actor` remains a linkable token.
+`FeedNoun::form('dish|dishes', 7)` returns `dishes`. Core substitutes the noun
+into the template, so `:actor put :object on the menu` can arrive as
+`:actor put dishes on the menu`. The noun is plain text with no link; `:actor`
+is still a linkable token.
 
 ## Members That Did Not Fill a Role
 
-A plural token lists the members that filled the role. It does not promise every member filled it. An axis pins what its key names, and
-a role outside the key is free to be absent on some members.
+A plural token lists the members that filled the role, which may not be every
+member. A role outside the axis key can be empty on some members.
 
-`targets` is keyed on actor, verb and day — target is not in the key at all. So
-an activity with no target joins the same bucket as one with a target: it counts
-towards `:count` and contributes no exemplar.
+`targets` is keyed on actor, verb and day, not on target. An activity with no
+target joins the same group as one with a target: it counts towards `:count`
+and adds no exemplar.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
@@ -110,10 +107,10 @@ towards `:count` and contributes no exemplar.
 'targets.ask' => ':actor asked about :targets'       // ✓ names the two there are
 ```
 
-Both lines are token-safe; the defect is in the noun the template puts beside
-`:count`, which nothing validates. `node.count` is the member total;
-`node.distinct.targets` counts only the members that filled the role. Where the
-two disagree, some members filled no target.
+Both lines are token-safe; the first is wrong because of the noun beside
+`:count`, which nothing checks. `node.count` is the member total, and
+`node.distinct.targets` counts the distinct targets. When they differ, some
+members have no target.
 
 ## One List per Template
 
@@ -125,16 +122,13 @@ Both of these are token-safe; only one is readable:
 ':actors placed :count orders with :target' // ✓ one list, one count, one pinned role
 ```
 
-Two rules meet here and only one is enforced. Token safety is semantic: doctor
-reports a token an axis cannot make true of every member. Length is editorial:
-nothing reports it, and the fix is to collapse every dimension but one to
-`:count`.
+Doctor reports unsafe tokens, but nothing reports length. Collapse every list
+but one to `:count`.
 
 ## Finding the Keys You Have Not Written
 
-You do not have to discover missing keys by reading your own app. Doctor reads
-the pairs actually recorded and the axes actually registered, and prints the
-registrations they imply:
+Doctor reads the pairs actually recorded and the axes registered, and prints
+the registrations they need:
 
 ```bash
 php artisan storyfeed:doctor --stubs
@@ -150,16 +144,13 @@ Storyfeed::aggregateGrammar([
 ]);
 ```
 
-Paste them in and write the sentences. The `TODO` line is not a placeholder to
-delete blindly: **it lists the tokens that are safe for that key**, derived
-from the axis recipe, so an aggregate stub can never offer a token its axis
-does not pin. A singular stub lists every role, because a singular key pins
-them all.
+Paste them in and write the sentences. Each `TODO` line **lists the tokens that
+are safe for that key**: an aggregate stub offers only the tokens its axis pins,
+and a singular stub lists every role.
 
-Two findings deliberately emit no stub. `roles` names a template that claims a
-role its activities never carry, and the remedy is authorial — the sentence is
-wrong, not missing. `aggregates.latent` names a pair no surface can read, and
-a stub there would be code that cannot render. See
+Two findings emit no stub. `roles` means a template names a role its activities
+never carry, so the sentence needs rewriting. `aggregates.latent` means no read
+mode shows that group, so a template for it would never render. See
 [Doctor](/reference/doctor#groups-no-surface-can-read).
 
 ## Wildcards
@@ -169,26 +160,26 @@ Resolution falls back `{type}.{verb}` → `{type}.*` → `*.{verb}` → `*.*`.
 ### Composite Parents
 
 ::: warning
-A composite's parent activity has **no object of its own**, so it resolves
-through the wildcard — authoring only `composite.{verb}` leaves the parent
-blank. Author both:
+A composite's parent activity has **no object of its own**, so its headline
+comes from the `*.{verb}` wildcard. With only `composite.{verb}` registered,
+the parent's headline is blank. Register both:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
-Storyfeed::grammar(['*.menu.dish_live' => ':actor put dishes on the menu']);
+Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 ```
 
-`'*.*'` matches everything, including the gaps you would want reported.
+`'*.*'` matches everything, including the missing headlines you would want
+doctor to report.
 :::
 
 ## Verbs Spanning Multiple Types
 
-Aggregate grammar is keyed by **axis and verb**, while a Story is per
-`(objectType, verb)`. When one verb spans several types — `discussion.asked` on dishes,
-orders and categories — its aggregate keys have no single owner: whichever Story
-declares `groups()` for `create` owns them all, and nothing indicates that to a
-reader of the other Stories.
+Aggregate grammar is keyed by **axis and verb**, while a Story is keyed by
+object type and verb. When one verb spans several types, such as `ask` on
+dishes, orders and categories, one Story's `groups()` sets the group headlines
+for all of them, and the other Stories do not show it.
 
-Pick one owner deliberately, or register the shared aggregate keys directly with
-`aggregateGrammar()` where their scope is obvious.
+Choose one Story to own them, or register the shared keys directly with
+`aggregateGrammar()`.
