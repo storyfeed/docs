@@ -1,9 +1,8 @@
 # Headlines
 
-A headline is the sentence the feed prints for an activity. It is a template,
-registered once per verb in the **grammar** registry, and the feed fills in
-the entities. When you are done, every verb your app records reads as a
-sentence.
+A headline is the sentence the feed prints for an activity. You register a
+template once per verb in the **grammar** registry, and the feed fills in the
+entities.
 
 <script setup>
 import { activity, scenes } from '../.vitepress/theme/samples'
@@ -22,9 +21,8 @@ Storyfeed::grammar([
 
 <FeedExample context :items="[withoutIcon]" />
 
-Read the key as two parts: the object's morph alias, a dot, and the verb.
-`order.placed` is the verb `placed`, recorded about an `order`. The dot
-belongs to the key; the verb you recorded is still `placed`.
+The key is the object's morph alias, a dot, and the verb: `order.place` is the
+verb `place`, recorded about an `order`. The verb you record is still `place`.
 
 The template names roles, never models:
 
@@ -45,10 +43,9 @@ The template names roles, never models:
 | `:result` | the produced entity |
 | `:instrument` | the tool or service used |
 
-Each token becomes the label of the entity in that role, linked where the
-entity has a link. A role the activity did not record renders as your
-renderer's placeholder, so a template names only the roles the verb always
-carries.
+Each token becomes the label of the entity in that role, linked where it has a
+link. A role the activity did not record renders as your renderer's
+placeholder, so a template names only the roles the verb always carries.
 
 ## Adding an Icon
 
@@ -57,24 +54,30 @@ carries.
 Storyfeed::icons([
     'order.place' => 'shopping-bag',
     'order.complete' => 'receipt',
-    '*.menu.dish_live' => 'chef-hat',   // any object type
+    '*.publish' => 'chef-hat',          // any object type
 ]);
 ```
 
 <FeedExample :items="[scenes.order]" />
 
-Keys resolve most-specific first: `order.placed`, then `order.*`, then
-`*.placed`, then `*.*`.
+Keys resolve most-specific first:
+
+| Key | Matches |
+|---|---|
+| `order.place` | that verb on that object type |
+| `order.*` | every verb on that object type |
+| `*.place` | that verb on any object type |
+| `*.*` | everything with no more specific entry |
 
 ::: headless it ships no icons
 `shopping-bag` is a name you chose, carried to your renderer verbatim. Mapping
 it to a drawing is the renderer's job, with whichever icon set it already has.
-The package validates nothing here and has no list to validate against.
+The package validates nothing here.
 :::
 
 ## What a Glyph Means
 
-A glyph names a shape. `glyph_intent` says what that shape means, and rides
+A glyph names a shape. `glyph_intent` says what the shape means, and sits
 beside it on every node:
 
 ```json
@@ -85,12 +88,7 @@ beside it on every node:
 }
 ```
 
-A renderer that draws the glyph small can tell the verbs apart by shape alone.
-One that draws it large, or a feed whose verbs cluster, needs more than a
-shape.
-
-Register intents the way you register icons — keyed `type.verb`, wildcards
-allowed, resolved most-specific first:
+Intents have their own registry, keyed and resolved like icons:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -104,36 +102,20 @@ Storyfeed::glyphIntents([
 Or on a story class:
 
 ```php
-// app/Stories/DocumentWasUploaded.php
+// app/Stories/OrderWasCompleted.php
 public function intent(): ?string
 {
     return 'success';
 }
 ```
 
-The value is **your** string. Storyfeed ships no vocabulary of intents and no
-colours: `success` is not a term the package knows, ranks or validates, exactly
-as `circle-check` is not an icon it ships. The three words above are this
-documentation's own, and the renderer maps them onto three colours it owns —
-`success`, `pending` and `danger` are what these examples chose to say, not a
-list to conform to.
+The value is **your** string. Storyfeed ships no intents and no colours, and
+validates nothing: `success`, `pending` and `danger` are this example's words,
+and the renderer maps them onto colours it owns.
 
-Intents resolve on their own registry, so a wildcard is stated once:
-
-| Key | Matches |
-|---|---|
-| `order.completed` | that verb on that object type |
-| `order.*` | every verb on that object type |
-| `*.completed` | that verb on any object type |
-| `*.*` | everything with no more specific entry |
-
-Most verbs have no intent, and that is the common case. A placed order is not yet a
-success or a failure, so `glyph_intent` is `null` and the disc renders plain —
-which is what every node carries until an app registers its first intent.
-
-A renderer that meets an intent it has no colour for draws the plain glyph.
-Unknown strings pass through, never dropped, so an app can add a word without
-waiting for a renderer to learn it.
+Most verbs have no intent. Their `glyph_intent` is `null`, and the glyph
+renders plain. Any string passes through unchanged; a renderer with no colour
+for it draws the plain glyph.
 
 ## Translating a Headline
 
