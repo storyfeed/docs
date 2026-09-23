@@ -161,7 +161,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 20. **The Basics teaches only what is needed to start building feeds.**
     Strict modes, config keys, commands, the doctor, caching, AS2 mapping,
     event and snapshot internals: none of it belongs in The Basics. It moves
-    to Digging deeper or Reference, or is cut. (Sharpens rule 8.)
+    to Digging deeper or Reference, or is cut. (Sharpens rule 8.) Getting
+    Started too: it ends when the feed renders, with no "verify" or "check
+    your work" step (ruled 2026-09-22: "the doctor is an advanced usage
+    concern").
 21. **Elementary form first.** The first snippet on any page is
     `Storyfeed::activity()->by()->action()->to()->publish()` or the plainest
     equivalent for the concept; typed and decorated forms (enums, Story
@@ -194,7 +197,9 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     (Sharpens rule 11.)
 26. **No forward references.** A page never names a tool or a term a later
     page introduces — the doctor, aggregation, axes — and never closes with a
-    pointer to the next concept. (Rule 18, generalised to prose.)
+    pointer to the next concept. No "Where to Go Next" section either: the
+    sidebar and the prev/next links already do that job. (Rule 18,
+    generalised to prose.)
 27. **Plain words over coined phrases.** No "anti-lie rule", no "the axis
     pins it", no "immutable snapshots live in…". Where a name is useful the
     plain sentence comes first and the name is optional. (Sharpens rule 3.)
