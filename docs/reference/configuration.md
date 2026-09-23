@@ -47,12 +47,11 @@ Storyfeed::verbs(ActivityVerb::class); // a backed enum implementing FeedVerb
 Storyfeed::verbs(['confirm' => ActivityType::Update]); // or a verb => type map
 ```
 
-Registering a verb declares it: `verbs.strict` then throws on any verb outside
-the declared vocabulary, `storyfeed:verbs --used` and the doctor report recorded
-verbs that were never declared and declared verbs never recorded, and the case's
-Activity Streams 2.0 type is what the serializer emits. A registered story class
-declares its verb the same way, so an app that records only through stories has
-nothing to register.
+Once a verb is registered, `verbs.strict` throws on any verb outside the
+registry, `storyfeed:verbs --used` and doctor report verbs recorded but never
+registered (and the reverse), and the serializer emits the verb's Activity
+Streams 2.0 type. A registered story class registers its verb too, so an app
+that records only through stories has nothing to register.
 
 ## Grouping
 
@@ -72,8 +71,8 @@ When grouping does not fire, check the [axis registry](/deeper/aggregation#the-b
 before changing thresholds: `repeat` pins the target id, while `targets` does not.
 
 `exemplar_limits` is keyed by singular role — `actor`, `object`, `target`,
-`context`, `origin`, `result`, `instrument` — and every default is `3`, which is
-what the payload has always emitted. Raise one where a surface leans on it:
+`context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
+one where a surface shows more:
 
 ```php
 // config/storyfeed.php
@@ -84,14 +83,12 @@ what the payload has always emitted. Raise one where a surface leans on it:
 ```
 
 Exemplars are drawn from the members already loaded, so `children_limit` still
-bounds them, and each one costs a resolver call — a group node listing six
-objects asks your resolver for six more entities on every page. An invalid or
-missing limit falls back to `3` rather than to nothing.
+bounds them. Each one is a resolver call: a group node listing six objects
+resolves six entities on every page. An invalid or missing limit falls back to
+`3`.
 
-::: tip
-Curation policy is not payload contract — change these freely. Only the group
-node's *shape* is frozen.
-:::
+These keys change which groups form and how many exemplars they list, not the
+shape of a group node, so they are safe to tune.
 
 ## Batches & Composites
 
@@ -121,7 +118,6 @@ node's *shape* is frozen.
 | Key | Default |  |
 |---|---|---|
 | `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
-| `replace.delete` | `'soft'` | superseded activities are soft-deleted; `'force'` also removes their grouping and participant rows |
 | `prune.after_days` | `null` | retention window; `null` keeps everything |
 | `trickle.limit` | `200` | activities snapshotted per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |

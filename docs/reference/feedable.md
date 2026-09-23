@@ -2,7 +2,7 @@
 
 Everything a `Feedable` model can put on the feed, and everything it can read
 back at render time. [Feedable Models](/basics/feedable-models) shows the
-common path; this page lists all of it.
+common path.
 
 ## The Contract
 
@@ -43,9 +43,9 @@ Payload shape: [entity object](/reference/payload#entity-object).
 
 ## `FeedContext`
 
-What `feedMedia()` receives. A resolver runs for every entity with a snapshot
-on a page, including group exemplars a renderer never draws as links, so it is
-a pure function of the context: no writes, and no query except `model()`.
+`feedMedia()` receives a `FeedContext`. The resolver runs for every entity with
+a snapshot on a page, including group exemplars that are never drawn as links,
+so it should make no writes and no queries except `model()`.
 
 | Accessor | Returns |
 |---|---|
@@ -57,8 +57,8 @@ a pure function of the context: no writes, and no query except `model()`.
 | `$context->feed()` | the registered name of the feed being read, or `null` on an ad-hoc feed and in the Activity Streams serializer |
 | `$context->model()` | the live model, or `null` |
 
-A thrown exception is reported, and the entity degrades to `url: null` and
-`media: null`. One broken resolver never breaks a feed.
+If the resolver throws, the exception is reported and the entity gets
+`url: null` and `media: null`; the rest of the feed renders.
 
 ### `$context->model()`
 
@@ -66,9 +66,9 @@ A thrown exception is reported, and the entity degrades to `url: null` and
 $document = $context->model(with: ['project'], withTrashed: true);
 ```
 
-The one database call a resolver may make: one query per class per page,
-however many entities ask. `null` when the row is gone, soft-deleted, or
-`storyfeed.hydration.enabled` is `false`, so the null branch is not optional.
+One query per class per page, however many entities ask. It returns `null` when
+the row is gone, soft-deleted, or `storyfeed.hydration.enabled` is `false`, so
+the resolver must handle `null`.
 
 | Argument | Effect |
 |---|---|
@@ -95,8 +95,7 @@ FeedMedia::make($url)->preview($thumb)->icon($avatar);
 
 ### Image Slots
 
-The slots are Activity Streams 2.0's property names, and the slot is the
-meaning:
+The slots are Activity Streams 2.0 property names:
 
 | Slot | Holds |
 |---|---|
@@ -161,23 +160,21 @@ placeholder. Activities are never hidden by the read path.
 
 `$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
 argument filled in, and takes an optional feed name:
-`$model->storyfeed('customer')`. Both read `feed_participants`; an install
-that predates the index runs `storyfeed:participants` once.
+`$model->storyfeed('customer')`. Both read `feed_participants`.
 
-`storyfeed()` on a model is not the `storyfeed()` helper, which returns the
-manager, or a pending activity when given a verb. Inside a model class both
-are reachable: `storyfeed()` is the function, `$this->storyfeed()` is this.
+The `storyfeed()` helper function is different: it returns the manager, or a
+pending activity when given a verb. Inside a model, `storyfeed()` is the helper
+and `$this->storyfeed()` is the model's feed.
 
 ## Morph Aliases
 
 Aliases are read from the app's morph map, or from `morph_map` in
-`config/storyfeed.php`, which merges into it at boot. Package-owned aliases
-resolve through `Support\MorphResolver`, independently of the app's map, so a
-package type is readable whether or not the app registered it.
+`config/storyfeed.php`, which merges into it at boot. The package's own aliases
+resolve whether or not the app's map registers them.
 
 An activity whose role alias no longer resolves still shows, with a
-placeholder. The trickle counts it as unresolved and soft-deletes it only when
-`storyfeed.trickle.prune` is enabled or `storyfeed:trickle --prune` is used.
+placeholder. The trickle counts it as unresolved, and soft-deletes it only with
+`storyfeed.trickle.prune` or `storyfeed:trickle --prune`.
 
 [Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
 map.
