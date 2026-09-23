@@ -12,7 +12,9 @@ const paid = activity({
 })
 </script>
 
-Two different things that both look like "not a user":
+An activity's actor does not have to be a user. It can be a **party**, a
+named participant with no model in your app, such as a payment provider. Or it
+can be **anonymous**: nobody is known.
 
 |  | Means | In the Payload |
 |---|---|---|
@@ -30,7 +32,7 @@ Storyfeed::record('pay', $order, actor: $party);
 
 <FeedExample context :items="[paid]" />
 
-Parties work in **any** role — actor, object, target, context, origin, result, or instrument:
+A party can fill any role, not only the actor:
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -40,7 +42,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-`party()` resolves-or-creates by name, so repeated calls reuse the row.
+`party()` finds or creates the party by name, so repeated calls reuse one row.
 
 ## Scoped Attribution
 
@@ -79,13 +81,12 @@ Storyfeed::actorlessGrammar([
 ]);
 ```
 
-A singular activity with no recorded actor identity uses this template before
-ordinary grammar. A named party or an actor whose model can no longer be
-resolved still uses ordinary grammar. If no actorless entry matches, ordinary
-grammar remains the fallback.
+An activity recorded with no actor uses this template instead of its ordinary
+grammar, when one matches. A party, or an actor whose model has since been
+deleted, still uses ordinary grammar.
 
-Keys are exact verbs, including dotted verbs. There are no wildcards or
-aggregate forms. String templates cannot contain `:actor` or `:actors`.
-Closures receive the activity and return finished text, as in
-[Grammar](/deeper/grammar). Registrations merge by default; pass `merge: false`
-to replace the actorless registry.
+Keys are exact verbs, including dotted verbs, with no wildcards and no group
+forms. A string template cannot contain `:actor` or `:actors`. A closure
+receives the activity and returns finished text, as in
+[Grammar](/deeper/grammar). Registrations merge; pass `merge: false` to replace
+them.
