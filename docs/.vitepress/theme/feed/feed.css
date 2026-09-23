@@ -362,8 +362,12 @@ a.sf-entity:hover {
  * A detail is a block under the sentence, not a card: the wrapper carries the
  * margin and the bound and draws nothing, because filling and bordering every
  * one of them was what made three in a viewport read as loud.
+ *
+ * NOT `.sf-body`: that is the row's text column. The Detail→Body rename gave
+ * this wrapper the same name, and every headline in the site dropped 0.5rem
+ * below its avatar.
  */
-.sf-body {
+.sf-body-form {
     margin-top: 0.5rem;
     max-width: 44rem;
 }

@@ -230,7 +230,7 @@ const slots = computed(() =>
             <div
                 v-for="(found, index) in forms"
                 :key="index"
-                class="sf-body"
+                class="sf-body-form"
             >
                 <component
                     :is="found.component"
