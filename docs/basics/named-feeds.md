@@ -93,14 +93,14 @@ Both work on any builder, with or without a name:
 ```php
 // a controller, or wherever the feed is read
 Storyfeed::feed()->only(['place', 'ready'])->get();
-Storyfeed::feed()->only(['order.*', OrderActivity::PaymentReceived])->get();
+Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();   // ready, reprice, confirm
 Storyfeed::feed()->except(['note'])->get();
 ```
 
 | | |
 |---|---|
 | accepts | verb strings and enum cases, mixed in one list |
-| `order.*` | a trailing `*` is a prefix wildcard |
+| `re*` | a trailing `*` is a prefix wildcard |
 | an unrecognised verb | never throws; a verb nobody records is a query matching nothing |
 | `only([])` | throws |
 | repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
