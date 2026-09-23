@@ -14,7 +14,7 @@ const authored = group({
 </script>
 
 A composite is one activity whose object is a **collection**: several dishes
-put on the menu as a single activity, rather than several activities grouped.
+put on the menu as a single activity.
 
 ## Recording One Yourself
 
@@ -80,15 +80,14 @@ class PublishMenuController extends Controller
 
 <FeedExample context :items="[authored]" />
 
-This writes a parent activity and one activity per member. In `log()` the
-members appear as ordinary rows; in the other modes the parent arrives as one
-node with `axis: 'composite'`. Serialized to
-[Activity Streams 2.0](/deeper/activity-streams), the object is an
-`OrderedCollection`.
+This writes a parent activity and one activity per dish. In `log()` the dishes
+appear as ordinary rows; in the other modes the parent is one node with
+`axis: 'composite'`.
 
 ## Bundling a Burst Automatically
 
-Mark a model `Bundleable` and a burst of activities on it becomes a composite:
+Mark a model `Bundleable`, and a burst of activities on it becomes one
+composite:
 
 ```php
 <?php
@@ -120,14 +119,12 @@ Storyfeed::bundleables(['menu_item']);
 ],
 ```
 
-Bundling happens when the actor's **batch** closes. A single activity stays as
-it is.
+Bundling happens when the actor's **batch** closes.
 
 ## Batches
 
-A batch is a burst of activity by one actor. It stays open until the actor has
-been quiet for `quiet_minutes`, and your recording code does nothing to make
-one.
+A batch is a burst of activity by one actor. It closes once the actor has been
+quiet for `quiet_minutes`.
 
 ```php
 // config/storyfeed.php
@@ -139,17 +136,15 @@ one.
 ],
 ```
 
-Otherwise a batch closes at that actor's next publish. To close batches on
-time, schedule the command:
+To close batches on time, schedule the command. Otherwise a batch closes at
+the actor's next publish.
 
 ```php
 // routes/console.php
 Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
 ```
 
-Closing fires `BatchClosed`, which you can listen to for digest emails or
-batched notifications. A batch does not group the feed itself; it makes
-composites when it closes.
+Closing fires `BatchClosed`, which you can listen to for digest emails.
 
 ## Grammar for Composites
 
@@ -163,12 +158,12 @@ Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 
 ## Backfilling
 
-`Bundleable` applies to new activity only. To bundle past activity:
+`Bundleable` applies only to new activity. To bundle past activity:
 
 ```bash
 php artisan storyfeed:bundle
 php artisan storyfeed:bundle --window=30   # only batches closed in the last 30 days
 ```
 
-It is safe to run twice. It regroups past days, so run it when few readers are
-scrolling.
+It is safe to run twice. Run it when few people are reading, because it
+regroups past days.

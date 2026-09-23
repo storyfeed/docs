@@ -1,8 +1,8 @@
 # Containers & Context
 
 `context` is the fourth role: the container an activity happened **inside**,
-such as the kitchen a dish belongs to. Record it, and you can read the feed for
-everything that happened inside that container.
+such as the kitchen a dish belongs to. Record it, and you can read everything
+that happened in that kitchen.
 
 <script setup>
 import { who, where, dishes, notes, activity } from '../.vitepress/theme/samples'
@@ -86,22 +86,20 @@ class DishQuestionController extends Controller
 | `target` | what the preposition points at | asked **about** the dish |
 | `context` | the container the act happened inside | …**in** the kitchen |
 
-`context` is for a target that sits inside a container: a question about a
-dish in a kitchen, a note on an order at a table. When the target is itself the
-container, `target` alone carries it:
+Use `context` when the target sits inside a container, like a dish in a
+kitchen. When the target is the container itself, `target` is enough:
 
 ::: code-group
 <<< @/snippets/publish-from-controller.php [Fluent Syntax]
 <<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
 :::
 
-Setting `context` to the same kitchen as well is allowed; it records the
-kitchen in both roles. A role the headline doesn't name is still used for
-scoping, grouping and the AS2 document, so fill every role that is true.
+Fill every role that is true, even one the headline doesn't name: roles are
+also used for scoping and grouping.
 
 ## When to Set It
 
-An activity needs `context` when something reads it:
+Set `context` when something reads it:
 
 | You Want | Why It Needs `context` |
 |---|---|
@@ -112,14 +110,14 @@ An activity needs `context` when something reads it:
 
 ## The Container Query
 
-`feed()->context($kitchen)` returns what happened inside the kitchen. It is
-narrower than [`involving()`](/basics/reading#scoping), which also matches
-activities where the kitchen is the `object`, such as its creation.
+`feed()->context($kitchen)` returns what happened inside the kitchen.
+[`involving()`](/basics/reading#scoping) also returns activities about the
+kitchen itself, such as its creation.
 
 ## A Container That Is Not a Model
 
-When the container is a plain value, such as a folder name, a source system
-or a mailbox, record it one of three ways:
+When the container is a plain value, such as a folder name, record it one of
+three ways:
 
 | Home | In the Headline | Groups by It | In the AS2 Document | Cost |
 |---|---|---|---|---|
@@ -129,6 +127,5 @@ or a mailbox, record it one of three ways:
 
 ## Recording Context at Publish
 
-Roles are set when the activity is published and never backfilled. If the
-container is a model you have at publish time, record it: anything that reads
-`context` later only sees the activities recorded with one.
+Roles are never filled in later. If you have the container when you publish,
+record it: a `context` read only finds activities recorded with one.
