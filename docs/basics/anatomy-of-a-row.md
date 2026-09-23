@@ -18,7 +18,7 @@ renderer decides where each one sits.
 | time | `published_at` | one timestamp, in the reader's zone |
 | thread | `thread` | what someone said, quoted on this activity |
 | media | `object.media.preview`, `object.media.url` | the object's picture, at the feed's scale |
-| detail | a `$body` key anywhere in `data` | one recognised form, drawn by whatever draws that form |
+| body | a `$body` key anywhere in `data` | one recognised body type, drawn by whatever draws that type |
 | tiles | a group's `sample`, `distinct` | a sample of a collapsed group's pictures |
 | members | `children`, `count` | the group's own rows, when a reader opens it |
 
@@ -32,9 +32,9 @@ link. No headings inside a row: the eye reads a heading as a new section.
 ## The Content Region
 
 Give the region a position and a maximum width, and nothing else: no border,
-fill or padding. Each form brings its own register. A quoted passage draws a
+fill or padding. Each body type brings its own register. A quoted passage draws a
 rule and an indent, a file line is a muted strip, a change is its own rows. A
-form with none reads as a line of text under the sentence.
+body type with none reads as a line of text under the sentence.
 
 ## Previews
 
@@ -57,7 +57,7 @@ two. Put the tile count on the row.
 
 Each tile keeps its entity's link, and draws the preview, not the original.
 
-## Unknown Forms
+## Unknown Body Types
 
-A form the renderer does not recognise draws nothing, never an error. See
-[Activity Details](/deeper/details#unknown-forms-in-a-renderer).
+A body type the renderer does not recognise draws nothing, never an error. See
+[Activity Body Content](/deeper/body#unknown-body-types-in-a-renderer).

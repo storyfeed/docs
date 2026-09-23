@@ -202,7 +202,11 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     generalised to prose.)
 27. **Plain words over coined phrases.** No "anti-lie rule", no "the axis
     pins it", no "immutable snapshots live in…". Where a name is useful the
-    plain sentence comes first and the name is optional. (Sharpens rule 3.)
+    plain sentence comes first and the name is optional. (Sharpens rule 3.) Two words are out (ruled 2026-09-22):
+    **form** reads as an HTML form, so a `KeyValue`, `Excerpt` or `MediaObject`
+    is a **body type**, and one instance is a **body**; **mint** is jargon, so
+    what `feedMedia()` returns is **resolved** when the feed is read, and a
+    composite is **created**.
 28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
     site", "when to…") live in the cookbook, not on the concept page.
 29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
@@ -298,7 +302,7 @@ reading and drawing, a second audience, then renderer-specific pages.
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
   while every reader of an activity feed does
 - ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, glyph intents, translation
-- ✅ What an Activity Shows — a headline alone, a quoted utterance, the detail forms
+- ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
 - ✅ Anatomy of a Row — the wireframe: every zone, what fills it, and the taste rules a renderer pays for otherwise
@@ -313,7 +317,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
 - ✅ Story Classes — the blueprint: headline, icon and grouping in one class (not required to get a feed going)
-- ✅ Activity Details — typed blocks in `data`, forms, versions
+- ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, thresholds, custom axes
 - ✅ Grammar — group headlines, plural tokens, the tokens a group may use, nouns, wildcards
 - ✅ Composites — `->objects()`, `Bundleable`, batches

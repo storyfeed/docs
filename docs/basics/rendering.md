@@ -152,9 +152,9 @@ the template is present.
 ## What the App Put in `data`
 
 Beneath the sentence, a row can carry an utterance or a
-[detail](/basics/activity-content): a value in the app's own `data` with a
-known form. Find one by walking `data` for a `$body` key. Draw the forms you
-recognise and **nothing** for the rest.
+[body](/basics/activity-content): a value in the app's own `data` with a known
+body type. Find one by walking `data` for a `$body` key. Draw the body types
+you recognise and **nothing** for the rest.
 
 ## Verifying Your Renderer
 

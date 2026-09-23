@@ -113,7 +113,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
     return FeedMedia::make(
         url: route('documents.show', $context->id()),
         preview: FeedImage::make(
-            src: route('documents.thumbnail', $context->id()),  // minted here, at read time
+            src: route('documents.thumbnail', $context->id()),  // resolved here, at read time
             mediaType: $context->data('mediaType'),             // the intrinsic facts come from the snapshot
             width: $context->data('width'),
             height: $context->data('height'),

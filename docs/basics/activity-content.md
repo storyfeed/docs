@@ -90,11 +90,11 @@ Storyfeed::activity()
 The text is stored on the activity, so editing the note afterwards does not
 change what the row quotes.
 
-## Details: a Form the Renderer Recognises
+## A Body the Renderer Recognises
 
-Everything else goes in `data`, where a **detail** is a value with a
-conventional form. The model writes it once, in `toFeed()`, and any renderer
-that recognises the form draws it with no view of yours.
+Everything else goes in `data`, where a **body** is a value of a known body
+type. The model writes it once, in `toFeed()`, and any renderer that
+recognises the type draws it with no view of yours.
 
 ```php
 // app/Models/Order.php
@@ -111,7 +111,7 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[withExcerpt]" />
 
-A detail on the snapshot shows wherever the entity appears, so the model writes
+A body on the snapshot shows wherever the entity appears, so the model writes
 it, not the line that records an activity:
 
 ```php
@@ -178,18 +178,19 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 `modal` is a boolean in the payload. Opening a dialog is your renderer's job;
 on this site, clicking the file name opens a panel.
 
-## The Forms Core Ships
+## The Body Types Core Ships
 
-| Form | Shows |
+| Body Type | Shows |
 |---|---|
 | `KeyValue` | labelled pairs |
 | `Excerpt` | a passage, and where it came from |
 | `Change` | before and after, for one field or several |
 | `File` | what an artefact is and how big |
-| `Markdown` | authored body text, as source |
+| `Prose` | authored text, and how to read it |
+| `ItemList` | several things, each a name and maybe a link |
 | `MediaObject` | a title, some prose, one picture, the files |
 
 They live in `Storyfeed\Body`. Each carries a version, so a renderer can
-upgrade an old row before drawing it. An app may write its own forms; a
-renderer draws nothing for a form it does not recognise, and the rest of the
+upgrade an old row before drawing it. An app may write its own body types; a
+renderer draws nothing for a type it does not recognise, and the rest of the
 row renders as usual.

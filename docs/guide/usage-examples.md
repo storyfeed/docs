@@ -264,7 +264,7 @@ Storyfeed::record(
 <FeedExample :items="[posted]" />
 
 The card comes from the dish's own `toFeed()`, covered in
-[Activity Body Content](/deeper/details).
+[Activity Body Content](/deeper/body).
 
 ## And Many More
 

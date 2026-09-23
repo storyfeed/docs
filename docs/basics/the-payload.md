@@ -114,9 +114,9 @@ When nobody acted, `actor` is `null`.
 }
 ```
 
-## A Form Inside `data`
+## A Body Inside `data`
 
-A detail sits in the app's own `data`, marked by two reserved keys:
+A body sits in the app's own `data`, marked by two reserved keys:
 
 ```jsonc
 {
@@ -175,12 +175,12 @@ The picture is on the entity:
 | `type` | the morph alias, as recorded |
 | `id` | the entity's key, as a string |
 | `label` | what `toFeed()` cached |
-| `url` | minted at read time by `feedMedia()`, or null |
+| `url` | resolved at read time by `feedMedia()`, or null |
 | `attributes` | anything the resolver attached to the link |
 | `modal` | a hint that the link opens in place |
 | `component` | a frontend component the app named |
-| `data` | the app's own map, including any detail |
-| `media` | the images the resolver minted, or null |
+| `data` | the app's own map, including any body |
+| `media` | the images the resolver returned, or null |
 
 ## What Is Not in It
 

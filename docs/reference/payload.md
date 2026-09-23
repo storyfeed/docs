@@ -24,7 +24,7 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
   "type": "delivery",                  // morph alias, never a class name
   "id": "42",                          // string-cast
   "label": "Delivery #1042",           // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
-  "url": "https://…/deliveries/1042",  // minted at read time; null ⇒ not linkable
+  "url": "https://…/deliveries/1042",  // resolved at read time; null ⇒ not linkable
   "attributes": {},                    // link attributes, e.g. {"target": "_blank"}
   "modal": false,                      // hint: open as a modal
   "component": null,                   // backend-named body component

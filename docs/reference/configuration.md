@@ -94,7 +94,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 | `grouping.batch.enabled` | `true` | infer bursts by one actor |
 | `grouping.batch.quiet_minutes` | `10` | idle time before a burst is considered finished |
 | `grouping.composite.auto` | `true` | bundle `Bundleable` runs at batch close |
-| `grouping.composite.min_objects` | `2` | smallest distinct object count that mints a composite |
+| `grouping.composite.min_objects` | `2` | smallest distinct object count that creates a composite |
 
 ## Hydration
 
@@ -107,7 +107,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 | Key | Default |  |
 |---|---|---|
 | `routes.enabled` | `false` | opt-in, read-only single-activity endpoint |
-| `routes.prefix` | `'storyfeed'` | **also mints activity IRIs** — changing it changes document ids |
+| `routes.prefix` | `'storyfeed'` | **also builds activity IRIs** — changing it changes document ids |
 | `routes.middleware` | `[]` | add auth/throttling here |
 
 ## Maintenance

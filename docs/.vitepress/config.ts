@@ -123,7 +123,7 @@ export default defineConfig({
           { text: 'Containers & Context', link: '/deeper/context' },
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Story Classes', link: '/deeper/stories' },
-          { text: 'Activity Body Content', link: '/deeper/details' },
+          { text: 'Activity Body Content', link: '/deeper/body' },
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Grammar', link: '/deeper/grammar' },
           { text: 'Composites', link: '/deeper/composites' },

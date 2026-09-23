@@ -283,7 +283,7 @@ activity. Whatever separates them belongs somewhere other than the verb.
 
 | What separates them | Where it belongs |
 | --- | --- |
-| A field moved | [a change in the body](/deeper/details) |
+| A field moved | [a change in the body](/deeper/body) |
 | Something was produced | the `result` role |
 | One happened earlier | `publishedAt()` |
 

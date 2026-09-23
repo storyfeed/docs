@@ -38,7 +38,7 @@ Named participants with no model in your app.
 
 Bursts of activity by one actor, with `activities_count` and
 `last_activity_at`. Closed by quiet window; closing fires `BatchClosed` and
-mints composites.
+creates composites.
 
 ## `feed_participants`
 

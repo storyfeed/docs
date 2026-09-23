@@ -5,7 +5,7 @@
 | Command | Does | Suggested |
 |---|---|---|
 | `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |
-| `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, mints composites. `--quiet-minutes=` | every 5 minutes |
+| `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
 | `storyfeed:prune` | permanently deletes activities past the retention window. `--days=` | daily, if `prune.after_days` is set |
 
 ```php

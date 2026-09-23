@@ -96,10 +96,10 @@ public function toFeed(): FeedEntity
 <FeedExample :items="[withTicket]" />
 
 Plain text can only be printed as it is. Labelled rows let a renderer line up
-each item with its price and set the total apart. Use the plainest form your
+each item with its price and set the total apart. Use the plainest body type your
 renderer makes use of.
 
-Recording the activity doesn't change: the body comes from the model. The form
+Recording the activity doesn't change: the body comes from the model. The body
 arrives on the node exactly as it went in:
 
 ```json
@@ -113,8 +113,8 @@ arrives on the node exactly as it went in:
 }
 ```
 
-Core stores it and never reads it. A form holds values, not markup, and never
-contains another form.
+Core stores it and never reads it. A body holds values, not markup, and never
+contains another body.
 
 ## Where a Body Lives
 
@@ -135,9 +135,9 @@ object. The other roles carry their bodies in the payload too, but drawing them
 would repeat an actor's body under every row that person acts in. A row whose
 object has no body shows just its headline.
 
-## More Than One Form
+## More Than One Body
 
-A slot takes one form or a list:
+A slot takes one body or a list:
 
 ```php
 // app/Models/MenuItem.php
@@ -151,9 +151,9 @@ public function toFeed(): FeedEntity
 ```
 
 When `toFeed()` and `feedMedia()` both return a body, the row carries both,
-stored forms first. The renderer decides how they're laid out.
+stored bodies first. The renderer decides how they're laid out.
 
-## Minting a Form at Read Time
+## Resolving a Body When the Feed Is Read
 
 `feedMedia()` can return a body too, built from the model as it is at that
 moment:
@@ -186,7 +186,7 @@ not one per row. If it throws, the error is reported and the body is left out.
 Use a closure when the body reads the live row; a body built from the snapshot
 is cheap enough to pass directly.
 
-## What a Minted Form May Read
+## What a Resolved Body May Read
 
 The resolver runs for every entity on the page, including ones a renderer never
 draws. These three reads cost no query per row:
@@ -200,7 +200,7 @@ Anything else runs once per row: `$dish->orders()->count()` in a resolver
 queries for every row that names a dish. Keep a counter column on the model
 instead.
 
-## Writing a Form
+## Writing a Body Type
 
 ```php
 <?php
@@ -261,14 +261,14 @@ final class Attachment implements FeedBody
 
 | Key | Constant | Holds |
 |---|---|---|
-| `$body` | `FeedBody::KEY` | the form's name, verbatim |
+| `$body` | `FeedBody::KEY` | the body type's name, verbatim |
 | `$v` | `FeedBody::VERSION` | the version that wrote the row |
 
 The `$` prefix keeps them apart from your own keys.
 
 ### Names
 
-A name is `Vocabulary/Form` in PascalCase: `Storyfeed/Body/MediaObject`,
+A name is `Vocabulary/Type` in PascalCase: `Storyfeed/Body/MediaObject`,
 `Acme/Attachment`. Renderers match it exactly. It's a lookup key, not a class
 name, and stored rows keep it even if the class moves.
 
@@ -278,18 +278,18 @@ Start `version()` at 1. A row with no `$v` is version 1. `upgrade()` runs when
 a row is read and never writes back, so a renderer always sees the current
 shape.
 
-## Who Upgrades a Form
+## Who Upgrades a Body
 
 | Value | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
 |---|---|---|---|
 | `FeedThread` at `$thread` | `thread` | core, on read | no |
 | `FeedChange` at `$change` | `change` | core, on read | no |
-| a form in a body | stays in `body` | the renderer | yes |
+| a body type's value | stays in `body` | the renderer | yes |
 
-Core upgrades what it reads. It never reads inside a body, so a form's renderer
+Core upgrades what it reads. It never reads inside a body, so the renderer
 calls `upgrade()` before drawing, even for a `FeedThread` placed in a body.
 
-## Existing Forms
+## Existing Body Types
 
 Core ships seven under `Storyfeed\Body`. Renderers may recognise them; core
 reads none of them.
@@ -310,9 +310,9 @@ never has to handle a bare string.
 ::: headless
 :::
 
-## Unknown Forms in a Renderer
+## Unknown Body Types in a Renderer
 
-A renderer skips a form it doesn't recognise and draws the rest of the row,
+A renderer skips a body type it doesn't recognise and draws the rest of the row,
 without an error.
 
 ## Inspecting What Is Stored
@@ -321,5 +321,5 @@ without an error.
 php artisan storyfeed:doctor --only=body
 ```
 
-It lists the stored forms and warns about two silent faults: a `$v` with no
-`$body`, and a form versioned on some rows but not others.
+It lists the stored body types and warns about two silent faults: a `$v` with no
+`$body`, and a body type versioned on some rows but not others.
