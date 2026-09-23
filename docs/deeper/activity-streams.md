@@ -1,11 +1,11 @@
 # Activity Streams 2.0
 
-Storyfeed serializes to [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
-JSON-LD for its recording model. All seven [entity roles](/basics/recording#roles)
-serialize under their AS2 property names.
-This is a document serialization surface, not a general AS2 importer.
+Storyfeed can serve each activity as a
+[W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
+document. All seven [entity roles](/basics/recording#roles) appear under their
+AS2 property names. It writes AS2 documents; it does not import arbitrary ones.
 
-One read-only endpoint, off by default:
+The route is read-only and off by default:
 
 ```php
 // config/storyfeed.php
@@ -20,8 +20,7 @@ One read-only endpoint, off by default:
 |---|---|
 | `GET /{prefix}/activities/{uid}` | a single `Activity` document, addressed by its ULID |
 
-Exposing an activity is an app decision — add auth or throttling via
-`middleware`.
+Add auth or throttling through `middleware`.
 
 ## Source, Outcome and Means
 
@@ -29,23 +28,21 @@ Exposing an activity is an app decision — add auth or throttling via
 |---|---|
 | [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
 | [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
-| [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used; W3C Example 85 places a music `Service` here |
+| [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
 
-[Recording](/basics/recording#roles) shows how direction determines the role.
+[Recording](/basics/recording#roles) shows which role to use.
 
 ## Serving a Collection
 
-There is no collection route: which activities a collection contains is a
-[named feed](/basics/named-feeds)'s decision, not an endpoint's.
-`CollectionSerializer::collection()` emits the shape, `OrderedCollection` /
-`OrderedCollectionPage` with `partOf`, an opaque `next` cursor and no
-`totalItems`. It builds no query and owns no IRI; both are arguments:
+There is no collection route; a [named feed](/basics/named-feeds) decides what
+a collection contains. `CollectionSerializer::collection()` turns a page of
+activities into an `OrderedCollection` or `OrderedCollectionPage`, with
+`partOf`, an opaque `next` cursor and no `totalItems`. You pass the page and
+the IRI it lives at:
 
 ```php
 collection(CursorPaginator $page, string $iri, ?string $cursor = null): array
 ```
-
-A cursor-paginated set of activities, and the IRI they live at.
 
 ::: warning
 The prefix mints activity IRIs, so changing it changes document ids. Pick one
@@ -55,11 +52,11 @@ before you publish anything externally.
 ## The `@context`
 
 Documents reference `https://ns.storyfeed.dev`, which defines the package's own
-terms (currently `sf:verb`). It is add-only.
+terms (currently `sf:verb`).
 
 ## Verb Mapping
 
-Each verb can map to an Activity Streams type, carried by the verb enum:
+A verb enum can map each verb to an Activity Streams type:
 
 ```php
 <?php
@@ -67,63 +64,52 @@ Each verb can map to an Activity Streams type, carried by the verb enum:
 namespace App\Enums;
 
 use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Concerns\AsFeedVerb;
+use Storyfeed\Contracts\FeedVerb;
 
-enum ActivityVerb: string implements FeedVerb
+enum OrderActivity: string implements FeedVerb
 {
     use AsFeedVerb;
 
-    case Upload = 'upload';
-    case Comment = 'comment';
-    case Confirm = 'confirm';
+    case Placed = 'place';
+    case Confirmed = 'confirm';
+    case Ready = 'ready';
 
     public function activityType(): ActivityType|string|null // [!code focus]
     { // [!code focus]
         return match ($this) { // [!code focus]
-            self::Upload => ActivityType::Add, // [!code focus]
-            self::Comment => ActivityType::Create, // [!code focus]
+            self::Placed => ActivityType::Create, // [!code focus]
+            self::Confirmed => ActivityType::Accept, // [!code focus]
             default => null, // [!code focus]
         }; // [!code focus]
     } // [!code focus]
 }
 ```
 
-The rules that matter:
-
-- Mapping is **vocabulary transcription only**. It never throws and never gates
-  recording or validation.
-- Unmapped verbs serialize with the base `Activity` type; the raw verb travels
-  as `sf:verb`. An unmapped `frobnicate` produces `"type": "Activity"` and
-  `"sf:verb": "frobnicate"`. Explicitly mapped extension type strings are
-  **preserved verbatim** as `type`.
+- The mapping only sets the document's `type`. It never throws and never
+  affects recording or validation.
+- An unmapped verb serializes as `"type": "Activity"`, with the verb in
+  `sf:verb`. A mapped extension type string is kept verbatim as `type`.
 - Composite objects serialize as `OrderedCollection`.
 - An entity's [media slots](/reference/payload#entity-media) serialize as AS2
   `Link` objects under `icon`, `image` and `preview`, with `mediaType`, `width`
   and `height`. A `url` typed as an image is a `Link` too. `$context->feed()`
-  is `null` in this serializer: a federation document has no surface.
+  is `null` here, because a document is not read through a feed.
 
-Reading Storyfeed's own documents with `Reader::activity()` recovers the `uid`
-from the document `id`, the verb from `sf:verb`, the emitted `type`, and
-`published` as `published_at` (at the serializer's whole-second precision).
-The serialized `actor`, `object`, `target`, `context`, `origin`, `result` and
-`instrument` values pass through
-unchanged, or return `null` when absent. That is the round-trip subset:
-top-level `summary` and `replies` are dropped, and the reader does not
-reconstruct every storage attribute or reproduce the whole document.
+`Reader::activity()` reads a Storyfeed document back. It recovers the `uid`
+from `id`, the verb from `sf:verb`, the `type`, and `published` as
+`published_at`, to the whole second. The seven role values come back unchanged,
+or `null` when absent. Top-level `summary` and `replies` are dropped, and
+storage attributes are not rebuilt.
 
 ## Type Overrides
 
-Per-story:
+Per story:
 
 ```php
-// app/Stories/DocumentWasUploaded.php
-public ActivityType|string|null $type = ActivityType::Add;
+// app/Stories/OrderWasPlaced.php
+public ActivityType|string|null $type = ActivityType::Create;
 ```
 
-Per-model, when the AS2 type belongs with the entity rather than the verb,
-implement `HasActivityStreamsType` — it keeps the mapping next to
-`toFeed()`/`feedMedia()` instead of in a central registry.
-
-## Federation
-
-ActivityPub federation is on the long-range roadmap. Nothing here requires it:
-these endpoints are a serialization surface, not a federation implementation.
+Per model, when the type belongs with the entity rather than the verb,
+implement `HasActivityStreamsType` on the model.
