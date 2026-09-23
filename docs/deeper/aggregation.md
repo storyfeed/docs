@@ -162,6 +162,11 @@ Storyfeed::axes([
 ]);
 ```
 
+`scene` groups activities that happened in the same container, such as three
+customers asking about dishes in one kitchen. No built-in axis keys on
+`context`, and an axis added later only groups activities recorded with a
+[context](/deeper/context), because roles are never backfilled.
+
 The recipe names the fields two activities must share to group; `!` marks a
 field that must be present. A singular role token is safe when both of the
 role's fields are in the key.

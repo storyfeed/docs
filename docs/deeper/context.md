@@ -58,19 +58,10 @@ An activity needs `context` when something reads it:
 
 | You Want | Why It Needs `context` |
 |---|---|
-| a group like "three customers asked about dishes in the same kitchen today" | axes key on roles, so the container has to *be* a role; no built-in axis keys on `context`, so this is a [custom axis](/deeper/aggregation#custom-axes) |
+| a group like "three customers asked about dishes in the same kitchen today" | grouping reads roles, so the container has to *be* a role |
 | `feed()->context($kitchen)` | the scope reads the `context` column |
-| `:context` in a composite headline | the built-in `composite` axis pins `:actor`, `:target` and `:context` — see [Composites](/deeper/composites) |
+| `:context` in a headline | a headline can only name a role the activity carries |
 | `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
-
-Grouping by a container needs a custom axis on the `context` role:
-
-```php
-// app/Providers/AppServiceProvider.php, boot()
-Axis::make('scene')
-    ->key('v:ca!:cid!:d')                 // verb + context identity + day
-    ->eligibleWhenDistinct('actor', min: 2);
-```
 
 ## The Container Query
 
@@ -91,6 +82,6 @@ or a mailbox, record it one of three ways:
 
 ## Recording Context at Publish
 
-Roles are set when the activity is published and never backfilled. A `context`
-axis registered later groups only the activities recorded with a `context`, so
-if the container is a model you have at publish time, record it.
+Roles are set when the activity is published and never backfilled. If the
+container is a model you have at publish time, record it: anything that reads
+`context` later only sees the activities recorded with one.
