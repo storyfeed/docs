@@ -12,9 +12,8 @@ const paid = activity({
 })
 </script>
 
-An activity's actor does not have to be a user. It can be a **party**, a
-named participant with no model in your app, such as a payment provider. Or it
-can be **anonymous**: nobody is known.
+An activity's actor doesn't have to be a user. It can be a **party**, such as
+a payment provider, or **anonymous**.
 
 |  | Means | In the Payload |
 |---|---|---|
@@ -143,7 +142,7 @@ class DispatchOrderController extends Controller
 ```
 :::
 
-`party()` finds or creates the party by name, so repeated calls reuse one row.
+`party()` finds or creates the party by name.
 
 ## Scoped Attribution
 
@@ -208,9 +207,8 @@ class CancelUnpaidOrders extends Command
 ```
 :::
 
-A string becomes a party; a model is used directly. An explicit `->actor()`
-still wins inside the scope, and the previous resolver is restored even if the
-callback throws.
+Pass a name for a party, or a model. An explicit `->by()` inside the block
+still wins.
 
 ## App-wide Fallbacks
 
@@ -223,7 +221,7 @@ callback throws.
 'actor_resolver' => null,    // an invokable class; null = the authenticated user
 ```
 
-With no fallback, unresolvable publishes are anonymous.
+With no fallback, an activity with no user is anonymous.
 
 ## Actorless Voice
 
@@ -234,12 +232,8 @@ Storyfeed::actorlessGrammar([
 ]);
 ```
 
-An activity recorded with no actor uses this template instead of its ordinary
-grammar, when one matches. A party, or an actor whose model has since been
-deleted, still uses ordinary grammar.
+An activity recorded with no actor uses this template when one matches. A
+party still uses the ordinary grammar.
 
-Keys are exact verbs, including dotted verbs, with no wildcards and no group
-forms. A string template cannot contain `:actor` or `:actors`. A closure
-receives the activity and returns finished text, as in
-[Grammar](/deeper/grammar). Registrations merge; pass `merge: false` to replace
-them.
+Keys are exact verbs, with no wildcards. A template can't contain `:actor`. A
+closure works as in [Grammar](/deeper/grammar).

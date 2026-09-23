@@ -1,8 +1,7 @@
 # Story Classes
 
-A Story is the blueprint for one type of activity: its verb, its headline, its
-icon and how it groups, in one class. Publishing through it produces the
-activity. A feed works without one.
+A Story is the blueprint for one type of activity: its verb, headline, icon
+and grouping, in one class. A feed works without one.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
@@ -72,8 +71,8 @@ OrderWasPlaced::activity($order)
 
 <FeedExample context :items="[placed]" />
 
-The tokens name roles, never models: `:actor`, `:object`, `:target`,
-`:context`. Each becomes the label of the entity in that role.
+Tokens name roles, not models: `:actor` becomes the label of whoever is in the
+actor role.
 
 ## Generating and Registering
 
@@ -120,7 +119,7 @@ class OrderWasPlaced extends Story
 
 <FeedExample :items="[placedWithIcon]" />
 
-The icon is a token; your renderer maps it onto an icon set it owns.
+The icon is a name; your renderer maps it to an icon.
 
 ## Grouping Repeats
 
@@ -164,9 +163,8 @@ class OrderWasPlaced extends Story
 
 <FeedExample :items="[grouped]" />
 
-`:count` is how many; `:actor` stays singular because every member shares it.
-[Aggregation](/deeper/aggregation) covers the other ways activities
-group.
+`:count` is how many. [Aggregation](/deeper/aggregation) covers the other ways
+activities group.
 
 ## What a Story Declares
 
@@ -182,15 +180,13 @@ group.
 Nothing is inferred from the class name.
 
 ::: tip Naming
-`{Object}Was{Verbed}` reads well when the object is the patient
-(`OrderWasPlaced`). For reflexive activities, write what happened:
-`CustomerJoined`, not `CustomerWasJoined`.
+Name a story for what happened: `OrderWasPlaced`, `CustomerJoined`.
 :::
 
 ## Examples
 
-The object is the note, but its label is the note's text, so the sentence
-names the target:
+The object is a note whose label is its text, so the sentence names the
+target instead:
 
 ```php
 <?php
@@ -220,7 +216,7 @@ class QuestionWasAsked extends Story
 }
 ```
 
-A completed order has no target; the sentence ends at the object:
+A completed order has no target:
 
 ```php
 <?php
@@ -250,8 +246,7 @@ class OrderWasCompleted extends Story
 }
 ```
 
-A dish goes on the menu, and the menu is a fixed word in the sentence rather
-than a role:
+The menu is a plain word in the sentence, not a role:
 
 ```php
 <?php
