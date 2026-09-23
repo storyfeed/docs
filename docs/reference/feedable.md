@@ -50,10 +50,11 @@ so it should make no writes and no queries except `model()`.
 | Accessor | Returns |
 |---|---|
 | `$context->type()` | the morph alias, as stored on the activity |
-| `$context->id()` | the entity's key |
+| `$context->key()` | the entity's key, as `getKey()` returns it |
+| `$context->routeKey()` | the entity's route key, as `getRouteKey()` returned it when the snapshot was written; `key()` on a snapshot written before that |
 | `$context->label()` | the cached label |
 | `$context->data()` | the `data` array `toFeed()` cached |
-| `$context->data('mediaType')` | one value from it; a missing key reads as `null`, or as the second argument |
+| `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key reads as `null`, or as the second argument |
 | `$context->feed()` | the registered name of the feed being read, or `null` on an ad-hoc feed and in the Activity Streams serializer |
 | `$context->model()` | the live model, or `null` |
 
@@ -111,10 +112,10 @@ use Storyfeed\FeedImage;
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
-        url: route('documents.show', $context->id()),
+        url: route('documents.show', $context->key()),
         preview: FeedImage::make(
-            src: route('documents.thumbnail', $context->id()),  // resolved here, at read time
-            mediaType: $context->data('mediaType'),             // the intrinsic facts come from the snapshot
+            src: route('documents.thumbnail', $context->key()),  // resolved here, at read time
+            mediaType: $context->data('mediaType'),              // the intrinsic facts come from the snapshot
             width: $context->data('width'),
             height: $context->data('height'),
             alt: $context->label(),

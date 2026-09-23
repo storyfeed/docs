@@ -169,7 +169,7 @@ document preview. `FeedMedia::modal()` marks the link, and the entity carries
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::modal(route('photos.show', $context->id())); // [!code focus]
+    return FeedMedia::modal(route('photos.show', $context->key())); // [!code focus]
 }
 ```
 

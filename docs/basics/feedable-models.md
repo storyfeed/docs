@@ -214,14 +214,14 @@ class MenuItem extends Model implements Feedable
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
-        $id = $context->id();
+        $routeKey = $context->routeKey();
 
         return match ($context->feed()) {
-            'kitchen' => FeedMedia::make(url: route('kitchen.menu.edit', $id)),
+            'kitchen' => FeedMedia::make(url: route('kitchen.menu.edit', $routeKey)),
             'customer' => FeedMedia::make(
-                url: route('menu.show', $id),
+                url: route('menu.show', $routeKey),
                 preview: FeedImage::make(
-                    src: route('menu.photo', $id),
+                    src: route('menu.photo', $routeKey),
                     mediaType: $context->data('mediaType'),
                     width: $context->data('width'),
                     height: $context->data('height'),
@@ -233,6 +233,9 @@ class MenuItem extends Model implements Feedable
     }
 }
 ```
+
+`$context->routeKey()` is the model's route key, the id or slug `route()`
+expects, stored with the snapshot.
 
 <FeedExample :items="[scoped[2]]" />
 

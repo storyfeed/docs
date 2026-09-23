@@ -24,6 +24,13 @@ snapshots unless a [media resolver](/reference/feedable#the-contract) loads the
 live model. Written at publish, refreshed on model save, backfilled by
 `storyfeed:trickle`.
 
+The `meta` column is a JSON column that holds Storyfeed's own extras for a
+snapshot: today, the model's route key, when it is not the primary key.
+Nothing is ever queried or indexed through `meta`; anything a query filters,
+sorts or joins on is a real column, like `shape`. Your `toFeed()` values stay
+in `data`. The two are never merged, and `$context->data()` never returns
+`meta`.
+
 ## `feed_groupings`
 
 Grouping candidates, one row per activity per applicable axis, computed at
