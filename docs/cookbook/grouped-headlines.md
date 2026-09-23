@@ -45,38 +45,58 @@ const crowd = group({
 
 *A customer places an order with the kitchen.*
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $firstOrder)
-    ->to($kitchen)
-    ->publish();
-```
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[one]" />
 
 *a minute later, another request*
 
-```php
-// where the fact happens: a controller, an action, a listener
+::: code-group
+```php [Fluent Syntax]
+// app/Http/Controllers/OrderController.php, store()
 Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $secondOrder)
+    ->by($request->user())
+    ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```
+
+```php [Named Arguments]
+// app/Http/Controllers/OrderController.php, store()
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    actor: $request->user(),
+    target: $kitchen,
+);
+```
+:::
 
 *another minute later, a third request*
 
-```php
-// where the fact happens: a controller, an action, a listener
+::: code-group
+```php [Fluent Syntax]
+// app/Http/Controllers/OrderController.php, store()
 Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $thirdOrder)
+    ->by($request->user())
+    ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```
+
+```php [Named Arguments]
+// app/Http/Controllers/OrderController.php, store()
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    actor: $request->user(),
+    target: $kitchen,
+);
+```
+:::
 
 Three orders, each placed once. Read the feed with grouping:
 

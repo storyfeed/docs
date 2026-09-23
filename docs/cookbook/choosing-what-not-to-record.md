@@ -5,17 +5,31 @@ Most events in an app, such as drafts, saves and background work, record
 nothing.
 
 ```php
-// app/Events/OrderPlaced.php
-public function toFeedActivity(): ?PendingActivity
-{
-    if ($this->order->status === 'draft') {
-        return null;                                 // not an activity
-    }
+<?php
 
-    return Storyfeed::activity()
-        ->by($this->customer)
-        ->action('place', $this->order)
-        ->to($this->order->kitchen);
+namespace App\Events;
+
+use App\Models\Order;
+use App\Models\User;
+use Storyfeed\Contracts\PublishesToFeed;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\PendingActivity;
+
+class OrderPlaced implements PublishesToFeed
+{
+    public function __construct(public Order $order, public User $customer) {}
+
+    public function toFeedActivity(): ?PendingActivity
+    {
+        if ($this->order->status === 'draft') { // [!code focus]
+            return null;                                 // not an activity [!code focus]
+        } // [!code focus]
+
+        return Storyfeed::activity() // [!code focus]
+            ->by($this->customer) // [!code focus]
+            ->action('place', $this->order) // [!code focus]
+            ->to($this->order->kitchen); // [!code focus]
+    }
 }
 ```
 
@@ -54,14 +68,70 @@ Storyfeed::grammar([
 Storyfeed::grammar([
     'note.ask' => ':actor asked about :target',   // names the dish, never the note
 ]);
-
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('ask', $note)
-    ->on($dish)
-    ->publish();
 ```
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('ask', $note) // [!code focus]
+            ->on($dish) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'ask', // [!code focus]
+            object: $note, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            target: $dish, // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 <script setup>
 import { who, dishes, notes, activity } from '../.vitepress/theme/samples'
@@ -116,17 +186,72 @@ the snapshot yourself.
 
 ## A Quote Belonging to One Activity
 
-```php
-// where the fact happens: a controller, an action, a listener
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
-Storyfeed::activity()
-    ->by($user)
-    ->action('ask', $note)
-    ->on($dish)
-    ->thread(FeedThread::make(text: $note->body))
-    ->publish();
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('ask', $note) // [!code focus]
+            ->on($dish) // [!code focus]
+            ->thread(FeedThread::make(text: $note->body)) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AskQuestionRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+class DishQuestionController extends Controller
+{
+    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $note = $dish->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'ask', // [!code focus]
+            object: $note, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            target: $dish, // [!code focus]
+            thread: FeedThread::make(text: $note->body), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 Use this when the words should be stored on the activity rather than read
 from the note. The renderer receives them as `node.thread.text`; drop the
@@ -143,15 +268,76 @@ Storyfeed::verbs(['reply' => ActivityType::Create]);
 Storyfeed::grammar([
     'discussion.reply' => ':actor replied about :target',
 ]);
-
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('reply', $discussion)
-    ->on($dish)
-    ->thread(FeedThread::make(text: $reply->body))
-    ->publish();
 ```
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreReplyRequest;
+use App\Models\Discussion;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+class DiscussionReplyController extends Controller
+{
+    public function store(StoreReplyRequest $request, MenuItem $dish, Discussion $discussion): RedirectResponse
+    {
+        $reply = $discussion->replies()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('reply', $discussion) // [!code focus]
+            ->on($dish) // [!code focus]
+            ->thread(FeedThread::make(text: $reply->body)) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreReplyRequest;
+use App\Models\Discussion;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+class DiscussionReplyController extends Controller
+{
+    public function store(StoreReplyRequest $request, MenuItem $dish, Discussion $discussion): RedirectResponse
+    {
+        $reply = $discussion->replies()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validated('body'),
+        ]);
+
+        Storyfeed::record( // [!code focus]
+            verb: 'reply', // [!code focus]
+            object: $discussion, // [!code focus]
+            actor: $request->user(), // [!code focus]
+            target: $dish, // [!code focus]
+            thread: FeedThread::make(text: $reply->body), // [!code focus]
+        ); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 Editing the note or discussion does not change a stored `FeedThread`. To keep
 only the latest reply, see [Repeating Activities](/cookbook/repeating-activities).

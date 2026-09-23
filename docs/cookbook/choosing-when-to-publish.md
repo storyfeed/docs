@@ -3,7 +3,8 @@
 Publish when a record's status changes, and not on other saves. The feed then
 shows what happened to the order, not every edit to it.
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Observers;
@@ -30,12 +31,48 @@ class OrderObserver
             return;
         }
 
-        Storyfeed::activity()
-            ->action($verb, $order)
-            ->publish();
+        Storyfeed::activity() // [!code focus]
+            ->action($verb, $order) // [!code focus]
+            ->publish(); // [!code focus]
     }
 }
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Observers;
+
+use App\Models\Order;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderObserver
+{
+    public function updated(Order $order): void
+    {
+        if (! $order->wasChanged('status')) {
+            return;                                  // a save is not news
+        }
+
+        $verb = match ($order->status) {
+            'confirmed' => 'confirm',
+            'ready' => 'ready',
+            'completed' => 'complete',
+            default => null,                         // a draft is not news either
+        };
+
+        if ($verb === null) {
+            return;
+        }
+
+        Storyfeed::record( // [!code focus]
+            verb: $verb, // [!code focus]
+            object: $order, // [!code focus]
+        ); // [!code focus]
+    }
+}
+```
+:::
 
 <script setup>
 import { who, where, orders, activity } from '../.vitepress/theme/samples'
@@ -102,9 +139,9 @@ class OrderConfirmed implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return Storyfeed::activity()
-            ->by($this->cook)
-            ->action('confirm', $this->order);
+        return Storyfeed::activity() // [!code focus]
+            ->by($this->cook) // [!code focus]
+            ->action('confirm', $this->order); // [!code focus]
     }
 }
 ```

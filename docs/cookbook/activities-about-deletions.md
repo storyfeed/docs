@@ -4,16 +4,64 @@ To record that something was deleted, make the surviving parent the object
 and carry the deleted thing's name in `data`. The row keeps rendering after the
 deleted model is gone.
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($user)
-    ->action('remove', $menu)             // object: the parent, which survives
-    ->data(['name' => $dish->name])       // the removed thing travels as text
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
 
-$dish->delete();
+namespace App\Http\Controllers;
+
+use App\Models\Menu;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class MenuDishController extends Controller
+{
+    public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
+    {
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('remove', $menu)             // object: the parent, which survives [!code focus]
+            ->data(['name' => $dish->name])       // the removed thing travels as text [!code focus]
+            ->publish(); // [!code focus]
+
+        $dish->delete();
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Menu;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class MenuDishController extends Controller
+{
+    public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
+    {
+        Storyfeed::record( // [!code focus]
+            verb: 'remove', // [!code focus]
+            object: $menu,                        // the parent, which survives [!code focus]
+            actor: $request->user(), // [!code focus]
+            data: ['name' => $dish->name],        // the removed thing travels as text [!code focus]
+        ); // [!code focus]
+
+        $dish->delete();
+
+        return back();
+    }
+}
+```
+:::
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
