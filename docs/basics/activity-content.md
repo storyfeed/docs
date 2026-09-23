@@ -178,7 +178,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 `modal` is a boolean in the payload. Opening a dialog is your renderer's job;
 on this site, clicking the file name opens a panel.
 
-## The Body Types Core Ships
+## The Body Types Storyfeed Ships
 
 | Body Type | Shows |
 |---|---|
