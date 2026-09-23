@@ -320,6 +320,11 @@ its verb, and only its `->actor()` is used:
 |---|---|
 | the headlines, icon, intent, grouping and every other setting | `->actor()` |
 
+A job dispatched during the request carries the actor the method chose, so a
+queued publish of `confirm_payment` gets the same actor.
+[Queues](/deeper/queues#a-verb-that-chooses-its-actor-from-the-request) covers
+how.
+
 A method whose headline changes with the request throws at that publish in
 `local` and `testing`, where `grammar.strict` is on:
 
@@ -429,12 +434,48 @@ php artisan make:story OrderStory --resource --model=Order
 ```
 
 The class has a method for each conventional verb, returning its default.
-`make:story` never edits `routes/feed.php`. Without `--resource`, it writes a
-one-verb class:
+`make:story` never edits `routes/feed.php`.
+
+Without `--resource`, it writes a one-verb class, and asks for what the name
+does not settle:
+
+```bash
+php artisan make:story DishWentLive
+```
+
+```txt
+ ┌ Which verb does this story record? ─────────────────────────┐
+ │ › ● publish                                                 │
+ │   ○ place                                                   │
+ │   ○ complete                                                │
+ └─────────────────────────────────────────────────────────────┘
+  The app's declared verbs. Pass --verb for one it does not declare.
+
+ ┌ Which model is the object of this story? ───────────────────┐
+ │ App\Models\MenuItem                                         │
+ └─────────────────────────────────────────────────────────────┘
+
+   INFO  Story [app/Stories/DishWentLive.php] created successfully.
+
+   INFO  Bind it in routes/feed.php:
+
+    Story::for(\App\Models\MenuItem::class)->verb('publish', \App\Stories\DishWentLive::class);
+```
+
+The verb is chosen from your declared verbs, and the model is suggested from
+your `Feedable` models. A name like `OrderWasPlaced` settles both when the part
+after `Was` spells exactly one declared verb, so nothing is asked. The class
+never holds a placeholder: each group headline is a sentence, with the tokens
+its axis allows listed in a comment above it.
+
+`--verb` and `--model` skip their prompts, so a script passes both:
 
 ```bash
 php artisan make:story DishWentLive --verb=publish --model=MenuItem
 ```
+
+Without a terminal, a verb or model the name does not settle fails, naming
+your declared verbs.
 
 ## Listing Verbs
 

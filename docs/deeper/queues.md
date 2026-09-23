@@ -356,6 +356,29 @@ use Storyfeed\Support\QueuedActor;
 Context::addHidden(QueuedActor::KEY, null);   // no actor travels, a Storyfeed::as() actor included
 ```
 
+### A Verb That Chooses Its Actor From the Request
+
+A [Story class method that takes the `Request`](/deeper/stories#using-the-request)
+chooses its verb's actor at each publish. On a worker there is no request, so a
+job dispatched during the request carries what the method chose: a party name,
+or a model as its morph alias and key, never the request itself.
+
+```php
+// app/Http/Controllers/PaymentWebhookController.php, __invoke()
+use App\Jobs\ConfirmPayment;
+
+// its confirm_payment gets the actor the request chose
+ConfirmPayment::dispatch($order);
+```
+
+Every such method runs at the first dispatch in a request, once per request,
+however many jobs follow. None runs when no job is dispatched, or inside
+`Storyfeed::as()`, which outranks them. A method that chose no actor chooses
+none on the worker either. An explicit actor in the job still wins, and an
+anonymous publish stays anonymous. A method that throws at the dispatch never
+fails it: the job publishes with the actor it would otherwise have had, and
+the doctor names the method (`actions.carry_failed`).
+
 ### A Scoped Actor
 
 A job dispatched inside `Storyfeed::as()` runs as that actor on the worker:

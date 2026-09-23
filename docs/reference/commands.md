@@ -69,7 +69,7 @@ works as for every other section.
 | Command | Does |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
-| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=` |
+| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
 | `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
@@ -98,6 +98,21 @@ php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 The hourly scheduled `curate` runs without `--rehash`, so rows are rehashed
 only when you run it yourself.
 
+### Ending a Composite Whose Parent Is Gone
+
+A force-deleted composite parent hands its members back to ordinary grouping.
+Where members are still claimed by a parent that no longer exists, the
+composite keeps rendering from them: a story that outlived its erasure. The
+doctor counts them (`claims.parent_gone`), and `--release` ends it:
+
+```bash
+php artisan storyfeed:curate --release   # a second run changes nothing
+```
+
+The members go back to ordinary grouping, their groups are re-decided, and
+the `sync_token` moves when anything changed. A trashed parent still owns its
+members, so it is left alone.
+
 `--rehash` can move a group past a live cursor, leaving the next page empty.
 It changes the `sync_token`, and clients must then discard every accumulated
 node and refetch from the head, including after an empty response. See the
@@ -121,5 +136,5 @@ once cached. Keep those in a service provider.
 
 | Command | Does |
 |---|---|
-| `make:story` | creates a [Story class](/deeper/stories). `--resource --model=Order` writes a class with a method per conventional verb and prints the `Story::resource()` line to bind it; it never edits `routes/feed.php`. Without `--resource`, a one-verb class: `--verb=`, `--model=`. `--from-doctor` generates a stub per gap doctor found |
+| `make:story` | creates a [Story class](/deeper/stories). `--resource --model=Order` writes a class with a method per conventional verb and prints the `Story::resource()` line to bind it; it never edits `routes/feed.php`. Without `--resource`, a one-verb class; it prints the `Story::for()->verb()` line to bind it. What the name does not settle it asks for: the verb from your declared verbs, the model from your `Feedable` models. `--verb=` and `--model=` skip the prompts; without a terminal, an unsettled verb or model fails naming the declared verbs. It never writes `TODO`. `--from-doctor` generates a stub per gap doctor found |
 | `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |

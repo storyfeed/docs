@@ -39,8 +39,10 @@ Each finding names its fix.
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
 | `body` | which [body types](/deeper/body) are actually stored, and the two ways one can be malformed quietly: a map with no `$body` key, and a body type versioned on some rows but not others | warning · info |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
+| `claims` | composite members still claimed by a parent that no longer exists (`claims.parent_gone`), so the composite still renders from them. [`storyfeed:curate --release`](/reference/commands#ending-a-composite-whose-parent-is-gone) ends it. A trashed parent is not counted | info |
 | `inherited` | `Feedable` subclasses deleted through a parent class that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
 | `retention` | rows past their verb's retention window, and busy verbs no window reaches. See [Retention](#retention) | warning · info |
+| `actions` | Story class methods that take the request and threw when a job was dispatched, and methods that read `request()` without taking `Request`. See [Actions](#actions) | warning |
 
 ## Feed Coverage
 
@@ -109,7 +111,7 @@ Register your feeds so this check can tell a real gap from a latent one.
 |---|---|---|
 | `removals.unclassified` | info | a recorded verb reads like a removal, but an activity with it is redundant once its object is deleted, as for any verb about its object. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
 | `labels.guessed` | info | the listed models are labelled by guesswork. Fine when the guess reads well in a feed; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable#models-you-don-t-own) |
-| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events never fire. Names the class, its alias and the parents, and says whether Storyfeed hears the parent's deletes for it (it does for a class in the morph map or registered with `Storyfeed::feedable()`) or its tombstones wait for `storyfeed:trickle` |
+| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events never fire. Names the class, its alias and the parents, and says whether Storyfeed hears the parent's deletes for it (it does for a class in the morph map or registered with `Storyfeed::feedable()`) or its tombstones wait for `storyfeed:trickle`. Updates are not heard through the parent either way: a subclass updated as its parent keeps its snapshot until the trickle runs |
 
 The label matters beyond the feed: it is what a tombstone keeps when its model
 asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
@@ -130,6 +132,13 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 |---|---|---|
 | `retention.backlog` | warning | a verb has rows more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them, with the snapshots and tombstones only they referred to. Usually a window just declared or shortened, or a prune nothing schedules; `storyfeed:prune --pretend` shows the run first |
 | `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it, so its rows are kept for the life of the table. A verb that says `->keepForever()` is never named |
+
+## Actions
+
+| Finding | Severity | Means |
+|---|---|---|
+| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched, where it runs to carry its actor to the worker. The dispatch went ahead, and the job published with the actor it would otherwise have had |
+| `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade without taking `Illuminate\Http\Request $request`. It runs only when stories compile, never at a publish or in a queued job. Take the `Request` as a parameter instead. Found by reading the source, so it only ever warns |
 
 ## Entities
 

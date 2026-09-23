@@ -89,7 +89,7 @@ public function print(): string   // nothing publishes `print` any more; old row
 
 ## Group Headlines in the Same Method
 
-A verb's group headline belongs beside its headline:
+A verb's group headline for its type belongs beside its headline:
 
 ```php
 <?php
@@ -106,11 +106,12 @@ class OrderStory
             ->headline(':actor placed :object with :target')
             ->icon('shopping-bag')
             ->grouped(fn ($group) => $group
-                ->repeat(':actor placed :count orders with :target')
-                ->actors(':actors placed :count orders with :target'));
+                ->repeat(':actor placed :count orders with :target'));
     }
 }
 ```
 
 Write both in the same edit, so no verb has a single headline without a group
-one.
+one. A group that can hold other types, such as `actors`, takes its headline
+on the verb in `routes/feed.php`, as in
+[Aggregation](/deeper/aggregation#grouping-along-another-axis).

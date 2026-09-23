@@ -17,8 +17,8 @@ Storyfeed::grammar([
 ]);
 
 Storyfeed::aggregateGrammar([
-    'repeat.place' => ':actor placed :count orders with :target',
-    'actors.place' => ':actors placed :count orders with :target',
+    'repeat.order.place' => ':actor placed :count orders with :target',
+    'actors.place' => ':actors ordered from :target',
 ]);
 ```
 
@@ -39,7 +39,7 @@ const burst = group({
 const crowd = group({
   id: 'ck5c', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors placed :count orders with :target',
+  headline_template: ':actors ordered from :target',
   actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
@@ -127,12 +127,16 @@ A group with no headline of its own gets a
 
 ## One Entry per Axis the Verb Can Group on
 
-| Axis | The Members Are | Sentence |
-|---|---|---|
-| `repeat` | one actor, one verb, one target, one kind of object | `:actor placed :count orders with :target` |
-| `actors` | several actors' acts on one target | `:actors placed :count orders with :target` |
-| `object` | repeated acts on one object | `:actor changed the price of :object :count times` |
-| `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` |
+| Axis | The Members Are | Sentence | Written On |
+|---|---|---|---|
+| `repeat` | one actor, one verb, one target, one kind of object | `:actor placed :count orders with :target` | the type |
+| `actors` | several actors' acts on one target | `:actors ordered from :target` | the verb |
+| `object` | repeated acts on one object | `:actor changed the price of :object :count times` | the type |
+| `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` | the verb |
+
+A group on the type can say "orders", because every member is an order. A group
+on the verb can gather other types into the same row, so its sentence names
+none.
 
 `:count` counts activities, not different objects. If the same order can be
 placed twice, write "placements", not "orders".
@@ -143,9 +147,9 @@ A group shows no quote or image of its own; those stay on the activities
 inside it. Where every comment must stay visible, read with `log()`, which
 doesn't group.
 
-## The Same Pair in a Story Class
+## The Same Headlines in a Story Class
 
-A verb's method holds both headlines:
+A verb's method holds its headline and the group headlines for its type:
 
 ```php
 <?php
@@ -161,11 +165,21 @@ class OrderStory
         return $verb
             ->headline(':actor placed :object with :target')
             ->grouped(fn ($group) => $group
-                ->repeat(':actor placed :count orders with :target')
-                ->actors(':actors placed :count orders with :target'));
+                ->repeat(':actor placed :count orders with :target'));
     }
 }
 ```
 
-Write both in the same edit, so no verb has a single headline without a group
-one.
+The `actors` headline stays on the verb in `routes/feed.php`:
+
+```php
+// routes/feed.php
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
+    ->actors(':actors ordered from :target'));
+```
+
+In `OrderStory`, it would be an error when stories compile. Write them in the
+same edit, so no verb has a single headline without a group one.
