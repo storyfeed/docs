@@ -98,35 +98,30 @@ Storyfeed::record(
 ```
 :::
 
-Three orders, each placed once. Read the feed with grouping:
+Read the feed with grouping:
 
 ```php
 // a controller, or wherever the feed is read
 $feed = Storyfeed::feed()->involving($kitchen)->live()->get();
 ```
 
-They share an actor, verb, object type, target and day, so `live()` groups
-them under the `repeat` headline:
+They share a customer, a kitchen and a day, so `live()` groups them under the
+`repeat` headline:
 
 <FeedExample :items="[burst]" />
 
-Aggregate grammar names a group; it does not create one. The group of five
-customers below needs `summary()` and at least three distinct actors under the
-default policy. See [Aggregation](/deeper/aggregation).
+A headline doesn't make a group form. The group of five customers below forms
+only when the feed is read with `summary()`, and only once at least three
+different customers have ordered. See [Aggregation](/deeper/aggregation).
 
 *five customers, five different orders, five requests, the same kitchen*
 
 <FeedExample :items="[crowd]" />
 
-Without an aggregate template, a group falls back to a generic headline,
-described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
-
-`repeat` only groups orders to the same kitchen. The
-[`targets` axis](/deeper/aggregation#the-built-in-axes) groups across kitchens.
+A group with no headline of its own gets a
+[generic one](/deeper/grammar#tokens-a-group-headline-may-use).
 
 ## One Entry per Axis the Verb Can Group on
-
-`:count` is always the member count; the noun after it names what a member is.
 
 | Axis | The Members Are | Sentence |
 |---|---|---|
@@ -135,24 +130,18 @@ described in [Grammar](/deeper/grammar#tokens-a-group-headline-may-use).
 | `object` | repeated acts on one object | `:actor changed the price of :object :count times` |
 | `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` |
 
-`:count` counts activities, not distinct objects. If the same order can be
-placed twice, write "placements", not "orders". On the `object` axis the count
-is of times, never of dishes.
-
-The tokens each axis allows are in [Aggregation](/deeper/aggregation).
+`:count` counts activities, not different objects. If the same order can be
+placed twice, write "placements", not "orders".
 
 ## When the Content Is the News
 
-A group has no quote of its own. Quotes and media stay on its children, so a
-collapsed group can hide the words or image the reader needed. Children are
-capped by `grouping.children_limit` (25 by default), and `children_truncated`
-says when some are left out; the count still covers the whole group.
-
-Where every comment must stay visible, read with `log()`.
+A group shows no quote or image of its own; those stay on the activities
+inside it. Where every comment must stay visible, read with `log()`, which
+doesn't group.
 
 ## The Same Pair in a Story
 
-A Story class holds both headlines, singular first:
+A Story class holds both headlines:
 
 ```php
 <?php
@@ -186,5 +175,5 @@ class OrderWasPlaced extends Story
 }
 ```
 
-Write `headline()` and `groups()` in the same edit, so no verb has a singular
-without a plural.
+Write both in the same edit, so no verb has a single headline without a group
+one.

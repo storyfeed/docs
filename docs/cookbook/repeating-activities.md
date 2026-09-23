@@ -167,10 +167,8 @@ Storyfeed::grammar([
 | occurrence | is this a retry of the same fact, or a new act? | an order placed again after an amendment is a new occurrence |
 | retention | does this feed need every occurrence? | append for a full timeline; replace only when earlier ones may leave the feed |
 
-Replacement publishes a new row and retires the earlier matches. It needs an
-object id, and it keeps neither the original row's id nor its time. It does
-not detect retries: an append-only publisher whose delivery can repeat needs
-its own retry guard.
+Replacing publishes a new row and removes the earlier ones, so the row gets a
+new id and time.
 
 ## A Full Timeline Beside a Latest-state Pulse
 
@@ -284,26 +282,21 @@ $pulse = Storyfeed::feed()->involving($order)->live()->get();
 
 The pulse keeps one row per verb, not one row per order.
 
-Replacement changes what is stored, so `log()` afterwards cannot recover the
-full timeline. If you need both, keep the full timeline and build the pulse
-from it without replacing.
+Replaced rows are gone from every feed, including `log()`. If a page needs the
+full timeline, don't replace.
 
 ## A Save-shaped Verb That Is Not Published at All
 
-A save that changes nothing a reader would notice records no row at all. See
+Don't publish a save the reader wouldn't notice. See
 [Choosing When to Publish](/cookbook/choosing-when-to-publish).
 
 ## What `->replace()` Matches On
 
-The object's type and id, and the verb. The actor, target, context and `data`
-are not part of the match. So a single `status` verb carrying
-`data: ['from' => …, 'to' => …]` replaces its own previous transition: seven
-states in, one row out. With a verb per transition, each one replaces only
-itself.
+The object and the verb. The actor, target, context and `data` don't count.
+So a single `status` verb with `data: ['from' => …, 'to' => …]` keeps only the
+latest transition.
 
-Replaced rows are soft-deleted by default: they leave every feed but stay in
-storage until `storyfeed:prune` removes them. Set `storyfeed.replace.delete`
-to `'force'` to delete them, with their grouping rows, in the publish
-transaction. Their participant rows are deleted either way.
+Replaced rows are soft-deleted. To delete them outright, set
+[`replace.delete`](/reference/configuration) to `'force'`.
 
 `->publishAndReplace()` is `->replace()->publish()` in one call.
