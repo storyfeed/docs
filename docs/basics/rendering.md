@@ -1,9 +1,9 @@
 # Rendering
 
-Every node in the payload is self-describing: a sentence with the entities
-already in it, a glyph, and whatever the app put in `data`. A renderer holds
-no domain knowledge, so an activity type you add next year draws with no
-frontend change. When you are done, one loop draws every feed your app reads.
+A renderer turns each node of the payload into a row. Every node carries its
+own sentence, its entities, a glyph and the app's `data`, so one loop draws
+every feed your app reads, and a verb you add later draws with no frontend
+change.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
@@ -33,16 +33,15 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
 </script>
 
 ::: headless it ships no renderer
-The package ends at the payload, and drawing it is yours — which is what this
-page is for. If you would rather not write one, `storyfeed/ui` draws these
+The package ends at the payload, and drawing it is yours. If you would rather
+not write a renderer, `storyfeed/ui` draws these
 nodes for Vue, Inertia and Blade, and `storyfeed/filament` is a Filament
 plugin. Neither is required, and neither is documented here.
 :::
 
 ## The Smallest Loop That Draws Something
 
-A node's `headline_template` is a sentence with tokens where the entities go.
-Substitute the entity labels and you have a row:
+Substitute the entity labels into `headline_template` and you have a row:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
@@ -63,12 +62,9 @@ Substitute the entity labels and you have a row:
 
 <FeedExample expanded context :items="[bare]" />
 
-That is a working feed. Everything below makes it better, one thing at a time.
-
 ## Linking the Entities
 
-An entity carries its own `url`, minted at read time, so a link needs no route
-knowledge:
+Each entity carries its own `url`, so a link needs no route knowledge:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
@@ -89,25 +85,24 @@ knowledge:
 
 <FeedExample :items="[one]" />
 
-The glyph on the node is a token your app registered. Map it to whatever icon
-set you use; an unknown one falls back rather than failing.
+The node's `glyph` is a token your app registered. Map it to your icon set,
+with a fallback icon for a token you don't recognise.
 
 ## Degraded Entities
 
 An entity whose snapshot has not been written yet arrives with `label: null`
-and `url: null`. A null **actor** means the actor is genuinely unknown.
-Neither withholds the activity:
+and `url: null`. A null **actor** means the actor is unknown. The activity is
+still in the feed:
 
 <FeedExample :items="[degraded]" />
 
-That is what the fallbacks in the loop above are for. Give the unknown actor
-your own word, conventionally "Someone".
+The fallbacks in the loop above cover both. "Someone" is the usual word for an
+unknown actor.
 
 ## Groups
 
-A group node says `kind: "group"` and carries a plural sentence. Its tokens
-resolve differently: `:count` is the member count, and a plural token draws
-the exemplars plus however many are not shown.
+A group node has `kind: "group"` and a plural sentence. `:count` is the member
+count, and a plural token draws the exemplars plus how many are not shown:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
@@ -130,17 +125,15 @@ the exemplars plus however many are not shown.
 
 <FeedExample :items="[grouped]" />
 
-A **singular** token on a group is the one case worth care. A group carries
-`node['actor']` only when the group really has one actor; otherwise the key is
-absent, because there is no single answer. Recover one from the exemplars only
-when `distinct` says there is exactly one, and otherwise draw the plural list,
-which is true at every size. An unconditional `?? exemplars[0]` names one
-person over a group of nine.
+A group carries `node['actor']` only when it has exactly one actor. For a
+**singular** token, take a name from the exemplars only when `distinct` says
+there is one, and otherwise draw the plural list. An unconditional
+`?? exemplars[0]` names one person over a group of nine.
 
 ## A Group With No Sentence
 
-Sometimes the server cannot summarise a group honestly, and **both**
-`headline_template` and `headline` are null. That is information, not a gap:
+Some groups have no sentence: **both** `headline_template` and `headline` are
+null. Draw the count:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
@@ -155,20 +148,17 @@ Sometimes the server cannot summarise a group honestly, and **both**
 
 <FeedExample :items="[unnamed]" />
 
-Draw the count, not prose assembled from the node's entities: a branch written
-for single activities names one actor over a many-actor group. `headline` is
-the pre-rendered fallback for grammar authored as a PHP closure; when the
-template is present it is null, so support both and let the template win.
+Don't assemble prose from the node's entities: a branch written for single
+activities names one actor over a many-actor group. `headline` is the
+pre-rendered sentence for grammar written as a PHP closure, and is null when
+the template is present.
 
 ## What the App Put in `data`
 
 Beneath the sentence, a row can carry an utterance or a
 [detail](/basics/activity-content): a value in the app's own `data` with a
-conventional form. A renderer finds one by walking `data` for a `$body` key,
-drawing the forms it recognises and **nothing** for the ones it does not.
-
-That rule is what lets an app add a form without waiting for a renderer to
-learn it, and it is the same rule the read path applies to an unknown verb.
+known form. Find one by walking `data` for a `$body` key. Draw the forms you
+recognise and **nothing** for the rest.
 
 ## Verifying Your Renderer
 
@@ -178,17 +168,16 @@ Render every node your feed produces and count the fallback strings:
 fallback leaks ("Someone"/"Something"): 0
 ```
 
-A leak means a token resolved to nothing, and a headline containing "Someone"
-reads well enough that the failure looks like an anonymous feed rather than a
-bug. Run it across every read mode. Degraded entities are the exception: they
-should render your placeholder.
+A leak means a token resolved to nothing, and it reads like an anonymous
+actor rather than a bug. Run it across every read mode. Degraded entities are
+the exception: they should render your placeholder.
 
 ## Feeds That Keep Moving
 
-A static render is done. A feed that polls or accumulates pages needs three
-more rules, because groups are not stable rows: a group of four becomes a
-group of five with a new node id, and a client that merges a fresh head page
-by id shows the same activities twice.
+A feed that polls or accumulates pages needs three more rules, because groups
+are not stable rows: a group of four becomes a group of five with a new node
+id, and a client that merges a fresh head page by id shows the same activities
+twice.
 
 1. **Window rule.** A fresh head page supersedes accumulated nodes whose
    `published_at` falls inside the range it covers.
