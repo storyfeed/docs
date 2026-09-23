@@ -201,8 +201,12 @@ export function activity(over: Record<string, any>) {
     object: over.object ?? null,
     target: over.target ?? null,
     context: over.context ?? null,
+    origin: over.origin ?? null,
+    result: over.result ?? null,
+    instrument: over.instrument ?? null,
     data: over.data ?? {},
     thread: over.thread ?? null,
+    change: over.change ?? null,
   }
 }
 
@@ -211,25 +215,43 @@ export function activity(over: Record<string, any>) {
  * the sample and distinct counts instead, which is contract, not styling.
  */
 export function group(over: Record<string, any>) {
+  // Core's NodePresenter::groupNode(), key for key and in its order: seven
+  // singular role keys, then a sample list and a distinct total for all seven.
+  const roles = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
+  const sample: Record<string, any[]> = {}
+  const distinct: Record<string, number> = {}
+  const singulars: Record<string, any> = {}
+
+  for (const role of roles) {
+    const key = `${role}s`
+    sample[key] = over[key] ?? []
+    distinct[key] = Math.max(over.distinct?.[key] ?? 0, sample[key].length)
+  }
+
+  // Core fills a singular key when the axis pins its token and exactly one
+  // entity holds the role. The samples have no axis registry, so the template
+  // stands in for the pinned tokens: `:actor` pins, `:actors` does not.
+  for (const role of roles) {
+    const key = `${role}s`
+    const pinned = new RegExp(`:${role}(?![a-z_])`).test(over.headline_template ?? '')
+    singulars[role] = pinned && sample[key].length === 1 && distinct[key] === 1 ? sample[key][0] : null
+  }
+
   return {
     kind: 'group',
     id: over.id,
-    verb: over.verb,
     axis: over.axis,
     count: over.count,
+    verb: over.verb,
     published_at: over.published_at,
     headline_template: over.headline_template,
     headline: null,
     glyph: over.glyph ?? null,
     glyph_intent:
       over.glyph_intent ?? resolveIntent(over.objects?.[0]?.type ?? null, over.verb),
-    sample: {
-      actors: over.actors ?? [],
-      objects: over.objects ?? [],
-      targets: over.targets ?? [],
-      contexts: over.contexts ?? [],
-    },
-    distinct: over.distinct ?? {},
+    ...singulars,
+    sample,
+    distinct,
     children: over.children ?? [],
     children_truncated: over.children_truncated ?? false,
   }

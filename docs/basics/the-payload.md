@@ -1,5 +1,9 @@
 # The Payload
 
+<script setup>
+import { scenes } from '../.vitepress/theme/samples'
+</script>
+
 Reading a feed returns one JSON document: the activities, newest first, each
 with everything a renderer needs to draw it. The package produces nothing else.
 Below are the examples from [Usage Examples](/guide/usage-examples) as that
@@ -7,19 +11,18 @@ JSON.
 
 ## The Envelope
 
+Return the feed from a route:
+
 ```php
-// a controller, or wherever the feed is read
-$page = Storyfeed::feed()->involving($kitchen)->get();
+// routes/web.php
+Route::get('/', function () {
+    return Storyfeed::feed()->get();
+});
 ```
 
-```jsonc
-{
-  "payload_version": 1,
-  "items": [ /* newest first */ ],
-  "next_cursor": "eyJ...",   // opaque; null at the end of the feed
-  "sync_token": null         // opaque; changes when settled history is rewritten
-}
-```
+The response is the following JSON:
+
+<FeedExample payload :items="[scenes.order]" />
 
 `next_cursor` and `sync_token` are opaque: your app stores them and sends them
 back on the next read. [Reading Feeds](/basics/reading#pagination) covers both.
@@ -28,54 +31,7 @@ back on the next read. [Reading Feeds](/basics/reading#pagination) covers both.
 
 A customer places an order. Every key a node carries is always present:
 
-```json
-{
-  "kind": "activity",
-  "id": "01K3M8QF4T7Z2YB6N1D9V0XA5C",
-  "verb": "place",
-  "published_at": "2026-08-14T14:30:00.000000Z",
-  "headline_template": ":actor placed :object with :target",
-  "headline": null,
-  "glyph": "shopping-bag",
-  "glyph_intent": null,
-  "actor": {
-    "type": "user",
-    "id": "4",
-    "label": "Steve Harrington",
-    "url": "/users/4",
-    "attributes": {},
-    "modal": false,
-    "component": null,
-    "data": {},
-    "media": null
-  },
-  "object": {
-    "type": "order",
-    "id": "1",
-    "label": "Order #1042",
-    "url": "/orders/1",
-    "attributes": {},
-    "modal": false,
-    "component": null,
-    "data": {},
-    "media": null
-  },
-  "target": {
-    "type": "kitchen",
-    "id": "1",
-    "label": "Nancy's Kitchen",
-    "url": "/kitchens/1",
-    "attributes": {},
-    "modal": false,
-    "component": null,
-    "data": {},
-    "media": null
-  },
-  "context": null,
-  "data": {},
-  "thread": null
-}
-```
+<FeedExample expanded :items="[scenes.order]" />
 
 The sentence arrives with its tokens in it and the entities beside it. A
 renderer substitutes the labels into the sentence. The nodes below have the

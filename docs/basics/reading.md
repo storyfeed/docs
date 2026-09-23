@@ -34,34 +34,24 @@ const scoped = [repeat, log[3]]
 
 ## Reading a Feed
 
-```php
-// a controller, or wherever the feed is read
-$page = Storyfeed::feed()
-    ->involving($kitchen)
-    ->limit(20)
-    ->get();
-```
-
-<FeedExample context :items="scoped" />
-
-`$page` is a `FeedPage`: the payload envelope, ready to return from a route.
+Return the feed from a route:
 
 ```php
 // routes/web.php
-Route::get('/feed', fn () => Storyfeed::feed()->limit(20)->get());
+Route::get('/', function () {
+    return Storyfeed::feed()->limit(20)->get();
+});
 ```
 
-```jsonc
-{
-  "payload_version": 1,
-  "items": [ /* activity nodes and group nodes, newest first */ ],
-  "next_cursor": "eyJ...",
-  "sync_token": null
-}
-```
+The response is the following JSON:
 
-`FeedPage` is `Arrayable`, `JsonSerializable`, `Responsable`, and read-only
-`ArrayAccess`, so `$page['items']` works the same in PHP as client-side.
+<FeedExample payload :items="scoped" />
+
+`get()` returns a `FeedPage`. It is `Arrayable`, `JsonSerializable`,
+`Responsable` and read-only `ArrayAccess`, so in PHP `$page['items']` holds
+the same nodes as `items` in the JSON. Drawn, the same page reads:
+
+<FeedExample context :items="scoped" />
 
 ## Read Modes
 
