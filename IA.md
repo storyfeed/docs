@@ -64,7 +64,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     *Exception:* a fact that contradicts a widely-held framework prior gets
     **stated** at each trigger site, not linked. A reader who doesn't know the
     fact exists will not click.
-11. **Describe the shipped API.** No internals the public API doesn't expose, no
+11. **Describe the shipped API, and only Storyfeed's.** A page never says
+    what a renderer will or will not do ("a renderer skips…", "never
+    errors"): Storyfeed has no say over someone else's frontend (ruled
+    2026-09-22). No internals the public API doesn't expose, no
     defence of alternatives that weren't shipped, no history of the package or
     its showcase app, and no anthropomorphism — the package does not refuse,
     want, or lie; a sentence names what the code does. If the reader needs no
@@ -164,7 +167,9 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     to Digging deeper or Reference, or is cut. (Sharpens rule 8.) Getting
     Started too: it ends when the feed renders, with no "verify" or "check
     your work" step (ruled 2026-09-22: "the doctor is an advanced usage
-    concern").
+    concern"). Elsewhere the doctor appears only where it is the
+    section's subject (Testing, grammar stubs, catching drift), never as an
+    aside that closes a section.
 21. **Elementary form first.** The first snippet on any page is
     `Storyfeed::activity()->by()->action()->to()->publish()` or the plainest
     equivalent for the concept; typed and decorated forms (enums, Story
