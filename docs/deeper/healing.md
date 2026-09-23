@@ -1,40 +1,35 @@
 # Healing a Feed
 
-A **healer** lets an app retire an existing story when its source is permanently
-absent. The app describes the policy; core rechecks it against the current row
-before applying a soft deletion.
+A **healer** soft-deletes activities whose source is gone for good, such as an
+activity about a file that was hard-deleted. The app decides which activities
+to retire; `storyfeed:heal` checks each one against the current row and
+applies it.
 
 ## Before Adopting
 
-This version supports **permanent source absence only**: the source cannot return
-with the same identity. A hard-deleted asset whose replacement gets a new ID fits
-that scope. A restorable source does not. A detached asset whose row still exists
-is not absent.
+A healer is only for sources that are **permanently** gone and cannot return
+with the same identity. A hard-deleted asset whose replacement gets a new ID
+qualifies. A restorable source does not, and neither does a detached asset whose
+row still exists.
 
-**The healer never treats the absence of a story as an instruction.** It does
-not record missing stories, restore removed ones, replace compositions, or infer
-what used to exist. An explicit retirement request for an activity that is
-already deleted or gone is unchanged.
-
-Retirement is app policy. A source disappearing does not by itself make a
-historical story untrue: the app must decide which stories should be retired.
-Core does not discover missing sources or apply a default deletion policy.
+A healer only retires activities it is told to. It never records, restores or
+replaces activities, and asking it to retire an activity that is already deleted
+changes nothing. Core does not look for missing sources and has no default
+policy: a source disappearing does not by itself make an activity untrue.
 
 ::: warning Healing rewrites settled history
-`storyfeed:heal` is a third `sync_token` writer, alongside `storyfeed:curate --rehash` and `storyfeed:bundle`.
-Every applied retirement bumps the feed's `sync_token`, so accumulating clients
-must discard their accumulated pages and refetch — the same resync contract as
+Every retirement bumps the feed's `sync_token`, like `storyfeed:curate --rehash`
+and `storyfeed:bundle`, so clients that accumulate pages must discard them and
+refetch, as described under
 [`storyfeed:curate --rehash`](/reference/commands#rehash-when-the-grouping-recipe-changes-underneath-existing-rows).
 A reader holding an earlier cursor may see an empty page before refetching.
-Preview first, prefer a quiet period, and avoid a fixed reading window. Core does
-not schedule healers.
+Preview first and run it at a quiet time. Core does not schedule healers.
 :::
 
 ## A Healer
 
-Enumerate existing stories, including those whose sources have disappeared.
-This example uses a synthetic `asset_reference` object backed by a hard-deleting
-`assets` table. The alias and the source lookup are app-owned.
+The healer yields one retirement request per candidate activity. Here the object
+is an `asset_reference`, backed by an `assets` table that hard-deletes:
 
 ```php
 <?php
@@ -73,18 +68,19 @@ class AssetHealer implements FeedHealer
 }
 ```
 
-`candidates()` and `whenAbsent` **must write nothing**. They run during preview as
-well as application. The source query must test real absence, not visibility,
-attachment, permissions, or a model scope that hides a still-present row.
+`candidates()` and `whenAbsent` **must write nothing**: they also run during a
+preview. The source query must test that the row is truly gone, not hidden by
+visibility, attachment, permissions or a model scope.
 
-Core reloads the activity by its physical ID and takes `lockForUpdate()` inside
-a transaction before calling `whenAbsent`. Activities must use the default database connection,
-where the participant index and sync token are written; a separate activity
-connection is rejected in preview and application. The callback receives that fresh row,
-so check its policy eligibility as well as its source. Do not capture an earlier
-absence result in the closure: a source present at execution time must yield
-`false`, even if a preview previously reported `retire`. The lock protects the
-activity; it does not lock an absent source or make a restorable source permanent.
+Before calling `whenAbsent`, core reloads the activity by ID inside a
+transaction with `lockForUpdate()`, and passes that fresh row to the closure.
+Check the row still matches your policy as well as checking the source. Do not
+reuse an earlier result in the closure: if the source is present when the
+closure runs, it must return `false`, even if a preview said `retire`. The lock
+covers the activity, not the source.
+
+Activities must be on the default database connection. A separate activity
+connection is rejected in both preview and application.
 
 Register the healer beside your feeds:
 
@@ -96,9 +92,9 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::healers([AssetHealer::class]);
 ```
 
-Classes resolve through the container. Instances are also accepted. The healer's
-`key()` names it for selection; later registration of the same key replaces the
-earlier registration. Use `merge: false` to replace the whole registry.
+A class resolves through the container; an instance works too. `key()` names
+the healer for `--only`, and registering the same key again replaces the
+earlier one. `merge: false` replaces the whole registry.
 
 ## Running It
 
@@ -108,10 +104,9 @@ php artisan storyfeed:heal --only=assets
 php artisan storyfeed:heal
 ```
 
-Start with `--dry-run`. It walks the selected healers and prints every request's
-label, outcome, and optional metadata. It reads current rows and evaluates the
-predicates without locks or writes. A preview is not a reservation: the applying
-run evaluates policy again.
+`--dry-run` prints each request's label, outcome and metadata. It reads current
+rows and evaluates the closures, without locks or writes. The applying run
+evaluates everything again.
 
 ```
 assets   Asset story 81   retire      {"reason":"source permanently absent"}
@@ -120,26 +115,24 @@ assets   Asset story 82   unchanged   {"reason":"source permanently absent"}
 
 | Outcome | When | Applying the Request |
 |---|---|---|
-| `retire` | the activity is live and the predicate confirms permanent source absence | soft-delete that activity and bump `sync_token` in the same transaction |
-| `unchanged` | the activity is deleted or gone, or the predicate is false | nothing |
+| `retire` | the activity is live and `whenAbsent` returns true | soft-delete the activity and bump `sync_token` in the same transaction |
+| `unchanged` | the activity is deleted or gone, or `whenAbsent` returns false | nothing |
 
-An app model hook can veto deletion; the applying run then reports `unchanged`.
-Repeat `--only` to select several keys. An unknown key fails before any healer
-runs. No selection runs every registered healer; an empty registry does nothing.
+A model hook that vetoes the deletion makes the outcome `unchanged`.
+Repeat `--only` to select several healers; an unknown key fails before any
+healer runs. Without `--only`, every registered healer runs.
 
-Each request commits separately. If a later request fails, earlier retirements
-remain committed with their resync signal. Results stream in memory; core stores
-no run record or retirement reason. An applied retirement soft-deletes through
-the model, like any other deletion.
+Each request commits on its own, so if a later one fails, earlier retirements
+stay committed and their `sync_token` bumps stand. Core stores no record of the
+run. A retirement soft-deletes through the model, like any other deletion.
 
 ## Testing a Healer
 
-Exercise the registered command, rather than trying to run the `FeedHealer`
-interface. Its methods are `key()` and `candidates()`; it has no `run()` method or
-single interface binding.
+Test through the command. `FeedHealer` has only `key()` and `candidates()`;
+there is no `run()` to call.
 
-With an `AssetHealer` registered and two existing activity fixtures, one backed
-by a present asset and the other by a permanently deleted asset:
+With `AssetHealer` registered, and two activities, one whose asset exists and
+one whose asset was deleted:
 
 ```php
 // tests/Feature/FeedTest.php
@@ -155,7 +148,6 @@ expect($absentSourceStory->fresh()->trashed())->toBeTrue()
     ->and($presentSourceStory->fresh()->trashed())->toBeFalse();
 ```
 
-Also assert that a detached-but-present source is unchanged, and that a source
-present by execution time prevents a previously previewed retirement. Repeating
-a run must not create stories, including after a retired story has been pruned.
-A healer that yields nothing makes no claim about any existing row.
+Also test that a detached but present source is `unchanged`, that a source
+present when the run applies blocks a retirement the preview reported, and that
+running twice creates no activities, even after a retired one has been pruned.
