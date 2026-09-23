@@ -20,10 +20,10 @@ class OrderPlaced implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return Storyfeed::activity() // [!code focus]
-            ->by($this->customer) // the actor travels on the event // [!code focus]
-            ->action('place', $this->order) // [!code focus]
-            ->to($this->order->kitchen); // [!code focus]
+        return Storyfeed::activity()
+            ->by($this->customer) // the actor travels on the event
+            ->action('place', $this->order)
+            ->to($this->order->kitchen);
     }
 }
 ```
@@ -100,10 +100,10 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::activity() // [!code focus]
-            ->action('place', $this->order) // no by(), no user: the actor is null // [!code focus]
-            ->to($this->order->kitchen) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->action('place', $this->order) // no by(), no user: the actor is null
+            ->to($this->order->kitchen)
+            ->publish();
     }
 }
 ```
@@ -123,11 +123,11 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $this->order, // no actor:, no user: the actor is null // [!code focus]
-            target: $this->order->kitchen, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $this->order, // no actor:, no user: the actor is null
+            target: $this->order->kitchen,
+        );
     }
 }
 ```
@@ -158,11 +158,11 @@ class OrderController extends Controller
 
         $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
 
-        Storyfeed::activity() // [!code focus]
-            ->by($knownAuthor) // User|null: null means anonymous // [!code focus]
-            ->action('place', $order) // [!code focus]
-            ->to($kitchen) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($knownAuthor) // User|null: null means anonymous
+            ->action('place', $order)
+            ->to($kitchen)
+            ->publish();
 
         return to_route('orders.show', $order);
     }
@@ -208,10 +208,10 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by('Stripe') // [!code focus]
-            ->action('pay', $order) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by('Stripe')
+            ->action('pay', $order)
+            ->publish();
 
         return response()->noContent();
     }
@@ -236,11 +236,11 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'pay', // [!code focus]
-            object: $order, // [!code focus]
-            actor: 'Stripe', // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'pay',
+            object: $order,
+            actor: 'Stripe',
+        );
 
         return response()->noContent();
     }
@@ -287,10 +287,10 @@ class ExpireOrders extends Command
         foreach ($unpaid as $order) {
             $order->update(['expired_at' => now()]);
 
-            Storyfeed::anonymous() // no actor, even inside Storyfeed::as() // [!code focus]
-                ->action('expire', $order) // [!code focus]
-                ->to($order->kitchen) // [!code focus]
-                ->publish(); // [!code focus]
+            Storyfeed::anonymous() // no actor, even inside Storyfeed::as()
+                ->action('expire', $order)
+                ->to($order->kitchen)
+                ->publish();
         }
     }
 }

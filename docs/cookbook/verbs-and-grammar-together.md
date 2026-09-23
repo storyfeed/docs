@@ -105,9 +105,9 @@ class OrderStory
         return $verb
             ->headline(':actor placed :object with :target')
             ->icon('shopping-bag')
-            ->grouped(fn ($group) => $group // [!code focus]
-                ->repeat(':actor placed :count orders with :target') // [!code focus]
-                ->actors(':actors placed :count orders with :target')); // [!code focus]
+            ->grouped(fn ($group) => $group
+                ->repeat(':actor placed :count orders with :target')
+                ->actors(':actors placed :count orders with :target'));
     }
 }
 ```

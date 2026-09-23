@@ -46,9 +46,9 @@ Return `null` to publish nothing for this instance:
 // app/Events/OrderPlaced.php
 public function toFeedActivity(): ?PendingActivity
 {
-    if ($this->order->isTest()) { // [!code focus]
-        return null; // [!code focus]
-    } // [!code focus]
+    if ($this->order->isTest()) {
+        return null;
+    }
 
     return Storyfeed::activity()
         ->by($this->customer)

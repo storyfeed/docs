@@ -32,7 +32,7 @@ const bulk = activity({ ...scenes.order, id: 'dm5',
   object: tombstone('order', '20', '2026-08-15T03:00:00.000000Z', { approximate: true }) })
 
 const readsGone = activity({ ...scenes.order, id: 'dm7', object: removedOrder,
-  missing_headline_template: ':actor placed an order that is no longer available' })
+  missing_headline_template: ':actor placed an order, since deleted' })
 
 const mixed = group({ id: 'dm6', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:30:00.000000Z',
@@ -120,7 +120,7 @@ class MenuItem extends Model implements Feedable
     {
         $this->feedEntity()
             ->label("{$this->code} {$this->name}")
-            ->tombstone(fn ($tombstone) => $tombstone->keepLabel()); // [!code focus]
+            ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
     }
 }
 ```
@@ -142,7 +142,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('place')
     ->headline(':actor placed :object with :target')
-    ->missing('object', 'target'); // [!code focus]
+    ->missing('object', 'target');
 ```
 
 Once the kitchen is deleted, placing an order with it is redundant too:
@@ -169,7 +169,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('void')
     ->headline(':actor voided :object')
-    ->type(ActivityType::Remove); // [!code focus]
+    ->type(ActivityType::Remove);
 ```
 
 <FeedExample :items="[voided]" expanded />
@@ -194,7 +194,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('place')
     ->headline(':actor placed :object with :target')
-    ->missingHeadline(':actor placed an order that is no longer available'); // [!code focus]
+    ->missingHeadline(':actor placed an order, since deleted');
 ```
 
 ```php [Array]
@@ -204,7 +204,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::stories([
     'order.place' => [
         'headline' => ':actor placed :object with :target',
-        'missingHeadline' => ':actor placed an order that is no longer available',
+        'missingHeadline' => ':actor placed an order, since deleted',
     ],
 ]);
 ```
@@ -238,7 +238,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('view')
     ->headline(':actor viewed :object')
-    ->forgetWhenMissing(); // [!code focus]
+    ->forgetWhenMissing();
 ```
 
 ```php [Array]
@@ -294,7 +294,7 @@ use Storyfeed\Facades\Storyfeed;
 
 Order::whereKey($ids)->delete();
 
-Storyfeed::tombstone(Order::class, $ids); // [!code focus]
+Storyfeed::tombstone(Order::class, $ids);
 ```
 
 Neither path has a model to ask, so `keepLabel()` is not applied. A verb's

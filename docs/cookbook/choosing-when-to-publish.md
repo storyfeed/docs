@@ -30,9 +30,9 @@ class OrderObserver
             return;
         }
 
-        Storyfeed::activity() // [!code focus]
-            ->action($verb, $order) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->action($verb, $order)
+            ->publish();
     }
 }
 ```
@@ -64,10 +64,10 @@ class OrderObserver
             return;
         }
 
-        Storyfeed::record( // [!code focus]
-            verb: $verb, // [!code focus]
-            object: $order, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: $verb,
+            object: $order,
+        );
     }
 }
 ```
@@ -140,9 +140,9 @@ class OrderConfirmed implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return Storyfeed::activity() // [!code focus]
-            ->by($this->cook) // [!code focus]
-            ->action('confirm', $this->order); // [!code focus]
+        return Storyfeed::activity()
+            ->by($this->cook)
+            ->action('confirm', $this->order);
     }
 }
 ```

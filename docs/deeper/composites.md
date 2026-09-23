@@ -37,11 +37,11 @@ class PublishMenuController extends Controller
 
         $dishes->each->update(['published_at' => now()]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('publish') // [!code focus]
-            ->objects($dishes) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('publish')
+            ->objects($dishes)
+            ->publish();
 
         return back();
     }
@@ -66,11 +66,11 @@ class PublishMenuController extends Controller
 
         $dishes->each->update(['published_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'publish', // [!code focus]
-            objects: $dishes, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'publish',
+            objects: $dishes,
+            actor: $request->user(),
+        );
 
         return back();
     }
@@ -173,8 +173,14 @@ Story::verb('publish')->grouped(fn (GroupBuilder $group) => $group->composite(
 // app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
-Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']); // the parent: blank without it
+Storyfeed::aggregateGrammar([
+    'composite.publish' => ':actor put :count dishes on the menu',
+]);
+
+// the parent: blank without it
+Storyfeed::grammar([
+    '*.publish' => ':actor put dishes on the menu',
+]);
 ```
 
 :::

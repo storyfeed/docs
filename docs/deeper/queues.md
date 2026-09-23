@@ -98,15 +98,15 @@ class CheckoutController extends Controller
 {
     public function __invoke(Request $request, Order $order): RedirectResponse
     {
-        DB::transaction(function () use ($request, $order) { // [!code focus]
+        DB::transaction(function () use ($request, $order) {
             $order->update(['status' => 'placed']);
 
-            Storyfeed::activity() // [!code focus]
-                ->by($request->user()) // [!code focus]
-                ->action('place', $order) // [!code focus]
-                ->to($order->kitchen) // [!code focus]
-                ->publish();                          // nothing reaches the queue yet // [!code focus]
-        });                                           // the listener's job is pushed here // [!code focus]
+            Storyfeed::activity()
+                ->by($request->user())
+                ->action('place', $order)
+                ->to($order->kitchen)
+                ->publish();                          // nothing reaches the queue yet
+        });                                           // the listener's job is pushed here
 
         return to_route('orders.show', $order);
     }
@@ -128,16 +128,16 @@ class CheckoutController extends Controller
 {
     public function __invoke(Request $request, Order $order): RedirectResponse
     {
-        DB::transaction(function () use ($request, $order) { // [!code focus]
+        DB::transaction(function () use ($request, $order) {
             $order->update(['status' => 'placed']);
 
-            Storyfeed::record( // [!code focus]
-                verb: 'place', // [!code focus]
-                object: $order, // [!code focus]
-                actor: $request->user(), // [!code focus]
-                target: $order->kitchen, // [!code focus]
-            );                                        // nothing reaches the queue yet // [!code focus]
-        });                                           // the listener's job is pushed here // [!code focus]
+            Storyfeed::record(
+                verb: 'place',
+                object: $order,
+                actor: $request->user(),
+                target: $order->kitchen,
+            );                                        // nothing reaches the queue yet
+        });                                           // the listener's job is pushed here
 
         return to_route('orders.show', $order);
     }
@@ -177,12 +177,12 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::activity() // [!code focus]
-            ->by($this->customer) // [!code focus]
-            ->action('place', $this->order) // [!code focus]
-            ->to($this->order->kitchen) // [!code focus]
-            ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($this->customer)
+            ->action('place', $this->order)
+            ->to($this->order->kitchen)
+            ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran
+            ->publish();
     }
 }
 ```
@@ -213,13 +213,13 @@ class RecordOrder implements ShouldQueue
 
     public function handle(): void
     {
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $this->order, // [!code focus]
-            actor: $this->customer, // [!code focus]
-            target: $this->order->kitchen, // [!code focus]
-            publishedAt: $this->occurredAt,   // without this, the row is dated when the job ran // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $this->order,
+            actor: $this->customer,
+            target: $this->order->kitchen,
+            publishedAt: $this->occurredAt,   // without this, the row is dated when the job ran
+        );
     }
 }
 ```
@@ -302,9 +302,9 @@ class RecordOrderPlaced implements ShouldQueue
 {
     public function handle(OrderPlaced $event): void
     {
-        Storyfeed::activity() // [!code focus]
-            ->action('place', $event->order) // [!code focus]
-            ->publish();   // names the customer who placed it // [!code focus]
+        Storyfeed::activity()
+            ->action('place', $event->order)
+            ->publish();   // names the customer who placed it
     }
 }
 ```
@@ -322,10 +322,10 @@ class RecordOrderPlaced implements ShouldQueue
 {
     public function handle(OrderPlaced $event): void
     {
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $event->order, // [!code focus]
-        );   // names the customer who placed it // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $event->order,
+        );   // names the customer who placed it
     }
 }
 ```
@@ -375,7 +375,7 @@ class SyncMenus extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('Nightly Import', fn () => SyncMenu::dispatch()); // [!code focus]
+        Storyfeed::as('Nightly Import', fn () => SyncMenu::dispatch());
     }
 }
 ```

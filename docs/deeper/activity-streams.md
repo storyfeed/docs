@@ -71,14 +71,14 @@ enum OrderActivity: string implements FeedVerb
     case Confirmed = 'confirm';
     case Ready = 'ready';
 
-    public function activityType(): ActivityType|string|null // [!code focus]
-    { // [!code focus]
-        return match ($this) { // [!code focus]
-            self::Placed => ActivityType::Create, // [!code focus]
-            self::Confirmed => ActivityType::Accept, // [!code focus]
-            default => null, // [!code focus]
-        }; // [!code focus]
-    } // [!code focus]
+    public function activityType(): ActivityType|string|null
+    {
+        return match ($this) {
+            self::Placed => ActivityType::Create,
+            self::Confirmed => ActivityType::Accept,
+            default => null,
+        };
+    }
 }
 ```
 

@@ -54,12 +54,12 @@ const scoped = [
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed; // [!code focus]
-use Storyfeed\Contracts\Feedable; // [!code focus]
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 
-class Order extends Model implements Feedable // [!code focus]
+class Order extends Model implements Feedable
 {
-    use InteractsWithFeed; // [!code focus]
+    use InteractsWithFeed;
 }
 ```
 
@@ -108,14 +108,14 @@ use Storyfeed\Contracts\Feedable;
 
 class Order extends Model implements Feedable
 {
-    use InteractsWithFeed { // [!code focus]
-        guessFeedLabel as guessedFeedLabel; // [!code focus]
-    } // [!code focus]
+    use InteractsWithFeed {
+        guessFeedLabel as guessedFeedLabel;
+    }
 
-    public function guessFeedLabel(): string // [!code focus]
-    { // [!code focus]
-        return $this->reference ?? $this->guessedFeedLabel(); // [!code focus]
-    } // [!code focus]
+    public function guessFeedLabel(): string
+    {
+        return $this->reference ?? $this->guessedFeedLabel();
+    }
 }
 ```
 
@@ -136,10 +136,10 @@ class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function describeFeed(): void // [!code focus]
-    { // [!code focus]
-        $this->feedEntity()->label("Order #{$this->reference}"); // [!code focus]
-    } // [!code focus]
+    public function describeFeed(): void
+    {
+        $this->feedEntity()->label("Order #{$this->reference}");
+    }
 }
 ```
 
@@ -167,10 +167,10 @@ class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    protected static function booted(): void // [!code focus]
-    { // [!code focus]
-        static::feedMediaUsing(fn ($context) => route('orders.show', $context->routeKey())); // [!code focus]
-    } // [!code focus]
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(fn ($context) => route('orders.show', $context->routeKey()));
+    }
 
     public function describeFeed(): void
     {
@@ -193,11 +193,11 @@ different on each surface, or nowhere:
 
 ```php
 // app/Models/Order.php, booted()
-static::feedMediaUsing(fn ($context) => match ($context->feed()) { // [!code focus]
-    'kitchen' => route('kitchen.ticket', $context->routeKey()), // [!code focus]
-    'customer' => route('orders.status', $context->routeKey()), // [!code focus]
-    default => null, // an ad-hoc feed reports no name; without this arm the match throws // [!code focus]
-}); // [!code focus]
+static::feedMediaUsing(fn ($context) => match ($context->feed()) {
+    'kitchen' => route('kitchen.ticket', $context->routeKey()),
+    'customer' => route('orders.status', $context->routeKey()),
+    default => null, // an ad-hoc feed reports no name; without this arm the match throws
+});
 ```
 
 On the `kitchen` feed:
@@ -218,10 +218,10 @@ return it:
 
 ```php
 // app/Models/MenuItem.php, booted()
-static::feedMediaUsing(fn ($context, $media) => $media // [!code focus]
-    ->url(route('menu.show', $context->routeKey())) // [!code focus]
-    ->preview(route('menu.photo', $context->routeKey())) // [!code focus]
-); // [!code focus]
+static::feedMediaUsing(fn ($context, $media) => $media
+    ->url(route('menu.show', $context->routeKey()))
+    ->preview(route('menu.photo', $context->routeKey()))
+);
 ```
 
 <FeedExample :items="withImage" />
@@ -253,17 +253,17 @@ class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function toFeed(): FeedEntity // [!code focus]
-    { // [!code focus]
-        return FeedEntity::make() // [!code focus]
-            ->label("Order #{$this->reference}"); // [!code focus]
-    } // [!code focus]
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label("Order #{$this->reference}");
+    }
 
-    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
-    { // [!code focus]
-        return FeedMedia::make() // [!code focus]
-            ->url(route('orders.show', $context->routeKey())); // [!code focus]
-    } // [!code focus]
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()
+            ->url(route('orders.show', $context->routeKey()));
+    }
 }
 ```
 
@@ -283,19 +283,19 @@ class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function toFeed(): FeedEntity // [!code focus]
-    { // [!code focus]
-        return FeedEntity::make( // [!code focus]
-            label: "Order #{$this->reference}", // [!code focus]
-        ); // [!code focus]
-    } // [!code focus]
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+        );
+    }
 
-    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
-    { // [!code focus]
-        return FeedMedia::make( // [!code focus]
-            url: route('orders.show', $context->routeKey()), // [!code focus]
-        ); // [!code focus]
-    } // [!code focus]
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            url: route('orders.show', $context->routeKey()),
+        );
+    }
 }
 ```
 
@@ -315,14 +315,14 @@ service provider instead:
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::feedable(Media::class) // [!code focus]
-    ->toFeedUsing(fn (Media $photo, $entity) => $entity // [!code focus]
-        ->label($photo->name) // [!code focus]
-        ->data(['mediaType' => $photo->mime_type]) // [!code focus]
-    ) // [!code focus]
-    ->feedMediaUsing(fn ($context, $media) => $media // [!code focus]
-        ->url(route('photos.show', $context->routeKey())) // [!code focus]
-    ); // [!code focus]
+Storyfeed::feedable(Media::class)
+    ->toFeedUsing(fn (Media $photo, $entity) => $entity
+        ->label($photo->name)
+        ->data(['mediaType' => $photo->mime_type])
+    )
+    ->feedMediaUsing(fn ($context, $media) => $media
+        ->url(route('photos.show', $context->routeKey()))
+    );
 ```
 
 The model is then feedable everywhere a `Feedable` is: its snapshot refreshes

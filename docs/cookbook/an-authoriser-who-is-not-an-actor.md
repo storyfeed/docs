@@ -21,16 +21,16 @@ class PhotoApprovalController extends Controller
     {
         $photo->update(['approved_at' => now()]);
 
-        Storyfeed::activity() // the contributor's story // [!code focus]
-            ->by($photo->user) // [!code focus]
-            ->action('publish', $photo) // [!code focus]
-            ->to($photo->menuItem) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity() // the contributor's story
+            ->by($photo->user)
+            ->action('publish', $photo)
+            ->to($photo->menuItem)
+            ->publish();
 
-        Storyfeed::activity() // the approval, in no feed // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('approve', $photo) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity() // the approval, in no feed
+            ->by($request->user())
+            ->action('approve', $photo)
+            ->publish();
 
         return back();
     }
@@ -53,18 +53,18 @@ class PhotoApprovalController extends Controller
     {
         $photo->update(['approved_at' => now()]);
 
-        Storyfeed::record( // the contributor's story // [!code focus]
-            verb: 'publish', // [!code focus]
-            object: $photo, // [!code focus]
-            actor: $photo->user, // [!code focus]
-            target: $photo->menuItem, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record( // the contributor's story
+            verb: 'publish',
+            object: $photo,
+            actor: $photo->user,
+            target: $photo->menuItem,
+        );
 
-        Storyfeed::record( // the approval, in no feed // [!code focus]
-            verb: 'approve', // [!code focus]
-            object: $photo, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record( // the approval, in no feed
+            verb: 'approve',
+            object: $photo,
+            actor: $request->user(),
+        );
 
         return back();
     }

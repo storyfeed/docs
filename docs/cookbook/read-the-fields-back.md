@@ -78,7 +78,8 @@ user · archived · document · —   coherent — nothing was aimed at
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::grammar([
-    'document.archive' => ':actor archived :object from :target',   // ✗ nothing fills :target
+    // ✗ nothing fills :target
+    'document.archive' => ':actor archived :object from :target',
 ]);
 ```
 

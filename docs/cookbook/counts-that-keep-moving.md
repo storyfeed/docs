@@ -30,14 +30,14 @@ class CommentController extends Controller
 
         $excerpt = Str::limit($comment->body, 140);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('reply', $discussion) // [!code focus]
-            ->thread(FeedThread::make( // [!code focus]
-                text: $excerpt, // [!code focus]
-                replies: $discussion->comments()->count(), // evaluated now, stored forever // [!code focus]
-            )) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('reply', $discussion)
+            ->thread(FeedThread::make(
+                text: $excerpt,
+                replies: $discussion->comments()->count(), // evaluated now, stored forever
+            ))
+            ->publish();
 
         return back();
     }
@@ -67,15 +67,15 @@ class CommentController extends Controller
 
         $excerpt = Str::limit($comment->body, 140);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'reply', // [!code focus]
-            object: $discussion, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            thread: FeedThread::make( // [!code focus]
-                text: $excerpt, // [!code focus]
-                replies: $discussion->comments()->count(), // evaluated now, stored forever // [!code focus]
-            ), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'reply',
+            object: $discussion,
+            actor: $request->user(),
+            thread: FeedThread::make(
+                text: $excerpt,
+                replies: $discussion->comments()->count(), // evaluated now, stored forever
+            ),
+        );
 
         return back();
     }

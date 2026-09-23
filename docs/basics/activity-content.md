@@ -82,7 +82,7 @@ Storyfeed::activity()
     ->by($customer)
     ->action('post', $note)
     ->on($order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code focus]
+    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
     ->publish();
 ```
 
@@ -106,7 +106,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make()
         ->label("Order #{$this->reference}")
-        ->body(Excerpt::make()->text($this->instructions)->from('Instructions')); // [!code focus]
+        ->body(Excerpt::make()->text($this->instructions)->from('Instructions'));
 }
 ```
 
@@ -118,7 +118,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: "Order #{$this->reference}",
-        body: Excerpt::make(text: $this->instructions, from: 'Instructions'), // [!code focus]
+        body: Excerpt::make(text: $this->instructions, from: 'Instructions'),
     );
 }
 ```
@@ -140,12 +140,12 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make()
         ->label("Order #{$this->reference}")
-        ->body(KeyValue::make()->items([ // [!code focus]
-            'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
-            'Items' => $this->items->count(), // [!code focus]
-            'Reference' => KeyValue::verbatim($this->reference), // [!code focus]
-            'Table' => KeyValue::missingAs($this->table, 'not seated'), // [!code focus]
-        ])); // [!code focus]
+        ->body(KeyValue::make()->items([
+            'Pickup' => $this->pickup_at->format('g:i a'),
+            'Items' => $this->items->count(),
+            'Reference' => KeyValue::verbatim($this->reference),
+            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+        ]));
 }
 ```
 
@@ -157,12 +157,12 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: "Order #{$this->reference}",
-        body: KeyValue::make(items: [ // [!code focus]
-            'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
-            'Items' => $this->items->count(), // [!code focus]
-            'Reference' => KeyValue::verbatim($this->reference), // [!code focus]
-            'Table' => KeyValue::missingAs($this->table, 'not seated'), // [!code focus]
-        ]), // [!code focus]
+        body: KeyValue::make(items: [
+            'Pickup' => $this->pickup_at->format('g:i a'),
+            'Items' => $this->items->count(),
+            'Reference' => KeyValue::verbatim($this->reference),
+            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+        ]),
     );
 }
 ```
@@ -188,7 +188,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make()
         ->label($this->name)
-        ->body(File::make()->size($this->bytes)->mediaType($this->mime)->name($this->name)); // [!code focus]
+        ->body(File::make()->size($this->bytes)->mediaType($this->mime)->name($this->name));
 }
 ```
 
@@ -200,7 +200,7 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: $this->name,
-        body: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name), // [!code focus]
+        body: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name),
     );
 }
 ```
@@ -224,7 +224,7 @@ carries `modal: true`.
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::make()->url(route('photos.show', $context->routeKey()))->modal(); // [!code focus]
+    return FeedMedia::make()->url(route('photos.show', $context->routeKey()))->modal();
 }
 ```
 
@@ -232,7 +232,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::make(url: route('photos.show', $context->routeKey()), modal: true); // [!code focus]
+    return FeedMedia::make(url: route('photos.show', $context->routeKey()), modal: true);
 }
 ```
 

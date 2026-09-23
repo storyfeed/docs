@@ -42,7 +42,9 @@ use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
-    'customer' => fn (FeedBuilder $feed) => $feed->only(['place', 'confirm', 'ready'])->log(),
+    'customer' => fn (FeedBuilder $feed) => $feed
+        ->only(['place', 'confirm', 'ready'])
+        ->log(),
     'kitchen' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```

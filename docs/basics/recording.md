@@ -97,10 +97,10 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by('Stripe') // [!code focus]
-            ->action('pay', $order) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by('Stripe')
+            ->action('pay', $order)
+            ->publish();
 
         return response()->noContent();
     }
@@ -125,11 +125,11 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'pay', // [!code focus]
-            object: $order, // [!code focus]
-            actor: 'Stripe', // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'pay',
+            object: $order,
+            actor: 'Stripe',
+        );
 
         return response()->noContent();
     }
@@ -166,11 +166,11 @@ class MenuItemPriceController extends Controller
 
         $dish->update(['price' => $request->integer('price')]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('reprice', $dish) // [!code focus]
-            ->data(['from' => $from, 'to' => $dish->price]) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('reprice', $dish)
+            ->data(['from' => $from, 'to' => $dish->price])
+            ->publish();
 
         return back();
     }
@@ -195,12 +195,12 @@ class MenuItemPriceController extends Controller
 
         $dish->update(['price' => $request->integer('price')]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'reprice', // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            data: ['from' => $from, 'to' => $dish->price], // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'reprice',
+            object: $dish,
+            actor: $request->user(),
+            data: ['from' => $from, 'to' => $dish->price],
+        );
 
         return back();
     }
@@ -230,12 +230,12 @@ class ImportPriceHistory extends Command
     public function handle(): void
     {
         foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
-            Storyfeed::activity() // [!code focus]
-                ->by(User::findOrFail($row['user_id'])) // [!code focus]
-                ->action('reprice', MenuItem::findOrFail($row['menu_item_id'])) // [!code focus]
-                ->data(['from' => $row['from'], 'to' => $row['to']]) // [!code focus]
-                ->publishedAt($row['changed_at']) // [!code focus]
-                ->publish(); // [!code focus]
+            Storyfeed::activity()
+                ->by(User::findOrFail($row['user_id']))
+                ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
+                ->data(['from' => $row['from'], 'to' => $row['to']])
+                ->publishedAt($row['changed_at'])
+                ->publish();
         }
     }
 }
@@ -258,13 +258,13 @@ class ImportPriceHistory extends Command
     public function handle(): void
     {
         foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
-            Storyfeed::record( // [!code focus]
-                verb: 'reprice', // [!code focus]
-                object: MenuItem::findOrFail($row['menu_item_id']), // [!code focus]
-                actor: User::findOrFail($row['user_id']), // [!code focus]
-                data: ['from' => $row['from'], 'to' => $row['to']], // [!code focus]
-                publishedAt: $row['changed_at'], // [!code focus]
-            ); // [!code focus]
+            Storyfeed::record(
+                verb: 'reprice',
+                object: MenuItem::findOrFail($row['menu_item_id']),
+                actor: User::findOrFail($row['user_id']),
+                data: ['from' => $row['from'], 'to' => $row['to']],
+                publishedAt: $row['changed_at'],
+            );
         }
     }
 }
@@ -332,11 +332,11 @@ class PublishMenuController extends Controller
 
         $dishes->each->update(['published_at' => now()]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->verb('publish') // [!code focus]
-            ->objects($dishes) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->verb('publish')
+            ->objects($dishes)
+            ->publish();
 
         return back();
     }
@@ -361,11 +361,11 @@ class PublishMenuController extends Controller
 
         $dishes->each->update(['published_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'publish', // [!code focus]
-            objects: $dishes, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'publish',
+            objects: $dishes,
+            actor: $request->user(),
+        );
 
         return back();
     }

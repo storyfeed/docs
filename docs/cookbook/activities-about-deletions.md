@@ -20,11 +20,11 @@ class MenuDishController extends Controller
 {
     public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
     {
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('remove', $dish) // [!code focus]
-            ->to($menu) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('remove', $dish)
+            ->to($menu)
+            ->publish();
 
         $dish->delete();
 
@@ -48,12 +48,12 @@ class MenuDishController extends Controller
 {
     public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
     {
-        Storyfeed::record( // [!code focus]
-            verb: 'remove', // [!code focus]
-            object: $dish, // [!code focus]
-            target: $menu, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'remove',
+            object: $dish,
+            target: $menu,
+            actor: $request->user(),
+        );
 
         $dish->delete();
 
@@ -119,7 +119,7 @@ its label on its tombstone:
 // app/Models/MenuItem.php, describeFeed()
 $this->feedEntity()
     ->label("{$this->code} {$this->name}")
-    ->tombstone(fn ($tombstone) => $tombstone->keepLabel()); // [!code focus]
+    ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
 ```
 
 <FeedExample :items="[removedKeepingLabel]" />

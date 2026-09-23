@@ -41,12 +41,12 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        $party = Storyfeed::party('Stripe'); // [!code focus]
+        $party = Storyfeed::party('Stripe');
 
-        Storyfeed::activity() // [!code focus]
-            ->by($party) // [!code focus]
-            ->action('pay', $order) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($party)
+            ->action('pay', $order)
+            ->publish();
 
         return response()->noContent();
     }
@@ -71,13 +71,13 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        $party = Storyfeed::party('Stripe'); // [!code focus]
+        $party = Storyfeed::party('Stripe');
 
-        Storyfeed::record( // [!code focus]
-            verb: 'pay', // [!code focus]
-            object: $order, // [!code focus]
-            actor: $party, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'pay',
+            object: $order,
+            actor: $party,
+        );
 
         return response()->noContent();
     }
@@ -105,10 +105,10 @@ class DispatchOrderController extends Controller
     {
         $order->update(['dispatched_at' => now()]);
 
-        Storyfeed::activity() // [!code focus]
-            ->action('dispatch', $order) // [!code focus]
-            ->to(Storyfeed::party('Front desk')) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->action('dispatch', $order)
+            ->to(Storyfeed::party('Front desk'))
+            ->publish();
 
         return back();
     }
@@ -130,11 +130,11 @@ class DispatchOrderController extends Controller
     {
         $order->update(['dispatched_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'dispatch', // [!code focus]
-            object: $order, // [!code focus]
-            target: Storyfeed::party('Front desk'), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'dispatch',
+            object: $order,
+            target: Storyfeed::party('Front desk'),
+        );
 
         return back();
     }
@@ -164,15 +164,15 @@ class CancelUnpaidOrders extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('System', function () { // [!code focus]
+        Storyfeed::as('System', function () {
             Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
                 $order->update(['cancelled_at' => now()]);
 
-                Storyfeed::activity() // [!code focus]
-                    ->action('cancel', $order) // [!code focus]
-                    ->publish(); // [!code focus]
+                Storyfeed::activity()
+                    ->action('cancel', $order)
+                    ->publish();
             });
-        }); // [!code focus]
+        });
     }
 }
 ```
@@ -192,16 +192,16 @@ class CancelUnpaidOrders extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('System', function () { // [!code focus]
+        Storyfeed::as('System', function () {
             Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
                 $order->update(['cancelled_at' => now()]);
 
-                Storyfeed::record( // [!code focus]
-                    verb: 'cancel', // [!code focus]
-                    object: $order, // [!code focus]
-                ); // [!code focus]
+                Storyfeed::record(
+                    verb: 'cancel',
+                    object: $order,
+                );
             });
-        }); // [!code focus]
+        });
     }
 }
 ```

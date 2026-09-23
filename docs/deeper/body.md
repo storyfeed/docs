@@ -69,9 +69,9 @@ class Order extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make() // [!code focus]
-            ->label("Order #{$this->reference}") // [!code focus]
-            ->body($this->summary()); // [!code focus]
+        return FeedEntity::make()
+            ->label("Order #{$this->reference}")
+            ->body($this->summary());
     }
 }
 ```
@@ -92,10 +92,10 @@ class Order extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make( // [!code focus]
-            label: "Order #{$this->reference}", // [!code focus]
-            body: $this->summary(), // [!code focus]
-        ); // [!code focus]
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+            body: $this->summary(),
+        );
     }
 }
 ```
@@ -114,7 +114,7 @@ use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(Excerpt::make()->text($this->summary())->from('Ticket')); // [!code focus]
+    ->body(Excerpt::make()->text($this->summary())->from('Ticket'));
 ```
 
 ```php [Named Arguments]
@@ -123,7 +123,7 @@ use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make(
     label: "Order #{$this->reference}",
-    body: Excerpt::make(text: $this->summary(), from: 'Ticket'), // [!code focus]
+    body: Excerpt::make(text: $this->summary(), from: 'Ticket'),
 );
 ```
 
@@ -141,11 +141,11 @@ use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(KeyValue::make() // [!code focus]
-        ->items($this->lines->mapWithKeys(fn (OrderLine $line) => [ // [!code focus]
-            "{$line->quantity} × {$line->item->name}" => $line->total->format(), // [!code focus]
-        ])->all()) // [!code focus]
-        ->items('Total', $this->total->format())); // [!code focus]
+    ->body(KeyValue::make()
+        ->items($this->lines->mapWithKeys(fn (OrderLine $line) => [
+            "{$line->quantity} × {$line->item->name}" => $line->total->format(),
+        ])->all())
+        ->items('Total', $this->total->format()));
 ```
 
 ```php [Named Arguments]
@@ -154,12 +154,12 @@ use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make(
     label: "Order #{$this->reference}",
-    body: KeyValue::make(items: $this->lines // [!code focus]
-        ->mapWithKeys(fn (OrderLine $line) => [ // [!code focus]
-            "{$line->quantity} × {$line->item->name}" => $line->total->format(), // [!code focus]
-        ]) // [!code focus]
-        ->put('Total', $this->total->format()) // [!code focus]
-        ->all()), // [!code focus]
+    body: KeyValue::make(items: $this->lines
+        ->mapWithKeys(fn (OrderLine $line) => [
+            "{$line->quantity} × {$line->item->name}" => $line->total->format(),
+        ])
+        ->put('Total', $this->total->format())
+        ->all()),
 );
 ```
 
@@ -198,20 +198,20 @@ or one row its own with `KeyValue::missingAs()`:
 ```php [Fluent Syntax]
 // app/Models/Order.php, toFeed()
 KeyValue::make()
-    ->missing('Not given') // [!code focus]
+    ->missing('Not given')
     ->items([
         'Table' => $this->table_number,
-        'Allergies' => KeyValue::missingAs($this->allergies, 'None'), // [!code focus]
+        'Allergies' => KeyValue::missingAs($this->allergies, 'None'),
     ])
 ```
 
 ```php [Named Arguments]
 // app/Models/Order.php, toFeed()
 KeyValue::make(
-    missing: 'Not given', // [!code focus]
+    missing: 'Not given',
     items: [
         'Table' => $this->table_number,
-        'Allergies' => KeyValue::missingAs($this->allergies, 'None'), // [!code focus]
+        'Allergies' => KeyValue::missingAs($this->allergies, 'None'),
     ],
 )
 ```
@@ -255,18 +255,18 @@ Each `body()` call adds to the list, in the order written:
 // app/Models/MenuItem.php, toFeed()
 return FeedEntity::make()
     ->label($this->name)
-    ->body(Excerpt::make()->text($this->description)) // [!code focus]
-    ->body(KeyValue::make()->items('Station', $this->station)); // [!code focus]
+    ->body(Excerpt::make()->text($this->description))
+    ->body(KeyValue::make()->items('Station', $this->station));
 ```
 
 ```php [Named Arguments]
 // app/Models/MenuItem.php, toFeed()
 return FeedEntity::make(
     label: $this->name,
-    body: [ // [!code focus]
-        Excerpt::make(text: $this->description), // [!code focus]
-        KeyValue::make(items: ['Station' => $this->station]), // [!code focus]
-    ], // [!code focus]
+    body: [
+        Excerpt::make(text: $this->description),
+        KeyValue::make(items: ['Station' => $this->station]),
+    ],
 );
 ```
 
@@ -288,7 +288,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
         ->url(route('menu.show', $context->routeKey()))
-        ->body(KeyValue::make()->items('Portions left', $context->model()?->portions_left)); // [!code focus]
+        ->body(KeyValue::make()->items('Portions left', $context->model()?->portions_left));
 }
 ```
 
@@ -298,7 +298,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
         url: route('menu.show', $context->routeKey()),
-        body: KeyValue::make(items: ['Portions left' => $context->model()?->portions_left]), // [!code focus]
+        body: KeyValue::make(items: ['Portions left' => $context->model()?->portions_left]),
     );
 }
 ```
@@ -370,9 +370,9 @@ class Note extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label($this->body)
-            ->body(Component::make() // [!code focus]
-                ->name('Note') // [!code focus]
-                ->props(['excerpt' => $this->body])); // [!code focus]
+            ->body(Component::make()
+                ->name('Note')
+                ->props(['excerpt' => $this->body]));
     }
 }
 ```
@@ -396,10 +396,10 @@ class Note extends Model implements Feedable
     {
         return FeedEntity::make(
             label: $this->body,
-            body: Component::make( // [!code focus]
-                name: 'Note', // [!code focus]
-                props: ['excerpt' => $this->body], // [!code focus]
-            ), // [!code focus]
+            body: Component::make(
+                name: 'Note',
+                props: ['excerpt' => $this->body],
+            ),
         );
     }
 }

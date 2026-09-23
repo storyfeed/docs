@@ -13,12 +13,12 @@ class OrderController extends Controller
     {
         $order = $kitchen->orders()->create($request->validated());
 
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $order, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $kitchen, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $order,
+            actor: $request->user(),
+            target: $kitchen,
+        );
 
         return to_route('orders.show', $order);
     }

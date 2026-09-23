@@ -51,7 +51,8 @@ class OrderStory
     {
         return $verb
             ->headline(':actor placed :object with :target')
-            ->grouped(fn ($group) => $group->repeat(':actor placed :count orders with :target')); // [!code focus]
+            ->grouped(fn ($group) => $group
+                ->repeat(':actor placed :count orders with :target'));
     }
 }
 ```
@@ -68,8 +69,8 @@ group names an **axis**: what its activities have in common.
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('place')
-    ->grouped(fn (GroupBuilder $group) => $group->actors(':actors ordered from :target'));
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
+    ->actors(':actors ordered from :target'));
 ```
 
 <FeedExample :items="[actors]" />
@@ -125,10 +126,11 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)
     ->verb('place')
-    ->grouped(fn (GroupBuilder $group) => $group->repeat(':actor placed :count orders with :target'));
+    ->grouped(fn (GroupBuilder $group) => $group
+        ->repeat(':actor placed :count orders with :target'));
 
-Story::verb('place')
-    ->grouped(fn (GroupBuilder $group) => $group->actors(':actors ordered from :target'));
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
+    ->actors(':actors ordered from :target'));
 ```
 
 ```php [Array]
@@ -136,8 +138,11 @@ Story::verb('place')
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::aggregateGrammar([
-    'repeat.order.place' => ':actor placed :count orders with :target', // {axis}.{type}.{verb}
-    'actors.place' => ':actors ordered from :target',                   // {axis}.{verb}
+    // {axis}.{type}.{verb}
+    'repeat.order.place' => ':actor placed :count orders with :target',
+
+    // {axis}.{verb}
+    'actors.place' => ':actors ordered from :target',
 ]);
 ```
 
@@ -176,10 +181,13 @@ allowed everywhere.
 
 ```php
 // a repeat group: one customer, many dishes
-':actor changed the price of :object :count times'  // ✗ which dish? an error when stories compile
-':actor changed :count prices'                      // ✓
-':actor changed :count prices on :targets'          // ✓ a list is true of every member
+':actor changed the price of :object :count times' // ✗ which dish?
+':actor changed :count prices'                     // ✓
+':actor changed :count prices on :targets'         // ✓ lists fit every member
 ```
+
+In `routes/feed.php` or a Story class, the first line is an error when stories
+compile.
 
 With no group headline, a group tries the single-activity headline. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
@@ -245,8 +253,8 @@ Both of these are token-safe; only one is readable:
 
 ```php
 // an actors group, which pins :target
-':actors placed :objects with :targets'     // ✗ three lists, 180 characters of names
-':actors ordered from :target'              // ✓ one list, one pinned role
+':actors placed :objects with :targets' // ✗ three lists of names
+':actors ordered from :target'          // ✓ one list, one pinned role
 ```
 
 Keep one list per template and collapse the others to `:count`.

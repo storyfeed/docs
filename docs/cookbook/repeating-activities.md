@@ -42,10 +42,10 @@ class MenuItemController extends Controller
     {
         $dish = $kitchen->menuItems()->create($request->validated());
 
-        Storyfeed::activity() // every new dish is its own row // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('add', $dish) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity() // every new dish is its own row
+            ->by($request->user())
+            ->action('add', $dish)
+            ->publish();
 
         return to_route('menu-items.edit', $dish);
     }
@@ -68,11 +68,11 @@ class MenuItemController extends Controller
     {
         $dish = $kitchen->menuItems()->create($request->validated());
 
-        Storyfeed::record( // every new dish is its own row // [!code focus]
-            verb: 'add', // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record( // every new dish is its own row
+            verb: 'add',
+            object: $dish,
+            actor: $request->user(),
+        );
 
         return to_route('menu-items.edit', $dish);
     }
@@ -99,11 +99,11 @@ class MenuItemPriceController extends Controller
     {
         $dish->update(['price' => $request->integer('price')]);
 
-        Storyfeed::activity() // replaces the earlier price change // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('reprice', $dish) // [!code focus]
-            ->replace() // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity() // replaces the earlier price change
+            ->by($request->user())
+            ->action('reprice', $dish)
+            ->replace()
+            ->publish();
 
         return back();
     }
@@ -126,12 +126,12 @@ class MenuItemPriceController extends Controller
     {
         $dish->update(['price' => $request->integer('price')]);
 
-        Storyfeed::record( // replaces the earlier price change // [!code focus]
-            verb: 'reprice', // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            replace: true, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record( // replaces the earlier price change
+            verb: 'reprice',
+            object: $dish,
+            actor: $request->user(),
+            replace: true,
+        );
 
         return back();
     }
@@ -204,10 +204,10 @@ class OrderTransitionController extends Controller
     {
         $order->update(['status' => $verb]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action($verb, $order) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action($verb, $order)
+            ->publish();
 
         return back();
     }
@@ -231,11 +231,11 @@ class OrderTransitionController extends Controller
     {
         $order->update(['status' => $verb]);
 
-        Storyfeed::record( // [!code focus]
-            verb: $verb, // [!code focus]
-            object: $order, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: $verb,
+            object: $order,
+            actor: $request->user(),
+        );
 
         return back();
     }

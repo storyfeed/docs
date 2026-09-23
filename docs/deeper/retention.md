@@ -33,7 +33,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('view')
     ->headline(':actor viewed :object')
-    ->keepFor('30 days'); // [!code focus]
+    ->keepFor('30 days');
 ```
 
 ```php [Array]
@@ -81,7 +81,7 @@ so `Story::verb('view')->keepFor(…)` applies to views of every type.
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
-Story::for(Order::class)->verb('refund')->keepForever(); // [!code focus]
+Story::for(Order::class)->verb('refund')->keepForever();
 ```
 
 | The Verb Declares | Its Activities Are Pruned After |

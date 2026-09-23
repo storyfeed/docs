@@ -61,7 +61,8 @@ Story::for(Order::class)
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target', // morph alias, a dot, the verb
+    // morph alias, a dot, the verb
+    'order.place' => ':actor placed :object with :target',
 ]);
 ```
 
@@ -103,7 +104,7 @@ filled:
 // routes/feed.php
 Story::for(Order::class)
     ->verb('place')
-    ->headline(':actor placed :object[ with :target]'); // [!code focus]
+    ->headline(':actor placed :object[ with :target]');
 ```
 
 <FeedExample :items="[placedAtCounter, scenes.order]" />
@@ -246,9 +247,9 @@ something else:
 
 ```php
 // routes/feed.php
-Story::resource(Order::class)->except('update'); // [!code focus]
+Story::resource(Order::class)->except('update');
 
-Story::for(Order::class)->verb('update')->headline(':actor changed :object'); // [!code focus]
+Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
 A verb defined in both places is an error naming both lines.
@@ -267,7 +268,7 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)->group(function () {
     Story::verb('place')
         ->headline(':actor placed :object with :target')
-        ->grouped(fn ($group) => $group->repeat(':actor placed :count orders')); // [!code focus]
+        ->grouped(fn ($group) => $group->repeat(':actor placed :count orders'));
 });
 ```
 
@@ -300,7 +301,7 @@ use Storyfeed\Facades\Story;
 Story::for(Question::class)
     ->verb('turn_into')
     ->headline(':actor turned :object into :result')
-    ->missing('object', 'result'); // [!code focus]
+    ->missing('object', 'result');
 ```
 
 With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
@@ -364,10 +365,10 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        story('place', $order) // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->to($order->kitchen) // [!code focus]
-            ->publish(); // [!code focus]
+        story('place', $order)
+            ->by($request->user())
+            ->to($order->kitchen)
+            ->publish();
 
         return to_route('orders.show', $order);
     }
@@ -390,12 +391,12 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $order, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $order->kitchen, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $order,
+            actor: $request->user(),
+            target: $order->kitchen,
+        );
 
         return to_route('orders.show', $order);
     }

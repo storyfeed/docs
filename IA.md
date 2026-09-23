@@ -186,10 +186,19 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     (`publish.php`, `publish-from-listener.php`, `publish-from-event.php`),
     embedded with `<<< @/snippets/<file>`, and its node is `scenes.upload` in
     `samples.ts`. No templating: a new context is a new file, named for it. (Sharpens rule 12.)
-22. **Bite-sized, focused snippets.** One idea per snippet, and
-    `// [!code focus]` on the lines that changed since the previous snippet.
-    A page is a sequence of small deltas, not one large listing — except the
-    one representative example per concept (rule 23).
+22. **Bite-sized snippets, and almost never a focus marker** (ruled
+    2026-09-23: "if the entire snippet is short enough, don't focus. it needs
+    judgement"). One idea per snippet; a page is a sequence of small deltas,
+    not one large listing — except the one representative example per concept
+    (rule 23). The test for a marker is whether the reader would lose the point
+    without it. Anything readable at a glance, roughly a screenful, gets none,
+    and that is every snippet on the site today. `// [!code focus]` is only for
+    something genuinely long where one small part matters and the rest stays
+    for orientation; it never dims an import (rule 35), a line the prose
+    contrasts against, or anything the section teaches. Prefer a shorter
+    snippet to a marker, and `// [!code highlight]`, not focus, for "this is
+    the line that changed". A long example string is shortened, never left to
+    run off the side of the block.
 23. **One representative example per concept, from a real app.** A class
     example that exhausts the feature within reason and self-documents for
     the savvy reader. Drawn from the owner's own apps, never an imagined
@@ -256,14 +265,13 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     to intrigue. From The Basics on, a recording example is the **full call
     site**: the class with its namespace and imports, the method, where each
     variable comes from, and what the method returns, so a developer can
-    follow along in their own app. The recording lines carry
-    `// [!code focus]`, so the call stands out and the rest of the class reads
-    as context. A later snippet in the same section may be a fragment of a
+    follow along in their own app. The whole class
+    reads at once, with no focus markers (rule 22). A later snippet in the same section may be a fragment of a
     class already shown in full, under `// app/…/File.php, method()`.
     The same holds for a model's feed code (`describeFeed()`, `toFeed()`,
     `feedMedia()`, the `booted()` that registers `feedMediaUsing()`): the
     first snippet in a section is the model class, namespace and imports
-    included, with the feed lines focused. A `routes/feed.php` snippet opens
+    included. A `routes/feed.php` snippet opens
     with `// routes/feed.php` and its `use` lines, as Laravel's route files do.
 34. **Every recording example shows both forms, as tabs** (ruled 2026-09-22).
     A `::: code-group` with `[Fluent Syntax]` first and `[Named Arguments]`

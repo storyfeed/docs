@@ -21,14 +21,14 @@ class OrderPlaced implements PublishesToFeed
 
     public function toFeedActivity(): ?PendingActivity
     {
-        if ($this->order->status === 'draft') { // [!code focus]
-            return null;                                 // not an activity [!code focus]
-        } // [!code focus]
+        if ($this->order->status === 'draft') {
+            return null;                                 // not an activity
+        }
 
-        return Storyfeed::activity() // [!code focus]
-            ->by($this->customer) // [!code focus]
-            ->action('place', $this->order) // [!code focus]
-            ->to($this->order->kitchen); // [!code focus]
+        return Storyfeed::activity()
+            ->by($this->customer)
+            ->action('place', $this->order)
+            ->to($this->order->kitchen);
     }
 }
 ```
@@ -73,7 +73,7 @@ Storyfeed::grammar([
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::grammar([
-    'note.ask' => ':actor asked about :target',   // names the dish, never the note
+    'note.ask' => ':actor asked about :target', // the dish, not the note
 ]);
 ```
 
@@ -97,11 +97,11 @@ class DishQuestionController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('ask', $note) // [!code focus]
-            ->on($dish) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('ask', $note)
+            ->on($dish)
+            ->publish();
 
         return back();
     }
@@ -127,12 +127,12 @@ class DishQuestionController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'ask', // [!code focus]
-            object: $note, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $dish, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'ask',
+            object: $note,
+            actor: $request->user(),
+            target: $dish,
+        );
 
         return back();
     }
@@ -178,11 +178,11 @@ class Note extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make() // [!code focus]
-            ->label($this->body) // [!code focus]
-            ->body(Component::make() // [!code focus]
-                ->name('Note') // [!code focus]
-                ->props(['excerpt' => $this->body])); // full text, not a shortened preview // [!code focus]
+        return FeedEntity::make()
+            ->label($this->body)
+            ->body(Component::make()
+                ->name('Note')
+                ->props(['excerpt' => $this->body])); // full text, not a shortened preview
     }
 }
 ```
@@ -204,13 +204,13 @@ class Note extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make( // [!code focus]
-            label: $this->body, // [!code focus]
-            body: Component::make( // [!code focus]
-                name: 'Note', // [!code focus]
-                props: ['excerpt' => $this->body], // full text, not a shortened preview // [!code focus]
-            ), // [!code focus]
-        ); // [!code focus]
+        return FeedEntity::make(
+            label: $this->body,
+            body: Component::make(
+                name: 'Note',
+                props: ['excerpt' => $this->body], // full text, not a shortened preview
+            ),
+        );
     }
 }
 ```
@@ -247,12 +247,12 @@ class DishQuestionController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('ask', $note) // [!code focus]
-            ->on($dish) // [!code focus]
-            ->thread(FeedThread::make(text: $note->body)) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('ask', $note)
+            ->on($dish)
+            ->thread(FeedThread::make(text: $note->body))
+            ->publish();
 
         return back();
     }
@@ -279,13 +279,13 @@ class DishQuestionController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'ask', // [!code focus]
-            object: $note, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $dish, // [!code focus]
-            thread: FeedThread::make(text: $note->body), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'ask',
+            object: $note,
+            actor: $request->user(),
+            target: $dish,
+            thread: FeedThread::make(text: $note->body),
+        );
 
         return back();
     }
@@ -335,12 +335,12 @@ class DiscussionReplyController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('reply', $discussion) // [!code focus]
-            ->on($dish) // [!code focus]
-            ->thread(FeedThread::make(text: $reply->body)) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('reply', $discussion)
+            ->on($dish)
+            ->thread(FeedThread::make(text: $reply->body))
+            ->publish();
 
         return back();
     }
@@ -368,13 +368,13 @@ class DiscussionReplyController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'reply', // [!code focus]
-            object: $discussion, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $dish, // [!code focus]
-            thread: FeedThread::make(text: $reply->body), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'reply',
+            object: $discussion,
+            actor: $request->user(),
+            target: $dish,
+            thread: FeedThread::make(text: $reply->body),
+        );
 
         return back();
     }

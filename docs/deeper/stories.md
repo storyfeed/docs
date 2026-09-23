@@ -23,7 +23,7 @@ const placedWithoutTarget = activity({ id: 'sc3', verb: 'place', glyph: 'shoppin
 
 const gone = activity({ ...scenes.order, id: 'sc4',
   object: tombstone('order', '31', '2026-08-14T15:05:00.000000Z'),
-  missing_headline_template: ':actor placed an order that is no longer available' })
+  missing_headline_template: ':actor placed an order, since deleted' })
 
 const live = activity({ id: 'sc5', verb: 'publish', glyph: 'chef-hat',
   published_at: '2026-08-14T09:00:00.000000Z',
@@ -57,26 +57,26 @@ use Storyfeed\Stories\Verb;
 
 class OrderStory
 {
-    public function place(Verb $verb): Verb // [!code focus]
-    { // [!code focus]
-        return $verb // [!code focus]
-            ->headline(':actor placed :object[ with :target]') // [!code focus]
-            ->icon('shopping-bag') // [!code focus]
-            ->missingHeadline(':actor placed an order that is no longer available'); // [!code focus]
-    } // [!code focus]
+    public function place(Verb $verb): Verb
+    {
+        return $verb
+            ->headline(':actor placed :object[ with :target]')
+            ->icon('shopping-bag')
+            ->missingHeadline(':actor placed an order, since deleted');
+    }
 
-    public function complete(): string // [!code focus]
-    { // [!code focus]
-        return ':actor completed :object'; // [!code focus]
-    } // [!code focus]
+    public function complete(): string
+    {
+        return ':actor completed :object';
+    }
 
-    public function confirmPayment(Verb $verb, Request $request): Verb // [!code focus]
-    { // [!code focus]
-        return $verb // [!code focus]
-            ->headline(':actor confirmed payment for :object') // [!code focus]
-            ->icon('credit-card') // [!code focus]
-            ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe'); // [!code focus]
-    } // [!code focus]
+    public function confirmPayment(Verb $verb, Request $request): Verb
+    {
+        return $verb
+            ->headline(':actor confirmed payment for :object')
+            ->icon('credit-card')
+            ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
+    }
 
     protected function reference(): string
     {
@@ -157,7 +157,7 @@ use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
 
 Story::resource(Order::class, OrderStory::class)
-    ->except('restore', 'confirm_payment'); // [!code focus]
+    ->except('restore', 'confirm_payment');
 ```
 
 ## Publishing a Verb
@@ -180,10 +180,10 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        story('place', $order) // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->to($order->kitchen) // [!code focus]
-            ->publish(); // [!code focus]
+        story('place', $order)
+            ->by($request->user())
+            ->to($order->kitchen)
+            ->publish();
 
         return to_route('orders.show', $order);
     }
@@ -206,12 +206,12 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'place', // [!code focus]
-            object: $order, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $order->kitchen, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',
+            object: $order,
+            actor: $request->user(),
+            target: $order->kitchen,
+        );
 
         return to_route('orders.show', $order);
     }
@@ -247,7 +247,7 @@ public function confirmPayment(Verb $verb, Request $request): Verb
     return $verb
         ->headline(':actor confirmed payment for :object')
         ->icon('credit-card')
-        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe'); // [!code focus]
+        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
 }
 ```
 
@@ -269,7 +269,7 @@ class PaymentWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        story('confirm_payment', $order)->publish(); // the verb names the actor // [!code focus]
+        story('confirm_payment', $order)->publish(); // the verb names the actor
 
         return response()->noContent();
     }
@@ -294,10 +294,10 @@ class PaymentWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        Storyfeed::record( // [!code focus]
-            verb: 'confirm_payment', // [!code focus]
-            object: $order, // the verb names the actor // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'confirm_payment',
+            object: $order, // the verb names the actor
+        );
 
         return response()->noContent();
     }
@@ -342,7 +342,7 @@ public function place(Verb $verb): Verb
     return $verb
         ->headline(':actor placed :object[ with :target]')
         ->icon('shopping-bag')
-        ->missingHeadline(':actor placed an order that is no longer available'); // [!code focus]
+        ->missingHeadline(':actor placed an order, since deleted');
 }
 ```
 
@@ -385,7 +385,7 @@ use App\Models\MenuItem;
 use App\Stories\DishWentLive;
 use Storyfeed\Facades\Story;
 
-Story::for(MenuItem::class)->verb('publish', DishWentLive::class); // [!code focus]
+Story::for(MenuItem::class)->verb('publish', DishWentLive::class);
 ```
 
 A one-verb class is dispatched from the call site, as a job is:

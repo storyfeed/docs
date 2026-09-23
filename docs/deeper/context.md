@@ -34,12 +34,12 @@ class DishQuestionController extends Controller
     {
         $note = $dish->notes()->create($request->validated());
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('ask', $note) // [!code focus]
-            ->on($dish)               // target: what the question is about // [!code focus]
-            ->context($kitchen)       // context: the kitchen the dish belongs to // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('ask', $note)
+            ->on($dish)               // target: what the question is about
+            ->context($kitchen)       // context: the kitchen the dish belongs to
+            ->publish();
 
         return back();
     }
@@ -63,13 +63,13 @@ class DishQuestionController extends Controller
     {
         $note = $dish->notes()->create($request->validated());
 
-        Storyfeed::record( // [!code focus]
-            verb: 'ask', // [!code focus]
-            object: $note, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $dish,            // what the question is about // [!code focus]
-            context: $kitchen,        // the kitchen the dish belongs to // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'ask',
+            object: $note,
+            actor: $request->user(),
+            target: $dish,            // what the question is about
+            context: $kitchen,        // the kitchen the dish belongs to
+        );
 
         return back();
     }

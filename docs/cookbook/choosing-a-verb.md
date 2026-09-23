@@ -26,11 +26,11 @@ class OrderController extends Controller
     {
         $order = $kitchen->orders()->create($request->validated());
 
-        Storyfeed::activity() // [!code focus]
-            ->by($request->user()) // [!code focus]
-            ->action('place', $order)   // not 'order.place' [!code focus]
-            ->to($kitchen) // [!code focus]
-            ->publish(); // [!code focus]
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('place', $order)   // not 'order.place'
+            ->to($kitchen)
+            ->publish();
 
         return to_route('orders.show', $order);
     }
@@ -53,12 +53,12 @@ class OrderController extends Controller
     {
         $order = $kitchen->orders()->create($request->validated());
 
-        Storyfeed::record( // [!code focus]
-            verb: 'place',   // not 'order.place' [!code focus]
-            object: $order, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $kitchen, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: 'place',   // not 'order.place'
+            object: $order,
+            actor: $request->user(),
+            target: $kitchen,
+        );
 
         return to_route('orders.show', $order);
     }
@@ -102,7 +102,7 @@ class MenuItemController extends Controller
     {
         $dish = MenuItem::create($request->validated());   // the dish is written here
 
-        Act::Create->by($request->user())->object($dish)->publish(); // [!code focus]
+        Act::Create->by($request->user())->object($dish)->publish();
 
         return to_route('menu-items.show', $dish);
     }
@@ -126,11 +126,11 @@ class MenuItemController extends Controller
     {
         $dish = MenuItem::create($request->validated());   // the dish is written here
 
-        Storyfeed::record( // [!code focus]
-            verb: Act::Create, // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: Act::Create,
+            object: $dish,
+            actor: $request->user(),
+        );
 
         return to_route('menu-items.show', $dish);
     }
@@ -156,7 +156,7 @@ class MenuDishController extends Controller
     {
         $menu->dishes()->attach($dish);   // the dish already existed
 
-        Act::Add->by($request->user())->object($dish)->to($menu)->publish(); // [!code focus]
+        Act::Add->by($request->user())->object($dish)->to($menu)->publish();
 
         return back();
     }
@@ -181,12 +181,12 @@ class MenuDishController extends Controller
     {
         $menu->dishes()->attach($dish);   // the dish already existed
 
-        Storyfeed::record( // [!code focus]
-            verb: Act::Add, // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            target: $menu, // [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: Act::Add,
+            object: $dish,
+            actor: $request->user(),
+            target: $menu,
+        );
 
         return back();
     }
@@ -263,10 +263,10 @@ class MailWebhookController extends Controller
             'outcome' => $request->input('event'),
         ]);
 
-        Act::Create->anonymously() // [!code focus]
-            ->object($deliveryEvent) // [!code focus]
-            ->to($document) // [!code focus]
-            ->publish(); // [!code focus]
+        Act::Create->anonymously()
+            ->object($deliveryEvent)
+            ->to($document)
+            ->publish();
 
         return response()->noContent();
     }
@@ -306,10 +306,10 @@ class MenuItemController extends Controller
 
         $revision = $dish->revisions()->create($request->validated());
 
-        Act::Update->by($request->user()) // [!code focus]
-            ->object($dish) // [!code focus]
-            ->resulting($revision) // what the update produced [!code focus]
-            ->publish(); // [!code focus]
+        Act::Update->by($request->user())
+            ->object($dish)
+            ->resulting($revision) // what the update produced
+            ->publish();
 
         return back();
     }
@@ -335,12 +335,12 @@ class MenuItemController extends Controller
 
         $revision = $dish->revisions()->create($request->validated());
 
-        Storyfeed::record( // [!code focus]
-            verb: Act::Update, // [!code focus]
-            object: $dish, // [!code focus]
-            actor: $request->user(), // [!code focus]
-            result: $revision, // what the update produced [!code focus]
-        ); // [!code focus]
+        Storyfeed::record(
+            verb: Act::Update,
+            object: $dish,
+            actor: $request->user(),
+            result: $revision, // what the update produced
+        );
 
         return back();
     }
