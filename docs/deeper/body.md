@@ -163,7 +163,7 @@ moment:
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
-        url: route('menu.show', $context->data('id')),
+        url: route('menu.show', $context->id()),
         body: KeyValue::make(['Portions left' => $context->model()?->portions_left]),
     );
 }

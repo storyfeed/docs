@@ -53,7 +53,7 @@ so it should make no writes and no queries except `model()`.
 | `$context->id()` | the entity's key |
 | `$context->label()` | the cached label |
 | `$context->data()` | the `data` array `toFeed()` cached |
-| `$context->data('id')` | one value from it; a missing key reads as `null`, or as the second argument |
+| `$context->data('mediaType')` | one value from it; a missing key reads as `null`, or as the second argument |
 | `$context->feed()` | the registered name of the feed being read, or `null` on an ad-hoc feed and in the Activity Streams serializer |
 | `$context->model()` | the live model, or `null` |
 

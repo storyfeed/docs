@@ -205,7 +205,6 @@ class MenuItem extends Model implements Feedable
         return FeedEntity::make(
             label: "{$this->code} {$this->name}",   // how the kitchen names a dish
             data: [
-                'id' => $this->id,
                 'mediaType' => $this->photo_mime,    // the intrinsic facts a thumbnail needs,
                 'width' => $this->photo_width,       // stored once, read on every render
                 'height' => $this->photo_height,
@@ -215,11 +214,7 @@ class MenuItem extends Model implements Feedable
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
-        $id = $context->data('id');
-
-        if ($id === null) {
-            return null;   // a snapshot taken before this key existed still renders, unlinked
-        }
+        $id = $context->id();
 
         return match ($context->feed()) {
             'kitchen' => FeedMedia::make(url: route('kitchen.menu.edit', $id)),
