@@ -187,7 +187,7 @@ declares one. A renderer may show either reading.
   "count": 5,                           // true total members
   "verb": "place",
   "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
-  "headline_template": ":actors placed :count orders with :target",
+  "headline_template": ":actors ordered from :target",
   "headline": null,
   "glyph": "shopping-bag",
   "glyph_intent": null,

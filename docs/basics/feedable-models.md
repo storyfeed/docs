@@ -31,7 +31,7 @@ const withImage = [
 // The kitchen's own feed: orders placed with it, and the dish it put live.
 const scoped = [
   group({ id: 'fm3', verb: 'place', axis: 'actors', count: 3, glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actors placed :count orders with :target',
+    headline_template: ':actors ordered from :target',
     actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
     objects: [orders.first, orders.second, orders.third],
     distinct: { actors: 3, objects: 3, targets: 1 } }),

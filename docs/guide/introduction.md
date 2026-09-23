@@ -48,7 +48,7 @@ const summary = [
     actors: [who.runner], objects: [orders.second, orders.first], distinct: { actors: 1, objects: 4 } }),
   group({ id: 'g3', verb: 'place', axis: 'actors', count: 12, glyph: 'shopping-bag',
     published_at: '2026-08-14T18:49:02.000000Z',
-    headline_template: ':actors placed :count orders with :target',
+    headline_template: ':actors ordered from :target',
     actors: [who.customer5, who.customer4, who.customer3], targets: [where.kitchen],
     distinct: { actors: 7, objects: 12, targets: 1 } }),
   group({ id: 'g4', verb: 'ask', axis: 'targets', count: 5, glyph: 'message-circle',

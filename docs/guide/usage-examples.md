@@ -29,7 +29,7 @@ const expanded = [
 const crowd = group({
   id: 'i7', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors placed :count orders with :target',
+  headline_template: ':actors ordered from :target',
   actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
   distinct: { actors: 5, objects: 5, targets: 1 },
 })

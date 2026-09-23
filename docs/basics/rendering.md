@@ -15,7 +15,7 @@ const one = scenes.order
 
 const grouped = group({ id: 'rn2', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
   published_at: at,
-  headline_template: ':actors placed :count orders with :target',
+  headline_template: ':actors ordered from :target',
   actors: [who.regular, who.customer2, who.customer3, who.customer4], targets: [where.kitchen],
   objects: [orders.first, orders.second, orders.third],
   distinct: { actors: 4, objects: 5, targets: 1 } })

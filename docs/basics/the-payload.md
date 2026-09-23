@@ -70,7 +70,7 @@ Five customers, the same kitchen:
 {
   "axis": "actors",
   "count": 5,
-  "headline_template": ":actors placed :count orders with :target",
+  "headline_template": ":actors ordered from :target",
   "actor": null,                       // five of them; there is no single answer
   "target": { /* the kitchen they share */ },
   "distinct": { "actors": 5, "objects": 5, "targets": 1 }
