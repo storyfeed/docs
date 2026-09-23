@@ -37,7 +37,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -67,7 +68,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -165,13 +167,15 @@ class CancelUnpaidOrders extends Command
     public function handle(): void
     {
         Storyfeed::as('System', function () {
-            Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
-                $order->update(['cancelled_at' => now()]);
+            Order::whereNull('paid_at')
+                ->where('created_at', '<', now()->subDay())
+                ->each(function (Order $order) {
+                    $order->update(['cancelled_at' => now()]);
 
-                Storyfeed::activity()
-                    ->action('cancel', $order)
-                    ->publish();
-            });
+                    Storyfeed::activity()
+                        ->action('cancel', $order)
+                        ->publish();
+                });
         });
     }
 }
@@ -193,14 +197,16 @@ class CancelUnpaidOrders extends Command
     public function handle(): void
     {
         Storyfeed::as('System', function () {
-            Order::whereNull('paid_at')->where('created_at', '<', now()->subDay())->each(function (Order $order) {
-                $order->update(['cancelled_at' => now()]);
+            Order::whereNull('paid_at')
+                ->where('created_at', '<', now()->subDay())
+                ->each(function (Order $order) {
+                    $order->update(['cancelled_at' => now()]);
 
-                Storyfeed::record(
-                    verb: 'cancel',
-                    object: $order,
-                );
-            });
+                    Storyfeed::record(
+                        verb: 'cancel',
+                        object: $order,
+                    );
+                });
         });
     }
 }
@@ -239,10 +245,12 @@ With no list, any name becomes a party. Names match as party keys do, so
 ```php
 // config/storyfeed.php
 'parties' => [
-    'fallback' => null,      // e.g. 'System' — a name for otherwise-anonymous publishes
+    // e.g. 'System' — a name for otherwise-anonymous publishes
+    'fallback' => null,
 ],
 
-'actor_resolver' => null,    // an invokable class; null = the authenticated user
+// an invokable class; null = the authenticated user
+'actor_resolver' => null,
 ```
 
 With no fallback, an activity with no user is anonymous.

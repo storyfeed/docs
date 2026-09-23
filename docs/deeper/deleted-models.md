@@ -93,7 +93,8 @@ A force delete can't be undone, so its tombstone is permanent:
 
 ```php
 // app/Http/Controllers/OrderController.php, destroy()
-$order->forceDelete();   // the activities stay; the tombstone is now their object for good
+// the activities stay; the tombstone is now their object for good
+$order->forceDelete();
 ```
 
 <FeedExample :items="[afterDelete]" />

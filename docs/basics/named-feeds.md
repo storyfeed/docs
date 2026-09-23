@@ -100,7 +100,8 @@ Both work on any read, named or not:
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->only(['place', 'ready'])->get();
-Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();   // ready, reprice, confirm
+// ready, reprice, confirm
+Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();
 Storyfeed::feed()->except(['note'])->get();
 ```
 
@@ -172,8 +173,11 @@ A call site can't change what `scope()` set, but may narrow the read:
 
 ```php
 // a controller, or wherever the feed is read
-CustomerFeed::make($order)->involving($other);            // throws FeedMisconfigured
-CustomerFeed::make($order)->only(['place'])->summary();   // fine
+// throws FeedMisconfigured
+CustomerFeed::make($order)->involving($other);
+
+// fine
+CustomerFeed::make($order)->only(['place'])->summary();
 ```
 
 A feed with no subject declares no constructor and no `scope()`:

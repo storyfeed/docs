@@ -40,10 +40,14 @@ otherwise render as a blank line.
 // tests/Feature/FeedTest.php
 use Storyfeed\Testing\GrammarCoverage;
 
-GrammarCoverage::assertCoversRecorded();          // every verb/type pair in the DB has grammar
-GrammarCoverage::assertCoversPublished();         // every pair published in this test
-GrammarCoverage::assertCoversAggregates();        // every group that formed has aggregate grammar
-GrammarCoverage::assertCoversPossibleAggregates(); // every axis that COULD form, whether it did or not
+// every verb/type pair in the DB has grammar
+GrammarCoverage::assertCoversRecorded();
+// every pair published in this test
+GrammarCoverage::assertCoversPublished();
+// every group that formed has aggregate grammar
+GrammarCoverage::assertCoversAggregates();
+// every axis that COULD form, whether it did or not
+GrammarCoverage::assertCoversPossibleAggregates();
 GrammarCoverage::assertCovers([['order', 'place']]);
 GrammarCoverage::assertCoversAggregateMatrix(
     axes: ['repeat', 'actors'],
@@ -69,7 +73,8 @@ about. It works under the fake, and passes when there is no data.
 ## Diagnostics in CI
 
 ```bash
-php artisan storyfeed:doctor --fail-on=warning   # exits non-zero on a warning or an error
+# exits non-zero on a warning or an error
+php artisan storyfeed:doctor --fail-on=warning
 ```
 
 Add `--json` for structured findings. See [Doctor](/reference/doctor).

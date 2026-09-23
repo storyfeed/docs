@@ -50,12 +50,17 @@ class BroadcastActivity implements ShouldQueue
 {
     public function handle(ActivityPublished $event): void
     {
-        $activity = $event->activity;        // an ActivitySnapshot: plain values, not a model
+        // an ActivitySnapshot: plain values, not a model
+        $activity = $event->activity;
 
-        $activity->verb;                     // 'place'
-        $activity->object['label'];          // the label as it read at publish
-        $activity->published_at;             // '2026-08-13T23:58:00+00:00'
-        $activity->toPayload();              // the whole snapshot as an array
+        // 'place'
+        $activity->verb;
+        // the label as it read at publish
+        $activity->object['label'];
+        // '2026-08-13T23:58:00+00:00'
+        $activity->published_at;
+        // the whole snapshot as an array
+        $activity->toPayload();
     }
 }
 ```
@@ -105,8 +110,8 @@ class CheckoutController extends Controller
                 ->by($request->user())
                 ->action('place', $order)
                 ->to($order->kitchen)
-                ->publish();                          // nothing reaches the queue yet
-        });                                           // the listener's job is pushed here
+                ->publish();  // nothing reaches the queue yet
+        });                   // the listener's job is pushed here
 
         return to_route('orders.show', $order);
     }
@@ -136,8 +141,8 @@ class CheckoutController extends Controller
                 object: $order,
                 actor: $request->user(),
                 target: $order->kitchen,
-            );                                        // nothing reaches the queue yet
-        });                                           // the listener's job is pushed here
+            );  // nothing reaches the queue yet
+        });     // the listener's job is pushed here
 
         return to_route('orders.show', $order);
     }
@@ -172,7 +177,8 @@ class RecordOrder implements ShouldQueue
 
     public function __construct(public Order $order, public User $customer)
     {
-        $this->occurredAt = now();            // the fact's time, captured where it happened
+        // the fact's time, captured where it happened
+        $this->occurredAt = now();
     }
 
     public function handle(): void
@@ -181,7 +187,8 @@ class RecordOrder implements ShouldQueue
             ->by($this->customer)
             ->action('place', $this->order)
             ->to($this->order->kitchen)
-            ->publishedAt($this->occurredAt)  // without this, the row is dated when the job ran
+            // without this, the row is dated when the job ran
+            ->publishedAt($this->occurredAt)
             ->publish();
     }
 }
@@ -208,7 +215,8 @@ class RecordOrder implements ShouldQueue
 
     public function __construct(public Order $order, public User $customer)
     {
-        $this->occurredAt = now();            // the fact's time, captured where it happened
+        // the fact's time, captured where it happened
+        $this->occurredAt = now();
     }
 
     public function handle(): void
@@ -218,7 +226,8 @@ class RecordOrder implements ShouldQueue
             object: $this->order,
             actor: $this->customer,
             target: $this->order->kitchen,
-            publishedAt: $this->occurredAt,   // without this, the row is dated when the job ran
+            // without this, the row is dated when the job ran
+            publishedAt: $this->occurredAt,
         );
     }
 }
@@ -257,7 +266,8 @@ Storyfeed::activity()
     ->by($this->customer)
     ->action('place', $this->order)
     ->to($this->order->kitchen)
-    ->data(['total' => $this->total])         // captured in the constructor, not read in handle()
+    // captured in the constructor, not read in handle()
+    ->data(['total' => $this->total])
     ->publishedAt($this->occurredAt)
     ->publish();
 ```
@@ -269,7 +279,8 @@ Storyfeed::record(
     object: $this->order,
     actor: $this->customer,
     target: $this->order->kitchen,
-    data: ['total' => $this->total],          // captured in the constructor, not read in handle()
+    // captured in the constructor, not read in handle()
+    data: ['total' => $this->total],
     publishedAt: $this->occurredAt,
 );
 ```
@@ -353,7 +364,8 @@ To opt out, before dispatching:
 use Illuminate\Support\Facades\Context;
 use Storyfeed\Support\QueuedActor;
 
-Context::addHidden(QueuedActor::KEY, null);   // no actor travels, a Storyfeed::as() actor included
+// no actor travels, a Storyfeed::as() actor included
+Context::addHidden(QueuedActor::KEY, null);
 ```
 
 ### A Verb That Chooses Its Actor From the Request
@@ -441,10 +453,12 @@ it('records the order', function () {
 
     event(new OrderPlaced($order, $customer));
 
-    Storyfeed::assertNothingPublished();                  // the job is on the queue, unrun
+    // the job is on the queue, unrun
+    Storyfeed::assertNothingPublished();
 
     $job = Queue::pushed(CallQueuedListener::class)->first();
-    app($job->class)->{$job->method}(...$job->data);      // run the listener
+    // run the listener
+    app($job->class)->{$job->method}(...$job->data);
 
     Storyfeed::assertPublished('place', $order);
 });

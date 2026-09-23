@@ -180,7 +180,12 @@ arrives on the node exactly as it went in:
   "$v": 1,
   "title": null,
   "items": [
-    { "key": "1 × N101 Chicken Curry", "value": "$14.50", "verbatim": false, "missing": null }
+    {
+      "key": "1 × N101 Chicken Curry",
+      "value": "$14.50",
+      "verbatim": false,
+      "missing": null
+    }
   ]
 }
 ```
@@ -288,7 +293,8 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
         ->url(route('menu.show', $context->routeKey()))
-        ->body(KeyValue::make()->items('Portions left', $context->model()?->portions_left));
+        ->body(KeyValue::make()
+            ->items('Portions left', $context->model()?->portions_left));
 }
 ```
 
@@ -298,7 +304,9 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
         url: route('menu.show', $context->routeKey()),
-        body: KeyValue::make(items: ['Portions left' => $context->model()?->portions_left]),
+        body: KeyValue::make(
+            items: ['Portions left' => $context->model()?->portions_left],
+        ),
     );
 }
 ```
@@ -316,12 +324,15 @@ read draws it:
 
 ```php [Fluent Syntax]
 // app/Models/MenuItem.php, feedMedia()
-->body(fn () => KeyValue::make()->items('Portions left', $context->model()?->portions_left))
+->body(fn () => KeyValue::make()
+    ->items('Portions left', $context->model()?->portions_left))
 ```
 
 ```php [Named Arguments]
 // app/Models/MenuItem.php, feedMedia()
-body: fn () => KeyValue::make(items: ['Portions left' => $context->model()?->portions_left]),
+body: fn () => KeyValue::make(
+    items: ['Portions left' => $context->model()?->portions_left],
+),
 ```
 
 :::
@@ -457,10 +468,13 @@ final class Attachment implements FeedBody
 
     public static function upgrade(array $payload, int $from): array
     {
-        // Never throw: a row written by any version, even a newer one, still renders.
+        // Never throw: a row written by any version, even a newer one,
+        // still renders.
         return [
             'size' => is_int($payload['size'] ?? null) ? $payload['size'] : null,
-            'mediaType' => is_string($payload['mediaType'] ?? null) ? $payload['mediaType'] : null,
+            'mediaType' => is_string($payload['mediaType'] ?? null)
+                ? $payload['mediaType']
+                : null,
         ];
     }
 

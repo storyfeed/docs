@@ -93,7 +93,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -121,7 +122,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -160,8 +162,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemPriceController extends Controller
 {
-    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdatePriceRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $from = $dish->price;
 
         $dish->update(['price' => $request->integer('price')]);
@@ -189,8 +193,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemPriceController extends Controller
 {
-    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdatePriceRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $from = $dish->price;
 
         $dish->update(['price' => $request->integer('price')]);
@@ -229,7 +235,9 @@ class ImportPriceHistory extends Command
 
     public function handle(): void
     {
-        foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
+        $rows = json_decode(file_get_contents($this->argument('file')), true);
+
+        foreach ($rows as $row) {
             Storyfeed::activity()
                 ->by(User::findOrFail($row['user_id']))
                 ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
@@ -257,7 +265,9 @@ class ImportPriceHistory extends Command
 
     public function handle(): void
     {
-        foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
+        $rows = json_decode(file_get_contents($this->argument('file')), true);
+
+        foreach ($rows as $row) {
             Storyfeed::record(
                 verb: 'reprice',
                 object: MenuItem::findOrFail($row['menu_item_id']),

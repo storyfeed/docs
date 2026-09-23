@@ -49,8 +49,10 @@ One customer, three orders, one group node:
   "count": 3,
   "verb": "place",
   "headline_template": ":actor placed :count orders with :target",
-  "actor": { "type": "user", "label": "Steve Harrington", … },  // one actor, so the key is filled
-  "object": null,                                               // three of them
+  // one actor, so the key is filled
+  "actor": { "type": "user", "label": "Steve Harrington", … },
+  // three of them
+  "object": null,
   "sample": {
     "actors": [ /* him */ ],
     "objects": [ /* up to three orders, to name */ ],

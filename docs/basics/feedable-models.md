@@ -91,7 +91,9 @@ provider. Returning `null` falls through to the list above:
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::guessFeedLabelsUsing(fn (Model $model) => $model->getAttribute('reference'));
+Storyfeed::guessFeedLabelsUsing(
+    fn (Model $model) => $model->getAttribute('reference'),
+);
 ```
 
 To change it for one model, write `guessFeedLabel()` on the model. To fall back
@@ -169,7 +171,9 @@ class Order extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn ($context) => route('orders.show', $context->routeKey()));
+        static::feedMediaUsing(
+            fn ($context) => route('orders.show', $context->routeKey()),
+        );
     }
 
     public function describeFeed(): void
@@ -196,7 +200,8 @@ different on each surface, or nowhere:
 static::feedMediaUsing(fn ($context) => match ($context->feed()) {
     'kitchen' => route('kitchen.ticket', $context->routeKey()),
     'customer' => route('orders.status', $context->routeKey()),
-    default => null, // an ad-hoc feed reports no name; without this arm the match throws
+    // an ad-hoc feed reports no name; without this arm the match throws
+    default => null,
 });
 ```
 
@@ -412,8 +417,10 @@ class MenuItem extends Model implements Feedable
         $this->feedEntity()
             ->label("{$this->code} {$this->name}")   // how the kitchen names a dish
             ->data([
-                'mediaType' => $this->photo_mime,    // the intrinsic facts a thumbnail needs,
-                'width' => $this->photo_width,       // stored once, read on every render
+                // the intrinsic facts a thumbnail needs,
+                // stored once, read on every render
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
                 'height' => $this->photo_height,
             ]);
     }

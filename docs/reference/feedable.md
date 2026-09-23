@@ -57,7 +57,9 @@ public function describeFeed(): void
 
 protected static function booted(): void
 {
-    static::feedMediaUsing(fn ($context) => route('orders.show', $context->routeKey()));
+    static::feedMediaUsing(
+        fn ($context) => route('orders.show', $context->routeKey()),
+    );
 }
 ```
 
@@ -78,7 +80,10 @@ A label left unset is guessed, first match wins:
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::guessFeedLabelsUsing(fn (Model $model) => $model->getAttribute('reference'));  // null falls through
+// null falls through
+Storyfeed::guessFeedLabelsUsing(
+    fn (Model $model) => $model->getAttribute('reference'),
+);
 ```
 
 A model that writes its own `guessFeedLabel()` is not asked by the app-wide
@@ -94,7 +99,9 @@ use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feedable(Media::class)
     ->toFeedUsing(fn (Media $media, $entity) => $entity->label($media->name))
-    ->feedMediaUsing(fn ($context, $media) => $media->url(route('media.show', $context->key())));
+    ->feedMediaUsing(
+        fn ($context, $media) => $media->url(route('media.show', $context->key())),
+    );
 ```
 
 | Method | Receives | Returns |
@@ -211,15 +218,19 @@ Every argument `FeedMedia::make()` takes has a method of the same name.
 
 ```php [Fluent Syntax]
 FeedMedia::make()->url($url)->attributes(['target' => '_blank']);
-FeedMedia::make()->url($url)->label($label);   // replaces the snapshot label on the node
-FeedMedia::make()->url($url)->modal();         // hint the renderer to open as a modal
+// replaces the snapshot label on the node
+FeedMedia::make()->url($url)->label($label);
+// hint the renderer to open as a modal
+FeedMedia::make()->url($url)->modal();
 FeedMedia::make()->url($url)->preview($thumb)->icon($avatar);
 ```
 
 ```php [Named Arguments]
 FeedMedia::make(url: $url, attributes: ['target' => '_blank']);
-FeedMedia::make(url: $url, label: $label);   // replaces the snapshot label on the node
-FeedMedia::make(url: $url, modal: true);     // hint the renderer to open as a modal
+// replaces the snapshot label on the node
+FeedMedia::make(url: $url, label: $label);
+// hint the renderer to open as a modal
+FeedMedia::make(url: $url, modal: true);
 FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 ```
 
@@ -257,8 +268,10 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
     return FeedMedia::make()
         ->url(route('documents.show', $context->routeKey()))
         ->preview(FeedImage::make()
-            ->src(route('documents.thumbnail', $context->routeKey()))  // resolved here, at read time
-            ->mediaType($context->data('mediaType'))                  // the intrinsic facts come from the snapshot
+            // resolved here, at read time
+            ->src(route('documents.thumbnail', $context->routeKey()))
+            // the intrinsic facts come from the snapshot
+            ->mediaType($context->data('mediaType'))
             ->width($context->data('width'))
             ->height($context->data('height'))
             ->alt($context->label()));
@@ -274,8 +287,10 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
     return FeedMedia::make(
         url: route('documents.show', $context->routeKey()),
         preview: FeedImage::make(
-            src: route('documents.thumbnail', $context->routeKey()),  // resolved here, at read time
-            mediaType: $context->data('mediaType'),                   // the intrinsic facts come from the snapshot
+            // resolved here, at read time
+            src: route('documents.thumbnail', $context->routeKey()),
+            // the intrinsic facts come from the snapshot
+            mediaType: $context->data('mediaType'),
             width: $context->data('width'),
             height: $context->data('height'),
             alt: $context->label(),

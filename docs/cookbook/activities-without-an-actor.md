@@ -152,8 +152,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $order = $kitchen->orders()->create($request->validated());
 
         $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
@@ -204,7 +206,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -232,7 +235,8 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 

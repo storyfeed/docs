@@ -22,8 +22,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::activity()
@@ -49,8 +51,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::record(
@@ -100,7 +104,8 @@ class MenuItemController extends Controller
 {
     public function store(StoreMenuItemRequest $request): RedirectResponse
     {
-        $dish = MenuItem::create($request->validated());   // the dish is written here
+        // the dish is written here
+        $dish = MenuItem::create($request->validated());
 
         Act::Create->by($request->user())->object($dish)->publish();
 
@@ -124,7 +129,8 @@ class MenuItemController extends Controller
 {
     public function store(StoreMenuItemRequest $request): RedirectResponse
     {
-        $dish = MenuItem::create($request->validated());   // the dish is written here
+        // the dish is written here
+        $dish = MenuItem::create($request->validated());
 
         Storyfeed::record(
             verb: Act::Create,
@@ -152,8 +158,11 @@ use Storyfeed\Act;
 
 class MenuDishController extends Controller
 {
-    public function store(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        Menu $menu,
+        MenuItem $dish,
+    ): RedirectResponse {
         $menu->dishes()->attach($dish);   // the dish already existed
 
         Act::Add->by($request->user())->object($dish)->to($menu)->publish();
@@ -177,8 +186,11 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuDishController extends Controller
 {
-    public function store(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        Menu $menu,
+        MenuItem $dish,
+    ): RedirectResponse {
         $menu->dishes()->attach($dish);   // the dish already existed
 
         Storyfeed::record(
@@ -257,7 +269,8 @@ class MailWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $document = Document::where('message_id', $request->input('message_id'))->firstOrFail();
+        $document = Document::where('message_id', $request->input('message_id'))
+            ->firstOrFail();
 
         $deliveryEvent = $document->deliveryEvents()->create([
             'outcome' => $request->input('event'),
@@ -300,8 +313,10 @@ use Storyfeed\Act;
 
 class MenuItemController extends Controller
 {
-    public function update(UpdateMenuItemRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdateMenuItemRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $dish->update($request->validated());
 
         $revision = $dish->revisions()->create($request->validated());
@@ -329,8 +344,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemController extends Controller
 {
-    public function update(UpdateMenuItemRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdateMenuItemRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $dish->update($request->validated());
 
         $revision = $dish->revisions()->create($request->validated());

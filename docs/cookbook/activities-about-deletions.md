@@ -18,8 +18,11 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuDishController extends Controller
 {
-    public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        Menu $menu,
+        MenuItem $dish,
+    ): RedirectResponse {
         Storyfeed::activity()
             ->by($request->user())
             ->action('remove', $dish)
@@ -46,8 +49,11 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuDishController extends Controller
 {
-    public function destroy(Request $request, Menu $menu, MenuItem $dish): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        Menu $menu,
+        MenuItem $dish,
+    ): RedirectResponse {
         Storyfeed::record(
             verb: 'remove',
             object: $dish,
@@ -82,7 +88,8 @@ use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
-    'remove' => ActivityType::Remove,   // a removal: the dish being gone is expected
+    // a removal: the dish being gone is expected
+    'remove' => ActivityType::Remove,
 ]);
 
 Storyfeed::grammar([

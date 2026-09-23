@@ -7,8 +7,10 @@
 | `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, and offers to run the migrations. `--without-migrations` publishes none |
 
 ```bash
-php artisan storyfeed:install   # never overwrites an existing routes/feed.php
-php artisan vendor:publish --tag=storyfeed-definitions   # the routes/feed.php stub alone
+# never overwrites an existing routes/feed.php
+php artisan storyfeed:install
+# the routes/feed.php stub alone
+php artisan vendor:publish --tag=storyfeed-definitions
 ```
 
 A `routes/feed.php` that isn't a Storyfeed file is left alone, and the command

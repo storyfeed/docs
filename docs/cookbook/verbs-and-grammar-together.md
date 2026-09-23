@@ -60,9 +60,12 @@ story('place', $order)
 ## Catching It
 
 ```bash
-php artisan storyfeed:doctor --only=grammar   # published pairs with no headline
-php artisan storyfeed:verbs --used            # registered but never recorded, and recorded but never registered
-php artisan storyfeed:list --type=order       # every verb on orders, and the method that declares it
+# published pairs with no headline
+php artisan storyfeed:doctor --only=grammar
+# registered but never recorded, and recorded but never registered
+php artisan storyfeed:verbs --used
+# every verb on orders, and the method that declares it
+php artisan storyfeed:list --type=order
 ```
 
 In `local` and `testing`, `verbs.strict` throws when you publish a verb nothing
@@ -70,8 +73,8 @@ declares, and `grammar.strict` throws when you publish one with no headline:
 
 ```txt
 Storyfeed does not recognize the verb [plcae]. Register it with
-Storyfeed::verbs(['plcae' => ActivityType::Update]) or an enum implementing FeedVerb,
-or disable storyfeed.verbs.strict.
+Storyfeed::verbs(['plcae' => ActivityType::Update]) or an enum implementing
+FeedVerb, or disable storyfeed.verbs.strict.
 ```
 
 ## A Verb Nothing Publishes Any More
@@ -81,7 +84,8 @@ method:
 
 ```php
 // app/Stories/OrderStory.php
-public function print(): string   // nothing publishes `print` any more; old rows still read
+// nothing publishes `print` any more; old rows still read
+public function print(): string
 {
     return ':actor printed :object';
 }

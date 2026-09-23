@@ -76,8 +76,11 @@ headline is for the verb `place`, recorded about an order.
 The template names roles, never models:
 
 ```php
-->headline(':customer placed :order with :kitchen')   // ✗ not tokens: these render as text
-->headline(':actor placed :object with :target')      // ✓
+// ✗ not tokens: these render as text
+->headline(':customer placed :order with :kitchen')
+
+// ✓
+->headline(':actor placed :object with :target')
 ```
 
 ## Tokens
@@ -412,7 +415,8 @@ in one call. It is a global helper, so it needs no `use` line.
 ## Loading the Feed File
 
 ```sh
-php artisan storyfeed:install   # creates routes/feed.php; never overwrites one you have
+# creates routes/feed.php; never overwrites one you have
+php artisan storyfeed:install
 ```
 
 Storyfeed loads `routes/feed.php` once every service provider has booted, so
@@ -421,7 +425,9 @@ your morph map is already in place.
 ## Listing and Caching Definitions
 
 ```sh
-php artisan storyfeed:list                            # every definition, with the file and line it came from
+# every definition, with the file and line it came from
+php artisan storyfeed:list
+
 php artisan storyfeed:list --type=order --verb=place
 ```
 

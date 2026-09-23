@@ -38,8 +38,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemController extends Controller
 {
-    public function store(StoreMenuItemRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        StoreMenuItemRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $dish = $kitchen->menuItems()->create($request->validated());
 
         Storyfeed::activity() // every new dish is its own row
@@ -64,8 +66,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemController extends Controller
 {
-    public function store(StoreMenuItemRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        StoreMenuItemRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $dish = $kitchen->menuItems()->create($request->validated());
 
         Storyfeed::record( // every new dish is its own row
@@ -95,8 +99,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemPriceController extends Controller
 {
-    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdatePriceRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $dish->update(['price' => $request->integer('price')]);
 
         Storyfeed::activity() // replaces the earlier price change
@@ -122,8 +128,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class MenuItemPriceController extends Controller
 {
-    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function update(
+        UpdatePriceRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $dish->update(['price' => $request->integer('price')]);
 
         Storyfeed::record( // replaces the earlier price change
@@ -199,9 +207,13 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderTransitionController extends Controller
 {
-    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)->whereIn('verb', ['place', 'confirm'])
-    public function __invoke(Request $request, Order $order, string $verb): RedirectResponse
-    {
+    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)
+    //     ->whereIn('verb', ['place', 'confirm'])
+    public function __invoke(
+        Request $request,
+        Order $order,
+        string $verb,
+    ): RedirectResponse {
         $order->update(['status' => $verb]);
 
         Storyfeed::activity()
@@ -226,9 +238,13 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderTransitionController extends Controller
 {
-    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)->whereIn('verb', ['place', 'confirm'])
-    public function __invoke(Request $request, Order $order, string $verb): RedirectResponse
-    {
+    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)
+    //     ->whereIn('verb', ['place', 'confirm'])
+    public function __invoke(
+        Request $request,
+        Order $order,
+        string $verb,
+    ): RedirectResponse {
         $order->update(['status' => $verb]);
 
         Storyfeed::record(

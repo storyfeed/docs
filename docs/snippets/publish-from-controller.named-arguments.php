@@ -9,8 +9,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
-    {
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::record(

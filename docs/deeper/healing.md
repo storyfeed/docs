@@ -55,7 +55,9 @@ class AssetHealer implements FeedHealer
                 whenAbsent: static fn (Activity $live): bool =>
                     $live->verb === 'publish'
                     && $live->object_type === 'asset_reference'
-                    && ! DB::table('assets')->where('id', $live->object_id)->exists(),
+                    && ! DB::table('assets')
+                        ->where('id', $live->object_id)
+                        ->exists(),
                 meta: ['reason' => 'source permanently absent'],
             );
         }

@@ -90,8 +90,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -120,8 +122,10 @@ use Storyfeed\Facades\Storyfeed;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -182,7 +186,8 @@ class Note extends Model implements Feedable
             ->label($this->body)
             ->body(Component::make()
                 ->name('Note')
-                ->props(['excerpt' => $this->body])); // full text, not a shortened preview
+                // full text, not a shortened preview
+                ->props(['excerpt' => $this->body]));
     }
 }
 ```
@@ -208,7 +213,8 @@ class Note extends Model implements Feedable
             label: $this->body,
             body: Component::make(
                 name: 'Note',
-                props: ['excerpt' => $this->body], // full text, not a shortened preview
+                // full text, not a shortened preview
+                props: ['excerpt' => $this->body],
             ),
         );
     }
@@ -240,8 +246,10 @@ use Storyfeed\FeedThread;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -272,8 +280,10 @@ use Storyfeed\FeedThread;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -328,8 +338,11 @@ use Storyfeed\FeedThread;
 
 class DiscussionReplyController extends Controller
 {
-    public function store(StoreReplyRequest $request, MenuItem $dish, Discussion $discussion): RedirectResponse
-    {
+    public function store(
+        StoreReplyRequest $request,
+        MenuItem $dish,
+        Discussion $discussion,
+    ): RedirectResponse {
         $reply = $discussion->replies()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -361,8 +374,11 @@ use Storyfeed\FeedThread;
 
 class DiscussionReplyController extends Controller
 {
-    public function store(StoreReplyRequest $request, MenuItem $dish, Discussion $discussion): RedirectResponse
-    {
+    public function store(
+        StoreReplyRequest $request,
+        MenuItem $dish,
+        Discussion $discussion,
+    ): RedirectResponse {
         $reply = $discussion->replies()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),

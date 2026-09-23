@@ -140,7 +140,8 @@ $kitchen->storyfeed()
 
 // tonight's service
 $kitchen->storyfeed()
-    ->query(fn (ActivityBuilder $q) => $q->where('published_at', '>=', today()->setHour(17)))
+    ->query(fn (ActivityBuilder $q) => $q
+        ->where('published_at', '>=', today()->setHour(17)))
     ->get();
 ```
 

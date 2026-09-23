@@ -21,8 +21,10 @@ use Storyfeed\FeedThread;
 
 class CommentController extends Controller
 {
-    public function store(StoreCommentRequest $request, Discussion $discussion): RedirectResponse
-    {
+    public function store(
+        StoreCommentRequest $request,
+        Discussion $discussion,
+    ): RedirectResponse {
         $comment = $discussion->comments()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -35,7 +37,8 @@ class CommentController extends Controller
             ->action('reply', $discussion)
             ->thread(FeedThread::make(
                 text: $excerpt,
-                replies: $discussion->comments()->count(), // evaluated now, stored forever
+                // evaluated now, stored forever
+                replies: $discussion->comments()->count(),
             ))
             ->publish();
 
@@ -58,8 +61,10 @@ use Storyfeed\FeedThread;
 
 class CommentController extends Controller
 {
-    public function store(StoreCommentRequest $request, Discussion $discussion): RedirectResponse
-    {
+    public function store(
+        StoreCommentRequest $request,
+        Discussion $discussion,
+    ): RedirectResponse {
         $comment = $discussion->comments()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
@@ -73,7 +78,8 @@ class CommentController extends Controller
             actor: $request->user(),
             thread: FeedThread::make(
                 text: $excerpt,
-                replies: $discussion->comments()->count(), // evaluated now, stored forever
+                // evaluated now, stored forever
+                replies: $discussion->comments()->count(),
             ),
         );
 

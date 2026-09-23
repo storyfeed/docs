@@ -139,9 +139,10 @@ A public method with another return type, or none, stops the definitions from
 compiling:
 
 ```txt
-[App\Stories\OrderStory@total] is a public method of a resource Story class, so it is an action,
-and it returns [int]. An action returns Storyfeed\Stories\Verb, string (the headline) or array
-(the array form). If it is a helper, make it protected or private.
+[App\Stories\OrderStory@total] is a public method of a resource Story class, so
+it is an action, and it returns [int]. An action returns Storyfeed\Stories\Verb,
+string (the headline) or array (the array form). If it is a helper, make it
+protected or private.
 ```
 
 ### Conventional Verbs
@@ -265,7 +266,8 @@ class PaymentWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -290,7 +292,8 @@ class PaymentWebhookController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
 
         $order->update(['paid_at' => now()]);
 
@@ -329,10 +332,11 @@ A method whose headline changes with the request throws at that publish in
 `local` and `testing`, where `grammar.strict` is on:
 
 ```txt
-[App\Stories\OrderStory@confirmPayment] returned a different headline for this request than when
-stories compiled. An action that takes the request may only use it to choose the actor: everything
-else is read when no request exists (the feed, storyfeed:list, the doctor, storyfeed:cache), so it
-must not depend on one.
+[App\Stories\OrderStory@confirmPayment] returned a different headline for this
+request than when stories compiled. An action that takes the request may only
+use it to choose the actor: everything else is read when no request exists (the
+feed, storyfeed:list, the doctor, storyfeed:cache), so it must not depend on
+one.
 ```
 
 ## When the Object Is Deleted
@@ -517,21 +521,31 @@ The class fails when stories compile until you uncomment one line.
 php artisan storyfeed:list --type=order
 ```
 
-```txt
-+-------+-----------------+---------------------------------------+--------------------------------------+----------------------+--------------+--------+--------+---------------------------------------+
-| Type  | Verb            | Action                                | Headline                             | Anonymous headline   | Icon         | Intent | Groups | Source                                |
-+-------+-----------------+---------------------------------------+--------------------------------------+----------------------+--------------+--------+--------+---------------------------------------+
-| order | complete        | App\Stories\OrderStory@complete       | :actor completed :object             |                      |              |        |        | App\Stories\OrderStory@complete       |
-| order | confirm_payment | App\Stories\OrderStory@confirmPayment | :actor confirmed payment for :object |                      | credit-card  |        |        | App\Stories\OrderStory@confirmPayment |
-| order | create          |                                       | :actor created :object               | :object was created  | plus         |        |        | routes/feed.php:7                     |
-| order | delete          |                                       | :actor deleted :object               | :object was deleted  | trash        |        |        | routes/feed.php:7                     |
-| order | place           | App\Stories\OrderStory@place          | :actor placed :object[ with :target] |                      | shopping-bag |        |        | App\Stories\OrderStory@place          |
-| order | restore         |                                       | :actor restored :object              | :object was restored | rotate-ccw   |        |        | routes/feed.php:7                     |
-| order | update          |                                       | :actor updated :object               | :object was updated  | pencil       |        |        | routes/feed.php:7                     |
-+-------+-----------------+---------------------------------------+--------------------------------------+----------------------+--------------+--------+--------+---------------------------------------+
-  Showing [7] definitions
+It prints a table with a row per verb: its headline, anonymous headline, icon,
+intent and group headlines, the Story class method that declares it, and the
+file it came from. `--json` prints the same rows, and `--verb` narrows them to
+one:
+
+```bash
+php artisan storyfeed:list --type=order --verb=place --json
 ```
 
-The Action column names the method that declares each verb. A new method is a
+```json
+[
+    {
+        "type": "order",
+        "verb": "place",
+        "action": "App\\Stories\\OrderStory@place",
+        "headline": ":actor placed :object[ with :target]",
+        "anonymous_headline": null,
+        "icon": "shopping-bag",
+        "intent": null,
+        "groups": [],
+        "source": "App\\Stories\\OrderStory@place"
+    }
+]
+```
+
+`action` names the method that declares each verb. A new method is a
 new verb once the definitions are compiled again, so run `storyfeed:cache`
 after deploying, as you run `route:cache`.

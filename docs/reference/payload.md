@@ -21,16 +21,26 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 
 ```jsonc
 {
-  "type": "delivery",                  // morph alias, never a class name
-  "id": "42",                          // string-cast
-  "label": "Delivery #1042",           // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
-  "url": "https://…/deliveries/1042",  // resolved at read time; null ⇒ not linkable
-  "attributes": {},                    // link attributes, e.g. {"target": "_blank"}
-  "modal": false,                      // hint: open as a modal
-  "data": {},                          // snapshot data
-  "media": null,                       // live image slots and optional attachment
-  "body": null,                        // a list of bodies, or null when there are none
-  "tombstone": null                    // null, or what a deleted entity left behind
+  // morph alias, never a class name
+  "type": "delivery",
+  // string-cast
+  "id": "42",
+  // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
+  "label": "Delivery #1042",
+  // resolved at read time; null ⇒ not linkable
+  "url": "https://…/deliveries/1042",
+  // link attributes, e.g. {"target": "_blank"}
+  "attributes": {},
+  // hint: open as a modal
+  "modal": false,
+  // snapshot data
+  "data": {},
+  // live image slots and optional attachment
+  "media": null,
+  // a list of bodies, or null when there are none
+  "body": null,
+  // null, or what a deleted entity left behind
+  "tombstone": null
 }
 ```
 
@@ -53,20 +63,28 @@ tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
 
 ```jsonc
 "object": {
-  "type": "storyfeed.tombstone",       // always this alias
-  "id": "17",                          // the tombstone's key, not the deleted model's
-  "label": null,                       // null, unless the model kept its label
-  "url": null,                         // always null
+  // always this alias
+  "type": "storyfeed.tombstone",
+  // the tombstone's key, not the deleted model's
+  "id": "17",
+  // null, unless the model kept its label
+  "label": null,
+  // always null
+  "url": null,
   "attributes": {},
   "modal": false,
   "data": {},
   "media": null,
   "body": null,
   "tombstone": {
-    "formerType": "order",             // the deleted model's morph alias
-    "deleted": "2026-09-23T12:00:00.000000Z",  // ISO 8601, or null when unknown
-    "approximate": false,              // true when the trickle found the deletion
-    "removedBy": null                  // reserved; always null
+    // the deleted model's morph alias
+    "formerType": "order",
+    // ISO 8601, or null when unknown
+    "deleted": "2026-09-23T12:00:00.000000Z",
+    // true when the trickle found the deletion
+    "approximate": false,
+    // reserved; always null
+    "removedBy": null
   }
 }
 ```
@@ -88,17 +106,24 @@ applies.
 
 ```jsonc
 "media": {
-  "icon":    null,                       // small, representational, ~32×32, 1:1: an avatar, a logo
-  "image":   null,                       // a larger visual representation of a NON-image resource
-  "preview": {                           // a preview of the resource: the dense-feed thumbnail
+  // small, representational, ~32×32, 1:1: an avatar, a logo
+  "icon": null,
+  // a larger visual representation of a NON-image resource
+  "image": null,
+  // a preview of the resource: the dense-feed thumbnail
+  "preview": {
     "src": "https://…/photos/88/thumb.jpg",
     "mediaType": "image/jpeg",
-    "width": 400,                        // int, or null when unknown; never 0
+    // int, or null when unknown; never 0
+    "width": 400,
     "height": 300,
-    "alt": null                          // optional alt text; null is preserved
+    // optional alt text; null is preserved
+    "alt": null
   },
-  "url": {                               // the resource itself is an image; describes what `entity.url` points at
-    "src": "https://…/photos/88/full.jpg",   // always equal to `entity.url`
+  // the resource itself is an image; describes what `entity.url` points at
+  "url": {
+    // always equal to `entity.url`
+    "src": "https://…/photos/88/full.jpg",
     "mediaType": "image/jpeg",
     "width": 4032,
     "height": 3024,
@@ -141,13 +166,16 @@ audience.
 ```jsonc
 {
   "kind": "activity",
-  "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",  // public ULID (uid), not the internal PK
+  // public ULID (uid), not the internal PK
+  "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
   "published_at": "2026-08-10T14:03:22Z",
   "headline_template": ":actor confirmed :object for :target",
-  "headline": null,                     // pre-rendered fallback; see below
+  // pre-rendered fallback; see below
+  "headline": null,
   "glyph": "circle-check",
-  "glyph_intent": null,                 // the app's own word for what the glyph means
+  // the app's own word for what the glyph means
+  "glyph_intent": null,
   "actor": { /* entity */ },
   "object": { /* entity */ },
   "target": { /* entity or null */ },
@@ -156,12 +184,18 @@ audience.
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
   "data": {},
-  "thread": null,                      // optional FeedThread conversation metadata
-  "change": null,                      // optional FeedChange before/after facts
-  "tombstoned": [],                    // the roles holding a tombstone, in role order
-  "redundant": false,                  // one of them is a role the verb is about
-  "missing_headline_template": null,   // the verb's reading once redundant
-  "missing_headline": null             // the same, pre-rendered
+  // optional FeedThread conversation metadata
+  "thread": null,
+  // optional FeedChange before/after facts
+  "change": null,
+  // the roles holding a tombstone, in role order
+  "tombstoned": [],
+  // one of them is a role the verb is about
+  "redundant": false,
+  // the verb's reading once redundant
+  "missing_headline_template": null,
+  // the same, pre-rendered
+  "missing_headline": null
 }
 ```
 
@@ -182,11 +216,15 @@ declares one. A renderer may show either reading.
 ```jsonc
 {
   "kind": "group",
-  "id": "grp_01J1K2…",                 // stable within its window
-  "axis": "actors",                     // unknown values: render as a generic group
-  "count": 5,                           // true total members
+  // stable within its window
+  "id": "grp_01J1K2…",
+  // unknown values: render as a generic group
+  "axis": "actors",
+  // true total members
+  "count": 5,
   "verb": "place",
-  "published_at": "2026-08-10T14:03:22Z",  // max of members; the sort key
+  // max of members; the sort key
+  "published_at": "2026-08-10T14:03:22Z",
   "headline_template": ":actors ordered from :target",
   "headline": null,
   "glyph": "shopping-bag",
@@ -198,7 +236,8 @@ declares one. A renderer may show either reading.
   "origin": null,
   "result": null,
   "instrument": null,
-  "sample": {                           // every role is a LIST
+  // every role is a LIST
+  "sample": {
     "actors": [ /* up to 3 entities */ ],
     "objects": [ /* up to 3 entities */ ],
     "targets": [ /* the shared target entity */ ],
@@ -213,9 +252,12 @@ declares one. A renderer may show either reading.
   },
   "children": [ /* member activity nodes, newest first, possibly truncated */ ],
   "children_truncated": false,
-  "tombstoned": [],                     // roles with a tombstone among the distinct entities
-  "redundant": false,                   // true when every member is redundant
-  "distinct_tombstoned": {              // per role, how many distinct entities are tombstones
+  // roles with a tombstone among the distinct entities
+  "tombstoned": [],
+  // true when every member is redundant
+  "redundant": false,
+  // per role, how many distinct entities are tombstones
+  "distinct_tombstoned": {
     "actors": 0, "objects": 0, "targets": 0, "contexts": 0,
     "origins": 0, "results": 0, "instruments": 0
   }

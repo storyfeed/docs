@@ -64,7 +64,12 @@ Add these tasks to your app’s schedule:
 // routes/console.php
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('storyfeed:trickle')->everyMinute();            // fill in missing snapshots
-Schedule::command('storyfeed:close-batches')->everyFiveMinutes(); // close idle bursts promptly
-Schedule::command('storyfeed:prune')->daily();                    // only if activities are pruned
+// fill in missing snapshots
+Schedule::command('storyfeed:trickle')->everyMinute();
+
+// close idle bursts promptly
+Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
+
+// only if activities are pruned
+Schedule::command('storyfeed:prune')->daily();
 ```

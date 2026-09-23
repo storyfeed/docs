@@ -188,7 +188,12 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make()
         ->label($this->name)
-        ->body(File::make()->size($this->bytes)->mediaType($this->mime)->name($this->name));
+        ->body(
+            File::make()
+                ->size($this->bytes)
+                ->mediaType($this->mime)
+                ->name($this->name)
+        );
 }
 ```
 
@@ -200,7 +205,11 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: $this->name,
-        body: File::make(size: $this->bytes, mediaType: $this->mime, name: $this->name),
+        body: File::make(
+            size: $this->bytes,
+            mediaType: $this->mime,
+            name: $this->name,
+        ),
     );
 }
 ```
@@ -224,7 +233,9 @@ carries `modal: true`.
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::make()->url(route('photos.show', $context->routeKey()))->modal();
+    return FeedMedia::make()
+        ->url(route('photos.show', $context->routeKey()))
+        ->modal();
 }
 ```
 
@@ -232,7 +243,10 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::make(url: route('photos.show', $context->routeKey()), modal: true);
+    return FeedMedia::make(
+        url: route('photos.show', $context->routeKey()),
+        modal: true,
+    );
 }
 ```
 

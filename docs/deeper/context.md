@@ -30,8 +30,11 @@ use Storyfeed\Facades\Storyfeed;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, Kitchen $kitchen, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        Kitchen $kitchen,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create($request->validated());
 
         Storyfeed::activity()
@@ -59,8 +62,11 @@ use Storyfeed\Facades\Storyfeed;
 
 class DishQuestionController extends Controller
 {
-    public function store(AskQuestionRequest $request, Kitchen $kitchen, MenuItem $dish): RedirectResponse
-    {
+    public function store(
+        AskQuestionRequest $request,
+        Kitchen $kitchen,
+        MenuItem $dish,
+    ): RedirectResponse {
         $note = $dish->notes()->create($request->validated());
 
         Storyfeed::record(
