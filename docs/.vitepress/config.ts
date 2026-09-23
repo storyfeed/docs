@@ -23,25 +23,43 @@ export default defineConfig({
   markdown: {
     config(md) {
       /*
-       * `::: headless <the limit>` — one device for the boundary of a headless
-       * package, so that "Storyfeed does not do this part" reads identically
-       * wherever a reader meets it.
-       *
-       * The standing half of the sentence is written HERE and not in the
-       * markdown: it appeared on five pages and would have drifted on the
-       * sixth. The page supplies only what this particular limit is, which is
-       * the half that differs.
+       * `::: headless <boundary>` — one device for the edge of a headless
+       * package, and every word of it lives here. A page writes the key and
+       * nothing else, so a boundary reads identically wherever it is called
+       * back. The Quickstart introduces "headless" in prose; these are the
+       * callbacks. An unknown key fails the build, and so does a body written
+       * on the page, which is where a second wording would start.
        *
        * A container rather than a Vue component, because house rule 9 allows
        * exactly one spelling of a callout and it is the container spelling.
        */
+      const HEADLESS: Record<string, [limit: string, body: string]> = {
+        renderer: ['it ships no renderer', "Drawing the payload is your app's job. For a ready-made renderer, see `storyfeed/ui` or `storyfeed/filament`."],
+        icons: ['it ships no icons', 'A glyph is a name you chose. Your renderer maps it to an icon.'],
+        images: ['it makes no images', 'Your app generates, stores and serves the image. `FeedImage` says where it is.'],
+        counts: ['it counts nothing for you', "The count is your app's query. Core passes it through unchecked."],
+        forms: ['it draws no form', "Core stores the block and returns it unchanged. Drawing and upgrading it is your renderer's job."],
+        reconcile: ['it reconciles nothing on the client', "Merging pages is your client's job."],
+      }
+
       md.use(container, 'headless', {
         render: (tokens: any[], idx: number) => {
-          if (tokens[idx].nesting !== 1) return '</div></div>\n'
+          if (tokens[idx].nesting !== 1) return '</div>\n'
 
-          const limit = tokens[idx].info.trim().slice('headless'.length).trim()
+          const key = tokens[idx].info.trim().slice('headless'.length).trim()
+          const entry = HEADLESS[key]
 
-          return `<div class="sf-headless custom-block"><p class="custom-block-title">Storyfeed is headless${limit ? ': ' + md.utils.escapeHtml(limit) : ''}</p><div class="sf-headless__body">`
+          if (!entry) {
+            throw new Error(`::: headless ${key} — unknown boundary; known: ${Object.keys(HEADLESS).join(', ')}`)
+          }
+
+          if (tokens[idx + 1]?.type !== 'container_headless_close') {
+            throw new Error(`::: headless ${key} — write the key only; the sentence lives in config.ts`)
+          }
+
+          const [limit, body] = entry
+
+          return `<div class="sf-headless custom-block"><p class="custom-block-title">Storyfeed is headless: ${md.utils.escapeHtml(limit)}</p><div class="sf-headless__body"><p>${md.renderInline(body)}</p></div>`
         },
       })
     },

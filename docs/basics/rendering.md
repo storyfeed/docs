@@ -32,9 +32,7 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
   actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })
 </script>
 
-::: headless it ships no renderer
-Drawing the payload is your app's job. For a ready-made renderer, see
-`storyfeed/ui` or `storyfeed/filament`.
+::: headless renderer
 :::
 
 ## The Smallest Loop That Draws Something

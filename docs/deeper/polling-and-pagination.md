@@ -4,8 +4,7 @@ A feed that polls for new activities, or loads older pages as the reader
 scrolls, holds nodes from several responses at once. Three rules keep what it
 holds correct.
 
-::: headless it reconciles nothing on the client
-Merging pages is your client's job.
+::: headless reconcile
 :::
 
 <script setup>

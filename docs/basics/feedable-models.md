@@ -241,8 +241,7 @@ class MenuItem extends Model implements Feedable
 
 <FeedExample :items="[scoped[2]]" />
 
-::: headless it makes no images
-Your app generates, stores and serves the image. `FeedImage` says where it is.
+::: headless images
 :::
 
 Images, attachments, the live model, and every argument each method accepts

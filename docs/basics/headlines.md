@@ -69,8 +69,7 @@ Keys resolve most-specific first:
 | `*.place` | that verb on any object type |
 | `*.*` | everything with no more specific entry |
 
-::: headless it ships no icons
-`shopping-bag` is a name you chose. Your renderer maps it to an icon.
+::: headless icons
 :::
 
 ## What a Glyph Means

@@ -230,8 +230,7 @@ Anything else is a query per row. `$dish->orders()->count()` inside a resolver
 runs once for every row that names a dish. Keep a counter cache column on the
 model instead.
 
-::: headless it counts nothing for you
-The count is your app's query. Core passes it through unchecked.
+::: headless counts
 :::
 
 A minted form is built by current code on every read, so it never needs
@@ -361,9 +360,7 @@ writing its own form owes nothing to them, and core reads none of them.
 A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
 never has to handle a bare string.
 
-::: headless it draws no form
-Core stores the block and returns it unchanged. Drawing and upgrading it is
-your renderer's job.
+::: headless forms
 :::
 
 ## Unknown Forms in a Renderer

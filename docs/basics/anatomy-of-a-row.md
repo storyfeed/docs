@@ -4,8 +4,7 @@ A feed row is made of a fixed set of zones: the rail, the headline, the time,
 and a few more. Each zone is filled from one part of the payload, and your
 renderer decides where each one sits.
 
-::: headless it ships no renderer
-This is a layout to build against, not a component to install.
+::: headless renderer
 :::
 
 <RowAnatomy />
