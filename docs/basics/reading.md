@@ -162,7 +162,7 @@ Each response carries what the next request needs:
 | Key | What to Do With It |
 |---|---|
 | `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
-| `items` | the page's activities; a page can be empty and still have a `next_cursor`, so keep going until `next_cursor` is `null` |
+| `items` | the page's activities |
 | `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
 
 A cursor only works with the query that made it: the same scope, filters, mode

@@ -207,9 +207,7 @@ key, so cache rendered headlines per node, not per grammar key.
 
 - Opaque. Store and return them; they are not parseable.
 - Ordered by `published_at`, newest first.
-- **An empty `items` array is not the end of the feed.** Only a null
-  `next_cursor` is. Follow while empty, bounded to a small hop count (five is a
-  reasonable bound).
+- `next_cursor: null` means the end.
 
 ## Sync Token
 
