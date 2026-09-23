@@ -411,7 +411,7 @@ DishWentLive::of($dish)->by($request->user())->publish();
 |---|---|---|
 | `headline()` | yes | the singular template |
 | `icon()`, `intent()` | no | the glyph and what it means |
-| `groups()` | no | a `Group` per axis, each with its group headline |
+| `groups()` | no | a `Group` per [one-type axis](/deeper/aggregation#the-built-in-axes), each with its group headline. An `actors` or `targets` headline goes on the verb in `routes/feed.php` |
 | `missing()` | no | the roles the activity is about |
 | `$verb`, `$objectType` | when not bound | the verb, and a model class, a morph alias, or a list of either |
 
@@ -466,7 +466,8 @@ The verb is chosen from your declared verbs, and the model is suggested from
 your `Feedable` models. A name like `OrderWasPlaced` settles both when the part
 after `Was` spells exactly one declared verb, so nothing is asked. The class
 never holds a placeholder: each group headline is a sentence, with the tokens
-its axis allows listed in a comment above it.
+its axis allows listed in a comment above it. A grouping that can hold other
+types is written as a commented `routes/feed.php` line instead.
 
 `--verb` and `--model` skip their prompts, so a script passes both:
 
@@ -476,6 +477,39 @@ php artisan make:story DishWentLive --verb=publish --model=MenuItem
 
 Without a terminal, a verb or model the name does not settle fails, naming
 your declared verbs.
+
+### Spelling the Past Tense
+
+A name with `Was` spells the headline's past tense. Any other name leaves it
+to `make:story`, which puts the verb in the past tense itself. Where the
+spelling depends on how the verb is stressed, as with `ship`, `visit` and
+`open`, it asks:
+
+```bash
+php artisan make:story DishWentLive --verb=ship --model=MenuItem
+```
+
+```txt
+ ┌ How is 'ship' written in the past tense? ───────────────────┐
+ │   ○ shiped                                                  │
+ │ › ● shipped                                                 │
+ │   ○ None of these — leave the headline commented            │
+ └─────────────────────────────────────────────────────────────┘
+  The headline says it, so it must be spelled right.
+```
+
+Some verbs have no right spelling on offer: `go` offers only `goed`. Choosing
+**None of these**, or running without a terminal, writes the headline
+commented out, one line per spelling, under a comment giving the reason. The
+group headlines are commented the same way:
+
+```php
+// app/Stories/DishWentLive.php, headline()
+// return ':actor shiped :object';
+// return ':actor shipped :object';
+```
+
+The class fails when stories compile until you uncomment one line.
 
 ## Listing Verbs
 
