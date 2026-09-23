@@ -1,7 +1,7 @@
 # Activities Without an Actor
 
-An actor on every activity somebody performed, a party on every activity a
-system performed, and a sentence with no `:actor` when nobody did.
+Record the user when a person acted, a named party when a system acted, and
+no actor when nobody did. Each case gets its own headline.
 
 ```php
 <?php
@@ -72,23 +72,27 @@ Storyfeed::grammar([
 
 ## The Actor Read from the Request
 
-An activity that omits `by()` uses ambient actor resolution. With the default
-configuration this is the authenticated user; a queue worker with no
-authenticated user, custom resolver, or fallback party resolves to null:
+Without `by()`, the actor is resolved from the request: by default, the
+authenticated user. A job dispatched from a console command or the scheduler
+has no user, so with no custom resolver or fallback party the actor is `null`:
 
 ```php
 <?php
 
-namespace App\Listeners;
+namespace App\Jobs;
 
-class RecordSubmission implements ShouldQueue
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
 {
     public function __construct(public Order $order) {}
 
     public function handle(): void
     {
         Storyfeed::activity()
-            ->action('place', $this->order)     // assumes no custom resolver or fallback party
+            ->action('place', $this->order)     // no by(), no user: the actor is null
             ->to($this->order->kitchen)
             ->publish();
     }
@@ -97,46 +101,42 @@ class RecordSubmission implements ShouldQueue
 
 <FeedExample :items="[anonymous]" />
 
-Under those defaults the row is published with `actor: null`. To retain the
-known author, use
-`->by($this->customer)`, with the user passed into the job the way the event above
-carries it. For a known system use a [party](/deeper/parties#parties); when the
-actor is genuinely absent, [actorless voice](/deeper/parties#actorless-voice)
-provides a separate sentence for the same verb.
+To keep the author, pass the user into the job and call
+`->by($this->customer)`, as the event above does. For a system, use a
+[party](/deeper/parties#parties). When nobody acted, give the verb an
+[actorless sentence](/deeper/parties#actorless-voice).
 
 ## An Explicitly Unknown Actor
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
-    ->by($knownAuthor) // User|null: null explicitly means anonymous
+    ->by($knownAuthor)                          // User|null: null means anonymous
     ->action('place', $order)
     ->to($kitchen)
     ->publish();
 ```
 
-`by(null)` bypasses the ambient actor, custom resolver, authenticated user,
-and fallback party. It does not borrow the current operator's identity when
-the carried author is unknown.
+`by(null)` skips actor resolution entirely: no resolver, no authenticated
+user, no fallback party.
 
-| Spelling | Actor Behavior |
+| Spelling | Actor |
 |---|---|
-| omit `by()` | resolve the ambient actor |
-| `->by(null)` or `->actor(null)` | explicitly anonymous |
-| `->anonymously()` | explicitly anonymous on an existing builder |
-| `Storyfeed::anonymous()` | start an explicitly anonymous builder |
+| omit `by()` | resolved from the request |
+| `->by(null)` or `->actor(null)` | anonymous |
+| `->anonymously()` | anonymous, on an existing builder |
+| `Storyfeed::anonymous()` | anonymous, from the start |
 
-The last explicit actor choice wins: `->by($user)->anonymously()` clears the
-actor; `->anonymously()->by($user)` names the user. These builder methods
-also override `Storyfeed::as(...)`. The one-call `Storyfeed::record(...,
-actor: null)` still uses ambient resolution; use an anonymous builder when
-null is intentional.
+The last call wins: `->by($user)->anonymously()` records no actor, and
+`->anonymously()->by($user)` records the user. Both override
+`Storyfeed::as(...)`. `Storyfeed::record(..., actor: null)` still resolves the
+actor; use an anonymous builder instead.
 
 ## One Sentence per Kind of Actor
 
 | The Act Was Performed by | The Actor Is | The Sentence |
 |---|---|---|
-| a user | the user, passed from the event or the action | `:actor placed :object with :target` |
+| a user | the user | `:actor placed :object with :target` |
 | a job, a command, an integration | a party, named | `:actor marked :object paid` |
 | nobody | none | `:object expired at :target` |
 
@@ -152,13 +152,9 @@ Storyfeed::activity()
 
 <FeedExample :items="[paid]" />
 
-`by('Stripe')` names a party; `by(null)` explicitly records an anonymous
-actor. The difference is in
-[Parties & anonymous actors](/deeper/parties).
-
-A job that publishes many activities scopes the block with
-`Storyfeed::as('System', …)` instead of naming the party on each call; see
-[Scoped attribution](/deeper/parties#scoped-attribution).
+A job that publishes many activities can wrap them in
+`Storyfeed::as('System', …)` instead of naming the party on each call. See
+[Scoped Attribution](/deeper/parties#scoped-attribution).
 
 ## No Actor at All
 
@@ -168,7 +164,8 @@ Storyfeed::grammar([
     'order.expire' => ':object expired at :target',   // no :actor, on purpose
 ]);
 
-Storyfeed::anonymous() // bypass actor resolution even inside an attributed scope
+// where the fact happens: a controller, an action, a listener
+Storyfeed::anonymous()                          // no actor, even inside Storyfeed::as()
     ->action('expire', $order)
     ->to($kitchen)
     ->publish();
@@ -176,6 +173,5 @@ Storyfeed::anonymous() // bypass actor resolution even inside an attributed scop
 
 <FeedExample :items="[expired]" />
 
-The builder records no actor, and the template describes the expiry without
-naming one. Removing `:actor` from a template changes only the sentence; it
-does not clear a stored actor or disable actor resolution.
+Leaving `:actor` out of a template changes only the sentence. It does not
+clear a stored actor.

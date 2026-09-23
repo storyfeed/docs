@@ -1,13 +1,15 @@
 # Recording Deletions
 
-A removal story that still renders after the row it is about is gone.
+To record that something was deleted, make the surviving parent the object
+and carry the deleted thing's name in `data`. The row keeps rendering after the
+deleted model is gone.
 
 ```php
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($user)
-    ->action('remove', $menu)      // object: the parent, which survives
-    ->data(['name' => $dish->name])           // the removed thing travels as text
+    ->action('remove', $menu)             // object: the parent, which survives
+    ->data(['name' => $dish->name])       // the removed thing travels as text
     ->publish();
 
 $dish->delete();
@@ -20,7 +22,7 @@ Storyfeed::verbs([
 ]);
 
 Storyfeed::grammar([
-    '*.menu.dish_removed' => ':actor removed a dish from :object',
+    'menu.remove' => ':actor removed a dish from :object',
 ]);
 ```
 
@@ -38,15 +40,13 @@ const removed = activity({
 
 <FeedExample context :items="[removed]" />
 
-The node's `data` carries the name for your renderer to show beneath the
-headline.
+Your renderer shows the name from the node's `data`.
 
 ## What a Removal Story May Reference
 
-For an Eloquent model using `Storyfeed\Concerns\InteractsWithFeed`, a
-model-instance delete soft-deletes every activity it took part in, in any
-role. A `forceDeleted` event hard-deletes them. The table assumes these
-model events run.
+A model using `Storyfeed\Concerns\InteractsWithFeed` soft-deletes every
+activity it took part in, in any role, when it is deleted. A force delete
+hard-deletes them.
 
 | The Removal Story References | After the Delete |
 |---|---|
@@ -54,18 +54,15 @@ model events run.
 | the deleted model, published after the delete | the snapshot renders; its link points at a record that is gone |
 | the surviving parent as `object`, the name in `data` | renders and links |
 
-Implementing `Feedable` alone installs no lifecycle hooks. A Feedable adapter
-around a media or discussion row does not receive the underlying model’s
-delete events automatically. Decide whether those activities should survive
-and wire any cleanup explicitly.
+The cascade runs on model events, so it does not run for:
 
-Bulk query deletes, such as `MenuItem::where(...)->delete()`, do not dispatch
-individual model events and therefore do not run this cascade.
+- a model that implements `Feedable` without the trait
+- a bulk query delete, such as `MenuItem::where(...)->delete()`
 
-The lifecycle hooks are in
+Wire that cleanup yourself. The hooks are in
 [Feedable API](/reference/feedable#snapshot-maintenance).
 
 ## A Soft Delete Is a Delete
 
-`$dish->delete()` on a soft-deleting model using the trait fires the same
-hook and soft-deletes the activities. Restoring the model does not restore them.
+Soft-deleting a model with the trait soft-deletes its activities too.
+Restoring the model does not restore them.

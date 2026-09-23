@@ -1,18 +1,18 @@
 # Recording an Authoriser
 
-Someone does a thing; someone else permits it. The doer belongs in the sentence.
-The authoriser belongs in the record, and usually nowhere else.
+When one person does something and another approves it, the doer is the actor
+of the story. Record the approval as a separate activity that no feed shows,
+so you can still look up who approved.
 
 ```php
-// The contributor's story. Their photo, their name on it.
-Storyfeed::activity()
+// where the fact happens: a controller, an action, a listener
+Storyfeed::activity()                 // the contributor's story
     ->by($customer)
     ->action('publish', $photo)
     ->to($dish)
     ->publish();
 
-// The approval. A real activity, in no feed.
-Storyfeed::activity()
+Storyfeed::activity()                 // the approval, in no feed
     ->by($approver)
     ->action('approve', $photo)
     ->publish();
@@ -27,38 +27,22 @@ Storyfeed::feeds([
 ]);
 ```
 
-## The Shape
-
-This turns up wherever a system has both a person who does something and a person
-who permits it: moderation queues, dual control, four-eyes approval, a draft
-someone else releases. The requirement is always the same sentence:
-
-> **Recorded and queryable, not in the sentence.**
-
-Two halves that pull against each other: a role would put the approver in the
-sentence, and a `data` key would keep them out of the index.
+This fits moderation queues, four-eyes approval, and a draft someone else
+releases. A role would put the approver in the sentence; a `data` key would
+keep them out of the participant index. A separate activity does neither.
 
 ## Checking for an Existing Record
 
-Before adding a row, look for the fact where it would naturally live. An approval
-usually happens *to* something — a photo, a document, a draft — and that thing
-often already carries a column, a custom property, or a status field recording
-who released it.
+If the approved thing already records who released it, in a column or a status
+field, use that. This recipe is for approvals with no such home: a change to a
+menu, a release with no record of its own.
 
-If it does, use that. The recipe below is for approvals with **no natural home**:
-a change applied to a menu, a release with no record of its own, an authorisation
-that sits between two entities rather than on one.
+## Finding the Approver
 
-## Recording It as Its Own Activity
-
-Record the approval as a real activity whose actor is the approver, and admit
-its verb to no feed. That satisfies both halves with mechanisms that already
-ship.
-
-**Queryable.** The approver is the *actor* of a real row, so the participant
-index has them. The footnote is a lookup:
+The approver is the actor of a real row, so the participant index has them:
 
 ```php
+// where the approver is shown: a controller or a view model
 $approval = Activity::query()
     ->involving($photo)
     ->where('verb', 'approve')
@@ -68,43 +52,26 @@ $approval = Activity::query()
 $approvedBy = $approval?->cachedActor;
 ```
 
-**Quiet.** It renders nowhere, because no feed admits the verb. The invisibility
-is a property of the read path rather than a convention someone has to remember.
-
-**Honest on the wire.** It is the `Accept` shape Activity Streams wants, so
-nothing is invented and no extension term appears in the serialized document.
-
-**The contributor's story is untouched.** Their name is the actor, which is the
-whole point of doing it this way rather than co-authoring the story.
+The approval renders nowhere, because no feed admits its verb. It maps to the
+Activity Streams `Accept` type, so the serialized document needs no extension
+term. The contributor stays the actor of their own story.
 
 ::: tip Exclude the verb, do not omit it
-`->except()` and omission produce the same feed. They do not produce the same
-*record*.
-
-`storyfeed:doctor`'s feed coverage check treats a verb as classified when a feed
-names it — **including when a feed excludes it**. An omitted verb is
-indistinguishable from one nobody wired up, and the helpful fix for an oversight
-is exactly the harmful fix for a deliberate exclusion. Naming it writes the
-decision somewhere tooling can see, so the next person to look finds *somebody
-decided this* instead of a gap that invites repair.
+`->except()` and leaving the verb out produce the same feed. But
+`storyfeed:doctor`'s feed coverage check counts a verb as classified when a
+feed names it, including in `except()`. An omitted verb looks like one nobody
+wired up.
 :::
 
-## When the Second Query Is Too Much
+## Showing the Approver on a Dense List
 
-On a single record's timeline, or one photo's detail page, the lookup is one
-query on a page already doing several. On a dense list it is not.
-
-If you reach that point, denormalise the approver's name into the story's `data`
-at publish time **as well** — and keep the activity as the record of truth. The
-`data` copy is a rendering convenience that may go stale; the activity is the
-thing `involving()` can still find, and the thing an audit answers from.
+On one photo's page, the lookup is one more query. On a long list it is one
+per row. There, also copy the approver's name into the story's `data` at
+publish time, and keep the approval activity as the record. The `data` copy
+can go stale; the activity is what `involving()` finds.
 
 ## What the Reader Sees
 
-Nothing, unless you draw it. The approval carries no headline template because it
-appears in no feed. The footnote is your renderer's, from the lookup above, and
-it should read like an annotation rather than a second sentence — a name and a
-timestamp under the story, not a row of its own.
-
-That asymmetry is the whole recipe: **the doer is the actor, the authoriser is a
-footnote.**
+Nothing, unless you draw it. The approval has no headline because no feed
+shows it. Draw the approver from the lookup as a name and a time under the
+story, not as a row of its own.
