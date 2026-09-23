@@ -94,7 +94,7 @@ One customer, three orders, one group node:
   "headline_template": ":actor placed :count orders with :target",
   "actor": { "type": "user", "label": "Steve Harrington", … },  // one actor, so the key is filled
   "object": null,                                               // three of them
-  "exemplars": {
+  "sample": {
     "actors": [ /* him */ ],
     "objects": [ /* up to three orders, to name */ ],
     "targets": [ /* the kitchen */ ]
@@ -122,7 +122,7 @@ Five customers, the same kitchen:
 
 A group fills a singular role key only when that role has one entity. To say
 how many entities a group holds, use `distinct`, which is the true total; the
-`exemplars` lists are only a sample.
+`sample` lists hold only a few.
 
 ## Someone Who Is Not a User
 

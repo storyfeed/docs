@@ -64,7 +64,7 @@ above already named them. Group children follow the same rule.
 
 Both slots exist on group nodes too. Fill a group's `body` only when
 `distinct.objects === 1`: with more than one distinct object a preview privileges
-one exemplar and implies it stands for the group, the same failure as a headline
+one sampled entity and implies it stands for the group, the same failure as a headline
 that names one document out of five.
 
 The body renders only when the payload names a component on the object. That is a

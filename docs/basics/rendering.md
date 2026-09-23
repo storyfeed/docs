@@ -102,13 +102,13 @@ unknown actor.
 ## Groups
 
 A group node has `kind: "group"` and a plural sentence. `:count` is the member
-count, and a plural token draws the exemplars plus how many are not shown:
+count, and a plural token draws the sample plus how many are not shown:
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
 @php
     $list = function (array $node, string $role) use ($entity) {
-        $shown = $node['exemplars'][$role] ?? [];
+        $shown = $node['sample'][$role] ?? [];
         $more = max(($node['distinct'][$role] ?? 0) - count($shown), 0);
 
         return implode(', ', array_map(fn ($e) => $entity($e, 'Something'), $shown))
@@ -126,9 +126,9 @@ count, and a plural token draws the exemplars plus how many are not shown:
 <FeedExample :items="[grouped]" />
 
 A group carries `node['actor']` only when it has exactly one actor. For a
-**singular** token, take a name from the exemplars only when `distinct` says
+**singular** token, take a name from the sample only when `distinct` says
 there is one, and otherwise draw the plural list. An unconditional
-`?? exemplars[0]` names one person over a group of nine.
+`?? sample[0]` names one person over a group of nine.
 
 ## A Group With No Sentence
 

@@ -77,7 +77,7 @@ non-null; an empty `content` string is preserved.
 carries the same location again with its `mediaType`, `width` and `height`.
 The four keys are Activity Streams 2.0 property names with AS2's definitions:
 a photo is `url` (the full image) plus `preview` (the derivative a list paints).
-Group `exemplars` are ordinary entity objects and carry `media` the same way.
+A group's `sample` entities are ordinary entity objects and carry `media` the same way.
 
 An optional `attachment` carries `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Its default type is `Document`.
@@ -141,7 +141,7 @@ audience.
   "origin": null,
   "result": null,
   "instrument": null,
-  "exemplars": {                        // every role is a LIST
+  "sample": {                           // every role is a LIST
     "actors": [ /* up to 3 entities */ ],
     "objects": [ /* up to 3 entities */ ],
     "targets": [ /* the shared target entity */ ],
@@ -160,8 +160,8 @@ audience.
 ```
 
 Each singular role key is an entity only when the axis pins the role, its
-exemplar list has exactly one entry, and its distinct count is exactly one.
-Otherwise it is `null`. Each plural role has an exemplar list capped at three
+sample list has exactly one entry, and its distinct count is exactly one.
+Otherwise it is `null`. Each plural role has a sample list capped at three
 and a distinct count; an absent role has `[]` and `0`.
 
 A renderer can rely on the group node's shape, but not on which groups appear:

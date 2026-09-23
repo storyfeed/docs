@@ -45,7 +45,7 @@ the number of members.
 | `:instrument` | `:instruments` | the tool or service used |
 
 A singular token becomes one entity's label. A plural token becomes the group's
-exemplars and an overflow count. [Rendering](/basics/rendering#groups)
+sample and an overflow count. [Rendering](/basics/rendering#groups)
 covers substitution and the `:count` and `:others` tokens.
 
 ## Tokens a Group Headline May Use
@@ -99,7 +99,7 @@ member. A role outside the axis key can be empty on some members.
 
 `targets` is keyed on actor, verb and day, not on target. An activity with no
 target joins the same group as one with a target: it counts towards `:count`
-and adds no exemplar.
+and adds nothing to the sample.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target

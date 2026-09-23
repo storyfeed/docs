@@ -23,7 +23,7 @@ where you meet them.
 | **curation** | choosing the winning axis at write time | editorial judgement, or anything at read time |
 | **eligibility** | the minimum that makes an axis worth applying | a limit on how big a group can get |
 | **group node** | an aggregate in its own right | a parent row with children attached |
-| **exemplars** | a few named participants, to print | the full membership — `distinct` has the totals |
+| **sample** | a few named participants, to print | the full membership — `distinct` has the totals |
 | **count** | activities in the group | distinct people (that's `distinct.actors`) |
 
 ## Rendering

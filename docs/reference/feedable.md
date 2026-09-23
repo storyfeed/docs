@@ -44,7 +44,7 @@ Payload shape: [entity object](/reference/payload#entity-object).
 ## `FeedContext`
 
 `feedMedia()` receives a `FeedContext`. The resolver runs for every entity with
-a snapshot on a page, including group exemplars that are never drawn as links,
+a snapshot on a page, including sampled group entities that are never drawn as links,
 so it should make no writes and no queries except `model()`.
 
 | Accessor | Returns |

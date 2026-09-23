@@ -11,8 +11,8 @@ const props = defineProps<{
     entities: Partial<
         Record<'actor' | 'object' | 'target' | 'context', FeedEntity | null>
     >;
-    /** Aggregate context (group nodes): exemplar lists and their true totals. */
-    exemplars?: Partial<Record<FeedRole, FeedEntity[]>>;
+    /** Aggregate context (group nodes): sample lists and their true totals. */
+    sample?: Partial<Record<FeedRole, FeedEntity[]>>;
     distinct?: Partial<Record<FeedRole, number>>;
     count?: number;
     /** Last-resort fallback when no grammar was authored at all. */
@@ -78,14 +78,14 @@ const parts = computed<Part[]>(() => {
 });
 
 function shown(role: FeedRole): FeedEntity[] {
-    return props.exemplars?.[role] ?? [];
+    return props.sample?.[role] ?? [];
 }
 
 /**
  * The collapsed remainder for a role: what the server counted, minus what it
  * gave us names for. A pinned role is a list of one with nothing left over.
  *
- * Note this is `distinct - shown`, never `- 1`: the exemplar list may hold
+ * Note this is `distinct - shown`, never `- 1`: the sample list may hold
  * several names, and subtracting one would overcount every time it does.
  */
 function overflow(role: FeedRole): number {
@@ -108,7 +108,7 @@ const actorOverflow = computed(() => overflow('actors'));
                 />
 
                 <!--
-                    Plural roles read the exemplar list and append the true
+                    Plural roles read the sample list and append the true
                     remainder, so the collapsed dimension is named rather than
                     counted: "Onboarding Portal, Analytics Dashboard and 2 more".
                 -->

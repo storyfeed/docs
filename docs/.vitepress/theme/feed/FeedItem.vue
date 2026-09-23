@@ -57,8 +57,8 @@ const resolved = computed<Rail>(() => {
  * entities not shown rather than the members.
  */
 const strip = computed(() => {
-    const exemplars = (props.item as any).exemplars?.objects ?? [];
-    const tiles = exemplars
+    const sample = (props.item as any).sample?.objects ?? [];
+    const tiles = sample
         .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
         .filter((t: any) => t.image !== null);
     const distinct = (props.item as any).distinct?.objects ?? tiles.length;

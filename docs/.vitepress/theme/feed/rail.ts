@@ -93,7 +93,7 @@ export function other(slot: RailSlot): RailSlot {
  *
  * MORE THAN ONE FACE SUPPRESSES IT. Geometry: a badge over a stacked pair sits
  * on the seam between two discs and reads as a third. Honesty: a single face on
- * a group of several actors is the one-actor lie the exemplar list exists to
+ * a group of several actors is the one-actor lie the sample list exists to
  * refuse. Either reason alone would do; together they are non-negotiable.
  */
 export function railFor(

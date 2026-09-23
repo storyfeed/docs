@@ -217,7 +217,7 @@ is cheap enough to pass directly.
 
 ## What a Minted Form May Read
 
-The resolver runs for every entity on the page, including a group's exemplars
+The resolver runs for every entity on the page, including a group's sampled entities
 that a renderer may never draw. A form built there can read three things
 without a query per row:
 

@@ -61,7 +61,7 @@ that records only through stories has nothing to register.
 | `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, `'summary'` |
 | `grouping.curate` | `true` | select a winning axis at publish time |
 | `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
-| `grouping.exemplar_limits.<role>` | `3` | distinct exemplars listed per singular role on a group node |
+| `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node |
 | `grouping.policy.min_actors` | `3` | distinct actors before the `actors` axis applies |
 | `grouping.policy.min_targets` | `2` | distinct targets before `targets` applies |
 | `grouping.policy.min_target_members` | `3` | members required on `targets` |
@@ -70,20 +70,20 @@ that records only through stories has nothing to register.
 When grouping does not fire, check the [axis registry](/deeper/aggregation#the-built-in-axes)
 before changing thresholds: `repeat` pins the target id, while `targets` does not.
 
-`exemplar_limits` is keyed by singular role — `actor`, `object`, `target`,
+`sample_limits` is keyed by singular role — `actor`, `object`, `target`,
 `context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
 one where a surface shows more:
 
 ```php
 // config/storyfeed.php
-'exemplar_limits' => [
+'sample_limits' => [
     'object' => 6,  // this feed shows the objects' pictures
     // everything else stays at 3
 ],
 ```
 
-Exemplars are drawn from the members already loaded, so `children_limit` still
-bounds them. Each one is a resolver call: a group node listing six objects
+The sample is drawn from the members already loaded, so `children_limit` still
+bounds it. Each sampled entity is a resolver call: a group node listing six objects
 resolves six entities on every page. An invalid or missing limit falls back to
 `3`.
 

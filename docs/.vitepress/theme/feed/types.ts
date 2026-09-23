@@ -88,7 +88,7 @@ export interface GroupNode extends BaseNode {
     kind: 'group';
     axis: string;
     /**
-     * Supplied ONLY where the axis pins that role — one exemplar, one distinct
+     * Supplied ONLY where the axis pins that role — one sampled entity, one distinct
      * value. Absent everywhere else on purpose: an unpinned role has no single
      * answer, so the server declines to name one rather than picking.
      */
@@ -101,7 +101,7 @@ export interface GroupNode extends BaseNode {
     children: ActivityNode[];
     children_truncated: boolean;
     /** Every role is a list, even when the axis pins it to one. */
-    exemplars: Record<FeedRole, FeedEntity[]>;
+    sample: Record<FeedRole, FeedEntity[]>;
     /** True distinct totals per role, for computing overflow. */
     distinct: Partial<Record<FeedRole, number>>;
 }

@@ -208,7 +208,7 @@ export function activity(over: Record<string, any>) {
 
 /**
  * A group node. Note what is absent: no singular role keys. A group carries
- * exemplars and distinct counts instead, which is contract, not styling.
+ * the sample and distinct counts instead, which is contract, not styling.
  */
 export function group(over: Record<string, any>) {
   return {
@@ -223,7 +223,7 @@ export function group(over: Record<string, any>) {
     glyph: over.glyph ?? null,
     glyph_intent:
       over.glyph_intent ?? resolveIntent(over.objects?.[0]?.type ?? null, over.verb),
-    exemplars: {
+    sample: {
       actors: over.actors ?? [],
       objects: over.objects ?? [],
       targets: over.targets ?? [],

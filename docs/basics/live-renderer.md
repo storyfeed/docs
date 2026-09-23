@@ -50,7 +50,7 @@ export interface GroupNode extends BaseNode {
   kind: 'group'
   axis: string
   count: number
-  exemplars: Partial<Record<`${FeedRole}s`, FeedEntity[]>>
+  sample: Partial<Record<`${FeedRole}s`, FeedEntity[]>>
   distinct: Partial<Record<`${FeedRole}s`, number>>
   children: ActivityNode[]
   children_truncated: boolean
@@ -225,14 +225,14 @@ import type { FeedNode, FeedRole } from './types'
 
 const props = defineProps<{ node: FeedNode }>()
 
-/** Resolve an emitted singular token from its role key, then exemplars. */
+/** Resolve an emitted singular token from its role key, then the sample. */
 function one(role: FeedRole) {
   if (props.node[role]) return props.node[role]
   if (props.node.kind !== 'group') return null
 
-  // Only when `distinct` says there is exactly one: exemplars[0] would name
+  // Only when `distinct` says there is exactly one: sample[0] would name
   // one entity over several.
-  const shown = props.node.exemplars?.[`${role}s`] ?? []
+  const shown = props.node.sample?.[`${role}s`] ?? []
 
   return shown.length === 1 && props.node.distinct?.[`${role}s`] === 1
     ? shown[0]
@@ -243,7 +243,7 @@ function one(role: FeedRole) {
 function overflow(role: FeedRole): number {
   if (props.node.kind !== 'group') return 0
 
-  const shown = props.node.exemplars?.[`${role}s`]?.length ?? 0
+  const shown = props.node.sample?.[`${role}s`]?.length ?? 0
 
   return Math.max((props.node.distinct?.[`${role}s`] ?? 0) - shown, 0)
 }
@@ -252,7 +252,7 @@ function overflow(role: FeedRole): number {
 function list(role: FeedRole): string {
   if (props.node.kind !== 'group') return '—'
 
-  const shown = (props.node.exemplars?.[`${role}s`] ?? []).map((e) => e.label ?? '—')
+  const shown = (props.node.sample?.[`${role}s`] ?? []).map((e) => e.label ?? '—')
   const more = overflow(role)
 
   if (shown.length === 0) return '—'

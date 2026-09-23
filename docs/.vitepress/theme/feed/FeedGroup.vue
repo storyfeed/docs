@@ -25,10 +25,10 @@ const resolved = computed<Rail>(() =>
     parseRail(props.rail === null ? 'actor-only' : props.rail),
 );
 
-// A group's faces are its exemplars, capped at three — and more than one of
+// A group's faces come from its sample, capped at three — and more than one of
 // them suppresses the badge, because a single face over a group of several
-// actors is the one-actor lie the exemplar list exists to refuse.
-const faces = computed(() => props.item.exemplars.actors.slice(0, 3));
+// actors is the one-actor lie the sample list exists to refuse.
+const faces = computed(() => props.item.sample.actors.slice(0, 3));
 
 const slots = computed(() =>
     railFor(resolved.value, {
@@ -50,19 +50,19 @@ const expanded = ref(unnamed.value);
 const time = useRelativeTime(toRef(() => props.item.published_at));
 
 // The server names a group's pinned roles for us (v0.9) — this used to
-// reconstruct them from `exemplars[0] ?? children[0]`, which is the thing that
+// reconstruct them from `sample[0] ?? children[0]`, which is the thing that
 // release removed the need for, and which quietly names one entity out of many
 // the first time a group is not uniform.
 //
-// Recover a singular from the exemplars ONLY when the group genuinely has one.
-// `distinct` is the true total from the aggregate query, so a one-item exemplar
+// Recover a singular from the sample ONLY when the group genuinely has one.
+// `distinct` is the true total from the aggregate query, so a one-item sample
 // list is not on its own proof.
 const singular = (role: 'actor' | 'object' | 'target' | 'context') => {
     const named = props.item[role];
 
     if (named) return named;
 
-    const shown = props.item.exemplars[`${role}s`] ?? [];
+    const shown = props.item.sample[`${role}s`] ?? [];
 
     return shown.length === 1 && props.item.distinct[`${role}s`] === 1
         ? shown[0]
@@ -86,7 +86,7 @@ const entities = computed(() => ({
  * you are already looking at is noise.
  */
 const strip = computed(() => {
-    const tiles = (props.item.exemplars.objects ?? [])
+    const tiles = (props.item.sample.objects ?? [])
         .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
         .filter((t: any) => t.image !== null);
 
@@ -150,7 +150,7 @@ const hiddenBeyondChildren = computed(
                     :template="item.headline_template"
                     :headline="item.headline"
                     :entities="entities"
-                    :exemplars="item.exemplars"
+                    :sample="item.sample"
                     :distinct="item.distinct"
                     :count="item.count"
                     :verb="item.verb"

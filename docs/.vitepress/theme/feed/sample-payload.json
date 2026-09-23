@@ -44,7 +44,7 @@
         }
       },
       "glyph": "file-up",
-      "exemplars": {
+      "sample": {
         "actors": [
           {
             "type": "member",

@@ -20,7 +20,7 @@ This is the layout to build your renderer against, not a component you install.
 | thread | `thread` | what someone said, quoted on this activity |
 | media | `object.media.preview`, `object.media.url` | the object's picture, at the feed's scale |
 | detail | a `$body` key anywhere in `data` | one recognised form, drawn by whatever draws that form |
-| tiles | a group's `exemplars`, `distinct` | a sample of a collapsed group's pictures |
+| tiles | a group's `sample`, `distinct` | a sample of a collapsed group's pictures |
 | members | `children`, `count` | the group's own rows, when a reader opens it |
 
 Nothing else belongs in a row. A zone with nothing in it is absent, not empty.
