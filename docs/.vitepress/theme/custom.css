@@ -277,18 +277,22 @@
 /*
  * `::: headless` — where the package stops.
  *
- * Deliberately quieter than `tip`: this is a standing fact about what
- * Storyfeed is, met on several pages, not a thing to act on. A reader who has
- * seen it once should be able to skip it by its shape.
+ * Louder than `tip`, never a warning (ruled 2026-09-22): a reader who misses
+ * it builds on an assumption the package does not meet. It cannot borrow a
+ * colour, because teal is `tip` and yellow is `warning` on this site, so it
+ * is loud by contrast instead: ink edges, an ink title, a solid fill.
  */
 .sf-headless {
-    border: 1px solid var(--vp-c-divider);
-    border-left: 3px solid var(--vp-c-text-3);
-    background: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-text-1);
+    border-left: 6px solid var(--vp-c-text-1);
+    background: var(--vp-c-default-soft);
+    color: var(--vp-c-text-1);
 }
 .sf-headless .custom-block-title {
-    color: var(--vp-c-text-2);
-    font-weight: 600;
+    color: var(--vp-c-text-1);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
 }
 .sf-headless__body p:last-child {
     margin-bottom: 0;

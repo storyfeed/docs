@@ -412,9 +412,13 @@ so nobody documents it as public API.
   somewhere to send a reader, so only it names `storyfeed/ui` and
   `storyfeed/filament`, as options, with neither required nor documented here.
 
-  It is quieter than `::: tip` on purpose: this is a standing fact about what
-  Storyfeed is, met repeatedly, not a thing to act on. Rule 9's one-spelling
-  rule still holds — it is a container, not a component.
+  It is LOUDER than `::: tip`, never a warning (ruled 2026-09-22): a reader who
+  misses it builds on something the package does not do. Teal is `tip` and
+  yellow is `warning`, so it is loud by contrast: ink edges, an ink title, a
+  solid fill. Every word of every box lives in the `HEADLESS` map in
+  `config.ts`; a page writes `::: headless <key>` and nothing else, and the
+  build fails on an unknown key or a body written on the page. Rule 9's
+  one-spelling rule still holds: it is a container, not a component.
 - Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
   package exists. When the `storyfeed/filament` page lands it is a **pricing and
   install** page — what it costs, the licence key, the private Composer endpoint
