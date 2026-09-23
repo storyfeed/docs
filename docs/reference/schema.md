@@ -1,6 +1,6 @@
 # Schema
 
-Eight tables, created by the published migrations.
+Nine tables, created by the published migrations.
 
 ## `feed_activities`
 
@@ -46,6 +46,13 @@ Named participants with no model in your app.
 Bursts of activity by one actor, with `activities_count` and
 `last_activity_at`. Closed by quiet window; closing fires `BatchClosed` and
 creates composites.
+
+## `feed_batch_locks`
+
+One row per actor that has been batched, keyed `(actor_type, actor_id)`, with
+the ids of the actor's open batches. A publish takes the actor's row before
+choosing a batch, so two publishes at once by one actor join the same batch.
+The key is a string, so UUID and ULID actors fit. Nothing in the feed reads it.
 
 ## `feed_participants`
 

@@ -19,7 +19,7 @@ holds what it defined.
 
 | Key | Default |  |
 |---|---|---|
-| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants`, `feed_tombstones` | remap on collision, or point at pre-existing feed tables |
+| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants`, `feed_tombstones`, `feed_batch_locks` | remap on collision, or point at pre-existing feed tables |
 | `models.*` | the package models, including `tombstone` (`FeedTombstone`) | swap in your own; they should extend the defaults |
 
 ## Identity
@@ -30,6 +30,7 @@ holds what it defined.
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | party name for otherwise-anonymous publishes (jobs, commands) |
+| `parties.strict` | `null` | once [`Storyfeed::parties()`](/deeper/parties#declaring-parties) declares a list, throw on an undeclared name; otherwise it is ignored. `null` = strict in local/testing only |
 
 For named system attribution or a sentence without an actor slot, see
 [Parties and actorless voice](/deeper/parties).
@@ -128,7 +129,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 | Key | Default |  |
 |---|---|---|
 | `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
-| `prune.after_days` | `null` | retention window; `null` keeps everything |
+| `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
 | `trickle.limit` | `200` | activities snapshotted, and snapshots checked for a deleted model, per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
 

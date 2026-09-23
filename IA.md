@@ -338,7 +338,7 @@ reading and drawing, a second audience, then renderer-specific pages.
   `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
   while every reader of an activity feed does
-- ✅ Headlines — `routes/feed.php` and the `Story` facade, tokens, optional segments, icons, glyph intents, translation, `Story::resource()`, the feed commands
+- ✅ Headlines — `routes/feed.php` and the `Story` facade, tokens, optional segments, icons, glyph intents, translation, `Story::resource()`, `story()` at the call site, the feed commands
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
@@ -353,7 +353,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Publishing from Events — the listener, `PublishesToFeed`, events core emits
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
-- ✅ Story Classes — the blueprint: headline, icon and grouping in one class (not required to get a feed going)
+- ✅ Story Classes — one class per model, one method per verb, bound in `routes/feed.php` like a resource controller. The verb is the public handle, as a route name is (`story('place', $order)`), and the class is a declaration call sites never touch: never instantiated, so no `publish()`. Request injection (only the actor varies), `missingHeadline()`, one-verb classes as the job-shaped exception, `make:story`, `storyfeed:list`
 - ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, thresholds, custom axes
 - ✅ Grammar — group headlines, plural tokens, the tokens a group may use, nouns, wildcards
@@ -361,7 +361,8 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Queues — queued listeners and jobs, the actor on a worker
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
-- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, bulk deletes, `->missing()`
+- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()`, `->forgetWhenMissing()` on the verb, bulk deletes
+- ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept. Taught with `view`; ephemeral state is Choosing What Not to Record
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
 
 ### Cookbook

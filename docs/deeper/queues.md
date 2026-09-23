@@ -341,7 +341,9 @@ It applies only when nothing else names the actor:
 |---|---|---|
 | an explicit actor | `->by($user)`, `->by('Nightly Import')` | ignored |
 | explicit anonymity | `->anonymously()`, `->by(null)` | ignored |
-| a registered resolver | `Storyfeed::as(…)`, `resolveActorUsing()`, `actor_resolver` | ignored, even when it returns null |
+| a `Storyfeed::as()` actor | around the dispatch, or inside the job | ignored |
+| the verb's own actor | `->actor('Stripe')` in its definition | ignored |
+| a registered resolver | `resolveActorUsing()`, `actor_resolver` | ignored, even when it returns null |
 | nothing above | | applied, ahead of `parties.fallback` |
 
 To opt out, before dispatching:
@@ -351,8 +353,38 @@ To opt out, before dispatching:
 use Illuminate\Support\Facades\Context;
 use Storyfeed\Support\QueuedActor;
 
-Context::addHidden(QueuedActor::KEY, null);
+Context::addHidden(QueuedActor::KEY, null);   // no actor travels, a Storyfeed::as() actor included
 ```
+
+### A Scoped Actor
+
+A job dispatched inside `Storyfeed::as()` runs as that actor on the worker:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use App\Jobs\SyncMenu;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class SyncMenus extends Command
+{
+    protected $signature = 'menus:sync';
+
+    public function handle(): void
+    {
+        Storyfeed::as('Nightly Import', fn () => SyncMenu::dispatch()); // [!code focus]
+    }
+}
+```
+
+Every activity the job publishes names the party *Nightly Import*, ahead of
+the logged-in user and a registered resolver, and jobs it dispatches inherit
+it. The scope ends with the job, even when the job throws. A job dispatched
+with `->afterResponse()` runs after the scope has closed, so it does not carry
+the actor.
 
 ### Jobs With No User
 
@@ -361,6 +393,7 @@ A job dispatched from a console command or the scheduler has no user to carry:
 | The Job Says | Actor Recorded | Batched |
 |---|---|---|
 | `->by('Nightly Import')` | the party *Nightly Import* | yes |
+| nothing, dispatched inside `Storyfeed::as('Nightly Import', …)` | the party *Nightly Import* | yes |
 | nothing, with `'parties' => ['fallback' => 'Nightly Import']` | the party *Nightly Import* | yes |
 | `->anonymously()`, whatever the fallback | none | no |
 | nothing, no fallback | none | no |
@@ -401,7 +434,7 @@ on that event was pushed, use `Queue::fake()` alone.
 
 | Guaranteed | How |
 |---|---|
-| one batch per actor per burst | the open batch row is locked inside the publish transaction |
+| one batch per actor per burst | a lock row per actor, taken inside the publish transaction |
 | one `BatchClosed` per batch | the close is a conditional update |
 | a snapshot never regresses | the upsert compares `updated_at` under the row lock |
 | the publish is atomic | snapshot, groupings, batch and curation commit together |

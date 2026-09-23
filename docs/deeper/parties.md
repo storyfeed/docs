@@ -210,6 +210,30 @@ class CancelUnpaidOrders extends Command
 Pass a name for a party, or a model. An explicit `->by()` inside the block
 still wins.
 
+## Declaring Parties
+
+A name given to `Storyfeed::as()`, or to a verb's own `->actor()`, may come
+from outside your code. Declare the names an actor may take:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::parties(['Stripe', 'Paddle', 'System']);
+```
+
+Once a list is declared, a name outside it:
+
+| Environment | An Undeclared Name |
+|---|---|
+| `local`, `testing` | throws `UndeclaredParty`, naming the call and the list |
+| everywhere else | is ignored: the activity keeps the actor it would have had without the name, and `storyfeed:doctor` reports it |
+
+With no list, any name becomes a party. Names match as party keys do, so
+`'Stripe'` and `'stripe'` are one party. `parties.strict` in
+`config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
+`local` and `testing` only.
+
 ## App-wide Fallbacks
 
 ```php

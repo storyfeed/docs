@@ -23,7 +23,7 @@ Each finding names its fix.
 | `labels` | `Feedable` models labelled by guesswork: no `describeFeed()`, `toFeed()`, `guessFeedLabel()` or `toFeedUsing()`. See [Deleted Models](#deleted-models) | info |
 | `surface` | models that appear in the feed but that nothing publishes about | warning · info |
 | `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? | warning · info |
-| `parties` | party rows whose morph alias no longer resolves | info |
+| `parties` | party names an actor took that `Storyfeed::parties()` does not declare, and party rows with no activities. See [Parties](#parties) | warning · info |
 | `participants` | activities missing from the index `involving()` reads | warning |
 | `tables` | are the package tables present, `feed_tombstones` included? Until it exists, deleted models leave no tombstone | error |
 | `columns` | are write-path columns present? (catches schema drift after an upgrade) | error |
@@ -39,6 +39,8 @@ Each finding names its fix.
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
 | `body` | which [body types](/deeper/body) are actually stored, and the two ways one can be malformed quietly: a map with no `$body` key, and a body type versioned on some rows but not others | warning · info |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
+| `inherited` | `Feedable` subclasses deleted through a parent class that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
+| `retention` | rows past their verb's retention window, and busy verbs no window reaches. See [Retention](#retention) | warning · info |
 
 ## Feed Coverage
 
@@ -105,9 +107,27 @@ Register your feeds so this check can tell a real gap from a latent one.
 |---|---|---|
 | `removals.unclassified` | info | a recorded verb reads like a removal, but an activity with it is redundant once its object is deleted, as for any verb about its object. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
 | `labels.guessed` | info | the listed models are labelled by guesswork. Fine when the guess reads well in a feed; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable#models-you-don-t-own) |
+| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events never fire. Names the class, its alias and the parents, and says whether Storyfeed hears the parent's deletes for it (it does for a class in the morph map or registered with `Storyfeed::feedable()`) or its tombstones wait for `storyfeed:trickle` |
 
 The label matters beyond the feed: it is what a tombstone keeps when its model
 asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
+
+## Parties
+
+| Finding | Severity | Means |
+|---|---|---|
+| `parties.ignored` | warning | an actor named a party that [`Storyfeed::parties()`](/deeper/parties#declaring-parties) does not declare, so it was ignored and the activity kept the actor it would otherwise have had. Declare the name if it is real |
+| `parties.undeclared_actor` | warning | a verb's own `->actor()` names a party the list does not declare: it throws in `local` and `testing` and is ignored elsewhere |
+| `parties.undeclared_list` | info | parties are in use and no list is declared, so any name given to `Storyfeed::as()` or a verb's `->actor()` becomes one |
+| `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
+| `parties.used` | info | a party, and how many activities it has |
+
+## Retention
+
+| Finding | Severity | Means |
+|---|---|---|
+| `retention.backlog` | warning | a verb has rows more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them, with the snapshots and tombstones only they referred to. Usually a window just declared or shortened, or a prune nothing schedules; `storyfeed:prune --pretend` shows the run first |
+| `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it, so its rows are kept for the life of the table. A verb that says `->keepForever()` is never named |
 
 ## Entities
 

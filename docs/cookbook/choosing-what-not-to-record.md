@@ -59,10 +59,12 @@ Storyfeed::grammar([
 | a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | the text of a note edited | no | the note is the story; its edit is not |
 | a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
+| someone typing, or coming online | no | it stops being true within seconds |
 | a field-level audit row | no | an audit log is its own surface |
 | a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
 | a question asked about a dish | yes | the sentence names what was asked about |
 | an order placed | yes | |
+| an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
 
 ## A Note Is an Activity About Its Target
 
