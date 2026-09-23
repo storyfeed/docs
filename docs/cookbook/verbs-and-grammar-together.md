@@ -1,7 +1,7 @@
 # Keeping Verbs and Grammar Together
 
-A verb and its headline drift apart when they are written in different
-places. Declare both in one Story class, and publish through that class.
+Write a verb and its headline in one Story class, and publish through that
+class. Then the two can't get out of step.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -35,7 +35,7 @@ class OrderWasPlaced extends Story
 }
 ```
 
-The verb string is written only in the class. Publish through it:
+Publish through the class:
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -47,7 +47,7 @@ OrderWasPlaced::activity($order)
 
 <FeedExample context :items="[scenes.order]" />
 
-Registration is in [Story Classes](/deeper/stories).
+Register the class as shown in [Story Classes](/deeper/stories).
 
 ## Where Drift Comes from
 
@@ -65,16 +65,12 @@ php artisan storyfeed:verbs --used            # registered but never recorded, a
 php artisan storyfeed:stories                 # registered definitions and recorded pairs
 ```
 
-`storyfeed:stories` reads recorded pairs, so it cannot find a publisher that
-has never run. Its `(call site)` rows are pairs, not source locations.
-
-`grammar.strict` throws at the publish call in `local` and `testing` when the
-pair has no headline. See [Configuration](/reference/configuration).
+In `local` and `testing`, the `grammar.strict` option throws when you publish
+a verb with no headline.
 
 ## A Verb Nothing Publishes Any More
 
-Rows recorded under a retired verb keep their headline only while the verb
-stays registered:
+Old rows keep their headline only while their verb stays registered:
 
 ```php
 <?php
@@ -99,6 +95,3 @@ class OrderWasPrinted extends Story
     }
 }
 ```
-
-`storyfeed:verbs --used` counts `print` as recorded while old rows remain. It
-cannot tell that nothing publishes it any more.

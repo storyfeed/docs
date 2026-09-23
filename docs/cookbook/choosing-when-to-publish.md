@@ -1,7 +1,6 @@
 # Choosing When to Publish
 
-Publish when a record's status changes, and not on other saves. The feed then
-shows what happened to the order, not every edit to it.
+Publish when a record's status changes, not on every save.
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -115,8 +114,8 @@ Storyfeed::grammar([
 | ready → completed | yes | `complete` |
 
 Use one verb per transition, not one `status` verb with the new state in
-`data`. The reason is in
-[Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
+`data`. [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on)
+explains why.
 
 ## The Transition from the Event
 
@@ -146,8 +145,7 @@ class OrderConfirmed implements PublishesToFeed
 }
 ```
 
-An `OrderSaved` event has no story to return. See
-[Publishing from Events](/deeper/events).
+See [Publishing from Events](/deeper/events).
 
 ## Where to Publish From
 
@@ -156,5 +154,3 @@ An `OrderSaved` event has no story to return. See
 | an action or service class | the common case: the fact and the record in one place |
 | a domain event via `PublishesToFeed` | when several things already react to the event |
 | a model observer | lifecycle facts (created, deleted) with no domain event |
-
-The pairs recorded from any of the three show up in `storyfeed:stories`.
