@@ -87,7 +87,10 @@ const posted = activity({
 
 ## One Activity
 
-<<< @/snippets/publish.php
+::: code-group
+<<< @/snippets/publish.php [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[scenes.order]" />
 
@@ -95,7 +98,8 @@ const posted = activity({
 
 The same customer orders three times in a few minutes, in three requests.
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // where the order is placed: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
@@ -103,6 +107,12 @@ Storyfeed::activity()
     ->to($kitchen)
     ->publish();
 ```
+
+```php [Named Arguments]
+// where the order is placed: a controller, an action, a listener
+Storyfeed::record('place', $order, actor: $customer, target: $kitchen);
+```
+:::
 
 On the feed:
 
@@ -127,7 +137,8 @@ Five customers, five orders, five separate requests.
 
 A payment provider reports an order paid, and it has no row in your database.
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // app/Http/Controllers/StripeWebhookController.php
 Storyfeed::activity()
     ->by('Stripe')
@@ -135,13 +146,20 @@ Storyfeed::activity()
     ->publish();
 ```
 
+```php [Named Arguments]
+// app/Http/Controllers/StripeWebhookController.php
+Storyfeed::record('pay', $order, actor: 'Stripe');
+```
+:::
+
 <FeedExample :items="[paid]" />
 
 [Parties & Anonymous Actors](/deeper/parties).
 
 ## The Words Someone Wrote
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($customer)
@@ -150,11 +168,18 @@ Storyfeed::activity()
     ->publish();
 ```
 
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+Storyfeed::record('note', $order, actor: $customer, thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'));
+```
+:::
+
 <FeedExample :items="[noted]" />
 
 ## A Photograph
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($cook)
@@ -163,13 +188,20 @@ Storyfeed::activity()
     ->publish();
 ```
 
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+Storyfeed::record('publish', $photo, actor: $cook, target: $dish);
+```
+:::
+
 <FeedExample :items="[photographed]" />
 
 ## Six Photographs, One Row
 
 The cook uploads a set, one request each.
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($cook)
@@ -177,11 +209,18 @@ Storyfeed::activity()
     ->publish();
 ```
 
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+Storyfeed::record('publish', $photo, actor: $cook);
+```
+:::
+
 <FeedExample :items="[photoBurst]" />
 
 ## A Dish, as a Post
 
-```php
+::: code-group
+```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
 Storyfeed::activity()
     ->by($cook)
@@ -189,7 +228,16 @@ Storyfeed::activity()
     ->publish();
 ```
 
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+Storyfeed::record('add', $dish, actor: $cook);
+```
+:::
+
 <FeedExample :items="[posted]" />
+
+The card comes from the dish's own `toFeed()`, covered in
+[Activity Body Content](/deeper/details).
 
 ## And Many More
 

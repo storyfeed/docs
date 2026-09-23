@@ -66,7 +66,10 @@ Storyfeed::grammar([
 
 ## Publishing an Activity
 
-<<< @/snippets/publish.php
+::: code-group
+<<< @/snippets/publish.php [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php [Named Arguments]
+:::
 
 On the feed:
 

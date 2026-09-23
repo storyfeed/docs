@@ -24,9 +24,13 @@ const priced = activity({
 
 ## The Builder
 
-The builder reads in the order of the headline it produces:
+Record an activity where the fact happens. The builder reads in the order of
+the headline it produces:
 
-<<< @/snippets/publish.php
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[scenes.order]" />
 
@@ -34,12 +38,8 @@ The first argument to `action()` is the **verb**: a plain string naming what
 happened. `place` is this app's own word, not one the package knows. Nothing
 is registered first; the package stores the string and hands it back.
 
-The same activity, in one call:
-
-```php
-// where the order is placed: a controller, an action, a listener
-Storyfeed::record('place', $order, actor: $customer, target: $kitchen);
-```
+`Storyfeed::record()` records the same activity in one call, with each role as
+a named argument. Every recording example on this site shows both forms.
 
 ## Roles
 
@@ -78,13 +78,60 @@ An alias and its setter record identical rows. `context` is set only by
 Omit the actor and the authenticated user is recorded. When a webhook or a
 job records the fact, there is no authenticated user, so name the actor:
 
-```php
-// app/Http/Controllers/StripeWebhookController.php
-Storyfeed::activity()
-    ->by('Stripe')
-    ->action('pay', $order)
-    ->publish();
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by('Stripe') // [!code focus]
+            ->action('pay', $order) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return response()->noContent();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        Storyfeed::record('pay', $order, actor: 'Stripe'); // [!code focus]
+
+        return response()->noContent();
+    }
+}
+```
+:::
 
 <FeedExample :items="[paid]" />
 
@@ -94,33 +141,149 @@ unknown.
 
 ## Extra Data and Backdating
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()
-    ->by($cook)
-    ->action('reprice', $dish)
-    ->data(['from' => 1450, 'to' => 1550])   // activity-level payload, arrives in the node
-    ->publishedAt($changedAt)                // backdate: imports, backfills
-    ->publish();
+`->data()` adds values to the activity itself. They arrive in its node:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UpdatePriceRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class MenuItemPriceController extends Controller
+{
+    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $from = $dish->price;
+
+        $dish->update(['price' => $request->integer('price')]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->action('reprice', $dish) // [!code focus]
+            ->data(['from' => $from, 'to' => $dish->price]) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UpdatePriceRequest;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class MenuItemPriceController extends Controller
+{
+    public function update(UpdatePriceRequest $request, MenuItem $dish): RedirectResponse
+    {
+        $from = $dish->price;
+
+        $dish->update(['price' => $request->integer('price')]);
+
+        Storyfeed::record('reprice', $dish, actor: $request->user(), data: ['from' => $from, 'to' => $dish->price]); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 <FeedExample :items="[priced]" />
 
-`Storyfeed::record()` takes the same as named arguments: `data:`,
-`publishedAt:`, `replace:`, `objects:` and `thread:`.
+`->publishedAt()` backdates an activity, for imports and backfills:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\MenuItem;
+use App\Models\User;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class ImportPriceHistory extends Command
+{
+    protected $signature = 'menu:import-prices {file}';
+
+    public function handle(): void
+    {
+        foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
+            Storyfeed::activity() // [!code focus]
+                ->by(User::findOrFail($row['user_id'])) // [!code focus]
+                ->action('reprice', MenuItem::findOrFail($row['menu_item_id'])) // [!code focus]
+                ->data(['from' => $row['from'], 'to' => $row['to']]) // [!code focus]
+                ->publishedAt($row['changed_at']) // [!code focus]
+                ->publish(); // [!code focus]
+        }
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\MenuItem;
+use App\Models\User;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class ImportPriceHistory extends Command
+{
+    protected $signature = 'menu:import-prices {file}';
+
+    public function handle(): void
+    {
+        foreach (json_decode(file_get_contents($this->argument('file')), true) as $row) {
+            Storyfeed::record( // [!code focus]
+                'reprice', // [!code focus]
+                MenuItem::findOrFail($row['menu_item_id']), // [!code focus]
+                actor: User::findOrFail($row['user_id']), // [!code focus]
+                data: ['from' => $row['from'], 'to' => $row['to']], // [!code focus]
+                publishedAt: $row['changed_at'], // [!code focus]
+            ); // [!code focus]
+        }
+    }
+}
+```
+:::
 
 ## Replacing Instead of Appending
 
 A price edited five times before the menu goes live is one fact.
-`->replace()` supersedes the earlier row with the same object and verb:
+`->replace()` supersedes the earlier row with the same object and verb, so
+each edit leaves one row:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish();
-
-// a minute later, another request
-Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish();
+::: code-group
+```php [Fluent Syntax]
+// app/Http/Controllers/MenuItemPriceController.php, update()
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('reprice', $dish)
+    ->data(['from' => $from, 'to' => $dish->price])
+    ->replace() // [!code highlight]
+    ->publish();
 ```
+
+```php [Named Arguments]
+// app/Http/Controllers/MenuItemPriceController.php, update()
+Storyfeed::record('reprice', $dish, actor: $request->user(), data: ['from' => $from, 'to' => $dish->price], replace: true); // [!code highlight]
+```
+:::
 
 <FeedExample :items="[priced]" />
 
@@ -129,11 +292,62 @@ Storyfeed::activity()->by($cook)->action('reprice', $dish)->replace()->publish()
 
 ## Recording Many Objects at Once
 
-Pass `objects:` (or `->objects()`) to record one activity about many objects:
+`->objects()` records one activity about many objects:
 
-```php
-// where the fact happens: a controller, an action, a listener
-Storyfeed::record('publish', objects: $dishes, actor: $cook);
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PublishMenuController extends Controller
+{
+    public function __invoke(Request $request): RedirectResponse
+    {
+        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+
+        $dishes->each->update(['published_at' => now()]);
+
+        Storyfeed::activity() // [!code focus]
+            ->by($request->user()) // [!code focus]
+            ->verb('publish') // [!code focus]
+            ->objects($dishes) // [!code focus]
+            ->publish(); // [!code focus]
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class PublishMenuController extends Controller
+{
+    public function __invoke(Request $request): RedirectResponse
+    {
+        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+
+        $dishes->each->update(['published_at' => now()]);
+
+        Storyfeed::record('publish', objects: $dishes, actor: $request->user()); // [!code focus]
+
+        return back();
+    }
+}
+```
+:::
 
 [Composites](/deeper/composites) covers how that activity reads and groups.

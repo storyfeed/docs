@@ -61,7 +61,10 @@ const withFile = activity({
 
 Most activities need nothing more. The sentence is the whole row:
 
-<<< @/snippets/publish.php
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[scenes.order]" />
 

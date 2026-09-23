@@ -232,7 +232,25 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     of any snippet must never have to ask "where do I put this?". Exempt: an
     API fragment on a Reference page (an argument list, a chain segment).
 
-### When a callout is earned — Silent / Unguarded / In-Hand
+33. **Getting Started hooks; the teaching pages leave nothing to guess**
+    (ruled 2026-09-22). Introduction, Usage Examples, Installation and
+    Quickstart show fragments under a location comment, because their job is
+    to intrigue. From The Basics on, a recording example is the **full call
+    site**: the class with its namespace and imports, the method, where each
+    variable comes from, and what the method returns, so a developer can
+    follow along in their own app. The recording lines carry
+    `// [!code focus]`, so the call stands out and the rest of the class reads
+    as context. A later snippet in the same section may be a fragment of a
+    class already shown in full, under `// app/…/File.php, method()`.
+34. **Every recording example shows both forms, as tabs** (ruled 2026-09-22).
+    A `::: code-group` with `[Fluent Syntax]` first and `[Named Arguments]`
+    second: the same activity as one `Storyfeed::record()` call. Fluent leads
+    and is the default tab. Shared snippets get a twin file,
+    `<name>.named-arguments.php`. No second tab where `record()` has no
+    equivalent: a chain that returns a `PendingActivity` (`toFeedActivity()`),
+    or one that says `->anonymously()` or `->by(null)`, because `record()`
+    reads `actor: null` as "not given" and resolves the ambient user.
+ — Silent / Unguarded / In-Hand
 
 All three must hold:
 
