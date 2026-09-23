@@ -1,8 +1,7 @@
 # Recording Deletions
 
-To record that something was deleted, make the surviving parent the object
-and carry the deleted thing's name in `data`. The row keeps rendering after the
-deleted model is gone.
+To record a deletion, make the parent that survives the object, and put the
+deleted thing's name in `data`. The row still renders after the model is gone.
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -92,9 +91,8 @@ Your renderer shows the name from the node's `data`.
 
 ## What a Removal Story May Reference
 
-A model using `Storyfeed\Concerns\InteractsWithFeed` soft-deletes every
-activity it took part in, in any role, when it is deleted. A force delete
-hard-deletes them.
+Deleting a model that uses `InteractsWithFeed` also deletes every activity it
+appears in.
 
 | The Removal Story References | After the Delete |
 |---|---|
@@ -102,15 +100,11 @@ hard-deletes them.
 | the deleted model, published after the delete | the snapshot renders; its link points at a record that is gone |
 | the surviving parent as `object`, the name in `data` | renders and links |
 
-The cascade runs on model events, so it does not run for:
-
-- a model that implements `Feedable` without the trait
-- a bulk query delete, such as `MenuItem::where(...)->delete()`
-
-Wire that cleanup yourself. The hooks are in
+A bulk delete, such as `MenuItem::where(...)->delete()`, skips this. Clean up
+after one with the methods in
 [Feedable API](/reference/feedable#snapshot-maintenance).
 
 ## A Soft Delete Is a Delete
 
-Soft-deleting a model with the trait soft-deletes its activities too.
-Restoring the model does not restore them.
+Soft-deleting the model soft-deletes its activities too. Restoring the model
+does not restore them.

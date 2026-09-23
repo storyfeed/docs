@@ -1,7 +1,7 @@
 # Activities Without an Actor
 
 Record the user when a person acted, a named party when a system acted, and
-no actor when nobody did. Each case gets its own headline.
+no actor when nobody did.
 
 ```php
 <?php
@@ -78,9 +78,9 @@ Storyfeed::grammar([
 
 ## The Actor Read from the Request
 
-Without `by()`, the actor is resolved from the request: by default, the
-authenticated user. A job dispatched from a console command or the scheduler
-has no user, so with no custom resolver or fallback party the actor is `null`:
+Without `by()`, the actor is the logged-in user by default. A job started from
+a console command or the scheduler has no logged-in user, so its actor is
+`null`:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -133,10 +133,8 @@ class RecordOrder implements ShouldQueue
 
 <FeedExample :items="[anonymous]" />
 
-To keep the author, pass the user into the job and call
-`->by($this->customer)`, as the event above does. For a system, use a
-[party](/deeper/parties#parties). When nobody acted, give the verb an
-[actorless sentence](/deeper/parties#actorless-voice).
+To keep the author, pass the user into the job and call `->by()` with it, as
+the event above does.
 
 ## An Explicitly Unknown Actor
 
@@ -169,9 +167,6 @@ class OrderController extends Controller
 }
 ```
 
-`by(null)` skips actor resolution entirely: no resolver, no authenticated
-user, no fallback party.
-
 | Spelling | Actor |
 |---|---|
 | omit `by()` | resolved from the request |
@@ -179,10 +174,8 @@ user, no fallback party.
 | `->anonymously()` | anonymous, on an existing builder |
 | `Storyfeed::anonymous()` | anonymous, from the start |
 
-The last call wins: `->by($user)->anonymously()` records no actor, and
-`->anonymously()->by($user)` records the user. Both override
-`Storyfeed::as(...)`. `Storyfeed::record(..., actor: null)` still resolves the
-actor; use an anonymous builder instead.
+`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
+one of the calls above instead.
 
 ## One Sentence per Kind of Actor
 
@@ -255,9 +248,8 @@ class StripeWebhookController extends Controller
 
 <FeedExample :items="[paid]" />
 
-A job that publishes many activities can wrap them in
-`Storyfeed::as('System', …)` instead of naming the party on each call. See
-[Scoped Attribution](/deeper/parties#scoped-attribution).
+To name the party once for a whole job, wrap it in `Storyfeed::as('System', …)`.
+See [Scoped Attribution](/deeper/parties#scoped-attribution).
 
 ## No Actor at All
 
@@ -302,5 +294,5 @@ class ExpireOrders extends Command
 
 <FeedExample :items="[expired]" />
 
-Leaving `:actor` out of a template changes only the sentence. It does not
-clear a stored actor.
+Leaving `:actor` out of a headline only changes the sentence. A stored actor
+stays stored.
