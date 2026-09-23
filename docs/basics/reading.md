@@ -180,12 +180,6 @@ filters, its mode. Send it back with the same query, including the same
 `query()` callbacks. Applied to a different query it does not error; it skips
 or repeats nodes.
 
-Store `sync_token` alongside the cursor and compare it on each page. When it
-changes, settled history was rewritten: drop the accumulated nodes and refetch
-from the head. Equality compare only; `null` to non-null counts as a change.
-A client that accumulates pages needs two more rules, in
-[Rendering](/basics/rendering#feeds-that-keep-moving).
-
 ## Conditional Building
 
 `FeedBuilder` is `Conditionable`:

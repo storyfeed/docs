@@ -172,20 +172,3 @@ A leak means a token resolved to nothing, and it reads like an anonymous
 actor rather than a bug. Run it across every read mode. Degraded entities are
 the exception: they should render your placeholder.
 
-## Feeds That Keep Moving
-
-A feed that polls or accumulates pages needs three more rules, because groups
-are not stable rows: a group of four becomes a group of five with a new node
-id, and a client that merges a fresh head page by id shows the same activities
-twice.
-
-1. **Window rule.** A fresh head page supersedes accumulated nodes whose
-   `published_at` falls inside the range it covers.
-2. **Member identity.** Drop any accumulated node whose children a fresh node
-   has claimed. `children` is capped by `grouping.children_limit`, so this is
-   a strong signal rather than a total one.
-3. **Sync token.** When the envelope's `sync_token` changes, settled history
-   was rewritten: drop everything accumulated and refetch from the head.
-   Equality compare only; `null` to non-null counts as a change.
-
-All three are implemented in [Live Rendering](/basics/live-renderer).

@@ -5,7 +5,7 @@ activity about a file that was hard-deleted. The app decides which activities
 to retire; `storyfeed:heal` checks each one against the current row and
 applies it.
 
-## Before Adopting
+## When to Use a Healer
 
 A healer is only for sources that are **permanently** gone and cannot return
 with the same identity. A hard-deleted asset whose replacement gets a new ID

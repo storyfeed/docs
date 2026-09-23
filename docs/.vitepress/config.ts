@@ -107,7 +107,6 @@ export default defineConfig({
           { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
           { text: 'Rendering', link: '/basics/rendering' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
-          { text: 'Live Rendering', link: '/basics/live-renderer' },
         ],
       },
       {
@@ -126,6 +125,7 @@ export default defineConfig({
           { text: 'Testing', link: '/deeper/testing' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
+          { text: 'Polling and Pagination', link: '/deeper/polling-and-pagination' },
         ],
       },
       {

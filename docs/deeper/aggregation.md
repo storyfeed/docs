@@ -194,5 +194,4 @@ A group arrives as one node, shaped as in the
 [payload contract](/reference/payload#group-node). The shape is fixed; which
 groups form is server policy, so a renderer never assumes a particular
 grouping. Within a read mode every activity appears in exactly one node,
-grouped or not, which is what the
-[reconciliation rule](/basics/rendering#feeds-that-keep-moving) relies on.
+grouped or not, which is what a client merging pages relies on.

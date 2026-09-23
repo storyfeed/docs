@@ -282,7 +282,6 @@ reading and drawing, a second audience, then renderer-specific pages.
 - ✅ Anatomy of a Row — the wireframe: every zone, what fills it, and the taste rules a renderer pays for otherwise
 - ✅ Rendering — the smallest loop, links, degraded entities, groups, details, resync
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
-- ✅ Live Rendering — Vue: reconciliation in code, sync_token, bounded empty-page loop
 
 ### Digging Deeper
 
@@ -300,6 +299,10 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
+- ✅ Polling and Pagination — the three rules a client holding several pages
+  follows: absorbed rows, empty pages, `sync_token`. Framework-free. Replaced
+  Live Rendering (a Vue walkthrough) on 2026-09-22: teaching one frontend is
+  not a headless package's job
 
 ### Cookbook
 
