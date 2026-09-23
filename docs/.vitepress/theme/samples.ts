@@ -166,9 +166,7 @@ export const party: Record<string, any> = build(PARTIES, (id, label) => entity('
 export const INTENTS: Record<string, string> = {
   'order.complete': 'success',
   'order.pay': 'success',
-  '*.moderation.photo_approved': 'success',
   'order.cancel': 'danger',
-  '*.menu.dish_off': 'danger',
   'order.place': 'pending',
 }
 

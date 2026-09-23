@@ -74,8 +74,10 @@ user · archived · document · —   coherent — nothing was aimed at
 ```
 
 ```php
-// config/storyfeed.php
-'document.archive' => ':actor archived :object from :target'   // ✗ nothing fills :target
+// app/Providers/AppServiceProvider.php, boot()
+Storyfeed::grammar([
+    'document.archive' => ':actor archived :object from :target',   // ✗ nothing fills :target
+]);
 ```
 
 The fields are fine, but the template names a role no publisher fills, so the

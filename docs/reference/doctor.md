@@ -35,7 +35,7 @@ Each finding names its fix.
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? | warning |
 | `manifest` | is the cached story manifest stale relative to your code? | error |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
-| `details` | which [detail](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares | warning · info |
+| `body` | which [body](/deeper/details) forms are actually in the `data` column, and the two ways one can be malformed quietly: a map with no form token, and a versioned map whose value is not what the form declares | warning · info |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
 
 ## Feed Coverage
