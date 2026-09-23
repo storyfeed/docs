@@ -104,12 +104,3 @@ usePoll(10_000, { only: ['feed'] })
 The composable holds the paging, the stream draws nodes, and the page supplies
 the payload and the URL of the next page. None of it knows what an order is.
 :::
-
-## Check Your Work
-
-```bash
-php artisan storyfeed:doctor
-```
-
-The doctor names each problem with its fix: a verb with no headline, or a
-model in the feed that nothing publishes about.

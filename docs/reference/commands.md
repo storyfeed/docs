@@ -71,9 +71,6 @@ node and refetch from the head, including after an empty response. See the
 | `storyfeed:cache` | compiles registered stories into a cached manifest — also runs on `php artisan optimize` |
 | `storyfeed:clear` | removes the cached manifest |
 
-`optimize` caches config, which can drop a seeded database on the next test run
-— see [Testing](/deeper/testing#clearing-the-cached-manifest-before-tests).
-
 ## Generators
 
 | Command | Does |

@@ -64,17 +64,6 @@ StorySurface::assertNoUnwiredSurface(except: [Kitchen::class]);
 This fails for a model that appears in your feed but that nothing publishes
 about. It works under the fake, and passes when there is no data.
 
-## Clearing the Cached Manifest Before Tests
-
-::: warning
-`php artisan optimize` caches config, and cached config overrides
-`phpunit.xml` — so the suite runs against your real database and
-`RefreshDatabase` drops it. The symptom is a pile of *unrelated* failures
-(auth 419s, missing notifications) that looks like a broken migration.
-
-Run `php artisan optimize:clear` before testing.
-:::
-
 ## Diagnostics in CI
 
 ```bash

@@ -15,8 +15,7 @@ composer require storyfeed/storyfeed:dev-main
 ```
 
 The service provider and `Storyfeed` facade register via package discovery.
-Commit `composer.lock` to pin the revision, and run `storyfeed:doctor` after an
-update.
+Commit `composer.lock` to pin the revision.
 
 ## Migrations
 
@@ -67,12 +66,3 @@ Schedule::command('storyfeed:trickle')->everyMinute();            // fill in mis
 Schedule::command('storyfeed:close-batches')->everyFiveMinutes(); // close idle bursts promptly
 Schedule::command('storyfeed:prune')->daily();                    // only if prune.after_days is set
 ```
-
-## Verify
-
-```bash
-php artisan storyfeed:doctor
-```
-
-The doctor checks your registries, schema and feed traffic, and names each
-problem with its fix. On a fresh install it has nothing to diagnose yet.
