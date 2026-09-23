@@ -4,6 +4,11 @@ A feed that polls for new activities, or loads older pages as the reader
 scrolls, holds nodes from several responses at once. Three rules keep what it
 holds correct.
 
+::: headless it reconciles nothing on the client
+The payload carries stable node ids, `children` and a `sync_token`. Merging
+pages is yours.
+:::
+
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
 

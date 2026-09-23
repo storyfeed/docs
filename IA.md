@@ -403,8 +403,9 @@ so nobody documents it as public API.
   Every `::: headless` container after it is a callback to that sentence, so
   none may appear on a page before the Quickstart (ruled 2026-09-22).
 
-  Five exist today: it ships no renderer, it ships no icons, it makes no
-  images, it draws no detail, it reconciles nothing on the client. A sixth
+  Six exist today: it ships no renderer, it ships no icons, it makes no
+  images, it draws no form, it counts nothing for you, it reconciles nothing
+  on the client. A seventh
   needs a boundary the others do not already cover. Only the renderer one has
   somewhere to send a reader, so only it names `storyfeed/ui` and
   `storyfeed/filament`, as options, with neither required nor documented here.
