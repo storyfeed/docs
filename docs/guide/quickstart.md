@@ -8,7 +8,7 @@ is a customer placing an order with a kitchen.
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
-## 1. Make the Models Feedable
+## Make the Models Feedable
 
 A model that appears in the feed says how it should read:
 
@@ -35,7 +35,7 @@ class Order extends Model implements Feedable
 
 `Kitchen` and `User` get the same treatment, each returning its own label.
 
-## 2. Give the Verb a Headline
+## Give the Verb a Headline
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -44,7 +44,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## 3. Publish an Activity
+## Publish an Activity
 
 <<< @/snippets/publish.php
 
@@ -52,7 +52,7 @@ On the feed:
 
 <FeedExample context :items="[scenes.order]" />
 
-## 4. See the Feed
+## Rendering the Activities
 
 This call returns everything the kitchen took part in:
 
@@ -63,14 +63,14 @@ $page = Storyfeed::feed()->involving($kitchen)->get();
 
 <FeedExample :items="[scenes.order]" />
 
-Each node carries its sentence with the entities already in it, so drawing one
-needs no knowledge of your app.
+Storyfeed is headless: it returns the feed as data and ships no frontend.
+Drawing it is your app's job. Each node carries its sentence with the entities
+already in it, so a renderer needs no knowledge of your app.
 
-::: details What the markup looks like
+### A Hypothetical Implementation in Vue
 
-Storyfeed ships no frontend. Here is one way an app could draw the feed: an
-Inertia page hands the payload to the app's own composable and stream
-component.
+An Inertia page hands the payload to the app's own composable and stream
+component:
 
 ```vue
 <!-- resources/js/Pages/Kitchen/Feed.vue -->
@@ -103,4 +103,3 @@ usePoll(10_000, { only: ['feed'] })
 
 The composable holds the paging, the stream draws nodes, and the page supplies
 the payload and the URL of the next page. None of it knows what an order is.
-:::

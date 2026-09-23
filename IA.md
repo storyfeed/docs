@@ -206,7 +206,9 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
     site", "when to…") live in the cookbook, not on the concept page.
 29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
-    Is X?", "Using X", "Examples of X".
+    Is X?", "Using X", "Examples of X". No numbers in headings ("1. Make the
+    Models Feedable"): VitePress does not number them, and hand numbers have to
+    be reshuffled whenever a step is added or removed (ruled 2026-09-22).
 30. **Story is the blueprint, Activity is the published fact.** A Story class
     produces an Activity; prose never uses one word for the other.
 31. **Both spines are a table of contents.** A sidebar entry names the
@@ -396,6 +398,10 @@ so nobody documents it as public API.
   plus the limit the page supplies: `::: headless it ships no icons`. The
   standing half is written once in the config rather than five times in
   markdown, because a sentence repeated across pages drifts on the sixth.
+
+  **The Quickstart's last step is where "headless" is first said, in prose.**
+  Every `::: headless` container after it is a callback to that sentence, so
+  none may appear on a page before the Quickstart (ruled 2026-09-22).
 
   Five exist today: it ships no renderer, it ships no icons, it makes no
   images, it draws no detail, it reconciles nothing on the client. A sixth
