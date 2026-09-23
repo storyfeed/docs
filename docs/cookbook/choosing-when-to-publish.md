@@ -1,12 +1,15 @@
 # Choosing When to Publish
 
-A publish site that fires when a status changes and stays silent on every
-other save. A feed that reads as what happened, not as what was edited.
+Publish when a record's status changes, and not on other saves. The feed then
+shows what happened to the order, not every edit to it.
 
 ```php
 <?php
 
 namespace App\Observers;
+
+use App\Models\Order;
+use Storyfeed\Facades\Storyfeed;
 
 class OrderObserver
 {
@@ -17,9 +20,9 @@ class OrderObserver
         }
 
         $verb = match ($order->status) {
-            'confirm' => 'confirm',
+            'confirmed' => 'confirm',
             'ready' => 'ready',
-            'archived' => 'archive',
+            'completed' => 'complete',
             default => null,                         // a draft is not news either
         };
 
@@ -54,7 +57,7 @@ const confirmed = activity({
 Storyfeed::verbs([
     'confirm' => ActivityType::Accept,
     'ready' => ActivityType::Update,
-    'archive' => ActivityType::Remove,
+    'complete' => ActivityType::Update,
 ]);
 
 Storyfeed::grammar([
@@ -70,22 +73,28 @@ Storyfeed::grammar([
 |---|---|---|
 | created as a draft | no | |
 | saved with no status change | no | |
-| placed → confirmed | yes | `confirmed` |
+| placed → confirmed | yes | `confirm` |
 | confirmed → ready | yes | `ready` |
-| ready → completed | yes | `completed` |
+| ready → completed | yes | `complete` |
 
-A verb names one transition. `confirmed`, `ready` and `completed` are three
-verbs, not one `status` verb carrying the new state in `data`. The reason is
-in [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
+Use one verb per transition, not one `status` verb with the new state in
+`data`. The reason is in
+[Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on).
 
 ## The Transition from the Event
 
-When the transition already has a domain event, the event publishes it:
+When the transition already has a domain event, publish from the event:
 
 ```php
 <?php
 
 namespace App\Events;
+
+use App\Models\Order;
+use App\Models\User;
+use Storyfeed\Contracts\PublishesToFeed;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\PendingActivity;
 
 class OrderConfirmed implements PublishesToFeed
 {
@@ -100,11 +109,8 @@ class OrderConfirmed implements PublishesToFeed
 }
 ```
 
-The event is the transition. An `OrderSaved` event has no feed story to
-return. See [Publishing from events](/deeper/events).
-
-A feed that publishes every save, with the field diff attached, is an audit
-log and reads as one.
+An `OrderSaved` event has no story to return. See
+[Publishing from Events](/deeper/events).
 
 ## Where to Publish From
 
@@ -114,5 +120,4 @@ log and reads as one.
 | a domain event via `PublishesToFeed` | when several things already react to the event |
 | a model observer | lifecycle facts (created, deleted) with no domain event |
 
-All three are explicit calls. Whichever you choose, the pairs they record show
-up in `storyfeed:stories`, including ones the package never wired.
+The pairs recorded from any of the three show up in `storyfeed:stories`.

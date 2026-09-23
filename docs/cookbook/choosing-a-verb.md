@@ -1,9 +1,8 @@
 # Choosing a Verb
 
-Several verbs sit close enough together that the choice is not obvious. Each
-pair below has a test that decides it, and the answer matters beyond wording:
-the verb decides the Activity Streams type a consumer reads, and it is half of
-every grammar key.
+How to name a verb, and a test for each pair of verbs that are easy to
+choose between. The verb sets the Activity Streams type and is half of every
+grammar key.
 
 ## Naming a Verb
 
@@ -18,21 +17,19 @@ Storyfeed::activity()->by($customer)
     ->publish();
 ```
 
-A verb that names its object repeats itself in every grammar key, because a
-key is already the object's morph alias and the verb: `order.order.place`. It
-also stops the verb being shared — `place` reads correctly for anything an app
-places, and `order.place` reads correctly for one model.
+A grammar key is already the object's morph alias plus the verb, so a verb
+that names its object gives `order.order.place`. A plain `place` also works for
+anything else the app places.
 
-Where a verb seems to need the extra word, the word is usually a role:
+Where a verb seems to need an extra word, the word is usually a role:
 
 | Reaching for | Record |
 | --- | --- |
 | `doctrine.clause_add` | `add`, object the clause, target the doctrine |
 | `menu.dish_publish` | `publish`, object the dish, target the menu |
 
-**Write verbs in the present tense** — `place`, not `placed`. The headline is
-where a sentence reads as the past: the stored verb is the fact, and
-`:actor placed :object` is how it is shown.
+Write verbs in the present tense: `place`, not `placed`. The headline puts it
+in the past: `:actor placed :object`.
 
 ## Create or Add
 
@@ -47,22 +44,20 @@ Verb::Create->by($cook)->object($dish)->publish();          // the dish is writt
 Verb::Add->by($cook)->object($dish)->to($menu)->publish();  // the dish already existed
 ```
 
-`add` takes a target, because a thing is added *to* something. If there is no
-target, the verb is probably `create`.
+`add` takes a target. With no target, the verb is probably `create`.
 
 ## Delete or Remove
 
 `delete` when nothing can be pointed at afterwards. `remove` when the object
 still exists and has only left a collection.
 
-Archiving is `remove`: the record is still there and a feed row can still link
-to it. Reach for `delete` only when the thing is gone.
+Archiving is `remove`: the record is still there, and a feed row can still
+link to it.
 
 ## Remove or Undo
 
-`undo` reverses an **activity**. Its object is the earlier act, not the thing
-the act was about — which is why restoring a retired item is `undo` rather than
-`create`. The item is not being written again; a retirement is being called off.
+`undo` reverses an activity. Its object is the earlier act, not the thing the
+act was about, so restoring a retired item is `undo`, not `create`.
 
 | The sentence you would say | Verb |
 | --- | --- |
@@ -81,27 +76,22 @@ the recipient is being asked to become a participant.
 
 `accept` answers a prior `offer` or `invite`. `like` is unprompted.
 
-An approval flow is `accept` every time, even when the interface calls the
-button something else.
+An approval is `accept`, whatever the button says.
 
 ## View or Read
 
 `view` for an impression — a page was opened, a preview loaded. `read` for
 deliberate consumption — a file was downloaded, a document taken away.
 
-Both are activities. Recording that someone looked at something needs no
-special treatment, and neither verb implies a change to the object.
-
-If the choice is not clear, it is `view`.
+Neither changes the object. If the choice is not clear, it is `view`.
 
 ## When No Verb Fits
 
-A verb that will not fit any of the twenty-eight activity types is usually a
-sign that something in the domain is not modelled yet.
+A verb that fits none of the twenty-eight activity types usually means
+something in the domain is not modelled yet.
 
-An email that bounced, was delivered, or failed has no verb of its own. What
-changed state is the delivery, and once a delivery is a record of its own, each
-outcome is an ordinary `create` against it:
+An email that bounced, was delivered, or failed has no verb of its own. Make
+the delivery a record, and each outcome is an ordinary `create` against it:
 
 ```php
 // where the fact happens: a webhook controller or listener
@@ -113,14 +103,13 @@ Verb::Create->anonymously()
     ->publish();
 ```
 
-The same test applies to a status that keeps moving. Three verbs for three
-states of one record usually want one verb and a record of the transition.
+Likewise, three verbs for three states of one record usually want one verb
+and a record of the transition.
 
 ## When Two Verbs Would Be Identical
 
-If two activities would share a verb, an object type and a target, they are the
-same activity, and whatever separates them belongs somewhere other than the
-verb.
+Two activities with the same verb, object type and target are the same
+activity. Whatever separates them belongs somewhere other than the verb.
 
 | What separates them | Where it belongs |
 | --- | --- |
@@ -137,6 +126,3 @@ Verb::Update->by($cook)
     ->resulting($revision) // what the update produced
     ->publish();
 ```
-
-A verb whose only job is to say *when* something happened is the clearest case:
-a backdated coverage is `publishedAt()`, not a second verb.
