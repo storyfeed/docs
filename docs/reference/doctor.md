@@ -3,7 +3,7 @@
 ```bash
 php artisan storyfeed:doctor
 php artisan storyfeed:doctor --json          # structured, for CI
-php artisan storyfeed:doctor --stubs         # print story stubs for every gap
+php artisan storyfeed:doctor --stubs         # print routes/feed.php definitions for every gap
 php artisan storyfeed:doctor --only=grammar  # one check
 ```
 
@@ -18,12 +18,14 @@ Each finding names its fix.
 | `aggregates` | does every group that formed — or *could* form — have aggregate grammar? | error · info |
 | `tokens` | does any aggregate template use a token its axis doesn't pin? | warning · info |
 | `axes` | does a grouping recipe omit `v`? Its groups may span several verbs, so no per-verb aggregate key is true of one. Answered from the registry, before any group forms | warning |
-| `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary) | warning · info |
+| `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary, with the `file:line` that defined it), and type-and-verb pairs defined but never recorded. See [Definitions](#definitions) | warning · info |
+| `removals` | recorded verbs that read like removals (`cancel`, `void_payment`, `trash`) but are treated as being about their object. See [Deleted Models](#deleted-models) | info |
+| `labels` | `Feedable` models labelled by guesswork: no `describeFeed()`, `toFeed()`, `guessFeedLabel()` or `toFeedUsing()`. See [Deleted Models](#deleted-models) | info |
 | `surface` | models that appear in the feed but that nothing publishes about | warning · info |
 | `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? | warning · info |
 | `parties` | party rows whose morph alias no longer resolves | info |
 | `participants` | activities missing from the index `involving()` reads | warning |
-| `tables` | are the package tables present? | error |
+| `tables` | are the package tables present, `feed_tombstones` included? Until it exists, deleted models leave no tombstone | error |
 | `columns` | are write-path columns present? (catches schema drift after an upgrade) | error |
 | `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it | error · info |
 | `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info | error · info |
@@ -35,7 +37,7 @@ Each finding names its fix.
 | `backlog` | activities still awaiting snapshots — is the trickle keeping up? | warning |
 | `manifest` | is the cached story manifest stale relative to your code? | error |
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
-| `body` | which [body types](/deeper/body) are actually in the `data` column, and the two ways one can be malformed quietly: a map with no `$body` key, and a body type versioned on some rows but not others | warning · info |
+| `body` | which [body types](/deeper/body) are actually stored, and the two ways one can be malformed quietly: a map with no `$body` key, and a body type versioned on some rows but not others | warning · info |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
 
 ## Feed Coverage
@@ -70,6 +72,10 @@ as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 ```php
 // config/storyfeed.php
 'portal' => fn (FeedBuilder $feed) => $feed->only(['place', 'ready'])->unrestricted(), // throws FeedMisconfigured
+
+// a controller, reading the feed
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed('portal')->only(['place', 'ready'])->get();                            // fine: narrowing at a call site
 ```
 
@@ -85,6 +91,23 @@ counts as a filter.
 | `aggregates.reachability_unknown` | info | no feeds are registered, or one threw while being inspected. Every pair is then reported as `aggregates.missing`, at error |
 
 Register your feeds so this check can tell a real gap from a latent one.
+
+## Definitions
+
+| Finding | Severity | Means |
+|---|---|---|
+| `verbs.dead` | info | a verb is declared but never recorded. Names the `file:line` that defined it |
+| `grammar.unrecorded` | info | a type-and-verb pair is defined but never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
+
+## Deleted Models
+
+| Finding | Severity | Means |
+|---|---|---|
+| `removals.unclassified` | info | a recorded verb reads like a removal, but an activity with it is redundant once its object is deleted, as for any verb about its object. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
+| `labels.guessed` | info | the listed models are labelled by guesswork. Fine when the guess reads well in a feed; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable#models-you-don-t-own) |
+
+The label matters beyond the feed: it is what a tombstone keeps when its model
+asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 
 ## Entities
 
@@ -127,17 +150,29 @@ snapshot that throws on an empty one is not reported.
 ## From Findings to Code
 
 ```bash
-php artisan storyfeed:doctor --stubs   # only the findings that name a registry edit
-php artisan make:story --from-doctor   # a story class per gap
+php artisan storyfeed:doctor --stubs            # routes/feed.php definitions, with their use lines
+php artisan storyfeed:doctor --stubs --arrays   # the same, as registry arrays for a service provider
+php artisan make:story --from-doctor            # a story class per gap
 ```
 
-`--stubs` prints the registrations the findings imply: a grammar key with the
-tokens that are safe for it, an icon key, an actorless verb, an axis template.
+`--stubs` prints the definitions the findings imply, ready for
+`routes/feed.php`:
+
+```php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')->headline('TODO :actor :object :target');
+```
+
+Each is a headline with the tokens that are safe for it, an icon, an actorless
+verb, or an axis template.
 Every stub comes from what was recorded: pairs that occurred, axes the compiled
 recipes apply, tokens that are pinned. `roles` and `aggregates.latent` emit no
 stub; the first needs its sentence rewritten, the second would render nowhere.
 
-The output has no headings or counts, so it can be piped. `// Nothing to
+The `--json` report carries each fix's `definition`. The output has no headings
+or counts, so it can be piped. `// Nothing to
 author` means no finding named a registry edit, not that there were no
 findings.
 

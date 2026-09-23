@@ -43,7 +43,7 @@ const openInPlace = activity({
   headline_template: ':actor added :object to :target',
   actor: who.cook, target: dishes.chickenCurry,
   object: { type: 'photo', id: '9', label: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
-    attributes: {}, modal: true, component: null, data: {}, media: null },
+    attributes: {}, modal: true, data: {}, media: null, body: null, tombstone: null },
 })
 
 const withFile = activity({
@@ -51,7 +51,7 @@ const withFile = activity({
   headline_template: ':actor added a photo of :target',
   actor: who.cook, target: dishes.chickenCurry,
   object: { type: 'photo', id: '1', label: 'chicken-curry.jpg', url: '/photos/1',
-    attributes: {}, modal: false, component: null, media: null,
+    attributes: {}, modal: false, data: {}, media: null, tombstone: null,
     body: [{ $body: 'Storyfeed/Body/File', $v: 1,
       name: 'chicken-curry.jpg', size: 284160, mediaType: 'image/jpeg' }] },
 })
@@ -75,6 +75,7 @@ activity. `->thread()` carries it:
 
 ```php
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
 Storyfeed::activity()
@@ -92,11 +93,24 @@ change what the row quotes.
 
 ## A Body the Renderer Recognises
 
-Everything else goes in `data`, where a **body** is a value of a known body
-type. The model writes it once, in `toFeed()`, and any renderer that
+Everything else goes in the entity's **body**, a value of a known body type. The model writes it once, in `toFeed()`, and any renderer that
 recognises the type draws it with no view of yours.
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
+// app/Models/Order.php
+use Storyfeed\Body\Excerpt;
+
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label("Order #{$this->reference}")
+        ->body(Excerpt::make()->text($this->instructions)->from('Instructions')); // [!code focus]
+}
+```
+
+```php [Named Arguments]
 // app/Models/Order.php
 use Storyfeed\Body\Excerpt;
 
@@ -104,17 +118,38 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: "Order #{$this->reference}",
-        body: Excerpt::make($this->instructions, from: 'Instructions'), // [!code focus]
+        body: Excerpt::make(text: $this->instructions, from: 'Instructions'), // [!code focus]
     );
 }
 ```
+
+:::
 
 <FeedExample :items="[withExcerpt]" />
 
 A body on the snapshot shows wherever the entity appears, so the model writes
 it, not the line that records an activity:
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
+// app/Models/Order.php
+use Storyfeed\Body\KeyValue;
+
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label("Order #{$this->reference}")
+        ->body(KeyValue::make()->items([ // [!code focus]
+            'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
+            'Items' => $this->items->count(), // [!code focus]
+            'Reference' => KeyValue::verbatim($this->reference), // [!code focus]
+            'Table' => KeyValue::missingAs($this->table, 'not seated'), // [!code focus]
+        ])); // [!code focus]
+}
+```
+
+```php [Named Arguments]
 // app/Models/Order.php
 use Storyfeed\Body\KeyValue;
 
@@ -122,26 +157,42 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: "Order #{$this->reference}",
-        body: KeyValue::make([ // [!code focus]
+        body: KeyValue::make(items: [ // [!code focus]
             'Pickup' => $this->pickup_at->format('g:i a'), // [!code focus]
             'Items' => $this->items->count(), // [!code focus]
             'Reference' => KeyValue::verbatim($this->reference), // [!code focus]
-            'Table' => ['value' => $this->table, 'missing' => 'not seated'], // [!code focus]
+            'Table' => KeyValue::missingAs($this->table, 'not seated'), // [!code focus]
         ]), // [!code focus]
     );
 }
 ```
 
+:::
+
 <FeedExample :items="[withKeyValue]" />
 
 A value the row has no answer for is **silent by default**. Give it a word
-only where the emptiness is itself the answer, per row or for the whole block
-with `missing:`. A value that is compared rather than read, a reference or an
-address, is marked `verbatim` so it gets one line and an ellipsis.
+only where the emptiness is itself the answer: one row with
+`KeyValue::missingAs()`, or the whole body with `->missing()`. A value that is
+compared rather than read, a reference or an address, is marked `verbatim`.
 
 ## What a File Is
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
+// app/Models/Photo.php
+use Storyfeed\Body\File;
+
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label($this->name)
+        ->body(File::make()->size($this->bytes)->mediaType($this->mime)->name($this->name)); // [!code focus]
+}
+```
+
+```php [Named Arguments]
 // app/Models/Photo.php
 use Storyfeed\Body\File;
 
@@ -154,6 +205,8 @@ public function toFeed(): FeedEntity
 }
 ```
 
+:::
+
 <FeedExample :items="[withFile]" />
 
 `File` says what a file is, never where it lives: the URL comes from
@@ -162,16 +215,28 @@ public function toFeed(): FeedEntity
 ## A Link That Opens in Place
 
 Some entities are better opened than navigated to, like a photograph or a
-document preview. `FeedMedia::modal()` marks the link, and the entity carries
-`modal: true`.
+document preview. `modal()` on the media marks the link, and the entity
+carries `modal: true`.
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
 // app/Models/Photo.php
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
-    return FeedMedia::modal(route('photos.show', $context->key())); // [!code focus]
+    return FeedMedia::make()->url(route('photos.show', $context->routeKey()))->modal(); // [!code focus]
 }
 ```
+
+```php [Named Arguments]
+// app/Models/Photo.php
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make(url: route('photos.show', $context->routeKey()), modal: true); // [!code focus]
+}
+```
+
+:::
 
 <FeedExample :items="[openInPlace]" />
 
@@ -189,6 +254,7 @@ on this site, clicking the file name opens a panel.
 | `Prose` | authored text, and how to read it |
 | `ItemList` | several things, each a name and maybe a link |
 | `MediaObject` | a title, some prose, one picture, the files |
+| `Component` | a component of your own, by name, with its props |
 
 They live in `Storyfeed\Body`. Each carries a version, so a renderer can
 upgrade an old row before drawing it. An app may write its own body types.

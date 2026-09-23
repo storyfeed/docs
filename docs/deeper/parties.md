@@ -227,13 +227,17 @@ With no fallback, an activity with no user is anonymous.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::actorlessGrammar([
-    'confirm' => ':object was confirmed', // exact verb, not objectType.verb
+    'order.confirm' => ':object was confirmed',
 ]);
 ```
 
 An activity recorded with no actor uses this template when one matches. A
 party still uses the ordinary grammar.
 
-Keys are exact verbs, with no wildcards. A template can't contain `:actor`. A
-closure works as in [Grammar](/deeper/grammar).
+Keys are object type and verb, like the grammar's, and resolve most-specific
+first: `order.confirm`, `order.*`, `*.confirm`, `*.*`. A key with no dot is a
+verb on any type, so `'confirm'` means `*.confirm`. A template can't contain
+`:actor`. A closure works as in [Grammar](/deeper/grammar).

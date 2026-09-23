@@ -145,6 +145,8 @@ After one new dish and two price changes:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
     'reprice' => ActivityType::Update,
     'add' => ActivityType::Add,
@@ -245,6 +247,8 @@ The order's page reads the timeline:
 
 ```php
 // app/Http/Controllers/OrderController.php, show()
+use Storyfeed\Facades\Storyfeed;
+
 $timeline = Storyfeed::feed()->involving($order)->log()->get();
 ```
 
@@ -275,6 +279,8 @@ Storyfeed::record(
 
 ```php
 // app/Http/Controllers/OrderController.php, show()
+use Storyfeed\Facades\Storyfeed;
+
 $pulse = Storyfeed::feed()->involving($order)->live()->get();
 ```
 

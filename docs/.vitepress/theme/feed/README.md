@@ -67,13 +67,19 @@ Both slots exist on group nodes too. Fill a group's `body` only when
 one sampled entity and implies it stands for the group, the same failure as a headline
 that names one document out of five.
 
-The body renders only when the payload names a component on the object. That is a
-boundary, not a gap: `component` is the backend stating what this entity should
-render as, while `data` is an app-specific bag the contract does not define. A
-renderer that reached into `data` for a conventional key — `excerpt`, say — would
-be inventing presentation the backend never asked for, and would do it for any
-entity that happened to use that word for something else. No component, no body;
-an app that wants a preview says so by naming one.
+The body renders only when the object carries a `Storyfeed/Body/Component` body
+naming a component the registry knows (`bodies/index.ts`); the component gets
+that body's `props`. That is a boundary, not a gap: the body is the backend
+stating what this entity should render as, while `data` is an app-specific bag
+the contract does not define. A renderer that reached into `data` for a
+conventional key — `excerpt`, say — would be inventing presentation the backend
+never asked for, and would do it for any entity that happened to use that word
+for something else. No component body, no body; an app that wants a preview
+says so by naming one.
+
+**Tombstones.** An entity with `tombstone` set is a deleted model. `EntityLink`
+draws it muted and never as a link, with its kept label or its former type;
+`EntityAvatar` draws its disc in grey.
 
 **Annotations.** `<slot name="annotations" :node>` renders below the body on both
 node kinds, for surfaces that explain a node rather than render it — this site's

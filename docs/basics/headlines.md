@@ -1,34 +1,93 @@
 # Headlines
 
-A headline is the sentence the feed prints for an activity. You register a
-template once per verb in the **grammar** registry, and the feed fills in the
+A headline is the sentence the feed prints for an activity. You write a
+template once per verb in `routes/feed.php`, and the feed fills in the
 entities.
 
 <script setup>
-import { activity, scenes } from '../.vitepress/theme/samples'
+import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
 
+const at = '2026-08-14T14:30:00.000000Z'
 const withoutIcon = activity({ ...scenes.order, id: 'hl1', glyph: null })
+
+const complete = activity({ id: 'hl2', verb: 'complete', glyph: 'receipt',
+  published_at: '2026-08-14T14:35:00.000000Z',
+  headline_template: ':actor completed :object',
+  actor: who.cook, object: orders.first })
+
+const completeWithoutIcon = activity({ ...complete, id: 'hl8', glyph: null })
+
+const placedAtCounter = activity({ id: 'hl3', verb: 'place', glyph: 'shopping-bag',
+  published_at: '2026-08-14T14:32:00.000000Z',
+  headline_template: ':actor placed :object',
+  actor: who.customer2, object: orders.second })
+
+const french = activity({ ...scenes.order, id: 'hl4',
+  headline_template: ':actor a passé :object auprès de :target' })
+
+const rushed = activity({ id: 'hl5', verb: 'place', glyph: 'shopping-bag',
+  published_at: '2026-08-14T14:32:00.000000Z',
+  headline_template: ':actor rushed :object to :target',
+  actor: who.customer2, object: orders.second, target: where.kitchen,
+  data: { rush: true } })
+
+const created = activity({ id: 'hl6', verb: 'create', glyph: 'plus',
+  published_at: '2026-08-14T14:40:00.000000Z',
+  headline_template: ':actor created :object',
+  actor: who.owner, object: orders.third })
+
+const repeated = group({ id: 'hl7', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
+  published_at: at,
+  headline_template: ':actor placed :count orders',
+  actors: [who.regular], objects: [orders.first, orders.second, orders.third],
+  distinct: { actors: 1, objects: 3 } })
 </script>
+
+## The Feed File
+
+```sh
+php artisan storyfeed:install   # creates routes/feed.php; never overwrites one you have
+```
+
+`routes/feed.php` holds what your activities say, the way `routes/web.php`
+holds your routes. Storyfeed loads it once every service provider has booted,
+so your morph map is already in place.
 
 ## Registering a Headline
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(':actor placed :object with :target');
+```
+
+```php [Array]
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
+    'order.place' => ':actor placed :object with :target', // morph alias, a dot, the verb
 ]);
 ```
 
+:::
+
 <FeedExample context :items="[withoutIcon]" />
 
-The key is the object's morph alias, a dot, and the verb: `order.place` is the
-verb `place`, recorded about an `order`. The verb you record is still `place`.
+`for()` names the object's type, and `verb()` names the verb you record. This
+headline is for the verb `place`, recorded about an order.
 
 The template names roles, never models:
 
 ```php
-'order.place' => ':customer placed :order with :kitchen',   // ✗ not tokens: these render as text
-'order.place' => ':actor placed :object with :target',      // ✓
+->headline(':customer placed :order with :kitchen')   // ✗ not tokens: these render as text
+->headline(':actor placed :object with :target')      // ✓
 ```
 
 ## Tokens
@@ -44,13 +103,85 @@ The template names roles, never models:
 | `:instrument` | the tool or service used |
 
 Each token becomes the label of the entity in that role, linked where it has a
-link. A role the activity did not record renders as your renderer's
-placeholder, so a template names only the roles the verb always carries.
+link.
+
+## Optional Segments
+
+Square brackets mark words that print only when the roles inside them are
+filled:
+
+```php
+// routes/feed.php
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(':actor placed :object[ with :target]'); // [!code focus]
+```
+
+<FeedExample :items="[placedAtCounter, scenes.order]" />
+
+Storyfeed resolves the brackets before the template reaches the payload. An
+order placed with a kitchen keeps ` with :target`; one placed without a target
+drops it. Without brackets, a role the activity did not record renders as your
+renderer's placeholder, so a template without them names only the roles the
+verb always carries.
+
+## Several Verbs on One Model
+
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->group(function () {
+    Story::verb('place')->headline(':actor placed :object with :target');
+    Story::verb('complete')->headline(':actor completed :object');
+});
+```
+
+```php [Array]
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::grammar([
+    'order.place' => ':actor placed :object with :target',
+    'order.complete' => ':actor completed :object',
+]);
+```
+
+:::
+
+<FeedExample :items="[completeWithoutIcon, withoutIcon]" />
+
+Every `Story::verb()` inside the closure is for orders.
 
 ## Adding an Icon
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->group(function () {
+    Story::verb('place')
+        ->headline(':actor placed :object with :target')
+        ->icon('shopping-bag');
+
+    Story::verb('complete')
+        ->headline(':actor completed :object')
+        ->icon('receipt');
+});
+
+Story::verb('publish')->icon('chef-hat');   // any object type
+```
+
+```php [Array]
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::icons([
     'order.place' => 'shopping-bag',
     'order.complete' => 'receipt',
@@ -58,16 +189,20 @@ Storyfeed::icons([
 ]);
 ```
 
-<FeedExample :items="[scenes.order]" />
+:::
 
-Keys resolve most-specific first:
+<FeedExample :items="[complete, scenes.order]" />
 
-| Key | Matches |
-|---|---|
-| `order.place` | that verb on that object type |
-| `order.*` | every verb on that object type |
-| `*.place` | that verb on any object type |
-| `*.*` | everything with no more specific entry |
+The most specific definition wins:
+
+| Fluent Syntax | Array Key | Matches |
+|---|---|---|
+| `Story::for(Order::class)->verb('place')` | `order.place` | that verb on that object type |
+| `Story::for(Order::class)->fallback()` | `order.*` | every verb on that object type |
+| `Story::verb('place')` | `*.place` | that verb on any object type |
+| `Story::fallback()` | `*.*` | everything with no more specific entry |
+
+The same order applies to headlines and to intents.
 
 ::: headless
 :::
@@ -85,16 +220,34 @@ beside it on every node:
 }
 ```
 
-Intents have their own registry, keyed and resolved like icons:
+::: code-group
 
-```php
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->group(function () {
+    Story::verb('place')->icon('shopping-bag')->intent('pending');   // the app's own word
+    Story::verb('complete')->icon('receipt')->intent('success');
+    Story::verb('cancel')->icon('x-circle')->intent('danger');
+});
+```
+
+```php [Array]
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::glyphIntents([
-    'order.complete' => 'success',   // the app's own word, not the package's
-    'order.place'    => 'pending',
+    'order.place' => 'pending',   // the app's own word
+    'order.complete' => 'success',
     'order.cancel' => 'danger',
 ]);
 ```
+
+:::
+
+<FeedExample :items="[complete, scenes.order]" />
 
 Or on a story class:
 
@@ -116,16 +269,180 @@ for it draws the plain glyph.
 
 ## Translating a Headline
 
-Templates are plain strings, so an app in one language can translate them
-where they're registered:
+::: code-group
 
-```php
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\FeedHeadline;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(FeedHeadline::trans('feed.order_placed'));
+```
+
+```php [Array]
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedHeadline;
+
 Storyfeed::grammar([
-    'order.place' => __('feed.order_placed'),   // translated once, at boot, into the app's default locale
+    'order.place' => FeedHeadline::trans('feed.order_placed'),
 ]);
 ```
 
-`__()` runs when the app boots, before any request sets a locale, so every
-reader sees the same language. Tokens are substituted by the renderer, so word
-order stays the translator's decision.
+:::
+
+```php
+// lang/fr/feed.php
+return [
+    'order_placed' => ':actor a passé :object auprès de :target',
+];
+```
+
+<FeedExample :items="[french]" />
+
+The key is translated when the feed is read, in the reader's locale. Tokens are
+substituted by the renderer, so word order stays the translator's decision.
+
+## Choosing a Headline per Activity
+
+A closure receives the activity and returns a template:
+
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Models\Activity;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(fn (Activity $activity) => ($activity->data['rush'] ?? false)
+        ? ':actor rushed :object to :target'
+        : ':actor placed :object with :target');
+```
+
+```php [Array]
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Activity;
+
+Storyfeed::grammar([
+    'order.place' => fn (Activity $activity) => ($activity->data['rush'] ?? false)
+        ? ':actor rushed :object to :target'
+        : ':actor placed :object with :target',
+]);
+```
+
+:::
+
+<FeedExample :items="[rushed, scenes.order]" />
+
+The closure runs when the feed is read. Its tokens become links, like any other
+template.
+
+## A Model's Everyday Verbs
+
+`Story::resource()` defines `create`, `update`, `delete` and `restore` for a
+model in one line:
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class);
+```
+
+<FeedExample :items="[created]" />
+
+| Verb | Headline | Without an actor | Icon |
+|---|---|---|---|
+| `create` | `:actor created :object` | `:object was created` | `plus` |
+| `update` | `:actor updated :object` | `:object was updated` | `pencil` |
+| `delete` | `:actor deleted :object` | `:object was deleted` | `trash` |
+| `restore` | `:actor restored :object` | `:object was restored` | `rotate-ccw` |
+
+Narrow it with `only()` or `except()`, and define a verb yourself to say
+something else:
+
+```php
+// routes/feed.php
+Story::resource(Order::class)->except('update'); // [!code focus]
+
+Story::for(Order::class)->verb('update')->headline(':actor changed :object'); // [!code focus]
+```
+
+A verb defined in both places is an error naming both lines.
+
+## Headlines for a Group
+
+A verb inside `Story::for()` can also say how a group of its activities reads:
+
+::: code-group
+
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->group(function () {
+    Story::verb('place')
+        ->headline(':actor placed :object with :target')
+        ->grouped(fn ($group) => $group->repeat(':actor placed :count orders')); // [!code focus]
+});
+```
+
+```php [Array]
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::aggregateGrammar([
+    'repeat.order.place' => ':actor placed :count orders',
+]);
+```
+
+:::
+
+<FeedExample :items="[repeated]" />
+
+The group headline belongs to orders only. The groups a feed can form, and the
+tokens their headlines may use, are in [Aggregation](/deeper/aggregation) and
+[Grammar](/deeper/grammar).
+
+## What a Verb Is About
+
+When a model is deleted, its activities stay. `->missing()` names the roles an
+activity is about, so the payload can say when one of them is gone:
+
+```php
+// routes/feed.php
+use App\Models\Question;
+use Storyfeed\Facades\Story;
+
+Story::for(Question::class)
+    ->verb('turn_into')
+    ->headline(':actor turned :object into :result')
+    ->missing('object', 'result'); // [!code focus]
+```
+
+With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
+covers what the feed does when a model goes.
+
+## Listing and Caching Definitions
+
+```sh
+php artisan storyfeed:list                            # every definition, with the file and line it came from
+php artisan storyfeed:list --type=order --verb=place
+```
+
+```sh
+php artisan storyfeed:cache   # in a deploy script, beside route:cache
+```
+
+Once cached, `routes/feed.php` isn't loaded at boot. Keep only `Story::`
+definitions in it: `storyfeed:cache` fails on a registry call such as
+`Storyfeed::grammar()`, which belongs in a service provider.

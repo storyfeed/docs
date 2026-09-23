@@ -38,6 +38,9 @@ Return the feed from a route:
 
 ```php
 // routes/web.php
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
 Route::get('/', function () {
     return Storyfeed::feed()->limit(20)->get();
 });
@@ -64,6 +67,8 @@ The same four activities as a log:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->involving($kitchen)->log()->get();
 ```
 
@@ -73,6 +78,8 @@ And as a summary:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->involving($kitchen)->summary()->get();
 ```
 
@@ -95,6 +102,8 @@ any role.
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->involving($order)->get();
 $order->storyfeed()->get();   // the same read, from the model
 ```
@@ -149,6 +158,9 @@ previous page's `next_cursor` back to get the next one:
 
 ```php
 // routes/web.php
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
 Route::get('/', function (Request $request) {
     return Storyfeed::feed()
         ->limit(20)
@@ -174,6 +186,8 @@ and `query()` callbacks.
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()
     ->when($request->kitchen, fn ($feed, $kitchen) => $feed->involving($kitchen))
     ->get();

@@ -27,21 +27,62 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
   "url": "https://…/deliveries/1042",  // resolved at read time; null ⇒ not linkable
   "attributes": {},                    // link attributes, e.g. {"target": "_blank"}
   "modal": false,                      // hint: open as a modal
-  "component": null,                   // backend-named body component
   "data": {},                          // snapshot data
-  "media": null                        // live image slots and optional attachment
+  "media": null,                       // live image slots and optional attachment
+  "body": null,                        // a list of bodies, or null when there are none
+  "tombstone": null                    // null, or what a deleted entity left behind
 }
 ```
 
 `url`, `attributes`, `modal` and `media` come from the model's static
 resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
-with the snapshot. `type`, `id`, `component`, `data` and `label` come from the
-snapshot; the resolver can override `label`.
+with the snapshot. `type`, `id`, `data` and `label` come from the snapshot;
+the resolver can override `label`. `body` lists the stored bodies, then the
+resolver's; each is a map naming its body type in `$body`
+([Activity Body Content](/deeper/body#existing-body-types)).
 [Feedable API](/reference/feedable#feedcontext) covers the resolver.
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
 non-null; an empty `content` string is preserved.
+
+### Tombstoned Entities
+
+A deleted model's activities stay, and each reference to it points at a
+tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
+
+```jsonc
+"object": {
+  "type": "storyfeed.tombstone",       // always this alias
+  "id": "17",                          // the tombstone's key, not the deleted model's
+  "label": null,                       // null, unless the model kept its label
+  "url": null,                         // always null
+  "attributes": {},
+  "modal": false,
+  "data": {},
+  "media": null,
+  "body": null,
+  "tombstone": {
+    "formerType": "order",             // the deleted model's morph alias
+    "deleted": "2026-09-23T12:00:00.000000Z",  // ISO 8601, or null when unknown
+    "approximate": false,              // true when the trickle found the deletion
+    "removedBy": null                  // reserved; always null
+  }
+}
+```
+
+An entity is in one of three states:
+
+| State | Shape |
+|---|---|
+| Anonymous | the role is `null` |
+| Degraded | the model's own `type`, `label: null`, `url: null`, `tombstone: null` |
+| Tombstoned | `type: "storyfeed.tombstone"`, `url: null`, `tombstone: {…}` |
+
+When `approximate` is true, `deleted` is when the trickle found the deletion,
+not when it happened. The headline, glyph and intent of an activity whose
+object is a tombstone resolve with `formerType`, so `order.place` still
+applies.
 
 ### Entity Media
 
@@ -116,9 +157,19 @@ audience.
   "instrument": { /* entity or null */ },
   "data": {},
   "thread": null,                      // optional FeedThread conversation metadata
-  "change": null                       // optional FeedChange before/after facts
+  "change": null,                      // optional FeedChange before/after facts
+  "tombstoned": [],                    // the roles holding a tombstone, in role order
+  "redundant": false                   // one of them is a role the verb is about
 }
 ```
+
+| Key | Holds |
+|---|---|
+| `tombstoned` | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
+| `redundant` | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
+
+Storyfeed gives the facts, never the wording. `redundant` is the fact that the
+activity's news is gone while the activity is still true as history.
 
 ## Group Node
 
@@ -155,9 +206,23 @@ audience.
     "origins": 0, "results": 0, "instruments": 0
   },
   "children": [ /* member activity nodes, newest first, possibly truncated */ ],
-  "children_truncated": false
+  "children_truncated": false,
+  "tombstoned": [],                     // roles with a tombstone among the distinct entities
+  "redundant": false,                   // true when every member is redundant
+  "distinct_tombstoned": {              // per role, how many distinct entities are tombstones
+    "actors": 0, "objects": 0, "targets": 0, "contexts": 0,
+    "origins": 0, "results": 0, "instruments": 0
+  }
 }
 ```
+
+| Key | Holds |
+|---|---|
+| `sample` | per role, up to three distinct entities, live ones before tombstoned ones |
+| `distinct` | per role, the true count of distinct entities across all members |
+| `tombstoned` | the roles with at least one tombstone among their distinct entities |
+| `redundant` | `true` only when every member is redundant |
+| `distinct_tombstoned` | per role, how many of the `distinct` entities are tombstones |
 
 Each singular role key is an entity only when the axis pins the role, its
 sample list has exactly one entry, and its distinct count is exactly one.

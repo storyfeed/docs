@@ -146,6 +146,7 @@ An axis is a key recipe and a rule for which activities it takes:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Grouping\Axis;
 
 Storyfeed::axes([
@@ -179,6 +180,8 @@ A new axis has the lowest priority. To outrank a built-in, say so:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::axes([$scene], before: 'repeat');
 ```
 

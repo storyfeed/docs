@@ -12,14 +12,29 @@ export interface FeedEntity {
     label: string | null;
     url: string | null;
     modal: boolean;
-    component: string | null;
     media: FeedMedia | null;
+    /** The entity's bodies, each a map naming its body type in `$body`. */
+    body?: Record<string, unknown>[] | null;
+    /** What a deleted entity left behind; null for a live one. */
+    tombstone?: FeedTombstone | null;
     attributes?: Record<string, string>;
     /** App-specific extras. This kit reads `initials` and `avatar_color`. */
     data?: Record<string, unknown> & {
         initials?: string;
         avatar_color?: string;
     };
+}
+
+/** A deleted entity: `type` is `storyfeed.tombstone`, `url` is null. */
+export interface FeedTombstone {
+    /** The deleted model's morph alias. */
+    formerType: string;
+    /** ISO time of the deletion, or null when nobody knows. */
+    deleted: string | null;
+    /** True when the trickle found the deletion rather than an event. */
+    approximate: boolean;
+    /** Reserved; always null. */
+    removedBy: null;
 }
 
 /** AS2's slot names: the slot is what the picture is FOR. */
@@ -71,6 +86,10 @@ interface BaseNode {
      * which is why it is optional here as well as nullable.
      */
     glyph_intent?: string | null;
+    /** The roles holding a tombstone, in role order. */
+    tombstoned?: string[];
+    /** One of them is a role the verb is about. */
+    redundant?: boolean;
 }
 
 export interface ActivityNode extends BaseNode {
@@ -104,6 +123,8 @@ export interface GroupNode extends BaseNode {
     sample: Record<FeedRole, FeedEntity[]>;
     /** True distinct totals per role, for computing overflow. */
     distinct: Partial<Record<FeedRole, number>>;
+    /** How many of the distinct entities per role are tombstones. */
+    distinct_tombstoned?: Partial<Record<FeedRole, number>>;
 }
 
 export type FeedNode = ActivityNode | GroupNode;

@@ -6,12 +6,21 @@ Every key in `config/storyfeed.php`. All have working defaults.
 php artisan vendor:publish --tag="storyfeed-config"
 ```
 
+## Definitions
+
+| Key | Default |  |
+|---|---|---|
+| `definitions` | `base_path('routes/feed.php')` | the file that holds your [headline definitions](/basics/headlines), loaded once every service provider has booted. Another path to use another file; `false` turns loading off |
+
+Once `storyfeed:cache` has run, the file isn't loaded at boot: the manifest
+holds what it defined.
+
 ## Tables & Models
 
 | Key | Default |  |
 |---|---|---|
-| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants` | remap on collision, or point at pre-existing feed tables |
-| `models.*` | the package models | swap in your own; they should extend the defaults |
+| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants`, `feed_tombstones` | remap on collision, or point at pre-existing feed tables |
+| `models.*` | the package models, including `tombstone` (`FeedTombstone`) | swap in your own; they should extend the defaults |
 
 ## Identity
 
@@ -43,6 +52,10 @@ built-in verbs:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use App\Enums\ActivityVerb;
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs(ActivityVerb::class); // a backed enum implementing FeedVerb
 Storyfeed::verbs(['confirm' => ActivityType::Update]); // or a verb => type map
 ```
@@ -116,7 +129,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 |---|---|---|
 | `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
 | `prune.after_days` | `null` | retention window; `null` keeps everything |
-| `trickle.limit` | `200` | activities snapshotted per `storyfeed:trickle` run |
+| `trickle.limit` | `200` | activities snapshotted, and snapshots checked for a deleted model, per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
 
 ## Diagnostics

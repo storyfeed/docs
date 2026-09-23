@@ -31,6 +31,7 @@ where you meet them.
 | Term | It Is | It Is **Not** |
 |---|---|---|
 | **[grammar](/deeper/grammar)** | the registry of headline templates | rendered prose |
+| **[definitions file](/basics/headlines#the-feed-file)** | `routes/feed.php`, where `Story::` defines what each activity says | a route file; it defines no URLs |
 | **token** | a `:placeholder` your renderer fills | a value the server substituted |
 | **glyph** | a token the payload ships, e.g. `shopping-bag` | an image, or a set the package owns |
 | **[body](/deeper/body)** | a typed block beneath the sentence — an excerpt, a change, a list; its kind is its **body type** | part of the headline, or a place for markup |
@@ -49,7 +50,8 @@ where you meet them.
 | Term | It Is | It Is **Not** |
 |---|---|---|
 | **snapshot** | cached label, data, and body fields per entity | a copy of your model |
-| **trickle** | the sweep that fills snapshots recording could not | a cache warmer you must run to read |
+| **trickle** | the sweep that fills snapshots recording could not, and finds deletions no event reported | a cache warmer you must run to read |
+| **[tombstone](/deeper/deleted-models)** | what a deleted model leaves in its activities: its former type and when it went | a deleted activity; the activities stay |
 | **[healer](/deeper/healing)** | an app-declared policy retiring stories whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
 
 ::: tip Glyph and icon, null actor and party

@@ -6,8 +6,8 @@ import { USERS, PLACES, DISHES, ORDERS, DEVICES, PHOTOS, PARTIES, NOTES, TICKET 
  * Every page that renders a feed builds its nodes here rather than inline, for
  * one reason: a page that hand-rolls its own node objects will eventually omit a
  * key the payload really carries, and then the example is quietly a fiction. It
- * happened on the anatomy page — an example comment with no `component`, which is
- * why the comment preview could not render.
+ * happened on the anatomy page — an example comment missing the key its preview
+ * was drawn from, which is why the comment preview could not render.
  *
  * The names are consistent across pages on purpose. The quickstart's document is
  * annual-report-v3.fig in Password Crackdown, so the introduction's is too, and a
@@ -29,10 +29,10 @@ export function entity(
     url,
     attributes: {},
     modal: false,
-    component: null,
     data: {},
     media: null,
     body: null,
+    tombstone: null,
     ...over,
   }
 }
@@ -64,10 +64,41 @@ export const photo = (id: string, label: string) => {
 
 /**
  * A note has no page of its own, so its url is null and its label is its text.
- * `component` names the body component the renderer resolves for the preview.
+ * Its preview is a `Storyfeed/Body/Component` body: the app's own `Note`
+ * component, by name, with its props.
  */
 export const note = (id: string, body: string) =>
-  entity('note', id, body, null, { component: 'Note', data: { excerpt: body } })
+  entity('note', id, body, null, {
+    body: [{ $body: 'Storyfeed/Body/Component', $v: 1, name: 'Note', props: { excerpt: body } }],
+  })
+
+/**
+ * What a deleted entity leaves behind: `type` is `storyfeed.tombstone`, the
+ * id is the tombstone's own, and `url` is null. The label is null unless the
+ * model kept it (`keepLabel()`).
+ */
+export function tombstone(
+  formerType: string,
+  id: string,
+  deleted: string | null,
+  over: { label?: string | null; approximate?: boolean } = {},
+) {
+  return entity('storyfeed.tombstone', id, over.label ?? null as any, null, {
+    tombstone: { formerType, deleted, approximate: over.approximate ?? false, removedBy: null },
+  })
+}
+
+const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
+
+const isTombstone = (entity: any) => entity?.type === 'storyfeed.tombstone'
+
+/**
+ * Core's default for which roles a verb is about: the object, unless the verb
+ * is a removal (the removal verbs these samples use).
+ * A page states `redundant` itself when its verb says otherwise.
+ */
+const REMOVALS = ['delete', 'discard', 'remove', 'restore', 'undo']
+const aboutRoles = (verb: string) => (REMOVALS.includes(verb) ? [] : ['object'])
 
 /**
  * The cast, built from the manifest. Ids come from position in the manifest, so a
@@ -207,6 +238,16 @@ export function activity(over: Record<string, any>) {
     data: over.data ?? {},
     thread: over.thread ?? null,
     change: over.change ?? null,
+    ...tombstoneFacts(over),
+  }
+}
+
+function tombstoneFacts(over: Record<string, any>) {
+  const tombstoned = ROLES.filter((role) => isTombstone(over[role]))
+
+  return {
+    tombstoned,
+    redundant: over.redundant ?? tombstoned.some((role) => aboutRoles(over.verb).includes(role)),
   }
 }
 
@@ -254,6 +295,25 @@ export function group(over: Record<string, any>) {
     distinct,
     children: over.children ?? [],
     children_truncated: over.children_truncated ?? false,
+    ...groupTombstoneFacts(over, sample, distinct),
+  }
+}
+
+function groupTombstoneFacts(over: Record<string, any>, sample: Record<string, any[]>, distinct: Record<string, number>) {
+  const counts: Record<string, number> = {}
+
+  for (const role of ROLES) {
+    const key = `${role}s`
+    counts[key] = over.distinct_tombstoned?.[key] ?? sample[key].filter(isTombstone).length
+  }
+
+  const tombstoned = ROLES.filter((role) => counts[`${role}s`] > 0)
+  const children: any[] = over.children ?? []
+
+  return {
+    tombstoned,
+    redundant: over.redundant ?? (children.length > 0 && children.every((child) => child.redundant)),
+    distinct_tombstoned: counts,
   }
 }
 

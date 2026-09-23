@@ -6,6 +6,8 @@ activity.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
     'place' => ActivityType::Create,
 ]);
@@ -102,6 +104,8 @@ Read the feed with grouping:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 $feed = Storyfeed::feed()->involving($kitchen)->live()->get();
 ```
 

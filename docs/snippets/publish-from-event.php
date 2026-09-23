@@ -2,7 +2,10 @@
 
 namespace App\Events;
 
+use App\Models\Order;
+use App\Models\User;
 use Storyfeed\Contracts\PublishesToFeed; // [!code focus]
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\PendingActivity; // [!code focus]
 
 class OrderPlaced implements PublishesToFeed // [!code focus]

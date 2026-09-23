@@ -64,6 +64,8 @@ const expired = activity({
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
     'place' => ActivityType::Create,
     'pay' => ActivityType::Accept,
@@ -255,6 +257,8 @@ See [Scoped Attribution](/deeper/parties#scoped-attribution).
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::grammar([
     'order.expire' => ':object expired at :target',   // no :actor, on purpose
 ]);

@@ -14,6 +14,9 @@ Return the feed from a route:
 
 ```php
 // routes/web.php
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
 Route::get('/', function () {
     return Storyfeed::feed()->get();
 });
@@ -174,13 +177,14 @@ The picture is on the entity:
 |---|---|
 | `type` | the morph alias, as recorded |
 | `id` | the entity's key, as a string |
-| `label` | what `toFeed()` cached |
+| `label` | the label the snapshot holds |
 | `url` | resolved at read time by `feedMedia()`, or null |
 | `attributes` | anything the resolver attached to the link |
 | `modal` | a hint that the link opens in place |
-| `component` | a frontend component the app named |
-| `data` | the app's own map, including any body |
+| `data` | the app's own map |
 | `media` | the images the resolver returned, or null |
+| `body` | the entity's bodies, or null |
+| `tombstone` | null, or what a [deleted model](/deeper/deleted-models) left behind |
 
 ## What Is Not in It
 

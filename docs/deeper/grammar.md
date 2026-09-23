@@ -18,6 +18,8 @@ const repeated = group({ id: 'g2', verb: 'place', axis: 'repeat', count: 3, glyp
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::aggregateGrammar([
     'repeat.place' => ':actor placed :count orders with :target',    // {axis}.{verb}
     'actors.place' => ':actors placed :count orders with :target',
@@ -67,6 +69,7 @@ Register the noun forms by morph alias:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedNoun;
 
 Storyfeed::nouns([
@@ -121,16 +124,16 @@ php artisan storyfeed:doctor --stubs
 ```
 
 ```php
-Storyfeed::grammar([
-    'order.place' => 'TODO :actor :object :target :context :origin :result :instrument',
-]);
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
 
-Storyfeed::aggregateGrammar([
-    'repeat.place' => 'TODO :actor :target :count',
-]);
+Story::for(Order::class)->verb('place')->headline('TODO :actor :object :target :context :origin :result :instrument');
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat('TODO :actor :target :count'));
 ```
 
-Paste them in and write the sentences. Each `TODO` line **lists the tokens that
+Paste them into `routes/feed.php` and write the sentences. `--stubs --arrays`
+prints the same edits as registry arrays for a service provider. Each `TODO` line **lists the tokens that
 are safe for that key**.
 
 ## Wildcards
@@ -145,6 +148,8 @@ comes from the `*.{verb}` wildcard, and is blank without one. Register both:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
 Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 ```

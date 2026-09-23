@@ -106,6 +106,8 @@ class MenuItem extends Model implements Feedable, Bundleable
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::bundleables(['menu_item']);
 ```
 
@@ -141,6 +143,8 @@ the actor's next publish.
 
 ```php
 // routes/console.php
+use Illuminate\Support\Facades\Schedule;
+
 Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
 ```
 
@@ -152,6 +156,8 @@ Register both, as [Grammar](/deeper/grammar#composite-parents) explains:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::aggregateGrammar(['composite.publish' => ':actor put :count dishes on the menu']);
 Storyfeed::grammar(['*.publish' => ':actor put dishes on the menu']);
 ```

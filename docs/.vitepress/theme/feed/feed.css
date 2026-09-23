@@ -139,6 +139,13 @@ a.sf-entity:hover {
     font-weight: 400;
 }
 
+/* A tombstone: the entity was deleted. Still named, never a link, and quieter
+   than a live entity so the sentence reads around it. */
+.sf-entity--tombstone {
+    color: var(--sf-muted);
+    font-weight: 400;
+}
+
 .sf-time {
     flex-shrink: 0;
     white-space: nowrap;

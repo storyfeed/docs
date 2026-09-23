@@ -55,6 +55,8 @@ class Order extends Model implements Feedable
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::grammar([
     'order.place' => ':actor placed :object with :target', // [!code highlight]
     'order.confirm' => ':actor confirmed :object',
@@ -81,6 +83,9 @@ Return the feed from a route:
 
 ```php
 // routes/web.php
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
 Route::get('/', function () {
     return Storyfeed::feed()->get();
 });

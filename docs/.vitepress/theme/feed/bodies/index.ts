@@ -2,8 +2,9 @@ import type { Component } from 'vue';
 import Note from './Note.vue';
 
 /**
- * Backend-named body components (`entity.component`). The registry keeps the
- * renderer domain-free: unknown names simply render no body.
+ * The app's own components, by the name a `Storyfeed/Body/Component` body
+ * carries. The registry keeps the renderer domain-free: an unknown name
+ * renders no body.
  */
 const BODIES: Record<string, Component> = {
     Note,

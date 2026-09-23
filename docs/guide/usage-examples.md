@@ -101,6 +101,8 @@ The same customer orders three times in a few minutes, in three requests.
 ::: code-group
 ```php [Fluent Syntax]
 // where the order is placed: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($customer)
     ->action('place', $order)
@@ -110,6 +112,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the order is placed: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -145,6 +149,8 @@ A payment provider reports an order paid, and it has no row in your database.
 ::: code-group
 ```php [Fluent Syntax]
 // app/Http/Controllers/StripeWebhookController.php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by('Stripe')
     ->action('pay', $order)
@@ -153,6 +159,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // app/Http/Controllers/StripeWebhookController.php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'pay',
     object: $order,
@@ -170,6 +178,8 @@ Storyfeed::record(
 ::: code-group
 ```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($customer)
     ->action('note', $order)
@@ -179,6 +189,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'note',
     object: $order,
@@ -195,6 +207,8 @@ Storyfeed::record(
 ::: code-group
 ```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($cook)
     ->action('publish', $photo)
@@ -204,6 +218,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'publish',
     object: $photo,
@@ -222,6 +238,8 @@ The cook uploads a set, one request each.
 ::: code-group
 ```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($cook)
     ->action('publish', $photo)
@@ -230,6 +248,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'publish',
     object: $photo,
@@ -245,6 +265,8 @@ Storyfeed::record(
 ::: code-group
 ```php [Fluent Syntax]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($cook)
     ->action('add', $dish)
@@ -253,6 +275,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'add',
     object: $dish,

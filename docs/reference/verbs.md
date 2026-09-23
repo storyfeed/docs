@@ -71,6 +71,7 @@ builds that map for the cases an application actually records.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Verb;
 
 Storyfeed::verbs(Verb::only(
@@ -90,6 +91,7 @@ enum implementing `FeedVerb`.
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
     'plate' => ActivityType::Create,
@@ -103,6 +105,7 @@ Storyfeed::verbs([
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 use App\Enums\KitchenActivity;
+use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Verb;
 
 Storyfeed::verbs(Verb::only(Verb::Create, Verb::Confirm));

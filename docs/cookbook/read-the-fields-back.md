@@ -75,6 +75,8 @@ user · archived · document · —   coherent — nothing was aimed at
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::grammar([
     'document.archive' => ':actor archived :object from :target',   // ✗ nothing fills :target
 ]);

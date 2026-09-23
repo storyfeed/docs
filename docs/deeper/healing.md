@@ -10,8 +10,9 @@ Use a healer only for sources that are **permanently** gone, such as a
 hard-deleted asset. A source that can be restored doesn't qualify, and neither
 does one whose row still exists.
 
-Storyfeed never looks for missing sources itself. A healer retires only the
-activities it names.
+Storyfeed never retires an activity itself. A healer retires only the
+activities it names. A deleted Feedable model needs no healer: its activities
+stay, and name a [tombstone](/deeper/deleted-models) instead.
 
 ::: warning Healing rewrites settled history
 Every retirement changes the feed's `sync_token`, so clients holding pages

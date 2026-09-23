@@ -280,6 +280,8 @@ each edit leaves one row:
 ::: code-group
 ```php [Fluent Syntax]
 // app/Http/Controllers/MenuItemPriceController.php, update()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('reprice', $dish)
@@ -290,6 +292,8 @@ Storyfeed::activity()
 
 ```php [Named Arguments]
 // app/Http/Controllers/MenuItemPriceController.php, update()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'reprice',
     object: $dish,

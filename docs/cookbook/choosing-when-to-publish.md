@@ -90,6 +90,8 @@ const confirmed = activity({
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
     'confirm' => ActivityType::Accept,
     'ready' => ActivityType::Update,

@@ -74,6 +74,8 @@ class PhotoApprovalController extends Controller
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feeds([
     'kitchen' => fn (FeedBuilder $feed) => $feed
         ->only(['publish', 'reprice'])

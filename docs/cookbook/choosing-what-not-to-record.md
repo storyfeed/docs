@@ -38,6 +38,9 @@ Returning `null` publishes nothing. See
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
     'place' => ActivityType::Create,
     'ask' => ActivityType::Create,
@@ -65,6 +68,8 @@ Storyfeed::grammar([
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::grammar([
     'note.ask' => ':actor asked about :target',   // names the dish, never the note
 ]);
@@ -152,12 +157,15 @@ The quote comes from the note's snapshot. Give the `Note` model this contract,
 and register its `note` morph alias as in
 [Feedable Models](/basics/feedable-models):
 
-```php
+::: code-group
+
+```php [Fluent Syntax]
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Component;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
@@ -168,17 +176,47 @@ class Note extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make(
-            label: $this->body,
-            data: ['excerpt' => $this->body], // full text, not a shortened preview
-            component: 'Note',
-        );
+        return FeedEntity::make() // [!code focus]
+            ->label($this->body) // [!code focus]
+            ->body(Component::make() // [!code focus]
+                ->name('Note') // [!code focus]
+                ->props(['excerpt' => $this->body])); // full text, not a shortened preview // [!code focus]
     }
 }
 ```
 
-`component: 'Note'` names a body component your renderer supplies; here it
-shows `data.excerpt` in a blockquote.
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Component;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Note extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make( // [!code focus]
+            label: $this->body, // [!code focus]
+            body: Component::make( // [!code focus]
+                name: 'Note', // [!code focus]
+                props: ['excerpt' => $this->body], // full text, not a shortened preview // [!code focus]
+            ), // [!code focus]
+        ); // [!code focus]
+    }
+}
+```
+
+:::
+
+The `Component` body names `Note`, a component your frontend supplies; here it
+shows the `excerpt` prop in a blockquote.
 
 Saving the note refreshes its snapshot, so every row that references it shows
 the edited text without a new activity. Without `InteractsWithFeed`, refresh
@@ -255,7 +293,7 @@ class DishQuestionController extends Controller
 
 Use this when the words should be stored on the activity rather than read
 from the note. The renderer receives them as `node.thread.text`; drop the
-`Note` body component so the text is not shown twice. `FeedThread` also takes
+`Note` component body so the text is not shown twice. `FeedThread` also takes
 `by`, `kind` and `replies`.
 
 When the object is the discussion itself, each activity can carry the reply it
@@ -263,6 +301,9 @@ is about:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs(['reply' => ActivityType::Create]);
 
 Storyfeed::grammar([

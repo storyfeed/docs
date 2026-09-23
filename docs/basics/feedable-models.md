@@ -4,7 +4,7 @@ A model that appears in an activity, as its actor, object, target or context,
 implements `Feedable`. It gives the feed a label to print and a link to follow.
 
 <script setup>
-import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, photos, activity, group } from '../.vitepress/theme/samples'
 
 const unlinked = { ...orders.first, url: null }
 const at = '2026-08-14T14:30:00.000000Z'
@@ -19,6 +19,13 @@ const withLink = [
   activity({ id: 'fm2', verb: 'place', glyph: 'shopping-bag', published_at: at,
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
+]
+
+// A dish whose media carries a photo preview as well as its link.
+const withImage = [
+  activity({ id: 'fm6', verb: 'publish', glyph: 'chef-hat', published_at: '2026-08-14T09:00:00.000000Z',
+    headline_template: ':actor put :object on the menu',
+    actor: who.cook, object: { ...dishes.chickenCurry, media: photos.curry.media } }),
 ]
 
 // The kitchen's own feed: orders placed with it, and the dish it put live.
@@ -39,10 +46,7 @@ const scoped = [
 ]
 </script>
 
-## The Snapshot
-
-`toFeed()` returns what the feed stores about the model: a label, and the data
-a link will need later.
+## Making a Model Feedable
 
 ```php
 <?php
@@ -50,34 +54,48 @@ a link will need later.
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
+use Storyfeed\Concerns\InteractsWithFeed; // [!code focus]
+use Storyfeed\Contracts\Feedable; // [!code focus]
 
-class Order extends Model implements Feedable
+class Order extends Model implements Feedable // [!code focus]
 {
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity // [!code focus]
-    { // [!code focus]
-        return FeedEntity::make( // [!code focus]
-            label: "Order #{$this->reference}", // [!code focus]
-            data: ['ulid' => $this->ulid], // [!code focus]
-        ); // [!code focus]
-    } // [!code focus]
+    use InteractsWithFeed; // [!code focus]
 }
 ```
 
 <FeedExample context :items="withSnapshot" />
 
-The snapshot is taken when an activity is published, and refreshed every time
-the model saves. The feed reads the snapshot, never the model, so reading a
-feed runs no model queries. Without a link, the entity renders as plain text.
+That is a complete Feedable model. Its label is guessed, and it isn't a link.
 
-## The Link
+The feed stores a snapshot of the model: its label, and anything else it is
+given. The snapshot is taken when an activity is published, and refreshed every
+time the model saves. The feed reads the snapshot, never the model, so reading
+a feed runs no model queries.
 
-`feedMedia()` runs at read time, from the snapshot, and returns where the
-entity links.
+## The Default Label
+
+A model that sets no label gets the first of these that it has:
+
+| Guess | Example |
+|---|---|
+| its `name` attribute | `Chicken Curry` |
+| its `title` attribute | `Spring Menu` |
+| its registered noun and its key | `Dish #42` |
+| its class name and its key | `Order #1042` |
+
+To guess differently across the whole app, register a guesser in a service
+provider. Returning `null` falls through to the list above:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::guessFeedLabelsUsing(fn (Model $model) => $model->getAttribute('reference'));
+```
+
+To change it for one model, write `guessFeedLabel()` on the model. To fall back
+to Storyfeed's guess from inside it, alias the trait's method:
 
 ```php
 <?php
@@ -87,35 +105,85 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext; // [!code focus]
-use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia; // [!code focus]
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed { // [!code focus]
+        guessFeedLabel as guessedFeedLabel; // [!code focus]
+    } // [!code focus]
+
+    public function guessFeedLabel(): string // [!code focus]
+    { // [!code focus]
+        return $this->reference ?? $this->guessedFeedLabel(); // [!code focus]
+    } // [!code focus]
+}
+```
+
+## Describing the Snapshot
+
+`describeFeed()` says what the snapshot holds:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 
 class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-            data: ['ulid' => $this->ulid],
-        );
-    }
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
+    public function describeFeed(): void // [!code focus]
     { // [!code focus]
-        // Reads what toFeed() stored; a key it did not store reads as null. // [!code focus]
-        return FeedMedia::make(url: route('orders.show', $context->data('ulid'))); // [!code focus]
+        $this->feedEntity()->label("Order #{$this->reference}"); // [!code focus]
     } // [!code focus]
+}
+```
+
+<FeedExample :items="withSnapshot" />
+
+`$this->feedEntity()` is the entity the snapshot is written from. Each call
+adds to it, and whatever it leaves unset stays empty, except the label, which
+is guessed.
+
+## The Link
+
+A link is resolved when the feed is read. There is no model then, only the
+snapshot, so the link is registered in `booted()`:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void // [!code focus]
+    { // [!code focus]
+        static::feedMediaUsing(fn ($context) => route('orders.show', $context->routeKey())); // [!code focus]
+    } // [!code focus]
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()->label("Order #{$this->reference}");
+    }
 }
 ```
 
 <FeedExample :items="withLink" />
 
-It is static because there is no model at read time: `$context` carries the
-snapshot. The URL is built on every read, so a changed route never leaves a
-stale link.
+`$context` carries the snapshot. `$context->routeKey()` is the model's route
+key, the id or slug `route()` expects. A string is the URL; `null` is no link.
+The URL is built on every read, so a changed route never leaves a stale link.
 
 ## A Link per Feed
 
@@ -124,15 +192,12 @@ stale link.
 different on each surface, or nowhere:
 
 ```php
-// app/Models/Order.php
-public static function feedMedia(FeedContext $context): ?FeedMedia
-{
-    return match ($context->feed()) { // [!code focus]
-        'kitchen' => FeedMedia::make(url: route('kitchen.ticket', $context->data('ulid'))), // [!code focus]
-        'customer' => FeedMedia::make(url: route('orders.status', $context->data('ulid'))), // [!code focus]
-        default => null, // an ad-hoc feed reports no name; without this arm the match throws // [!code focus]
-    }; // [!code focus]
-}
+// app/Models/Order.php, booted()
+static::feedMediaUsing(fn ($context) => match ($context->feed()) { // [!code focus]
+    'kitchen' => route('kitchen.ticket', $context->routeKey()), // [!code focus]
+    'customer' => route('orders.status', $context->routeKey()), // [!code focus]
+    default => null, // an ad-hoc feed reports no name; without this arm the match throws // [!code focus]
+}); // [!code focus]
 ```
 
 On the `kitchen` feed:
@@ -145,6 +210,128 @@ On a feed with no name:
 
 The name comes from the feed's registration, not from the request, so a link
 resolves the same way in a queued job, the console and a test.
+
+## Images
+
+The closure's second argument is the entity's media. Fill its slots and
+return it:
+
+```php
+// app/Models/MenuItem.php, booted()
+static::feedMediaUsing(fn ($context, $media) => $media // [!code focus]
+    ->url(route('menu.show', $context->routeKey())) // [!code focus]
+    ->preview(route('menu.photo', $context->routeKey())) // [!code focus]
+); // [!code focus]
+```
+
+<FeedExample :items="withImage" />
+
+`url()` is the link, and `preview()` is a picture of the entity. Every slot is
+listed in the [Feedable API](/reference/feedable) reference.
+
+## Writing `toFeed()` by Hand
+
+`toFeed()` and `feedMedia()` are the two methods of the `Feedable` contract.
+`InteractsWithFeed` writes them from `describeFeed()` and `feedMediaUsing()`.
+A model can write them itself instead:
+
+::: code-group
+
+```php [Fluent Syntax]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity // [!code focus]
+    { // [!code focus]
+        return FeedEntity::make() // [!code focus]
+            ->label("Order #{$this->reference}"); // [!code focus]
+    } // [!code focus]
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
+    { // [!code focus]
+        return FeedMedia::make() // [!code focus]
+            ->url(route('orders.show', $context->routeKey())); // [!code focus]
+    } // [!code focus]
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity // [!code focus]
+    { // [!code focus]
+        return FeedEntity::make( // [!code focus]
+            label: "Order #{$this->reference}", // [!code focus]
+        ); // [!code focus]
+    } // [!code focus]
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code focus]
+    { // [!code focus]
+        return FeedMedia::make( // [!code focus]
+            url: route('orders.show', $context->routeKey()), // [!code focus]
+        ); // [!code focus]
+    } // [!code focus]
+}
+```
+
+:::
+
+<FeedExample :items="withLink" />
+
+A method the model writes takes precedence over the trait's.
+
+## Models You Don't Own
+
+A model from another package can't implement `Feedable`. Register it in a
+service provider instead:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feedable(Media::class) // [!code focus]
+    ->toFeedUsing(fn (Media $photo, $entity) => $entity // [!code focus]
+        ->label($photo->name) // [!code focus]
+        ->data(['mediaType' => $photo->mime_type]) // [!code focus]
+    ) // [!code focus]
+    ->feedMediaUsing(fn ($context, $media) => $media // [!code focus]
+        ->url(route('photos.show', $context->routeKey())) // [!code focus]
+    ); // [!code focus]
+```
+
+The model is then feedable everywhere a `Feedable` is: its snapshot refreshes
+on save, and its deletes reach the feed, including deletes the other package
+makes itself. Both closures are optional; with neither, the label is guessed.
+
+Register the exact class the package creates, because a model's events fire
+under its own class name. A class that already implements `Feedable` can't
+also be registered.
 
 ## The Model's Own Feed
 
@@ -168,6 +355,12 @@ namespace change. Enforce a map:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use App\Models\Kitchen;
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
 Relation::enforceMorphMap([
     'order' => Order::class,
     'menu_item' => MenuItem::class,
@@ -191,56 +384,49 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
 
 class MenuItem extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function toFeed(): FeedEntity
+    protected static function booted(): void
     {
-        return FeedEntity::make(
-            label: "{$this->code} {$this->name}",   // how the kitchen names a dish
-            data: [
+        static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
+            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
+            'customer' => $media
+                ->url(route('menu.show', $context->routeKey()))
+                ->preview(FeedImage::make()
+                    ->src(route('menu.photo', $context->routeKey()))
+                    ->mediaType($context->data('mediaType'))
+                    ->width($context->data('width'))
+                    ->height($context->data('height'))
+                    ->alt($context->label())
+                ),
+            default => null,
+        });
+    }
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->label("{$this->code} {$this->name}")   // how the kitchen names a dish
+            ->data([
                 'mediaType' => $this->photo_mime,    // the intrinsic facts a thumbnail needs,
                 'width' => $this->photo_width,       // stored once, read on every render
                 'height' => $this->photo_height,
-            ],
-        );
-    }
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        $routeKey = $context->routeKey();
-
-        return match ($context->feed()) {
-            'kitchen' => FeedMedia::make(url: route('kitchen.menu.edit', $routeKey)),
-            'customer' => FeedMedia::make(
-                url: route('menu.show', $routeKey),
-                preview: FeedImage::make(
-                    src: route('menu.photo', $routeKey),
-                    mediaType: $context->data('mediaType'),
-                    width: $context->data('width'),
-                    height: $context->data('height'),
-                    alt: $context->label(),
-                ),
-            ),
-            default => null,
-        };
+            ]);
     }
 }
 ```
 
-`$context->routeKey()` is the model's route key, the id or slug `route()`
-expects, stored with the snapshot.
+`$context->data()` reads what the snapshot stored; a key it did not store
+reads as `null`.
 
-<FeedExample :items="[scoped[2]]" />
+<FeedExample :items="withImage" />
 
 ::: headless
 :::
 
-Images, attachments, the live model, and every argument each method accepts
-are in the [Feedable API](/reference/feedable) reference.
+Attachments, the live model, and every argument each method accepts are in
+the [Feedable API](/reference/feedable) reference.

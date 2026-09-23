@@ -73,7 +73,7 @@ arrays, scalars and null.
 | `published_at`, `deleted_at` | `?string` | ISO 8601 |
 | `forceDeleted` | `bool` | true on `ActivityDeleted` for a hard delete |
 
-Each role array holds `type`, `id`, `label`, `component`, `data`, `content`,
+Each role array holds `type`, `id`, `label`, `data`, `content`,
 `mediaType` and `attributedTo`, as the entity's snapshot read at publish.
 
 Not carried: the actor's model, the entity's `url` and `media` (they resolve at
@@ -375,6 +375,10 @@ listener runs:
 
 ```php
 // tests/Feature/FeedTest.php
+use Illuminate\Events\CallQueuedListener;
+use Illuminate\Support\Facades\Queue;
+use Storyfeed\Facades\Storyfeed;
+
 it('records the order', function () {
     Storyfeed::fake();
     Queue::fake();

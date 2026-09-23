@@ -50,6 +50,11 @@ const initials = computed(() => {
 // deterministically so the same entity is always the same color — and so the
 // server and the client agree, which a random pick would not.
 const color = computed(() => {
+    // A deleted entity keeps its place on the rail, in grey.
+    if (props.entity?.tombstone) {
+        return '#9ca3af';
+    }
+
     const provided = props.entity?.data?.avatar_color;
 
     if (typeof provided === 'string' && provided.length > 0) {

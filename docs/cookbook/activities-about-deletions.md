@@ -1,7 +1,8 @@
 # Recording Deletions
 
-To record a deletion, make the parent that survives the object, and put the
-deleted thing's name in `data`. The row still renders after the model is gone.
+To record a deletion, record it about the model you delete, with a verb that
+says it was removed. The activity stays after the delete, naming the model's
+tombstone.
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -21,8 +22,8 @@ class MenuDishController extends Controller
     {
         Storyfeed::activity() // [!code focus]
             ->by($request->user()) // [!code focus]
-            ->action('remove', $menu)             // object: the parent, which survives [!code focus]
-            ->data(['name' => $dish->name])       // the removed thing travels as text [!code focus]
+            ->action('remove', $dish) // [!code focus]
+            ->to($menu) // [!code focus]
             ->publish(); // [!code focus]
 
         $dish->delete();
@@ -49,9 +50,9 @@ class MenuDishController extends Controller
     {
         Storyfeed::record( // [!code focus]
             verb: 'remove', // [!code focus]
-            object: $menu,                        // the parent, which survives [!code focus]
+            object: $dish, // [!code focus]
+            target: $menu, // [!code focus]
             actor: $request->user(), // [!code focus]
-            data: ['name' => $dish->name],        // the removed thing travels as text [!code focus]
         ); // [!code focus]
 
         $dish->delete();
@@ -62,49 +63,104 @@ class MenuDishController extends Controller
 ```
 :::
 
-```php
+::: code-group
+```php [Fluent Syntax]
+// routes/feed.php
+use App\Models\MenuItem;
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)
+    ->verb('remove')
+    ->headline(':actor removed :object from :target')
+    ->type(ActivityType::Remove); // a removal: the dish being gone is expected
+```
+
+```php [Array]
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::verbs([
-    'remove' => ActivityType::Remove,
+    'remove' => ActivityType::Remove,   // a removal: the dish being gone is expected
 ]);
 
 Storyfeed::grammar([
-    'menu.remove' => ':actor removed a dish from :object',
+    'menu_item.remove' => ':actor removed :object from :target',
 ]);
 ```
+:::
 
 <script setup>
-import { who, where, dishes, activity } from '../.vitepress/theme/samples'
+import { who, where, dishes, activity, tombstone } from '../.vitepress/theme/samples'
+
+const deleted = '2026-08-14T17:05:00.000000Z'
 
 const removed = activity({
   id: 'ck8', verb: 'remove', glyph: 'circle-x',
-  published_at: '2026-08-14T17:05:00.000000Z',
-  headline_template: ':actor removed a dish from :object',
-  actor: who.cook, object: where.menu,
-  data: { name: dishes.cutlets.label },
+  published_at: deleted,
+  headline_template: ':actor removed :object from :target',
+  actor: who.cook, target: where.menu,
+  object: tombstone('menu_item', '31', deleted),
+})
+
+const removedKeepingLabel = activity({
+  ...removed, id: 'ck9',
+  object: tombstone('menu_item', '31', deleted, { label: dishes.cutlets.label }),
 })
 </script>
 
 <FeedExample context :items="[removed]" />
 
-Your renderer shows the name from the node's `data`.
+The dish is a tombstone once it is deleted. To keep naming it, the model keeps
+its label on its tombstone:
+
+```php
+// app/Models/MenuItem.php, describeFeed()
+$this->feedEntity()
+    ->label("{$this->code} {$this->name}")
+    ->tombstone(fn ($tombstone) => $tombstone->keepLabel()); // [!code focus]
+```
+
+<FeedExample :items="[removedKeepingLabel]" />
 
 ## What a Removal Story May Reference
 
-Deleting a model that uses `InteractsWithFeed` also deletes every activity it
-appears in.
-
 | The Removal Story References | After the Delete |
 |---|---|
-| the deleted model, in any role, published before the delete | deleted with the model's other activities |
-| the deleted model, published after the delete | the snapshot renders; its link points at a record that is gone |
-| the surviving parent as `object`, the name in `data` | renders and links |
+| the deleted model, in any role | names its tombstone; its label only with `keepLabel()` |
+| a surviving parent, such as the menu | renders and links |
 
-A bulk delete, such as `MenuItem::where(...)->delete()`, skips this. Clean up
-after one with the methods in
-[Feedable API](/reference/feedable#snapshot-maintenance).
+Every other activity that named the dish stays too. [Deleted Models](/deeper/deleted-models)
+covers what each of them says.
 
-## A Soft Delete Is a Delete
+## When the Activities Must Go
 
-Soft-deleting the model soft-deletes its activities too. Restoring the model
-does not restore them.
+Deleting a model never deletes its activities. When they must go, such as a
+customer asking to be forgotten, remove them before the model:
+
+```php
+// app/Http/Controllers/AccountController.php, destroy()
+$user->forceDeleteFromFeed();   // every activity involving the user, permanently
+$user->forceDelete();
+```
+
+| Method | Removes |
+|---|---|
+| `deleteFromFeed()` | soft-deletes every activity involving the model |
+| `forceDeleteFromFeed()` | permanently deletes every activity involving the model, soft-deleted ones included |
+
+A model registered with `Storyfeed::feedable()` has no such methods. Call the
+actions they use:
+
+```php
+// where the model is deleted: a controller, an action, a job
+use Storyfeed\Actions\DeleteFromFeed;
+use Storyfeed\Actions\ForceDeleteFromFeed;
+
+(new DeleteFromFeed)($photo);        // soft
+(new ForceDeleteFromFeed)($photo);   // permanent
+```
+
+To forget only the activities a model made redundant, and keep the rest, use
+`forgetActivities()` on its [tombstone](/deeper/deleted-models#forgetting-activities).

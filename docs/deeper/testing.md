@@ -8,6 +8,8 @@ or a group has no headline.
 
 ```php
 // tests/Feature/FeedTest.php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::fake();
 
 // … exercise your code …

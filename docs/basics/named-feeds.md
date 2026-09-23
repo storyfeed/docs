@@ -51,6 +51,8 @@ Read it by name, from the facade or from the model:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed('kitchen')->involving($kitchen)->get();
 ```
 
@@ -75,6 +77,8 @@ A name sets the **verbs**, not the **scope**. Scope each read with
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed('customer')->get();                     // every order in the system
 Storyfeed::feed('customer')->involving($order)->get();  // this order
 ```
@@ -91,6 +95,8 @@ Both work on any read, named or not:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->only(['place', 'ready'])->get();
 Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();   // ready, reprice, confirm
 Storyfeed::feed()->except(['note'])->get();
@@ -107,6 +113,9 @@ Storyfeed::feed()->except(['note'])->get();
 On a named feed, `only()` can only narrow the declared list:
 
 ```php
+// a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
 // reads only 'place': 'note' is not in the declared list
 Storyfeed::feed('customer')->only(['place', 'note'])->get();
 ```
@@ -193,6 +202,8 @@ Register classes and closures in one list:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feeds([
     'customer' => CustomerFeed::class,     // named explicitly
     KitchenFeed::class,                    // name derived: 'kitchen'

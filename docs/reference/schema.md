@@ -1,6 +1,6 @@
 # Schema
 
-Seven tables, created by the published migrations.
+Eight tables, created by the published migrations.
 
 ## `feed_activities`
 
@@ -29,7 +29,7 @@ snapshot: today, the model's route key, when it is not the primary key.
 Nothing is ever queried or indexed through `meta`; anything a query filters,
 sorts or joins on is a real column, like `shape`. Your `toFeed()` values stay
 in `data`. The two are never merged, and `$context->data()` never returns
-`meta`.
+`meta`. The `component` column is unused.
 
 ## `feed_groupings`
 
@@ -54,6 +54,25 @@ One row per (activity, filled role): `activity_id`, `role`, `entity_type`
 `(entity_type, entity_id, published_at, activity_id)`, so `involving()` is a
 single ordered lookup. Written in the publish transaction; backfilled by
 `storyfeed:participants`.
+
+## `feed_tombstones`
+
+What a deleted model leaves behind, one row per deleted model. Every reference
+to the model, in every role column, its `cached_*_id` and `feed_participants`,
+points at its tombstone instead. See [Deleted Models](/deeper/deleted-models).
+
+| Column |  |
+|---|---|
+| `id` | the tombstone's key, and the entity `id` in the payload |
+| `model_type` / `model_id` | the deleted model's alias and key; unique together. The key is a string, so UUID and ULID keys fit |
+| `restorable` | true while the model can come back (a soft delete); false once it is gone for good |
+| `approximate` | true when the trickle found the deletion, so `deleted_at` is when it was found |
+| `deleted_at` | when the model was deleted, or found deleted |
+| `label` | the model's label, only when it asked for `keepLabel()` |
+| `meta` | JSON, Storyfeed's own extras |
+| timestamps | |
+
+Its alias is `storyfeed.tombstone`, whatever your morph map says.
 
 ## `feed_meta`
 

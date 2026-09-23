@@ -260,6 +260,11 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     `// [!code focus]`, so the call stands out and the rest of the class reads
     as context. A later snippet in the same section may be a fragment of a
     class already shown in full, under `// app/…/File.php, method()`.
+    The same holds for a model's feed code (`describeFeed()`, `toFeed()`,
+    `feedMedia()`, the `booted()` that registers `feedMediaUsing()`): the
+    first snippet in a section is the model class, namespace and imports
+    included, with the feed lines focused. A `routes/feed.php` snippet opens
+    with `// routes/feed.php` and its `use` lines, as Laravel's route files do.
 34. **Every recording example shows both forms, as tabs** (ruled 2026-09-22).
     A `::: code-group` with `[Fluent Syntax]` first and `[Named Arguments]`
     second: the same activity as one `Storyfeed::record()` call. Every argument
@@ -270,6 +275,24 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     equivalent: a chain that returns a `PendingActivity` (`toFeedActivity()`),
     or one that says `->anonymously()` or `->by(null)`, because `record()`
     reads `actor: null` as "not given" and resolves the ambient user.
+    **Value objects too:** a `FeedEntity`, a body, a `FeedMedia` or a
+    `FeedImage` built in `toFeed()`, `describeFeed()` or `feedMedia()` gets
+    the same two tabs: the chain (`FeedEntity::make()->label(…)->body(…)`)
+    first, `make()` with every argument named second. **Definitions too:** a
+    `routes/feed.php` snippet (`Story::for(…)->verb(…)->headline(…)`) gets
+    `[Fluent Syntax]` first and `[Array]` second, the same definitions as a
+    registry array in a service provider, where one exists. No second tab
+    where the other form has no equivalent (`describeFeed()` and
+    `$this->feedEntity()` are chain-only; `Story::resource()` has no array).
+35. **Every snippet that calls a facade shows its `use` line** (ruled
+    2026-09-23). There is no global `Storyfeed` alias, so `Storyfeed::…`
+    without `use Storyfeed\Facades\Storyfeed;` is a line the reader cannot
+    run. A class snippet has it in its `use` block; a fragment has it under
+    its location comment, above the code. The same for `Story`
+    (`Storyfeed\Facades\Story`) and any framework facade the snippet calls
+    (`Relation`, `Route`, `DB`). Exempt: an API fragment on a Reference page
+    (a method signature, a chain segment), and a later fragment in the same
+    section that continues a snippet which already showed the import.
  — Silent / Unguarded / In-Hand
 
 All three must hold:
@@ -309,13 +332,13 @@ Feedable Models first, because recording a non-`Feedable` object fails silently.
 After that, simple to complex: the elementary act, the typed layer over it,
 reading and drawing, a second audience, then renderer-specific pages.
 
-- ✅ Feedable Models — `toFeed()` / `feedMedia()`, a link per feed, the model's own feed, morph aliases
+- ✅ Feedable Models — the guessed label, `describeFeed()` / `feedMediaUsing()`, a link per feed, `toFeed()` by hand, models you don't own, the model's own feed, morph aliases
 - ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
 - ✅ Verbs — the same verb typed, as a `FeedVerb` enum (owner's page). Named
   `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
   while every reader of an activity feed does
-- ✅ Headlines — `Storyfeed::grammar()`, tokens, icons, glyph intents, translation
+- ✅ Headlines — `routes/feed.php` and the `Story` facade, tokens, optional segments, icons, glyph intents, translation, `Story::resource()`, the feed commands
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
 - ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
@@ -338,6 +361,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Queues — queued listeners and jobs, the actor on a worker
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
+- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, bulk deletes, `->missing()`
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
 
 ### Cookbook

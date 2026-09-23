@@ -82,6 +82,8 @@ php artisan make:story OrderWasPlaced
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::stories([
     OrderWasPlaced::class,
 ]);

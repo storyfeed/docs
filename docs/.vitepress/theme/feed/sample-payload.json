@@ -17,14 +17,15 @@
         "url": "/members/8",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 8,
           "name": "Aiko Tanaka",
           "role": "developer",
           "initials": "AT",
           "avatar_color": "#14b8a6"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "object": null,
       "target": null,
@@ -35,13 +36,14 @@
         "url": "/projects/15",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 15,
           "name": "Verification Tiers",
           "client": "Chirp",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "glyph": "file-up",
       "sample": {
@@ -53,14 +55,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           }
         ],
         "objects": [
@@ -71,14 +74,15 @@
             "url": "/projects/15#document-1599",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1599,
               "title": "signage-plan-client-copy.fig",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           {
             "type": "document",
@@ -87,14 +91,15 @@
             "url": "/projects/15#document-1598",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1598,
               "title": "pricing-table-final.docx",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           {
             "type": "document",
@@ -103,14 +108,15 @@
             "url": "/projects/15#document-1597",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1597,
               "title": "motion-test-rev-b.docx",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           }
         ],
         "targets": [
@@ -121,13 +127,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           }
         ],
         "contexts": [
@@ -138,13 +145,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           }
         ]
       },
@@ -170,14 +178,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -186,14 +195,15 @@
             "url": "/projects/15#document-1599",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1599,
               "title": "signage-plan-client-copy.fig",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -202,13 +212,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -217,15 +228,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -242,14 +256,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -258,14 +273,15 @@
             "url": "/projects/15#document-1598",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1598,
               "title": "pricing-table-final.docx",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -274,13 +290,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -289,15 +306,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -314,14 +334,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -330,14 +351,15 @@
             "url": "/projects/15#document-1597",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1597,
               "title": "motion-test-rev-b.docx",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -346,13 +368,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -361,15 +384,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -386,14 +412,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -402,14 +429,15 @@
             "url": "/projects/15#document-1596",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1596,
               "title": "hero-desktop-rev-b.docx",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -418,13 +446,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -433,15 +462,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -458,14 +490,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -474,14 +507,15 @@
             "url": "/projects/15#document-1595",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1595,
               "title": "motion-test-client-copy.pdf",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -490,13 +524,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -505,15 +540,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -530,14 +568,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -546,14 +585,15 @@
             "url": "/projects/15#document-1594",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1594,
               "title": "colour-tokens-final-2.sketch",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -562,13 +602,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -577,15 +618,18 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         },
         {
           "kind": "activity",
@@ -602,14 +646,15 @@
             "url": "/members/8",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 8,
               "name": "Aiko Tanaka",
               "role": "developer",
               "initials": "AT",
               "avatar_color": "#14b8a6"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "object": {
             "type": "document",
@@ -618,14 +663,15 @@
             "url": "/projects/15#document-1593",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 1593,
               "title": "colour-tokens-v1.fig",
               "status": "draft",
               "version": 1,
               "project_id": 15
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "target": {
             "type": "project",
@@ -634,13 +680,14 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
           "context": {
             "type": "project",
@@ -649,18 +696,29 @@
             "url": "/projects/15",
             "attributes": [],
             "modal": false,
-            "component": null,
             "data": {
               "id": 15,
               "name": "Verification Tiers",
               "client": "Chirp",
               "status": "active"
-            }
+            },
+            "body": null,
+            "tombstone": null
           },
-          "data": null
+          "data": null,
+          "tombstoned": [],
+          "redundant": false
         }
       ],
-      "children_truncated": false
+      "children_truncated": false,
+      "tombstoned": [],
+      "redundant": false,
+      "distinct_tombstoned": {
+        "actors": 0,
+        "objects": 0,
+        "targets": 0,
+        "contexts": 0
+      }
     },
     {
       "kind": "activity",
@@ -677,14 +735,15 @@
         "url": "/members/7",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 7,
           "name": "Tomás Rivera",
           "role": "strategist",
           "initials": "TR",
           "avatar_color": "#6366f1"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "object": {
         "type": "task",
@@ -693,13 +752,14 @@
         "url": "/projects/3#task-592",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 592,
           "title": "Rewrite the icon library",
           "status": "complete",
           "project_id": 3
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "target": {
         "type": "project",
@@ -708,13 +768,14 @@
         "url": "/projects/3",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 3,
           "name": "Port Migration",
           "client": "Orchard Devices",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "context": {
         "type": "project",
@@ -723,15 +784,18 @@
         "url": "/projects/3",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 3,
           "name": "Port Migration",
           "client": "Orchard Devices",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
-      "data": null
+      "data": null,
+      "tombstoned": [],
+      "redundant": false
     },
     {
       "kind": "activity",
@@ -748,14 +812,15 @@
         "url": "/members/1",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1,
           "name": "Jasper Tey",
           "role": "principal",
           "initials": "JT",
           "avatar_color": "#334155"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "object": {
         "type": "document",
@@ -764,14 +829,15 @@
         "url": "/projects/5#document-1608",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1608,
           "title": "signage-plan-v2.csv",
           "status": null,
           "version": null,
           "project_id": 5
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "target": {
         "type": "project",
@@ -780,13 +846,14 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "context": {
         "type": "project",
@@ -795,15 +862,18 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
-      "data": null
+      "data": null,
+      "tombstoned": [],
+      "redundant": false
     },
     {
       "kind": "activity",
@@ -820,14 +890,15 @@
         "url": "/members/1",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1,
           "name": "Jasper Tey",
           "role": "principal",
           "initials": "JT",
           "avatar_color": "#334155"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "object": {
         "type": "document",
@@ -836,14 +907,15 @@
         "url": "/projects/5#document-1607",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1607,
           "title": "pricing-table-rev-b.pdf",
           "status": null,
           "version": null,
           "project_id": 5
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "target": {
         "type": "project",
@@ -852,13 +924,14 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "context": {
         "type": "project",
@@ -867,15 +940,18 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
-      "data": null
+      "data": null,
+      "tombstoned": [],
+      "redundant": false
     },
     {
       "kind": "activity",
@@ -892,14 +968,15 @@
         "url": "/members/1",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1,
           "name": "Jasper Tey",
           "role": "principal",
           "initials": "JT",
           "avatar_color": "#334155"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "object": {
         "type": "document",
@@ -908,14 +985,15 @@
         "url": "/projects/5#document-1605",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 1605,
           "title": "hero-mobile-final.docx",
           "status": null,
           "version": null,
           "project_id": 5
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "target": {
         "type": "project",
@@ -924,13 +1002,14 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
       "context": {
         "type": "project",
@@ -939,15 +1018,18 @@
         "url": "/projects/5",
         "attributes": [],
         "modal": false,
-        "component": null,
         "data": {
           "id": 5,
           "name": "Password Crackdown",
           "client": "Streamline+",
           "status": "active"
-        }
+        },
+        "body": null,
+        "tombstone": null
       },
-      "data": null
+      "data": null,
+      "tombstoned": [],
+      "redundant": false
     }
   ],
   "next_cursor": null,
