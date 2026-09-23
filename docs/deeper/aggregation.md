@@ -1,8 +1,7 @@
 # Aggregation
 
 Aggregation shows several related activities as one row: three orders from
-one customer read as one line, not three. A Story's `groups()` says which
-activities group together and what the row says.
+one customer read as one line, not three.
 
 <script setup>
 import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
@@ -75,7 +74,7 @@ class OrderWasPlaced extends Story
 ## Grouping Along Another Axis
 
 Five customers ordering from the same kitchen need a different sentence. Each
-`Group` names an **axis**: what its members have in common.
+`Group` names an **axis**: what its activities have in common.
 
 ```php
 // app/Stories/OrderWasPlaced.php
@@ -90,13 +89,12 @@ public function groups(): array
 
 <FeedExample :items="[actors]" />
 
-In each read mode, an activity belongs to exactly one axis. Grouping is decided
-when the activity is published, not when the feed is read.
+Grouping is decided when the activity is published. In each read mode, an
+activity is in only one group.
 
 ## Which Axes Each Mode Reads
 
-The read mode does not change how activities were grouped. It changes which
-groupings the read shows.
+The read mode chooses which groupings a read shows:
 
 | Mode | Reads |
 |---|---|
@@ -104,11 +102,8 @@ groupings the read shows.
 | `live()` | `repeat`, plus authored composites |
 | `summary()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner |
 
-A headline written for an axis that none of your reads use never renders.
-`storyfeed:doctor` reports it as `aggregates.latent`.
-
-Until `storyfeed:curate` has run, `summary()` groups only by `repeat`, because
-no bucket has a winner yet.
+Until `storyfeed:curate` has run, `summary()` groups only by `repeat`. The
+package schedules it hourly.
 
 ## The Built-in Axes
 
@@ -120,9 +115,10 @@ no bucket has a winner yet.
 | `object` | many actions on one object | `:actor` `:object` | ":actor changed the price of :object :count times" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | see [Composites](/deeper/composites) |
 
-A singular token is safe only where the axis pins that role; a plural token is
-safe everywhere. `Group::on('scene')` names a custom axis, and `Group::any()`
-matches whichever axis wins.
+Use a singular token like `:target` only where the axis pins that role, so
+every activity in the group shares it. A plural token works everywhere.
+`Group::on('scene')` names a custom axis, and `Group::any()` matches whichever
+axis wins.
 
 ## Thresholds
 
@@ -138,18 +134,15 @@ matches whichever axis wins.
 ],
 ```
 
-Below a threshold, activities stay ungrouped. Thresholds apply at publish time,
-so changing one does not regroup existing activities; `storyfeed:curate`
-re-applies them to history and bumps the `sync_token`.
+Below a threshold, activities stay ungrouped. Changing a threshold doesn't
+regroup past activities until `storyfeed:curate` runs.
 
-`repeat` keys on the target, so orders placed with different kitchens do not
-group under it; `targets` is the axis for that. A role the key leaves free may
-be empty on some members, which a plural token
-[handles](/deeper/grammar#members-that-did-not-fill-a-role).
+`repeat` groups only orders placed with the same kitchen; `targets` groups
+across kitchens.
 
 ## Custom Axes
 
-An axis is a key recipe and an eligibility rule:
+An axis is a key recipe and a rule for which activities it takes:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -162,13 +155,11 @@ Storyfeed::axes([
 ]);
 ```
 
-`scene` groups activities that happened in the same container, such as three
-customers asking about dishes in one kitchen. No built-in axis keys on
-`context`, and an axis added later only groups activities recorded with a
-[context](/deeper/context), because roles are never backfilled.
+`scene` groups activities in the same [context](/deeper/context), such as
+three customers asking about dishes in one kitchen.
 
-The recipe names the fields two activities must share to group; `!` marks a
-field that must be present. A singular role token is safe when both of the
+The recipe names the fields two activities must share; `!` marks a field that
+must be present. A singular token like `:context` is safe when both of its
 role's fields are in the key.
 
 | Role | Type Field | Id Field |
@@ -181,10 +172,10 @@ role's fields are in the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb and `d` adds the day. Without `v`, a group may span verbs,
-so only a verb-agnostic grammar key (`scene.*`) applies to it.
+`v` adds the verb and `d` the day. Without `v`, a group may mix verbs, so only
+a `scene.*` grammar key applies to it.
 
-A new axis registers at the lowest priority. To outrank a built-in, say so:
+A new axis has the lowest priority. To outrank a built-in, say so:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -196,7 +187,5 @@ Then author `scene.{verb}` templates in the [grammar](/deeper/grammar).
 ## Group Nodes
 
 A group arrives as one node, shaped as in the
-[payload contract](/reference/payload#group-node). The shape is fixed; which
-groups form is server policy, so a renderer never assumes a particular
-grouping. Within a read mode every activity appears in exactly one node,
-grouped or not, which is what a client merging pages relies on.
+[payload contract](/reference/payload#group-node). Which groups form may
+change, so a renderer shouldn't assume a particular grouping.
