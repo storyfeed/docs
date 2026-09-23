@@ -178,7 +178,7 @@ class OrderController extends Controller
 
 ## Using Storyfeed's Verbs
 
-Storyfeed also ships common verbs, as the `Storyfeed\Verb` enum.
+Storyfeed also ships common verbs, as the `Storyfeed\Act` enum.
 
 <FeedExample context :items="[confirmed]" />
 
@@ -191,7 +191,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Verb; // [!code focus]
+use Storyfeed\Act; // [!code focus]
 
 class ConfirmOrderController extends Controller
 {
@@ -199,7 +199,7 @@ class ConfirmOrderController extends Controller
     {
         $order->update(['confirmed_at' => now()]);
 
-        Verb::Confirm->by($request->user()) // [!code focus]
+        Act::Confirm->by($request->user()) // [!code focus]
             ->object($order)
             ->publish();
 
@@ -216,8 +216,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Storyfeed\Act; // [!code focus]
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb; // [!code focus]
 
 class ConfirmOrderController extends Controller
 {
@@ -226,7 +226,7 @@ class ConfirmOrderController extends Controller
         $order->update(['confirmed_at' => now()]);
 
         Storyfeed::record(
-            verb: Verb::Confirm, // [!code focus]
+            verb: Act::Confirm, // [!code focus]
             object: $order,
             actor: $request->user(),
         );

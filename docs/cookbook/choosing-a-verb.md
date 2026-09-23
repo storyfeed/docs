@@ -94,7 +94,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
-use Storyfeed\Verb;
+use Storyfeed\Act;
 
 class MenuItemController extends Controller
 {
@@ -102,7 +102,7 @@ class MenuItemController extends Controller
     {
         $dish = MenuItem::create($request->validated());   // the dish is written here
 
-        Verb::Create->by($request->user())->object($dish)->publish(); // [!code focus]
+        Act::Create->by($request->user())->object($dish)->publish(); // [!code focus]
 
         return to_route('menu-items.show', $dish);
     }
@@ -117,8 +117,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb;
 
 class MenuItemController extends Controller
 {
@@ -127,7 +127,7 @@ class MenuItemController extends Controller
         $dish = MenuItem::create($request->validated());   // the dish is written here
 
         Storyfeed::record( // [!code focus]
-            verb: Verb::Create, // [!code focus]
+            verb: Act::Create, // [!code focus]
             object: $dish, // [!code focus]
             actor: $request->user(), // [!code focus]
         ); // [!code focus]
@@ -148,7 +148,7 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Verb;
+use Storyfeed\Act;
 
 class MenuDishController extends Controller
 {
@@ -156,7 +156,7 @@ class MenuDishController extends Controller
     {
         $menu->dishes()->attach($dish);   // the dish already existed
 
-        Verb::Add->by($request->user())->object($dish)->to($menu)->publish(); // [!code focus]
+        Act::Add->by($request->user())->object($dish)->to($menu)->publish(); // [!code focus]
 
         return back();
     }
@@ -172,8 +172,8 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb;
 
 class MenuDishController extends Controller
 {
@@ -182,7 +182,7 @@ class MenuDishController extends Controller
         $menu->dishes()->attach($dish);   // the dish already existed
 
         Storyfeed::record( // [!code focus]
-            verb: Verb::Add, // [!code focus]
+            verb: Act::Add, // [!code focus]
             object: $dish, // [!code focus]
             actor: $request->user(), // [!code focus]
             target: $menu, // [!code focus]
@@ -251,7 +251,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Storyfeed\Verb;
+use Storyfeed\Act;
 
 class MailWebhookController extends Controller
 {
@@ -263,7 +263,7 @@ class MailWebhookController extends Controller
             'outcome' => $request->input('event'),
         ]);
 
-        Verb::Create->anonymously() // [!code focus]
+        Act::Create->anonymously() // [!code focus]
             ->object($deliveryEvent) // [!code focus]
             ->to($document) // [!code focus]
             ->publish(); // [!code focus]
@@ -296,7 +296,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
-use Storyfeed\Verb;
+use Storyfeed\Act;
 
 class MenuItemController extends Controller
 {
@@ -306,7 +306,7 @@ class MenuItemController extends Controller
 
         $revision = $dish->revisions()->create($request->validated());
 
-        Verb::Update->by($request->user()) // [!code focus]
+        Act::Update->by($request->user()) // [!code focus]
             ->object($dish) // [!code focus]
             ->resulting($revision) // what the update produced [!code focus]
             ->publish(); // [!code focus]
@@ -324,8 +324,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb;
 
 class MenuItemController extends Controller
 {
@@ -336,7 +336,7 @@ class MenuItemController extends Controller
         $revision = $dish->revisions()->create($request->validated());
 
         Storyfeed::record( // [!code focus]
-            verb: Verb::Update, // [!code focus]
+            verb: Act::Update, // [!code focus]
             object: $dish, // [!code focus]
             actor: $request->user(), // [!code focus]
             result: $revision, // what the update produced [!code focus]

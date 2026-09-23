@@ -1,6 +1,6 @@
 # Verb Vocabulary
 
-`Storyfeed\Verb` is a backed enum of common verbs you can record with instead
+`Storyfeed\Act` is a backed enum of common verbs you can record with instead
 of writing your own. Each case stores a plain English word as the verb, such as
 `approve`, and serializes as an Activity Streams 2.0 activity type, such as
 `Accept`, so you need no mapping of your own.
@@ -53,29 +53,30 @@ A case records an activity the same way an application's own enum does.
 
 ```php
 // where the fact happens: a controller, an action, a listener
-use Storyfeed\Verb;
+use Storyfeed\Act;
 
-Verb::Approve->by($editor)
+Act::Approve->by($editor)
     ->object($photo)
     ->to($menu)
     ->publish();
 ```
 
 The row stores `approve`, and the Activity Streams serializer emits
-`"type": "Accept"` alongside `"sf:verb": "approve"`.
+`"type": "Accept"` alongside `"sf:verb": "approve"`. `->of($photo)` starts
+from the object instead: `Act::Approve->of($photo)->by($editor)`.
 
 ## Registering the Verbs You Use
 
-`Storyfeed::verbs()` takes a map of verb to activity type. `Verb::only()`
+`Storyfeed::verbs()` takes a map of verb to activity type. `Act::only()`
 builds that map for the cases an application actually records.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb;
 
-Storyfeed::verbs(Verb::only(
-    Verb::Create, Verb::Update, Verb::Approve, Verb::Archive,
+Storyfeed::verbs(Act::only(
+    Act::Create, Act::Update, Act::Approve, Act::Archive,
 ));
 ```
 
@@ -105,9 +106,9 @@ Storyfeed::verbs([
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 use App\Enums\KitchenActivity;
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Verb;
 
-Storyfeed::verbs(Verb::only(Verb::Create, Verb::Confirm));
+Storyfeed::verbs(Act::only(Act::Create, Act::Confirm));
 Storyfeed::verbs(KitchenActivity::class);
 ```
