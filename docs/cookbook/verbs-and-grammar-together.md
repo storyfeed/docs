@@ -1,7 +1,7 @@
 # Keeping Verbs and Grammar Together
 
-Every verb the app publishes has a headline, every headline has a publisher,
-and both are declared in the same file.
+A verb and its headline drift apart when they are written in different
+places. Declare both in one Story class, and publish through that class.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -11,6 +11,11 @@ import { scenes } from '../.vitepress/theme/samples'
 <?php
 
 namespace App\Stories;
+
+use App\Models\Order;
+use BackedEnum;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Story;
 
 class OrderWasPlaced extends Story
 {
@@ -30,7 +35,7 @@ class OrderWasPlaced extends Story
 }
 ```
 
-The class is the one place the verb string is written. Publish through it:
+The verb string is written only in the class. Publish through it:
 
 ```php
 // where the fact happens: a controller, an action, a listener
@@ -60,16 +65,15 @@ php artisan storyfeed:verbs --used            # registered but never recorded, a
 php artisan storyfeed:stories                 # registered definitions and recorded pairs
 ```
 
-`storyfeed:stories` cannot discover an unregistered publisher that has never
-run. Its `(call site)` rows identify recorded object/verb pairs, not source
-locations.
+`storyfeed:stories` reads recorded pairs, so it cannot find a publisher that
+has never run. Its `(call site)` rows are pairs, not source locations.
 
 `grammar.strict` throws at the publish call in `local` and `testing` when the
-pair has no headline. It is in [Configuration](/reference/configuration).
+pair has no headline. See [Configuration](/reference/configuration).
 
 ## A Verb Nothing Publishes Any More
 
-Rows recorded under a retired verb keep their sentence only while the verb
+Rows recorded under a retired verb keep their headline only while the verb
 stays registered:
 
 ```php
@@ -77,13 +81,17 @@ stays registered:
 
 namespace App\Stories;
 
+use App\Models\Order;
+use BackedEnum;
+use Storyfeed\Contracts\FeedVerb;
+use Storyfeed\Story;
+
 class OrderWasPrinted extends Story
 {
-    // Nothing publishes `print` any more. Registered so rows recorded under it
-    // keep their headline.
+    // Nothing publishes `print` any more. Registered so old rows keep their headline.
     public string|array|null $objectType = Order::class;
 
-    public string|FeedVerb|BackedEnum|null $verb = 'order.print';
+    public string|FeedVerb|BackedEnum|null $verb = 'print';
 
     public function headline(): string
     {
@@ -92,7 +100,5 @@ class OrderWasPrinted extends Story
 }
 ```
 
-`storyfeed:verbs --used` compares declarations with distinct stored verbs.
-While historical `print` rows remain, `print` still counts as recorded; the
-command cannot tell whether a publisher is still active. Keep the Story
-registered so those rows retain their headline.
+`storyfeed:verbs --used` counts `print` as recorded while old rows remain. It
+cannot tell that nothing publishes it any more.

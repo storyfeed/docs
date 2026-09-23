@@ -1,15 +1,15 @@
 # Composing a Coherent Activity
 
-Check an activity's composition before recording it: **read the recorded fields
-back. Do they cohere?**
+Before you record a new kind of activity, write its fields out in a line and
+check that they describe what happened.
 
 ```text
 :actor · :verb · :object · :target
 ```
 
-Substitute the values you plan to record. Use `—` for an empty field. Can a
-reader reconstruct the event from those values alone? Apply this to each new
-composition before writing its headline.
+Fill in the values you plan to record, with `—` for an empty field. A reader
+should be able to tell what happened from those values alone. Do this before
+writing the headline.
 
 ## An Invitation Accepted
 
@@ -19,26 +19,22 @@ invitee · joined   · invitee    · —        incoherent
 invitee · accepted · invitation · project  coherent
 ```
 
-The event is an invitee accepting an invitation to a project. The inviter sent
-the invitation earlier; they did not perform the acceptance.
-
 | Composition | What the Fields Say |
 |---|---|
-| Inviter · joined · invitee · — | The inviter occupies the actor field, although they did not act in this event. |
-| Invitee · joined · invitee · — | Correcting the actor still leaves the invitee repeated as the object. The fields do not identify what they joined. |
-| Invitee · accepted · invitation · project | The fields identify who accepted, what they accepted, and which project the invitation was for. |
+| Inviter · joined · invitee · — | The inviter is the actor, but sent the invitation earlier and did not act here. |
+| Invitee · joined · invitee · — | The invitee is repeated as the object, and nothing says what they joined. |
+| Invitee · accepted · invitation · project | Who accepted, what they accepted, and which project it was for. |
 
 ## What to Look For
 
 | Failure Mode | Inspect Each Field for |
 |---|---|
-| A bystander | Someone who did not participate in this event. |
-| A repetition | The same entity occupying two fields. Check whether both roles are intended. |
-| Noise | Something that is not part of the event at all. |
+| A bystander | someone who did not take part in this event |
+| A repetition | the same entity in two fields |
+| Noise | something that is not part of the event at all |
 
-A repetition can be legitimate: someone editing their own profile may be both
-actor and object. Read the fields together to decide whether the repetition
-describes the event.
+A repetition can be right: someone editing their own profile is both actor and
+object.
 
 ## Coherence and Completeness
 
@@ -46,18 +42,16 @@ describes the event.
 user · moved · document · folder B
 ```
 
-This record coheres: it identifies who moved the file and its destination.
-It does not identify where the file came from. That missing role is a fidelity
-gap, not an incoherence. Decide separately whether the event needs that detail.
+This describes the move, but not where the document came from. That is a
+missing detail, not a wrong record; decide separately whether the event needs
+it.
 
-The test does not require a grammatical sentence or prepositions between the
-fields. The summary can change at any time while the record remains. Read the
-stored values independently of the prose used to display them.
+Read the stored values, not the headline. The headline can change later; the
+record stays.
 
 ## What Reading One Row Cannot Catch
 
-It reads one tuple. Two mistakes live outside one tuple, and both look correct
-inside it.
+Two mistakes look correct in any single row.
 
 ### Whether the Event Happened Once
 
@@ -67,12 +61,11 @@ user · revised · proposal · —   coherent
 user · revised · proposal · —   coherent
 ```
 
-Three autosaves, one revision as a reader would count it. Every row passes the
-test on its own, because the test never asks how many rows there are. Read a
-window of rows for the verb rather than one composition:
-[Choosing when to publish](/cookbook/choosing-when-to-publish) covers where the
-call belongs, and [Repeating activities](/cookbook/repeating-activities) covers
-collapsing the ones that stay.
+Three autosaves, one revision as a reader would count it. Look at several rows
+for the verb, not one. [Choosing When to Publish](/cookbook/choosing-when-to-publish)
+covers where the call belongs, and
+[Repeating Activities](/cookbook/repeating-activities) covers collapsing the
+rest.
 
 ### Whether Every Token Has a Publisher
 
@@ -85,16 +78,15 @@ user · archived · document · —   coherent — nothing was aimed at
 'document.archive' => ':actor archived :object from :target'   // ✗ nothing fills :target
 ```
 
-The composition coheres, and the template names a role no publisher supplies, so
-the headline renders a fallback where a name should be. The test cannot see this
-because it reads the fields, not the grammar that will print them.
+The fields are fine, but the template names a role no publisher fills, so the
+headline shows a fallback where a name should be.
 
 ```sh
 php artisan storyfeed:doctor --only=roles
 ```
 
-The `roles` check reports a singular template naming a role none of its
-activities carry.
+The `roles` check reports a template that names a role none of its activities
+carry.
 
 ## Repeated Rows
 
@@ -102,11 +94,7 @@ activities carry.
 php artisan storyfeed:doctor --only=reflexive
 ```
 
-The check reports activities with the same entity type and ID in `actor` and
-`object`, grouped by verb. Its `reflexive.actor_object` finding is an
-informational note (`info`), because reflexive records can be legitimate.
-It catches actor/object repetition, not bystanders or noise, and does not
-inspect every pair of fields. Use the finding to read those records back.
-
-See [Doctor](/reference/doctor) for running checks and
-[Recording activities](/basics/recording) for assigning the fields.
+The check lists activities with the same entity as `actor` and `object`,
+grouped by verb, at `info` severity. It does not find bystanders, noise, or
+repetition in other fields. Read the rows it lists back with the test above.
+See [Doctor](/reference/doctor).
