@@ -1,7 +1,8 @@
 # Quickstart
 
-Three steps until your app is recording activities, and a look at what comes
-back. The example is a customer placing an order with a kitchen.
+Recording an activity takes three things: models that say how they read in a
+feed, a headline for the verb, and one call where the fact happens. The example
+is a customer placing an order with a kitchen.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -47,16 +48,13 @@ Storyfeed::grammar([
 
 <<< @/snippets/publish.php
 
-That is the activity, and this is it on a feed:
+On the feed:
 
 <FeedExample context :items="[scenes.order]" />
 
-Call it wherever the fact becomes true: an action, an observer, an event
-listener.
-
 ## 4. See the Feed
 
-One call returns everything the kitchen took part in:
+This call returns everything the kitchen took part in:
 
 ```php
 // a controller, or wherever the feed is read
@@ -65,15 +63,12 @@ $page = Storyfeed::feed()->involving($kitchen)->get();
 
 <FeedExample :items="[scenes.order]" />
 
-Each node carries its own sentence with the entities already in it, so drawing
-one needs no knowledge of your app. [Reading Feeds](/basics/reading) covers
-what else that call can ask for, and [Rendering](/basics/rendering) covers
-drawing it.
+Each node carries its sentence with the entities already in it, so drawing one
+needs no knowledge of your app.
 
 ::: details What the markup looks like
 
-A page hands the payload to a composable and the composable to the stream.
-This is a production call site, with the names changed:
+A page hands the payload to a composable, and the composable to the stream:
 
 ```vue
 <!-- resources/js/Pages/Kitchen/Feed.vue -->
@@ -83,7 +78,7 @@ import { toRef } from 'vue'
 import FeedStream from '@/components/feed/FeedStream.vue'
 import { useFeedStream } from '@/composables/useFeedStream'
 
-const props = defineProps<{ feed: FeedPayload }>()
+const props = defineProps<{ feed: FeedPayload, kitchen: { id: number } }>()
 
 const { items, nextCursor, loadingMore, loadMore } = useFeedStream(
     toRef(() => props.feed),
@@ -103,11 +98,9 @@ usePoll(10_000, { only: ['feed'] })
 </template>
 ```
 
-Nothing there knows what an order is. The composable holds the paging and the
-reconciliation rules, the stream draws nodes, and the page supplies a payload
-and a URL to ask for more of it.
+The composable holds the paging, the stream draws nodes, and the page supplies
+the payload and the URL for the next page. None of it knows what an order is.
 :::
-
 
 ## Check Your Work
 
@@ -115,13 +108,5 @@ and a URL to ask for more of it.
 php artisan storyfeed:doctor
 ```
 
-Doctor reads your registries and your actual traffic, and names each problem
-with its fix: a verb with no headline, a group that would arrive unnamed, a
+The doctor names each problem with its fix: a verb with no headline, or a
 model in the feed that nothing publishes about.
-
-## Where to Go Next
-
-Your app is recording. Everything else is a choice you have not had to make
-yet: which activities each surface shows, how bursts of them collapse into one
-line, what a row carries beneath its sentence, and how any of it is drawn.
-[The Basics](/basics/feedable-models) takes them in order.

@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | PHP | 8.4+ |
-| Laravel | 12 or 13 (rolling current + previous major) |
+| Laravel | 12 or 13 |
 | Database | MySQL, PostgreSQL, SQLite, or SQL Server |
 
 ## Install
@@ -15,9 +15,8 @@ composer require storyfeed/storyfeed:dev-main
 ```
 
 The service provider and `Storyfeed` facade register via package discovery.
-
-Commit `composer.lock` to pin the resolved revision, and run
-`storyfeed:doctor` after an update.
+Commit `composer.lock` to pin the revision, and run `storyfeed:doctor` after an
+update.
 
 ## Migrations
 
@@ -36,11 +35,8 @@ php artisan migrate
 | `feed_participants` | the index `involving()` reads |
 | `feed_meta` | package bookkeeping |
 
-::: warning
-Schema changes ship as **additive** `add_*` migrations, never edits to create
-stubs you already ran. Publish and migrate; never delete a migration you have
+After an update, publish and migrate again. Never delete a migration you have
 already run.
-:::
 
 ## Configuration
 
@@ -48,22 +44,22 @@ already run.
 php artisan vendor:publish --tag="storyfeed-config"
 ```
 
-Optional — every value in `config/storyfeed.php` has a working default. The
-ones you are most likely to touch first:
+Optional: every value in `config/storyfeed.php` has a working default. The ones
+you are most likely to change:
 
 | Key | Default |  |
 |---|---|---|
 | `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, or `'summary'` |
-| `grouping.batch.quiet_minutes` | `10` | idle time before an actor's burst is considered finished |
+| `grouping.batch.quiet_minutes` | `10` | idle minutes before an actor's burst is finished |
 | `prune.after_days` | `null` | retention; `null` keeps everything |
 
 ## Scheduling
 
-The feed works synchronously out of the box. With Laravel’s scheduler running,
-the package schedules `storyfeed:curate` hourly with overlap protection. Set
-`storyfeed.curate.schedule` to `false` to disable that automatic repair.
+The feed works without a scheduler. When Laravel’s scheduler runs, the package
+schedules `storyfeed:curate` hourly on its own; set `storyfeed.curate.schedule`
+to `false` to turn that off.
 
-Add these maintenance tasks to your app’s schedule:
+Add these tasks to your app’s schedule:
 
 ```php
 // routes/console.php
@@ -78,6 +74,5 @@ Schedule::command('storyfeed:prune')->daily();                    // only if pru
 php artisan storyfeed:doctor
 ```
 
-Doctor inspects your registries, schema, and actual feed traffic, and names each
-problem with its fix. On a fresh install it reports that there is nothing to
-diagnose yet.
+The doctor checks your registries, schema and feed traffic, and names each
+problem with its fix. On a fresh install it has nothing to diagnose yet.
