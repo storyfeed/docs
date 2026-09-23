@@ -1,7 +1,7 @@
 # Reading Feeds
 
-A read is a builder that returns a page of nodes, ready to render or to return
-from a route. When you are done, one line reads the feed a surface wants.
+`Storyfeed::feed()` starts a read. You narrow it, choose a mode, and `get()`
+returns a page of nodes, ready to render or to return from a route.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
@@ -89,21 +89,17 @@ Storyfeed::feed()->involving($kitchen)->summary()->get();
 
 <FeedExample :items="summary" />
 
-The app-wide default is `grouping.default` in the config; a call always
-overrides it. Mode names never appear in the payload: which mode a surface
-uses is a server-side choice a renderer knows nothing about.
+The app-wide default is `grouping.default` in the config, and a call
+overrides it. The payload does not name the mode, so a renderer draws every
+mode the same way.
 
-**A mode is chosen per surface, not per app.** One app wanting all three at
-once is the normal case:
+**A mode is chosen per surface, not per app.** One app often uses all three:
 
 | Surface | Mode | Why |
 |---|---|---|
-| an audit or support view | `log()` | every row is evidence, and collapsing two of them into one loses the thing being looked for |
-| a screen someone watches while working | `live()` | bursts collapse as they form, and nothing reshuffles under a reader who is mid-glance |
-| a page opened once, days later | `summary()` | the reader wants the shape of what happened, not every keystroke that made it |
-
-[Which axes each mode reads](/deeper/aggregation#which-axes-each-mode-reads)
-covers what changes underneath.
+| an audit or support view | `log()` | every row is evidence |
+| a screen someone watches while working | `live()` | bursts collapse as they form, and nothing reshuffles under the reader |
+| a page opened once, days later | `summary()` | the reader wants the shape of what happened |
 
 ## Scoping
 
@@ -116,7 +112,7 @@ Storyfeed::feed()->involving($order)->get();
 $order->storyfeed()->get();   // the same read, from the model
 ```
 
-The narrower filters answer narrower questions:
+Narrower filters:
 
 | Call | Returns |
 |---|---|
@@ -131,15 +127,15 @@ whose two members fall inside the kitchen arrives as a group of two on that
 kitchen's page.
 
 ::: tip The difference between involving and context
-`context()` is the container question, and it misses an entity's own
-lifecycle: "dish put on the menu" records the dish as the **object**, so a
-context-scoped menu page omits it. A page a user expects is `involving()`.
+`context()` returns only activities recorded inside a container. "Dish put on
+the menu" records the dish as the **object**, so a page scoped with `context()`
+misses it. An entity's own page uses `involving()`.
 :::
 
 ## Custom Constraints with `query()`
 
-The filters above are a closed set. `query()` hands you the underlying
-activity query for anything they cannot express:
+`query()` hands you the underlying activity query, for anything the filters
+cannot express:
 
 ```php
 // a controller, or wherever the feed is read
@@ -156,16 +152,15 @@ $kitchen->storyfeed()
 
 <FeedExample :items="[repeat]" />
 
-Callbacks compose, and the constraint reaches the whole read: group children
-and the counts behind a group are built from the same query.
+Callbacks compose, and the constraint applies to the whole read, including
+group children and group counts.
 
 - `limit()` or `offset()` inside the callback throws. Size the page with
   `limit()` on the builder.
 - Ordering inside the callback is ignored. The read owns its ordering, because
   the cursor encodes a position in it.
-- A callback narrows and never widens. Each one is wrapped in its own group,
-  so a top-level `orWhere` inside it constrains that group rather than reaching
-  past the scope.
+- A callback only narrows. Each one is wrapped in its own `where` group, so an
+  `orWhere` inside it cannot reach past the scope.
 
 ## Pagination
 
@@ -183,9 +178,7 @@ $page = Storyfeed::feed()->cursor($request->query('cursor'))->get();
 A cursor is a position in the stream **this** query produced: its scope, its
 filters, its mode. Send it back with the same query, including the same
 `query()` callbacks. Applied to a different query it does not error; it skips
-or repeats nodes. The first page and the later pages are often built in
-different places, a controller and an endpoint, and one filter's difference is
-enough.
+or repeats nodes.
 
 Store `sync_token` alongside the cursor and compare it on each page. When it
 changes, settled history was rewritten: drop the accumulated nodes and refetch
