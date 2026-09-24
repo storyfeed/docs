@@ -535,28 +535,24 @@ verb whose spelling is uncertain is asked about, with a way to skip it:
 ```
 
 Choosing `shipped` writes `OrderWasShipped`. Without a terminal, it skips each such verb, writes nothing for it, and prints
-a `make:story` command for it:
+a complete `make:story` command for each spelling. Run the line with the right
+one:
 
 ```txt
-   INFO  Story [app/Stories/OrderWasPlaced.php] created successfully.
+   INFO  Story [app/Stories/DeliveryWasArchived.php] created successfully.
 
-   WARN  Skipped, because the past tense cannot be spelled for certain. Run
-         make:story for each, naming the class with the right spelling:
+   INFO  Bind it in routes/feed.php:
 
-    php artisan make:story --verb=ship --object=order
+    Story::for('delivery')->verb('archive', \App\Stories\DeliveryWasArchived::class);
 
    INFO  Review the generated verbs and headlines — the class names were
          derived from the recorded pairs, so a few will read awkwardly.
 
-   INFO  Bind it in routes/feed.php:
+   WARN  Skipped, because the past tense cannot be spelled for certain. Run
+         the line with the right spelling:
 
-    Story::for(\App\Models\Order::class)->verb('place', \App\Stories\OrderWasPlaced::class);
-```
-
-Run the printed command with the class name added:
-
-```bash
-php artisan make:story OrderWasShipped --verb=ship --object=order
+    php artisan make:story DeliveryWasShiped --verb=ship --object=delivery
+    php artisan make:story DeliveryWasShipped --verb=ship --object=delivery
 ```
 
 ## Listing Verbs
