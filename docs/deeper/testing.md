@@ -38,6 +38,7 @@ otherwise render as a blank line.
 
 ```php
 // tests/Feature/FeedTest.php
+use App\Models\Order;
 use Storyfeed\Testing\GrammarCoverage;
 
 // every verb/type pair in the DB has grammar
@@ -52,12 +53,30 @@ GrammarCoverage::assertCovers([['order', 'place']]);
 GrammarCoverage::assertCoversAggregateMatrix(
     axes: ['repeat', 'actors'],
     verbs: ['place', 'ask'],
+    objectTypes: [Order::class],
 );
 ```
 
 Prefer `assertCoversPossibleAggregates()`: it checks every group your axes
 *could* form, so it catches gaps before real traffic does. The matrix variant
 asserts a grid you choose.
+
+A group headline on a type, as a [Story class](/deeper/stories) writes it, is
+kept under that type's key: `repeat.order.place`. On an axis that groups one
+type, such as `repeat`, `assertCoversPossibleAggregates()` checks each type the
+verb was recorded with, and `assertCoversAggregateMatrix()` checks each type in
+`objectTypes:`, as model classes or morph aliases. One type's headline does not
+cover another's. Without `objectTypes:`, the matrix checks the verb alone. A
+missing headline is named by its key:
+
+```txt
+Storyfeed aggregate grammar coverage is incomplete:
+  - repeat.order.place (no aggregate headline)
+  - actors.place (no aggregate headline)
+
+Register the missing entries with Storyfeed::aggregateGrammar().
+Failed asserting that two arrays are identical.
+```
 
 ```php
 // tests/Feature/FeedTest.php
@@ -67,8 +86,10 @@ StorySurface::assertNoUnwiredSurface();
 StorySurface::assertNoUnwiredSurface(except: [Kitchen::class]);
 ```
 
-This fails for a model that appears in your feed but that nothing publishes
-about. It works under the fake, and passes when there is no data.
+This fails for a `Feedable` model that nothing publishes about, and for one the
+enforced morph map has no alias for (see
+[Surface](/reference/doctor#surface)). It also fails when the check cannot run, and when no activities are recorded,
+because then there is nothing to judge. It works under the fake.
 
 ## Diagnostics in CI
 
