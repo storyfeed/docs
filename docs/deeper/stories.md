@@ -515,6 +515,50 @@ group headlines are commented the same way:
 
 The class fails when stories compile until you uncomment one line.
 
+### Generating from Doctor Findings
+
+```bash
+php artisan make:story --from-doctor
+```
+
+It writes a one-verb class for each type and verb recorded with no headline,
+named from the pair: `OrderWasPlaced`. The name spells the past tense, so a
+verb whose spelling is uncertain is asked about, with a way to skip it:
+
+```txt
+ ┌ How is 'ship' written in the past tense? ────────────────────┐
+ │   ○ shiped                                                   │
+ │ › ● shipped                                                  │
+ │   ○ Skip this one                                            │
+ └──────────────────────────────────────────────────────────────┘
+  The class is named with it, and its headline says it.
+```
+
+Choosing `shipped` writes `OrderWasShipped`. Without a terminal, it skips each such verb, writes nothing for it, and prints
+a `make:story` command for it:
+
+```txt
+   INFO  Story [app/Stories/OrderWasPlaced.php] created successfully.
+
+   WARN  Skipped, because the past tense cannot be spelled for certain. Run
+         make:story for each, naming the class with the right spelling:
+
+    php artisan make:story --verb=ship --object=order
+
+   INFO  Review the generated verbs and headlines — the class names were
+         derived from the recorded pairs, so a few will read awkwardly.
+
+   INFO  Bind it in routes/feed.php:
+
+    Story::for(\App\Models\Order::class)->verb('place', \App\Stories\OrderWasPlaced::class);
+```
+
+Run the printed command with the class name added:
+
+```bash
+php artisan make:story OrderWasShipped --verb=ship --object=order
+```
+
 ## Listing Verbs
 
 ```bash
