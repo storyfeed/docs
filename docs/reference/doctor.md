@@ -27,7 +27,7 @@ Each finding names its fix.
 | `verbs` | verbs recorded but unregistered (typos), or registered but never recorded (dead vocabulary, with the `file:line` that defined it), and type-and-verb pairs defined but never recorded. See [Definitions](#definitions) | warning · info |
 | `removals` | recorded verbs that read like removals (`cancel`, `void_payment`, `trash`) but are treated as being about their object. See [Deleted Models](#deleted-models) | info |
 | `labels` | `Feedable` models labelled by guesswork: no `describeFeed()`, `toFeed()`, `guessFeedLabel()` or `toFeedUsing()`. See [Deleted Models](#deleted-models) | info |
-| `surface` | models that appear in the feed but that nothing publishes about | warning · info |
+| `surface` | models that appear in the feed but that nothing publishes about, and `Feedable` models the enforced morph map cannot name. See [Surface](#surface) | warning · info |
 | `feeds` | is every verb decided — named in the allowlist or denylist of at least one restricted [named feed](/basics/named-feeds)? | warning · info |
 | `parties` | party names an actor took that `Storyfeed::parties()` does not declare, and party rows with no activities. See [Parties](#parties) | warning · info |
 | `participants` | activities missing from the index `involving()` reads | warning |
@@ -148,6 +148,46 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 | `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched, where it runs to carry its actor to the worker. The dispatch went ahead, and the job published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade without taking `Illuminate\Http\Request $request`. It runs only when stories compile, never at a publish or in a queued job. Take the `Request` as a parameter instead. Found by reading the source, so it only ever warns |
 
+## Surface
+
+| Finding | Severity | Means |
+|---|---|---|
+| `surface.unwired` | warning | a `Feedable` model has never appeared in any role on any activity, and no headline names its type. Something should be publishing about it, or the `Feedable` is left over |
+| `surface.unaliased` | warning | a `Feedable` model has no alias in the enforced morph map, so publishing anything that names it throws `ClassMorphViolationException`. Reported with or without recorded activities |
+| `surface.unassessable` | info | no activities are recorded, so `surface.unwired` cannot be judged |
+| `surface.publisher` | info | a class that publishes to the feed |
+
+`surface.unaliased` is usually a subclass of an aliased model. The finding
+names the parent's alias:
+
+```txt
+[App\Models\PriorityOrder] implements Feedable, but the morph map is enforced
+and has no alias for it, so publishing anything that names it throws
+ClassMorphViolationException. It extends [App\Models\Order], stored as `order`:
+return `order` from its getMorphClass() if it should appear as that, or give it
+an alias of its own in Relation::enforceMorphMap().
+```
+
+To appear in the feed as its parent, return the parent's alias:
+
+```php
+<?php
+
+namespace App\Models;
+
+class PriorityOrder extends Order
+{
+    public function getMorphClass(): string
+    {
+        return 'order';
+    }
+}
+```
+
+To appear as a type of its own, give it an alias in
+`Relation::enforceMorphMap()`. A model with no aliased parent gets only that
+second fix.
+
 ## Entities
 
 The `entities` check resolves every morph alias recorded in the actor, object,
@@ -181,7 +221,8 @@ any class filling a role in recorded activities.
 | `hydration.page` | info | how many hydrating classes the 30 most recent activities carry, so how many queries that page pays on top of its own |
 | `hydration.opaque` | info | `feedMedia()` threw when probed with the class's latest snapshot, so whether it hydrates cannot be said |
 
-The check is silent when no resolver hydrates. It probes with the newest
+The check is silent when no resolver hydrates. A class the morph map cannot
+name is skipped; `surface` reports it as `surface.unaliased`. It probes with the newest
 snapshot for the alias, so a resolver that hydrates only under an unregistered
 feed name, or only for an older snapshot shape, is not seen. A class with no
 snapshot that throws on an empty one is not reported.
@@ -195,7 +236,7 @@ php artisan storyfeed:doctor --stubs
 # the same, as registry arrays for a service provider
 php artisan storyfeed:doctor --stubs --arrays
 
-# a story class per gap
+# a Story class per type and verb with no headline
 php artisan make:story --from-doctor
 ```
 
@@ -210,6 +251,25 @@ Story::for(Order::class)->verb('place')->headline(':actor placed :object');
 // order.place: an icon from your app's own set; doctor cannot choose one.
 // Story::for(Order::class)->verb('place')->icon('…');
 ```
+
+With that headline written, one user places three orders, and several users
+place an order for the same customer:
+
+```php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+// order.place: an icon from your app's own set; doctor cannot choose one.
+// Story::for(Order::class)->verb('place')->icon('…');
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->actors(':actors placed :objects'));
+Story::for(Order::class)->verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat(':actor placed :objects'));
+```
+
+A group of one type, as a `repeat` group is, gets its headline on that type,
+where a [Story class](/deeper/stories) files it: the finding names the key
+`repeat.order.place`. A group that can hold several types, as an `actors`
+group can, gets its headline on the verb alone, over tokens that name no type.
 
 Each is a headline, an icon, an actorless verb, or a group headline. Where
 doctor can write the sentence, the stub is live: the verb in the past tense,
@@ -226,6 +286,10 @@ The `--json` report carries each fix's `definition`. The output has no headings
 or counts, so it can be piped. `// Nothing to
 author` means no finding named a registry edit, not that there were no
 findings.
+
+`make:story --from-doctor` writes a Story class for each type and verb with no
+headline instead. See
+[Generating from Doctor Findings](/deeper/stories#generating-from-doctor-findings).
 
 ## In CI
 
