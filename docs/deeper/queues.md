@@ -232,15 +232,14 @@ The builder also accepts `->deleteWhenMissingModels()`. A Story class can set
 `public bool $deleteWhenMissingModels = true`; the class's setting wins over the
 declaration. `snapshotNow()` does not exempt models from restoration.
 
-## Unique, Debounced, and Stored Activities
+## Unique and Stored Activities
 
-`ShouldBeUnique` keeps the first pending publish, `#[DebounceFor]` the last
-pending publish, and `keepLatest()` the latest stored row.
+`ShouldBeUnique` keeps the first pending publish; `keepLatest()` keeps the latest row.
 
-A queued Story may implement `ShouldBeUnique` and define `uniqueId()`, or use
-`#[DebounceFor]` and define `debounceId()`. It cannot combine both. Debouncing
-uses Laravel's queue support; a Story's `DebounceFor` attribute must omit
-`maxWait`.
+A queued Story may implement `ShouldBeUnique` and define `uniqueId()`.
+
+`#[DebounceFor]` isn't supported on Story classes, as Laravel doesn't support it
+on queued mailables, notifications or listeners, so use `keepLatest(within:)`.
 
 ## Carrying the Actor and Context
 

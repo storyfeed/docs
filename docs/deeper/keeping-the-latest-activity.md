@@ -139,5 +139,7 @@ Only matching activities within ten minutes of the new activity's
 Superseded activities are soft-deleted by default. The
 `storyfeed.keep_latest.delete` setting controls their deletion mode.
 
-`ShouldBeUnique` keeps the first pending publish, `DebounceFor` the last pending
-publish, and `keepLatest()` the latest stored row.
+`ShouldBeUnique` keeps the first pending publish; `keepLatest()` keeps the latest row.
+
+`#[DebounceFor]` isn't supported on Story classes, as Laravel doesn't support it
+on queued mailables, notifications or listeners, so use `keepLatest(within:)`.
