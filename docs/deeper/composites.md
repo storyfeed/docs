@@ -1,5 +1,7 @@
 # Composites
 
+[Story Middleware & Batching](/deeper/story-middleware-and-batching) covers per-verb batch windows and activities outside batches.
+
 <script setup>
 import { who, dishes, group } from '../.vitepress/theme/samples'
 

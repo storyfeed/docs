@@ -3,6 +3,8 @@
 A verb can say how long its activities are worth keeping. `storyfeed:prune`
 deletes them once they are older, along with anything only they referred to.
 
+[Keeping the Latest Activity](/deeper/keeping-the-latest-activity) keeps only the latest matching row for a verb.
+
 <script setup>
 import { who, orders, group } from '../.vitepress/theme/samples'
 

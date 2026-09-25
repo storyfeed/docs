@@ -4,6 +4,8 @@
 such as the kitchen a dish belongs to. Record it, and you can read everything
 that happened in that kitchen.
 
+[Activity Scopes](/deeper/activity-scopes) supplies context across a callback or an HTTP request.
+
 <script setup>
 import { who, where, dishes, notes, activity } from '../.vitepress/theme/samples'
 
