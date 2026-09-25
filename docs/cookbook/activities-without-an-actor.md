@@ -13,6 +13,12 @@ no actor when nobody did.
 | a job, a command, an integration | a party, named | `:actor marked :object paid` |
 | nobody | none | `:object expired at :target` |
 
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const placed = scene.order
+const { paid, expired } = scene.cookbook.actorless
+</script>
+
 <span id="the-default-actor"></span>
 
 ## Recording the Authenticated User
@@ -82,65 +88,10 @@ class OrderController extends Controller
 
 ## Preserving an Actor in Background Work
 
-A job dispatched from an authenticated request already carries that user.
-A job started from a console command or scheduler has no logged-in user.
-Without an actor scope, resolver or fallback party, its actor is `null`:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Jobs/RecordOrder.php"
-<?php
-
-namespace App\Jobs;
-
-use App\Models\Order;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Storyfeed\Facades\Storyfeed;
-
-class RecordOrder implements ShouldQueue
-{
-    public function __construct(public Order $order) {}
-
-    public function handle(): void
-    {
-        Storyfeed::activity()
-            ->action('place', $this->order) // no by(), no user: the actor is null
-            ->to($this->order->shop)
-            ->publish();
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Jobs/RecordOrder.php"
-<?php
-
-namespace App\Jobs;
-
-use App\Models\Order;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Storyfeed\Facades\Storyfeed;
-
-class RecordOrder implements ShouldQueue
-{
-    public function __construct(public Order $order) {}
-
-    public function handle(): void
-    {
-        Storyfeed::record(
-            verb: 'place',
-            object: $this->order, // no actor:, no user: the actor is null
-            target: $this->order->shop,
-        );
-    }
-}
-```
-:::
-
-<FeedExample :items="[anonymous]" />
-
-To keep the author, pass the user into the job and call `->by()` with it, as
-the event below does.
-
-Pass the user who acted with the event or job, then assign that user with `by()`:
+A job dispatched from an authenticated request already carries that user. A
+job started from a console command or the scheduler has no logged-in user, so
+its activity has no actor. Pass the user who acted with the event or job, and
+assign it with `by()`:
 
 ```php memo="app/Events/OrderPlaced.php"
 <?php
@@ -167,35 +118,7 @@ class OrderPlaced implements PublishesToFeed
 }
 ```
 
-<script setup>
-import { scene } from '../.vitepress/theme/world'
-const placed = scene.order
-const { anonymous, paid, expired } = scene.cookbook.actorless
-</script>
-
-<FeedExample :items="[placed]" />
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\ActivityStreams\ActivityType;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::verbs([
-    'place' => ActivityType::Create,
-    'pay' => ActivityType::Accept,
-    'expire' => ActivityType::Remove,
-]);
-```
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target');
-
-Story::for(Order::class)->verb('pay')
-    ->headline(':actor marked :object paid');
-```
+It records the same activity as the controller above.
 
 ## Recording a System Actor
 
@@ -262,68 +185,15 @@ class StripeWebhookController extends Controller
 
 <FeedExample :items="[paid]" />
 
-To name the party once for a whole job, wrap it in `Storyfeed::actor('System', …)`.
-See [Scoped Attribution](/deeper/parties#scoped-attribution).
-
-## Recording Anonymous Activities
-
-Use explicit anonymity when an activity must carry no actor, even in an authenticated request.
-
-### Explicit Anonymity
-
-```php memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(
-        PlaceOrderRequest $request,
-        Shop $shop,
-    ): RedirectResponse {
-        $order = $shop->orders()->create($request->validated());
-
-        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
-
-        Storyfeed::activity()
-            ->by($knownAuthor) // User|null: null means anonymous
-            ->action('place', $order)
-            ->to($shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-
-| Spelling | Actor |
-|---|---|
-| omit `by()` | resolved from the request |
-| `->by(null)` or `->actor(null)` | anonymous |
-| `->anonymously()` | anonymous, on an existing builder |
-| `Storyfeed::anonymous()` | anonymous, from the start |
-| `Storyfeed::record(..., anonymous: true)` | anonymous; supplying a non-null `actor:` too throws |
-
-`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
-`anonymous: true` for explicit anonymity with named arguments.
+To name one party for a whole job, see
+[Sharing an Actor](/deeper/activity-scopes#sharing-an-actor).
+A party can also fill [other roles](/deeper/parties#using-parties-in-other-roles).
 
 <span id="recording-without-an-actor"></span>
 
-### Anonymous Headlines
+## Recording No Actor
 
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('expire')
-    ->headline(':object expired at :target');
-```
+A scheduled command that expires unpaid orders acts for nobody:
 
 ```php memo="app/Console/Commands/ExpireOrders.php"
 <?php
@@ -359,5 +229,8 @@ class ExpireOrders extends Command
 
 <FeedExample :items="[expired]" />
 
-Leaving `:actor` out of a headline only changes the sentence. A stored actor
-stays stored.
+The `expire` headline leaves `:actor` out.
+[Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities)
+covers every spelling of an anonymous activity, and
+[Anonymous Headlines](/deeper/parties#anonymous-headlines) covers headlines
+for activities with no actor.

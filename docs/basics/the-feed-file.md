@@ -5,7 +5,7 @@ icon, and how a group of them reads, the way `routes/web.php` declares your
 routes.
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { scene } from '../.vitepress/theme/world'
 
 // Presentation variants of catalogue facts, as different feed definitions render them.
 const withoutIcon = { ...scene.order, glyph: null }
@@ -14,8 +14,6 @@ const completeWithoutIcon = { ...complete, glyph: null }
 const placedAtCounter = { ...scene.order, target: null, headline_template: ':actor placed :object' }
 const rushed = { ...scene.order, headline_template: ':actor rushed :object to :target', data: { rush: true } }
 const created = scene.basics.feedFile.created
-const repeated = { ...liveOf(scene.guide.usageExamples.repeatOrders)[0],
-  headline_template: ':actor placed :count orders' }
 </script>
 
 ## Basic Definitions
@@ -46,8 +44,11 @@ Story::for(Order::class)
 Storyfeed loads `routes/feed.php` once every service provider has booted, so
 your morph map is already in place.
 
-`for()` names the object's type, and `verb()` names the verb you record. This
-headline is for the verb `place`, recorded about an order.
+<a id="publishing-a-verb"></a>
+
+`for()` names the object's type, and `verb()` names the verb you
+[record](/basics/recording). This headline is for the verb `place`, recorded
+about an order.
 
 The template names roles, never models:
 
@@ -58,71 +59,6 @@ The template names roles, never models:
 // ✓
 ->headline(':actor placed :object with :target')
 ```
-
-<a id="publishing-a-verb"></a>
-
-### Publishing an Activity
-
-Publish the verb and object with `Storyfeed::activity()`:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/CheckoutController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class CheckoutController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('place', $order)
-            ->to($order->shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/CheckoutController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class CheckoutController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::record(
-            verb: 'place',
-            object: $order,
-            actor: $request->user(),
-            target: $order->shop,
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-:::
-
-<FeedExample :items="[scene.order]" />
 
 ## Headline Templates
 
@@ -290,46 +226,14 @@ The same order applies to headlines and to intents.
 
 
 <a id="headlines-for-a-group"></a>
-
-## Group Headlines
-
-A verb inside `Story::for()` can also say how a group of its activities reads:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->group(function () {
-    Story::verb('place')
-        ->headline(':actor placed :object with :target')
-        ->grouped(fn ($group) => $group->repeat(':actor placed :count orders'));
-});
-```
-
-<FeedExample :items="[repeated]" />
-
-The group headline belongs to orders only. The groups a feed can form, and the
-tokens their headlines may use, are in [Aggregation](/deeper/aggregation).
-
+<a id="group-headlines"></a>
 <a id="roles-that-determine-redundancy"></a>
+<a id="headlines-for-deleted-models"></a>
 
-## Headlines for Deleted Models
-
-When a model is deleted, its activities stay. `->missing()` names the roles an
-activity is about, so the payload can say when one of them is gone:
-
-```php memo="routes/feed.php"
-use App\Models\Question;
-use Storyfeed\Facades\Story;
-
-Story::for(Question::class)
-    ->verb('turn_into')
-    ->headline(':actor turned :object into :result')
-    ->missing('object', 'result');
-```
-
-With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
-covers what the feed does when a model goes.
+A verb's definition can also say how a group of its activities reads, and what
+its activities say once a model they name is deleted.
+[Aggregation](/deeper/aggregation#defining-group-headlines) and
+[Deleted Models](/deeper/deleted-models) cover both.
 
 ## Listing Definitions
 
@@ -339,7 +243,9 @@ List the definitions loaded by your application:
 php artisan storyfeed:list
 ```
 
-Use `--type=order` or `--verb=place` to filter the list. The output includes the headline, icon and declaration location. [Commands](/reference/commands) lists the inspection options.
+Use `--type=order` or `--verb=place` to filter the list, and `--json` for
+machine-readable rows. The output includes the headline, icon and declaration
+location. [Commands](/reference/commands) lists the inspection options.
 
 ## Caching Definitions
 
@@ -349,7 +255,9 @@ Cache definitions during deployment:
 php artisan storyfeed:cache
 ```
 
-Storyfeed loads the cached manifest instead of evaluating `routes/feed.php` at boot. Rebuild the cache after changing definitions. To remove it:
+Storyfeed loads the cached manifest instead of evaluating `routes/feed.php` at
+boot. `php artisan optimize` runs it too. Rebuild the cache after changing
+definitions. To remove it:
 
 ```bash
 php artisan storyfeed:clear

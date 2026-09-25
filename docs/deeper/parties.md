@@ -5,6 +5,7 @@
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const paid = scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay')
+const { anonymous } = scene.cookbook.actorless
 </script>
 
 An activity's actor doesn't have to be a user. It can be a **party**, such as
@@ -188,10 +189,53 @@ With no fallback, an activity with no user is anonymous.
 
 ## Recording Anonymous Activities
 
-Use `->anonymously()` to record an activity without an actor, even when a scope
-or default supplies one. Omitting the actor lets those defaults apply. See
-[Activities Without an Actor](/cookbook/activities-without-an-actor) for a full
-recording example.
+Omitting the actor lets the authenticated user, a scope or a default apply.
+To record an activity with no actor, even in an authenticated request, pass
+`null` to `by()`:
+
+```php memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Shop;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(
+        PlaceOrderRequest $request,
+        Shop $shop,
+    ): RedirectResponse {
+        $order = $shop->orders()->create($request->validated());
+
+        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
+
+        Storyfeed::activity()
+            ->by($knownAuthor) // User|null: null means anonymous
+            ->action('place', $order)
+            ->to($shop)
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+
+<FeedExample :items="[anonymous]" />
+
+| Spelling | Actor |
+|---|---|
+| omit `by()` | resolved from the request |
+| `->by(null)` or `->actor(null)` | anonymous |
+| `->anonymously()` | anonymous, on an existing builder |
+| `Storyfeed::anonymous()` | anonymous, from the start |
+| `Storyfeed::record(..., anonymous: true)` | anonymous; supplying a non-null `actor:` too throws |
+
+`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
+`anonymous: true` for explicit anonymity with named arguments.
 
 <a id="actorless-voice"></a>
 
@@ -210,6 +254,21 @@ An activity recorded with no actor uses the anonymous headline. A party uses
 the ordinary headline. The anonymous template cannot contain `:actor`.
 A closure works as in
 [The Feed File](/basics/the-feed-file#choosing-a-headline-per-activity).
+
+A verb that never has an actor, such as one recorded by a scheduled command,
+can leave `:actor` out of its headline:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('expire')
+    ->headline(':object expired at :target');
+```
+
+Leaving `:actor` out of a headline only changes the sentence. A stored actor
+stays stored.
+
 <a id="scoped-attribution"></a>
 
 ## Sharing an Actor

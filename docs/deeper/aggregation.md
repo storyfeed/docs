@@ -314,4 +314,6 @@ Then give its groups headlines with `$group->axis('scene', …)`, as in
 
 A group arrives as one node, shaped as in the
 [payload contract](/reference/payload#group-node). Which groups form may
-change, so a renderer shouldn't assume a particular grouping.
+change, so a renderer shouldn't assume a particular grouping. A group shows no
+quote or image of its own; those stay on the activities inside it. Where every
+one must stay visible, read with `log()`, which doesn't group.

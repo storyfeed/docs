@@ -242,8 +242,8 @@ without an explicit actor inherit `System`.
 |---|---|---|
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
 | Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}` | `Storyfeed::context()` or `storyfeed.context:{param}` |
-| Story middleware | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
-| Defaults | the verb's actor; otherwise a custom resolver (or authenticated user when no resolver is set), then the fallback party | none |
+| [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
+| Defaults | the [verb's actor](/deeper/stories#request-based-actors); otherwise a custom resolver (or authenticated user when no resolver is set), then the fallback party | none |
 
 Explicit anonymity keeps the actor empty. Without any context supplied, the
 context stays empty.

@@ -47,6 +47,11 @@ The [Schema](/reference/schema) describes the tables. For manual publication or 
 
 The installer creates `config/storyfeed.php`. Every setting has a default; see [Configuration](/reference/configuration) for the available options.
 
+<a id="scheduling"></a>
+<a id="scheduling-maintenance"></a>
+
+The feed works without a scheduler; once it is live, Storyfeed has [maintenance commands](/reference/commands#scheduling-maintenance) worth scheduling.
+
 ### Publishing Configuration
 
 You may publish the configuration separately:
@@ -54,28 +59,3 @@ You may publish the configuration separately:
 ```bash
 php artisan vendor:publish --tag="storyfeed-config"
 ```
-
-<a id="scheduling"></a>
-
-## Scheduling Maintenance
-
-The feed works without a scheduler. When Laravel’s scheduler runs, the package
-schedules `storyfeed:curate` hourly on its own; set `storyfeed.curate.schedule`
-to `false` to turn that off.
-
-Add these tasks to your app’s schedule:
-
-```php memo="routes/console.php"
-use Illuminate\Support\Facades\Schedule;
-
-// fill in missing snapshots
-Schedule::command('storyfeed:trickle')->everyMinute();
-
-// close idle bursts promptly
-Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
-
-// only if activities are pruned
-Schedule::command('storyfeed:prune')->daily();
-```
-
-Configure [Laravel’s scheduler](https://laravel.com/docs/13.x/scheduling#running-the-scheduler) to run these tasks.

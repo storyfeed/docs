@@ -373,24 +373,27 @@ Spatie package docs (one page per capability, ruthless brevity), Inertia
 
 ## The structure
 
-Laravel-style grouping: a reader goes Getting started → The basics →
-Digging deeper → Reference, and can stop at any tier with a working feed.
+Laravel-style grouping: a reader goes Getting Started → The Basics → Reading
+and Rendering → the two depth groups → Testing and Maintenance → Reference, and
+can stop at any tier with a working feed. The list mirrors `config.ts`; no page
+leans on one further down.
 
 ### Getting Started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Usage Examples — the showcase: a snippet, the feed it renders, and the page that teaches it
-- ✅ Installation — `guide/installation`
-- ✅ Quickstart — three steps until the app is recording; reading and drawing are choices, not setup
+- ✅ Installation — `guide/installation`: install, run the installer, configure. Maintenance scheduling lives on Retention, with a one-line pointer here
+- ✅ Quickstart — three steps until the app is recording; reading and drawing are choices, not setup. Its model uses `toFeed()`, the style The Basics teaches first
+- ✅ What You Can Build (`guide/usage-examples`) — the showcase: a snippet, the feed it renders, and the page that teaches it
 
 ### The Basics
 
 Feedable Models first, because recording a non-`Feedable` object fails silently.
-After that, simple to complex: the elementary act, the typed layer over it,
-reading and drawing, a second audience, then renderer-specific pages.
+Then the elementary act, the headline it reads as, the typed layer over the
+verb, and what an activity shows.
 
-- ✅ Feedable Models — the guessed label, `describeFeed()` / `feedMediaUsing()`, a link per feed, `toFeed()` by hand, models you don't own, the model's own feed, morph aliases
-- ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
+- ✅ Feedable Models — the guessed label, `toFeed()` (the style Quickstart uses), `describeFeed()` under its own heading as the alternative, `feedMediaUsing()`, a link per feed, models you don't own, the model's own feed, morph aliases
+- ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, data, the publication time
+- ✅ The Feed File (`basics/the-feed-file`) — `routes/feed.php` and the `Story` facade: headlines, tokens, optional segments, dynamic headlines, icons and intents, definition groups, `Story::resource()`, precedence, listing and caching (the one home for `storyfeed:list` / `storyfeed:cache`). Comes after Recording, so it never teaches a publish. Group headlines live in Aggregation and deleted-model headlines in Deleted Models; this page links both
 - ✅ Activity Verbs (`basics/verbs`) — the same verb typed, as a `FeedVerb` enum (owner's page). Named
   `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
@@ -398,50 +401,69 @@ reading and drawing, a second audience, then renderer-specific pages.
   chose `Activity Verbs` on 2026-09-24: it says whose verbs they are beside
   Recording Activities and Activity Content, and stays apart from Reference's
   Verb Vocabulary. The slug stays `basics/verbs`, so no link moves
-- ✅ The Feed File (`basics/the-feed-file`) — `routes/feed.php` and the `Story` facade: headlines, tokens, optional segments, icons and intents, `Story::resource()`, group headlines, `->missing()`, `story()` at the call site, loading, listing and caching. Named `Headlines` until 2026-09-23; renamed for the file's job, as Laravel's Routing page is. Declaration only: what a glyph means moved to Rendering, translation to Localization
-- ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
-- ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
-- ✅ The Payload — the envelope, one activity node beside the row it draws, an entity, one group
-- ✅ Anatomy of a Row — the wireframe: every zone, what fills it, and the taste rules a renderer pays for otherwise
-- ✅ Rendering — the smallest loop, links, what a glyph means, degraded entities, groups, details, resync
+- ✅ Activity Content — a headline alone, a quoted utterance, entity bodies and the body-type table (the one home for the table)
+
+### Reading and Rendering
+
+Choose the feed, then inspect it, then draw it.
+
+- ✅ Reading Feeds — the builder, the one plain definition of a group, read modes, filtering, `query()`, pagination
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
+- ✅ Latest Activity per Object (`deeper/latest-per-object`) — proposal: `latestPer()` is not in core yet
+- ✅ The Payload — the envelope, one activity node, one group node; every key is in Reference › The Payload Contract
+- ✅ Anatomy of a Row — the zones of a row and the payload values that fill them
+- ✅ Rendering — the smallest loop, links, what a glyph means, degraded entities, groups, details
 
-### Digging Deeper
+### Recording in Depth
 
-Recording depth, then payload depth, then grouping, then operations.
+Who acted and where, then the classes and pipeline built on them.
 
-- ✅ Publishing from Events — the listener, `PublishesToFeed`, events core emits
+- ✅ Publishing From Events — the listener, `PublishesToFeed`, events core emits
+- ✅ Parties & Anonymous Actors — named non-model participants, declared parties, anonymous activities and headlines
 - ✅ Containers & Context — the fourth role, target vs context, the container query
-- ✅ Parties & Anonymous Actors — null actor vs named non-model participant
-- ✅ Story Classes (`deeper/stories`) — elementary publishing, the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors, single-verb declarations and generator options
+- ✅ Activity Scopes — `Storyfeed::actor()` / `Storyfeed::context()` over a callback or request, role precedence
+- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors
+- ✅ Named Stories — names, prefixes, group attributes, `story()`, `Story::has()` / `storyIs()`
 - ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches and inspection
-- ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
-- ✅ Aggregation — grouping repeats, axes, group headlines (per type or per verb), plural tokens, the tokens a group may use, nouns, thresholds, custom axes
+- ✅ Story Middleware & Batching — middleware classes and closures, aliases and groups, batch windows, default roles
+- ✅ Queued Publishing (`deeper/queues`) — `queue()`, queued Story classes, publication time and snapshots, transactions, missing models, actor/context carry
+
+### Shaping the Feed
+
+How stored activities become the rows a feed shows, grouping first.
+
+- ✅ Aggregation — what a group is made of, axes, group headlines (the one home), plural tokens, nouns, thresholds, custom axes
+- ✅ Grouping Periods — the calendar boundary a verb groups within
+- ✅ Keeping the Latest Activity — `keepLatest()`: a new activity replaces earlier matching ones when stored
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
+- ✅ Custom Body Types (`deeper/body`) — what Activity Content doesn't cover: resolving bodies at read time, custom components, writing body types, versions
 - ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
-- ✅ Queued Publishing (`deeper/queues`) — `queue()`, queued Story classes, publication time and snapshots, transactions, missing models, actor/context carry and first/last/latest behaviour
-- ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
-- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()`, `->forgetWhenMissing()` on the verb, bulk deletes
-- ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept. Taught with `view`; ephemeral state is Choosing What Not to Record
-- ✅ Latest Activity per Object — `latestPer()` on a feed: one row per key in that view, every activity still stored; the key table, which activity is the latest, groups formed from what the feed shows. Contrasted with `keepLatest()` in one tip
+
+### Testing and Maintenance
+
+- ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
+- ✅ Doctor (`reference/doctor`)
+- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()` (the one home for deleted-model headlines), `->forgetWhenMissing()`, bulk deletes
+- ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept, and the maintenance schedule. Taught with `view`; ephemeral state is Choosing What Not to Record
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
 
 ### Cookbook
 
-In the order a reader meets the problem.
+In the order a reader meets the problem. A recipe is a decision plus an
+example; the mechanics stay on the concept page it links.
 
-- ✅ Composing a Coherent Activity · Choosing When to Publish · Choosing What Not to Record ·
-  Repeating Activities · Recording Deletions · Activities Without an Actor · Recording an
-  Authoriser · Headlines for Grouped Activities · Keeping Verbs and Grammar Together ·
-  Counts That Keep Changing
+- ✅ Composing a Coherent Activity · Choosing a Verb · Choosing When to Publish ·
+  Choosing What Not to Record · Repeating Activities · Recording Deletions ·
+  Activities Without an Actor · Recording an Authoriser · Headlines for Grouped
+  Activities · Counts That Keep Changing
 
 ### Reference
 
-Vocabulary, then what you type, then the shapes, then the policy pages.
+What you type, then the shapes, then the policy pages.
 
-- ✅ Glossary · Configuration · Commands · Doctor · Feedable API · The Payload Contract ·
-  Schema · Compatibility
+- ✅ Configuration · Commands · Feedable API · Verb Vocabulary · The Payload
+  Contract · Schema · Compatibility · Glossary
 
 ## Pending coverage
 

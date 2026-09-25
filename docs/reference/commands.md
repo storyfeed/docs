@@ -98,6 +98,10 @@ works as for every other section.
 
 ## Scheduling Maintenance
 
+The feed works without a scheduler. When [Laravel's scheduler](https://laravel.com/docs/13.x/scheduling#running-the-scheduler)
+runs, Storyfeed schedules `storyfeed:curate` hourly on its own; set
+[`curate.schedule`](/reference/configuration#maintenance) to `false` to turn that off. Schedule the others yourself:
+
 | Command | Does | Suggested |
 |---|---|---|
 | `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, tombstones models deleted without a model event, restores tombstones whose model is back, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |

@@ -47,6 +47,32 @@ Return `null` without calling `$next` to publish nothing. The builder's
 result of `$next` on the normal path. Middleware cannot change the activity's
 verb or object type.
 
+### Closure Middleware
+
+A closure works as middleware too:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag')
+    ->middleware(
+    // Leave type hints off closures that storyfeed:cache will serialize.
+    static function ($activity, $next) {
+        return $next($activity->data([
+            ...($activity->activity->data ?? []),
+            'reviewed' => true,
+        ]));
+    },
+);
+```
+
+<FeedExample :items="[marked]" expanded />
+
+`Storyfeed::fake()` runs the same middleware pipeline.
+
 <a id="registering-aliases-and-groups"></a>
 
 ## Registering Middleware
@@ -222,38 +248,11 @@ Declare the party name in the [party list](/deeper/parties#declaring-parties);
 `->by()` does not check that list.
 
 <a id="caching-closure-middleware"></a>
+<a id="inspecting-middleware"></a>
 
 ## Caching and Inspecting Middleware
 
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag')
-    ->middleware(
-    // Leave type hints off closures that storyfeed:cache will serialize.
-    static function ($activity, $next) {
-        return $next($activity->data([
-            ...($activity->activity->data ?? []),
-            'reviewed' => true,
-        ]));
-    },
-);
-```
-
-<FeedExample :items="[marked]" expanded />
-
-`storyfeed:cache` preserves middleware declarations and closures. Keep aliases
-and named groups in a service provider so they also exist when the feed file
-is cached. `Storyfeed::fake()` runs the same middleware pipeline.
-
-<a id="inspecting-middleware"></a>
-
-```bash
-php artisan storyfeed:list -v
-```
-
-The middleware column shows the resolved classes and arguments.
-`storyfeed:list --json` also includes them.
+[`storyfeed:cache`](/basics/the-feed-file#caching-definitions) keeps middleware
+declarations, closures included. Keep aliases and named groups in a service
+provider so they also exist when the feed file is cached. `storyfeed:list -v`
+shows each verb's resolved middleware classes and arguments.

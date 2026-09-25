@@ -288,5 +288,13 @@ $user->forceDelete();
 
 `deleteFromFeed()` soft-deletes them instead. These are explicit calls. A deleted model normally leaves a tombstone; a
 verb with `forgetWhenMissing()` also removes activities after permanent deletion.
-[Recording Deletions](/cookbook/activities-about-deletions) covers choosing
-between them.
+A model registered with `Storyfeed::feedable()` has neither method; call the
+actions instead:
+
+```php
+(new \Storyfeed\Actions\DeleteFromFeed)($model);
+(new \Storyfeed\Actions\ForceDeleteFromFeed)($model);
+```
+
+[Recording Deletions](/cookbook/activities-about-deletions) helps choose
+between keeping a label, forgetting activities and removing them.

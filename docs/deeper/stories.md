@@ -6,13 +6,10 @@ A Story class can build an activity from the data you give it.
 Declarations can also stay in `routes/feed.php` or live in their own classes.
 
 <script setup>
-import { scene, activity, tombstone, WORLD_ANCHOR } from '../.vitepress/theme/world'
+import { scene, activity } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
 const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay'),
   verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
-const gone = activity({ ...placed,
-  object: tombstone(placed.object.type, placed.object.id, new Date(WORLD_ANCHOR - 60 * 60 * 1000).toISOString()),
-  missing_headline_template: ':actor placed an order, since deleted' })
 </script>
 
 <a id="publishing-an-activity"></a>
@@ -287,6 +284,27 @@ Each method declares its return type:
 Use `Verb` when setting several options, or `string` for a headline alone.
 Make helpers protected or private.
 
+<a id="keeping-definitions-for-stored-activities"></a>
+
+Keep a method after nothing publishes its verb. A stored activity reads its
+headline from the verb's declaration when the feed is read, so removing the
+method leaves old rows without a headline:
+
+```php memo="app/Stories/OrderStory.php"
+// Nothing publishes `print` any more; old rows still read.
+public function print(): string
+{
+    return ':actor printed :object';
+}
+```
+
+<a id="headlines-for-deleted-objects"></a>
+<a id="deleted-object-headlines"></a>
+
+A resource method's `Verb` takes every definition method, including
+`missingHeadline()` for once its object is deleted:
+[Deleted Models](/deeper/deleted-models#missing-headlines) covers it.
+
 ### Conventional Verbs
 
 `Story::resource()` always defines `create`, `update`, `delete` and
@@ -414,25 +432,6 @@ Changing a headline with the request throws when `grammar.strict` is on,
 including the default local and testing environments. Jobs dispatched during
 the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#request-based-actors).
 
-<a id="headlines-for-deleted-objects"></a>
-
-### Deleted-Object Headlines
-
-```php memo="app/Stories/OrderStory.php" at="Replacing place()"
-public function place(Verb $verb): Verb
-{
-    return $verb
-        ->headline(':actor placed :object[ with :target]')
-        ->icon('shopping-bag')
-        ->missingHeadline(':actor placed an order, since deleted');
-}
-```
-
-<FeedExample :items="[gone]" />
-
-`missingHeadline()` supplies the verb's reading after its object is deleted.
-[Deleted Models](/deeper/deleted-models) covers the other missing-entity policies.
-
 <a id="generating-from-doctor-findings"></a>
 
 ## Generating From Existing Activities
@@ -450,13 +449,7 @@ commands for the possible spellings; run the command with the correct one.
 
 ## Listing and Caching Stories
 
-```bash
-php artisan storyfeed:list --type=order
-```
-
-The table shows each verb's name, presentation, grouping, calendar period,
-keep-latest policy and source. `-v` adds middleware and role constraints; `--verb=place` narrows the
-selection and `--json` returns machine-readable rows.
-
-A new resource method becomes a verb when definitions compile again. Run
-`storyfeed:cache` after deploying, as you run `route:cache`.
+A new resource method becomes a verb when definitions compile again: it
+appears in `storyfeed:list`, and a cached manifest needs `storyfeed:cache`
+again, as The Feed File's [Listing Definitions](/basics/the-feed-file#listing-definitions)
+and [Caching Definitions](/basics/the-feed-file#caching-definitions) describe.

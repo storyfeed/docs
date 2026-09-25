@@ -84,7 +84,8 @@ class CompleteTasksController extends Controller
 This writes a parent activity and one activity per task. In `log()` the tasks
 appear as ordinary rows. In `live()`, the parent is one node with
 `axis: 'composite'`; in `summary()`, it contributes a phrase to its actor's
-digest row.
+digest row. A composite is never replaced by
+[`keepLatest()`](/deeper/keeping-the-latest-activity).
 
 <a id="headlines-for-a-composite"></a>
 

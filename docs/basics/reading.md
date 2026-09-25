@@ -39,6 +39,14 @@ For a feed containing three order placements, the response has this shape:
 
 <FeedExample :items="scoped" />
 
+<a id="groups"></a>
+
+The three orders share one row. That row is a **group**: one row standing for
+several activities that belong together, such as one person placing order after
+order. It keeps its members, and it reads as a sentence once the verb has a
+group headline. [Aggregation](/deeper/aggregation) covers which activities
+group and how their headlines are declared.
+
 <a id="read-modes"></a>
 
 ## Choosing a Read Mode

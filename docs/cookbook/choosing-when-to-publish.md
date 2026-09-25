@@ -139,7 +139,7 @@ Order::observe(OrderObserver::class);
 | ready → completed | yes | `complete` |
 
 Use one verb per transition, not one `status` verb with the new state in
-`data`. [Repeating Activities](/cookbook/repeating-activities#matching-activities)
+`data`. [Repeating Activities](/cookbook/repeating-activities#keeping-the-latest-occurrence)
 explains why.
 
 <span id="publishing-status-transitions-from-events"></span>

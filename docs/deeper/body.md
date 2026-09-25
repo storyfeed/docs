@@ -1,268 +1,90 @@
-# Activity Body Content
-
-## Introduction
+# Custom Body Types
 
 <script setup>
-import { scene, role, activity } from '../.vitepress/theme/world'
-const row = scene.order
-const ticket = [{ key: role.product.label, value: '1', verbatim: false, missing: null }]
-const text = `1 × ${role.product.label}`
-const asText = activity({ ...row,
-  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
-    content: text, mediaType: 'text/plain', verbatim: false, title: null }] } })
-const asExcerpt = activity({ ...row,
-  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-    text, from: 'Ticket', truncated: false }] } })
-const withTicket = activity({ ...row,
-  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: ticket }] } })
+import { scene } from '../.vitepress/theme/world'
 const withComponent = scene.question
 </script>
 
-A body is what an activity shows beneath its headline: the lines of an order, a
-quoted passage, a before and after. The model writes it in `toFeed()`, and a
-renderer draws it.
+## Introduction
 
-The order from the [Quickstart](/guide/quickstart), with no body yet:
-
-<FeedExample :items="[scene.order]">
-  <template #body><BodyPlaceholder /></template>
-</FeedExample>
+Beyond the body types Storyfeed ships, a body can be built when the feed is
+read, name a component in your frontend, or be a body type you write.
 
 <a id="defining-a-body"></a>
+<a id="defining-bodies"></a>
+<a id="text-and-excerpts"></a>
+<a id="labelled-values"></a>
+<a id="values-that-are-missing"></a>
+<a id="missing-values"></a>
+<a id="existing-body-types"></a>
+<a id="available-body-types"></a>
 
-## Defining Bodies
+Adding a body in `toFeed()`, and the body types Storyfeed ships, are covered in
+[Activity Content](/basics/activity-content#built-in-body-types).
 
-### Text and Excerpts
+## Attaching Bodies to Entities
 
-The plainest body is a line of text:
+<a id="bodies-by-role"></a>
+<a id="multiple-bodies"></a>
+
+Each entity can carry bodies, in any role, and your frontend chooses which to
+display. Each `body()` call adds to the list, in the order written:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Order.php"
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\KeyValue;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Order extends Model implements Feedable
+class MenuItem extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make()
-            ->label("Order #{$this->reference}")
-            ->body($this->summary());
+            ->label($this->name)
+            ->body(Excerpt::make()->text($this->description))
+            ->body(KeyValue::make()->items('Station', $this->station));
     }
 }
 ```
 
-```php [Named Arguments] memo="app/Models/Order.php"
+```php [Named Arguments] memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\KeyValue;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Order extends Model implements Feedable
+class MenuItem extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make(
-            label: "Order #{$this->reference}",
-            body: $this->summary(),
+            label: $this->name,
+            body: [
+                Excerpt::make(text: $this->description),
+                KeyValue::make(items: ['Station' => $this->station]),
+            ],
         );
     }
 }
-```
-
-:::
-
-<FeedExample :items="[asText]" />
-
-An `Excerpt` adds a caption saying where the words came from:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
-use Storyfeed\Body\Excerpt;
-
-return FeedEntity::make()
-    ->label("Order #{$this->reference}")
-    ->body(Excerpt::make()->text($this->summary())->from('Ticket')->truncated(false));
-```
-
-```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
-use Storyfeed\Body\Excerpt;
-
-return FeedEntity::make(
-    label: "Order #{$this->reference}",
-    body: Excerpt::make(text: $this->summary(), from: 'Ticket', truncated: false),
-);
-```
-
-:::
-
-<FeedExample :items="[asExcerpt]" />
-
-### Labelled Values
-
-A `KeyValue` keeps each line apart as data:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
-use Storyfeed\Body\KeyValue;
-
-return FeedEntity::make()
-    ->label("Order #{$this->reference}")
-    ->body(KeyValue::make()
-        ->items($this->lines->mapWithKeys(fn (OrderLine $line) => [
-            "{$line->quantity} × {$line->item->name}" => $line->total->format(),
-        ])->all())
-        ->items('Total', $this->total->format()));
-```
-
-```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
-use Storyfeed\Body\KeyValue;
-
-return FeedEntity::make(
-    label: "Order #{$this->reference}",
-    body: KeyValue::make(items: $this->lines
-        ->mapWithKeys(fn (OrderLine $line) => [
-            "{$line->quantity} × {$line->item->name}" => $line->total->format(),
-        ])
-        ->put('Total', $this->total->format())
-        ->all()),
-);
-```
-
-:::
-
-<FeedExample :items="[withTicket]" />
-
-Plain text can only be printed as it is. Labelled rows let a renderer line up
-each item with its price and set the total apart. Use the plainest body type your
-renderer makes use of.
-
-Recording the activity doesn't change: the body comes from the model. The body
-arrives on the node exactly as it went in:
-
-```json
-{
-  "$body": "Storyfeed/Body/KeyValue",
-  "$v": 1,
-  "title": null,
-  "items": [
-    {
-      "key": "1 × N101 Chicken Curry",
-      "value": "$14.50",
-      "verbatim": false,
-      "missing": null
-    }
-  ]
-}
-```
-
-Storyfeed stores the body and hands it back unchanged; it never looks inside.
-A body holds values, not markup, and never contains another body.
-
-<a id="values-that-are-missing"></a>
-
-### Missing Values
-
-A null value has no word of its own. Give the whole body one with `missing()`,
-or one row its own with `KeyValue::missingAs()`:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
-KeyValue::make()
-    ->missing('Not given')
-    ->items([
-        'Table' => $this->table_number,
-        'Allergies' => KeyValue::missingAs($this->allergies, 'None'),
-    ])
-```
-
-```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
-KeyValue::make(
-    missing: 'Not given',
-    items: [
-        'Table' => $this->table_number,
-        'Allergies' => KeyValue::missingAs($this->allergies, 'None'),
-    ],
-)
-```
-
-:::
-
-| Call | Sets the word for |
-|---|---|
-| `->missing($word)` | every row with no value, unless it has its own |
-| `KeyValue::missingAs($value, $word)` | that one row |
-
-Every row carries its word in `missing`, beside its `value`, or `null` when
-neither call gave one.
-
-<a id="existing-body-types"></a>
-
-## Available Body Types
-
-Storyfeed ships eight under `Storyfeed\Body`. They're conventions a renderer
-can choose to draw; Storyfeed itself treats them like any other body.
-
-| Name | Is | Keys |
-|---|---|---|
-| `Storyfeed/Body/KeyValue` | labelled rows | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
-| `Storyfeed/Body/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Storyfeed/Body/Change` | before → after, for one field or several | `items`, a map of field to `[before, after]` |
-| `Storyfeed/Body/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
-| `Storyfeed/Body/Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
-| `Storyfeed/Body/ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `Storyfeed/Body/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
-| `Storyfeed/Body/Component` | a component of your own, by name | `name`, `props` |
-
-A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
-never has to handle a bare string.
-
-## Attaching Bodies to Entities
-
-### Bodies By Role
-
-Each entity can carry bodies, in any role. These examples show the object's
-body beneath the headline. Your frontend chooses which bodies to display.
-
-### Multiple Bodies
-
-Each `body()` call adds to the list, in the order written:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="toFeed()"
-return FeedEntity::make()
-    ->label($this->name)
-    ->body(Excerpt::make()->text($this->description))
-    ->body(KeyValue::make()->items('Station', $this->station));
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
-return FeedEntity::make(
-    label: $this->name,
-    body: [
-        Excerpt::make(text: $this->description),
-        KeyValue::make(items: ['Station' => $this->station]),
-    ],
-);
 ```
 
 :::
@@ -499,7 +321,7 @@ final class Attachment implements FeedBody
 }
 ```
 
-`HasPayload` builds `toArray()` from `toPayload()`.
+`HasPayload` builds `toArray()` from `toPayload()`. A body holds values, not markup, and never contains another body.
 
 <a id="names"></a>
 

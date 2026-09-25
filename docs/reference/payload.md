@@ -57,7 +57,7 @@ resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
 with the snapshot. `type`, `id`, `data` and `label` come from the snapshot;
 the resolver can override `label`. `body` lists the stored bodies, then the
 resolver's; each is a map naming its body type in `$body`
-([Activity Body Content](/deeper/body#existing-body-types)).
+([Activity Content](/basics/activity-content#built-in-body-types)).
 [Feedable API](/reference/feedable#feedcontext) covers the resolver.
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),

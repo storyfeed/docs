@@ -22,6 +22,132 @@ implements `Feedable`. It gives the feed a label to print and a link to follow.
 
 ## Making Models Feedable
 
+::: code-group
+```php [Fluent Syntax] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()->label("Order #{$this->reference}");
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+        );
+    }
+}
+```
+:::
+
+<FeedExample :items="withSnapshot" />
+
+`toFeed()` returns the entity the feed stores for the model: here, its label.
+`InteractsWithFeed` supplies the rest of the `Feedable` contract. The order
+isn't a link yet.
+
+The feed stores a snapshot of the model: its label, and anything else it is
+given. The snapshot is taken when an activity is published, and refreshed every
+time the model saves. The feed reads those stored values. A resolver can also request the current
+model when it needs live values.
+
+## Defining Entity Values
+
+### Snapshot Data
+
+`data()` stores values that a media resolver needs later:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()->label($this->name)->data([
+            'mediaType' => $this->photo_mime,
+            'width' => $this->photo_width,
+            'height' => $this->photo_height,
+        ]);
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            data: [
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ],
+        );
+    }
+}
+```
+:::
+
+The feed stores these values in the entity snapshot. [Images](#images) shows how a resolver uses them.
+
+<a id="the-default-label"></a>
+
+### Default Labels
+
+A model can leave `toFeed()` out. The trait alone is a complete Feedable model:
+
 ```php memo="app/Models/Order.php"
 <?php
 
@@ -39,20 +165,7 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="withSnapshot" />
 
-That is a complete Feedable model. Its label is guessed, and it isn't a link.
-
-The feed stores a snapshot of the model: its label, and anything else it is
-given. The snapshot is taken when an activity is published, and refreshed every
-time the model saves. The feed reads those stored values. A resolver can also request the current
-model when it needs live values.
-
-## Defining Entity Values
-
-<a id="the-default-label"></a>
-
-### Default Labels
-
-A model that sets no label gets the first of these that it has:
+Its label is guessed, from the first of these that it has:
 
 | Guess | Example |
 |---|---|
@@ -60,6 +173,8 @@ A model that sets no label gets the first of these that it has:
 | its `title` attribute | `Spring Menu` |
 | its registered noun and its key | `Menu item #42` |
 | its class name and its key | `Order #1042` |
+
+A model that writes `toFeed()` sets its own label, and nothing is guessed.
 
 ### Custom Labels
 
@@ -102,7 +217,11 @@ class Order extends Model implements Feedable
 
 <a id="describing-the-snapshot"></a>
 
-`describeFeed()` says what the snapshot holds:
+### Describing the Snapshot with `describeFeed()`
+
+`describeFeed()` is the other way to write the snapshot. Instead of returning a
+new entity, the model adds to the one the trait builds, through
+`$this->feedEntity()`:
 
 ```php memo="app/Models/Order.php"
 <?php
@@ -126,39 +245,11 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="withSnapshot" />
 
-`$this->feedEntity()` is the entity the snapshot is written from. Each call
-adds to it, and whatever it leaves unset stays empty, except the label, which
-is guessed.
-
-### Snapshot Data
-
-Use `describeFeed()` to store values that a media resolver needs later:
-
-```php memo="app/Models/MenuItem.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function describeFeed(): void
-    {
-        $this->feedEntity()->label($this->name)->data([
-            'mediaType' => $this->photo_mime,
-            'width' => $this->photo_width,
-            'height' => $this->photo_height,
-        ]);
-    }
-}
-```
-
-The feed stores these values in the entity snapshot. [Images](#images) shows how a resolver uses them.
+Each call adds to the same entity. Whatever it leaves unset stays empty, except
+the label, which is guessed. Prefer it when a model should keep its guessed
+label while adding data or a body, or when a parent model and its subclasses
+each add a part. A model that writes `toFeed()` itself never calls
+`describeFeed()`.
 
 ## Resolving Links and Images
 
@@ -168,7 +259,8 @@ The feed stores these values in the entity snapshot. [Images](#images) shows how
 
 A link is resolved when the feed is read. Register a resolver in `booted()` to build it from the stored snapshot:
 
-```php memo="app/Models/Order.php"
+::: code-group
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -176,6 +268,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
 
 class Order extends Model implements Feedable
 {
@@ -188,12 +281,43 @@ class Order extends Model implements Feedable
         );
     }
 
-    public function describeFeed(): void
+    public function toFeed(): FeedEntity
     {
-        $this->feedEntity()->label("Order #{$this->reference}");
+        return FeedEntity::make()->label("Order #{$this->reference}");
     }
 }
 ```
+
+```php [Named Arguments] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn ($context) => route('orders.show', $context->routeKey()),
+        );
+    }
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+        );
+    }
+}
+```
+:::
 
 <FeedExample :items="withLink" />
 
@@ -260,6 +384,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
 
 class MenuItem extends Model implements Feedable
@@ -283,9 +408,9 @@ class MenuItem extends Model implements Feedable
         });
     }
 
-    public function describeFeed(): void
+    public function toFeed(): FeedEntity
     {
-        $this->feedEntity()
+        return FeedEntity::make()
             ->label($this->name)
             ->data([
                 // the intrinsic facts a thumbnail needs,
@@ -306,6 +431,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
 
 class MenuItem extends Model implements Feedable
@@ -330,17 +456,18 @@ class MenuItem extends Model implements Feedable
         });
     }
 
-    public function describeFeed(): void
+    public function toFeed(): FeedEntity
     {
-        $this->feedEntity()
-            ->label($this->name)
-            ->data([
+        return FeedEntity::make(
+            label: $this->name,
+            data: [
                 // the intrinsic facts a thumbnail needs,
                 // stored once, read on every render
                 'mediaType' => $this->photo_mime,
                 'width' => $this->photo_width,
                 'height' => $this->photo_height,
-            ]);
+            ],
+        );
     }
 }
 ```
@@ -355,8 +482,8 @@ class MenuItem extends Model implements Feedable
 ## Implementing the Feedable Contract
 
 `toFeed()` and `feedMedia()` are the two methods of the `Feedable` contract.
-`InteractsWithFeed` writes them from `describeFeed()` and `feedMediaUsing()`.
-A model can write them itself instead:
+`InteractsWithFeed` writes `feedMedia()` from the `feedMediaUsing()` closure.
+A model can write it itself instead, as a static method:
 
 ::: code-group
 

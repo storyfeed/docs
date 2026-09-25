@@ -93,7 +93,8 @@ listeners on these events.
 
 ### Batch Events
 
-`Storyfeed\Events\BatchClosed` carries the closed batch and its activities in
+`Storyfeed\Events\BatchClosed` carries the closed
+[batch](/deeper/story-middleware-and-batching#batching-activities) and its activities in
 `$event->batch`. It also carries a snapshot and dispatches after the outermost
 transaction commits. Register a Laravel listener for this event to act when a
 batch closes.

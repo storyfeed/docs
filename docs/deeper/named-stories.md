@@ -256,13 +256,9 @@ unnamed key returns `null`; `storyIs()` returns `false` for it.
 
 ## Caching Named Stories
 
-```bash
-php artisan storyfeed:cache
-```
-
-Duplicate names fail caching, naming both declarations, as duplicate route
-names fail `route:cache`. At runtime, a duplicate name resolves to the last
-declaration. `storyfeed:cache` also runs under `php artisan optimize`.
+Duplicate names fail [`storyfeed:cache`](/basics/the-feed-file#caching-definitions),
+naming both declarations, as duplicate route names fail `route:cache`. At
+runtime, a duplicate name resolves to the last declaration.
 
 <a id="checking-names-with-phpstan"></a>
 

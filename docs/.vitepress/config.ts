@@ -166,12 +166,13 @@ export default defineConfig({
         ],
       },
       {
-        // Definitions before publishing, as Routing comes before Controllers.
+        // Record an activity first, then declare what it reads as: no page
+        // leans on one further down.
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
-          { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Recording Activities', link: '/basics/recording' },
+          { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Verbs', link: '/basics/verbs' },
           { text: 'Activity Content', link: '/basics/activity-content' },
         ],
@@ -189,23 +190,30 @@ export default defineConfig({
         ],
       },
       {
-        // Grouped by capability family, as Laravel's Digging Deeper is.
-        text: 'Digging Deeper',
+        // Who acted and where first, then the classes and pipeline that
+        // build on them: no page leans on one further down.
+        text: 'Recording in Depth',
         items: [
-          { text: 'Story Classes', link: '/deeper/stories' },
-          { text: 'Named Stories', link: '/deeper/named-stories' },
-          { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
-          { text: 'Story Middleware & Batching', link: '/deeper/story-middleware-and-batching' },
           { text: 'Publishing From Events', link: '/deeper/events' },
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Containers & Context', link: '/deeper/context' },
           { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
+          { text: 'Story Classes', link: '/deeper/stories' },
+          { text: 'Named Stories', link: '/deeper/named-stories' },
+          { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
+          { text: 'Story Middleware & Batching', link: '/deeper/story-middleware-and-batching' },
           { text: 'Queued Publishing', link: '/deeper/queues' },
-          { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
+        ],
+      },
+      {
+        // How stored activities become the rows a feed shows, grouping first.
+        text: 'Shaping the Feed',
+        items: [
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Grouping Periods', link: '/deeper/grouping-periods' },
+          { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
-          { text: 'Activity Body Content', link: '/deeper/body' },
+          { text: 'Custom Body Types', link: '/deeper/body' },
           { text: 'Localization', link: '/deeper/localization' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
         ],
@@ -234,7 +242,6 @@ export default defineConfig({
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Keeping Verbs and Grammar Together', link: '/cookbook/verbs-and-grammar-together' },
           { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
         ],
       },

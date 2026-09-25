@@ -39,8 +39,9 @@ the headline it produces:
 <FeedExample :items="[scene.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
-happened. `place` is this app's own word, not one the package knows. Declare the verb and its headline in [the feed file](/basics/the-feed-file). The stored verb is
-the string you pass.
+happened. `place` is this app's own word, not one the package knows. The stored
+verb is the string you pass, and [The Feed File](/basics/the-feed-file) gives it
+the headline the feed prints.
 
 ### Named Arguments
 

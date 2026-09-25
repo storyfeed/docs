@@ -83,76 +83,25 @@ Story::for(MenuItem::class)
 ```
 
 <script setup>
-import { scene, role } from '../.vitepress/theme/world'
+import { scene } from '../.vitepress/theme/world'
 import { activity, tombstone } from '../.vitepress/theme/samples'
 
-// Two renderings of the same deletion: discard or preserve the snapshot label.
 const source = scene.cookbook.deletion
 const removed = activity({ ...source,
   object: tombstone(source.object.type, source.object.id, source.published_at),
-})
-const removedKeepingLabel = activity({ ...source,
-  object: tombstone(source.object.type, source.object.id, source.published_at, { label: role.product.label }),
 })
 </script>
 
 <FeedExample :items="[removed]" />
 
-## Preserving a Deleted Model's Label
+## Choosing What Stays
 
-The menu item is a tombstone once it is deleted. To keep naming it, the model keeps
-its label on its tombstone:
+Every other activity that named the menu item stays too, with the tombstone in
+its place. [Deleted Models](/deeper/deleted-models) covers what each of them
+says.
 
-```php memo="app/Models/MenuItem.php" at="describeFeed()"
-$this->feedEntity()
-    ->label("{$this->code} {$this->name}")
-    ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
-```
-
-<FeedExample :items="[removedKeepingLabel]" />
-
-<span id="references-after-deletion"></span>
-
-## Referencing Surviving Models
-
-| The Removal Story References | After the Delete |
+| To | Use |
 |---|---|
-| the deleted model, in any role | names its tombstone; its label only with `keepLabel()` |
-| a surviving parent, such as the menu | renders and links |
-
-Every other activity that named the menu item stays too. [Deleted Models](/deeper/deleted-models)
-covers what each of them says.
-
-## Removing Activities
-
-### Removing All Involving Activities
-
-Deleting a model keeps its activities unless a verb declares `forgetWhenMissing()`. When they must go, such as a
-customer asking to be forgotten, remove them before the model:
-
-```php memo="app/Http/Controllers/AccountController.php" at="destroy()"
-$user->forceDeleteFromFeed();   // every activity involving the user, permanently
-$user->forceDelete();
-```
-
-| Method | Removes |
-|---|---|
-| `deleteFromFeed()` | soft-deletes every activity involving the model |
-| `forceDeleteFromFeed()` | permanently deletes every activity involving the model, soft-deleted ones included |
-
-A model registered with `Storyfeed::feedable()` has no such methods. Call the
-actions they use:
-
-```php memo="Where the model is deleted: a controller, an action, a job"
-use Storyfeed\Actions\DeleteFromFeed;
-use Storyfeed\Actions\ForceDeleteFromFeed;
-
-(new DeleteFromFeed)($photo);        // soft
-(new ForceDeleteFromFeed)($photo);   // permanent
-```
-
-### Forgetting Redundant Activities
-
-To forget only the activities a deletion made redundant, and keep the rest,
-declare [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-activities)
-on the verbs that should go.
+| keep naming the deleted model in old activities | [`keepLabel()`](/deeper/deleted-models#keeping-labels) on its tombstone |
+| remove only the activities the deletion made redundant | [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-redundant-activities) on those verbs |
+| remove every activity involving the model, such as for a customer asking to be forgotten | [`deleteFromFeed()` or `forceDeleteFromFeed()`](/deeper/deleted-models#removing-activities-explicitly), before the delete |

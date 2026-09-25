@@ -324,27 +324,29 @@ class Photo extends Model implements Feedable
 <FeedExample :items="[withFile]" />
 
 `File` says what a file is, never where it lives: the URL comes from
-[`feedMedia()`](/basics/feedable-models#the-link) at read time.
+the [link resolver](/basics/feedable-models#the-link) at read time.
 
 <a id="built-in-body-types"></a>
 
 ### Available Body Types
 
-| Body Type | Shows |
-|---|---|
-| `KeyValue` | labelled pairs |
-| `Excerpt` | a passage, and where it came from |
-| `Change` | before and after, for one field or several |
-| `File` | what an artefact is and how big |
-| `Prose` | authored text, and how to read it |
-| `ItemList` | several things, each a name and maybe a link |
-| `MediaObject` | a title, some prose, one picture, the files |
-| `Component` | a component of your own, by name, with its props |
+| Body Type | Shows | Payload Keys |
+|---|---|---|
+| `KeyValue` | labelled pairs | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
+| `Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
+| `Change` | before and after, for one field or several | `items`, a map of field to `[before, after]` |
+| `File` | what an artefact is and how big | `name`, `size`, `mediaType` |
+| `Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
+| `ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
+| `MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `Component` | a component of your own, by name, with its props | `name`, `props` |
 
-They live in `Storyfeed\Body`. Each carries a version, so a renderer can
+They live in `Storyfeed\Body`, and each is stored under its name in `$body`,
+such as `Storyfeed/Body/KeyValue`. A string passed as a body is stored as a
+`Prose` body. Each carries a version, so a renderer can
 upgrade an old row before drawing it. An app may write its own body types.
 
-See [Activity Body Content](/deeper/body) for body construction and custom types.
+See [Custom Body Types](/deeper/body) for bodies resolved at read time, custom components and writing your own body types.
 
 ## Linking to Content
 
@@ -366,18 +368,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
 
 class Photo extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public static function feedMedia(FeedContext $context): ?FeedMedia
+    protected static function booted(): void
     {
-        return FeedMedia::make()
+        static::feedMediaUsing(fn ($context, $media) => $media
             ->url(route('photos.show', $context->routeKey()))
-            ->modal();
+            ->modal()
+        );
     }
 }
 ```
@@ -390,19 +391,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
 use Storyfeed\FeedMedia;
 
 class Photo extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public static function feedMedia(FeedContext $context): ?FeedMedia
+    protected static function booted(): void
     {
-        return FeedMedia::make(
+        static::feedMediaUsing(fn ($context) => FeedMedia::make(
             url: route('photos.show', $context->routeKey()),
             modal: true,
-        );
+        ));
     }
 }
 ```

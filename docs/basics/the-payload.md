@@ -4,41 +4,25 @@
 import { scene, liveOf } from '../.vitepress/theme/world'
 
 const repeated = liveOf(scene.guide.usageExamples.repeatOrders)[0]
-const crowd = liveOf(scene.busyPlace)[0]
-const paid = scene.basics.recording.paid
-const note = scene.basics.activityContent.note
-const quoted = { ...note,
-  thread: { text: note.object.label, by: note.actor.label, kind: 'note', replies: null, truncated: false } }
-const body = scene.basics.activityContent.ready
-const photograph = scene.basics.activityContent.photo
 </script>
 
 ## Introduction
 
 Reading a feed returns one JSON document: the activities, newest first, with
-everything a renderer needs to draw them. The response contains activity nodes and group nodes.
+everything a renderer needs to draw them. The response contains activity nodes
+and group nodes. [The Payload Contract](/reference/payload) lists every key.
 
 <a id="the-envelope"></a>
 
 ## The Response Envelope
 
-Return the feed from a route:
-
-```php memo="routes/web.php"
-use Illuminate\Support\Facades\Route;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function () {
-    return Storyfeed::feed()->get();
-});
-```
-
-The response is the following JSON:
+A page of the feed holding one activity is the following JSON:
 
 <FeedExample payload :items="[scene.order]" />
 
 Your app sends `next_cursor` back to read the next page. See
-[Reading Feeds](/basics/reading#pagination).
+[Reading Feeds](/basics/reading#pagination), and the
+[Response Envelope](/reference/payload#response-envelope) for every key.
 
 <a id="one-activity"></a>
 
@@ -48,87 +32,41 @@ A customer places an order. Every key is always present:
 
 <FeedExample expanded :items="[scene.order]" />
 
-A renderer puts the entities' labels into the sentence's tokens. Each example
-below shows the complete node that draws it.
-
-### Entity Fields
-
-| Key | Holds |
-|---|---|
-| `type` | the morph alias, as recorded |
-| `id` | the entity's key, as a string |
-| `label` | the label the snapshot holds |
-| `url` | resolved at read time by `feedMedia()`, or null |
-| `attributes` | anything the resolver attached to the link |
-| `modal` | a hint that the link opens in place |
-| `data` | the app's own map |
-| `media` | the images the resolver returned, or null |
-| `body` | the entity's bodies, or null |
-| `tombstone` | null, or what a [deleted model](/deeper/deleted-models) left behind |
-
+<a id="entity-fields"></a>
 <a id="activities-by-a-payment-provider"></a>
+<a id="parties-and-missing-actors"></a>
 
-### Parties and Missing Actors
+Each role holds an entity: its `type`, `id`, `label`, `url` and the rest of
+the fields [Entities](/reference/payload#entities) lists. A role nobody filled
+is `null`; when nobody acted, `actor` is `null`.
 
-A payment provider marks an order paid:
-
-<FeedExample expanded :items="[paid]" />
-
-When nobody acted, `actor` is `null`.
+<a id="group-nodes"></a>
 
 ## Group Nodes
 
-A group represents several activities in one node.
-
-### Repeated Activities
-
+A [group](/basics/reading#groups) represents several activities in one node.
 One customer, three orders, one group node:
 
 <FeedExample expanded :items="[repeated]" />
 
+<a id="repeated-activities"></a>
 <a id="activities-by-several-people"></a>
+<a id="activities-by-several-actors"></a>
+<a id="digest-rows"></a>
 
-### Activities by Several Actors
+`count` says how many activities the group holds. For how many entities fill a
+role, read `distinct`; `sample` holds only a few. A `summary()` row is a group
+with `axis: "summary"` and one phrase per verb.
+[Group Nodes](/reference/payload#group-nodes) lists every key.
 
-Several people, the same place:
-
-<FeedExample expanded :items="[crowd]" />
-
-A group fills a singular role only when the grouping axis fixes the role and the group
-has exactly one entity in it. For
-how many there are, read `distinct`; `sample` holds only a few.
-
-### Digest Rows
-
-`summary()` returns groups with `axis: "summary"`. A row carries its calendar
-`period` and per-verb `phrases`, each with its own count and headline fields.
-`phrases_truncated` says whether more phrases exist. A row spanning several
-verbs has no row-level verb or glyph; draw its actor and join its phrases.
-
-## Activity Content
-
-### Quoted Text
-
-<FeedExample expanded :items="[quoted]" />
-
-### Entity Bodies
-
-An entity's `body` list carries structured content. Each body names its type
-and version with `$body` and `$v`.
-
-<FeedExample expanded :items="[body]" />
-
+<a id="activity-content"></a>
+<a id="quoted-text"></a>
+<a id="entity-bodies"></a>
 <a id="a-photograph"></a>
-
-### Media
-
-The picture is on the entity:
-
-<FeedExample expanded :items="[photograph]" />
-
+<a id="media"></a>
 <a id="data-and-presentation"></a>
+<a id="presentation-values"></a>
 
-## Presentation Values
-
-Storyfeed supplies data rather than HTML. A headline declared with a translation
-key is translated on read; its role tokens remain for the renderer to fill in.
+Quoted text, bodies and pictures arrive in the same nodes;
+[Activity Content](/basics/activity-content) shows each one with its payload.
+[Rendering](/basics/rendering) draws them.

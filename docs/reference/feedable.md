@@ -241,7 +241,7 @@ FeedEntity::make(
 | `tombstone()` | `Closure(PendingTombstone)` | not on the payload: what the model's tombstone keeps |
 
 `FeedEntity` is `Conditionable`, so `->when()` and `->unless()` work in a
-chain. Body types are listed in [Activity Body Content](/deeper/body#existing-body-types).
+chain. Body types are listed in [Activity Content](/basics/activity-content#built-in-body-types).
 
 Payload shape: [entity object](/reference/payload#entity-object).
 
@@ -464,7 +464,7 @@ FeedEntity::make(
 
 The payload carries the `Component` body in `entity.body`, with its `name`
 and `props`; what your frontend draws for the name is yours.
-[Activity Body Content](/deeper/body#drawing-your-own-component) covers it.
+[Custom Body Types](/deeper/body#drawing-your-own-component) covers it.
 
 ## Morph Aliases
 

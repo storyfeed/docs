@@ -104,7 +104,9 @@ glyph, as you would for an intent you have no colour for.
 
 ### Plural Roles
 
-A group node has `kind: "group"` and a plural sentence. `:count` is the member
+A [group](/basics/reading#groups) node has `kind: "group"` and a plural
+sentence; [Aggregation](/deeper/aggregation) covers which activities group and
+the tokens a group headline may use. `:count` is the member
 count, and a plural token draws the sample plus how many are not shown:
 
 ```blade memo="resources/views/feed.blade.php"
@@ -129,8 +131,8 @@ count, and a plural token draws the sample plus how many are not shown:
 
 <FeedExample :items="[grouped]" />
 
-A group fills a singular role only when the grouping axis fixes that role and the
-group has exactly one entity in it. For a
+A group fills a singular role, such as `actor`, only when every member shares
+that one entity. For a
 **singular** token, take a name from the sample only when `distinct` says
 there is one, and otherwise draw the plural list. An unconditional
 `?? sample[0]` names one person over a group of nine.
@@ -163,7 +165,7 @@ Using `$entity` and `$list` from the examples above:
 ```
 
 An authored row headline can use the group renderer above instead. For an
-unknown axis without a headline, fall back to “N activities”.
+unknown `axis` value without a headline, fall back to “N activities”.
 
 ### Groups Without Headlines
 
@@ -197,7 +199,7 @@ An activity’s `data` contains values supplied when recording it. Your applicat
 
 ### Bodies
 
-Structured entity content is in the entity’s `body` list. Each body identifies its type with `$body` and version with `$v`. Match the types your frontend supports; see [Activity Body Content](/deeper/body).
+Structured entity content is in the entity’s `body` list. Each body identifies its type with `$body` and version with `$v`. Match the types your frontend supports; see [Activity Content](/basics/activity-content) and [Custom Body Types](/deeper/body).
 
 <a id="degraded-entities"></a>
 

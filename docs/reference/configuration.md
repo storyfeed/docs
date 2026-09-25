@@ -48,7 +48,7 @@ For named system attribution or a sentence without an actor slot, see
 | Key | Default |  |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/cookbook/repeating-activities#matching-activities) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
+| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
 
 ### Verbs
 

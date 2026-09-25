@@ -106,7 +106,9 @@ Story::for(Order::class)->verb('save')
 <FeedExample :items="[otherActor, saved]" />
 
 The feed keeps each actor's latest save of each order. `per` takes one role name
-or an array of role names. The verb is always part of the match.
+or an array of role names. The verb is always part of the match. An activity
+with an empty role in the match, such as an anonymous save under
+`per: ['object', 'actor']`, replaces nothing.
 
 ## Limiting the Time Window
 
@@ -137,7 +139,8 @@ Only matching activities within ten minutes of the new activity's
 ## Deleting Superseded Activities
 
 Superseded activities are soft-deleted by default. The
-`storyfeed.keep_latest.delete` setting controls their deletion mode.
+`storyfeed.keep_latest.delete` setting controls their deletion mode: set it to
+`'force'` to delete them outright.
 
 ## Queue Uniqueness and Read Filtering
 
