@@ -32,7 +32,7 @@ stay, and name a [tombstone](/deeper/deleted-models) instead.
 A healer yields one `StoryRetirement` per activity that might need retiring.
 Here the object is an `asset_reference`, whose `assets` table hard-deletes:
 
-```php
+```php memo="app/Storyfeed/AssetHealer.php"
 <?php
 
 namespace App\Storyfeed;
@@ -86,8 +86,8 @@ Activities must be on the default database connection.
 
 Register the healer beside your feeds:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use App\Storyfeed\AssetHealer;
 use Storyfeed\Facades\Storyfeed;
 
@@ -136,8 +136,7 @@ one fails, the earlier ones stand.
 Test through the command. With `AssetHealer` registered, and two activities,
 one whose asset exists and one whose asset was deleted:
 
-```php
-// tests/Feature/FeedTest.php
+```php memo="tests/Feature/FeedTest.php"
 $this->artisan('storyfeed:heal', ['--dry-run' => true, '--only' => ['assets']])
     ->assertSuccessful();
 

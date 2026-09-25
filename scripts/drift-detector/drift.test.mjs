@@ -127,3 +127,12 @@ test('application static removed-method homonyms and namespace prefixes are unre
   assert.equal(r.stale.length, 0);
   assert.ok(r.unresolved.some(s => s.identifier === 'Thing::toFeedLink'));
 });
+
+// Fence metadata must not hide PHP code or turn memo text into API references.
+test('PHP fences with memos, tabs and highlights retain drift detection', () => {
+  const code = 'use Storyfeed\\DefinitelyMissing;';
+  const plain = scan(php(code));
+  const decorated = scan('```php {1} [Example] memo="Storyfeed\\NotAnImport"\n' + code + '\n```');
+  assert.deepEqual(decorated, plain);
+  assert.deepEqual(decorated.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing']);
+});

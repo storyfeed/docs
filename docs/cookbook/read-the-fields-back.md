@@ -77,8 +77,7 @@ rest.
 user · archived · document · —   coherent — nothing was aimed at
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Document;
 use Storyfeed\Facades\Story;
 

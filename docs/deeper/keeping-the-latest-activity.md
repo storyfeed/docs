@@ -20,8 +20,7 @@ const earlier = { ...saved, id: 'earlier-save',
 
 ## Keeping the Latest Activity
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -37,7 +36,7 @@ After successive saves of the same order, the feed contains the latest save:
 Publish normally. The verb's declaration applies at every call site:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/SaveOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -60,7 +59,7 @@ class SaveOrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/SaveOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -100,8 +99,7 @@ and other verbs keep their activities.
 
 Replace the original `save` declaration with this one:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -119,8 +117,7 @@ or an array of role names. The verb is always part of the match.
 
 Add a time window to that declaration:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 

@@ -7,7 +7,7 @@ tombstone.
 ## Recording a Deletion
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuDishController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -38,7 +38,7 @@ class MenuDishController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuDishController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -71,8 +71,7 @@ class MenuDishController extends Controller
 ```
 :::
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Story;
@@ -109,8 +108,8 @@ const removedKeepingLabel = activity({
 The dish is a tombstone once it is deleted. To keep naming it, the model keeps
 its label on its tombstone:
 
-```php
-// app/Models/MenuItem.php, describeFeed()
+```php memo="app/Models/MenuItem.php"
+// describeFeed()
 $this->feedEntity()
     ->label("{$this->code} {$this->name}")
     ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
@@ -137,8 +136,8 @@ covers what each of them says.
 Deleting a model keeps its activities unless a verb declares `forgetWhenMissing()`. When they must go, such as a
 customer asking to be forgotten, remove them before the model:
 
-```php
-// app/Http/Controllers/AccountController.php, destroy()
+```php memo="app/Http/Controllers/AccountController.php"
+// destroy()
 $user->forceDeleteFromFeed();   // every activity involving the user, permanently
 $user->forceDelete();
 ```

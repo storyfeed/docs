@@ -14,8 +14,7 @@ Fake Storyfeed before calling the code under test. This test exercises the
 listener from [Publishing From Events](/deeper/events#publishing-from-a-listener),
 using your application's model factories:
 
-```php
-// tests/Feature/RecordOrderPlacedTest.php
+```php memo="tests/Feature/RecordOrderPlacedTest.php"
 use App\Events\OrderPlaced;
 use App\Listeners\RecordOrderPlaced;
 use App\Models\Kitchen;
@@ -58,8 +57,8 @@ nothing, rather than after asserting a successful publication.
 `published($verb = null)` returns the captured activities for custom assertions.
 Continue the listener test with:
 
-```php
-// tests/Feature/RecordOrderPlacedTest.php, inside the test
+```php memo="tests/Feature/RecordOrderPlacedTest.php"
+// inside the test
 $activity = Storyfeed::published('place')->sole();
 
 expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
@@ -75,8 +74,7 @@ expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
 Queued activities are captured separately from synchronous publications. For
 a controller that ends its builder with `queue()`, assert the queued activity:
 
-```php
-// tests/Feature/QueuedOrderTest.php
+```php memo="tests/Feature/QueuedOrderTest.php"
 use App\Http\Controllers\PlaceOrderController;
 use App\Models\Kitchen;
 use App\Models\Order;
@@ -134,8 +132,8 @@ to dispatch that event after the transaction commits.
 
 Check the type and verb pairs your application records:
 
-```php
-// tests/Feature/FeedCoverageTest.php, after exercising the application
+```php memo="tests/Feature/FeedCoverageTest.php"
+// after exercising the application
 use Storyfeed\Testing\GrammarCoverage;
 
 GrammarCoverage::assertCoversRecorded();  // Pairs in the database.
@@ -146,8 +144,8 @@ GrammarCoverage::assertCoversPublished(); // Pairs published in this test.
 
 Check both groups that formed and groups the configured axes could form:
 
-```php
-// tests/Feature/FeedCoverageTest.php, after exercising the application
+```php memo="tests/Feature/FeedCoverageTest.php"
+// after exercising the application
 use Storyfeed\Testing\GrammarCoverage;
 
 GrammarCoverage::assertCoversAggregates();
@@ -163,8 +161,7 @@ with the verb.
 
 Choose a set of activities and group combinations explicitly:
 
-```php
-// tests/Feature/FeedCoverageTest.php
+```php memo="tests/Feature/FeedCoverageTest.php"
 use App\Models\Order;
 use Storyfeed\Testing\GrammarCoverage;
 
@@ -187,8 +184,8 @@ Storyfeed aggregate grammar coverage is incomplete:
 
 ## Testing Feedable Coverage
 
-```php
-// tests/Feature/FeedCoverageTest.php, after exercising the application
+```php memo="tests/Feature/FeedCoverageTest.php"
+// after exercising the application
 use App\Models\Kitchen;
 use Storyfeed\Testing\StorySurface;
 

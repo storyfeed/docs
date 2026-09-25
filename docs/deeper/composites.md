@@ -23,7 +23,7 @@ put on the menu as a single activity.
 ## Recording Composites
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PublishMenuController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -52,7 +52,7 @@ class PublishMenuController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PublishMenuController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -96,8 +96,7 @@ A composite needs two headlines: one for the group, and one for its parent
 activity. The parent has **no object of its own**, so no object type's
 headline reaches it.
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
@@ -121,7 +120,7 @@ parent's headline is an error when stories compile.
 Mark a model `Bundleable`, and a burst of activities on it becomes one
 composite:
 
-```php
+```php memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
@@ -137,15 +136,14 @@ class MenuItem extends Model implements Feedable, Bundleable
 }
 ```
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::bundleables(['menu_item']);
 ```
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'grouping' => [
     'composite' => [
         'auto' => true,
@@ -164,8 +162,7 @@ A batch is a burst of activity by one actor. Its quiet window defaults to `group
 declare its own window with [`batched(within:)`](/deeper/story-middleware-and-batching#batch-windows). Each publish sets the batch's
 `closes_at`.
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'grouping' => [
     'batch' => [
         'enabled' => true,
@@ -177,8 +174,7 @@ declare its own window with [`batched(within:)`](/deeper/story-middleware-and-ba
 To close batches on time, schedule the command. Otherwise a batch closes at
 the actor's next publish.
 
-```php
-// routes/console.php
+```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('storyfeed:close-batches')->everyFiveMinutes();

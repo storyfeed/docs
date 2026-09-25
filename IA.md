@@ -252,27 +252,36 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     enums under their Laravel-conventional namespaces; a package type under
     its real one. The snippet opens with `<?php`, then the namespace, then the
     `use` block, so it reads as the file it is.
-    **A snippet that is not a class opens with a comment naming where it
-    goes:** `// config/storyfeed.php`, `// app/Providers/AppServiceProvider.php,
-    boot()`, `// routes/console.php`, `// where the fact happens: a controller,
-    an action, a listener`, `{{-- resources/views/feed.blade.php --}}`. A reader
-    of any snippet must never have to ask "where do I put this?". Exempt: an
-    API fragment on a Reference page (an argument list, a chain segment).
+    **For a snippet with a known file, the file path goes in the block's
+    `memo`; extra placement goes in a `//` comment.** For example,
+    `memo="app/Providers/AppServiceProvider.php"` with `// boot()` in the code.
+    A snippet with no specific file keeps its placement comment, such as
+    `// where the fact happens: a controller, an action, a listener`.
+    A reader of any snippet must never have to ask "where do I put this?".
+    Exempt: an API fragment on a Reference page (an argument list, a chain segment).
+
+    **Code fences accept an optional `memo="…"` attribute**, a short memo shown
+    above the code and excluded from copying. For now, use only the known file
+    path; do not invent paths for shell commands, payloads or unlocated fragments.
+    Each fence in a code group can have its own memo. Imported snippets use
+    `<<< @/snippets/file.php {php memo="app/Path/File.php"} [Label]`.
+    Empty values and unterminated quotes fail the build.
 
 33. **Getting Started hooks; the teaching pages leave nothing to guess**
     (ruled 2026-09-22). Introduction, Usage Examples, Installation and
-    Quickstart show fragments under a location comment, because their job is
-    to intrigue. From The Basics on, a recording example is the **full call
+    Quickstart show fragments under a file-path memo or placement comment,
+    because their job is to intrigue. From The Basics on, a recording example is the **full call
     site**: the class with its namespace and imports, the method, where each
     variable comes from, and what the method returns, so a developer can
     follow along in their own app. The whole class
     reads at once, with no focus markers (rule 22). A later snippet in the same section may be a fragment of a
-    class already shown in full, under `// app/…/File.php, method()`.
+    class already shown in full, with `memo="app/…/File.php"` and `// method()`.
     The same holds for a model's feed code (`describeFeed()`, `toFeed()`,
     `feedMedia()`, the `booted()` that registers `feedMediaUsing()`): the
     first snippet in a section is the model class, namespace and imports
-    included. A `routes/feed.php` snippet opens
-    with `// routes/feed.php` and its `use` lines, as Laravel's route files do.
+    included. A `routes/feed.php` snippet has
+    `memo="routes/feed.php"` and opens with its `use` lines, as Laravel's route
+    files do.
 34. **Every recording example shows both forms, as tabs** (ruled 2026-09-22).
     A `::: code-group` with `[Fluent Syntax]` first and `[Named Arguments]`
     second: the same activity as one `Storyfeed::record()` call. Every argument
@@ -293,8 +302,8 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
 35. **Every snippet that calls a facade shows its `use` line** (ruled
     2026-09-23). There is no global `Storyfeed` alias, so `Storyfeed::…`
     without `use Storyfeed\Facades\Storyfeed;` is a line the reader cannot
-    run. A class snippet has it in its `use` block; a fragment has it under
-    its location comment, above the code. The same for `Story`
+    run. A class snippet has it in its `use` block; a fragment keeps it above
+    the code, after any placement comment. The same for `Story`
     (`Storyfeed\Facades\Story`) and any framework facade the snippet calls
     (`Relation`, `Route`, `DB`). Exempt: an API fragment on a Reference page
     (a method signature, a chain segment), and a later fragment in the same

@@ -67,7 +67,7 @@ headline lines commented out. Choose a line before compiling the definitions.
 php artisan make:story OrderWasPlaced --verb=place --object=Order
 ```
 
-```php
+```php memo="app/Stories/OrderWasPlaced.php"
 <?php
 
 namespace App\Stories;
@@ -113,8 +113,7 @@ in the verb bound to this class. Return `null` to publish nothing.
 
 Bind the class to its object type and verb in the feed file:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderWasPlaced;
 use Storyfeed\Facades\Story;
@@ -126,7 +125,7 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 
 An authenticated controller gives the Story its data:
 
-```php
+```php memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -175,7 +174,7 @@ The data belongs in `toFeedActivity()`.
 php artisan make:story PlaceStory --invokable --verb=place --object=Order
 ```
 
-```php
+```php memo="app/Stories/PlaceStory.php"
 <?php
 
 namespace App\Stories;
@@ -198,8 +197,7 @@ class PlaceStory
 When `routes/feed.php` gets long, a single-verb class puts that verb's headlines
 in their own class. It extends nothing. Bind it instead of the inline declaration:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\PlaceStory;
 use Storyfeed\Facades\Story;
@@ -224,7 +222,7 @@ its headline then needs to make sense for every type it covers.
 php artisan make:story OrderStory --model=Order
 ```
 
-```php
+```php memo="app/Stories/OrderStory.php"
 <?php
 
 namespace App\Stories;
@@ -250,8 +248,7 @@ class OrderStory
 Each public method declares a verb. The class extends nothing and receives no
 order to publish. Bind it instead of the other `place` declarations:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
@@ -298,8 +295,7 @@ Make helpers protected or private.
 `restore`. A method named for one of them replaces its default whole; the
 others keep theirs. `only()` and `except()` name verbs as they are stored:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
@@ -312,8 +308,7 @@ Story::resource(Order::class, OrderStory::class)
 
 ### Selecting Verbs
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
@@ -338,8 +333,7 @@ Both methods accept an array instead of separate arguments.
 
 ### Registering Multiple Resources
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\User;
@@ -377,8 +371,8 @@ An unknown option throws.
 
 ### Request-Based Actors
 
-```php
-// app/Stories/OrderStory.php: add the Request import and this method.
+```php memo="app/Stories/OrderStory.php"
+// add the Request import and this method.
 use Illuminate\Http\Request;
 
 public function confirmPayment(Verb $verb, Request $request): Verb
@@ -394,15 +388,15 @@ The same webhook can choose between two [declared parties](/deeper/parties#decla
 Its controller publishes `confirm_payment` without naming an actor:
 
 ::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/PaymentWebhookController.php, __invoke(): after loading $order.
+```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php"
+// __invoke(): after loading $order.
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity('confirm_payment', $order)->publish();
 ```
 
-```php [Named Arguments]
-// app/Http/Controllers/PaymentWebhookController.php, __invoke(): after loading $order.
+```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php"
+// __invoke(): after loading $order.
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(verb: 'confirm_payment', object: $order);
@@ -429,8 +423,8 @@ the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#re
 
 ### Deleted-Object Headlines
 
-```php
-// app/Stories/OrderStory.php: replace place().
+```php memo="app/Stories/OrderStory.php"
+// replace place().
 public function place(Verb $verb): Verb
 {
     return $verb

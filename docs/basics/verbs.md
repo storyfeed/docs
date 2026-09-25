@@ -23,7 +23,7 @@ case of an enum.
 ## Recording With Strings
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -50,7 +50,7 @@ class OrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -91,7 +91,7 @@ These verbs are free-form strings, and can be anything at all.
 
 A backed enum gives your application a shared vocabulary:
 
-```php
+```php memo="app/Enums/OrderActivity.php"
 <?php
 
 namespace App\Enums;
@@ -108,7 +108,7 @@ enum OrderActivity: string
 
 Add Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface to record directly from an enum case:
 
-```php
+```php memo="app/Enums/OrderActivity.php"
 <?php
 
 namespace App\Enums;
@@ -129,7 +129,7 @@ enum OrderActivity: string implements FeedVerb
 `Storyfeed::record()` accepts the backed enum with or without the trait:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -155,7 +155,7 @@ class OrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -193,7 +193,7 @@ class OrderController extends Controller
 Storyfeed also ships common verbs, as the `Storyfeed\Act` enum.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/ConfirmOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -218,7 +218,7 @@ class ConfirmOrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/ConfirmOrderController.php"
 <?php
 
 namespace App\Http\Controllers;

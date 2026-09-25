@@ -52,7 +52,7 @@ implements `Feedable`. It gives the feed a label to print and a link to follow.
 
 ## Making Models Feedable
 
-```php
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -96,8 +96,8 @@ A model that sets no label gets the first of these that it has:
 To guess differently across the whole app, register a guesser in a service
 provider. Returning `null` falls through to the list above:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
@@ -109,7 +109,7 @@ Storyfeed::guessFeedLabelsUsing(
 To change it for one model, write `guessFeedLabel()` on the model. To fall back
 to Storyfeed's guess from inside it, alias the trait's method:
 
-```php
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -135,7 +135,7 @@ class Order extends Model implements Feedable
 
 `describeFeed()` says what the snapshot holds:
 
-```php
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -165,7 +165,7 @@ is guessed.
 
 Use `describeFeed()` to store values that a media resolver needs later:
 
-```php
+```php memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
@@ -199,7 +199,7 @@ The feed stores these values in the entity snapshot. [Images](#images) shows how
 
 A link is resolved when the feed is read. Register a resolver in `booted()` to build it from the stored snapshot:
 
-```php
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -240,7 +240,7 @@ The URL is built on every read, so a changed route never leaves a stale link.
 [registered](/basics/named-feeds) under, so one snapshot can link somewhere
 different on each surface, or nowhere:
 
-```php
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -283,7 +283,7 @@ The media resolver can fill a preview as well as a link. This model uses the sto
 <a id="a-complete-model"></a>
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
@@ -329,7 +329,7 @@ class MenuItem extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
@@ -391,7 +391,7 @@ A model can write them itself instead:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -421,7 +421,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -466,8 +466,8 @@ A method the model writes takes precedence over the trait's.
 A model from another package can't implement `Feedable`. Register it in a
 service provider instead:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
 
@@ -513,8 +513,8 @@ It is the same builder as `Storyfeed::feed()->involving($kitchen)->get()`.
 Storyfeed stores morph aliases, never class names, so entities survive a
 namespace change. Enforce a map:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use App\Models\Kitchen;
 use App\Models\MenuItem;
 use App\Models\Order;

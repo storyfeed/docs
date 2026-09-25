@@ -5,8 +5,8 @@ headline. Declare it with `grouped()` beside the single-activity headline.
 
 ## Defining a Group Headline
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -15,8 +15,7 @@ Storyfeed::verbs([
 ]);
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\Group;
@@ -57,8 +56,8 @@ const crowd = group({
 *A customer places an order with the kitchen.*
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample context :items="[one]" />
@@ -66,8 +65,8 @@ const crowd = group({
 *a minute later, another request*
 
 ::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/OrderController.php, store()
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
+// store()
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -75,8 +74,8 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// app/Http/Controllers/OrderController.php, store()
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
+// store()
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -89,8 +88,8 @@ Storyfeed::record(
 *another minute later, a third request*
 
 ::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/OrderController.php, store()
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
+// store()
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -98,8 +97,8 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// app/Http/Controllers/OrderController.php, store()
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
+// store()
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -169,7 +168,7 @@ doesn't group.
 
 A verb's method holds its headline and the group headlines for its type:
 
-```php
+```php memo="app/Stories/OrderStory.php"
 <?php
 
 namespace App\Stories;
@@ -190,8 +189,7 @@ class OrderStory
 
 The `actors` headline stays on the verb in `routes/feed.php`:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 

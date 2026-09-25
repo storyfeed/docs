@@ -42,8 +42,8 @@ customer's order page and the kitchen's screen can each read their own.
 
 Register each feed as a closure over the builder:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
@@ -116,7 +116,7 @@ This creates `app/Feeds/CustomerFeed.php` with a typed constructor and a scope. 
 
 A feed class takes its subject in the constructor. Its `scope()` method uses that subject when reading:
 
-```php
+```php memo="app/Feeds/CustomerFeed.php"
 <?php
 
 namespace App\Feeds;
@@ -154,7 +154,7 @@ CustomerFeed::make($order)->get();
 
 `define()` sets the vocabulary and read mode without reading constructor state. A feed with no subject declares no constructor and no `scope()`:
 
-```php
+```php memo="app/Feeds/KitchenFeed.php"
 <?php
 
 namespace App\Feeds;
@@ -200,8 +200,8 @@ CustomerFeed::make($order)->only(['place'])->summary();
 
 Register classes and closures in one list:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use App\Feeds\CustomerFeed;
 use App\Feeds\KitchenFeed;
 use Storyfeed\Facades\Storyfeed;

@@ -19,7 +19,7 @@ to process queued activities. The `sync` connection runs them immediately.
 
 ## Queueing Activities
 
-```php
+```php memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -60,8 +60,8 @@ The `publish()` / `queue()` pair follows Laravel's explicit mailable queueing.
 
 ### Queue and Connection
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -90,8 +90,8 @@ The database connection needs Laravel's jobs table.
 
 Add `delay()` before `queue()` to choose when the job becomes available:
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -110,8 +110,7 @@ The worker determines when it is handled. After publication:
 
 ### Per-Verb Defaults
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -139,7 +138,7 @@ Queue settings do not queue an ordinary `publish()` call. End the builder with
 
 ### Queueable Stories
 
-```php
+```php memo="app/Stories/OrderWasPlaced.php"
 <?php
 
 namespace App\Stories;
@@ -182,8 +181,7 @@ class OrderWasPlaced extends Story implements ShouldQueue
 
 Replace the inline declaration with the class binding:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderWasPlaced;
 use Storyfeed\Facades\Story;
@@ -193,8 +191,8 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 
 An authenticated controller supplies the data:
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use App\Stories\OrderWasPlaced;
 use Storyfeed\Facades\Storyfeed;
 
@@ -248,8 +246,8 @@ Outside a transaction it publishes immediately.
 
 ## Publication Time and Model Snapshots
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -272,8 +270,7 @@ Story middleware runs on the worker.
 
 ### Missing Models
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderWasPlaced;
 use Storyfeed\Facades\Story;
@@ -311,8 +308,8 @@ chooses its verb's actor at each publish. On a worker there is no request, so a
 job dispatched during the request carries what the method chose: a party name,
 or a model as its morph alias and key, never the request itself.
 
-```php
-// app/Http/Controllers/PaymentWebhookController.php, __invoke()
+```php memo="app/Http/Controllers/PaymentWebhookController.php"
+// __invoke()
 use App\Jobs\ConfirmPayment;
 
 // its confirm_payment gets the actor the request chose
@@ -331,7 +328,7 @@ the doctor names the method (`actions.carry_failed`).
 
 A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 
-```php
+```php memo="app/Console/Commands/SyncMenus.php"
 <?php
 
 namespace App\Console\Commands;
@@ -389,7 +386,7 @@ set `publishedAt()`. Capture the event time in the job's constructor if the
 activity belongs to that earlier moment:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Jobs/RecordOrder.php"
 <?php
 
 namespace App\Jobs;
@@ -423,7 +420,7 @@ class RecordOrder implements ShouldQueue
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Jobs/RecordOrder.php"
 <?php
 
 namespace App\Jobs;

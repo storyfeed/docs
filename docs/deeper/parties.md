@@ -27,7 +27,7 @@ a payment provider, or **anonymous**.
 ## Recording a Party
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -58,7 +58,7 @@ class StripeWebhookController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -98,7 +98,7 @@ class StripeWebhookController extends Controller
 A party can fill any role, not only the actor:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/DispatchOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -123,7 +123,7 @@ class DispatchOrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/DispatchOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -159,8 +159,8 @@ class DispatchOrderController extends Controller
 A name given to `Storyfeed::actor()`, or to a verb's own `->actor()`, may come
 from outside your code. Declare the names an actor may take:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::parties(['Stripe', 'Paddle', 'System']);
@@ -182,8 +182,7 @@ With no list, any name becomes a party. Names match as party keys do, so
 
 ## Setting a Default Actor
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'parties' => [
     // e.g. 'System' — a name for otherwise-anonymous publishes
     'fallback' => null,
@@ -206,8 +205,7 @@ recording example.
 
 ### Anonymous Headlines
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 

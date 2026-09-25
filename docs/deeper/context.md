@@ -28,7 +28,7 @@ Roles are never filled in later. If you have the container when you publish,
 record it: a `context` read only finds activities recorded with one.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -60,7 +60,7 @@ class DishQuestionController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -109,8 +109,8 @@ Use `context` when the target sits inside a container, like a dish in a
 kitchen. When the target is the container itself, `target` is enough:
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample :items="[scenes.order]" />

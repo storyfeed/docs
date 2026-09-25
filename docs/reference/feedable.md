@@ -10,7 +10,7 @@ common path.
 
 ## The Feedable Contract
 
-```php
+```php memo="src/Contracts/Feedable.php"
 <?php
 
 namespace Storyfeed\Contracts;
@@ -56,7 +56,7 @@ not a link.
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -86,7 +86,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -132,8 +132,8 @@ A label left unset is guessed, first match wins:
 | the registered noun and the key | `Dish #42` |
 | the class name as words and the key | `Menu Item #42` |
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
@@ -183,8 +183,8 @@ and `$this->storyfeed()` is the model's feed.
 
 ## Registering External Models
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
 
@@ -248,8 +248,8 @@ Payload shape: [entity object](/reference/payload#entity-object).
 
 ### `PendingTombstone`
 
-```php
-// app/Models/Order.php, describeFeed()
+```php memo="app/Models/Order.php"
+// describeFeed()
 use Storyfeed\PendingTombstone;
 
 $this->feedEntity()
@@ -353,7 +353,7 @@ The slots are Activity Streams 2.0 property names:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Document.php"
 <?php
 
 namespace App\Models;
@@ -385,7 +385,7 @@ class Document extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Document.php"
 <?php
 
 namespace App\Models;

@@ -21,7 +21,7 @@ php artisan make:listener RecordOrderPlaced --event=OrderPlaced
 
 ## Publishing From a Listener
 
-```php
+```php memo="app/Events/OrderPlaced.php"
 <?php
 
 namespace App\Events;
@@ -36,8 +36,8 @@ class OrderPlaced
 ```
 
 ::: code-group
-<<< @/snippets/publish-from-listener.php [Fluent Syntax]
-<<< @/snippets/publish-from-listener.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-listener.php {php memo="app/Listeners/RecordOrderPlaced.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-listener.named-arguments.php {php memo="app/Listeners/RecordOrderPlaced.php"} [Named Arguments]
 :::
 
 <FeedExample context :items="[scenes.order]" />
@@ -54,7 +54,7 @@ to run the listener.
 An event can build the activity itself, with no listener to register. Return
 it without calling `publish()`; dispatching the event publishes it:
 
-<<< @/snippets/publish-from-event.php
+<<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPlaced.php"}
 
 <FeedExample :items="[scenes.order]" />
 
@@ -62,8 +62,7 @@ it without calling `publish()`; dispatching the event publishes it:
 
 Return `null` to publish nothing for this instance:
 
-```php
-// app/Events/OrderPlaced.php
+```php memo="app/Events/OrderPlaced.php"
 public function toFeedActivity(): ?PendingActivity
 {
     if ($this->order->isTest()) {

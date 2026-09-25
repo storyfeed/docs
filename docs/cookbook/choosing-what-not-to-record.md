@@ -23,7 +23,7 @@ nothing.
 
 ## Skipping Publication
 
-```php
+```php memo="app/Events/OrderPlaced.php"
 <?php
 
 namespace App\Events;
@@ -55,8 +55,8 @@ class OrderPlaced implements PublishesToFeed
 Returning `null` publishes nothing. See
 [Publishing from Events](/deeper/events).
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -66,8 +66,7 @@ Storyfeed::verbs([
 ]);
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -77,8 +76,7 @@ Story::for(Order::class)->verb('place')
 
 ## Recording Notes
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Note;
 use Storyfeed\Facades\Story;
 
@@ -87,7 +85,7 @@ Story::for(Note::class)->verb('ask')
 ```
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -119,7 +117,7 @@ class DishQuestionController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -174,7 +172,7 @@ and register its `note` morph alias as in
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Note.php"
 <?php
 
 namespace App\Models;
@@ -201,7 +199,7 @@ class Note extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Note.php"
 <?php
 
 namespace App\Models;
@@ -244,7 +242,7 @@ the snapshot yourself.
 ## Recording Activity Quotes
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -278,7 +276,7 @@ class DishQuestionController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/DishQuestionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -321,16 +319,15 @@ from the note. The renderer receives them as `node.thread.text`; drop the
 When the object is the discussion itself, each activity can carry the reply it
 is about:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs(['reply' => ActivityType::Create]);
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Discussion;
 use Storyfeed\Facades\Story;
 
@@ -339,7 +336,7 @@ Story::for(Discussion::class)->verb('reply')
 ```
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/DiscussionReplyController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -375,7 +372,7 @@ class DiscussionReplyController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/DiscussionReplyController.php"
 <?php
 
 namespace App\Http\Controllers;

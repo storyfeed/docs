@@ -19,7 +19,7 @@ is a customer placing an order with a kitchen.
 A model that appears in the feed says how it should read:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -40,7 +40,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -70,8 +70,7 @@ class Order extends Model implements Feedable
 
 ## Defining a Headline
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -94,8 +93,7 @@ On the feed:
 
 Return the feed from a route:
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
@@ -128,8 +126,7 @@ With Inertia, pass the same feed as a prop instead,
 `Inertia::render('Home', ['feed' => Storyfeed::feed()->get()])`, and the page
 hands it to the app's own composable and stream component:
 
-```vue
-<!-- resources/js/Pages/Home.vue -->
+```vue memo="resources/js/Pages/Home.vue"
 <script setup lang="ts">
 import { usePoll } from '@inertiajs/vue3'
 import { toRef } from 'vue'

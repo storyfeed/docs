@@ -54,8 +54,7 @@ The [installer](/guide/installation#running-the-installer) creates `routes/feed.
 
 A headline is the sentence the feed prints for an activity:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -89,7 +88,7 @@ The template names roles, never models:
 Publish the verb and object with `Storyfeed::activity()`:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/CheckoutController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -116,7 +115,7 @@ class CheckoutController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/CheckoutController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -171,8 +170,7 @@ link.
 Square brackets mark words that print only when the roles inside them are
 filled:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -193,8 +191,7 @@ drops it. Without brackets, an unfilled role leaves its token in the template. U
 
 A closure receives the activity and returns a template:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Models\Activity;
@@ -215,8 +212,7 @@ template.
 
 ## Icons and Intents
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -237,8 +233,7 @@ Story::verb('publish')->icon('chef-hat');   // any object type
 
 `intent()` names what the icon means, in your app's own word:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -251,8 +246,7 @@ Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
 
 ## Definition Groups
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -273,8 +267,7 @@ Every `Story::verb()` inside the closure is for orders.
 `Story::resource()` defines `create`, `update`, `delete` and `restore` for a
 model in one line:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -293,8 +286,7 @@ Story::resource(Order::class);
 Narrow it with `only()` or `except()`, and define a verb yourself to say
 something else:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -325,8 +317,7 @@ The same order applies to headlines and to intents.
 
 A verb inside `Story::for()` can also say how a group of its activities reads:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -349,8 +340,7 @@ tokens their headlines may use, are in [Aggregation](/deeper/aggregation).
 When a model is deleted, its activities stay. `->missing()` names the roles an
 activity is about, so the payload can say when one of them is gone:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Question;
 use Storyfeed\Facades\Story;
 

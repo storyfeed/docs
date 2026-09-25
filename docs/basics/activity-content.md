@@ -64,8 +64,8 @@ wrote, the facts behind a change, or what a file is.
 Most activities need nothing more. The sentence is the whole row:
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample context :items="[scenes.order]" />
@@ -78,7 +78,7 @@ When the activity is *about* an utterance, the utterance belongs on the
 activity. `->thread()` carries it:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderNoteController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -108,7 +108,7 @@ class OrderNoteController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderNoteController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -160,7 +160,7 @@ An entity's **body** carries structured content. The model supplies it in
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -187,7 +187,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -225,7 +225,7 @@ it, not the line that records an activity:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -254,7 +254,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -296,7 +296,7 @@ compared rather than read, a reference or an address, is marked `verbatim`.
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Photo.php"
 <?php
 
 namespace App\Models;
@@ -325,7 +325,7 @@ class Photo extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Photo.php"
 <?php
 
 namespace App\Models;
@@ -393,7 +393,7 @@ carries `modal: true`.
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Photo.php"
 <?php
 
 namespace App\Models;
@@ -417,7 +417,7 @@ class Photo extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Photo.php"
 <?php
 
 namespace App\Models;

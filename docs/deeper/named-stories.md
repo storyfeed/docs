@@ -14,8 +14,7 @@ const placed = { ...scenes.order, data: null, glyph_intent: null }
 
 ## Naming Stories
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -31,7 +30,7 @@ Story::for(Order::class)->verb('place')
 
 Publish it from an authenticated controller by name:
 
-```php
+```php memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -61,8 +60,8 @@ class PlaceOrderController extends Controller
 `story()` takes a name, just as Laravel's `route()` does. Its facade equivalent
 is `Storyfeed::route()`, corresponding to Laravel's `URL::route()`:
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 $activity = Storyfeed::route('order.place', $order)
@@ -88,8 +87,7 @@ A declaration bound to a Story constructed with data still requires
 
 ### Name Prefixes
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -113,8 +111,7 @@ are in Laravel. An individual declaration keeps `->name()` to set its name.
 
 ### Shared Attributes
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -137,8 +134,7 @@ five-minute batch window. The attributes chain in any order, as
 
 For one declaration, omit `group()`:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -158,8 +154,7 @@ The same direct form accepts `fallback()`, `resource()`, `resources()`,
 
 ### Nested Groups
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Models\User;
 use Storyfeed\Facades\Story;
@@ -195,8 +190,7 @@ actor and removes the inherited five-minute batch middleware. The built-in
 
 ## Naming Resource Stories
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
@@ -242,8 +236,8 @@ name beside its declaration; `--json` includes it too.
 
 ### Matching Names
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Story;
 
 Story::has('order.place');         // true for the declaration above
@@ -276,8 +270,8 @@ declaration. `storyfeed:cache` also runs under `php artisan optimize`.
 
 ## Checking Names With Static Analysis
 
-```txt
-# phpstan.neon, when phpstan/extension-installer is not installed
+```txt memo="phpstan.neon"
+# when phpstan/extension-installer is not installed
 includes:
     - vendor/storyfeed/storyfeed/extension.neon
 ```

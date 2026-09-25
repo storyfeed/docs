@@ -23,7 +23,7 @@ const live = activity({ ...fixed, id: 'count-live', thread: { ...fixed.thread, r
 ## Recording a Fixed Count
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/CommentController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -62,7 +62,7 @@ class CommentController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/CommentController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -117,8 +117,8 @@ can add a reply.
 
 ### Leaving the Stored Count Empty
 
-```php
-// app/Http/Controllers/CommentController.php, store()
+```php memo="app/Http/Controllers/CommentController.php"
+// store()
 use Storyfeed\FeedThread;
 
 FeedThread::make(text: $excerpt, replies: null);

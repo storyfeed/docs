@@ -59,7 +59,7 @@ The plainest body is a line of text:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -82,7 +82,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -114,8 +114,8 @@ An `Excerpt` adds a caption saying where the words came from:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/Order.php, toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php"
+// toFeed()
 use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make()
@@ -123,8 +123,8 @@ return FeedEntity::make()
     ->body(Excerpt::make()->text($this->summary())->from('Ticket'));
 ```
 
-```php [Named Arguments]
-// app/Models/Order.php, toFeed()
+```php [Named Arguments] memo="app/Models/Order.php"
+// toFeed()
 use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make(
@@ -143,8 +143,8 @@ A `KeyValue` keeps each line apart as data:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/Order.php, toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php"
+// toFeed()
 use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make()
@@ -156,8 +156,8 @@ return FeedEntity::make()
         ->items('Total', $this->total->format()));
 ```
 
-```php [Named Arguments]
-// app/Models/Order.php, toFeed()
+```php [Named Arguments] memo="app/Models/Order.php"
+// toFeed()
 use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make(
@@ -210,8 +210,8 @@ or one row its own with `KeyValue::missingAs()`:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/Order.php, toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php"
+// toFeed()
 KeyValue::make()
     ->missing('Not given')
     ->items([
@@ -220,8 +220,8 @@ KeyValue::make()
     ])
 ```
 
-```php [Named Arguments]
-// app/Models/Order.php, toFeed()
+```php [Named Arguments] memo="app/Models/Order.php"
+// toFeed()
 KeyValue::make(
     missing: 'Not given',
     items: [
@@ -275,16 +275,16 @@ Each `body()` call adds to the list, in the order written:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/MenuItem.php, toFeed()
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+// toFeed()
 return FeedEntity::make()
     ->label($this->name)
     ->body(Excerpt::make()->text($this->description))
     ->body(KeyValue::make()->items('Station', $this->station));
 ```
 
-```php [Named Arguments]
-// app/Models/MenuItem.php, toFeed()
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+// toFeed()
 return FeedEntity::make(
     label: $this->name,
     body: [
@@ -308,8 +308,7 @@ moment:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/MenuItem.php
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
@@ -319,8 +318,7 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 }
 ```
 
-```php [Named Arguments]
-// app/Models/MenuItem.php
+```php [Named Arguments] memo="app/Models/MenuItem.php"
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(
@@ -359,14 +357,14 @@ payload resolves it:
 
 ::: code-group
 
-```php [Fluent Syntax]
-// app/Models/MenuItem.php, feedMedia()
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+// feedMedia()
 ->body(fn () => KeyValue::make()
     ->items('Portions left', $context->model()?->portions_left))
 ```
 
-```php [Named Arguments]
-// app/Models/MenuItem.php, feedMedia()
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+// feedMedia()
 body: fn () => KeyValue::make(
     items: ['Portions left' => $context->model()?->portions_left],
 ),
@@ -403,7 +401,7 @@ A `Component` body names a component in your frontend and the props it gets:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Note.php"
 <?php
 
 namespace App\Models;
@@ -429,7 +427,7 @@ class Note extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Note.php"
 <?php
 
 namespace App\Models;
@@ -477,7 +475,7 @@ write a body type with its own `upgrade()`.
 
 ## Writing Body Types
 
-```php
+```php memo="app/Feed/Attachment.php"
 <?php
 
 namespace App\Feed;

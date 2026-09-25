@@ -50,8 +50,7 @@ how to display them.
 This activity names three roles. Substitute their labels into its template:
 
 
-```blade
-{{-- resources/views/feed.blade.php --}}
+```blade memo="resources/views/feed.blade.php"
 {{-- This example draws the activity above; groups use the section below. --}}
 @foreach ($page['items'] as $node)
     <article>
@@ -76,8 +75,7 @@ This activity names three roles. Substitute their labels into its template:
 
 Each entity carries its own `url`, so a link needs no route knowledge:
 
-```blade
-{{-- resources/views/feed.blade.php --}}
+```blade memo="resources/views/feed.blade.php"
 @php
     $entity = fn (?array $e, string $fallback) => $e === null
         ? e($fallback)
@@ -128,8 +126,7 @@ glyph, as you would for an intent you have no colour for.
 A group node has `kind: "group"` and a plural sentence. `:count` is the member
 count, and a plural token draws the sample plus how many are not shown:
 
-```blade
-{{-- resources/views/feed.blade.php --}}
+```blade memo="resources/views/feed.blade.php"
 @php
     $list = function (array $node, string $role) use ($entity) {
         $shown = $node['sample'][$role] ?? [];
@@ -162,8 +159,7 @@ there is one, and otherwise draw the plural list. An unconditional
 Some groups have no sentence: **both** `headline_template` and `headline` are
 null. Draw the count:
 
-```blade
-{{-- resources/views/feed.blade.php --}}
+```blade memo="resources/views/feed.blade.php"
 @if ($node['headline_template'])
     {{-- the sentence, as above --}}
 @elseif ($node['headline'])

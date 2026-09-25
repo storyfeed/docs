@@ -38,8 +38,7 @@ everything a renderer needs to draw them. The response contains activity nodes a
 
 Return the feed from a route:
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 

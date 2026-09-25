@@ -65,8 +65,7 @@ to `false` to turn that off.
 
 Add these tasks to your app’s schedule:
 
-```php
-// routes/console.php
+```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
 
 // fill in missing snapshots

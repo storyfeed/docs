@@ -23,7 +23,7 @@ supply a default for that role or the actor across several publishes.
 ### Sharing Context
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -51,7 +51,7 @@ class PlaceOrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -98,8 +98,8 @@ activity builder with that context set.
 ### Sharing an Actor
 
 ::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::actor($request->user(), function () use ($order) {
@@ -110,8 +110,8 @@ Storyfeed::actor($request->user(), function () use ($order) {
 });
 ```
 
-```php [Named Arguments]
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
+// __invoke()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::actor($request->user(), function () use ($order) {
@@ -146,8 +146,7 @@ activity still takes precedence over the scope.
 
 ### Context From Route Parameters
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use App\Http\Controllers\PlaceOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -161,7 +160,7 @@ The parameter must be an Eloquent model; a missing or unbound value throws.
 Implicit binding needs the controller to receive that parameter:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -185,7 +184,7 @@ class PlaceOrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -223,8 +222,7 @@ The middleware supplies the context to every activity published in this request.
 
 ### Declared Party Actors
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use App\Http\Controllers\PlaceOrderController;
 use Illuminate\Support\Facades\Route;
 

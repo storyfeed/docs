@@ -59,8 +59,8 @@ For named system attribution or a sentence without an actor slot, see
 The registry is the vocabulary the app declares, on top of the package's
 built-in verbs:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use App\Enums\ActivityVerb;
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
@@ -96,8 +96,7 @@ before changing thresholds: `repeat` groups activities with the same target, whi
 `context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
 one where a surface shows more:
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'sample_limits' => [
     'object' => 6,  // this feed shows the objects' pictures
     // everything else stays at 3

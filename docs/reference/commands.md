@@ -104,8 +104,7 @@ works as for every other section.
 | `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
 | `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention), repairs the groups they leave, and deletes the snapshots and tombstones only they referred to. `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
 
-```php
-// routes/console.php
+```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('storyfeed:trickle')->everyMinute();

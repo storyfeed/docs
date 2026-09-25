@@ -12,7 +12,7 @@ A verb says what happened. It does not say what it happened to — the object
 already does that.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -41,7 +41,7 @@ class OrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -99,7 +99,7 @@ are naming guidance; Storyfeed stores the verb you supply.
 already had an identity and is now part of something.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -123,7 +123,7 @@ class MenuItemController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -154,7 +154,7 @@ class MenuItemController extends Controller
 :::
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuDishController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -181,7 +181,7 @@ class MenuDishController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuDishController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -272,7 +272,7 @@ Neither changes the object. If the choice is not clear, it is `view`.
 You can record delivery outcomes as their own models. Each outcome then
 uses `create` against that record:
 
-```php
+```php memo="app/Http/Controllers/MailWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -322,7 +322,7 @@ supersedes it.
 | One happened earlier | `publishedAt()` |
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -352,7 +352,7 @@ class MenuItemController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;

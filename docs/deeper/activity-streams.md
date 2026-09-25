@@ -16,8 +16,7 @@ The Activity Streams document is separate from the normal
 
 The read-only route is off by default. Enable it in the configuration:
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'routes' => [
     'enabled' => true,
     'prefix' => 'storyfeed',
@@ -83,7 +82,7 @@ Documents reference `https://ns.storyfeed.dev`, which defines `sf:verb`.
 
 A verb enum can map each verb to an Activity Streams type:
 
-```php
+```php memo="app/Enums/OrderActivity.php"
 <?php
 
 namespace App\Enums;
@@ -124,8 +123,7 @@ enum OrderActivity: string implements FeedVerb
 On a Story class, import `Storyfeed\ActivityStreams\ActivityType` and set
 its type property:
 
-```php
-// app/Stories/OrderWasPlaced.php
+```php memo="app/Stories/OrderWasPlaced.php"
 public ActivityType|string|null $type = ActivityType::Create;
 ```
 

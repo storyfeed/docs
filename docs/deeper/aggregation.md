@@ -44,7 +44,7 @@ Three orders from one customer, minutes apart, as a log:
 
 The same three, grouped by the verb's `grouped()`:
 
-```php
+```php memo="app/Stories/OrderStory.php"
 <?php
 
 namespace App\Stories;
@@ -72,8 +72,7 @@ class OrderStory
 Five customers ordering from the same kitchen need a different sentence. Each
 group names an **axis**: what its activities have in common.
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
@@ -125,8 +124,7 @@ whichever axis wins.
 
 ### Thresholds
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'grouping' => [
     'policy' => [
         'min_actors' => 3,          // actors axis needs 3+ distinct actors
@@ -152,8 +150,7 @@ boundary shared by grouped activities.
 
 `grouped()` declares a headline for each grouping axis:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
@@ -251,8 +248,7 @@ its entities are one type. Otherwise the group has no headline, and
 
 Give a type its noun:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -277,8 +273,8 @@ link.
 
 An axis is a key recipe and a rule for which activities it takes:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Grouping\Axis;
 
@@ -315,8 +311,8 @@ a `scene.*` key applies to it.
 
 A new axis has the lowest priority. To outrank a built-in, say so:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::axes([$scene], before: 'repeat');

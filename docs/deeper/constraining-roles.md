@@ -16,8 +16,7 @@ const placed = { ...scenes.order, data: null, glyph_intent: null }
 
 ## Defining Role Constraints
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Kitchen;
 use App\Models\Order;
 use App\Models\User;
@@ -55,8 +54,7 @@ declaration. Repeating a constraint replaces the allowed types for that role.
 
 ### Parties and Empty Roles
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Kitchen;
 use App\Models\Order;
 use App\Models\User;

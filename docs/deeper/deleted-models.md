@@ -52,8 +52,8 @@ and restoration hooks. [Feedable Models](/basics/feedable-models) covers setup.
 
 ### Soft Deletions
 
-```php
-// app/Http/Controllers/OrderController.php, destroy()
+```php memo="app/Http/Controllers/OrderController.php"
+// destroy()
 $order->delete();
 ```
 
@@ -91,8 +91,8 @@ A deleted order's headline, icon and intent are still the ones defined for
 On a model that soft-deletes, restoring it points every activity back at it,
 and the tombstone goes:
 
-```php
-// app/Http/Controllers/OrderController.php, restore()
+```php memo="app/Http/Controllers/OrderController.php"
+// restore()
 $order->restore();
 ```
 
@@ -104,8 +104,8 @@ $order->restore();
 
 A force delete can't be undone, so its tombstone is permanent:
 
-```php
-// app/Http/Controllers/OrderController.php, destroy()
+```php memo="app/Http/Controllers/OrderController.php"
+// destroy()
 // the activities stay; the tombstone is now their object for good
 $order->forceDelete();
 ```
@@ -121,7 +121,7 @@ $order->forceDelete();
 A tombstone drops the model's label. A model whose label is safe to keep after
 deletion, such as a dish on a public menu, says so in `describeFeed()`:
 
-```php
+```php memo="app/Models/MenuItem.php"
 <?php
 
 namespace App\Models;
@@ -168,8 +168,7 @@ is `true` only when every member is redundant.
 An activity is **redundant** when a role its verb is about holds a tombstone.
 By default, a verb is about its object. `->missing()` names the roles instead:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -192,8 +191,7 @@ applies to every verb on orders; a verb's own call wins. On a class that extends
 A verb that records a removal is about nothing by default, because its
 object being gone is expected:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Story;
@@ -218,8 +216,7 @@ such as `delete`, `discard` or `undo`. `Story::resource()` declares its
 
 `->missingHeadline()` gives a verb its own sentence for once it is redundant:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -248,8 +245,7 @@ A verb with no `missingHeadline()` has `null` in both.
 `->forgetWhenMissing()` deletes a verb's activities once they are redundant and
 the deletion is permanent. A viewed order is no news once the order is gone:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -303,8 +299,8 @@ its morph alias in place of the class.
 
 When the activities themselves must go, remove them before the model:
 
-```php
-// app/Http/Controllers/AccountController.php, destroy()
+```php memo="app/Http/Controllers/AccountController.php"
+// destroy()
 $user->forceDeleteFromFeed();   // every activity involving the user, permanently
 $user->forceDelete();
 ```

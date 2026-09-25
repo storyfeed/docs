@@ -16,7 +16,7 @@ Generate a resource Story class before adding its verb methods:
 php artisan make:story OrderStory --model=Order
 ```
 
-```php
+```php memo="app/Stories/OrderStory.php"
 <?php
 
 namespace App\Stories;
@@ -34,8 +34,7 @@ class OrderStory
 }
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
@@ -48,8 +47,8 @@ Story::resource(Order::class, OrderStory::class);
 Publish by the verb's name:
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample context :items="[scenes.order]" />
@@ -86,8 +85,7 @@ FeedVerb, or disable storyfeed.verbs.strict.
 Old rows keep their headline only while their verb stays declared, so keep the
 method:
 
-```php
-// app/Stories/OrderStory.php
+```php memo="app/Stories/OrderStory.php"
 // nothing publishes `print` any more; old rows still read
 public function print(): string
 {
@@ -101,7 +99,7 @@ public function print(): string
 
 A verb's group headline for its type belongs beside its headline:
 
-```php
+```php memo="app/Stories/OrderStory.php"
 <?php
 
 namespace App\Stories;

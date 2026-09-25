@@ -38,8 +38,7 @@ ready to render or to return from a route.
 
 Return the feed from a route:
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
@@ -178,8 +177,7 @@ previous page's `next_cursor` back to get the next one:
 
 ### Reading the Next Page
 
-```php
-// routes/web.php
+```php memo="routes/web.php"
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;

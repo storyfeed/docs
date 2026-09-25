@@ -22,6 +22,32 @@ export default defineConfig({
 
   markdown: {
     config(md) {
+      // Strip before code-group titles are read too: a memo may contain [brackets].
+      md.core.ruler.push('code-memo', (state) => {
+        for (const token of state.tokens) {
+          if (token.type !== 'fence') continue
+          const start = /(?:^|\s)memo=/.exec(token.info)
+          if (!start) continue
+          const value = /^memo="([^"]*)"(?=\s|$)/.exec(token.info.slice(start.index).trimStart())
+          if (!value || !value[1].trim()) {
+            throw new Error('Code memo requires a non-empty, double-quoted value: memo="…"')
+          }
+          token.meta = { ...token.meta, memo: value[1] }
+          token.info = token.info.slice(0, start.index) + token.info.slice(start.index).replace(/^(\s*)memo="[^"]*"/, '$1')
+          if (/(?:^|\s)memo=/.test(token.info)) throw new Error('Only one memo is allowed per code block')
+        }
+      })
+
+      const fence = md.renderer.rules.fence!
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        const memo = tokens[idx].meta?.memo
+        const html = fence(tokens, idx, options, env, self)
+        if (memo === undefined) return html
+        // Keep button → language → pre siblings intact for VitePress's copy handler.
+        return html.replace(/^(<div class="[^"]*)"([^>]*>)/,
+          (_, opening, closing) => `${opening} sf-code-memo"${closing}<div class="sf-code-memo__bar" v-pre>${md.utils.escapeHtml(memo)}</div>`)
+      }
+
       /*
        * `::: headless` — one callout, one message, every word of it here. The
        * Quickstart introduces "headless" in prose; this box is the callback,

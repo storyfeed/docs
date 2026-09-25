@@ -20,8 +20,7 @@ const french = activity({ ...scenes.order, id: 'lc1',
 
 Define the template in your language file:
 
-```php
-// lang/fr/feed.php
+```php memo="lang/fr/feed.php"
 return [
     'order_placed' => ':actor a passé :object auprès de :target',
 ];
@@ -31,8 +30,7 @@ return [
 
 Pass the translation key to `FeedHeadline::trans()`:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\FeedHeadline;
@@ -58,8 +56,7 @@ decision. A missing key renders as the key.
 
 A group's noun takes a translation key the same way:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\FeedNoun;
@@ -67,8 +64,7 @@ use Storyfeed\FeedNoun;
 Story::for(Order::class)->fallback()->noun(FeedNoun::trans('nouns.order'));
 ```
 
-```php
-// lang/fr/nouns.php
+```php memo="lang/fr/nouns.php"
 return [
     'order' => 'commande|commandes',
 ];

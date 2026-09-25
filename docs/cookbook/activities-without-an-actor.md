@@ -20,7 +20,7 @@ no actor when nobody did.
 Without `by()`, Storyfeed resolves the logged-in user as the actor by default:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -48,7 +48,7 @@ class OrderController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -86,7 +86,7 @@ A job started from a console command or scheduler has no logged-in user.
 Without an actor scope, resolver or fallback party, its actor is `null`:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Jobs/RecordOrder.php"
 <?php
 
 namespace App\Jobs;
@@ -109,7 +109,7 @@ class RecordOrder implements ShouldQueue
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Jobs/RecordOrder.php"
 <?php
 
 namespace App\Jobs;
@@ -141,7 +141,7 @@ the event below does.
 
 Pass the user who acted with the event or job, then assign that user with `by()`:
 
-```php
+```php memo="app/Events/OrderPlaced.php"
 <?php
 
 namespace App\Events;
@@ -200,8 +200,8 @@ const expired = activity({
 
 <FeedExample context :items="[placed]" />
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -212,8 +212,7 @@ Storyfeed::verbs([
 ]);
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -227,7 +226,7 @@ Story::for(Order::class)->verb('pay')
 ## Recording a System Actor
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -256,7 +255,7 @@ class StripeWebhookController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -298,7 +297,7 @@ Use explicit anonymity when an activity must carry no actor, even in an authenti
 
 ### Explicit Anonymity
 
-```php
+```php memo="app/Http/Controllers/OrderController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -343,8 +342,7 @@ one of the calls above instead.
 
 ### Anonymous Headlines
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -352,7 +350,7 @@ Story::for(Order::class)->verb('expire')
     ->headline(':object expired at :target');
 ```
 
-```php
+```php memo="app/Console/Commands/ExpireOrders.php"
 <?php
 
 namespace App\Console\Commands;

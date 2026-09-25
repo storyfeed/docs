@@ -27,8 +27,7 @@ const weekly = { ...group({ id: 'period-week', verb: 'place', axis: 'repeat', co
 
 ## Setting a Grouping Period
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\Group;
@@ -73,8 +72,7 @@ accepts `hour`, `day`, `week`, or `month`, or a `Storyfeed\Grouping\Period` case
 
 ## Setting Default Periods
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
 
 Story::fallback()->groupedWeekly();
@@ -89,8 +87,7 @@ that combines verbs still separates activities with different periods.
 
 ## Calendar Periods and Batch Windows
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\Group;

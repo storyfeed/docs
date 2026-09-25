@@ -13,7 +13,7 @@ php artisan make:observer OrderObserver --model=Order
 In its `updated` method, publish only the transitions the feed should show:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Observers/OrderObserver.php"
 <?php
 
 namespace App\Observers;
@@ -47,7 +47,7 @@ class OrderObserver
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Observers/OrderObserver.php"
 <?php
 
 namespace App\Observers;
@@ -98,8 +98,8 @@ const confirmed = activity({
 
 <FeedExample context :items="[confirmed]" />
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -110,8 +110,7 @@ Storyfeed::verbs([
 ]);
 ```
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -129,8 +128,8 @@ Story::for(Order::class)->verb('complete')
 
 Register the observer in your service provider:
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use App\Models\Order;
 use App\Observers\OrderObserver;
 
@@ -157,7 +156,7 @@ explains why.
 
 When the transition already has a domain event, publish from the event:
 
-```php
+```php memo="app/Events/OrderConfirmed.php"
 <?php
 
 namespace App\Events;

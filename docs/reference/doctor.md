@@ -97,8 +97,8 @@ it.
 
 #### Declaring an Unrestricted Feed
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
@@ -196,7 +196,7 @@ an alias of its own in Relation::enforceMorphMap().
 
 To appear in the feed as its parent, return the parent's alias:
 
-```php
+```php memo="app/Models/PriorityOrder.php"
 <?php
 
 namespace App\Models;
@@ -268,7 +268,7 @@ php artisan make:story --from-doctor
 `--stubs` prints the definitions the findings imply, ready for
 `routes/feed.php`. After one order is placed with no definition:
 
-```php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -280,7 +280,7 @@ Story::for(Order::class)->verb('place')->headline(':actor placed :object');
 With that headline written, one user places three orders, and several users
 place an order for the same customer:
 
-```php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;

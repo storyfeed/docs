@@ -42,8 +42,8 @@ Record an activity where the fact happens. The builder reads in the order of
 the headline it produces:
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample context :items="[scenes.order]" />
@@ -101,7 +101,7 @@ Omit the actor and the authenticated user is recorded. When a webhook or a
 job records the fact, there is no authenticated user, so name the actor:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -130,7 +130,7 @@ class StripeWebhookController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -174,7 +174,7 @@ unknown.
 `->data()` adds values to the activity itself. They arrive in its node:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -205,7 +205,7 @@ class MenuItemPriceController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemPriceController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -245,7 +245,7 @@ class MenuItemPriceController extends Controller
 `->publishedAt()` backdates an activity, for imports and backfills:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Console/Commands/ImportPriceHistory.php"
 <?php
 
 namespace App\Console\Commands;
@@ -275,7 +275,7 @@ class ImportPriceHistory extends Command
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Console/Commands/ImportPriceHistory.php"
 <?php
 
 namespace App\Console\Commands;
@@ -317,7 +317,7 @@ class ImportPriceHistory extends Command
 `->objects()` records one activity about many objects:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PublishMenuController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -346,7 +346,7 @@ class PublishMenuController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PublishMenuController.php"
 <?php
 
 namespace App\Http\Controllers;

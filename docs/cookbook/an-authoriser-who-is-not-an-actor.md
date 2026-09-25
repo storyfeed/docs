@@ -14,8 +14,7 @@ menu, a release with no record of its own.
 
 ## Recording an Approval
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Photo;
 use Storyfeed\Facades\Story;
 
@@ -23,7 +22,7 @@ Story::for(Photo::class)->verb('approve')->headline(':actor approved :object');
 ```
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PhotoApprovalController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -55,7 +54,7 @@ class PhotoApprovalController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PhotoApprovalController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -92,8 +91,8 @@ class PhotoApprovalController extends Controller
 
 ## Filtering Approval Activities
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
+```php memo="app/Providers/AppServiceProvider.php"
+// boot()
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 

@@ -28,7 +28,7 @@ const pulse = [timeline[0], timeline[1]]
 *A cook adds a dish:*
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -56,7 +56,7 @@ class MenuItemController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -88,8 +88,7 @@ class MenuItemController extends Controller
 
 Declare which price changes to keep:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use Storyfeed\Facades\Story;
 
@@ -101,7 +100,7 @@ Story::for(MenuItem::class)->verb('reprice')
 *Later, in another request, they change its price:*
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -129,7 +128,7 @@ class MenuItemPriceController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemPriceController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -191,7 +190,7 @@ The order is placed, confirmed, amended, and placed again. Choose one storage po
 For the full timeline, each transition request runs this with its verb:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderTransitionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -222,7 +221,7 @@ class OrderTransitionController extends Controller
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderTransitionController.php"
 <?php
 
 namespace App\Http\Controllers;
@@ -257,8 +256,8 @@ class OrderTransitionController extends Controller
 
 The order's page reads the timeline:
 
-```php
-// app/Http/Controllers/OrderController.php, show()
+```php memo="app/Http/Controllers/OrderController.php"
+// show()
 use Storyfeed\Facades\Storyfeed;
 
 $timeline = Storyfeed::feed()->involving($order)->log()->get();
@@ -271,8 +270,7 @@ $timeline = Storyfeed::feed()->involving($order)->log()->get();
 To keep only the latest occurrence of each verb, declare that policy. The
 controller publishes the same way:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -285,8 +283,8 @@ Story::for(Order::class)->verb('confirm')
     ->keepLatest();
 ```
 
-```php
-// app/Http/Controllers/OrderController.php, show()
+```php memo="app/Http/Controllers/OrderController.php"
+// show()
 use Storyfeed\Facades\Storyfeed;
 
 $pulse = Storyfeed::feed()->involving($order)->live()->get();
@@ -308,8 +306,7 @@ context and `data` do not count.
 
 Use `per:` to choose the roles that identify a repeated occurrence:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use Storyfeed\Facades\Story;
 
@@ -328,8 +325,7 @@ Superseded rows are soft-deleted. To delete them outright, set
 
 Add `within:` when only nearby repetitions should replace one another:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use Storyfeed\Facades\Story;
 

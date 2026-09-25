@@ -29,8 +29,7 @@ const after = group({ id: 're1', verb: 'view', axis: 'repeat', count: 2, glyph: 
 
 A viewed order matters for a month, and then it doesn't:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -48,8 +47,7 @@ so `Story::verb('view')->keepFor(…)` applies to views of every type.
 
 `prune.after_days` sets a window for every verb that declares none.
 
-```php
-// config/storyfeed.php
+```php memo="config/storyfeed.php"
 'prune' => [
     'after_days' => 365,
 ],
@@ -59,8 +57,7 @@ so `Story::verb('view')->keepFor(…)` applies to views of every type.
 
 `keepForever()` exempts a verb from default retention:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -104,8 +101,7 @@ already past it.
 php artisan storyfeed:prune # Permanently deletes activities past their retention window.
 ```
 
-```php
-// routes/console.php
+```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('storyfeed:prune')->daily();

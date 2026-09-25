@@ -16,7 +16,7 @@ const marked = { ...placed, data: { reviewed: true } }
 
 ## Defining Story Middleware
 
-```php
+```php memo="app/StoryMiddleware/MarkReviewed.php"
 <?php
 
 namespace App\StoryMiddleware;
@@ -55,7 +55,7 @@ verb or object type.
 
 Register aliases and named groups in a service provider:
 
-```php
+```php memo="app/Providers/AppServiceProvider.php"
 <?php
 
 namespace App\Providers;
@@ -84,8 +84,7 @@ group above contains the `reviewed` alias; either name may be assigned to a stor
 
 Attach the class to the verb:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use App\StoryMiddleware\MarkReviewed;
 use Storyfeed\Facades\Story;
@@ -100,8 +99,7 @@ Story::for(Order::class)->verb('place')
 
 Use the group in the feed file:
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -141,8 +139,7 @@ method is read without constructor data.
 
 ### Batch Windows
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -178,8 +175,7 @@ existing declaration when trying one.
 
 ### Publishing Outside a Batch
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
@@ -198,7 +194,7 @@ The activity remains in the feed. It does not affect the actor's open batch.
 
 ## Preserving Actor and Context Values
 
-```php
+```php memo="app/StoryMiddleware/UseServiceActor.php"
 <?php
 
 namespace App\StoryMiddleware;
@@ -228,8 +224,7 @@ The party name must be [declared](/deeper/parties#declaring-parties).
 
 ## Caching and Inspecting Middleware
 
-```php
-// routes/feed.php
+```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 

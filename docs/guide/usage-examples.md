@@ -107,8 +107,7 @@ const posted = activity({
 A payment provider reports an order paid, and it has no row in your database.
 
 ::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/StripeWebhookController.php
+```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -117,8 +116,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// app/Http/Controllers/StripeWebhookController.php
+```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
