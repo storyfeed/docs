@@ -73,7 +73,7 @@ Storyfeed::verbs(Act::only(
 ));
 ```
 
-Register the cases you record, not the whole enum. Grammar coverage reports
+Register the cases you record, not the whole enum. Headline coverage reports
 every registered verb with no headline, so registering all seventy-two produces
 a finding for each verb the application never uses.
 

@@ -175,8 +175,8 @@ checks the verb alone. A missing headline is named by its key:
 
 ```text
 Storyfeed group headline coverage is incomplete:
-  - repeat.order.place (no aggregate headline)
-  - actors.place (no aggregate headline)
+  - repeat.order.place (no group headline)
+  - actors.place (no group headline)
 ```
 
 ## Testing Feedable Coverage
