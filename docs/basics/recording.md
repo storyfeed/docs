@@ -1,11 +1,7 @@
 # Recording Activities
 
-An activity is a verb plus the entities in its roles. You record one with an
-explicit call, wherever the fact happens: an action, an observer, an event
-listener.
-
 <script setup>
-import { who, where, orders, dishes, party, activity, scenes } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, party, activity, group, scenes } from '../.vitepress/theme/samples'
 
 const paid = activity({
   id: 'r2', verb: 'pay', glyph: 'credit-card',
@@ -19,10 +15,28 @@ const priced = activity({
   published_at: '2026-08-14T09:10:00.000000Z',
   headline_template: ':actor changed the price of :object',
   actor: who.cook, object: dishes.kottu,
+  data: { from: 1200, to: 1400 },
+})
+const composite = group({
+  id: 'recording-composite', verb: 'publish', axis: 'composite', count: 2, glyph: 'chef-hat',
+  published_at: '2026-08-14T09:20:00.000000Z',
+  headline_template: ':actor put :count dishes on the menu',
+  actors: [who.cook], objects: [dishes.cutlets, dishes.roti],
+  distinct: { actors: 1, objects: 2 },
 })
 </script>
 
-## The Builder
+## Introduction
+
+An activity is a verb plus the entities in its roles. You record one with an
+explicit call, wherever the fact happens: an action, an observer, an event
+listener.
+
+<a id="the-builder"></a>
+
+## Publishing Activities
+
+### Fluent Recording
 
 Record an activity where the fact happens. The builder reads in the order of
 the headline it produces:
@@ -35,13 +49,17 @@ the headline it produces:
 <FeedExample context :items="[scenes.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
-happened. `place` is this app's own word, not one the package knows. Declare the verb and its headline in `routes/feed.php`. The stored verb is
+happened. `place` is this app's own word, not one the package knows. Declare the verb and its headline in [the feed file](/basics/the-feed-file). The stored verb is
 the string you pass.
 
-`Storyfeed::record()` records the same activity in one call, with each role as
+### Named Arguments
+
+Select the Named Arguments tab above to use `Storyfeed::record()`. It records the same activity in one call, with each role as
 a named argument. The two calls record the same roles.
 
-## Roles
+<a id="roles"></a>
+
+## Assigning Roles
 
 | Role | Question It Answers | Example |
 |---|---|---|
@@ -56,7 +74,9 @@ a named argument. The two calls record the same roles.
 Direction decides the role. The same tablet is a `target` for an order sent
 **to** it and an `instrument` for an order taken **on** it.
 
-## Reading As a Sentence
+<a id="reading-as-a-sentence"></a>
+
+### Role Aliases
 
 Each role has a setter named for it: `actor()`, `object()`, `target()`,
 `context()`, `origin()`, `result()` and `instrument()`; `verb()` sets the verb.
@@ -73,7 +93,9 @@ Aliases let the call site read as the sentence:
 An alias and its setter record identical rows. `context` is set only by
 `->context()`; `->in()` and `->from()` set the target, not the container.
 
-## The Actor
+<a id="the-actor"></a>
+
+## Assigning the Actor
 
 Omit the actor and the authenticated user is recorded. When a webhook or a
 job records the fact, there is no authenticated user, so name the actor:
@@ -145,7 +167,9 @@ A string actor is a [party](/deeper/parties): a named participant with no
 model. When nothing names an actor, the activity has none, and the actor is
 unknown.
 
-## Extra Data and Backdating
+<a id="extra-data-and-backdating"></a>
+
+## Adding Activity Data
 
 `->data()` adds values to the activity itself. They arrive in its node:
 
@@ -216,6 +240,8 @@ class MenuItemPriceController extends Controller
 
 <FeedExample :items="[priced]" />
 
+## Setting the Publication Time
+
 `->publishedAt()` backdates an activity, for imports and backfills:
 
 ::: code-group
@@ -281,7 +307,12 @@ class ImportPriceHistory extends Command
 ```
 :::
 
-## Recording Many Objects At Once
+
+<FeedExample :items="[priced]" />
+
+<a id="recording-many-objects-at-once"></a>
+
+## Recording Multiple Objects
 
 `->objects()` records one activity about many objects:
 
@@ -345,4 +376,6 @@ class PublishMenuController extends Controller
 ```
 :::
 
-[Composites](/deeper/composites) covers how that activity reads and groups.
+<FeedExample :items="[composite]" />
+
+With the group headline defined, the selected dishes read as one group. [Composites](/deeper/composites) covers how that activity reads and groups.

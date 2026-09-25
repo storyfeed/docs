@@ -1,8 +1,5 @@
 # Feedable Models
 
-A model that appears in an activity, as its actor, object, target or context,
-implements `Feedable`. It gives the feed a label to print and a link to follow.
-
 <script setup>
 import { who, where, orders, dishes, notes, photos, activity, group } from '../.vitepress/theme/samples'
 
@@ -46,7 +43,14 @@ const scoped = [
 ]
 </script>
 
-## Making a Model Feedable
+## Introduction
+
+A model that appears in an activity, as its actor, object, target or context,
+implements `Feedable`. It gives the feed a label to print and a link to follow.
+
+<a id="making-a-model-feedable"></a>
+
+## Making Models Feedable
 
 ```php
 <?php
@@ -72,7 +76,11 @@ given. The snapshot is taken when an activity is published, and refreshed every
 time the model saves. The feed reads those stored values. A resolver can also request the current
 model when it needs live values.
 
-## The Default Label
+## Defining Entity Values
+
+<a id="the-default-label"></a>
+
+### Default Labels
 
 A model that sets no label gets the first of these that it has:
 
@@ -82,6 +90,8 @@ A model that sets no label gets the first of these that it has:
 | its `title` attribute | `Spring Menu` |
 | its registered noun and its key | `Dish #42` |
 | its class name and its key | `Order #1042` |
+
+### Custom Labels
 
 To guess differently across the whole app, register a guesser in a service
 provider. Returning `null` falls through to the list above:
@@ -121,7 +131,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-## Describing the Snapshot
+<a id="describing-the-snapshot"></a>
 
 `describeFeed()` says what the snapshot holds:
 
@@ -151,10 +161,43 @@ class Order extends Model implements Feedable
 adds to it, and whatever it leaves unset stays empty, except the label, which
 is guessed.
 
-## The Link
+### Snapshot Data
 
-A link is resolved when the feed is read. There is no model then, only the
-snapshot, so the link is registered in `booted()`:
+Use `describeFeed()` to store values that a media resolver needs later:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()->label($this->name)->data([
+            'mediaType' => $this->photo_mime,
+            'width' => $this->photo_width,
+            'height' => $this->photo_height,
+        ]);
+    }
+}
+```
+
+The feed stores these values in the entity snapshot. [Images](#images) shows how a resolver uses them.
+
+## Resolving Links and Images
+
+<a id="the-link"></a>
+
+### Links
+
+A link is resolved when the feed is read. Register a resolver in `booted()` to build it from the stored snapshot:
 
 ```php
 <?php
@@ -189,20 +232,37 @@ class Order extends Model implements Feedable
 key, the id or slug `route()` expects. A string is the URL; `null` is no link.
 The URL is built on every read, so a changed route never leaves a stale link.
 
-## A Link Per Feed
+<a id="a-link-per-feed"></a>
+
+### Links for Named Feeds
 
 `$context->feed()` is the name the feed was
 [registered](/basics/named-feeds) under, so one snapshot can link somewhere
 different on each surface, or nowhere:
 
 ```php
-// app/Models/Order.php, booted()
-static::feedMediaUsing(fn ($context) => match ($context->feed()) {
-    'kitchen' => route('kitchen.ticket', $context->routeKey()),
-    'customer' => route('orders.status', $context->routeKey()),
-    // an ad-hoc feed reports no name; without this arm the match throws
-    default => null,
-});
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(fn ($context) => match ($context->feed()) {
+            'kitchen' => route('kitchen.ticket', $context->routeKey()),
+            'customer' => route('orders.status', $context->routeKey()),
+            // an ad-hoc feed reports no name; without this arm the match throws
+            default => null,
+        });
+    }
+}
 ```
 
 On the `kitchen` feed:
@@ -216,25 +276,114 @@ On a feed with no name:
 The name comes from the feed's registration, not from the request, so a link
 resolves the same way in a queued job, the console and a test.
 
-## Images
+### Images
 
-The closure's second argument is the entity's media. Fill its slots and
-return it:
+The media resolver can fill a preview as well as a link. This model uses the stored image dimensions on the customer feed:
 
-```php
-// app/Models/MenuItem.php, booted()
-static::feedMediaUsing(fn ($context, $media) => $media
-    ->url(route('menu.show', $context->routeKey()))
-    ->preview(route('menu.photo', $context->routeKey()))
-);
+<a id="a-complete-model"></a>
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedImage;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
+            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
+            'customer' => $media
+                ->url(route('menu.show', $context->routeKey()))
+                ->preview(FeedImage::make()
+                    ->src(route('menu.photo', $context->routeKey()))
+                    ->mediaType($context->data('mediaType'))
+                    ->width($context->data('width'))
+                    ->height($context->data('height'))
+                    ->alt($context->label())
+                ),
+            default => null,
+        });
+    }
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->label($this->name)
+            ->data([
+                // the intrinsic facts a thumbnail needs,
+                // stored once, read on every render
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ]);
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedImage;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
+            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
+            'customer' => $media
+                ->url(route('menu.show', $context->routeKey()))
+                ->preview(FeedImage::make(
+                    src: route('menu.photo', $context->routeKey()),
+                    mediaType: $context->data('mediaType'),
+                    width: $context->data('width'),
+                    height: $context->data('height'),
+                    alt: $context->label(),
+                )
+                ),
+            default => null,
+        });
+    }
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->label($this->name)
+            ->data([
+                // the intrinsic facts a thumbnail needs,
+                // stored once, read on every render
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ]);
+    }
+}
+```
+:::
 
 <FeedExample :items="withImage" />
 
-`url()` is the link, and `preview()` is a picture of the entity. Every slot is
-listed in the [Feedable API](/reference/feedable) reference.
+`$context->data()` reads a snapshot value and returns `null` for a missing key. `preview()` supplies an image; `url()` supplies the link. See [Feedable API](/reference/feedable) for all media slots.
 
-## Writing `toFeed()` By Hand
+<a id="writing-tofeed-by-hand"></a>
+
+## Implementing the Feedable Contract
 
 `toFeed()` and `feedMedia()` are the two methods of the `Feedable` contract.
 `InteractsWithFeed` writes them from `describeFeed()` and `feedMediaUsing()`.
@@ -310,7 +459,9 @@ class Order extends Model implements Feedable
 
 A method the model writes takes precedence over the trait's.
 
-## Models You Don't Own
+<a id="models-you-don-t-own"></a>
+
+## Registering External Models
 
 A model from another package can't implement `Feedable`. Register it in a
 service provider instead:
@@ -338,7 +489,9 @@ Register the exact class the package creates, because a model's events fire
 under its own class name. A class that already implements `Feedable` can't
 also be registered.
 
-## The Model's Own Feed
+<a id="the-model-s-own-feed"></a>
+
+## Reading a Model's Feed
 
 `InteractsWithFeed` also gives the model a feed of everything it took part in:
 
@@ -353,7 +506,9 @@ $kitchen->storyfeed()->get();
 
 It is the same builder as `Storyfeed::feed()->involving($kitchen)->get()`.
 
-## Morph Aliases
+<a id="morph-aliases"></a>
+
+## Defining Morph Aliases
 
 Storyfeed stores morph aliases, never class names, so entities survive a
 namespace change. Enforce a map:
@@ -376,61 +531,6 @@ Relation::enforceMorphMap([
     'user' => User::class,
 ]);
 ```
-
-## A Complete Model
-
-Everything above in one class, with a photo preview on the customer's feed:
-
-```php
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedImage;
-
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
-            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
-            'customer' => $media
-                ->url(route('menu.show', $context->routeKey()))
-                ->preview(FeedImage::make()
-                    ->src(route('menu.photo', $context->routeKey()))
-                    ->mediaType($context->data('mediaType'))
-                    ->width($context->data('width'))
-                    ->height($context->data('height'))
-                    ->alt($context->label())
-                ),
-            default => null,
-        });
-    }
-
-    public function describeFeed(): void
-    {
-        $this->feedEntity()
-            ->label("{$this->code} {$this->name}")   // how the kitchen names a dish
-            ->data([
-                // the intrinsic facts a thumbnail needs,
-                // stored once, read on every render
-                'mediaType' => $this->photo_mime,
-                'width' => $this->photo_width,
-                'height' => $this->photo_height,
-            ]);
-    }
-}
-```
-
-`$context->data()` reads what the snapshot stored; a key it did not store
-reads as `null`.
-
-<FeedExample :items="withImage" />
 
 ::: headless
 :::

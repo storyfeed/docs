@@ -87,7 +87,9 @@ const oneActivity = [
 ]
 </script>
 
-## What Is an Activity?
+<a id="what-is-an-activity"></a>
+
+## Activities
 
 An activity is a recorded fact, shaped like a sentence with named roles:
 
@@ -111,7 +113,7 @@ The summary headline of the activity may take different forms, but the underlyin
 The recorded verb is still `place`, whichever headline describes it.
 
 
-## Examples of Activities
+<a id="examples-of-activities"></a>
 
 <FeedExample context :items="oneActivity">
   <template #annotations="{ node }">
@@ -123,12 +125,31 @@ In the question, the headline names the **target**, not the object. The object
 is the note, and its label is the note's whole text; the dish is what the
 sentence needs.
 
-## Examples of Feeds
+## Recording Activities
 
-### As a Timeline
+After [installing Storyfeed](/guide/installation), record an activity where the order is placed:
+
+::: code-group
+<<< @/snippets/publish.php [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php [Named Arguments]
+:::
+
+<FeedExample :items="[oneActivity[1]]" />
+
+<a id="examples-of-feeds"></a>
+
+## Reading Feeds
+
+A feed reads recorded activities as individual rows or groups. [Reading Feeds](/basics/reading) describes the read modes.
+
+<a id="as-a-timeline"></a>
+
+### Timeline Feeds
 
 <FeedExample :items="log" />
 
-### As a Grouped Summary
+<a id="as-a-grouped-summary"></a>
+
+### Aggregated Feeds
 
 <FeedExample :items="summary" />

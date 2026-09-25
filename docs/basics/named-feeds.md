@@ -1,8 +1,5 @@
 # Named Feeds
 
-A named feed is a list of verbs you declare once and read by name. A
-customer's order page and the kitchen's screen can each read their own.
-
 <script setup>
 import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme/samples'
 
@@ -32,7 +29,16 @@ const kitchen = [
 const customer = kitchen.filter(node => ['place', 'confirm', 'ready'].includes(node.verb))
 </script>
 
-## Declaring a Feed
+## Introduction
+
+A named feed is a list of verbs you declare once and read by name. A
+customer's order page and the kitchen's screen can each read their own.
+
+## Defining Named Feeds
+
+<a id="declaring-a-feed"></a>
+
+### Registering a Closure
 
 Register each feed as a closure over the builder:
 
@@ -48,6 +54,8 @@ Storyfeed::feeds([
     'kitchen' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```
+
+### Reading a Named Feed
 
 Read it by name, from the facade or from the model:
 
@@ -72,7 +80,9 @@ $order->storyfeed('customer')->get();
 An unknown name throws `UnknownFeed`. A call site may change the mode, but not
 add verbs.
 
-## Verbs and Scope
+<a id="verbs-and-scope"></a>
+
+### Scoping Closure Feeds
 
 A name sets the **verbs**, not the **scope**. Scope each read with
 `involving()`, `context()` or `query()`:
@@ -85,50 +95,26 @@ Storyfeed::feed('customer')->get();                     // every order in the sy
 Storyfeed::feed('customer')->involving($order)->get();  // this order
 ```
 
-::: danger
-The first line shows a customer other people's orders.
-[Feed classes](#feed-classes) put the scope in the declaration, so it can't be
-forgotten.
-:::
+> [!WARNING]
+> The first line shows a customer other people's orders.
+> [Feed classes](#feed-classes) put the scope in the declaration, so it can't be
+> forgotten.
 
-## Filtering Verbs
+## Generating Feed Classes
 
-Both work on any read, named or not:
+Generate a feed class when each read needs a subject, such as an order:
 
-```php
-// a controller, or wherever the feed is read
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::feed()->only(['place', 'ready'])->get();
-// ready, reprice, confirm
-Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();
-Storyfeed::feed()->except(['note'])->get();
+```bash
+php artisan make:feed Customer --subject='App\Models\Order' --role=involving --only=place,confirm,ready --mode=log
 ```
 
-| | |
-|---|---|
-| accepts | verb strings and enum cases, mixed in one list |
-| `re*` | a trailing `*` is a prefix wildcard |
-| an unrecognised verb | never throws; a verb nobody records is a query matching nothing |
-| `only([])` | throws |
-| repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
+This creates `app/Feeds/CustomerFeed.php` with a typed constructor and a scope. `--role=involving` includes the order in any role; the generator's default role is `context`.
 
-On a named feed, `only()` can only narrow the declared list:
+<a id="feed-classes"></a>
 
-```php
-// a controller, or wherever the feed is read
-use Storyfeed\Facades\Storyfeed;
+## Writing Feed Classes
 
-// reads only 'place': 'note' is not in the declared list
-Storyfeed::feed('customer')->only(['place', 'note'])->get();
-```
-
-Groups count only the verbs the filter lets through.
-
-## Feed Classes
-
-A closure can't know which order it's for. A feed class takes that subject in
-its constructor:
+A feed class takes its subject in the constructor. Its `scope()` method uses that subject when reading:
 
 ```php
 <?php
@@ -157,30 +143,16 @@ class CustomerFeed extends Feed
 
 ```php
 // a controller, or wherever the feed is read
+use App\Feeds\CustomerFeed;
+
 CustomerFeed::make($order)->get();
 ```
 
 <FeedExample :items="customer" />
 
-Generate one with `php artisan make:feed Customer --subject=App\Models\Order`.
+### Defining Verbs and Read Modes
 
-| Hook | Declares | May Read Constructor State |
-|---|---|---|
-| `define()` | what the feed is about: verbs, mode, limit | no |
-| `scope()` | the values only a request supplies | yes |
-
-A call site can't change what `scope()` set, but may narrow the read:
-
-```php
-// a controller, or wherever the feed is read
-// throws FeedMisconfigured
-CustomerFeed::make($order)->involving($other);
-
-// fine
-CustomerFeed::make($order)->only(['place'])->summary();
-```
-
-A feed with no subject declares no constructor and no `scope()`:
+`define()` sets the vocabulary and read mode without reading constructor state. A feed with no subject declares no constructor and no `scope()`:
 
 ```php
 <?php
@@ -201,14 +173,39 @@ class KitchenFeed extends Feed
 
 ```php
 // a controller, or wherever the feed is read
+use App\Feeds\KitchenFeed;
+
 KitchenFeed::make()->get();
 ```
+
+### Scoping by Subject
+
+| Hook | Declares | May Read Constructor State |
+|---|---|---|
+| `define()` | what the feed is about: verbs, mode, limit | no |
+| `scope()` | the values only a request supplies | yes |
+
+A call site can't change what `scope()` set, but may narrow the read:
+
+```php
+// a controller, or wherever the feed is read
+// throws FeedMisconfigured
+CustomerFeed::make($order)->involving($other);
+
+// fine
+CustomerFeed::make($order)->only(['place'])->summary();
+```
+
+### Registering Classes
 
 Register classes and closures in one list:
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use App\Feeds\CustomerFeed;
+use App\Feeds\KitchenFeed;
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
     'customer' => CustomerFeed::class,     // named explicitly
@@ -219,7 +216,44 @@ Storyfeed::feeds([
 
 A feed class works without registering. Registering gives it a name.
 
-## Feeds and Access Control
+## Filtering Verbs
+
+Both work on any read, named or not:
+
+```php
+// a controller, or wherever the feed is read
+use App\Enums\OrderActivity;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->only(['place', 'ready'])->get();
+// ready, reprice, confirm
+Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();
+Storyfeed::feed()->except(['note'])->get();
+```
+
+| | |
+|---|---|
+| accepts | verb strings and enum cases, mixed in one list |
+| `re*` | a trailing `*` is a prefix wildcard |
+| an unrecognised verb | never throws; a verb nobody records is a query matching nothing |
+| `only([])` | throws |
+| repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
+
+On a named feed, `only()` can only narrow the declared list:
+
+```php
+// a controller, or wherever the feed is read
+use Storyfeed\Facades\Storyfeed;
+
+// reads only 'place': 'note' is not in the declared list
+Storyfeed::feed('customer')->only(['place', 'note'])->get();
+```
+
+Groups count only the verbs the filter lets through.
+
+<a id="feeds-and-access-control"></a>
+
+## Authorizing Feed Access
 
 A feed only filters rows.
 

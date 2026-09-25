@@ -13,12 +13,14 @@ const confirmed = activity({
 })
 </script>
 
+## Introduction
+
 A verb is the word your app records for what happened: a plain string, or a
 case of an enum.
 
-## Using Strings
+<a id="using-strings"></a>
 
-<FeedExample context :items="[placed]" />
+## Recording With Strings
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -39,7 +41,7 @@ class OrderController extends Controller
 
         Storyfeed::activity()
             ->by($request->user())
-            ->action('place', $order) // [!code focus]
+            ->action('place', $order)
             ->to($kitchen)
             ->publish();
 
@@ -65,7 +67,7 @@ class OrderController extends Controller
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::record(
-            verb: 'place', // [!code focus]
+            verb: 'place',
             object: $order,
             actor: $request->user(),
             target: $kitchen,
@@ -77,12 +79,17 @@ class OrderController extends Controller
 ```
 :::
 
+<FeedExample context :items="[placed]" />
+
 These verbs are free-form strings, and can be anything at all.
 
-## Using Your Own Enums
+<a id="using-your-own-enums"></a>
 
-In practice, passing loose strings may lead to typos and drift as an application grows. A
-common pattern is to define your verbs within an enum,
+## Recording With Enums
+
+### Defining a Backed Enum
+
+A backed enum gives your application a shared vocabulary:
 
 ```php
 <?php
@@ -97,19 +104,21 @@ enum OrderActivity: string
 }
 ```
 
-which can then be decorated with Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface,
+### Adding Fluent Recording
+
+Add Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface to record directly from an enum case:
 
 ```php
 <?php
 
 namespace App\Enums;
 
-use Storyfeed\Concerns\AsFeedVerb; // [!code focus]
-use Storyfeed\Contracts\FeedVerb; // [!code focus]
+use Storyfeed\Concerns\AsFeedVerb;
+use Storyfeed\Contracts\FeedVerb;
 
-enum OrderActivity: string implements FeedVerb // [!code focus]
+enum OrderActivity: string implements FeedVerb
 {
-    use AsFeedVerb; // [!code focus]
+    use AsFeedVerb;
 
     case Placed = 'place';
     case Confirmed = 'confirm';
@@ -117,7 +126,7 @@ enum OrderActivity: string implements FeedVerb // [!code focus]
 }
 ```
 
-to allow fluent recording of activities using the enum. `Storyfeed::record()` takes the enum either way:
+`Storyfeed::record()` accepts the backed enum with or without the trait:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -125,7 +134,7 @@ to allow fluent recording of activities using the enum. `Storyfeed::record()` ta
 
 namespace App\Http\Controllers;
 
-use App\Enums\OrderActivity; // [!code focus]
+use App\Enums\OrderActivity;
 use App\Http\Requests\PlaceOrderRequest;
 use App\Models\Kitchen;
 use Illuminate\Http\RedirectResponse;
@@ -136,7 +145,7 @@ class OrderController extends Controller
     {
         $order = $kitchen->orders()->create($request->validated());
 
-        OrderActivity::Placed->by($request->user()) // [!code focus]
+        OrderActivity::Placed->by($request->user())
             ->object($order)
             ->to($kitchen)
             ->publish();
@@ -151,7 +160,7 @@ class OrderController extends Controller
 
 namespace App\Http\Controllers;
 
-use App\Enums\OrderActivity; // [!code focus]
+use App\Enums\OrderActivity;
 use App\Http\Requests\PlaceOrderRequest;
 use App\Models\Kitchen;
 use Illuminate\Http\RedirectResponse;
@@ -164,7 +173,7 @@ class OrderController extends Controller
         $order = $kitchen->orders()->create($request->validated());
 
         Storyfeed::record(
-            verb: OrderActivity::Placed, // [!code focus]
+            verb: OrderActivity::Placed,
             object: $order,
             actor: $request->user(),
             target: $kitchen,
@@ -176,11 +185,12 @@ class OrderController extends Controller
 ```
 :::
 
+
+<FeedExample context :items="[placed]" />
+
 ## Using Storyfeed's Verbs
 
 Storyfeed also ships common verbs, as the `Storyfeed\Act` enum.
-
-<FeedExample context :items="[confirmed]" />
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -191,7 +201,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Act; // [!code focus]
+use Storyfeed\Act;
 
 class ConfirmOrderController extends Controller
 {
@@ -199,7 +209,7 @@ class ConfirmOrderController extends Controller
     {
         $order->update(['confirmed_at' => now()]);
 
-        Act::Confirm->by($request->user()) // [!code focus]
+        Act::Confirm->by($request->user())
             ->object($order)
             ->publish();
 
@@ -216,7 +226,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Act; // [!code focus]
+use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 class ConfirmOrderController extends Controller
@@ -226,7 +236,7 @@ class ConfirmOrderController extends Controller
         $order->update(['confirmed_at' => now()]);
 
         Storyfeed::record(
-            verb: Act::Confirm, // [!code focus]
+            verb: Act::Confirm,
             object: $order,
             actor: $request->user(),
         );
@@ -236,6 +246,8 @@ class ConfirmOrderController extends Controller
 }
 ```
 :::
+
+<FeedExample context :items="[confirmed]" />
 
 The stored verb is the case's value, `confirm`, so the row is the same as one
 recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.
