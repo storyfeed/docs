@@ -183,7 +183,6 @@ export default defineConfig({
         items: [
           { text: 'Reading Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
-          { text: 'Latest Activity per Object', link: '/deeper/latest-per-object' },
           { text: 'The Payload', link: '/basics/the-payload' },
           { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
           { text: 'Rendering', link: '/basics/rendering' },

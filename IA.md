@@ -409,7 +409,6 @@ Choose the feed, then inspect it, then draw it.
 
 - ✅ Reading Feeds — the builder, the one plain definition of a group, read modes, filtering, `query()`, pagination
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
-- ✅ Latest Activity per Object (`deeper/latest-per-object`) — proposal: `latestPer()` is not in core yet
 - ✅ The Payload — the envelope, one activity node, one group node; every key is in Reference › The Payload Contract
 - ✅ Anatomy of a Row — the zones of a row and the payload values that fill them
 - ✅ Rendering — the smallest loop, links, what a glyph means, degraded entities, groups, details

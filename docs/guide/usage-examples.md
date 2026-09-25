@@ -68,7 +68,7 @@ $order->storyfeed()->log()->get();
 
 <FeedExample :items="orderStory" />
 
-More in [Latest Activity per Object](/deeper/latest-per-object).
+More in [Reading Feeds](/basics/reading#filtering-by-entity-or-role).
 
 <a id="grouping-activities"></a>
 
