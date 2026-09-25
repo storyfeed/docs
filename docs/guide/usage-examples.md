@@ -21,7 +21,6 @@ const previews = logOf([withThread, withKeyValue, content.photo, content.product
 
 const actorless = logOf(Object.values(scene.cookbook.actorless))
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)
-const board = logOf(scene.deeper.latestPerObject.board)
 const live = liveOf(scene.glance)
 const daily = summaryOf(scene.glance)
 const weekly = summaryOf(everything(), 'week')
@@ -68,16 +67,6 @@ $order->storyfeed()->log()->get();
 ```
 
 <FeedExample :items="orderStory" />
-
-More in [Latest Activity per Object](/deeper/latest-per-object).
-
-## The Latest for Each Order
-
-```php memo="A controller, or wherever the feed is read"
-Storyfeed::feed()->involving($shop)->latestPer('object')->log()->get();
-```
-
-<FeedExample :items="board" />
 
 More in [Latest Activity per Object](/deeper/latest-per-object).
 
