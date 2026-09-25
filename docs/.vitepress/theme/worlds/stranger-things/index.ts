@@ -1,6 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
-import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT } from './manifest'
+import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
+  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -78,6 +79,20 @@ const build = <K extends string>(source: Record<K, string>, make: (id: string, l
 
 const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
 
+// ── Bodies ───────────────────────────────────────────────────────────────────
+// A body belongs to its entity, so it is set here, once, and every row that
+// names the thing shows the same preview. Each names its subject, even where
+// the headline already does. Its form follows what the thing is: a record is a
+// card, a description is titled Prose, a signed document is a File, a passage
+// from a paper is an Excerpt. Orders carry none: the order is the docs'
+// standard example, and its pages teach the bare `toFeed()`.
+const detail = (key: string, value: string, verbatim = false) => ({ key, value, verbatim, missing: null })
+const card = (title: string, items: ReturnType<typeof detail>[]) =>
+  [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title, items }]
+const prose = (title: string, content: string) =>
+  [{ $body: 'Storyfeed/Body/Prose', $v: 1, content, mediaType: 'text/plain', verbatim: false, title }]
+
+
 const cast = build(CAST, (id, label) => user(id, label))
 const venues = build(VENUES, (id, label, key) => entity('venue', id, label, `/venues/${slug(key)}`))
 const fare = build(FARE, (id, label, key) => entity('menu_item', id, label, `/menu/${slug(key)}`))
@@ -115,13 +130,54 @@ const holding: Record<keyof typeof HOLDINGS, [string, string]> = {
   pretzelBag: ['menu_item', '/menu/pretzel-bag'],
 }
 const things = build(HOLDINGS, (id, label, key) => entity(holding[key][0], id, label, holding[key][1]))
+
+// The board's tasks carry what the task asks for: the S3 plot in the board's
+// words (uncertain: `music` and `door` are this catalogue's reading of the plot).
+for (const key of Object.keys(TASKS) as (keyof typeof TASKS)[]) tasks[key] = { ...tasks[key], body: prose(TASKS[key], TASK_NOTES[key]) }
+// A ticket carries its report, titled by the ticket's number. The reports are ours.
+for (const key of Object.keys(TICKETS) as (keyof typeof TICKETS)[])
+  tickets[key] = { ...tickets[key], body: prose(`Ticket #${tickets[key].id}`, TICKET_REPORTS[key]) }
+// A signed document is its file. Sizes are ours.
+const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, internship: 61870, farmSale: 132406 }
+for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
+  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+    name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
+// Nancy's story, quoted from her draft (SOURCES.post: Driscoll's rats, S3E2). The wording is ours.
+things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
+  text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom, truncated: true }] }
+// The film is a real one (SOURCES.cinema): its facts, never its poster.
+things.film = { ...things.film, body: card(HOLDINGS.film, [
+  detail('Director', ENTITY_CONTENT.director), detail('Rated', 'R'), detail('Showing', ENTITY_CONTENT.showing)]) }
+things.repo = { ...things.repo, body: card(HOLDINGS.repo, [
+  detail('About', ENTITY_CONTENT.repoAbout), detail('Visibility', 'Public')]) }
 // The things that have a photograph of their own (see PHOTO_CREDITS below).
 const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel: 'ferris', fireworks: 'fireworks', pretzelBag: 'pretzels' }
 
 /** Minted, not named: orders, pull requests, invoices and photos are numbered. */
 const order = (n: number) => entity('order', String(n), `Order #${n}`, `/orders/${n}`)
-const pull = (n: number) => entity('pull_request', String(n), `Pull request #${n}`, `/pulls/${n}`)
-const invoice = (n: number) => entity('invoice', String(n), `Scoops Ahoy invoice #${n}`, `/invoices/${n}`)
+
+// uncertain: the branches, file counts and titles are invented for the cameo merges.
+const PULLS: Record<number, [string, number]> = {
+  1: ['antenna-mount', 3], 2: ['transmitter', 5], 3: ['utah-range', 2], 4: ['tape-input', 4], 5: ['static-filter', 2],
+}
+const pull = (n: number) => entity('pull_request', String(n), `Pull request #${n}`, `/pulls/${n}`, {
+  body: card(`Pull request #${n}`, [
+    detail('Title', PULL_TITLES[n as keyof typeof PULL_TITLES]),
+    detail('Branch', PULLS[n][0], true),
+    detail('Files changed', String(PULLS[n][1])),
+  ]) })
+
+// uncertain: the amounts and who is billed are invented; Stripe is the splice.
+const INVOICES: Record<number, string> = {
+  1981: '$412.50', 1982: '$388.00', 1983: '$455.25', 1984: '$520.75', 1985: '$497.00', 1986: '$610.40', 1987: '$96.00', 1988: '$148.80',
+}
+const invoice = (n: number) => entity('invoice', String(n), `Scoops Ahoy invoice #${n}`, `/invoices/${n}`, {
+  body: card(`Scoops Ahoy invoice #${n}`, [
+    detail('Amount', INVOICES[n]),
+    detail('Billed to', VENUES.mall),
+    detail('Reference', `INV-${n}`, true),
+  ]) })
+
 // ── Photographs ──────────────────────────────────────────────────────────────
 // Free photos from Unsplash (unsplash.com/license), self-hosted under
 // public/media/worlds/stranger-things/, 960x720. Stock pictures of ordinary
@@ -172,7 +228,6 @@ fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
 // details card, because its object is the item, not a picture. A body is
 // self-contained: it names its item even though the headline does too.
 const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: mediaOf('sundae') })
-const detail = (key: string, value: string) => ({ key, value, verbatim: false, missing: null })
 const menuProduct = { ...fare.butterscotch,
   body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title: fare.butterscotch.label, items: [
     detail('Price', APP_CONTENT.price),

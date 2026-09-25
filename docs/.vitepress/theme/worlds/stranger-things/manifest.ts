@@ -146,3 +146,50 @@ export const APP_CONTENT = {
   section: 'Sundaes',
   available: 'At the counter',
 }
+
+/**
+ * What the cast's apps hold about their things: the bodies under a row. Each
+ * belongs to its entity, so every row that names the thing shows the same one.
+ * Illustrative app content, not dialogue; sources and hedges are in index.ts.
+ */
+export const TASK_NOTES = {
+  record:    'Tape the Russian message Cerebro picked up on Weathertop.',
+  crack:     'Work out what the Russian message on the tape is saying.',
+  music:     'Pick out the mall in the sounds behind the message on the tape.',
+  locations: 'Match each line of the message to a place in the mall.',
+  ducts:     'Crawl through the ducts into the locked storeroom.',
+  door:      'Unlock the storeroom door from the inside so the others can get in.',
+  elevator:  'Find out where the elevator in the storeroom goes down to.',
+  planck:    'Get Planck\'s constant to open the safe. Suzie knows it.',
+}
+
+/** Support tickets, as their reporter wrote them. */
+export const TICKET_REPORTS = {
+  magnets: 'Every magnet on the store display fell off at once, then did it again an hour later.',
+  power:   'The power went out across town this evening. It came back on its own a minute later.',
+}
+
+/** Pull requests merged into cerebro, by number. */
+export const PULL_TITLES = {
+  1: 'Add the antenna mount',
+  2: 'Wire up the transmitter',
+  3: 'Boost the range to reach Utah',
+  4: 'Add a tape recorder input',
+  5: 'Filter out the static',
+}
+
+/** Documents the cast sign, as files. */
+export const DOCUMENT_FILES = {
+  contract:   'scoops-ahoy-employment-contract.pdf',
+  internship: 'hawkins-post-internship-agreement.pdf',
+  farmSale:   'hess-farm-sale-agreement.pdf',
+}
+
+/** The rest of the bodies. */
+export const ENTITY_CONTENT = {
+  ratStory:     'Rats have been getting into Doris Driscoll\'s cellar and eating her fertilizer, bag after bag.',
+  ratStoryFrom: 'Draft for the Hawkins Post',
+  director:     'George A. Romero',
+  showing:      'Sneak preview',
+  repoAbout:    'The radio built at camp, to reach Utah from Weathertop',
+}
