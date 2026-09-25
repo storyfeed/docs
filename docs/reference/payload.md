@@ -91,7 +91,7 @@ tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
     // the deleted model's morph alias
     "formerType": "order",
     // ISO 8601, or null when unknown
-    "deleted": "2026-09-23T12:00:00.000000Z",
+    "deleted": "1985-07-04T12:00:00.000000Z",
     // true when the trickle found the deletion
     "approximate": false,
     // reserved; always null
@@ -168,7 +168,7 @@ and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 The resolver's context names the feed being read, so one snapshot can resolve
 to a different URL on each feed. The name comes from the feed registry, never
-from the request. A kitchen feed can carry a signed operational link that the
+from the request. A shop feed can carry a signed operational link that the
 customer feed never shows.
 
 A node does not say which feed produced it, so anything that stores or forwards
@@ -194,7 +194,7 @@ and `media: null`, and the exception is reported server-side.
   // public ULID (uid), not the internal PK
   "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
-  "published_at": "2026-08-10T14:03:22Z",
+  "published_at": "1985-07-04T14:03:22Z",
   "headline_template": ":actor confirmed :object for :target",
   // pre-rendered fallback; see below
   "headline": null,
@@ -251,7 +251,7 @@ declares one. A renderer may show either reading.
   "count": 5,
   "verb": "place",
   // max of members; the sort key
-  "published_at": "2026-08-10T14:03:22Z",
+  "published_at": "1985-07-04T14:03:22Z",
   "headline_template": ":actors ordered from :target",
   "headline": null,
   "glyph": "shopping-bag",

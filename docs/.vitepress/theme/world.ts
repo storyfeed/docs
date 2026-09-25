@@ -181,6 +181,14 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const glanceIds = unique([...s.busyPlace, ...s.repeat, s.distant, ...s.cameo, ...s.around])
 
   const scene = {
+    cookbook: {
+      actorless: { anonymous: one(s.cookbook.actorless.anonymous), paid: one(s.cookbook.actorless.paid), expired: one(s.cookbook.actorless.expired) },
+      transitions: { confirmed: one(s.cookbook.transitions.confirmed), timeline: many(s.cookbook.transitions.timeline) },
+      pricing: many(s.cookbook.pricing),
+      deletion: one(s.cookbook.deletion),
+      discussion: one(s.cookbook.discussion),
+      grouped: { repeat: many(s.cookbook.grouped.repeat), actors: many(s.cookbook.grouped.actors) },
+    },
     /** A customer places an order with the shop: the standard example. */
     order: one(s.order),
     /** A customer asks about a product, with a note. */

@@ -17,7 +17,7 @@ nothing.
 | someone typing, or coming online | no | it stops being true within seconds |
 | a field-level audit row | no | an audit log is its own surface |
 | a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| a question asked about a dish | yes | the sentence names what was asked about |
+| a question asked about a menu item | yes | the sentence names what was asked about |
 | an order placed | yes | |
 | an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
 
@@ -47,7 +47,7 @@ class OrderPlaced implements PublishesToFeed
         return Storyfeed::activity()
             ->by($this->customer)
             ->action('place', $this->order)
-            ->to($this->order->kitchen);
+            ->to($this->order->shop);
     }
 }
 ```
@@ -98,9 +98,9 @@ class DishQuestionController extends Controller
 {
     public function store(
         AskQuestionRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $note = $dish->notes()->create([
+        $note = $product->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
         ]);
@@ -108,7 +108,7 @@ class DishQuestionController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action('ask', $note)
-            ->on($dish)
+            ->on($product)
             ->publish();
 
         return back();
@@ -130,9 +130,9 @@ class DishQuestionController extends Controller
 {
     public function store(
         AskQuestionRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $note = $dish->notes()->create([
+        $note = $product->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
         ]);
@@ -141,7 +141,7 @@ class DishQuestionController extends Controller
             verb: 'ask',
             object: $note,
             actor: $request->user(),
-            target: $dish,
+            target: $product,
         );
 
         return back();
@@ -151,17 +151,11 @@ class DishQuestionController extends Controller
 :::
 
 <script setup>
-import { who, dishes, notes, activity } from '../.vitepress/theme/samples'
-
-const question = activity({
-  id: 'ck7', verb: 'ask', glyph: 'message-circle',
-  published_at: '2026-08-14T14:28:00.000000Z',
-  headline_template: ':actor asked about :target',
-  actor: who.customer4, object: notes.spice, target: dishes.chickenCurry,
-})
+import { scene } from '../.vitepress/theme/world'
+const question = scene.question
 </script>
 
-<FeedExample context :items="[question]">
+<FeedExample :items="[question]">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 
@@ -256,9 +250,9 @@ class DishQuestionController extends Controller
 {
     public function store(
         AskQuestionRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $note = $dish->notes()->create([
+        $note = $product->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
         ]);
@@ -266,7 +260,7 @@ class DishQuestionController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action('ask', $note)
-            ->on($dish)
+            ->on($product)
             ->thread(FeedThread::make(text: $note->body))
             ->publish();
 
@@ -290,9 +284,9 @@ class DishQuestionController extends Controller
 {
     public function store(
         AskQuestionRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $note = $dish->notes()->create([
+        $note = $product->notes()->create([
             'user_id' => $request->user()->id,
             'body' => $request->validated('body'),
         ]);
@@ -301,7 +295,7 @@ class DishQuestionController extends Controller
             verb: 'ask',
             object: $note,
             actor: $request->user(),
-            target: $dish,
+            target: $product,
             thread: FeedThread::make(text: $note->body),
         );
 
@@ -350,7 +344,7 @@ class DiscussionReplyController extends Controller
 {
     public function store(
         StoreReplyRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
         Discussion $discussion,
     ): RedirectResponse {
         $reply = $discussion->replies()->create([
@@ -361,7 +355,7 @@ class DiscussionReplyController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action('reply', $discussion)
-            ->on($dish)
+            ->on($product)
             ->thread(FeedThread::make(text: $reply->body))
             ->publish();
 
@@ -386,7 +380,7 @@ class DiscussionReplyController extends Controller
 {
     public function store(
         StoreReplyRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
         Discussion $discussion,
     ): RedirectResponse {
         $reply = $discussion->replies()->create([
@@ -398,7 +392,7 @@ class DiscussionReplyController extends Controller
             verb: 'reply',
             object: $discussion,
             actor: $request->user(),
-            target: $dish,
+            target: $product,
             thread: FeedThread::make(text: $reply->body),
         );
 

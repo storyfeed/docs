@@ -121,6 +121,11 @@ const photo = (n: number) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos
 
 /** This pack's own verbs. The rest (place, ask, pay, merge…) are the engine's. */
 const VERBS: Record<string, VerbWording> = {
+  add: { glyph: 'ice-cream-cone', headline: ':actor added a menu item, :object' },
+  reprice: { glyph: 'tag', headline: ':actor changed the price of :object' },
+  remove: { glyph: 'circle-x', headline: ':actor removed :object from :target' },
+  expire: { glyph: 'circle-x', headline: ':object expired at :target' },
+  reply: { glyph: 'message-circle', headline: ':actor replied about :object' },
   serve:    { glyph: 'ice-cream-cone', headline: ':actor served :object', repeat: ':actor served :count orders' },
   call:     { glyph: 'radio', headline: ':actor radioed :target', repeat: ':actor radioed :target :count times' },
   file:     { glyph: 'newspaper', headline: ':actor filed :object with :target' },
@@ -347,6 +352,31 @@ const ROWS: Row[] = [
   row('k64', '1985-07-04 20:02', 'check_in', investigator, null, v.mall, 'S3E8'),
 ]
 
+// Cookbook examples use the existing on-screen roles and product (S3E2;
+// SOURCES.scoops / SOURCES.troop). Each action below is a modern-software
+// illustration, not an assertion that this transaction happened on screen.
+// uncertain: these app transactions and clock times are invented for teaching.
+const cookbookRow = (id: string, at: string, verb: string, actor: any, object: any, target: any = null) =>
+  row(`cookbook-${id}`, at, verb, actor, object, target, 'splice',
+    { uncertain: 'Illustrative software transaction, not an on-screen event.' })
+ROWS.push(
+  cookbookRow('anonymous', '1985-07-02 12:10', 'place', null, order(1035), v.scoops),
+  cookbookRow('paid', '1985-07-02 12:15', 'pay', stripe, order(1035)),
+  cookbookRow('expired', '1985-07-04 09:00', 'expire', null, order(1040), v.scoops),
+  cookbookRow('confirmed', '1985-07-02 12:20', 'confirm', scooper, order(1035)),
+  cookbookRow('replaced', '1985-07-02 12:30', 'place', scout, order(1035), v.scoops),
+  cookbookRow('added', '1985-06-30 10:00', 'add', scooper, fare.butterscotch),
+  cookbookRow('repriced', '1985-06-30 10:12', 'reprice', scooper, fare.butterscotch),
+  cookbookRow('removed', '1985-07-03 10:00', 'remove', scooper, fare.butterscotch, v.scoops),
+  cookbookRow('reply', '1985-07-02 12:10', 'reply', scout, { ...worldNotes.forLife, type: 'discussion', body: null }),
+  cookbookRow('repeat1', '1985-07-01 11:00', 'place', scout, order(1101), v.scoops),
+  cookbookRow('repeat2', '1985-07-01 11:01', 'place', scout, order(1102), v.scoops),
+  cookbookRow('repeat3', '1985-07-01 11:02', 'place', scout, order(1103), v.scoops),
+  cookbookRow('crowd1', '1985-07-01 12:00', 'place', scout, order(1104), v.scoops),
+  cookbookRow('crowd2', '1985-07-01 12:01', 'place', radio, order(1104), v.scoops),
+  cookbookRow('crowd3', '1985-07-01 12:02', 'place', linguist, order(1104), v.scoops),
+)
+
 // ── Roles and scenes ─────────────────────────────────────────────────────────
 
 
@@ -364,6 +394,14 @@ export default {
     service: stripe,
   },
   scenes: {
+    cookbook: {
+      actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
+      transitions: { confirmed: 'cookbook-confirmed', timeline: ['j84', 'cookbook-confirmed', 'cookbook-replaced'] },
+      pricing: ['cookbook-added', 'cookbook-repriced'],
+      deletion: 'cookbook-removed',
+      discussion: 'cookbook-reply',
+      grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
+    },
     order: 'j84',
     question: 'j85',
     otherApps: { task: 'j65', code: 'j75', billing: 'k22', signature: 'j01', support: 'j51', team: 'j89' },

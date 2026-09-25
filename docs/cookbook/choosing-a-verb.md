@@ -18,7 +18,7 @@ already does that.
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -26,14 +26,14 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::activity()
             ->by($request->user())
             ->action('place', $order)   // not 'order.place'
-            ->to($kitchen)
+            ->to($shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -47,7 +47,7 @@ class OrderController extends Controller
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -55,15 +55,15 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::record(
             verb: 'place',   // not 'order.place'
             object: $order,
             actor: $request->user(),
-            target: $kitchen,
+            target: $shop,
         );
 
         return to_route('orders.show', $order);
@@ -81,7 +81,7 @@ Where a verb seems to need an extra word, the word is usually a role:
 | Reaching for | Record |
 | --- | --- |
 | `doctrine.clause_add` | `add`, object the clause, target the doctrine |
-| `menu.dish_publish` | `publish`, object the dish, target the menu |
+| `menu.item_publish` | `publish`, object the menu item, target the menu |
 
 Write verbs in the present tense: `place`, not `placed`. The headline puts it
 in the past: `:actor placed :object`.
@@ -113,12 +113,12 @@ class MenuItemController extends Controller
 {
     public function store(StoreMenuItemRequest $request): RedirectResponse
     {
-        // the dish is written here
-        $dish = MenuItem::create($request->validated());
+        // the menu item is written here
+        $product = MenuItem::create($request->validated());
 
-        Act::Create->by($request->user())->object($dish)->publish();
+        Act::Create->by($request->user())->object($product)->publish();
 
-        return to_route('menu-items.show', $dish);
+        return to_route('menu-items.show', $product);
     }
 }
 ```
@@ -138,16 +138,16 @@ class MenuItemController extends Controller
 {
     public function store(StoreMenuItemRequest $request): RedirectResponse
     {
-        // the dish is written here
-        $dish = MenuItem::create($request->validated());
+        // the menu item is written here
+        $product = MenuItem::create($request->validated());
 
         Storyfeed::record(
             verb: Act::Create,
-            object: $dish,
+            object: $product,
             actor: $request->user(),
         );
 
-        return to_route('menu-items.show', $dish);
+        return to_route('menu-items.show', $product);
     }
 }
 ```
@@ -170,11 +170,11 @@ class MenuDishController extends Controller
     public function store(
         Request $request,
         Menu $menu,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $menu->dishes()->attach($dish);   // the dish already existed
+        $menu->menuItems()->attach($product);   // the menu item already existed
 
-        Act::Add->by($request->user())->object($dish)->to($menu)->publish();
+        Act::Add->by($request->user())->object($product)->to($menu)->publish();
 
         return back();
     }
@@ -198,13 +198,13 @@ class MenuDishController extends Controller
     public function store(
         Request $request,
         Menu $menu,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $menu->dishes()->attach($dish);   // the dish already existed
+        $menu->menuItems()->attach($product);   // the menu item already existed
 
         Storyfeed::record(
             verb: Act::Add,
-            object: $dish,
+            object: $product,
             actor: $request->user(),
             target: $menu,
         );
@@ -336,14 +336,14 @@ class MenuItemController extends Controller
 {
     public function update(
         UpdateMenuItemRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $dish->update($request->validated());
+        $product->update($request->validated());
 
-        $revision = $dish->revisions()->create($request->validated());
+        $revision = $product->revisions()->create($request->validated());
 
         Act::Update->by($request->user())
-            ->object($dish)
+            ->object($product)
             ->resulting($revision) // what the update produced
             ->publish();
 
@@ -367,15 +367,15 @@ class MenuItemController extends Controller
 {
     public function update(
         UpdateMenuItemRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $dish->update($request->validated());
+        $product->update($request->validated());
 
-        $revision = $dish->revisions()->create($request->validated());
+        $revision = $product->revisions()->create($request->validated());
 
         Storyfeed::record(
             verb: Act::Update,
-            object: $dish,
+            object: $product,
             actor: $request->user(),
             result: $revision, // what the update produced
         );

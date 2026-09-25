@@ -77,6 +77,46 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.ok(now - Date.parse(scene.distant.published_at) >= 30 * DAY, 'distant is 30 days back or more')
   })
 
+  test(`${name}: cookbook scenes preserve the behaviours being taught`, () => {
+    const c = scene.cookbook
+    const rows = [c.actorless.anonymous, c.actorless.paid, c.actorless.expired,
+      c.transitions.confirmed, ...c.transitions.timeline, ...c.pricing,
+      c.deletion, c.discussion, ...c.grouped.repeat, ...c.grouped.actors]
+    for (const row of rows) {
+      assert.ok(Date.parse(row.published_at) < now, `${row.id}: visible before now`)
+      assert.ok(world.everything().some((entry) => entry.id === row.id), `${row.id}: catalogued`)
+    }
+    assert.equal(c.actorless.anonymous.actor, null)
+    assert.equal(c.actorless.anonymous.verb, 'place')
+    assert.ok(same(c.actorless.paid.actor, role.service))
+    assert.equal(c.actorless.paid.verb, 'pay')
+    assert.equal(c.actorless.paid.object.type, 'order')
+    assert.equal(c.actorless.expired.actor, null)
+    assert.equal(c.actorless.expired.verb, 'expire')
+    assert.equal(c.transitions.confirmed.verb, 'confirm')
+    assert.ok(same(c.transitions.confirmed.actor, role.staff))
+    const timeline = [...c.transitions.timeline].sort((a, b) => a.published_at.localeCompare(b.published_at))
+    assert.deepEqual(timeline.map((r) => r.verb), ['place', 'confirm', 'place'])
+    assert.ok(timeline.every((r) => same(r.object, scene.order.object)))
+    assert.deepEqual(c.pricing.map((r) => r.verb), ['add', 'reprice'])
+    assert.ok(c.pricing.every((r) => same(r.object, role.product)))
+    assert.equal(c.deletion.verb, 'remove')
+    assert.ok(same(c.deletion.object, role.product))
+    assert.equal(c.discussion.verb, 'reply')
+    assert.equal(c.discussion.object.type, 'discussion')
+    const [repeat] = world.liveOf(c.grouped.repeat)
+    assert.equal(repeat.axis, 'repeat')
+    assert.equal(repeat.count, 3)
+    assert.equal(repeat.distinct.objects, 3)
+    assert.deepEqual(ids(repeat.children), ids(c.grouped.repeat))
+    const [crowd] = world.summaryOf(c.grouped.actors)
+    assert.equal(crowd.axis, 'actors')
+    assert.equal(crowd.count, 3)
+    assert.equal(crowd.distinct.actors, 3)
+    assert.equal(crowd.distinct.objects, 1)
+    assert.deepEqual(ids(crowd.children), ids(c.grouped.actors))
+  })
+
   test(`${name}: the glance is short and wide, and each mode does its one job`, () => {
     const glance = scene.glance
     assert.ok(glance.length >= 10 && glance.length <= 14, `glance has ${glance.length} rows`)
@@ -136,4 +176,17 @@ test('no page or snippet imports a pack or picks a pack\'s rows', () => {
     if (/\b(worldOf|pack\.rows|pack\.scenes)\b/.test(text)) leaks.push(`${relative(docs, file)}: reaches into a pack`)
   }
   assert.deepEqual(leaks, [])
+})
+
+// Lane C has completed the migration; prevent reintroducing its legacy world.
+test('cookbook, reference and tone lab use scenes with an anchored clock', () => {
+  const scope = [...files(resolve(docs, 'cookbook'), /\.md$/),
+    ...files(resolve(docs, 'reference'), /\.md$/), resolve(docs, 'tone-lab.md')]
+  for (const file of scope) {
+    const text = readFileSync(file, 'utf8')
+    assert.doesNotMatch(text, /\b(?:who|where|dishes|scenes)\.[a-zA-Z]+/, relative(docs, file))
+    assert.doesNotMatch(text, /<FeedExample[^>]*\bcontext\b/, relative(docs, file))
+    assert.doesNotMatch(text, /published_at:\s*['"]\d{4}-/, relative(docs, file))
+    assert.doesNotMatch(text, /\$kitchen|Models\\Kitchen/, relative(docs, file))
+  }
 })

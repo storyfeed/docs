@@ -96,13 +96,13 @@ use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
-    'kitchen' => fn (FeedBuilder $feed) => $feed
+    'shop' => fn (FeedBuilder $feed) => $feed
         ->only(['publish', 'reprice'])
         ->except('approve'),        // decided, not forgotten
 ]);
 ```
 
-The `kitchen` feed excludes the approval. Other feeds must also exclude it
+The `shop` feed excludes the approval. Other feeds must also exclude it
 if it should remain hidden.
 
 This fits moderation queues, four-eyes approval, and a draft someone else
