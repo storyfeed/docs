@@ -1,55 +1,173 @@
 # Testing
 
-`Storyfeed::fake()` captures activities instead of saving them, so a test can
-assert what was published. Coverage assertions fail the suite when an activity
-or a group has no headline.
+## Introduction
 
-## Faking the Feed
+`Storyfeed::fake()` captures activities instead of saving them, so you can
+assert what your application publishes. Coverage assertions check that your
+recorded activities and possible groups have headlines.
+
+<a id="faking-the-feed"></a>
+
+## Faking Activities
+
+Fake Storyfeed before calling the code under test. This test exercises the
+listener from [Publishing From Events](/deeper/events#publishing-from-a-listener),
+using your application's model factories:
 
 ```php
-// tests/Feature/FeedTest.php
+// tests/Feature/RecordOrderPlacedTest.php
+use App\Events\OrderPlaced;
+use App\Listeners\RecordOrderPlaced;
+use App\Models\Kitchen;
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::fake();
+uses(RefreshDatabase::class);
 
-// … exercise your code …
+it('records the placed order', function () {
+    $customer = User::factory()->create();
+    $order = Order::factory()->for(Kitchen::factory())->create();
 
-Storyfeed::assertPublished('place', $order);
-Storyfeed::assertPublishedCount(3, 'place');
-Storyfeed::assertNotPublished('delete');
-Storyfeed::assertNothingPublished();
+    Storyfeed::fake();
+
+    (new RecordOrderPlaced)->handle(new OrderPlaced($order, $customer));
+
+    Storyfeed::assertPublished('place', $order);
+    Storyfeed::assertPublishedCount(1);
+    Storyfeed::assertNotPublished('delete');
+});
 ```
 
-| Method |  |
+### Asserting Published Activities
+
+| Method | Assertion |
 |---|---|
 | `assertPublished($verb, $object = null)` | a matching activity was published |
 | `assertNotPublished($verb, $object = null)` | none was |
-| `assertPublishedCount($n, $verb = null)` | exactly `$n` |
-| `assertNothingPublished()` | nothing at all |
-| `published($verb = null)` | the captured activities, for custom assertions |
+| `assertPublishedCount($n, $verb = null)` | exactly `$n` activities were published |
+| `assertNothingPublished()` | nothing was published |
 
-Methods with a `$verb` argument also accept a closure there. The fake uses
-your real registries, but writes no snapshots or groupings and dispatches no
-`ActivityPublished` event.
+Methods with a `$verb` argument also accept a closure for matching activity
+attributes. Use `assertNothingPublished()` in a test whose action should record
+nothing, rather than after asserting a successful publication.
 
-## Coverage Assertions
+### Inspecting Captured Activities
 
-These fail the suite when an activity type has no headline, which would
-otherwise render as a blank line.
+`published($verb = null)` returns the captured activities for custom assertions.
+Continue the listener test with:
 
 ```php
-// tests/Feature/FeedTest.php
+// tests/Feature/RecordOrderPlacedTest.php, inside the test
+$activity = Storyfeed::published('place')->sole();
+
+expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
+```
+
+> [!NOTE]
+> The fake uses your real registries and story middleware, but writes no
+> snapshots or groupings and dispatches no `ActivityPublished` event. Use a
+> database-backed test without this fake to check persistence or grouped reads.
+
+## Testing Queued and Event Publishing
+
+Queued activities are captured separately from synchronous publications. For
+a controller that ends its builder with `queue()`, assert the queued activity:
+
+```php
+// tests/Feature/QueuedOrderTest.php
+use App\Http\Controllers\PlaceOrderController;
+use App\Models\Kitchen;
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+uses(RefreshDatabase::class);
+
+it('queues the placed order', function () {
+    $customer = User::factory()->create();
+    $order = Order::factory()->for(Kitchen::factory())->create();
+    $request = Request::create('/orders/'.$order->getKey().'/place', 'POST');
+    $request->setUserResolver(fn () => $customer);
+
+    Storyfeed::fake();
+
+    // Use the controller from Queued Publishing, which calls queue().
+    (new PlaceOrderController)($request, $order);
+
+    Storyfeed::assertQueued('place', $order);
+    Storyfeed::assertQueuedCount(1);
+    Storyfeed::assertNothingPublished();
+});
+```
+
+The [queued controller](/deeper/queues#queueing-activities) also uses the
+application's `orders.show` route for its redirect.
+
+| Method | Purpose |
+|---|---|
+| `assertQueued($verb, $object = null)` | asserts a queued activity; also accepts a queued Story class or a predicate |
+| `assertNotQueued($verb, $object = null)` | asserts no match was queued |
+| `assertQueuedCount($n, $verb = null)` | counts queued activities |
+| `assertNothingQueued()` | asserts no activities or Story classes were queued |
+| `queued($verb = null)` | returns captured queued activities |
+
+The fake sends no job to the queue. For a queued Story class, it calls
+`toFeedActivity()` during the test and captures the result.
+
+To test publishing from an application event, dispatch the event while
+Storyfeed is faked, then use `assertPublished()` or `assertQueued()` for its
+publication path. Leave that application event unfaked so its listeners run.
+
+To test that an `ActivityPublished` listener is queued, use Laravel's
+`Queue::fake()` without `Storyfeed::fake()`. The publication must run normally
+to dispatch that event after the transaction commits.
+
+<a id="coverage-assertions"></a>
+
+## Testing Headline Coverage
+
+### Activity Headlines
+
+Check the type and verb pairs your application records:
+
+```php
+// tests/Feature/FeedCoverageTest.php, after exercising the application
+use Storyfeed\Testing\GrammarCoverage;
+
+GrammarCoverage::assertCoversRecorded();  // Pairs in the database.
+GrammarCoverage::assertCoversPublished(); // Pairs published in this test.
+```
+
+### Possible Groups
+
+Check both groups that formed and groups the configured axes could form:
+
+```php
+// tests/Feature/FeedCoverageTest.php, after exercising the application
+use Storyfeed\Testing\GrammarCoverage;
+
+GrammarCoverage::assertCoversAggregates();
+GrammarCoverage::assertCoversPossibleAggregates();
+```
+
+`assertCoversPossibleAggregates()` checks possible groups before real traffic
+forms them. A type-specific headline such as `repeat.order.place` covers that
+type only. For axes that hold one type, the assertion checks each type recorded
+with the verb.
+
+### Explicit Coverage Matrices
+
+Choose a set of activities and group combinations explicitly:
+
+```php
+// tests/Feature/FeedCoverageTest.php
 use App\Models\Order;
 use Storyfeed\Testing\GrammarCoverage;
 
-// every verb/type pair in the DB has grammar
-GrammarCoverage::assertCoversRecorded();
-// every pair published in this test
-GrammarCoverage::assertCoversPublished();
-// every group that formed has aggregate grammar
-GrammarCoverage::assertCoversAggregates();
-// every axis that COULD form, whether it did or not
-GrammarCoverage::assertCoversPossibleAggregates();
 GrammarCoverage::assertCovers([['order', 'place']]);
 GrammarCoverage::assertCoversAggregateMatrix(
     axes: ['repeat', 'actors'],
@@ -58,43 +176,38 @@ GrammarCoverage::assertCoversAggregateMatrix(
 );
 ```
 
-Prefer `assertCoversPossibleAggregates()`: it checks every group your axes
-*could* form, so it catches gaps before real traffic does. The matrix variant
-asserts a grid you choose.
+`objectTypes` accepts model classes or morph aliases. Without it, the matrix
+checks the verb alone. A missing headline is named by its key:
 
-A group headline on a type, as a [Story class](/deeper/stories) writes it, is
-kept under that type's key: `repeat.order.place`. On an axis that groups one
-type, such as `repeat`, `assertCoversPossibleAggregates()` checks each type the
-verb was recorded with, and `assertCoversAggregateMatrix()` checks each type in
-`objectTypes:`, as model classes or morph aliases. One type's headline does not
-cover another's. Without `objectTypes:`, the matrix checks the verb alone. A
-missing headline is named by its key:
-
-```txt
+```text
 Storyfeed aggregate grammar coverage is incomplete:
   - repeat.order.place (no aggregate headline)
   - actors.place (no aggregate headline)
 ```
 
+## Testing Feedable Coverage
+
 ```php
-// tests/Feature/FeedTest.php
+// tests/Feature/FeedCoverageTest.php, after exercising the application
 use App\Models\Kitchen;
 use Storyfeed\Testing\StorySurface;
 
 StorySurface::assertNoUnwiredSurface();
+// Or exclude models intentionally absent from this application's feed:
 StorySurface::assertNoUnwiredSurface(except: [Kitchen::class]);
 ```
 
 This fails for a `Feedable` model that nothing publishes about, and for one the
-enforced morph map has no alias for (see
-[Surface](/reference/doctor#surface)). It also fails when the check cannot run, and when no activities are recorded,
-because then there is nothing to judge. It works under the fake.
+enforced morph map has no alias for. See [Surface](/reference/doctor#surface).
+It also fails when the check cannot run or no activities are recorded. It
+works under the fake.
 
-## Diagnostics in CI
+<a id="diagnostics-in-ci"></a>
 
-```bash
-# exits non-zero on a warning or an error
-php artisan storyfeed:doctor --fail-on=warning
+## Running Diagnostics in CI
+
+```shell
+php artisan storyfeed:doctor --fail-on=warning # Fails on a warning or an error.
 ```
 
 Add `--json` for structured findings. See [Doctor](/reference/doctor).

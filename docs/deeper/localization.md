@@ -1,7 +1,9 @@
 # Localization
 
-A headline can be a translation key. Each reader sees it in their own locale,
-from your app's `lang` files.
+## Introduction
+
+A headline or noun can use a translation key from your app's `lang` files.
+Storyfeed translates it when the feed is read, using the application's current locale.
 
 <script setup>
 import { activity, scenes } from '../.vitepress/theme/samples'
@@ -10,7 +12,24 @@ const french = activity({ ...scenes.order, id: 'lc1',
   headline_template: ':actor a passé :object auprès de :target' })
 </script>
 
-## Translating a Headline
+<a id="translating-a-headline"></a>
+
+## Defining Translated Headlines
+
+### Translation Files
+
+Define the template in your language file:
+
+```php
+// lang/fr/feed.php
+return [
+    'order_placed' => ':actor a passé :object auprès de :target',
+];
+```
+
+### Using Translation Keys
+
+Pass the translation key to `FeedHeadline::trans()`:
 
 ```php
 // routes/feed.php
@@ -23,16 +42,9 @@ Story::for(Order::class)
     ->headline(FeedHeadline::trans('feed.order_placed'));
 ```
 
-```php
-// lang/fr/feed.php
-return [
-    'order_placed' => ':actor a passé :object auprès de :target',
-];
-```
-
 <FeedExample :items="[french]" />
 
-The key is translated when the feed is read, in the reader's locale. The
+The key is translated when the feed is read, using the application's current locale. The
 translated line is a template like any other: its tokens stay links, and its
 [optional segments](/basics/the-feed-file#optional-segments) still apply.
 Tokens are substituted by the renderer, so word order stays the translator's
@@ -40,7 +52,9 @@ decision. A missing key renders as the key.
 
 `anonymousHeadline()` and `missingHeadline()` take a `FeedHeadline` too.
 
-## Translating a Noun
+<a id="translating-a-noun"></a>
+
+## Defining Translated Nouns
 
 A group's noun takes a translation key the same way:
 
@@ -62,3 +76,10 @@ return [
 
 [Aggregation](/deeper/aggregation#group-headline-tokens) covers where
 a noun appears.
+
+## Selecting the Locale
+
+Set Laravel's application locale before reading the feed. Storyfeed uses that
+locale to resolve headline and noun keys; it does not choose a locale for the
+reader. See Laravel's [locale configuration](https://laravel.com/docs/13.x/localization#configuring-the-locale)
+for request-specific locale selection.

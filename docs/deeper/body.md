@@ -1,5 +1,7 @@
 # Activity Body Content
 
+## Introduction
+
 <script setup>
 import { who, where, orders, dishes, notes, scenes, activity, ticketRows, ticketText } from '../.vitepress/theme/samples'
 
@@ -47,7 +49,11 @@ The order from [Usage Examples](/guide/usage-examples), with no body yet:
   <template #body><BodyPlaceholder /></template>
 </FeedExample>
 
-## Defining a Body
+<a id="defining-a-body"></a>
+
+## Defining Bodies
+
+### Text and Excerpts
 
 The plainest body is a line of text:
 
@@ -131,6 +137,8 @@ return FeedEntity::make(
 
 <FeedExample :items="[asExcerpt]" />
 
+### Labelled Values
+
 A `KeyValue` keeps each line apart as data:
 
 ::: code-group
@@ -193,7 +201,9 @@ arrives on the node exactly as it went in:
 Storyfeed stores the body and hands it back unchanged; it never looks inside.
 A body holds values, not markup, and never contains another body.
 
-### Values That Are Missing
+<a id="values-that-are-missing"></a>
+
+### Missing Values
 
 A null value has no word of its own. Give the whole body one with `missing()`,
 or one row its own with `KeyValue::missingAs()`:
@@ -231,24 +241,35 @@ KeyValue::make(
 Every row carries its word in `missing`, beside its `value`, or `null` when
 neither call gave one.
 
-## Stored and Resolved Bodies
+<a id="existing-body-types"></a>
 
-The model writes the body, in one of two places:
+## Available Body Types
 
-| Written with | Written | The body is |
+Storyfeed ships eight under `Storyfeed\Body`. They're conventions a renderer
+can choose to draw; Storyfeed itself treats them like any other body.
+
+| Name | Is | Keys |
 |---|---|---|
-| `->body(…)` on the `FeedEntity` in `toFeed()` | every time the model is saved | stored, and follows the model |
-| `->body(…)` on the `FeedMedia` in `feedMedia()` | every read | built on the read, and never stored |
+| `Storyfeed/Body/KeyValue` | labelled rows | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
+| `Storyfeed/Body/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
+| `Storyfeed/Body/Change` | before → after, for one field or several | `items`, a map of field to `[before, after]` |
+| `Storyfeed/Body/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
+| `Storyfeed/Body/Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
+| `Storyfeed/Body/ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
+| `Storyfeed/Body/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `Storyfeed/Body/Component` | a component of your own, by name | `name`, `props` |
 
-Neither freezes a value. To keep what was true at the time, point the activity
-at a model that never changes, such as a revision or a posted note.
+A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
+never has to handle a bare string.
 
-## Bodies By Role
+## Attaching Bodies to Entities
+
+### Bodies By Role
 
 Each entity can carry bodies, in any role. These examples show the object's
 body beneath the headline. Your frontend chooses which bodies to display.
 
-## Multiple Bodies
+### Multiple Bodies
 
 Each `body()` call adds to the list, in the order written:
 
@@ -278,7 +299,9 @@ return FeedEntity::make(
 When `toFeed()` and `feedMedia()` both return a body, the row carries both,
 stored bodies first. The renderer decides how they're laid out.
 
-## Resolving a Body When the Feed Is Read
+<a id="resolving-a-body-when-the-feed-is-read"></a>
+
+## Resolving Bodies at Read Time
 
 `feedMedia()` can return a body too, built from the model as it is at that
 moment:
@@ -313,7 +336,23 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 Stored and resolved bodies share the same payload shape.
 
-### Deferring the Work
+<a id="stored-and-resolved-bodies"></a>
+
+### Stored and Resolved Values
+
+The model writes the body, in one of two places:
+
+| Written with | Written | The body is |
+|---|---|---|
+| `->body(…)` on the `FeedEntity` in `toFeed()` | every time the model is saved | stored, and follows the model |
+| `->body(…)` on the `FeedMedia` in `feedMedia()` | every read | built on the read, and never stored |
+
+Neither freezes a value. To keep what was true at the time, point the activity
+at a model that never changes, such as a revision or a posted note.
+
+<a id="deferring-the-work"></a>
+
+### Deferred Resolution
 
 The resolver runs on every read. Pass a closure to build the body only when a
 payload resolves it:
@@ -340,7 +379,9 @@ not one per row. If it throws, the error is reported and the body is left out.
 Use a closure when the body reads the live row; a body built from the snapshot
 is cheap enough to pass directly.
 
-## Data Available to Resolvers
+<a id="data-available-to-resolvers"></a>
+
+### Resolver Data
 
 The resolver runs for every entity on the page, including ones a renderer never
 draws. These three reads cost no query per row:
@@ -354,7 +395,9 @@ Anything else runs once per row: `$dish->orders()->count()` in a resolver
 queries for every row that names a dish. Keep a counter column on the model
 instead.
 
-## Drawing Your Own Component
+<a id="drawing-your-own-component"></a>
+
+## Using Custom Components
 
 A `Component` body names a component in your frontend and the props it gets:
 
@@ -430,7 +473,9 @@ name throws `IncompleteFeedValue` when it is used.
 A `Component` suits props you control. When the shape will change over time,
 write a body type with its own `upgrade()`.
 
-## Writing a Body Type
+<a id="writing-a-body-type"></a>
+
+## Writing Body Types
 
 ```php
 <?php
@@ -489,7 +534,17 @@ final class Attachment implements FeedBody
 
 `HasPayload` builds `toArray()` from `toPayload()`.
 
-### The Two Reserved Keys
+<a id="names"></a>
+
+### Type Names
+
+`bodyType()` returns the name. A name is `Vocabulary/Type` in PascalCase: `Storyfeed/Body/MediaObject`,
+`Acme/Attachment`. Renderers match it exactly. It's a lookup key, not a class
+name, and stored rows keep it even if the class moves.
+
+<a id="the-two-reserved-keys"></a>
+
+### Reserved Keys
 
 | Key | Constant | Holds |
 |---|---|---|
@@ -498,19 +553,17 @@ final class Attachment implements FeedBody
 
 The `$` prefix keeps them apart from your own keys.
 
-### Names
+<a id="body-versions"></a>
 
-`bodyType()` returns the name. A name is `Vocabulary/Type` in PascalCase: `Storyfeed/Body/MediaObject`,
-`Acme/Attachment`. Renderers match it exactly. It's a lookup key, not a class
-name, and stored rows keep it even if the class moves.
-
-### Body Versions
+### Versions and Upgrades
 
 Start `version()` at 1. The body's `upgrade()` method converts an older
 payload when your frontend calls it. Storyfeed preserves the stored body and
 its version.
 
-## Upgrading Payload Values
+<a id="upgrading-payload-values"></a>
+
+## Upgrading Other Payload Values
 
 | Value | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
 |---|---|---|---|
@@ -522,24 +575,6 @@ Storyfeed upgrades `$thread` and `$change` itself, because it uses them to build
 the node. It never looks inside a body, so your renderer calls `upgrade()`
 before drawing one, even a `FeedThread` placed in a body.
 
-## Existing Body Types
-
-Storyfeed ships eight under `Storyfeed\Body`. They're conventions a renderer
-can choose to draw; Storyfeed itself treats them like any other body.
-
-| Name | Is | Keys |
-|---|---|---|
-| `Storyfeed/Body/KeyValue` | labelled rows | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
-| `Storyfeed/Body/Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Storyfeed/Body/Change` | before → after, for one field or several | `items`, a map of field to `[before, after]` |
-| `Storyfeed/Body/File` | what an artefact is and how big | `name`, `size`, `mediaType` |
-| `Storyfeed/Body/Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
-| `Storyfeed/Body/ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `Storyfeed/Body/MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
-| `Storyfeed/Body/Component` | a component of your own, by name | `name`, `props` |
-
-A string passed as `body` is stored as `Storyfeed/Body/Prose`, so a renderer
-never has to handle a bare string.
 
 ::: headless
 :::

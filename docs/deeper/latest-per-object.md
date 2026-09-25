@@ -1,5 +1,7 @@
 # Latest Activity per Object
 
+## Introduction
+
 `latestPer('object')` shows one row per object in a feed: the latest thing
 that happened to it. Every activity stays stored, so other feeds still show
 all of them.
@@ -43,7 +45,9 @@ const repriced = group({ id: 'lp8', verb: 'reprice', axis: 'repeat', count: 3, g
   distinct: { actors: 1, objects: 3 } })
 </script>
 
-## Showing the Latest Activity per Object
+<a id="showing-the-latest-activity-per-object"></a>
+
+## Reading the Latest Activity
 
 An order is placed, confirmed, marked ready and paid. Its own page shows each
 step:
@@ -73,13 +77,54 @@ Storyfeed::feed()
 Both read the same rows. The board leaves out an order's earlier activities,
 and the order's page still shows them.
 
-::: tip The difference between keepLatest and latestPer
-[`keepLatest()`](/deeper/keeping-the-latest-activity) on a verb decides what is stored, so the earlier activities
-leave every feed. `latestPer()` on a feed decides what that feed shows, and
-the earlier activities stay for every other feed.
-:::
+> [!NOTE]
+> **The difference between keepLatest and latestPer**
+>
+> [`keepLatest()`](/deeper/keeping-the-latest-activity) on a verb decides what is stored, so the earlier activities
+> leave every feed. `latestPer()` on a feed decides what that feed shows, and
+> the earlier activities stay for every other feed.
 
-## Declaring It on a Named Feed
+<a id="choosing-the-key"></a>
+
+## Choosing Grouping Keys
+
+`latestPer()` takes one role, or several:
+
+| Call | The Feed Shows |
+|---|---|
+| `latestPer('object')` | the latest activity about each object, whatever its verb |
+| `latestPer(['object', 'verb'])` | the latest activity of each verb about each object |
+| `latestPer(['object', 'actor'])` | the latest activity by each person about each object |
+| `latestPer('target')` | the latest activity about each target |
+
+A key can name any role (`actor`, `object`, `target`, `context`, `origin`,
+`result`, `instrument`) and `verb`. An activity with no value in a role the
+key names is always shown.
+
+<a id="which-activity-is-the-latest"></a>
+
+## Ordering and Filtering Results
+
+As with Eloquent's `latestOfMany()`, the latest activity is the first one in
+the feed's own order: the newest `published_at`, then the highest id.
+
+| When | The Feed Shows |
+|---|---|
+| a newer activity about the object is published | the newer one, at its own time |
+| a newer activity is scheduled for later | the one before it, until the newer one is published |
+| the latest activity is deleted | the one before it |
+| the feed's other filters leave out the newest activity | the latest one the filters let through |
+
+The key is checked after the feed's other filters. `only(['place', 'ready'])`
+with `latestPer('object')` shows each order's latest placing or marking ready,
+even when it was paid afterwards.
+
+Pagination works as it does on any feed. A cursor only works with the query
+that made it, `latestPer()` included.
+
+<a id="declaring-it-on-a-named-feed"></a>
+
+## Defining a Named Feed
 
 A feed that always shows the latest activity per object says so once:
 
@@ -104,41 +149,9 @@ Storyfeed::feed('board')->involving($kitchen)->get();
 
 <FeedExample :items="board" />
 
-## Choosing the Key
+<a id="grouping-the-latest-activities"></a>
 
-`latestPer()` takes one role, or several:
-
-| Call | The Feed Shows |
-|---|---|
-| `latestPer('object')` | the latest activity about each object, whatever its verb |
-| `latestPer(['object', 'verb'])` | the latest activity of each verb about each object |
-| `latestPer(['object', 'actor'])` | the latest activity by each person about each object |
-| `latestPer('target')` | the latest activity about each target |
-
-A key can name any role (`actor`, `object`, `target`, `context`, `origin`,
-`result`, `instrument`) and `verb`. An activity with no value in a role the
-key names is always shown.
-
-## Which Activity Is the Latest
-
-As with Eloquent's `latestOfMany()`, the latest activity is the first one in
-the feed's own order: the newest `published_at`, then the highest id.
-
-| When | The Feed Shows |
-|---|---|
-| a newer activity about the object is published | the newer one, at its own time |
-| a newer activity is scheduled for later | the one before it, until the newer one is published |
-| the latest activity is deleted | the one before it |
-| the feed's other filters leave out the newest activity | the latest one the filters let through |
-
-The key is checked after the feed's other filters. `only(['place', 'ready'])`
-with `latestPer('object')` shows each order's latest placing or marking ready,
-even when it was paid afterwards.
-
-Pagination works as it does on any feed. A cursor only works with the query
-that made it, `latestPer()` included.
-
-## Grouping the Latest Activities
+## Aggregating Latest Activities
 
 Groups are formed from the activities the feed shows. A cook who changed the
 price of three dishes several times each this morning:

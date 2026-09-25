@@ -1,5 +1,7 @@
 # Activity Scopes
 
+## Introduction
+
 `Storyfeed::actor()` and `Storyfeed::context()` supply their roles inside a callback.
 HTTP middleware can supply either role for a request.
 
@@ -9,7 +11,16 @@ const scoped = { ...activity({ ...scenes.order, target: null, context: where.kit
   headline_template: ':actor placed :object in :context' }), data: null, glyph_intent: null }
 </script>
 
-## Setting Context on an Activity
+<a id="setting-context-on-an-activity"></a>
+
+The [context role](/deeper/context) records an activity's wider setting. Scopes
+supply a default for that role or the actor across several publishes.
+
+## Sharing Roles Within a Callback
+
+<a id="sharing-context-within-a-callback"></a>
+
+### Sharing Context
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -28,11 +39,12 @@ class PlaceOrderController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('place', $order)
-            ->context($order->kitchen)
-            ->publish();
+        Storyfeed::context($order->kitchen, function () use ($request, $order) {
+            Storyfeed::activity()
+                ->by($request->user())
+                ->action('place', $order)
+                ->publish();
+        });
 
         return to_route('orders.show', $order);
     }
@@ -55,12 +67,13 @@ class PlaceOrderController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::record(
-            verb: 'place',
-            object: $order,
-            actor: $request->user(),
-            context: $order->kitchen,
-        );
+        Storyfeed::context($order->kitchen, function () use ($request, $order) {
+            Storyfeed::record(
+                verb: 'place',
+                object: $order,
+                actor: $request->user(),
+            );
+        });
 
         return to_route('orders.show', $order);
     }
@@ -72,55 +85,17 @@ With `:actor placed :object in :context` declared as the headline:
 
 <FeedExample :items="[scoped]" expanded />
 
-`context` is the activity's wider setting. It is separate from `target`;
-`->to()` and `->in()` set the target. [Containers & Context](/deeper/context)
-explains those roles.
-
-## Sharing Context Within a Callback
-
-::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::context($order->kitchen, function () use ($request, $order) {
-    Storyfeed::activity()
-        ->by($request->user())
-        ->action('place', $order)
-        ->publish();
-});
-```
-
-```php [Named Arguments]
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::context($order->kitchen, function () use ($request, $order) {
-    Storyfeed::record(
-        verb: 'place',
-        object: $order,
-        actor: $request->user(),
-    );
-});
-```
-:::
-
-<FeedExample :items="[scoped]" expanded />
-
 Every activity published inside the callback inherits the context, including
 activities published by methods the callback calls. An explicit context on an
-activity wins. Nested callbacks use the innermost context; leaving a callback
-restores the previous one, even when it throws.
+activity wins.
 
 The scope accepts an Eloquent model or a declared party name and returns the
 callback's result. Without a callback, `Storyfeed::context($model)` returns an
 activity builder with that context set.
 
-Jobs dispatched inside the scope carry its context to the worker. The context
-is resolved from its identity there. The worker restores its previous scope
-after the job.
+<a id="sharing-an-actor-within-a-callback"></a>
 
-## Sharing an Actor Within a Callback
+### Sharing an Actor
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -153,15 +128,23 @@ Storyfeed::actor($request->user(), function () use ($order) {
 
 `actor()` supplies the actor as `context()` supplies the context. Both accept
 an Eloquent model or a declared party name and return the callback's result.
-An explicit actor or explicit anonymity wins over the actor scope. Nested
-callbacks use the innermost actor and restore the previous scope when they
-finish, including when they throw.
+An explicit actor or explicit anonymity wins over the actor scope.
 
 Without a callback, `Storyfeed::actor($user)` returns an activity builder with
 that actor set. Jobs dispatched inside the callback carry its actor to the
 worker; see [Queued Publishing](/deeper/queues#scoped-actors).
 
-## Setting Context From a Route
+### Nested Scopes
+
+Nested callbacks use the innermost actor or context. Leaving a callback
+restores the previous scope, even when it throws. An explicit value on the
+activity still takes precedence over the scope.
+
+## Sharing Roles Within an HTTP Request
+
+<a id="setting-context-from-a-route"></a>
+
+### Context From Route Parameters
 
 ```php
 // routes/web.php
@@ -236,7 +219,9 @@ class PlaceOrderController extends Controller
 The `Kitchen` model needs an `orders()` relationship for the scoped binding.
 The middleware supplies the context to every activity published in this request.
 
-## Setting a Route's Actor
+<a id="setting-a-route-s-actor"></a>
+
+### Declared Party Actors
 
 ```php
 // routes/web.php
@@ -253,7 +238,9 @@ Declare that [party](/deeper/parties#declaring-parties) in your service provider
 The explicit `->by($request->user())` in the controller still wins; activities
 without an explicit actor inherit `System`.
 
-## Actor and Context Precedence
+<a id="actor-and-context-precedence"></a>
+
+## Role Precedence
 
 | Priority | Actor | Context |
 |---|---|---|
@@ -264,3 +251,9 @@ without an explicit actor inherit `System`.
 
 Explicit anonymity keeps the actor empty. Without any context supplied, the
 context stays empty.
+
+## Passing Scopes to Queued Jobs
+
+Jobs dispatched inside an actor or context scope carry its identity to the
+worker. [Queued Publishing](/deeper/queues#carrying-actors-and-context) covers
+restoration, nested jobs and dispatch methods that run after the scope closes.

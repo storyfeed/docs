@@ -1,5 +1,7 @@
 # Parties & Anonymous Actors
 
+## Introduction
+
 <script setup>
 import { orders, party, activity } from '../.vitepress/theme/samples'
 
@@ -20,7 +22,9 @@ a payment provider, or **anonymous**.
 | **anonymous** | the actor is genuinely unknown | `actor: null` — actorless grammar or a renderer fallback |
 | **party** | a named participant with no model in your app | an ordinary entity, `type: "storyfeed.party"`, real `label`, `url: null` |
 
-## Parties
+<a id="parties"></a>
+
+## Recording a Party
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -89,6 +93,8 @@ class StripeWebhookController extends Controller
 
 <FeedExample context :items="[paid]" />
 
+### Using Parties in Other Roles
+
 A party can fill any role, not only the actor:
 
 ::: code-group
@@ -146,77 +152,9 @@ class DispatchOrderController extends Controller
 
 `party()` finds or creates the party by name.
 
-## Scoped Attribution
+<a id="declaring-parties"></a>
 
-Inside a job or console command there is no authenticated user. Scope a block:
-
-::: code-group
-```php [Fluent Syntax]
-<?php
-
-namespace App\Console\Commands;
-
-use App\Models\Order;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class CancelUnpaidOrders extends Command
-{
-    protected $signature = 'orders:cancel-unpaid';
-
-    public function handle(): void
-    {
-        Storyfeed::actor('System', function () {
-            Order::whereNull('paid_at')
-                ->where('created_at', '<', now()->subDay())
-                ->each(function (Order $order) {
-                    $order->update(['cancelled_at' => now()]);
-
-                    Storyfeed::activity()
-                        ->action('cancel', $order)
-                        ->publish();
-                });
-        });
-    }
-}
-```
-
-```php [Named Arguments]
-<?php
-
-namespace App\Console\Commands;
-
-use App\Models\Order;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class CancelUnpaidOrders extends Command
-{
-    protected $signature = 'orders:cancel-unpaid';
-
-    public function handle(): void
-    {
-        Storyfeed::actor('System', function () {
-            Order::whereNull('paid_at')
-                ->where('created_at', '<', now()->subDay())
-                ->each(function (Order $order) {
-                    $order->update(['cancelled_at' => now()]);
-
-                    Storyfeed::record(
-                        verb: 'cancel',
-                        object: $order,
-                    );
-                });
-        });
-    }
-}
-```
-:::
-
-Pass a name for a party, or a model. An explicit `->by()` inside the block
-still wins.
-
-## Declaring Parties
+## Declaring Party Names
 
 A name given to `Storyfeed::actor()`, or to a verb's own `->actor()`, may come
 from outside your code. Declare the names an actor may take:
@@ -240,7 +178,9 @@ With no list, any name becomes a party. Names match as party keys do, so
 `config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
 `local` and `testing` only.
 
-## App-Wide Fallbacks
+<a id="app-wide-fallbacks"></a>
+
+## Setting a Default Actor
 
 ```php
 // config/storyfeed.php
@@ -255,7 +195,16 @@ With no list, any name becomes a party. Names match as party keys do, so
 
 With no fallback, an activity with no user is anonymous.
 
-## Actorless Voice
+## Recording Anonymous Activities
+
+Use `->anonymously()` to record an activity without an actor, even when a scope
+or default supplies one. Omitting the actor lets those defaults apply. See
+[Activities Without an Actor](/cookbook/activities-without-an-actor) for a full
+recording example.
+
+<a id="actorless-voice"></a>
+
+### Anonymous Headlines
 
 ```php
 // routes/feed.php
@@ -271,3 +220,11 @@ An activity recorded with no actor uses the anonymous headline. A party uses
 the ordinary headline. The anonymous template cannot contain `:actor`.
 A closure works as in
 [The Feed File](/basics/the-feed-file#choosing-a-headline-per-activity).
+<a id="scoped-attribution"></a>
+
+## Sharing an Actor
+
+Use `Storyfeed::actor($party, $callback)` to supply an actor to every activity
+published inside a callback. A declared party name such as `System` also works.
+[Activity Scopes](/deeper/activity-scopes#sharing-an-actor) covers the callback,
+its lifecycle and role precedence.

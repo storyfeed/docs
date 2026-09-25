@@ -1,5 +1,7 @@
 # Queued Publishing
 
+## Introduction
+
 `queue()` sends an activity to a Laravel queue for publishing by a worker.
 `publish()` writes it in the current process.
 
@@ -8,29 +10,40 @@ import { scenes } from '../.vitepress/theme/samples'
 const placed = { ...scenes.order, data: null, glyph_intent: null }
 </script>
 
-## Publishing in the Current Process
+Configure a [Laravel queue worker](https://laravel.com/docs/13.x/queues#running-the-queue-worker)
+to process queued activities. The `sync` connection runs them immediately.
 
-::: code-group
-<<< @/snippets/place-order.php [Fluent Syntax]
-<<< @/snippets/place-order.named-arguments.php [Named Arguments]
-:::
+<a id="publishing-in-the-current-process"></a>
 
-<FeedExample :items="[placed]" />
+<a id="queueing-an-activity"></a>
 
-`Storyfeed::record()` stays synchronous. Queueing uses the activity builder's
-`queue()` terminal instead.
-
-## Queueing an Activity
+## Queueing Activities
 
 ```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('place', $order)
-    ->to($order->kitchen)
-    ->queue();
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('place', $order)
+            ->to($order->kitchen)
+            ->queue();
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
 After the worker publishes it:
@@ -38,10 +51,14 @@ After the worker publishes it:
 <FeedExample :items="[placed]" />
 
 The `publish()` / `queue()` pair follows Laravel's explicit mailable queueing.
-`queue()` returns no activity. It uses your configured queue connection; the
-`sync` connection runs it immediately.
+`queue()` returns no activity. It uses your configured queue connection.
 
-## Choosing a Queue and Delay
+`Storyfeed::record()` stays synchronous. Queueing uses the builder's
+`queue()` terminal, so this call has no named-arguments equivalent.
+
+<a id="choosing-a-queue-and-delay"></a>
+
+### Queue and Connection
 
 ```php
 // app/Http/Controllers/PlaceOrderController.php, __invoke()
@@ -53,12 +70,10 @@ Storyfeed::activity()
     ->to($order->kitchen)
     ->onConnection('database')
     ->onQueue('feed')
-    ->delay(now()->addSeconds(10))
-    ->afterCommit()
     ->queue();
 ```
 
-After the transaction commits and a worker handles the job:
+After a worker handles the job:
 
 <FeedExample :items="[placed]" />
 
@@ -69,10 +84,31 @@ queue you chose:
 php artisan queue:work database --queue=feed
 ```
 
-The database connection needs Laravel's jobs table. The delay controls when the
-job becomes available; the worker determines when it is handled.
+The database connection needs Laravel's jobs table.
 
-## Declaring Queue Settings on a Verb
+### Delays
+
+Add `delay()` before `queue()` to choose when the job becomes available:
+
+```php
+// app/Http/Controllers/PlaceOrderController.php, __invoke()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)
+    ->to($order->kitchen)
+    ->delay(now()->addSeconds(10))
+    ->queue();
+```
+
+The worker determines when it is handled. After publication:
+
+<FeedExample :items="[placed]" />
+
+<a id="declaring-queue-settings-on-a-verb"></a>
+
+### Per-Verb Defaults
 
 ```php
 // routes/feed.php
@@ -97,41 +133,11 @@ a positive interval string, or a `DateInterval`.
 Queue settings do not queue an ordinary `publish()` call. End the builder with
 `queue()` to send it to the queue.
 
-## Publication Time and Snapshots
+<a id="queueing-a-story-class"></a>
 
-```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
-use Storyfeed\Facades\Storyfeed;
+## Queueing Story Classes
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('place', $order)
-    ->to($order->kitchen)
-    ->snapshotNow()
-    ->queue();
-```
-
-<FeedExample :items="[placed]" />
-
-`published_at` is captured when `queue()` is called; an explicit
-`publishedAt()` wins. Entity snapshots are taken on the worker by default.
-`->snapshotNow()` opts into taking the builder's entity snapshots at the call.
-
-Story middleware runs on the worker.
-
-## Waiting for a Transaction
-
-| Setting | Queued Publish |
-|---|---|
-| no explicit setting | follows the queue connection's `after_commit` setting |
-| `afterCommit()` | dispatches after the transaction commits; rollback discards it |
-| `beforeCommit()` | dispatches without waiting for the commit |
-
-`afterCommit()` also works with synchronous `publish()`: the returned activity
-is unsaved until commit, and is not stored if the transaction rolls back.
-Outside a transaction it publishes immediately.
-
-## Queueing a Story Class
+### Queueable Stories
 
 ```php
 <?php
@@ -212,7 +218,59 @@ An explicit time set by `toFeedActivity()` takes precedence.
 A Story's `middleware()` declares story middleware; Queueable's `through()`
 and `$middleware` configure job middleware.
 
-## Handling Missing Models
+<a id="unique-and-stored-activities"></a>
+
+### Unique Stories
+
+`ShouldBeUnique` keeps the first pending publish;
+[`keepLatest()`](/deeper/keeping-the-latest-activity) keeps the latest stored row.
+
+A queued Story may implement `ShouldBeUnique` and define `uniqueId()`.
+
+Story classes do not support `#[DebounceFor]`. Use `keepLatest(within:)`
+when successive publications should supersede earlier stored activities.
+
+<a id="waiting-for-a-transaction"></a>
+
+## Queues and Transactions
+
+| Setting | Queued Publish |
+|---|---|
+| no explicit setting | follows the queue connection's `after_commit` setting |
+| `afterCommit()` | dispatches after the transaction commits; rollback discards it |
+| `beforeCommit()` | dispatches without waiting for the commit |
+
+`afterCommit()` also works with synchronous `publish()`: the returned activity
+is unsaved until commit, and is not stored if the transaction rolls back.
+Outside a transaction it publishes immediately.
+
+<a id="publication-time-and-snapshots"></a>
+
+## Publication Time and Model Snapshots
+
+```php
+// app/Http/Controllers/PlaceOrderController.php, __invoke()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)
+    ->to($order->kitchen)
+    ->snapshotNow()
+    ->queue();
+```
+
+<FeedExample :items="[placed]" />
+
+`published_at` is captured when `queue()` is called; an explicit
+`publishedAt()` wins. Entity snapshots are taken on the worker by default.
+`->snapshotNow()` opts into taking the builder's entity snapshots at the call.
+
+Story middleware runs on the worker.
+
+<a id="handling-missing-models"></a>
+
+### Missing Models
 
 ```php
 // routes/feed.php
@@ -226,37 +284,25 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class)
 
 By default a model deleted before the worker restores it fails the job with
 `ModelNotFoundException`. This declaration opts into dropping that publish
-without recording an activity. It replaces the preceding class binding.
+without recording an activity. Use it in place of the class binding under Queueable Stories.
 
 The builder also accepts `->deleteWhenMissingModels()`. A Story class can set
 `public bool $deleteWhenMissingModels = true`; the class's setting wins over the
 declaration. `snapshotNow()` does not exempt models from restoration.
 
-## Unique and Stored Activities
+<a id="carrying-the-actor-and-context"></a>
 
-`ShouldBeUnique` keeps the first pending publish; `keepLatest()` keeps the latest row.
-
-A queued Story may implement `ShouldBeUnique` and define `uniqueId()`.
-
-`#[DebounceFor]` isn't supported on Story classes, as Laravel doesn't support it
-on queued mailables, notifications or listeners, so use `keepLatest(within:)`.
-
-## Carrying the Actor and Context
+## Carrying Actors and Context
 
 The user authenticated at dispatch travels with the job, as a morph alias and
 key in Laravel's hidden [Context](https://laravel.com/docs/context), and is
 applied on the worker. Jobs dispatched from that job inherit it.
 
-It applies only when nothing else names the actor:
-
-| Decided First | Example | The Transported User |
-|---|---|---|
-| an explicit actor | `->by($user)`, `->by('Nightly Import')` | ignored |
-| explicit anonymity | `->anonymously()`, `->by(null)` | ignored |
-| a `Storyfeed::actor()` actor | around the dispatch, or inside the job | ignored |
-| the verb's own actor | `->actor('Stripe')` in its definition | ignored |
-| a registered resolver | `resolveActorUsing()`, `actor_resolver` | ignored, even when it returns null |
-| nothing above | | applied, ahead of `parties.fallback` |
+The transported user is a default. Explicit roles, scopes, story middleware,
+the verb's actor and a registered resolver take precedence; see
+[Role Precedence](/deeper/activity-scopes#role-precedence). A registered resolver
+also takes precedence when it returns null. The transported user applies before
+`parties.fallback`.
 
 ### Request-Based Actors
 
@@ -334,13 +380,16 @@ otherwise the job inherits the scope. Jobs it dispatches inherit the context,
 and the worker restores its previous scope after each job, including failures.
 See [Activity Scopes](/deeper/activity-scopes) for callback and route examples.
 
-## Publishing From Your Own Job
+<a id="publishing-from-your-own-job"></a>
+
+## Publishing From Application Jobs
 
 Calling `publish()` inside a job records the worker's current time unless you
 set `publishedAt()`. Capture the event time in the job's constructor if the
 activity belongs to that earlier moment:
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Jobs;
@@ -374,14 +423,61 @@ class RecordOrder implements ShouldQueue
 }
 ```
 
+```php [Named Arguments]
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
+{
+    use Dispatchable, Queueable, SerializesModels;
+
+    public Carbon $occurredAt;
+
+    public function __construct(public Order $order)
+    {
+        $this->occurredAt = now();
+    }
+
+    public function handle(): void
+    {
+        Storyfeed::record(
+            verb: 'place',
+            object: $this->order,
+            target: $this->order->kitchen,
+            publishedAt: $this->occurredAt,
+        );
+    }
+}
+```
+:::
+
+<FeedExample :items="[placed]" />
+
 The publication time determines ordering and the activity's
 [grouping period](/deeper/grouping-periods). Capture any event values you need
 in the job as well: model identifiers restore the worker's current model data.
 Using `queue()` directly already captures publication time at dispatch.
 
-## Listening After Publication
+<a id="listening-after-publication"></a>
+
+## Queueing Publication Listeners
 
 A listener for `ActivityPublished` can implement `ShouldQueue`. Storyfeed's
 [events](/deeper/events) carry immutable publication snapshots and dispatch
 after the database transaction commits. `Storyfeed::fake()` does not dispatch
 these events; use `Queue::fake()` alone when asserting that a listener was queued.
+
+## Testing Queued Publishing
+
+Use `Storyfeed::fake()` and `assertQueued()` to check the queued activity
+without sending a job. [Testing Queued and Event Publishing](/deeper/testing#testing-queued-and-event-publishing)
+covers the queued assertions and when to use Laravel's queue fake instead.

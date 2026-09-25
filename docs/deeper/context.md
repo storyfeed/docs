@@ -1,5 +1,7 @@
 # Containers & Context
 
+## Introduction
+
 `context` records the container an activity happened **inside**,
 such as the kitchen a dish belongs to. Record it, and you can read everything
 that happened in that kitchen.
@@ -7,7 +9,7 @@ that happened in that kitchen.
 [Activity Scopes](/deeper/activity-scopes) supplies context across a callback or an HTTP request.
 
 <script setup>
-import { who, where, dishes, notes, activity } from '../.vitepress/theme/samples'
+import { who, where, dishes, notes, activity, scenes } from '../.vitepress/theme/samples'
 
 const inside = activity({
   id: 'cx1', verb: 'ask', glyph: 'message-circle',
@@ -17,6 +19,13 @@ const inside = activity({
   context: where.kitchen,
 })
 </script>
+
+<a id="recording-context-at-publish"></a>
+
+## Recording Context
+
+Roles are never filled in later. If you have the container when you publish,
+record it: a `context` read only finds activities recorded with one.
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -87,7 +96,9 @@ class DishQuestionController extends Controller
 
 <FeedExample context :items="[inside]" />
 
-## The Difference Between Target and Context
+<a id="the-difference-between-target-and-context"></a>
+
+## Target and Context
 
 | Role | Holds | In the Sentence |
 |---|---|---|
@@ -102,10 +113,12 @@ kitchen. When the target is the container itself, `target` is enough:
 <<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
 :::
 
+<FeedExample :items="[scenes.order]" />
+
 Fill every role that is true, even one the headline doesn't name: roles are
 also used for scoping and grouping.
 
-## Uses of Context
+<a id="uses-of-context"></a>
 
 Set `context` when something reads it:
 
@@ -116,13 +129,17 @@ Set `context` when something reads it:
 | `:context` in a headline | a headline can only name a role the activity carries |
 | `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
 
-## The Container Query
+<a id="the-container-query"></a>
+
+## Reading Activities in a Container
 
 `feed()->context($kitchen)` returns what happened inside the kitchen.
 [`involving()`](/basics/reading#scoping) also returns activities about the
 kitchen itself, such as its creation.
 
-## Non-Model Containers
+<a id="non-model-containers"></a>
+
+## Using Non-Model Containers
 
 When the container is a plain value, such as a folder name, record it one of
 three ways:
@@ -132,8 +149,3 @@ three ways:
 | `->context('Saturday service')` | yes, as `:context` | yes | yes, as a [party](/deeper/parties) | one party per distinct string |
 | `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
 | a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
-
-## Recording Context At Publish
-
-Roles are never filled in later. If you have the container when you publish,
-record it: a `context` read only finds activities recorded with one.

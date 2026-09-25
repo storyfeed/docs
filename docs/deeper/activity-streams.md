@@ -1,20 +1,31 @@
 # Activity Streams 2.0
 
+## Introduction
+
 Storyfeed can serve each activity as a
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
 document, with all seven [roles](/basics/recording#roles) under their AS2
 names.
 
-The route is read-only and off by default:
+The Activity Streams document is separate from the normal
+[feed payload](/basics/the-payload).
+
+## Serving Activity Documents
+
+### Enabling the Route
+
+The read-only route is off by default. Enable it in the configuration:
 
 ```php
 // config/storyfeed.php
 'routes' => [
-    'enabled' => false,
+    'enabled' => true,
     'prefix' => 'storyfeed',
-    'middleware' => [],
+    'middleware' => [], // Add your application's access middleware.
 ],
 ```
+
+### Route Middleware and Identifiers
 
 | Route | Serves |
 |---|---|
@@ -22,15 +33,13 @@ The route is read-only and off by default:
 
 Add auth or throttling through `middleware`.
 
-## Source, Outcome and Means
+> [!WARNING]
+> The prefix is part of every activity's id, so changing it changes them all.
+> Choose it before you share any documents.
 
-| Role | AS2 Meaning |
-|---|---|
-| [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
-| [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
-| [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
+<a id="serving-a-collection"></a>
 
-## Serving a Collection
+## Serving Collections
 
 There is no collection route. `CollectionSerializer::collection()` turns a page
 of activities, such as a [named feed](/basics/named-feeds)'s, into an
@@ -38,19 +47,39 @@ of activities, such as a [named feed](/basics/named-feeds)'s, into an
 page and its IRI:
 
 ```php
-collection(CursorPaginator $page, string $iri, ?string $cursor = null): array
+// In a controller, after obtaining an authorised page of Activity models.
+use Storyfeed\Serialization\CollectionSerializer;
+
+$document = app(CollectionSerializer::class)->collection($page, $iri, $cursor);
 ```
 
-::: warning
-The prefix is part of every activity's id, so changing it changes them all.
-Choose it before you share any documents.
-:::
+`$page` is an `Illuminate\Contracts\Pagination\CursorPaginator` of activity
+models. `$iri` is the absolute URL your application serves for this collection;
+`$cursor` is the incoming cursor string, or `null` for the first page.
 
-## The `@context`
+## Activity Streams Fields
+
+<a id="source-outcome-and-means"></a>
+
+### Roles
+
+| Role | AS2 Meaning |
+|---|---|
+| [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
+| [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
+| [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
+
+<a id="the-context"></a>
+
+### JSON-LD Context
 
 Documents reference `https://ns.storyfeed.dev`, which defines `sf:verb`.
 
-## Verb Mapping
+## Mapping Activity Types
+
+<a id="verb-mapping"></a>
+
+### Verb Mappings
 
 A verb enum can map each verb to an Activity Streams type:
 
@@ -90,17 +119,20 @@ enum OrderActivity: string implements FeedVerb
   `Link` objects under `icon`, `image` and `preview`. While serializing,
   `$context->feed()` in `feedMedia()` is `null`.
 
-`Reader::activity()` reads a Storyfeed document back: the `uid`, verb, `type`,
-roles, and `published_at` to the whole second. It drops `summary` and
-`replies`.
+### Type Overrides
 
-## Type Overrides
-
-Per story:
+On a Story class, import `Storyfeed\ActivityStreams\ActivityType` and set
+its type property:
 
 ```php
 // app/Stories/OrderWasPlaced.php
 public ActivityType|string|null $type = ActivityType::Create;
 ```
 
-Per model: implement `HasActivityStreamsType`.
+On a model, implement `Storyfeed\Contracts\HasActivityStreamsType`.
+
+## Reading Activity Documents
+
+`Storyfeed\Serialization\Reader::activity()` reads a Storyfeed document back: the `uid`, verb, `type`,
+roles, and `published_at` to the whole second. It drops `summary` and
+`replies`.

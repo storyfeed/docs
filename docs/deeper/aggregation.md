@@ -1,5 +1,7 @@
 # Aggregation
 
+## Introduction
+
 Aggregation shows several related activities as one row: three orders from
 one customer read as one line, not three.
 
@@ -30,7 +32,11 @@ const actors = group({ id: 'ag5', verb: 'place', axis: 'actors', count: 5, glyph
   distinct: { actors: 5, objects: 5, targets: 1 } })
 </script>
 
-## Grouping Repeats
+## Grouping Activities
+
+<a id="grouping-repeats"></a>
+
+### Repeated Activities
 
 Three orders from one customer, minutes apart, as a log:
 
@@ -59,7 +65,9 @@ class OrderStory
 
 <FeedExample :items="[repeat]" />
 
-## Grouping Along Another Axis
+<a id="grouping-along-another-axis"></a>
+
+### Activities Along Other Axes
 
 Five customers ordering from the same kitchen need a different sentence. Each
 group names an **axis**: what its activities have in common.
@@ -83,7 +91,9 @@ no type. The same headline in a Story class is an error when stories compile.
 Grouping is decided when the activity is published. In each read mode, an
 activity is in only one group.
 
-## Axes By Read Mode
+<a id="axes-by-read-mode"></a>
+
+## Choosing a Read Mode
 
 The read mode chooses which groupings a read shows:
 
@@ -96,7 +106,9 @@ The read mode chooses which groupings a read shows:
 With `grouping.curate` enabled, publishing selects a winning axis.
 `storyfeed:curate` also revisits recent activity hourly when Laravel's scheduler runs.
 
-## Built-In Axes
+## Grouping Axes
+
+### Built-In Axes
 
 | Axis | Collapses | Pins (Safe Singular Tokens) | One Type | Example Headline |
 |---|---|---|---|---|
@@ -111,7 +123,32 @@ A headline for a **One Type** axis can go in a Story class or inside
 `$group->axis('scene', …)` names a custom axis, and `$group->any(…)` matches
 whichever axis wins.
 
-## Registering a Group Headline
+### Thresholds
+
+```php
+// config/storyfeed.php
+'grouping' => [
+    'policy' => [
+        'min_actors' => 3,          // actors axis needs 3+ distinct actors
+        'min_targets' => 2,
+        'min_target_members' => 3,
+        'min_object_members' => 2,
+    ],
+],
+```
+
+Below a threshold, activities stay ungrouped. Changing a threshold doesn't
+regroup past activities until `storyfeed:curate` runs.
+
+`repeat` groups only orders placed with the same kitchen; `targets` groups
+across kitchens.
+
+See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
+boundary shared by grouped activities.
+
+<a id="registering-a-group-headline"></a>
+
+## Defining Group Headlines
 
 `grouped()` declares a headline for each grouping axis:
 
@@ -132,6 +169,8 @@ Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
 
 <FeedExample :items="[repeat, actors]" />
 
+### Definition Scope
+
 | Written In | Key | Used For |
 |---|---|---|
 | `OrderStory::place()`, or `Story::for(Order::class)->verb('place')` | `repeat.order.place` | groups of orders |
@@ -139,7 +178,9 @@ Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
 
 A group tries the key with its type first, then the key without.
 
-## Plural Tokens
+<a id="plural-tokens"></a>
+
+### Singular and Plural Tokens
 
 | Singular Token | Plural Token | Entity Role |
 |---|---|---|
@@ -155,7 +196,7 @@ A plural token becomes a few of the group's names and a count of the rest.
 [Rendering](/basics/rendering#groups) covers how. `:count` is the number of
 activities in the group.
 
-## Group Headline Tokens
+<a id="group-headline-tokens"></a>
 
 A group headline may only use tokens that are true of **every** activity in
 it. A singular token is allowed only where the axis pins it; a plural token is
@@ -170,6 +211,38 @@ allowed everywhere.
 
 In `routes/feed.php` or a Story class, the first line is an error when stories
 compile.
+
+<a id="plural-lists-in-headlines"></a>
+
+Both of these are token-safe; only one is readable:
+
+```php
+// an actors group, which pins :target
+':actors placed :objects with :targets' // ✗ three lists of names
+':actors ordered from :target'          // ✓ one list, one pinned role
+```
+
+Keep one list per template and collapse the others to `:count`.
+
+<a id="groups-with-missing-roles"></a>
+
+### Missing Roles
+
+A plural token lists only the activities that filled the role. `targets`
+groups by actor, verb and calendar period (a day by default), so an activity with no target can join the
+group: it counts towards `:count` but adds no name.
+
+```php
+// a targets group of 5 members, 2 of them carrying a target
+':actor asked about :count dishes'  // ✗ five members, two dishes
+':actor asked about :targets'       // ✓ names the two there are
+```
+
+The first line is wrong because of the noun beside `:count`, and nothing
+checks that. A difference between `node.count` and `node.distinct.targets` can mean
+repeated targets, missing targets, or both.
+
+### Fallback Nouns
 
 With no group headline, a group tries the single-activity headline. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
@@ -198,55 +271,9 @@ returns `dishes`. So `:actor put :object on the menu` can arrive as
 `:actor put dishes on the menu`. The noun is plain text; `:actor` is still a
 link.
 
-## Groups With Missing Roles
+<a id="custom-axes"></a>
 
-A plural token lists only the activities that filled the role. `targets`
-groups by actor, verb and calendar period (a day by default), so an activity with no target can join the
-group: it counts towards `:count` but adds no name.
-
-```php
-// a targets group of 5 members, 2 of them carrying a target
-':actor asked about :count dishes'  // ✗ five members, two dishes
-':actor asked about :targets'       // ✓ names the two there are
-```
-
-The first line is wrong because of the noun beside `:count`, and nothing
-checks that. A difference between `node.count` and `node.distinct.targets` can mean
-repeated targets, missing targets, or both.
-
-## Plural Lists in Headlines
-
-Both of these are token-safe; only one is readable:
-
-```php
-// an actors group, which pins :target
-':actors placed :objects with :targets' // ✗ three lists of names
-':actors ordered from :target'          // ✓ one list, one pinned role
-```
-
-Keep one list per template and collapse the others to `:count`.
-
-## Thresholds
-
-```php
-// config/storyfeed.php
-'grouping' => [
-    'policy' => [
-        'min_actors' => 3,          // actors axis needs 3+ distinct actors
-        'min_targets' => 2,
-        'min_target_members' => 3,
-        'min_object_members' => 2,
-    ],
-],
-```
-
-Below a threshold, activities stay ungrouped. Changing a threshold doesn't
-regroup past activities until `storyfeed:curate` runs.
-
-`repeat` groups only orders placed with the same kitchen; `targets` groups
-across kitchens.
-
-## Custom Axes
+## Defining Custom Axes
 
 An axis is a key recipe and a rule for which activities it takes:
 
@@ -265,6 +292,8 @@ Storyfeed::axes([
 `scene` groups activities in the same [context](/deeper/context), such as
 three customers asking about dishes in one kitchen.
 
+### Keys
+
 The recipe names the fields two activities must share; `!` marks a field that
 must be present. A singular token like `:context` is safe when both of its
 role's fields are in the key.
@@ -282,6 +311,8 @@ role's fields are in the key.
 `v` adds the verb and `d` its calendar period, a day by default. Without `v`, a group may mix verbs, so only
 a `scene.*` key applies to it.
 
+### Priority
+
 A new axis has the lowest priority. To outrank a built-in, say so:
 
 ```php
@@ -294,7 +325,9 @@ Storyfeed::axes([$scene], before: 'repeat');
 Then give its groups headlines with `$group->axis('scene', …)`, as in
 [Registering a Group Headline](#registering-a-group-headline).
 
-## Group Nodes
+<a id="group-nodes"></a>
+
+## Reading Group Nodes
 
 A group arrives as one node, shaped as in the
 [payload contract](/reference/payload#group-node). Which groups form may
