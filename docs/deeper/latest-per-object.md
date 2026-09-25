@@ -74,7 +74,7 @@ Both read the same rows. The board leaves out an order's earlier activities,
 and the order's page still shows them.
 
 ::: tip The difference between keepLatest and latestPer
-`keepLatest()` on a verb decides what is stored, so the earlier activities
+[`keepLatest()`](/deeper/keeping-the-latest-activity) on a verb decides what is stored, so the earlier activities
 leave every feed. `latestPer()` on a feed decides what that feed shows, and
 the earlier activities stay for every other feed.
 :::
