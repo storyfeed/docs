@@ -3,6 +3,8 @@
 A Story class says what each of a model's verbs reads as, one method per verb.
 Call sites never touch it: they name the verb, the way a link names a route.
 
+[Publishing Story Classes](/deeper/publishing-story-classes) covers activities constructed with data and single-verb declarations.
+
 <script setup>
 import { who, where, orders, dishes, party, activity, tombstone, scenes } from '../.vitepress/theme/samples'
 

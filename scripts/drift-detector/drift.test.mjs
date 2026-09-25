@@ -54,12 +54,17 @@ test('framework, inherited, trait, facade and constant members are not stale', (
 test('application imports and declarations shadow retired short names', () => {
   for (const code of ['use App\\FeedLink; FeedLink::make();', 'class FeedLink {} FeedLink::make();', 'class Thing { public static function toFeedLink() {} }', 'function toFeedLink() {} toFeedLink();', 'use App\\Noun; Noun::phrase(2);']) assert.equal(scan(php(code), retired).stale.length, 0, code);
 });
+// A fixed closed surface: FeedImage now uses Conditionable, so unknown
+// methods on its live surface correctly remain unresolved (traits are open).
+const closedApi = { ...api, classes: { ...api.classes,
+  'Storyfeed\\ClosedExample': { methods: ['make'], properties: [], open: false },
+} };
 test('explicit missing package imports and closed-class methods are stale', () => {
-  const r = scan(php('use Storyfeed\\DefinitelyMissing; FeedImage::notHere();'));
-  assert.deepEqual(r.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing', 'FeedImage::notHere']);
+  const r = scan(php('use Storyfeed\\DefinitelyMissing; ClosedExample::notHere();'), closedApi);
+  assert.deepEqual(r.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing', 'ClosedExample::notHere']);
 });
 test('aliased core imports resolve', () => {
-  const r = scan(php('use Storyfeed\\FeedImage as Picture; Picture::make("url"); Picture::notHere();'));
+  const r = scan(php('use Storyfeed\\ClosedExample as Picture; Picture::make("url"); Picture::notHere();'), closedApi);
   assert.deepEqual(r.stale.map(s => s.identifier), ['Picture::notHere']);
 });
 test('grouped imports are unresolved rather than falsely stale namespace prefixes', () => {
