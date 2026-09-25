@@ -113,8 +113,7 @@ keep them out of the participant index. A separate activity does neither.
 
 The approver is the actor of a real row, so the participant index has them:
 
-```php
-// where the approver is shown: a controller or a view model
+```php memo="where the approver is shown: a controller or a view model"
 use Storyfeed\Models\Activity;
 
 $approval = Activity::query()

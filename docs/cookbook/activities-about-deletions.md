@@ -148,8 +148,7 @@ $user->forceDelete();
 A model registered with `Storyfeed::feedable()` has no such methods. Call the
 actions they use:
 
-```php
-// where the model is deleted: a controller, an action, a job
+```php memo="where the model is deleted: a controller, an action, a job"
 use Storyfeed\Actions\DeleteFromFeed;
 use Storyfeed\Actions\ForceDeleteFromFeed;
 

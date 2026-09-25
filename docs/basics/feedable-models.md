@@ -493,8 +493,7 @@ also be registered.
 
 `InteractsWithFeed` also gives the model a feed of everything it took part in:
 
-```php
-// a controller, or wherever the feed is read
+```php memo="a controller, or wherever the feed is read"
 $kitchen->storyfeed()->get();
 ```
 

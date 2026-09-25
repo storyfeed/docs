@@ -140,8 +140,7 @@ Storyfeed::record(
 ### Quoting Text
 
 ::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
+```php [Fluent Syntax] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
@@ -152,8 +151,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
+```php [Named Arguments] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
@@ -173,8 +171,7 @@ Storyfeed::record(
 ### Including a Photograph
 
 ::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
+```php [Fluent Syntax] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -184,8 +181,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
+```php [Named Arguments] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
@@ -204,8 +200,7 @@ Storyfeed::record(
 ### Including Entity Content
 
 ::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
+```php [Fluent Syntax] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -214,8 +209,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
+```php [Named Arguments] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
@@ -238,8 +232,7 @@ The card comes from the dish's own `toFeed()`, covered in
 The same customer orders three times in a few minutes, in three requests.
 
 ::: code-group
-```php [Fluent Syntax]
-// where the order is placed: a controller, an action, a listener
+```php [Fluent Syntax] memo="where the order is placed: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -249,8 +242,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// where the order is placed: a controller, an action, a listener
+```php [Named Arguments] memo="where the order is placed: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
@@ -286,8 +278,7 @@ Five customers, five orders, five separate requests.
 The cook uploads a set, one request each.
 
 ::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
+```php [Fluent Syntax] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -296,8 +287,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
+```php [Named Arguments] memo="where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(

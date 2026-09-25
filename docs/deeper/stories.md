@@ -371,8 +371,7 @@ An unknown option throws.
 
 ### Request-Based Actors
 
-```php memo="app/Stories/OrderStory.php"
-// add the Request import and this method.
+```php memo="app/Stories/OrderStory.php" at="add this method and the Request import"
 use Illuminate\Http\Request;
 
 public function confirmPayment(Verb $verb, Request $request): Verb
@@ -388,15 +387,13 @@ The same webhook can choose between two [declared parties](/deeper/parties#decla
 Its controller publishes `confirm_payment` without naming an actor:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php"
-// __invoke(): after loading $order.
+```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity('confirm_payment', $order)->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php"
-// __invoke(): after loading $order.
+```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(verb: 'confirm_payment', object: $order);
@@ -423,8 +420,7 @@ the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#re
 
 ### Deleted-Object Headlines
 
-```php memo="app/Stories/OrderStory.php"
-// replace place().
+```php memo="app/Stories/OrderStory.php" at="replacing place()"
 public function place(Verb $verb): Verb
 {
     return $verb

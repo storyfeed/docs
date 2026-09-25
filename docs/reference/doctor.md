@@ -110,8 +110,7 @@ Storyfeed::feeds([
 and a call site can still narrow it. A verb covered only by this feed reports
 as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 
-```php
-// a controller, reading the feed
+```php memo="a controller, reading the feed"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed('portal')->only(['place', 'ready'])->get();

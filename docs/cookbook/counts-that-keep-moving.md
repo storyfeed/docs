@@ -131,8 +131,7 @@ FeedThread::make(text: $excerpt, replies: null);
 
 Count the whole page in one query. One query per row is an N+1:
 
-```php
-// where the page is assembled: a controller, before the nodes are rendered
+```php memo="where the page is assembled: a controller, before the nodes are rendered"
 use App\Models\Comment;
 
 $counts = Comment::query()
@@ -149,8 +148,7 @@ see the other rows.
 
 A settled discussion's reply count may not be useful on this surface:
 
-```php
-// where the page is assembled, for each node
+```php memo="where the page is assembled, for each node"
 $node['thread']['replies'] = $node['verb'] === 'settle'
     ? null
     : $counts[$subjectId] ?? null;
