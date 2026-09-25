@@ -58,6 +58,20 @@ for (const [name, pack] of Object.entries(PACKS)) {
     }
   })
 
+  test(`${name}: every row that names an entity shows the same body`, () => {
+    const seen = new Map()
+    for (const row of pack.rows) {
+      for (const slot of ['actor', 'object', 'target']) {
+        const entity = row[slot]
+        if (!entity || typeof entity !== 'object' || entity.tombstone) continue
+        const key = `${entity.type}:${entity.id}`
+        const body = JSON.stringify(entity.body ?? null)
+        if (!seen.has(key)) seen.set(key, [body, row.id])
+        else assert.equal(body, seen.get(key)[0], `${key} in ${row.id} differs from ${seen.get(key)[1]}`)
+      }
+    }
+  })
+
   test(`${name}: every role is an entity`, () => {
     for (const key of ['customer', 'shop', 'product', 'staff', 'service']) {
       assert.ok(role[key]?.type && role[key]?.id && role[key]?.label, `role.${key}`)
@@ -228,12 +242,14 @@ for (const [name, pack] of Object.entries(PACKS)) {
       assert.ok(same(content[key].object, scene.order.object))
       assert.ok(same(content[key].actor, role.staff))
     }
-    assert.ok(content.ready.object.body.some(body => body.$body === 'Storyfeed/Body/Prose' && body.content && body.title?.includes(content.ready.object.label)))
+    // The order carries no body: Activity Content builds its Prose on its own example.
+    assert.ok(!content.ready.object.body?.length, 'the shared order has no body')
     assert.ok(content.photo.object.media?.preview?.src)
     assert.ok(content.photo.object.url)
     assert.ok(same(content.photo.target, role.product))
     assert.ok(same(content.product.object, role.product))
-    assert.ok(content.product.object.body.some(body => body.$body === 'Storyfeed/Body/KeyValue'))
+    assert.ok(content.product.object.body.some(body => body.$body === 'Storyfeed/Body/KeyValue' && body.title === role.product.label))
+    assert.ok(role.product.body?.some(body => body.$body === 'Storyfeed/Body/KeyValue'), 'the card is on the item itself')
     assert.equal(recording.paid.verb, 'pay')
     assert.ok(same(recording.paid.actor, role.service))
     assert.ok(same(recording.paid.object, scene.order.object))

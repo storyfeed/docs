@@ -139,7 +139,6 @@ export const SERVICES = {
 
 /** Illustrative shop-app content; not dialogue, prices or products newly claimed as canon. */
 export const APP_CONTENT = {
-  instructions: 'A spoon with the order, please.',
   note: 'Can I collect this at the counter?',
   photo: 'uss-butterscotch.jpg',
   price: '$2.95',

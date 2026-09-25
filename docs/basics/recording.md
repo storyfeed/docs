@@ -4,7 +4,7 @@
 import { scene, group } from '../.vitepress/theme/world'
 
 const paid = scene.basics.recording.paid
-const priced = { ...scene.basics.recording.priced, data: { from: 1200, to: 1400 } }
+const priced = { ...scene.basics.recording.priced, data: { from: 275, to: 295 } }
 // The same catalogue photos, recorded together in one request instead of separately.
 const photos = scene.basics.recording.photos
 const composite = group({

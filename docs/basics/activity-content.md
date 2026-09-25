@@ -6,7 +6,10 @@ import { scene } from '../.vitepress/theme/world'
 const content = scene.basics.activityContent
 const withThread = { ...content.note,
   thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
-const withProse = content.ready
+const withProse = { ...content.ready,
+  object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
+    content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
+    title: `${content.ready.object.label} instructions` }] } }
 const withKeyValue = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
     title: content.confirmed.object.label, items: [

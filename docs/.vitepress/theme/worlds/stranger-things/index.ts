@@ -85,7 +85,8 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // the headline already does. Its form follows what the thing is: a record is a
 // card, a description is titled Prose, a signed document is a File, a passage
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
-// standard example, and its pages teach the bare `toFeed()`.
+// standard example, and its pages teach the bare `toFeed()`. A page that
+// teaches a body on an order builds it on its own example.
 const detail = (key: string, value: string, verbatim = false) => ({ key, value, verbatim, missing: null })
 const card = (title: string, items: ReturnType<typeof detail>[]) =>
   [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title, items }]
@@ -150,6 +151,10 @@ things.film = { ...things.film, body: card(HOLDINGS.film, [
   detail('Director', ENTITY_CONTENT.director), detail('Showing', ENTITY_CONTENT.showing)]) }
 things.repo = { ...things.repo, body: card(HOLDINGS.repo, [
   detail('About', ENTITY_CONTENT.repoAbout), detail('Visibility', 'Public')]) }
+// The shop's menu item is a record, so its card is its details. Every row that
+// names it shows the same card. The price is ours.
+fare.butterscotch = { ...fare.butterscotch, body: card(fare.butterscotch.label, [
+  detail('Price', APP_CONTENT.price), detail('Section', APP_CONTENT.section), detail('Available', APP_CONTENT.available)]) }
 // The things that have a photograph of their own (see PHOTO_CREDITS below).
 const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel: 'ferris', fireworks: 'fireworks', pretzelBag: 'pretzels' }
 
@@ -224,21 +229,9 @@ for (const [key, file] of Object.entries(photographed)) things[key] = { ...thing
 venues.scoops = { ...venues.scoops, media: mediaOf('parlour') }
 fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel') }
 fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
-// The photo belongs to the photo activity; the menu item's own preview is a
-// details card, because its object is the item, not a picture. A body is
-// self-contained: it names its item even though the headline does too.
+// The photo belongs to the photo activity; the menu item's own preview is its
+// details card (set with the other bodies above).
 const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: mediaOf('sundae') })
-const menuProduct = { ...fare.butterscotch,
-  body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title: fare.butterscotch.label, items: [
-    detail('Price', APP_CONTENT.price),
-    detail('Section', APP_CONTENT.section),
-    detail('Available', APP_CONTENT.available),
-  ] }] }
-// Instructions are a field of the order, not a passage quoted from somewhere,
-// so they are Prose under a title that names the order.
-const instructedOrder = { ...order(1035), body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
-  content: APP_CONTENT.instructions, mediaType: 'text/plain', verbatim: false,
-  title: `${order(1035).label} instructions` }] }
 
 // ── The verbs ────────────────────────────────────────────────────────────────
 
@@ -531,14 +524,14 @@ ROWS.push(
   // splice: the staff member handles the same order, through the shop app.
   row('a-confirm', '1985-07-02 12:03', 'confirm', scooper, order(1035), v.scoops, 'splice', demo),
   row('a-note', '1985-07-02 12:04', 'post', scout, note('201', APP_CONTENT.note), order(1035), 'splice', demo),
-  row('a-ready', '1985-07-02 12:06', 'ready', scooper, instructedOrder, v.scoops, 'splice', demo),
+  row('a-ready', '1985-07-02 12:06', 'ready', scooper, order(1035), v.scoops, 'splice', demo),
   row('a-paid', '1985-07-02 12:07', 'pay', stripe, order(1035), null, 'splice', demo),
   row('a-complete', '1985-07-02 12:08', 'complete', scooper, order(1035), v.scoops, 'splice',
     { ...demo, headline: ':actor completed :object' }),
   row('a-created', '1985-07-02 11:59', 'create', scooper, order(1035), v.scoops, 'splice', demo),
   // splice: the catalogue item is already sourced in the pack; prices and media are illustrative.
   row('a-price', '1985-07-02 11:00', 'reprice', scooper, fare.butterscotch, v.scoops, 'splice', demo),
-  row('a-product', '1985-07-02 10:00', 'publish', scooper, menuProduct, v.scoops, 'splice', demo),
+  row('a-product', '1985-07-02 10:00', 'publish', scooper, fare.butterscotch, v.scoops, 'splice', demo),
   row('a-photo', '1985-07-02 10:05', 'publish', scooper, menuPhoto, fare.butterscotch, 'splice',
     { ...demo, headline: ':actor added a photo of :target' }),
 )
