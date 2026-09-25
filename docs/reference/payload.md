@@ -15,6 +15,9 @@ a renderer needs no knowledge of your domain.
 }
 ```
 
+Empty PHP maps such as `data` and `attributes` serialize as `[]`; populated
+string-keyed maps serialize as JSON objects.
+
 ## Entity Object
 
 Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`) is `null` or:
@@ -128,14 +131,15 @@ applies.
     "width": 4032,
     "height": 3024,
     "alt": "Pad thai, table 4"
-  }
+  },
+  "attachments": []
 }
 ```
 
 | Value | Meaning |
 |---|---|
 | `media: null` | the entity has no media; the common case |
-| `media: {…}` | all four image keys present, each an image object or `null`, plus `attachment` when set |
+| `media: {…}` | all four image keys present, each an image object or `null`, plus `attachments` (an empty list when none) |
 | `media.url !== null` | the thing behind `entity.url` is an image |
 | `width`, `height` | advisory, for reserving the box before the bytes arrive; `null` when unknown, never `0` |
 
@@ -145,8 +149,8 @@ The four keys are Activity Streams 2.0 property names with AS2's definitions:
 a photo is `url` (the full image) plus `preview` (the derivative a list paints).
 A group's `sample` entities are ordinary entity objects and carry `media` the same way.
 
-An optional `attachment` carries `type`, `href`, `mediaType`,
-and `name` from `FeedResource`. Its default type is `Document`.
+`attachments` is a list of resources carrying `type`, `href`, `mediaType`,
+and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 ### One Payload, One Feed
 
@@ -203,7 +207,7 @@ audience.
 |---|---|
 | `tombstoned` | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
-| `missing_headline_template` | the verb's [`->missingHeadline()`](/deeper/deleted-models#a-headline-for-a-deleted-object), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
+| `missing_headline_template` | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
 | `missing_headline` | the pre-rendered fallback for a closure-authored `->missingHeadline()`, as `headline` is for `headline_template`; otherwise `null` |
 
 Storyfeed gives the facts, never its own wording. `redundant` is the fact that
@@ -266,7 +270,7 @@ declares one. A renderer may show either reading.
 
 | Key | Holds |
 |---|---|
-| `sample` | per role, up to three distinct entities, live ones before tombstoned ones |
+| `sample` | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
 | `distinct` | per role, the true count of distinct entities across all members |
 | `tombstoned` | the roles with at least one tombstone among their distinct entities |
 | `redundant` | `true` only when every member is redundant |
@@ -274,7 +278,7 @@ declares one. A renderer may show either reading.
 
 Each singular role key is an entity only when the axis pins the role, its
 sample list has exactly one entry, and its distinct count is exactly one.
-Otherwise it is `null`. Each plural role has a sample list capped at three
+Otherwise it is `null`. Each plural role has a limited sample list
 and a distinct count; an absent role has `[]` and `0`.
 
 A renderer can rely on the group node's shape, but not on which groups appear:
@@ -290,7 +294,7 @@ registry. The package ships no icon set, and an unresolved pair is `null`.
 what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
 Like the verb it is free-form: no vocabulary is shipped or validated, and any
 string passes through. It is `null` for every pair with no registered intent.
-See [what a glyph means](/basics/rendering#what-a-glyph-means).
+See [what a glyph means](/basics/rendering#glyphs-and-intents).
 
 Both resolve on the same ladder and independently of each other:
 `type.verb`, `type.*`, `*.verb`, `*.*`.
@@ -306,11 +310,11 @@ template is non-null, so a test should not assert a non-null `headline`.
 
 Both are null on a group node when no sentence is true of the whole group.
 Renderers **must** handle it; see
-[Rendering](/basics/rendering#a-group-with-no-sentence).
+[Rendering](/basics/rendering#groups-without-headlines).
 
 Token availability per axis is in
 [Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s
-pinned roles; the [singular fallback](/deeper/aggregation#tokens-a-group-headline-may-use) can also
+pinned roles; the [singular fallback](/deeper/aggregation#group-headline-tokens) can also
 keep a role token when the group contains exactly one distinct entity.
 
 Noun substitution can change the emitted template even for the same grammar

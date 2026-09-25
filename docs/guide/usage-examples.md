@@ -1,5 +1,7 @@
 # Usage Examples
 
+Record orders, quotes and photographs, and read them as individual or grouped activities.
+
 <script setup>
 import { who, where, orders, dishes, photos, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
 
@@ -94,7 +96,7 @@ const posted = activity({
 
 <FeedExample context :items="[scenes.order]" />
 
-## Three in a Row, One Line
+## Repeated Orders
 
 The same customer orders three times in a few minutes, in three requests.
 
@@ -134,7 +136,7 @@ As a timeline:
 [Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
 decides the grouping.
 
-## A Crowd, One Line
+## Orders From Several Customers
 
 Five customers, five orders, five separate requests.
 
@@ -142,7 +144,7 @@ Five customers, five orders, five separate requests.
 
 [Aggregation](/deeper/aggregation) covers the axes and what each one may say.
 
-## Someone Who Is Not a User
+## Activities By a Payment Provider
 
 A payment provider reports an order paid, and it has no row in your database.
 
@@ -173,7 +175,7 @@ Storyfeed::record(
 
 [Parties & Anonymous Actors](/deeper/parties).
 
-## The Words Someone Wrote
+## Quoted Text
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -231,7 +233,7 @@ Storyfeed::record(
 
 <FeedExample :items="[photographed]" />
 
-## Six Photographs, One Row
+## Grouped Photographs
 
 The cook uploads a set, one request each.
 
@@ -260,7 +262,7 @@ Storyfeed::record(
 
 <FeedExample :items="[photoBurst]" />
 
-## A Dish, as a Post
+## Dish Content
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -289,10 +291,3 @@ Storyfeed::record(
 
 The card comes from the dish's own `toFeed()`, covered in
 [Activity Body Content](/deeper/body).
-
-## And Many More
-
-A feed can group by whoever you like, tell one history to several audiences,
-bundle a burst of work into one story, publish itself from an event, keep
-working when a row it names is gone, and serialize to
-[Activity Streams 2.0](/deeper/activity-streams).

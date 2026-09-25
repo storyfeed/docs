@@ -83,7 +83,7 @@ no type. The same headline in a Story class is an error when stories compile.
 Grouping is decided when the activity is published. In each read mode, an
 activity is in only one group.
 
-## Which Axes Each Mode Reads
+## Axes By Read Mode
 
 The read mode chooses which groupings a read shows:
 
@@ -93,10 +93,10 @@ The read mode chooses which groupings a read shows:
 | `live()` | `repeat`, plus authored composites |
 | `summary()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner |
 
-Until `storyfeed:curate` has run, `summary()` groups only by `repeat`. The
-package schedules it hourly.
+With `grouping.curate` enabled, publishing selects a winning axis.
+`storyfeed:curate` also revisits recent activity hourly when Laravel's scheduler runs.
 
-## The Built-in Axes
+## Built-In Axes
 
 | Axis | Collapses | Pins (Safe Singular Tokens) | One Type | Example Headline |
 |---|---|---|---|---|
@@ -173,7 +173,7 @@ A plural token becomes a few of the group's names and a count of the rest.
 [Rendering](/basics/rendering#groups) covers how. `:count` is the number of
 activities in the group.
 
-## Tokens a Group Headline May Use
+## Group Headline Tokens
 
 A group headline may only use tokens that are true of **every** activity in
 it. A singular token is allowed only where the axis pins it; a plural token is
@@ -192,7 +192,7 @@ compile.
 With no group headline, a group tries the single-activity headline. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
 its entities are one type. Otherwise the group has no headline, and
-[your renderer handles it](/basics/rendering#a-group-with-no-sentence).
+[your renderer handles it](/basics/rendering#groups-without-headlines).
 
 Give a type its noun:
 
@@ -231,10 +231,10 @@ returns `dishes`. So `:actor put :object on the menu` can arrive as
 `:actor put dishes on the menu`. The noun is plain text; `:actor` is still a
 link.
 
-## Members That Did Not Fill a Role
+## Groups With Missing Roles
 
 A plural token lists only the activities that filled the role. `targets`
-groups by actor, verb and day, so an activity with no target can join the
+groups by actor, verb and calendar period (a day by default), so an activity with no target can join the
 group: it counts towards `:count` but adds no name.
 
 ```php
@@ -244,10 +244,10 @@ group: it counts towards `:count` but adds no name.
 ```
 
 The first line is wrong because of the noun beside `:count`, and nothing
-checks that. When `node.count` and `node.distinct.targets` differ, some
-activities have no target.
+checks that. A difference between `node.count` and `node.distinct.targets` can mean
+repeated targets, missing targets, or both.
 
-## One List per Template
+## Plural Lists in Headlines
 
 Both of these are token-safe; only one is readable:
 
@@ -312,7 +312,7 @@ role's fields are in the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb and `d` the day. Without `v`, a group may mix verbs, so only
+`v` adds the verb and `d` its calendar period, a day by default. Without `v`, a group may mix verbs, so only
 a `scene.*` key applies to it.
 
 A new axis has the lowest priority. To outrank a built-in, say so:

@@ -1,9 +1,8 @@
 # Rendering
 
 A renderer turns each node of the payload into a row. Every node carries its
-own sentence, its entities, a glyph and the app's `data`, so one loop draws
-every feed your app reads, and a verb you add later draws with no frontend
-change.
+headline fields, entities, glyph and the app's `data`. Your frontend chooses
+how to display them.
 
 <script setup>
 import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
@@ -40,15 +39,17 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
 ::: headless
 :::
 
-## The Smallest Loop That Draws Something
+## Rendering a Headline
 
-Substitute the entity labels into `headline_template` and you have a row:
+This activity names three roles. Substitute their labels into its template:
+
 
 ```blade
 {{-- resources/views/feed.blade.php --}}
+{{-- This example draws the activity above; groups use the section below. --}}
 @foreach ($page['items'] as $node)
     <article>
-        {{ strtr($node['headline_template'], [
+        {{ strtr($node['headline_template'] ?? $node['headline'] ?? '', [
             ':actor' => $node['actor']['label'] ?? 'Someone',
             ':object' => $node['object']['label'] ?? 'Something',
             ':target' => $node['target']['label'] ?? 'Something',
@@ -77,7 +78,7 @@ Each entity carries its own `url`, so a link needs no route knowledge:
             : e($e['label'] ?? $fallback));
 @endphp
 
-{!! strtr($node['headline_template'], [
+{!! strtr($node['headline_template'] ?? $node['headline'] ?? '', [
     ':actor' => $entity($node['actor'], 'Someone'),
     ':object' => $entity($node['object'], 'Something'),
     ':target' => $entity($node['target'], 'Something'),
@@ -86,7 +87,7 @@ Each entity carries its own `url`, so a link needs no route knowledge:
 
 <FeedExample :items="[one]" />
 
-## What a Glyph Means
+## Glyphs and Intents
 
 The node's `glyph` is a token your app registered. Map it to your icon set,
 with a fallback icon for a token you don't recognise. `glyph_intent` sits
@@ -118,8 +119,8 @@ still in the feed:
 
 <FeedExample :items="[degraded]" />
 
-The fallbacks in the loop above cover both. "Someone" is the usual word for an
-unknown actor.
+The example uses placeholders for missing labels. For an unknown actor, a
+headline without an actor token can describe the activity directly.
 
 ## Groups
 
@@ -138,7 +139,9 @@ count, and a plural token draws the sample plus how many are not shown:
     };
 @endphp
 
-{!! strtr($node['headline_template'], [
+{!! strtr($node['headline_template'] ?? $node['headline'] ?? '', [
+    ':actor' => $entity($node['actor'], 'Someone'),
+    ':target' => $entity($node['target'], 'Something'),
     ':actors' => $list($node, 'actors'),
     ':targets' => $list($node, 'targets'),
     ':count' => $node['count'],
@@ -147,12 +150,13 @@ count, and a plural token draws the sample plus how many are not shown:
 
 <FeedExample :items="[grouped]" />
 
-A group carries `node['actor']` only when it has exactly one actor. For a
+A group fills a singular role only when its axis pins that role and the
+group has exactly one entity in it. For a
 **singular** token, take a name from the sample only when `distinct` says
 there is one, and otherwise draw the plural list. An unconditional
 `?? sample[0]` names one person over a group of nine.
 
-## A Group With No Sentence
+## Groups Without Headlines
 
 Some groups have no sentence: **both** `headline_template` and `headline` are
 null. Draw the count:
@@ -175,7 +179,7 @@ activities names one actor over a many-actor group. `headline` is the
 pre-rendered sentence for grammar written as a PHP closure, and is null when
 the template is present.
 
-## What the App Put in `data`
+## Activity Data and Bodies
 
 Beneath the sentence, a row can carry an utterance or a
 [body](/basics/activity-content): a value in the app's own `data` with a known
@@ -193,4 +197,3 @@ fallback leaks ("Someone"/"Something"): 0
 A leak means a token resolved to nothing, and it reads like an anonymous
 actor rather than a bug. Run it across every read mode. Degraded entities are
 the exception: they should render your placeholder.
-

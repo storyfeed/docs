@@ -21,13 +21,11 @@ const after = group({ id: 're1', verb: 'view', axis: 'repeat', count: 2, glyph: 
   distinct: { actors: 1, objects: 2 } })
 </script>
 
-## Keeping a Verb for a While
+## Per-Verb Retention
 
 A viewed order matters for a month, and then it doesn't:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -37,20 +35,6 @@ Story::for(Order::class)
     ->headline(':actor viewed :object')
     ->keepFor('30 days');
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::stories([
-    'order.view' => [
-        'headline' => ':actor viewed :object',
-        'keepFor' => '30 days',
-    ],
-]);
-```
-
-:::
 
 ```php
 // routes/console.php
@@ -66,7 +50,7 @@ verbs are kept.
 `'6 months'`, or a `DateInterval`. It sits on the same ladder as a headline,
 so `Story::verb('view')->keepFor(…)` applies to views of every type.
 
-## A Window for Every Verb
+## Default Retention
 
 `prune.after_days` sets a window for every verb that declares none.
 `keepForever()` exempts a verb from it:
@@ -95,7 +79,7 @@ Story::for(Order::class)->verb('refund')->keepForever();
 `storyfeed:prune --days=` overrides `prune.after_days` for one run. A verb's own
 window still wins.
 
-## Seeing What a Run Would Delete
+## Previewing Pruning
 
 ```bash
 php artisan storyfeed:prune --pretend
@@ -113,7 +97,7 @@ Would prune 3 activities, 2 snapshots and 0 tombstones. Nothing was deleted.
 Run it after declaring or shortening a window: the next run deletes everything
 already past it.
 
-## What a Run Deletes
+## Pruned Activities and Entities
 
 A group loses the members that were pruned. Before the run:
 

@@ -153,7 +153,7 @@ class CheckoutController extends Controller
 The events implement `ShouldDispatchAfterCommit`: the job is pushed at the
 outermost commit, and a rollback leaves no row and no job.
 
-## A Job That Publishes
+## Publishing From a Job
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -253,7 +253,7 @@ A backdated row can land above a cursor a client has already paged past. A
 fresh read of the head picks it up, as the [payload contract](/reference/payload)
 describes.
 
-### Values That Must Not Change
+### Preserving Event Values
 
 `SerializesModels` re-fetches the model on the worker, so an order renamed
 before the job runs publishes under its new name. A value the fact must keep
@@ -291,7 +291,7 @@ Storyfeed::record(
 | The Job | Do |
 |---|---|
 | publishes, then fails, then retries | publish last: `publish()` has no idempotency key |
-| repeats a verb on the same object | `->replace()`: the newest row supersedes the earlier `(object, verb)` |
+| repeats a verb on the same object | declare `->keepLatest()` on the verb: the latest `published_at` wins for its object and verb |
 | runs an import that must not record | `Storyfeed::withoutRecording(fn () => $importer->run())` |
 
 `stopRecording()` lasts for the rest of the process, which on a worker is
@@ -368,7 +368,7 @@ use Storyfeed\Support\QueuedActor;
 Context::addHidden(QueuedActor::KEY, null);
 ```
 
-### A Verb That Chooses Its Actor From the Request
+### Request-Based Actors
 
 A [Story class method that takes the `Request`](/deeper/stories#using-the-request)
 chooses its verb's actor at each publish. On a worker there is no request, so a
@@ -391,7 +391,7 @@ anonymous publish stays anonymous. A method that throws at the dispatch never
 fails it: the job publishes with the actor it would otherwise have had, and
 the doctor names the method (`actions.carry_failed`).
 
-### A Scoped Actor
+### Scoped Actors
 
 A job dispatched inside `Storyfeed::as()` runs as that actor on the worker:
 
@@ -421,7 +421,7 @@ it. The scope ends with the job, even when the job throws. A job dispatched
 with `->afterResponse()` runs after the scope has closed, so it does not carry
 the actor.
 
-### Jobs With No User
+### Jobs Without a User
 
 A job dispatched from a console command or the scheduler has no user to carry:
 
@@ -469,7 +469,7 @@ on that event was pushed, use `Queue::fake()` alone.
 
 ## Concurrent Workers
 
-| Guaranteed | How |
+| Behaviour | How |
 |---|---|
 | one batch per actor per burst | a lock row per actor, taken inside the publish transaction |
 | one `BatchClosed` per batch | the close is a conditional update |

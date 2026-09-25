@@ -91,7 +91,7 @@ The first line shows a customer other people's orders.
 forgotten.
 :::
 
-## `only()` and `except()`
+## Filtering Verbs
 
 Both work on any read, named or not:
 

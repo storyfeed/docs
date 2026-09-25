@@ -40,7 +40,7 @@ For named system attribution or a sentence without an actor slot, see
 | Key | Default |  |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `replace.delete` | `'soft'` | what [`->replace()`](/cookbook/repeating-activities#what-replace-matches-on) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
+| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/cookbook/repeating-activities#matching-activities) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
 
 ## Verbs
 
@@ -81,7 +81,7 @@ that records only through stories has nothing to register.
 | `grouping.policy.min_target_members` | `3` | members required on `targets` |
 | `grouping.policy.min_object_members` | `2` | members required on `object` |
 
-When grouping does not fire, check the [axis registry](/deeper/aggregation#the-built-in-axes)
+When grouping does not fire, check the [axis registry](/deeper/aggregation#built-in-axes)
 before changing thresholds: `repeat` pins the target id, while `targets` does not.
 
 `sample_limits` is keyed by singular role — `actor`, `object`, `target`,
@@ -129,6 +129,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 | Key | Default |  |
 |---|---|---|
 | `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
+| `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs |
 | `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
 | `trickle.limit` | `200` | activities snapshotted, and snapshots checked for a deleted model, per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |

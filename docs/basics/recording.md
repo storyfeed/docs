@@ -35,11 +35,11 @@ the headline it produces:
 <FeedExample context :items="[scenes.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
-happened. `place` is this app's own word, not one the package knows. Nothing
-is registered first; the package stores the string and hands it back.
+happened. `place` is this app's own word, not one the package knows. Declare the verb and its headline in `routes/feed.php`. The stored verb is
+the string you pass.
 
 `Storyfeed::record()` records the same activity in one call, with each role as
-a named argument. Every recording example on this site shows both forms.
+a named argument. The two calls record the same roles.
 
 ## Roles
 
@@ -56,7 +56,7 @@ a named argument. Every recording example on this site shows both forms.
 Direction decides the role. The same tablet is a `target` for an order sent
 **to** it and an `instrument` for an order taken **on** it.
 
-## Reading as a Sentence
+## Reading As a Sentence
 
 Each role has a setter named for it: `actor()`, `object()`, `target()`,
 `context()`, `origin()`, `result()` and `instrument()`; `verb()` sets the verb.
@@ -281,45 +281,7 @@ class ImportPriceHistory extends Command
 ```
 :::
 
-## Replacing Instead of Appending
-
-A price edited five times before the menu goes live is one fact.
-`->replace()` supersedes the earlier row with the same object and verb, so
-each edit leaves one row:
-
-::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/MenuItemPriceController.php, update()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('reprice', $dish)
-    ->data(['from' => $from, 'to' => $dish->price])
-    ->replace() // [!code highlight]
-    ->publish();
-```
-
-```php [Named Arguments]
-// app/Http/Controllers/MenuItemPriceController.php, update()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'reprice',
-    object: $dish,
-    actor: $request->user(),
-    data: ['from' => $from, 'to' => $dish->price],
-    replace: true, // [!code highlight]
-);
-```
-:::
-
-<FeedExample :items="[priced]" />
-
-`data` is not part of the key. Which verbs should replace is in
-[Repeating Activities](/cookbook/repeating-activities).
-
-## Recording Many Objects at Once
+## Recording Many Objects At Once
 
 `->objects()` records one activity about many objects:
 

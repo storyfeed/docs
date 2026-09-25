@@ -1,4 +1,4 @@
-# What an Activity Shows
+# Activity Content
 
 The headline is one sentence. Under it an activity can show the words someone
 wrote, the facts behind a change, or what a file is.
@@ -57,7 +57,7 @@ const withFile = activity({
 })
 </script>
 
-## A Headline on Its Own
+## Headlines
 
 Most activities need nothing more. The sentence is the whole row:
 
@@ -68,7 +68,7 @@ Most activities need nothing more. The sentence is the whole row:
 
 <FeedExample context :items="[scenes.order]" />
 
-## Words Someone Wrote
+## Quoted Text
 
 When the activity is *about* an utterance, the utterance belongs on the
 activity. `->thread()` carries it:
@@ -91,10 +91,10 @@ Storyfeed::activity()
 The text is stored on the activity, so editing the note afterwards does not
 change what the row quotes.
 
-## A Body the Renderer Recognises
+## Entity Bodies
 
-Everything else goes in the entity's **body**, a value of a known body type. The model writes it once, in `toFeed()`, and any renderer that
-recognises the type draws it with no view of yours.
+An entity's **body** carries structured content. The model supplies it in
+`toFeed()`, and your frontend chooses how to draw each body type.
 
 ::: code-group
 
@@ -171,12 +171,11 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[withKeyValue]" />
 
-A value the row has no answer for is **silent by default**. Give it a word
-only where the emptiness is itself the answer: one row with
+A missing value can carry a label for your renderer: one row with
 `KeyValue::missingAs()`, or the whole body with `->missing()`. A value that is
 compared rather than read, a reference or an address, is marked `verbatim`.
 
-## What a File Is
+## File Details
 
 ::: code-group
 
@@ -221,7 +220,7 @@ public function toFeed(): FeedEntity
 `File` says what a file is, never where it lives: the URL comes from
 [`feedMedia()`](/basics/feedable-models#the-link) at read time.
 
-## A Link That Opens in Place
+## Modal Links
 
 Some entities are better opened than navigated to, like a photograph or a
 document preview. `modal()` on the media marks the link, and the entity
@@ -255,9 +254,9 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 <FeedExample :items="[openInPlace]" />
 
 `modal` is a boolean in the payload. Opening a dialog is your renderer's job;
-on this site, clicking the file name opens a panel.
+the flag does not open a dialog by itself.
 
-## The Body Types Storyfeed Ships
+## Built-In Body Types
 
 | Body Type | Shows |
 |---|---|

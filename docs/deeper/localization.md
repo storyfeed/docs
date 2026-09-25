@@ -74,5 +74,5 @@ return [
 ];
 ```
 
-[Aggregation](/deeper/aggregation#tokens-a-group-headline-may-use) covers where
+[Aggregation](/deeper/aggregation#group-headline-tokens) covers where
 a noun appears.

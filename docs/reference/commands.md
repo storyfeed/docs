@@ -1,5 +1,7 @@
 # Commands
 
+Artisan commands install, inspect and maintain the feed.
+
 ## Installing
 
 | Command | Does |
@@ -39,7 +41,7 @@ Schedule::command('storyfeed:prune')->daily();
 | Command | Does |
 |---|---|
 | `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines, and `--stubs --arrays` prints them as registry arrays for a service provider; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json` |
+| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json`; `-v` adds resolved middleware, which JSON always includes |
 | `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
 
@@ -80,8 +82,8 @@ every client that accumulates nodes resyncs.
 
 ### Rehashing Existing Rows
 
-Grouping is computed at publish time from the role columns, the verb and the
-day. Existing rows keep the hash they were written with; nothing recomputes it
+Grouping is computed at publish time from the role columns, the verb and its
+calendar period (a day by default). Existing rows keep the hash they were written with; nothing recomputes it
 on read. These change what the hash would be:
 
 - registering a new axis
@@ -100,7 +102,7 @@ php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 The hourly scheduled `curate` runs without `--rehash`, so rows are rehashed
 only when you run it yourself.
 
-### Ending a Composite Whose Parent Is Gone
+### Releasing Orphaned Composites
 
 A force-deleted composite parent hands its members back to ordinary grouping.
 Where members are still claimed by a parent that no longer exists, the
@@ -138,5 +140,5 @@ once cached. Keep those in a service provider.
 
 | Command | Does |
 |---|---|
-| `make:story` | creates a [Story class](/deeper/stories). `--resource --model=Order` writes a class with a method per conventional verb and prints the `Story::resource()` line to bind it; it never edits `routes/feed.php`. Without `--resource`, a one-verb class; it prints the `Story::for()->verb()` line to bind it. What the name does not settle it asks for: the verb from your declared verbs, the model from your `Feedable` models. `--verb=` and `--model=` skip the prompts; without a terminal, an unsettled verb or model fails naming the declared verbs. For a name without `Was`, it spells the verb's past tense itself, and where that is uncertain (`ship`) it asks, offering each spelling and **None of these — leave the headline commented**; without a terminal, or with that choice, the headline is written commented out, one line per spelling, and the class fails at compile until one is uncommented. A group headline for an axis that can hold other types is written as a commented `routes/feed.php` line. It never writes `TODO`. `--from-doctor` writes a one-verb class for each type and verb recorded with no headline, named from the pair (`OrderWasPlaced`); a verb whose past tense is uncertain it asks about, offering each spelling and **Skip this one**, and without a terminal it skips the verb, writes nothing for it, and prints a complete `make:story` command for each spelling, class name included, to run the right one. `--object=` takes the object's model or morph alias, or `'*'` for none, as `--model=` does for a one-verb class. See [Generating from Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
+| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
 | `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |

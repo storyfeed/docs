@@ -69,7 +69,7 @@ Activity Streams 2.0 recommends. The payload says so:
 | `redundant` | `true`: the activity was about the order, and the order is gone |
 
 What `redundant` means, and how a verb changes it, is in
-[What a Verb Is About](#what-a-verb-is-about). The full shape is in
+[What a Verb Is About](#roles-that-determine-redundancy). The full shape is in
 [The Payload Contract](/reference/payload).
 
 A deleted order's headline, icon and intent are still the ones defined for
@@ -130,7 +130,7 @@ class MenuItem extends Model implements Feedable
 
 The label stays, and the link goes.
 
-## What a Verb Is About
+## Roles That Determine Redundancy
 
 An activity is **redundant** when a role its verb is about holds a tombstone.
 By default, a verb is about its object. `->missing()` names the roles instead:
@@ -152,9 +152,7 @@ Once the kitchen is deleted, placing an order with it is redundant too:
 
 `->missing()` replaces the default, and `->missing()` with no roles means the
 verb is about none of them. On `Story::for(Order::class)->missing(...)`, it
-applies to every verb on orders; a verb's own call wins. In the array form it
-is a `'missing'` key, and on a story class a `missing()` method returning the
-list.
+applies to every verb on orders; a verb's own call wins. On a class that extends `Story`, a `missing()` method returns the list.
 
 ## Removal Verbs
 
@@ -181,13 +179,11 @@ with one of those types counts even when it is recorded as a plain string,
 such as `delete`, `discard` or `undo`. `Story::resource()` declares its
 `delete` and `restore` verbs as removals.
 
-## A Headline for a Deleted Object
+## Headlines for Deleted Objects
 
 `->missingHeadline()` gives a verb its own sentence for once it is redundant:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -197,20 +193,6 @@ Story::for(Order::class)
     ->headline(':actor placed :object with :target')
     ->missingHeadline(':actor placed an order, since deleted');
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::stories([
-    'order.place' => [
-        'headline' => ':actor placed :object with :target',
-        'missingHeadline' => ':actor placed an order, since deleted',
-    ],
-]);
-```
-
-:::
 
 <FeedExample :items="[readsGone]" expanded />
 
@@ -229,9 +211,7 @@ A verb with no `missingHeadline()` has `null` in both.
 `->forgetWhenMissing()` deletes a verb's activities once they are redundant and
 the deletion is permanent. A viewed order is no news once the order is gone:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -241,20 +221,6 @@ Story::for(Order::class)
     ->headline(':actor viewed :object')
     ->forgetWhenMissing();
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::stories([
-    'order.view' => [
-        'headline' => ':actor viewed :object',
-        'forgetWhenMissing' => true,
-    ],
-]);
-```
-
-:::
 
 The order's other activities stay, naming its tombstone. On
 `Story::for(Order::class)->fallback()` it applies to every verb on orders.
@@ -266,7 +232,7 @@ The order's other activities stay, naming its tombstone. On
 | deleted by a query, then passed to `Storyfeed::tombstone()` | are permanently deleted, when the rows are gone for good |
 | found deleted by `storyfeed:trickle` | are permanently deleted, when the rows are gone for good |
 
-## Groups with a Deleted Model
+## Groups With Deleted Models
 
 A group counts its tombstones per role, beside `distinct`:
 
@@ -276,7 +242,7 @@ A group counts its tombstones per role, beside `distinct`:
 group's `sample` lists live entities before tombstones. `redundant` on a group
 is `true` only when every member is redundant.
 
-## Deleting Many at Once
+## Bulk Deletions
 
 A query that deletes rows directly, such as `Order::whereKey($ids)->delete()`,
 fires no model events. `storyfeed:trickle` finds those models on its next run
@@ -312,7 +278,7 @@ $user->forceDeleteFromFeed();   // every activity involving the user, permanentl
 $user->forceDelete();
 ```
 
-`deleteFromFeed()` soft-deletes them instead. Neither runs on its own: a
-deleted model leaves a tombstone, and only these two calls remove activities.
+`deleteFromFeed()` soft-deletes them instead. These are explicit calls. A deleted model normally leaves a tombstone; a
+verb with `forgetWhenMissing()` also removes activities after permanent deletion.
 [Recording Deletions](/cookbook/activities-about-deletions) covers choosing
 between them.

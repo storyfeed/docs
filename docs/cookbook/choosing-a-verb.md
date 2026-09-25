@@ -247,7 +247,7 @@ deliberate consumption — a file was downloaded, a document taken away.
 
 Neither changes the object. If the choice is not clear, it is `view`.
 
-## When No Verb Fits
+## Recording Outcomes
 
 A verb that fits none of the twenty-eight activity types usually means
 something in the domain is not modelled yet.
@@ -289,7 +289,7 @@ class MailWebhookController extends Controller
 Likewise, three verbs for three states of one record usually want one verb
 and a record of the transition.
 
-## When Two Verbs Would Be Identical
+## Distinguishing Activities
 
 Two activities with the same verb, object type and target are the same
 activity. Whatever separates them belongs somewhere other than the verb.

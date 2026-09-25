@@ -11,7 +11,7 @@ Fill in the values you plan to record, with `—` for an empty field. A reader
 should be able to tell what happened from those values alone. Do this before
 writing the headline.
 
-## An Invitation Accepted
+## Recording an Accepted Invitation
 
 ```text
 inviter · joined   · invitee    · —        incoherent
@@ -25,7 +25,7 @@ invitee · accepted · invitation · project  coherent
 | Invitee · joined · invitee · — | The invitee is repeated as the object, and nothing says what they joined. |
 | Invitee · accepted · invitation · project | Who accepted, what they accepted, and which project it was for. |
 
-## What to Look For
+## Checking Role Values
 
 | Failure Mode | Inspect Each Field for |
 |---|---|
@@ -49,11 +49,11 @@ it.
 Read the stored values, not the headline. The headline can change later; the
 record stays.
 
-## What Reading One Row Cannot Catch
+## Checking Multiple Activities
 
 Two mistakes look correct in any single row.
 
-### Whether the Event Happened Once
+### Duplicate Occurrences
 
 ```text
 user · revised · proposal · —   coherent
@@ -67,7 +67,7 @@ covers where the call belongs, and
 [Repeating Activities](/cookbook/repeating-activities) covers collapsing the
 rest.
 
-### Whether Every Token Has a Publisher
+### Unfilled Headline Tokens
 
 ```text
 user · archived · document · —   coherent — nothing was aimed at

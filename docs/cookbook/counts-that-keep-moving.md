@@ -4,7 +4,7 @@ A count you record in an activity, such as "3 replies", is stored as it was at
 publish and never recomputed. If the count can still change, store nothing and
 look it up when the feed is read.
 
-## Recording It
+## Recording a Count
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -97,13 +97,13 @@ trickle.
 That is right for something finished, and wrong on a surface where the reader
 can add a reply.
 
-## Resolving It Instead
+## Resolving a Live Count
 
 **1. Store nothing.**
 
 ```php
 // app/Http/Controllers/CommentController.php, store()
-FeedThread::make(text: $excerpt, replies: null)
+FeedThread::make(text: $excerpt, replies: null);
 ```
 
 `null` means nobody counted. It renders as an excerpt with no count, not as
@@ -136,7 +136,7 @@ $node['thread']['replies'] = $node['verb'] === 'settle'
 Set `null` explicitly. A backfill or a hand-repaired row can put a stored
 count back, and it would show in place of the live one.
 
-## Which Counts This Covers
+## Choosing Counts to Resolve
 
 Any count about something that keeps changing after the activity: replies,
 unread items, "3 photos waiting", members of an open collection. Ask:

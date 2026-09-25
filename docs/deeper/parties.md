@@ -240,7 +240,7 @@ With no list, any name becomes a party. Names match as party keys do, so
 `config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
 `local` and `testing` only.
 
-## App-wide Fallbacks
+## App-Wide Fallbacks
 
 ```php
 // config/storyfeed.php

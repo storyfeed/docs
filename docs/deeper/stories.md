@@ -1,7 +1,7 @@
 # Story Classes
 
-A Story class says what each of a model's verbs reads as, one method per verb.
-Call sites never touch it: they name the verb, the way a link names a route.
+Story classes keep activity definitions together. A resource class holds a
+model's verbs; a class that extends `Story` publishes one activity with its data.
 
 [Publishing Story Classes](/deeper/publishing-story-classes) covers activities constructed with data and single-verb declarations.
 
@@ -32,6 +32,21 @@ const live = activity({ id: 'sc5', verb: 'publish', glyph: 'chef-hat',
   headline_template: ':actor put :object on the menu',
   actor: who.cook, object: dishes.kottu })
 </script>
+
+## Defining a Verb
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('complete')->headline(':actor completed :object');
+```
+
+<FeedExample :items="[completed]" />
+
+When the feed file gets long, move a model's verb definitions into a resource
+class. The binding below replaces the individual definition above.
 
 ## Binding a Story Class
 
@@ -98,7 +113,7 @@ returns in `routes/feed.php`, with the same methods.
 | `place()` | `place` | `:actor placed :object[ with :target]` |
 | `complete()` | `complete` | `:actor completed :object` |
 | `confirmPayment()` | `confirm_payment` | `:actor confirmed payment for :object` |
-| none | `create`, `update`, `delete`, `restore` | the [defaults](/basics/the-feed-file#a-model-s-everyday-verbs) |
+| none | `create`, `update`, `delete`, `restore` | the [defaults](/basics/the-feed-file#conventional-model-verbs) |
 
 To add a verb, add a method. Nothing else names it.
 
@@ -116,7 +131,7 @@ The method name is the verb, snake-cased when it has more than one word:
 Nothing else is mapped: `store()` records `store`, and `create()` records
 `create`.
 
-### What an Action Returns
+### Action Return Types
 
 Each method declares its return type:
 
@@ -176,6 +191,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
 
 class CheckoutController extends Controller
 {
@@ -183,8 +199,9 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        story('place', $order)
+        Storyfeed::activity()
             ->by($request->user())
+            ->action('place', $order)
             ->to($order->kitchen)
             ->publish();
 
@@ -224,19 +241,11 @@ class CheckoutController extends Controller
 
 <FeedExample context :items="[scenes.order]" />
 
-The call names the verb, and Storyfeed finds the method that declares it. The
-verb is the public handle, as a route's name is, and the Story class is the
-declaration behind it:
+The call names the verb. Storyfeed reads the definition compiled from the
+resource class.
 
-| Laravel | Storyfeed |
-|---|---|
-| `Route::resource('orders', OrderController::class)` | `Story::resource(Order::class, OrderStory::class)` |
-| `route('orders.show', $order)` | `story('place', $order)`, `Act::Complete->of($order)` |
-| `route:list` | `storyfeed:list` |
-| an unknown route name throws | an unknown verb throws in `local` and `testing` (`verbs.strict`) |
-
-Nothing instantiates `OrderStory` at a call site, as nothing instantiates a
-controller. So it has no `publish()`: the call site starts from the verb.
+Resource classes are declarations. Call sites publish through
+`Storyfeed::activity()` or `Storyfeed::record()`.
 
 ## Using the Request
 
@@ -263,6 +272,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
 
 class PaymentWebhookController extends Controller
 {
@@ -273,7 +283,7 @@ class PaymentWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        story('confirm_payment', $order)->publish(); // the verb names the actor
+        Storyfeed::activity('confirm_payment', $order)->publish(); // the verb names the actor
 
         return response()->noContent();
     }
@@ -327,7 +337,7 @@ its verb, and only its `->actor()` is used:
 
 A job dispatched during the request carries the actor the method chose, so a
 queued publish of `confirm_payment` gets the same actor.
-[Queues](/deeper/queues#a-verb-that-chooses-its-actor-from-the-request) covers
+[Queues](/deeper/queues#request-based-actors) covers
 how.
 
 A method whose headline changes with the request throws at that publish in
@@ -341,7 +351,7 @@ feed, storyfeed:list, the doctor, storyfeed:cache), so it must not depend on
 one.
 ```
 
-## When the Object Is Deleted
+## Headlines for Deleted Objects
 
 `->missingHeadline()` gives a verb its own reading once the object it is about
 has been deleted:
@@ -362,19 +372,30 @@ public function place(Verb $verb): Verb
 `->forgetWhenMissing()` deletes the verb's activities instead, once the
 deletion is permanent. Both are in [Deleted Models](/deeper/deleted-models).
 
-## One-Verb Story Classes
+## Publishing a Story With Data
 
-A verb can also have a class of its own, which extends `Story`:
+A class that extends `Story` receives its data in the constructor and builds
+the activity in `toFeedActivity()`:
 
 ```php
 <?php
 
 namespace App\Stories;
 
+use App\Models\MenuItem;
+use App\Models\User;
+use Storyfeed\PendingActivity;
 use Storyfeed\Stories\Story;
 
 class DishWentLive extends Story
 {
+    public function __construct(public MenuItem $dish, public User $user) {}
+
+    public function toFeedActivity(): ?PendingActivity
+    {
+        return $this->activity($this->dish)->by($this->user);
+    }
+
     public function headline(): string
     {
         return ':actor put :object on the menu';
@@ -399,27 +420,29 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)->verb('publish', DishWentLive::class);
 ```
 
-A one-verb class is dispatched from the call site, as a job is:
+Construct it with the activity’s data and publish it:
 
 ```php
 // app/Http/Controllers/MenuItemController.php, publish()
 use App\Stories\DishWentLive;
+use Storyfeed\Facades\Storyfeed;
 
-DishWentLive::of($dish)->by($request->user())->publish();
+Storyfeed::publish(new DishWentLive($dish, $request->user()));
 ```
 
 <FeedExample :items="[live]" />
 
-`of()` takes the activity's object. On an enum case it reads the same:
-`Act::Complete->of($order)`.
+`toFeedActivity()` may return `null` to publish nothing. Presentation methods
+such as `headline()` run without the constructor and cannot read its data.
 
 | Member | Required | |
 |---|---|---|
+| `toFeedActivity()` | yes | builds the pending activity, or returns `null` |
 | `headline()` | yes | the singular template |
 | `icon()`, `intent()` | no | the glyph and what it means |
-| `groups()` | no | a `Group` per [one-type axis](/deeper/aggregation#the-built-in-axes), each with its group headline. An `actors` or `targets` headline goes on the verb in `routes/feed.php` |
+| `groups()` | no | a `Group` per [one-type axis](/deeper/aggregation#built-in-axes), each with its group headline. An `actors` or `targets` headline goes on the verb in `routes/feed.php` |
 | `missing()` | no | the roles the activity is about |
-| `$verb`, `$objectType` | when not bound | the verb, and a model class, a morph alias, or a list of either |
+| `$verb`, `$objectType` | no | optional declarations that must agree with the binding; an unscoped binding needs `$objectType` |
 
 A verb defined in two places, by a method, a class or a line in
 `routes/feed.php`, stops the definitions from compiling, and the error names
@@ -442,8 +465,8 @@ php artisan make:story OrderStory --resource --model=Order
 The class has a method for each conventional verb, returning its default.
 `make:story` never edits `routes/feed.php`.
 
-Without `--resource`, it writes a one-verb class, and asks for what the name
-does not settle:
+With a name and no shape option, it writes a class to construct and publish.
+It asks for the verb and object when the name does not settle them:
 
 ```bash
 php artisan make:story DishWentLive
@@ -475,10 +498,10 @@ never holds a placeholder: each group headline is a sentence, with the tokens
 its axis allows listed in a comment above it. A grouping that can hold other
 types is written as a commented `routes/feed.php` line instead.
 
-`--verb` and `--model` skip their prompts, so a script passes both:
+`--verb` and `--object` skip their prompts, so a script passes both:
 
 ```bash
-php artisan make:story DishWentLive --verb=publish --model=MenuItem
+php artisan make:story DishWentLive --verb=publish --object=MenuItem
 ```
 
 Without a terminal, a verb or model the name does not settle fails, naming
@@ -492,7 +515,7 @@ spelling depends on how the verb is stressed, as with `ship`, `visit` and
 `open`, it asks:
 
 ```bash
-php artisan make:story DishWentLive --verb=ship --model=MenuItem
+php artisan make:story DishWentLive --verb=ship --object=MenuItem
 ```
 
 ```txt
@@ -517,13 +540,13 @@ group headlines are commented the same way:
 
 The class fails when stories compile until you uncomment one line.
 
-### Generating from Doctor Findings
+### Generating From Doctor Findings
 
 ```bash
 php artisan make:story --from-doctor
 ```
 
-It writes a one-verb class for each type and verb recorded with no headline,
+It writes a class to construct and publish for each type and verb recorded with no headline,
 named from the pair: `OrderWasPlaced`. The name spells the past tense, so a
 verb whose spelling is uncertain is asked about, with a way to skip it:
 
@@ -563,9 +586,9 @@ one:
 php artisan storyfeed:list --type=order
 ```
 
-It prints a table with a row per verb: its headline, anonymous headline, icon,
-intent and group headlines, the Story class method that declares it, and the
-file it came from. `--json` prints the same rows, and `--verb` narrows them to
+It prints a table with a row per verb: its name, headline, anonymous headline,
+icon, intent, group headlines, calendar period and keep-latest policy, the Story class
+method that declares it, and the file it came from. `-v` adds middleware. `--json` prints the same rows, and `--verb` narrows them to
 one:
 
 ```bash
@@ -577,13 +600,17 @@ php artisan storyfeed:list --type=order --verb=place --json
     {
         "type": "order",
         "verb": "place",
+        "name": "order.place",
         "action": "App\\Stories\\OrderStory@place",
         "headline": ":actor placed :object[ with :target]",
         "anonymous_headline": null,
         "icon": "shopping-bag",
         "intent": null,
         "groups": [],
-        "source": "App\\Stories\\OrderStory@place"
+        "period": "day",
+        "keep_latest": null,
+        "source": "App\\Stories\\OrderStory@place",
+        "middleware": ["Storyfeed\\Middleware\\Batch"]
     }
 ]
 ```

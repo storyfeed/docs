@@ -39,7 +39,9 @@ Publish by the verb's name:
 
 ```php
 // where the fact happens: a controller, an action, a listener
-story('place', $order)
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity('place', $order)
     ->by($customer)
     ->to($kitchen)
     ->publish();
@@ -49,7 +51,7 @@ story('place', $order)
 
 [Story Classes](/deeper/stories) covers the class.
 
-## Where Drift Comes from
+## Causes of Verb Drift
 
 | Verb Written in | Headline Written in | Drifts When |
 |---|---|---|
@@ -57,7 +59,7 @@ story('place', $order)
 | an enum | a grammar array | a case's value changes |
 | a Story class method | the same method | a call site names a verb no method declares, which throws in `local` and `testing` |
 
-## Catching It
+## Checking Verb Coverage
 
 ```bash
 # published pairs with no headline
@@ -77,7 +79,7 @@ Storyfeed::verbs(['plcae' => ActivityType::Update]) or an enum implementing
 FeedVerb, or disable storyfeed.verbs.strict.
 ```
 
-## A Verb Nothing Publishes Any More
+## Unused Verbs
 
 Old rows keep their headline only while their verb stays declared, so keep the
 method:

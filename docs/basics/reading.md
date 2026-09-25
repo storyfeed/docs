@@ -85,15 +85,7 @@ Storyfeed::feed()->involving($kitchen)->summary()->get();
 
 <FeedExample :items="summary" />
 
-The default is `grouping.default` in the config. The payload doesn't say which
-mode made it, so a renderer draws them all the same way. Choose a mode per
-screen, not per app:
-
-| Surface | Mode | Why |
-|---|---|---|
-| an audit or support view | `log()` | every row is evidence |
-| a screen someone watches while working | `live()` | bursts collapse as they form, and nothing reshuffles under the reader |
-| a page opened once, days later | `summary()` | the reader wants the shape of what happened |
+The payload uses the same node shapes in every mode. A read chooses its mode:
 
 ## Scoping
 
@@ -126,7 +118,7 @@ the menu" records the dish as the **object**, so a dish's page scoped with
 `context()` misses it. `involving()` finds it.
 :::
 
-## Custom Constraints with `query()`
+## Custom Query Constraints
 
 `query()` gives you the activity query, for anything the filters can't
 express:

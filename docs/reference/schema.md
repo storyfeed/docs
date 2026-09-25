@@ -44,8 +44,9 @@ Named participants with no model in your app.
 ## `feed_batches`
 
 Bursts of activity by one actor, with `activities_count` and
-`last_activity_at`. Closed by quiet window; closing fires `BatchClosed` and
-creates composites.
+`last_activity_at`, a scheduled `closes_at`, and `closed_at` once closed.
+The quiet window sets `closes_at`; closing fires `BatchClosed` and can create
+composites.
 
 ## `feed_batch_locks`
 

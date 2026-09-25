@@ -131,7 +131,7 @@ $this->feedEntity()
 
 <FeedExample :items="[removedKeepingLabel]" />
 
-## What a Removal Story May Reference
+## References After Deletion
 
 | The Removal Story References | After the Delete |
 |---|---|
@@ -141,9 +141,9 @@ $this->feedEntity()
 Every other activity that named the dish stays too. [Deleted Models](/deeper/deleted-models)
 covers what each of them says.
 
-## When the Activities Must Go
+## Removing Activities
 
-Deleting a model never deletes its activities. When they must go, such as a
+Deleting a model keeps its activities unless a verb declares `forgetWhenMissing()`. When they must go, such as a
 customer asking to be forgotten, remove them before the model:
 
 ```php

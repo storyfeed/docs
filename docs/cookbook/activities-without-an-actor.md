@@ -11,6 +11,7 @@ namespace App\Events;
 use App\Models\Order;
 use App\Models\User;
 use Storyfeed\Contracts\PublishesToFeed;
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\PendingActivity;
 
@@ -78,7 +79,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## The Actor Read from the Request
+## The Default Actor
 
 Without `by()`, the actor is the logged-in user by default. A job started from
 a console command or the scheduler has no logged-in user, so its actor is
@@ -138,7 +139,7 @@ class RecordOrder implements ShouldQueue
 To keep the author, pass the user into the job and call `->by()` with it, as
 the event above does.
 
-## An Explicitly Unknown Actor
+## Explicit Anonymity
 
 ```php
 <?php
@@ -181,7 +182,7 @@ class OrderController extends Controller
 `Storyfeed::record(..., actor: null)` still records the logged-in user. Use
 one of the calls above instead.
 
-## One Sentence per Kind of Actor
+## Headlines By Actor Type
 
 | The Act Was Performed by | The Actor Is | The Sentence |
 |---|---|---|
@@ -189,7 +190,7 @@ one of the calls above instead.
 | a job, a command, an integration | a party, named | `:actor marked :object paid` |
 | nobody | none | `:object expired at :target` |
 
-## A System Is a Party
+## Recording a System Actor
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -257,7 +258,7 @@ class StripeWebhookController extends Controller
 To name the party once for a whole job, wrap it in `Storyfeed::as('System', …)`.
 See [Scoped Attribution](/deeper/parties#scoped-attribution).
 
-## No Actor at All
+## Recording Without an Actor
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()

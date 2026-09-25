@@ -118,7 +118,7 @@ drops it. Without brackets, a role the activity did not record renders as your
 renderer's placeholder, so a template without them names only the roles the
 verb always carries.
 
-## Several Verbs on One Model
+## Several Verbs On One Model
 
 ::: code-group
 
@@ -207,7 +207,7 @@ Storyfeed::glyphIntents(['order.complete' => 'success']);
 
 :::
 
-[Rendering](/basics/rendering#what-a-glyph-means) covers drawing it.
+[Rendering](/basics/rendering#glyphs-and-intents) covers drawing it.
 
 The most specific definition wins:
 
@@ -223,7 +223,7 @@ The same order applies to headlines and to intents.
 ::: headless
 :::
 
-## A Model's Everyday Verbs
+## Conventional Model Verbs
 
 `Story::resource()` defines `create`, `update`, `delete` and `restore` for a
 model in one line:
@@ -291,7 +291,7 @@ Storyfeed::aggregateGrammar([
 The group headline belongs to orders only. The groups a feed can form, and the
 tokens their headlines may use, are in [Aggregation](/deeper/aggregation).
 
-## What a Verb Is About
+## Roles That Determine Redundancy
 
 When a model is deleted, its activities stay. `->missing()` names the roles an
 activity is about, so the payload can say when one of them is gone:
@@ -310,7 +310,7 @@ Story::for(Question::class)
 With no call, a verb is about its object. [Deleted Models](/deeper/deleted-models)
 covers what the feed does when a model goes.
 
-## Choosing a Headline per Activity
+## Choosing a Headline Per Activity
 
 A closure receives the activity and returns a template:
 
@@ -348,9 +348,9 @@ Storyfeed::grammar([
 The closure runs when the feed is read. Its tokens become links, like any other
 template.
 
-## Naming the Verb at the Call Site
+## Publishing a Verb
 
-A verb defined here is published by its name, the way `route()` names a route:
+Publish the verb and object with `Storyfeed::activity()`:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -361,6 +361,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
 
 class CheckoutController extends Controller
 {
@@ -368,8 +369,9 @@ class CheckoutController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        story('place', $order)
+        Storyfeed::activity()
             ->by($request->user())
+            ->action('place', $order)
             ->to($order->kitchen)
             ->publish();
 
@@ -409,9 +411,6 @@ class CheckoutController extends Controller
 
 <FeedExample context :items="[scenes.order]" />
 
-`story('place', $order)` is `Storyfeed::activity()->action('place', $order)`
-in one call. It is a global helper, so it needs no `use` line.
-
 ## Loading the Feed File
 
 ```sh
@@ -421,20 +420,3 @@ php artisan storyfeed:install
 
 Storyfeed loads `routes/feed.php` once every service provider has booted, so
 your morph map is already in place.
-
-## Listing and Caching Definitions
-
-```sh
-# every definition, with the file and line it came from
-php artisan storyfeed:list
-
-php artisan storyfeed:list --type=order --verb=place
-```
-
-```sh
-php artisan storyfeed:cache   # in a deploy script, beside route:cache
-```
-
-Once cached, `routes/feed.php` isn't loaded at boot. Keep only `Story::`
-definitions in it: `storyfeed:cache` fails on a registry call such as
-`Storyfeed::grammar()`, which belongs in a service provider.

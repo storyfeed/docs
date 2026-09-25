@@ -1,6 +1,6 @@
 # Containers & Context
 
-`context` is the fourth role: the container an activity happened **inside**,
+`context` records the container an activity happened **inside**,
 such as the kitchen a dish belongs to. Record it, and you can read everything
 that happened in that kitchen.
 
@@ -105,7 +105,7 @@ kitchen. When the target is the container itself, `target` is enough:
 Fill every role that is true, even one the headline doesn't name: roles are
 also used for scoping and grouping.
 
-## When to Set It
+## Uses of Context
 
 Set `context` when something reads it:
 
@@ -122,7 +122,7 @@ Set `context` when something reads it:
 [`involving()`](/basics/reading#scoping) also returns activities about the
 kitchen itself, such as its creation.
 
-## A Container That Is Not a Model
+## Non-Model Containers
 
 When the container is a plain value, such as a folder name, record it one of
 three ways:
@@ -133,7 +133,7 @@ three ways:
 | `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
 | a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
 
-## Recording Context at Publish
+## Recording Context At Publish
 
 Roles are never filled in later. If you have the container when you publish,
 record it: a `context` read only finds activities recorded with one.

@@ -32,8 +32,8 @@ Each finding names its fix.
 | `parties` | party names an actor took that `Storyfeed::parties()` does not declare, and party rows with no activities. See [Parties](#parties) | warning · info |
 | `participants` | activities missing from the index `involving()` reads | warning |
 | `tables` | are the package tables present, `feed_tombstones` included? Until it exists, deleted models leave no tombstone | error |
-| `columns` | are write-path columns present? (catches schema drift after an upgrade) | error |
-| `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — a warning outside `testing`, info under it | error · info |
+| `columns` | are write-path columns present? (catches missing write-path columns) | error |
+| `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — an error outside `testing`, info under it | error · info |
 | `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info | error · info |
 | `grouping` | activities with no grouping row that today's axes would group — an import that ran `storyfeed:rebuild` before `storyfeed:trickle` | warning |
 | `entities` | a model filling a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the row is gone. See [Entities](#entities) | error · warning · info |
@@ -45,9 +45,10 @@ Each finding names its fix.
 | `freshness` | has the feed stopped receiving new activity? (`doctor.stale_after`) — catches a forgotten feed, not a broken one | warning · info |
 | `body` | which [body types](/deeper/body) are actually stored, and the two ways one can be malformed quietly: a map with no `$body` key, and a body type versioned on some rows but not others | warning · info |
 | `dangling` | grouping and participant rows whose activity no longer exists, trashed included. Activities have no database cascade, so a bulk hard-delete leaves these behind | info |
-| `claims` | composite members still claimed by a parent that no longer exists (`claims.parent_gone`), so the composite still renders from them. [`storyfeed:curate --release`](/reference/commands#ending-a-composite-whose-parent-is-gone) ends it. A trashed parent is not counted | info |
+| `claims` | composite members still claimed by a parent that no longer exists (`claims.parent_gone`), so the composite still renders from them. [`storyfeed:curate --release`](/reference/commands#releasing-orphaned-composites) ends it. A trashed parent is not counted | info |
 | `inherited` | `Feedable` subclasses deleted through a parent class that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
 | `retention` | rows past their verb's retention window, and busy verbs no window reaches. See [Retention](#retention) | warning · info |
+| `keep_latest` | multiple live rows on a declared key (`keep_latest.split`, warning), or superseded rows on an undeclared verb (`keep_latest.undeclared`, info); declarations with `within:` are excluded from the split check | warning · info |
 | `actions` | Story class methods that take the request and threw when a job was dispatched, and methods that read `request()` without taking `Request`. See [Actions](#actions) | warning |
 
 ## Feed Coverage
@@ -71,8 +72,13 @@ it.
 ### Declaring an Unrestricted Feed
 
 ```php
-// config/storyfeed.php
-'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
+// app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedBuilder;
+
+Storyfeed::feeds([
+    'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
+]);
 ```
 
 `unrestricted()` declares a feed that carries every verb. It changes no query,
@@ -80,23 +86,16 @@ and a call site can still narrow it. A verb covered only by this feed reports
 as `feeds.unrestricted` at info instead of `feeds.unclassified` at warning.
 
 ```php
-// config/storyfeed.php
-// throws FeedMisconfigured
-'portal' => fn (FeedBuilder $feed) => $feed
-    ->only(['place', 'ready'])
-    ->unrestricted(),
-
 // a controller, reading the feed
 use Storyfeed\Facades\Storyfeed;
 
-// fine: narrowing at a call site
 Storyfeed::feed('portal')->only(['place', 'ready'])->get();
 ```
 
 One feed declaration cannot both filter and be `unrestricted()`, and `verb()`
 counts as a filter.
 
-### Groups No Surface Can Read
+### Group Reachability
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -227,7 +226,7 @@ snapshot for the alias, so a resolver that hydrates only under an unregistered
 feed name, or only for an older snapshot shape, is not seen. A class with no
 snapshot that throws on an empty one is not reported.
 
-## From Findings to Code
+## Generating Definitions
 
 ```bash
 # routes/feed.php definitions, with their use lines
@@ -291,7 +290,7 @@ findings.
 headline instead. See
 [Generating from Doctor Findings](/deeper/stories#generating-from-doctor-findings).
 
-## In CI
+## Continuous Integration
 
 ```bash
 php artisan storyfeed:doctor --json --fail-on=warning   # or --fail-on=error
@@ -301,6 +300,6 @@ Without `--fail-on` the exit code is always 0. The
 [coverage assertions](/deeper/testing#coverage-assertions) fail fast in the
 suite; doctor reports against real traffic.
 
-## On a Fresh Install
+## Empty Feeds
 
 With no data, doctor reports that there is nothing to diagnose.

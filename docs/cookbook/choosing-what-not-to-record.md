@@ -51,7 +51,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## What Stays Out
+## Events to Omit
 
 | What Happened | Activity | Because |
 |---|---|---|
@@ -66,7 +66,7 @@ Storyfeed::grammar([
 | an order placed | yes | |
 | an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
 
-## A Note Is an Activity About Its Target
+## Recording Notes
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -230,7 +230,7 @@ Saving the note refreshes its snapshot, so every row that references it shows
 the edited text without a new activity. Without `InteractsWithFeed`, refresh
 the snapshot yourself.
 
-## A Quote Belonging to One Activity
+## Recording Activity Quotes
 
 ::: code-group
 ```php [Fluent Syntax]
