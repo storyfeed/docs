@@ -135,6 +135,9 @@ const on = (date, time) => `2026-08-${date}T${time}.000000Z`
 const past = (id, date, time, verb, glyph, headline_template, actor, object = null, target = null) =>
   activity({ id, verb, glyph, published_at: on(date, time), headline_template, actor, object, target })
 const hellfire = entity('club', 'hellfire', 'the Hellfire Club', '/clubs/hellfire')
+const scoopsAhoy = entity('store', 'scoops', 'Scoops Ahoy', '/stores/scoops')
+const pastOn = (date, id, time, verb, glyph, headline_template, actor, object = null, target = null) =>
+  activity({ id, verb, glyph, published_at: `${date}T${time}.000000Z`, headline_template, actor, object, target })
 const earlier = [
   past('y1', '13', '19:05:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.customer2, order(1039), where.kitchen),
   past('y2', '13', '19:06:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1039)),
@@ -155,6 +158,15 @@ const earlier = [
   past('o2', '12', '12:00:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.lassi),
   past('o3', '12', '12:05:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.roti),
   past('o4', '12', '12:10:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.cutlets),
+  // Two weeks back: the code host and the operation begin.
+  pastOn('2026-08-01', 'a1', '09:30:00', 'create', 'git-merge', ':actor created :object', who.customer3, elsewhere.repo),
+  pastOn('2026-08-01', 'a2', '14:00:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, elsewhere.project),
+  pastOn('2026-08-01', 'a3', '14:20:00', 'join', 'user-plus', ':actor joined :target', who.regular, null, elsewhere.project),
+  pastOn('2026-08-01', 'a4', '14:45:00', 'join', 'user-plus', ':actor joined :target', who.customer3, null, elsewhere.project),
+  // A month back: Starcourt Mall opens on the Fourth of July.
+  pastOn('2026-07-04', 'm1', '10:00:00', 'join', 'user-plus', ':actor joined :target', who.regular, null, scoopsAhoy),
+  pastOn('2026-07-04', 'm2', '10:05:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, scoopsAhoy),
+  pastOn('2026-07-04', 'm3', '21:30:00', 'pay', 'receipt', ':actor marked :object paid', party.service, invoice(1001)),
 ]
 
 const newestFirst = (rows) => [...rows].sort((a, b) => b.published_at.localeCompare(a.published_at))
