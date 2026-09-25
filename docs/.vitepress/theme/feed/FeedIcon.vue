@@ -23,6 +23,8 @@ import {
     Tag,
     CircleX,
     Eye,
+    GitMerge,
+    Ticket,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { Component } from 'vue';
@@ -75,6 +77,8 @@ const ICONS: Record<string, Component> = {
     tablet: Tablet,
     tag: Tag,
     'circle-x': CircleX,
+    'git-merge': GitMerge,
+    ticket: Ticket,
     eye: Eye,
 };
 

@@ -9,7 +9,7 @@ feed, and serialized following
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one.
-import { who, where, orders, dishes, devices, notes, activity, group } from '../.vitepress/theme/samples'
+import { who, where, orders, dishes, notes, party, entity, activity, group } from '../.vitepress/theme/samples'
 
 // Eight minutes of a dinner service, 18:44–18:52.
 const log = [
@@ -72,18 +72,40 @@ const oneActivity = [
   activity({ id: 'a5', verb: 'place', glyph: 'shopping-bag', published_at: '2026-08-14T18:44:02.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
-  activity({ id: 'a4', verb: 'publish', glyph: 'chef-hat', published_at: '2026-08-14T12:00:00.000000Z',
-    headline_template: ':actor put :object on the menu',
-    actor: who.cook, object: dishes.chickenCurry }),
-  activity({ id: 'a3', verb: 'pair', glyph: 'tablet', published_at: '2026-08-14T11:30:00.000000Z',
-    headline_template: ':actor paired :object',
-    actor: who.cook, object: devices.ipad }),
-  activity({ id: 'a2', verb: 'join', glyph: 'user-plus', published_at: '2026-08-13T19:00:00.000000Z',
+]
+
+// The same shape in other apps, same cast: a task tracker, a code host,
+// billing, e-signature, a support desk, a newsroom.
+const elsewhere = {
+  task:     entity('task', '17', 'Decode the Russian broadcast', '/tasks/17'),
+  project:  entity('project', 'starcourt', 'Operation Starcourt', '/projects/starcourt'),
+  pull:     entity('pull_request', '214', 'Pull request #214', '/pulls/214'),
+  repo:     entity('repository', 'cerebro', 'cerebro', '/repositories/cerebro'),
+  invoice:  entity('invoice', '1983', 'Scoops Ahoy invoice #1983', '/invoices/1983'),
+  contract: entity('document', 'fv-1', 'the Family Video employment contract', '/documents/fv-1'),
+  ticket:   entity('ticket', '881', 'Ticket #881: Dig Dug high score reset', '/tickets/881'),
+  desk:     entity('team', 'photo', 'the Hawkins Post photo desk', '/teams/photo'),
+}
+
+const otherApps = [
+  activity({ id: 'e1', verb: 'complete', glyph: 'square-check', published_at: '2026-08-14T16:20:00.000000Z',
+    headline_template: ':actor completed :object in :target',
+    actor: who.customer2, object: elsewhere.task, target: elsewhere.project }),
+  activity({ id: 'e2', verb: 'merge', glyph: 'git-merge', published_at: '2026-08-14T15:05:00.000000Z',
+    headline_template: ':actor merged :object into :target',
+    actor: who.customer3, object: elsewhere.pull, target: elsewhere.repo }),
+  activity({ id: 'e3', verb: 'pay', glyph: 'receipt', published_at: '2026-08-14T14:00:00.000000Z',
+    headline_template: ':actor marked :object paid',
+    actor: party.service, object: elsewhere.invoice }),
+  activity({ id: 'e4', verb: 'sign', glyph: 'file-pen', published_at: '2026-08-14T11:40:00.000000Z',
+    headline_template: ':actor signed :object',
+    actor: who.regular, object: elsewhere.contract }),
+  activity({ id: 'e5', verb: 'assign', glyph: 'ticket', published_at: '2026-08-14T10:15:00.000000Z',
+    headline_template: ':actor assigned :object to :target',
+    actor: who.customer4, object: elsewhere.ticket, target: who.customer5 }),
+  activity({ id: 'e6', verb: 'join', glyph: 'user-plus', published_at: '2026-08-13T19:00:00.000000Z',
     headline_template: ':actor joined :target',
-    actor: who.newcomer, target: where.table }),
-  activity({ id: 'a1', verb: 'open', glyph: 'building-2', published_at: '2026-08-12T10:00:00.000000Z',
-    headline_template: ':actor opened :object',
-    actor: who.owner, object: where.kitchen }),
+    actor: who.runner, target: elsewhere.desk }),
 ]
 </script>
 
@@ -117,25 +139,35 @@ The recorded verb is still `place`, whichever headline describes it.
 
 ### Examples of Activities
 
+The same roles fit any app.
+
 **{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*. The object is the note itself, so the headline names the target.
 
 <FeedExample :items="[oneActivity[0]]" />
 
-**{{ who.cook.label }}** *(actor)* **put** **{{ dishes.chickenCurry.label }}** *(object)* **on the menu** *(verb)*
+**{{ who.customer2.label }}** *(actor)* **completed** *(verb)* **{{ elsewhere.task.label }}** *(object)* in **{{ elsewhere.project.label }}** *(target)*
 
-<FeedExample :items="[oneActivity[2]]" />
+<FeedExample :items="[otherApps[0]]" />
 
-**{{ who.cook.label }}** *(actor)* **paired** *(verb)* **{{ devices.ipad.label }}** *(object)*
+**{{ who.customer3.label }}** *(actor)* **merged** *(verb)* **{{ elsewhere.pull.label }}** *(object)* into **{{ elsewhere.repo.label }}** *(target)*
 
-<FeedExample :items="[oneActivity[3]]" />
+<FeedExample :items="[otherApps[1]]" />
 
-**{{ who.newcomer.label }}** *(actor)* **joined** *(verb)* **{{ where.table.label }}** *(target)*, with no object
+**{{ party.service.label }}** *(actor)* **marked** **{{ elsewhere.invoice.label }}** *(object)* **paid** *(verb)*. The actor is a service, not a user.
 
-<FeedExample :items="[oneActivity[4]]" />
+<FeedExample :items="[otherApps[2]]" />
 
-**{{ who.owner.label }}** *(actor)* **opened** *(verb)* **{{ where.kitchen.label }}** *(object)*
+**{{ who.regular.label }}** *(actor)* **signed** *(verb)* **{{ elsewhere.contract.label }}** *(object)*
 
-<FeedExample :items="[oneActivity[5]]" />
+<FeedExample :items="[otherApps[3]]" />
+
+**{{ who.customer4.label }}** *(actor)* **assigned** *(verb)* **{{ elsewhere.ticket.label }}** *(object)* to **{{ who.customer5.label }}** *(target)*. The target is a person.
+
+<FeedExample :items="[otherApps[4]]" />
+
+**{{ who.runner.label }}** *(actor)* **joined** *(verb)* **{{ elsewhere.desk.label }}** *(target)*, with no object
+
+<FeedExample :items="[otherApps[5]]" />
 
 ## Recording Activities
 
