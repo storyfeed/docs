@@ -102,48 +102,6 @@ The exception names the verb's declaration key, role, allowed types and actual
 type. A queued publish checks on the worker; `Storyfeed::fake()` checks queued
 activities too. An object constraint checks every member of a composite.
 
-## Array Definitions
-
-```php
-<?php
-
-namespace App\Stories;
-
-use App\Models\Kitchen;
-use App\Models\User;
-
-class OrderStory
-{
-    public function place(): array
-    {
-        return [
-            'headline' => ':actor placed :object with :target',
-            'icon' => 'shopping-bag',
-            'where' => [
-                'actor' => [User::class, 'party'],
-                'target' => Kitchen::class,
-            ],
-        ];
-    }
-}
-```
-
-Bind the resource class in place of the inline declaration:
-
-```php
-// routes/feed.php
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resource(Order::class, OrderStory::class);
-```
-
-<FeedExample :items="[placed]" />
-
-The `where` array maps each role to one type or a list of types.
-`Story::resources()` uses `wheres` in its shared options instead.
-
 ## Inspecting Constraints
 
 ```bash

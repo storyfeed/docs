@@ -12,9 +12,7 @@ const french = activity({ ...scenes.order, id: 'lc1',
 
 ## Translating a Headline
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -24,18 +22,6 @@ Story::for(Order::class)
     ->verb('place')
     ->headline(FeedHeadline::trans('feed.order_placed'));
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedHeadline;
-
-Storyfeed::grammar([
-    'order.place' => FeedHeadline::trans('feed.order_placed'),
-]);
-```
-
-:::
 
 ```php
 // lang/fr/feed.php

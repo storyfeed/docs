@@ -74,9 +74,6 @@ missing headline is named by its key:
 Storyfeed aggregate grammar coverage is incomplete:
   - repeat.order.place (no aggregate headline)
   - actors.place (no aggregate headline)
-
-Register the missing entries with Storyfeed::aggregateGrammar().
-Failed asserting that two arrays are identical.
 ```
 
 ```php

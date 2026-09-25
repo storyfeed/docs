@@ -74,13 +74,12 @@ user · archived · document · —   coherent — nothing was aimed at
 ```
 
 ```php
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
+// routes/feed.php
+use App\Models\Document;
+use Storyfeed\Facades\Story;
 
-Storyfeed::grammar([
-    // ✗ nothing fills :target
-    'document.archive' => ':actor archived :object from :target',
-]);
+Story::for(Document::class)->verb('archive')
+    ->headline(':actor archived :object from :target'); // Nothing fills :target.
 ```
 
 The fields are fine, but the template names a role no publisher fills, so the

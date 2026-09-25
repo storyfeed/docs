@@ -40,7 +40,7 @@ Schedule::command('storyfeed:prune')->daily();
 
 | Command | Does |
 |---|---|
-| `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines, and `--stubs --arrays` prints them as registry arrays for a service provider; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
+| `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
 | `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
 | `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
@@ -132,9 +132,8 @@ node and refetch from the head, including after an empty response. See the
 `storyfeed:cache` caches `routes/feed.php` as `route:cache` caches route files:
 once cached, the file isn't loaded at boot. Closure headlines are serialised.
 A closure that can't be serialised fails the command, naming its `file:line`.
-The file may hold definitions only: a registry call such as
-`Storyfeed::grammar()` in it fails the command, because it would stop running
-once cached. Keep those in a service provider.
+The file holds story definitions only. Register the verb vocabulary in a
+service provider.
 
 ## Generators
 

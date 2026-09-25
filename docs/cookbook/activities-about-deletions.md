@@ -69,8 +69,7 @@ class MenuDishController extends Controller
 ```
 :::
 
-::: code-group
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\MenuItem;
 use Storyfeed\ActivityStreams\ActivityType;
@@ -81,22 +80,6 @@ Story::for(MenuItem::class)
     ->headline(':actor removed :object from :target')
     ->type(ActivityType::Remove); // a removal: the dish being gone is expected
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\ActivityStreams\ActivityType;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::verbs([
-    // a removal: the dish being gone is expected
-    'remove' => ActivityType::Remove,
-]);
-
-Storyfeed::grammar([
-    'menu_item.remove' => ':actor removed :object from :target',
-]);
-```
-:::
 
 <script setup>
 import { who, where, dishes, activity, tombstone } from '../.vitepress/theme/samples'

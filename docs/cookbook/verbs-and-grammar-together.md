@@ -55,8 +55,8 @@ Storyfeed::activity('place', $order)
 
 | Verb Written in | Headline Written in | Drifts When |
 |---|---|---|
-| a call site | a grammar array | a verb is added at one and not the other |
-| an enum | a grammar array | a case's value changes |
+| a call site | a `routes/feed.php` declaration | a verb is added at one and not the other |
+| an enum | a `routes/feed.php` declaration | a case's value changes |
 | a Story class method | the same method | a call site names a verb no method declares, which throws in `local` and `testing` |
 
 ## Checking Verb Coverage

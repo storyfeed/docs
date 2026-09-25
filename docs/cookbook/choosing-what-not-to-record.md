@@ -45,10 +45,15 @@ Storyfeed::verbs([
     'place' => ActivityType::Create,
     'ask' => ActivityType::Create,
 ]);
+```
 
-Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
-]);
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target');
 ```
 
 ## Events to Omit
@@ -69,12 +74,12 @@ Storyfeed::grammar([
 ## Recording Notes
 
 ```php
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
+// routes/feed.php
+use App\Models\Note;
+use Storyfeed\Facades\Story;
 
-Storyfeed::grammar([
-    'note.ask' => ':actor asked about :target', // the dish, not the note
-]);
+Story::for(Note::class)->verb('ask')
+    ->headline(':actor asked about :target');
 ```
 
 ::: code-group
@@ -317,10 +322,15 @@ use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs(['reply' => ActivityType::Create]);
+```
 
-Storyfeed::grammar([
-    'discussion.reply' => ':actor replied about :target',
-]);
+```php
+// routes/feed.php
+use App\Models\Discussion;
+use Storyfeed\Facades\Story;
+
+Story::for(Discussion::class)->verb('reply')
+    ->headline(':actor replied about :target');
 ```
 
 ::: code-group

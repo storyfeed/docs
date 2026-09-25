@@ -29,7 +29,7 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
    warning label.
 3. **Industry vocabulary, not invented vocabulary.** The pattern is an
    *activity feed*; the flat read is a *timeline*; grouping is *aggregation*
-   (the package's own API says `aggregateGrammar`); the wire format is
+   and the wire format is
    *Activity Streams 2.0*. Humble means the reader recognizes every noun.
 4. **Short declarative sentences.** One idea each. Sub-clauses about why the
    API is shaped this way go in a `::: tip` — or get cut, and default to cut.
@@ -286,12 +286,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     **Value objects too:** a `FeedEntity`, a body, a `FeedMedia` or a
     `FeedImage` built in `toFeed()`, `describeFeed()` or `feedMedia()` gets
     the same two tabs: the chain (`FeedEntity::make()->label(…)->body(…)`)
-    first, `make()` with every argument named second. **Definitions too:** a
-    `routes/feed.php` snippet (`Story::for(…)->verb(…)->headline(…)`) gets
-    `[Fluent Syntax]` first and `[Array]` second, the same definitions as a
-    registry array in a service provider, where one exists. No second tab
-    where the other form has no equivalent (`describeFeed()` and
-    `$this->feedEntity()` are chain-only; `Story::resource()` has no array).
+    first, `make()` with every argument named second.
+    **Definitions use fluent syntax only:** declare them in `routes/feed.php`.
+    Do not teach registry-array calls or array-based story declarations.
+    `Storyfeed::verbs()` remains the verb vocabulary registration API.
 35. **Every snippet that calls a facade shows its `use` line** (ruled
     2026-09-23). There is no global `Storyfeed` alias, so `Storyfeed::…`
     without `use Storyfeed\Facades\Storyfeed;` is a line the reader cannot
@@ -365,7 +363,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
 - ✅ Story Classes (`deeper/stories`) — elementary publishing, the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors, single-verb declarations and generator options
-- ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches, array definitions and inspection
+- ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches and inspection
 - ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, group headlines (per type or per verb), plural tokens, the tokens a group may use, nouns, thresholds, custom axes
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines

@@ -258,19 +258,16 @@ With no fallback, an activity with no user is anonymous.
 ## Actorless Voice
 
 ```php
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
 
-Storyfeed::actorlessGrammar([
-    'order.confirm' => ':object was confirmed',
-]);
+Story::for(Order::class)->verb('confirm')
+    ->headline(':actor confirmed :object')
+    ->anonymousHeadline(':object was confirmed');
 ```
 
-An activity recorded with no actor uses this template when one matches. A
-party still uses the ordinary grammar.
-
-Keys are object type and verb, like the grammar's, and resolve most-specific
-first: `order.confirm`, `order.*`, `*.confirm`, `*.*`. A key with no dot is a
-verb on any type, so `'confirm'` means `*.confirm`. A template can't contain
-`:actor`. A closure works as in
+An activity recorded with no actor uses the anonymous headline. A party uses
+the ordinary headline. The anonymous template cannot contain `:actor`.
+A closure works as in
 [The Feed File](/basics/the-feed-file#choosing-a-headline-per-activity).

@@ -234,9 +234,6 @@ snapshot that throws on an empty one is not reported.
 # routes/feed.php definitions, with their use lines
 php artisan storyfeed:doctor --stubs
 
-# the same, as registry arrays for a service provider
-php artisan storyfeed:doctor --stubs --arrays
-
 # a Story class per type and verb with no headline
 php artisan make:story --from-doctor
 ```

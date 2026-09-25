@@ -160,9 +160,7 @@ A composite needs two headlines: one for the group, and one for its parent
 activity. The parent has **no object of its own**, so no object type's
 headline reaches it.
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
@@ -172,22 +170,6 @@ Story::verb('publish')->grouped(fn (GroupBuilder $group) => $group->composite(
     ':actor put dishes on the menu',        // the parent activity
 ));
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::aggregateGrammar([
-    'composite.publish' => ':actor put :count dishes on the menu',
-]);
-
-// the parent: blank without it
-Storyfeed::grammar([
-    '*.publish' => ':actor put dishes on the menu',
-]);
-```
-
-:::
 
 A composite grouping in `routes/feed.php` or a Story class without the
 parent's headline is an error when stories compile.

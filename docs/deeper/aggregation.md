@@ -113,12 +113,9 @@ whichever axis wins.
 
 ## Registering a Group Headline
 
-`grouped()` files each group headline under a key. A service provider can
-write the keys directly:
+`grouped()` declares a headline for each grouping axis:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -132,21 +129,6 @@ Story::for(Order::class)
 Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
     ->actors(':actors ordered from :target'));
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::aggregateGrammar([
-    // {axis}.{type}.{verb}
-    'repeat.order.place' => ':actor placed :count orders with :target',
-
-    // {axis}.{verb}
-    'actors.place' => ':actors ordered from :target',
-]);
-```
-
-:::
 
 <FeedExample :items="[repeat, actors]" />
 
@@ -196,9 +178,7 @@ its entities are one type. Otherwise the group has no headline, and
 
 Give a type its noun:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\MenuItem;
 use App\Models\Order;
@@ -208,19 +188,6 @@ use Storyfeed\FeedNoun;
 Story::for(MenuItem::class)->fallback()->noun('dish|dishes');
 Story::for(Order::class)->fallback()->noun(FeedNoun::trans('nouns.order'));
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedNoun;
-
-Storyfeed::nouns([
-    'menu_item' => 'dish|dishes', // morph alias, not a class name
-    'order' => FeedNoun::trans('nouns.order'),
-]);
-```
-
-:::
 
 Supply both forms; Storyfeed never inflects. Wrap translation keys in
 `FeedNoun::trans()`; locales with more plural forms can add pipe segments.

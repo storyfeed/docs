@@ -91,6 +91,7 @@ const confirmed = activity({
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
@@ -98,12 +99,21 @@ Storyfeed::verbs([
     'ready' => ActivityType::Update,
     'complete' => ActivityType::Update,
 ]);
+```
 
-Storyfeed::grammar([
-    'order.confirm' => ':actor confirmed :object',
-    'order.ready' => ':actor marked :object ready',
-    'order.complete' => ':actor completed :object',
-]);
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('confirm')
+    ->headline(':actor confirmed :object');
+
+Story::for(Order::class)->verb('ready')
+    ->headline(':actor marked :object ready');
+
+Story::for(Order::class)->verb('complete')
+    ->headline(':actor completed :object');
 ```
 
 ## Status Transitions

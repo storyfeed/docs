@@ -1,8 +1,7 @@
 # Headlines for Grouped Activities
 
 When a feed groups several activities into one row, the row needs its own
-headline. Write it with `aggregateGrammar()`, next to the headline for a single
-activity.
+headline. Declare it with `grouped()` beside the single-activity headline.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -12,15 +11,20 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::verbs([
     'place' => ActivityType::Create,
 ]);
+```
 
-Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
-]);
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\Group;
 
-Storyfeed::aggregateGrammar([
-    'repeat.order.place' => ':actor placed :count orders with :target',
-    'actors.place' => ':actors ordered from :target',
-]);
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->grouped(Group::repeat()->headline(':actor placed :count orders with :target'));
+
+Story::verb('place')
+    ->grouped(Group::byActors()->headline(':actors ordered from :target'));
 ```
 
 <script setup>

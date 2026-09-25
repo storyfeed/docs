@@ -199,21 +199,9 @@ Each method declares its return type:
 |---|---|
 | `Storyfeed\Stories\Verb` | the definition it received, filled in |
 | `string` | the headline, and nothing else |
-| `array` | the definition as an array, one key per `Verb` method |
 
-```php
-// app/Stories/OrderStory.php
-public function refund(): array
-{
-    return [
-        'headline' => ':actor refunded :object',
-        'icon' => 'rotate-ccw',
-    ];
-}
-```
-
-A public method with another return type, or none, stops the definitions from
-compiling. Make helpers protected or private.
+Use `Verb` when setting several options, or `string` for a headline alone.
+Make helpers protected or private.
 
 ### Conventional Verbs
 
@@ -290,8 +278,7 @@ group. This example replaces the individual resource bindings.
 | `excluded_middleware` | removes matching middleware |
 | `wheres` | sets [role constraints](/deeper/constraining-roles), keyed by role |
 
-An unknown option throws. The resource options use `wheres`; an individual
-array definition uses `where`.
+An unknown option throws.
 
 ### Using the Request
 
@@ -396,8 +383,8 @@ Story::for(Order::class)->verb('place', PlaceStory::class);
 <FeedExample :items="[placed]" />
 
 The original controller still works. An invokable declaration can return a
-`Verb`, a headline string, or an array of definition settings, just like a
-resource method. `Story::verb('place', PlaceStory::class)` binds it across types;
+`Verb` or a headline string, just like a resource method.
+`Story::verb('place', PlaceStory::class)` binds it across types;
 its headline then needs to make sense for every type it covers.
 
 ## Generator Options

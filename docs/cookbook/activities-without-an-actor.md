@@ -65,6 +65,7 @@ const expired = activity({
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
@@ -72,11 +73,18 @@ Storyfeed::verbs([
     'pay' => ActivityType::Accept,
     'expire' => ActivityType::Remove,
 ]);
+```
 
-Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
-    'order.pay' => ':actor marked :object paid',
-]);
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target');
+
+Story::for(Order::class)->verb('pay')
+    ->headline(':actor marked :object paid');
 ```
 
 ## The Default Actor
@@ -261,12 +269,12 @@ See [Scoped Attribution](/deeper/parties#scoped-attribution).
 ## Recording Without an Actor
 
 ```php
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
 
-Storyfeed::grammar([
-    'order.expire' => ':object expired at :target',   // no :actor, on purpose
-]);
+Story::for(Order::class)->verb('expire')
+    ->headline(':object expired at :target');
 ```
 
 ```php

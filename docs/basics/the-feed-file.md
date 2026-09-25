@@ -44,9 +44,7 @@ const repeated = group({ id: 'hl7', verb: 'place', axis: 'repeat', count: 3, gly
 
 A headline is the sentence the feed prints for an activity:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -55,18 +53,6 @@ Story::for(Order::class)
     ->verb('place')
     ->headline(':actor placed :object with :target');
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::grammar([
-    // morph alias, a dot, the verb
-    'order.place' => ':actor placed :object with :target',
-]);
-```
-
-:::
 
 <FeedExample context :items="[withoutIcon]" />
 
@@ -120,9 +106,7 @@ verb always carries.
 
 ## Several Verbs On One Model
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -133,27 +117,13 @@ Story::for(Order::class)->group(function () {
 });
 ```
 
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::grammar([
-    'order.place' => ':actor placed :object with :target',
-    'order.complete' => ':actor completed :object',
-]);
-```
-
-:::
-
 <FeedExample :items="[completeWithoutIcon, withoutIcon]" />
 
 Every `Story::verb()` inside the closure is for orders.
 
 ## Adding an Icon
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -171,26 +141,11 @@ Story::for(Order::class)->group(function () {
 Story::verb('publish')->icon('chef-hat');   // any object type
 ```
 
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::icons([
-    'order.place' => 'shopping-bag',
-    'order.complete' => 'receipt',
-    '*.publish' => 'chef-hat',          // any object type
-]);
-```
-
-:::
-
 <FeedExample :items="[complete, scenes.order]" />
 
 `intent()` names what the icon means, in your app's own word:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -198,25 +153,16 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
 ```
 
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::glyphIntents(['order.complete' => 'success']);
-```
-
-:::
-
 [Rendering](/basics/rendering#glyphs-and-intents) covers drawing it.
 
 The most specific definition wins:
 
-| Fluent Syntax | Array Key | Matches |
-|---|---|---|
-| `Story::for(Order::class)->verb('place')` | `order.place` | that verb on that object type |
-| `Story::for(Order::class)->fallback()` | `order.*` | every verb on that object type |
-| `Story::verb('place')` | `*.place` | that verb on any object type |
-| `Story::fallback()` | `*.*` | everything with no more specific entry |
+| Declaration | Matches |
+|---|---|
+| `Story::for(Order::class)->verb('place')` | that verb on that object type |
+| `Story::for(Order::class)->fallback()` | every verb on that object type |
+| `Story::verb('place')` | that verb on any object type |
+| `Story::fallback()` | everything with no more specific entry |
 
 The same order applies to headlines and to intents.
 
@@ -261,9 +207,7 @@ A verb defined in both places is an error naming both lines.
 
 A verb inside `Story::for()` can also say how a group of its activities reads:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -274,17 +218,6 @@ Story::for(Order::class)->group(function () {
         ->grouped(fn ($group) => $group->repeat(':actor placed :count orders'));
 });
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::aggregateGrammar([
-    'repeat.order.place' => ':actor placed :count orders',
-]);
-```
-
-:::
 
 <FeedExample :items="[repeated]" />
 
@@ -314,9 +247,7 @@ covers what the feed does when a model goes.
 
 A closure receives the activity and returns a template:
 
-::: code-group
-
-```php [Fluent Syntax]
+```php
 // routes/feed.php
 use App\Models\Order;
 use Storyfeed\Facades\Story;
@@ -328,20 +259,6 @@ Story::for(Order::class)
         ? ':actor rushed :object to :target'
         : ':actor placed :object with :target');
 ```
-
-```php [Array]
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Activity;
-
-Storyfeed::grammar([
-    'order.place' => fn (Activity $activity) => ($activity->data['rush'] ?? false)
-        ? ':actor rushed :object to :target'
-        : ':actor placed :object with :target',
-]);
-```
-
-:::
 
 <FeedExample :items="[rushed, scenes.order]" />
 
