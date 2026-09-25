@@ -103,8 +103,8 @@ export type SceneIds = {
   otherApps: Record<AppKind, string>
   /** Three or more people doing one thing at one place on one day: Summary folds them, Live does not. */
   busyPlace: string[]
-  /** One person doing one thing to one target twice or more on one day: Live folds it. */
-  repeat: string[]
+  /** Runs of one person doing one thing at one target twice or more on one day: Live folds each. */
+  repeats: string[][]
   /** One row from long before now (30 days or more). */
   distant: string
   /** Jasper's rows (flagged `cameo`). */

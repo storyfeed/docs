@@ -179,7 +179,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
 
   const s = p.scenes
   const unique = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) === i)
-  const glanceIds = unique([...s.busyPlace, ...s.repeat, s.distant, ...s.cameo, ...s.around])
+  const glanceIds = unique([...s.busyPlace, ...s.repeats.flat(), s.distant, ...s.cameo, ...s.around])
 
   const deeper = s.deeper
   const scene = {
@@ -210,8 +210,8 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     ) as Record<AppKind, any>,
     /** Three or more people at one place: Summary folds them. */
     busyPlace: many(s.busyPlace),
-    /** One person doing one thing twice or more: Live folds it. */
-    repeat: many(s.repeat),
+    /** Runs of one person doing one thing again: Live folds each. */
+    repeats: s.repeats.map(many),
     /** One row from long ago. */
     distant: one(s.distant),
     /** Jasper's rows. */

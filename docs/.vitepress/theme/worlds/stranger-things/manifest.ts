@@ -102,6 +102,10 @@ export const HOLDINGS = {
   fireworks:   'the fireworks',
   dart:        'Dart',
   band:        'the Hawkins High Marching Band',
+  carnivalGame: 'a carnival game',
+  teacups:     'the teacups',
+  carousel:    'the carousel',
+  ponyRide:    'the ponies',
 }
 
 /** Tasks on the Scoops Troop board, in the order the show resolves them. */

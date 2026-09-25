@@ -44,10 +44,10 @@ Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 | `scene.question` | The customer asks about a product | verb `ask`, a note as object, target `role.product` |
 | `scene.otherApps.{task, code, billing, signature, support, team}` | One row from each kind of app | verbs `complete`, `merge`, `pay`, `sign`, `assign`, `join` |
 | `scene.busyPlace` | Three or more people doing one thing at one place on one day | Summary folds them into one group; Live does not |
-| `scene.repeat` | One person doing one thing to one target twice or more on one day | Live folds it, and only it |
+| `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run, and only those |
 | `scene.distant` | One row from long ago | 30 days or more before now |
 | `scene.cameo` | Jasper's rows | flagged `cameo` |
-| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | 10–14 rows, a few days, 6+ kinds of activity, Summary < Live < Log |
+| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live shows 10–14 rows over a few days with 3+ expanders; 6+ kinds of activity; Summary < Live < Log |
 
 The cookbook also requires `scene.cookbook`: `actorless` (anonymous placement,
 service payment, actorless expiry), `transitions` (confirmation and a

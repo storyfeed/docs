@@ -54,7 +54,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: every scene resolves, published by now, and does its job`, () => {
     const all = [scene.order, scene.question, ...Object.values(scene.otherApps), ...scene.busyPlace,
-      ...scene.repeat, scene.distant, ...scene.cameo, ...scene.glance]
+      ...scene.repeats.flat(), scene.distant, ...scene.cameo, ...scene.glance]
     for (const node of all) assert.ok(Date.parse(node.published_at) <= now, `${node.id} is after now`)
 
     assert.equal(scene.order.verb, 'place')
@@ -265,7 +265,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: the glance is short and wide, and each mode does its one job`, () => {
     const glance = scene.glance
-    assert.ok(glance.length >= 10 && glance.length <= 14, `glance has ${glance.length} rows`)
+    assert.ok(glance.length <= 24, `glance has ${glance.length} rows`)
     const recent = glance.filter((n) => n.id !== scene.distant.id)
     assert.ok(new Set(recent.map((n) => n.published_at.slice(0, 10))).size <= 4, 'a few days')
     for (const n of recent) assert.ok(now - Date.parse(n.published_at) < 7 * DAY, `${n.id} is within the week`)
@@ -275,8 +275,13 @@ for (const [name, pack] of Object.entries(PACKS)) {
     const live = world.liveOf(glance)
     const summary = world.summaryOf(glance)
 
-    // Live folds the repeat, and only the repeat.
-    assert.deepEqual(groups(live).map((g) => [g.axis, ids(g.children)]), [['repeat', ids(scene.repeat)]])
+    // Live stays glanceable, and folds the repeats, and only the repeats.
+    assert.ok(live.length >= 10 && live.length <= 14, `Live shows ${live.length} rows`)
+    assert.ok(scene.repeats.length >= 3, 'several expanders')
+    const byFirst = (a, b) => a[0].localeCompare(b[0])
+    assert.deepEqual(groups(live).map((g) => ids(g.children).sort()).sort(byFirst),
+      scene.repeats.map((run) => ids(run).sort()).sort(byFirst))
+    assert.ok(groups(live).every((g) => g.axis === 'repeat'))
     // Summary also folds the busy place, as one many-people group.
     const busy = groups(summary).filter((g) => g.axis === 'actors')
     assert.deepEqual(busy.map((g) => ids(g.children)), [ids(scene.busyPlace)])
