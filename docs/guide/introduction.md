@@ -115,6 +115,8 @@ The recorded verb is still `place`, whichever headline describes it.
 
 <a id="examples-of-activities"></a>
 
+### Examples of Activities
+
 **{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*. The object is the note itself, so the headline names the target.
 
 <FeedExample :items="[oneActivity[0]]" />
