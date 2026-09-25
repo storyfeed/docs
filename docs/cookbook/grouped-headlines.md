@@ -105,7 +105,7 @@ Storyfeed::record(
 
 Read the feed with grouping:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 $feed = Storyfeed::feed()->involving($kitchen)->live()->get();

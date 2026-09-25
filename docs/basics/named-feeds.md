@@ -58,7 +58,7 @@ Storyfeed::feeds([
 
 Read it by name, from the facade or from the model:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed('kitchen')->involving($kitchen)->get();
@@ -68,7 +68,7 @@ Storyfeed::feed('kitchen')->involving($kitchen)->get();
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 $order->storyfeed('customer')->get();
 ```
 
@@ -84,7 +84,7 @@ add verbs.
 A name sets the **verbs**, not the **scope**. Scope each read with
 `involving()`, `context()` or `query()`:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed('customer')->get();                     // every order in the system
@@ -137,7 +137,7 @@ class CustomerFeed extends Feed
 }
 ```
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use App\Feeds\CustomerFeed;
 
 CustomerFeed::make($order)->get();
@@ -166,7 +166,7 @@ class KitchenFeed extends Feed
 }
 ```
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use App\Feeds\KitchenFeed;
 
 KitchenFeed::make()->get();
@@ -181,7 +181,7 @@ KitchenFeed::make()->get();
 
 A call site can't change what `scope()` set, but may narrow the read:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 // throws FeedMisconfigured
 CustomerFeed::make($order)->involving($other);
 
@@ -212,7 +212,7 @@ A feed class works without registering. Registering gives it a name.
 
 Both work on any read, named or not:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use App\Enums\OrderActivity;
 use Storyfeed\Facades\Storyfeed;
 
@@ -232,7 +232,7 @@ Storyfeed::feed()->except(['note'])->get();
 
 On a named feed, `only()` can only narrow the declared list:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 // reads only 'place': 'note' is not in the declared list

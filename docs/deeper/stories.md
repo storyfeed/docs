@@ -371,7 +371,7 @@ An unknown option throws.
 
 ### Request-Based Actors
 
-```php memo="app/Stories/OrderStory.php" at="add this method and the Request import"
+```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
 use Illuminate\Http\Request;
 
 public function confirmPayment(Verb $verb, Request $request): Verb
@@ -420,7 +420,7 @@ the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#re
 
 ### Deleted-Object Headlines
 
-```php memo="app/Stories/OrderStory.php" at="replacing place()"
+```php memo="app/Stories/OrderStory.php" at="Replacing place()"
 public function place(Verb $verb): Verb
 {
     return $verb

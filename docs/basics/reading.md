@@ -68,7 +68,7 @@ The response is the following JSON:
 
 The same four activities as a log:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->involving($kitchen)->log()->get();
@@ -78,7 +78,7 @@ Storyfeed::feed()->involving($kitchen)->log()->get();
 
 And as a summary:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->involving($kitchen)->summary()->get();
@@ -97,7 +97,7 @@ The payload uses the same node shapes in every mode. Choose the mode for each su
 An entity's own page uses `involving()`: every activity that mentions it, in
 any role.
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->involving($order)->get();
@@ -127,7 +127,7 @@ Scopes combine. A group counts only the activities inside the scope.
 `query()` gives you the activity query, for anything the filters can't
 express:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Models\Builders\ActivityBuilder;
 
 // everything except notes
@@ -155,7 +155,7 @@ the builder.
 
 `FeedBuilder` is `Conditionable`:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()

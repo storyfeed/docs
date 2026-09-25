@@ -45,7 +45,7 @@ of activities, such as a [named feed](/basics/named-feeds)'s, into an
 `OrderedCollection` or `OrderedCollectionPage` with a `next` cursor. Pass the
 page and its IRI:
 
-```php memo="a controller, after obtaining an authorised page of Activity models"
+```php memo="A controller, after obtaining an authorised page of Activity models"
 use Storyfeed\Serialization\CollectionSerializer;
 
 $document = app(CollectionSerializer::class)->collection($page, $iri, $cursor);

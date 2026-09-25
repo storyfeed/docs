@@ -257,7 +257,7 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     goes in `at`: `memo="app/Providers/AppServiceProvider.php" at="boot()"`
     renders as `app/Providers/AppServiceProvider.php → boot()`. A call site
     with no single file is the memo itself:
-    `memo="where the fact happens: a controller, an action, a listener"`.
+    `memo="Where the fact happens: a controller, an action, a listener"`.
     A `//` comment in the code explains the code; it never says where the code
     goes. A reader of any snippet must never have to ask "where do I put this?".
     Exempt: an API fragment on a Reference page (an argument list, a chain
@@ -279,7 +279,7 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     variable comes from, and what the method returns, so a developer can
     follow along in their own app. The whole class
     reads at once, with no focus markers (rule 22). A later snippet in the same section may be a fragment of a
-    class already shown in full, with `memo="app/…/File.php" at="method()"`.
+    class already shown in full, with `memo="App/…/File.php" at="method()"`.
     The same holds for a model's feed code (`describeFeed()`, `toFeed()`,
     `feedMedia()`, the `booted()` that registers `feedMediaUsing()`): the
     first snippet in a section is the model class, namespace and imports

@@ -57,7 +57,7 @@ nothing, rather than after asserting a successful publication.
 `published($verb = null)` returns the captured activities for custom assertions.
 Continue the listener test with:
 
-```php memo="tests/Feature/RecordOrderPlacedTest.php" at="inside the test"
+```php memo="tests/Feature/RecordOrderPlacedTest.php" at="Inside the test"
 $activity = Storyfeed::published('place')->sole();
 
 expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
@@ -131,7 +131,7 @@ to dispatch that event after the transaction commits.
 
 Check the type and verb pairs your application records:
 
-```php memo="tests/Feature/FeedCoverageTest.php" at="after exercising the application"
+```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use Storyfeed\Testing\GrammarCoverage;
 
 GrammarCoverage::assertCoversRecorded();  // Pairs in the database.
@@ -142,7 +142,7 @@ GrammarCoverage::assertCoversPublished(); // Pairs published in this test.
 
 Check both groups that formed and groups the configured axes could form:
 
-```php memo="tests/Feature/FeedCoverageTest.php" at="after exercising the application"
+```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use Storyfeed\Testing\GrammarCoverage;
 
 GrammarCoverage::assertCoversAggregates();
@@ -181,7 +181,7 @@ Storyfeed aggregate grammar coverage is incomplete:
 
 ## Testing Feedable Coverage
 
-```php memo="tests/Feature/FeedCoverageTest.php" at="after exercising the application"
+```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use App\Models\Kitchen;
 use Storyfeed\Testing\StorySurface;
 

@@ -52,7 +52,7 @@ const repriced = group({ id: 'lp8', verb: 'reprice', axis: 'repeat', count: 3, g
 An order is placed, confirmed, marked ready and paid. Its own page shows each
 step:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 $order->storyfeed()->log()->get();
 ```
 
@@ -60,7 +60,7 @@ $order->storyfeed()->log()->get();
 
 The kitchen's board shows each order once, at its latest step:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()
@@ -137,7 +137,7 @@ Storyfeed::feeds([
 ]);
 ```
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed('board')->involving($kitchen)->get();
@@ -152,7 +152,7 @@ Storyfeed::feed('board')->involving($kitchen)->get();
 Groups are formed from the activities the feed shows. A cook who changed the
 price of three dishes several times each this morning:
 
-```php memo="a controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()

@@ -276,7 +276,7 @@ deletion time is when it was found:
 It restores them the same way when a bulk `restore()` brings them back. To
 tombstone them straight away:
 
-```php memo="where the rows are deleted: a controller, an action, a job"
+```php memo="Where the rows are deleted: a controller, an action, a job"
 use App\Models\Order;
 use Storyfeed\Facades\Storyfeed;
 

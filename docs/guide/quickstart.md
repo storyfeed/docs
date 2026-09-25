@@ -81,8 +81,8 @@ Story::for(Order::class)->verb('place')
 ## Publishing an Activity
 
 ::: code-group
-<<< @/snippets/publish.php {php memo="where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
-<<< @/snippets/publish.named-arguments.php {php memo="where the order is placed: a controller, an action, a listener"} [Named Arguments]
+<<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php {php memo="Where the order is placed: a controller, an action, a listener"} [Named Arguments]
 :::
 
 On the feed:
