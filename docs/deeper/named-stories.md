@@ -18,7 +18,7 @@ const placed = { ...scenes.order, data: null, glyph_intent: null }
 <FeedExample :items="[placed]" />
 
 This call supplies the verb directly. A named declaration lets the call site
-refer to the definition instead.
+refer to the definition instead, as a named `Route` does in Laravel.
 
 ## Naming a Story
 
@@ -46,7 +46,7 @@ $activity = story('order.place', $order)
 <FeedExample :items="[placed]" />
 
 `story()` takes a name, just as Laravel's `route()` does. Its facade equivalent
-is `Storyfeed::route()`:
+is `Storyfeed::route()`, corresponding to Laravel's `URL::route()`:
 
 ```php
 // app/Http/Controllers/PlaceOrderController.php, __invoke()
