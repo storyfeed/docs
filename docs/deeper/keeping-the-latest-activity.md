@@ -1,5 +1,7 @@
 # Keeping the Latest Activity
 
+## Introduction
+
 `keepLatest()` leaves the latest activity for a verb in the feed.
 Earlier matching activities leave every read mode, including `log()`.
 
@@ -14,7 +16,9 @@ const earlier = { ...saved, id: 'earlier-save',
   published_at: '2026-08-14T14:00:00.000000Z' }
 </script>
 
-## Declaring the Policy
+<a id="declaring-the-policy"></a>
+
+## Keeping the Latest Activity
 
 ```php
 // routes/feed.php
@@ -90,7 +94,9 @@ The latest `published_at` wins, regardless of arrival order. A backdated activit
 older than a matching live activity is stored already superseded. Other objects
 and other verbs keep their activities.
 
-## Keeping the Latest per Actor
+<a id="keeping-the-latest-per-actor"></a>
+
+## Choosing Matching Roles
 
 Replace the original `save` declaration with this one:
 
@@ -136,10 +142,18 @@ Only matching activities within ten minutes of the new activity's
 | `keepLatest(within: '10 minutes')` | same object and verb, within ten minutes |
 | no declaration | every activity remains |
 
+## Deleting Superseded Activities
+
 Superseded activities are soft-deleted by default. The
 `storyfeed.keep_latest.delete` setting controls their deletion mode.
 
-`ShouldBeUnique` keeps the first pending publish; `keepLatest()` keeps the latest row.
+## Queue Uniqueness and Read Filtering
 
-`#[DebounceFor]` isn't supported on Story classes, as Laravel doesn't support it
-on queued mailables, notifications or listeners, so use `keepLatest(within:)`.
+[`ShouldBeUnique`](/deeper/queues#unique-stories) keeps the first pending publish.
+`keepLatest()` supersedes matching stored activities after publication.
+[`latestPer()`](/deeper/latest-per-object) filters one feed's results while
+keeping every activity stored.
+
+Story classes do not support `#[DebounceFor]`. Use `keepLatest(within:)` when
+successive publications should supersede earlier stored activities within a
+window.

@@ -1,10 +1,12 @@
 # Healing a Feed
 
+## Introduction
+
 A **healer** soft-deletes activities whose source is gone for good, such as an
 activity about a file that was hard-deleted. Your healer picks the activities,
 and `storyfeed:heal` retires them.
 
-## Permanently Missing Sources
+<a id="permanently-missing-sources"></a>
 
 Use a healer only for sources that are **permanently** gone, such as a
 hard-deleted asset. A source that can be restored doesn't qualify, and neither
@@ -13,14 +15,19 @@ does one whose row still exists.
 A healer retires only the activities it names. A deleted Feedable model needs no healer: its activities
 stay, and name a [tombstone](/deeper/deleted-models) instead.
 
-::: warning Healing rewrites settled history
-Every retirement changes the feed's `sync_token`, so clients holding pages
-must refetch them, as under
-[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
-Preview first and run it at a quiet time. Healers are never scheduled for you.
-:::
+> [!WARNING]
+> **Healing rewrites settled history**
+>
+> Every retirement changes the feed's `sync_token`, so clients holding pages
+> must refetch them, as under
+> [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
+> Preview first and run it at a quiet time. Healers are never scheduled for you.
 
-## Defining a Healer
+<a id="defining-a-healer"></a>
+
+## Defining Healers
+
+### Selecting Candidates
 
 A healer yields one `StoryRetirement` per activity that might need retiring.
 Here the object is an `asset_reference`, whose `assets` table hard-deletes:
@@ -68,10 +75,14 @@ class AssetHealer implements FeedHealer
 during a preview. Query the source table directly, so a row hidden by a scope
 or permissions doesn't look deleted.
 
+### Rechecking Missing Sources
+
 `whenAbsent` receives a freshly loaded, locked copy of the activity. Check it
 and the source again there, and return `false` if the source exists now.
 
 Activities must be on the default database connection.
+
+## Registering Healers
 
 Register the healer beside your feeds:
 
@@ -85,12 +96,14 @@ Storyfeed::healers([AssetHealer::class]);
 
 A class or an instance works. `key()` names the healer for `--only`.
 
-## Running a Healer
+<a id="running-a-healer"></a>
 
-```bash
+## Running Healers
+
+### Previewing Retirements
+
+```shell
 php artisan storyfeed:heal --dry-run
-php artisan storyfeed:heal --only=assets
-php artisan storyfeed:heal
 ```
 
 `--dry-run` prints each request's label, outcome and `meta`, and writes
@@ -106,10 +119,19 @@ assets   Asset activity 82   unchanged   {"reason":"source permanently absent"}
 | `retire` | the activity is live and `whenAbsent` returns true | soft-delete the activity and bump `sync_token` in the same transaction |
 | `unchanged` | the activity is deleted or gone, or `whenAbsent` returns false | nothing |
 
+### Applying Retirements
+
+```shell
+php artisan storyfeed:heal --only=assets
+php artisan storyfeed:heal
+```
+
 Without `--only`, every healer runs. Each retirement commits on its own, so if
 one fails, the earlier ones stand.
 
-## Testing a Healer
+<a id="testing-a-healer"></a>
+
+## Testing Healers
 
 Test through the command. With `AssetHealer` registered, and two activities,
 one whose asset exists and one whose asset was deleted:

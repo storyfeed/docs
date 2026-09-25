@@ -1,7 +1,10 @@
 # Story Middleware & Batching
 
-A verb can set its batch window or stay outside batches.
-Story middleware runs around publishing an activity.
+## Introduction
+
+Story middleware runs around publishing an activity. Use it to add shared
+data, supply roles, or decide whether to publish. Built-in batch middleware
+collects an actor's activities into a sitting.
 
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
@@ -9,7 +12,134 @@ const placed = { ...scenes.order, data: null, glyph_intent: null }
 const marked = { ...placed, data: { reviewed: true } }
 </script>
 
-## Setting a Batch Window
+<a id="writing-story-middleware"></a>
+
+## Defining Story Middleware
+
+```php
+<?php
+
+namespace App\StoryMiddleware;
+
+use Closure;
+use Storyfeed\PendingActivity;
+
+class MarkReviewed
+{
+    public function handle(PendingActivity $activity, Closure $next): mixed
+    {
+        $activity->data([
+            ...($activity->activity->data ?? []),
+            'reviewed' => true,
+        ]);
+
+        return $next($activity);
+    }
+}
+```
+
+Middleware receives the `PendingActivity`
+and passes it to `$next`. Code after `$next($activity)` can inspect the returned
+activity; check its `exists` property before work that requires a stored row.
+
+Return `null` without calling `$next` to publish nothing. The builder's
+`publish()` then returns an unsaved activity (`exists === false`). Return the
+result of `$next` on the normal path. Middleware cannot change the activity's
+verb or object type.
+
+<a id="registering-aliases-and-groups"></a>
+
+## Registering Middleware
+
+### Aliases
+
+Register aliases and named groups in a service provider:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use App\StoryMiddleware\MarkReviewed;
+use Illuminate\Support\ServiceProvider;
+use Storyfeed\Facades\Story;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        // Register here: cached stories do not load routes/feed.php.
+        Story::aliasMiddleware('reviewed', MarkReviewed::class);
+        Story::middlewareGroup('review', ['reviewed']);
+    }
+}
+```
+
+### Groups
+
+`middlewareGroup()` gives a list of middleware a shared name. The `review`
+group above contains the `reviewed` alias; either name may be assigned to a story.
+
+## Assigning Middleware to Stories
+
+Attach the class to the verb:
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use App\StoryMiddleware\MarkReviewed;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag')
+    ->middleware(MarkReviewed::class);
+```
+
+<FeedExample :items="[marked]" expanded />
+
+Use the group in the feed file:
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::middleware('review')->group(function () {
+    Story::for(Order::class)->verb('place')
+        ->headline(':actor placed :object with :target')
+        ->icon('shopping-bag');
+    Story::for(Order::class)->verb('complete')
+        ->headline(':actor completed :object')
+        ->withoutMiddleware('reviewed');
+});
+```
+
+<FeedExample :items="[marked]" expanded />
+
+### Execution Order
+
+The `place` activity receives the review data; `complete` skips that middleware.
+The built-in `default` group runs first, followed by enclosing groups and the
+verb's own middleware. Identical resolved strings run once.
+
+### Excluding Middleware
+
+Exclusions match resolved strings exactly: `withoutMiddleware('batch')` leaves
+`batch:5 minutes` in place. Use `unbatched()` to remove batching altogether.
+
+### Parameters
+
+A string may name a class, an alias, or a group. Append arguments after a colon,
+as in `batch:5 minutes`; a custom class receives them after `$next` in `handle()`.
+A constructed Story may declare its middleware in `middleware(): array`; that
+method is read without constructor data.
+
+## Batching Activities
+
+<a id="setting-a-batch-window"></a>
+
+### Batch Windows
 
 ```php
 // routes/feed.php
@@ -46,7 +176,7 @@ actor's sitting to join.
 The examples below are alternative declarations for `place`. Replace its
 existing declaration when trying one.
 
-## Publishing Outside a Batch
+### Publishing Outside a Batch
 
 ```php
 // routes/feed.php
@@ -64,108 +194,9 @@ Story::for(Order::class)->verb('place')
 The activity remains in the feed. It does not affect the actor's open batch.
 `unbatched()` removes batch middleware, including a window inherited from a group.
 
-## Writing Story Middleware
+<a id="preserving-an-actor-or-context"></a>
 
-```php
-<?php
-
-namespace App\StoryMiddleware;
-
-use Closure;
-use Storyfeed\PendingActivity;
-
-class MarkReviewed
-{
-    public function handle(PendingActivity $activity, Closure $next): mixed
-    {
-        $activity->data([
-            ...($activity->activity->data ?? []),
-            'reviewed' => true,
-        ]);
-
-        return $next($activity);
-    }
-}
-```
-
-Attach the class to the verb:
-
-```php
-// routes/feed.php
-use App\Models\Order;
-use App\StoryMiddleware\MarkReviewed;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag')
-    ->middleware(MarkReviewed::class);
-```
-
-<FeedExample :items="[marked]" expanded />
-
-The activity carries `data.reviewed`. Middleware receives the `PendingActivity`
-and passes it to `$next`. Code after `$next($activity)` can inspect the returned
-activity; check its `exists` property before work that requires a stored row.
-
-Return `null` without calling `$next` to publish nothing. The builder's
-`publish()` then returns an unsaved activity (`exists === false`). Return the
-result of `$next` on the normal path. Middleware cannot change the activity's
-verb or object type.
-
-## Registering Aliases and Groups
-
-```php
-<?php
-
-namespace App\Providers;
-
-use App\StoryMiddleware\MarkReviewed;
-use Illuminate\Support\ServiceProvider;
-use Storyfeed\Facades\Story;
-
-class AppServiceProvider extends ServiceProvider
-{
-    public function boot(): void
-    {
-        // Register here: cached stories do not load routes/feed.php.
-        Story::aliasMiddleware('reviewed', MarkReviewed::class);
-        Story::middlewareGroup('review', ['reviewed']);
-    }
-}
-```
-
-Use the group in the feed file:
-
-```php
-// routes/feed.php
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::middleware('review')->group(function () {
-    Story::for(Order::class)->verb('place')
-        ->headline(':actor placed :object with :target')
-        ->icon('shopping-bag');
-    Story::for(Order::class)->verb('complete')
-        ->headline(':actor completed :object')
-        ->withoutMiddleware('reviewed');
-});
-```
-
-<FeedExample :items="[marked]" expanded />
-
-The `place` activity receives the review data; `complete` skips that middleware.
-The built-in `default` group runs first, followed by enclosing groups and the
-verb's own middleware. Identical resolved strings run once. Exclusions match
-resolved strings exactly: `withoutMiddleware('batch')` leaves
-`batch:5 minutes` in place. Use `unbatched()` to remove batching altogether.
-
-A string may name a class, an alias, or a group. Append arguments after a colon,
-as in `batch:5 minutes`; a custom class receives them after `$next` in `handle()`.
-A constructed Story may declare its middleware in `middleware(): array`; that
-method is read without constructor data.
-
-## Preserving an Actor or Context
+## Preserving Actor and Context Values
 
 ```php
 <?php
@@ -193,7 +224,9 @@ explicitly anonymous activity. Use `has('context')` before supplying context.
 These checks preserve the [actor and context precedence](/deeper/activity-scopes#actor-and-context-precedence).
 The party name must be [declared](/deeper/parties#declaring-parties).
 
-## Caching Closure Middleware
+<a id="caching-closure-middleware"></a>
+
+## Caching and Inspecting Middleware
 
 ```php
 // routes/feed.php
@@ -220,7 +253,7 @@ Story::for(Order::class)->verb('place')
 and named groups in a service provider so they also exist when the feed file
 is cached. `Storyfeed::fake()` runs the same middleware pipeline.
 
-## Inspecting Middleware
+<a id="inspecting-middleware"></a>
 
 ```bash
 php artisan storyfeed:list -v

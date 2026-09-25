@@ -1,5 +1,7 @@
 # Retention
 
+## Introduction
+
 A verb can say how long its activities are worth keeping. `storyfeed:prune`
 deletes them once they are older, along with anything only they referred to.
 
@@ -21,7 +23,9 @@ const after = group({ id: 're1', verb: 'view', axis: 'repeat', count: 2, glyph: 
   distinct: { actors: 1, objects: 2 } })
 </script>
 
-## Per-Verb Retention
+## Defining Retention
+
+### Per-Verb Retention
 
 A viewed order matters for a month, and then it doesn't:
 
@@ -36,24 +40,13 @@ Story::for(Order::class)
     ->keepFor('30 days');
 ```
 
-```php
-// routes/console.php
-use Illuminate\Support\Facades\Schedule;
-
-Schedule::command('storyfeed:prune')->daily();
-```
-
-Each run permanently deletes the `view` activities older than 30 days. Other
-verbs are kept.
-
 `keepFor()` takes a string Carbon reads as an interval: `'30 days'`,
 `'6 months'`, or a `DateInterval`. It sits on the same ladder as a headline,
 so `Story::verb('view')->keepFor(…)` applies to views of every type.
 
-## Default Retention
+### Default Retention
 
 `prune.after_days` sets a window for every verb that declares none.
-`keepForever()` exempts a verb from it:
 
 ```php
 // config/storyfeed.php
@@ -61,6 +54,10 @@ so `Story::verb('view')->keepFor(…)` applies to views of every type.
     'after_days' => 365,
 ],
 ```
+
+### Keeping Activities Forever
+
+`keepForever()` exempts a verb from default retention:
 
 ```php
 // routes/feed.php
@@ -79,7 +76,11 @@ Story::for(Order::class)->verb('refund')->keepForever();
 `storyfeed:prune --days=` overrides `prune.after_days` for one run. A verb's own
 window still wins.
 
-## Previewing Pruning
+## Pruning Activities
+
+<a id="previewing-pruning"></a>
+
+### Previewing a Run
 
 ```bash
 php artisan storyfeed:prune --pretend
@@ -97,7 +98,24 @@ Would prune 3 activities, 2 snapshots and 0 tombstones. Nothing was deleted.
 Run it after declaring or shortening a window: the next run deletes everything
 already past it.
 
-## Pruned Activities and Entities
+### Running and Scheduling Pruning
+
+```shell
+php artisan storyfeed:prune # Permanently deletes activities past their retention window.
+```
+
+```php
+// routes/console.php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('storyfeed:prune')->daily();
+```
+
+Each run permanently deletes the `view` activities older than 30 days. Other verbs follow their own declarations or default retention.
+
+<a id="pruned-activities-and-entities"></a>
+
+## Pruning Groups and Unused Entities
 
 A group loses the members that were pruned. Before the run:
 
@@ -114,8 +132,9 @@ The run also deletes the snapshots and tombstones that only pruned activities
 referred to, so a pruned entity's label and data leave the database too.
 Nothing records what a run removed.
 
-::: tip Pruning and not recording
-A state that stops mattering within seconds, such as someone typing, is not an
-activity at all. [Choosing What Not to Record](/cookbook/choosing-what-not-to-record)
-covers it.
-:::
+> [!NOTE]
+> **Pruning and not recording**
+>
+> A state that stops mattering within seconds, such as someone typing, is not an
+> activity at all. [Choosing What Not to Record](/cookbook/choosing-what-not-to-record)
+> covers it.

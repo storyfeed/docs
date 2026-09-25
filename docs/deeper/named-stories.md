@@ -1,5 +1,7 @@
 # Named Stories
 
+## Introduction
+
 A named story gives a declaration a handle you can use when publishing.
 The name selects the verb and checks the object's type.
 
@@ -8,19 +10,9 @@ import { scenes } from '../.vitepress/theme/samples'
 const placed = { ...scenes.order, data: null, glyph_intent: null }
 </script>
 
-## Publishing an Activity
+<a id="naming-a-story"></a>
 
-::: code-group
-<<< @/snippets/place-order.php [Fluent Syntax]
-<<< @/snippets/place-order.named-arguments.php [Named Arguments]
-:::
-
-<FeedExample :items="[placed]" />
-
-This call supplies the verb directly. A named declaration lets the call site
-refer to the definition instead, as a named `Route` does in Laravel.
-
-## Naming a Story
+## Naming Stories
 
 ```php
 // routes/feed.php
@@ -33,14 +25,35 @@ Story::for(Order::class)->verb('place')
     ->icon('shopping-bag');
 ```
 
-Publish it from the controller by name:
+<a id="publishing-an-activity"></a>
+
+## Publishing Named Stories
+
+Publish it from an authenticated controller by name:
 
 ```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
-$activity = story('order.place', $order)
-    ->by($request->user())
-    ->to($order->kitchen)
-    ->publish();
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        $activity = story('order.place', $order)
+            ->by($request->user())
+            ->to($order->kitchen)
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
 <FeedExample :items="[placed]" />
@@ -69,7 +82,11 @@ A declaration bound to a Story constructed with data still requires
 `Storyfeed::publish(new OrderWasPlaced(...))`; giving it a name does not bypass
 `toFeedActivity()`.
 
-## Prefixing Names
+## Story Groups
+
+<a id="prefixing-names"></a>
+
+### Name Prefixes
 
 ```php
 // routes/feed.php
@@ -92,7 +109,9 @@ exactly as written, including the dot, producing `billing.place`.
 `Story::name()` is an alias for `Story::as()`, as `Route::as()` / `Route::name()`
 are in Laravel. An individual declaration keeps `->name()` to set its name.
 
-## Chaining Group Attributes
+<a id="chaining-group-attributes"></a>
+
+### Shared Attributes
 
 ```php
 // routes/feed.php
@@ -135,7 +154,9 @@ Story::for(Order::class)->as('billing.')->middleware('batch:5 minutes')
 The same direct form accepts `fallback()`, `resource()`, `resources()`,
 `noun()`, `missing()` and `activityStreamsType()`.
 
-### Nesting Groups
+<a id="nesting-groups"></a>
+
+### Nested Groups
 
 ```php
 // routes/feed.php
@@ -170,7 +191,9 @@ actor and removes the inherited five-minute batch middleware. The built-in
 
 [Constraining Roles](/deeper/constraining-roles) covers the allowed role types.
 
-## Resource Story Names
+<a id="resource-story-names"></a>
+
+## Naming Resource Stories
 
 ```php
 // routes/feed.php
@@ -204,7 +227,20 @@ A verb declared individually is unnamed until it receives `->name()`. That
 also applies when the declaration binds a single-verb class or a Story
 constructed with data.
 
-## Inspecting Names
+## Inspecting Story Names
+
+### Listing Stories
+
+```bash
+php artisan storyfeed:list --name=order.
+```
+
+`--name` filters names containing the supplied text. The listing includes the
+name beside its declaration; `--json` includes it too.
+
+<a id="inspecting-names"></a>
+
+### Matching Names
 
 ```php
 // app/Http/Controllers/PlaceOrderController.php, __invoke()
@@ -224,7 +260,9 @@ Names live in the declarations, not in activity rows. `storyName()` resolves
 from the activity's object type and verb using the current definitions. An
 unnamed key returns `null`; `storyIs()` returns `false` for it.
 
-## Checking Names During Deployment
+<a id="checking-names-during-deployment"></a>
+
+## Caching Named Stories
 
 ```bash
 php artisan storyfeed:cache
@@ -234,14 +272,9 @@ Duplicate names fail caching, naming both declarations, as duplicate route
 names fail `route:cache`. At runtime, a duplicate name resolves to the last
 declaration. `storyfeed:cache` also runs under `php artisan optimize`.
 
-```bash
-php artisan storyfeed:list --name=order.
-```
+<a id="checking-names-with-phpstan"></a>
 
-`--name` filters names containing the supplied text. The listing includes the
-name beside its declaration; `--json` includes it too.
-
-## Checking Names With PHPStan
+## Checking Names With Static Analysis
 
 ```txt
 # phpstan.neon, when phpstan/extension-installer is not installed

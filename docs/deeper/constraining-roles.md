@@ -1,5 +1,7 @@
 # Constraining Roles
 
+## Introduction
+
 Role constraints limit which model types may fill an activity's roles.
 A publish with a different type throws before the activity is stored.
 
@@ -8,19 +10,11 @@ import { scenes } from '../.vitepress/theme/samples'
 const placed = { ...scenes.order, data: null, glyph_intent: null }
 </script>
 
-## Publishing an Activity
+<a id="publishing-an-activity"></a>
 
-::: code-group
-<<< @/snippets/place-order.php [Fluent Syntax]
-<<< @/snippets/place-order.named-arguments.php [Named Arguments]
-:::
+<a id="allowing-role-types"></a>
 
-<FeedExample :items="[placed]" />
-
-The actor is a user, the object is an order, and the target is its kitchen.
-A declaration can limit those roles to these types.
-
-## Allowing Role Types
+## Defining Role Constraints
 
 ```php
 // routes/feed.php
@@ -38,7 +32,7 @@ Story::for(Order::class)->verb('place')
 
 <FeedExample :items="[placed]" />
 
-The controller's publish satisfies both constraints. Like Laravel's
+Publishing an order placed by a user with a kitchen target satisfies both constraints. Like Laravel's
 `Route::where()` and `whereIn()`, these methods restrict allowed values;
 Storyfeed checks role types at publish time instead of matching a URL.
 
@@ -50,16 +44,16 @@ Storyfeed checks role types at publish time instead of matching a URL.
 | `whereContext(Kitchen::class)` | context |
 | `whereRole('origin', Kitchen::class)` | origin; also accepts `result`, `instrument` or any role above |
 
+### Model Types and Morph Aliases
+
 Each accepts model classes, morph aliases, or `'party'`. Classes resolve through
 `getMorphClass()`. Pass several types as separate arguments or as an array.
 An empty type list, `'*'`, or a class that is not an Eloquent model throws at
 declaration. Repeating a constraint replaces the allowed types for that role.
 
-Constraints can be declared on a verb, a class binding, a resource or a
-[group](/deeper/named-stories#nesting-groups). A Story constructed with data takes
-its constraints on the binding in `routes/feed.php`.
+<a id="allowing-parties"></a>
 
-## Allowing Parties
+### Parties and Empty Roles
 
 ```php
 // routes/feed.php
@@ -87,7 +81,18 @@ is also allowed. Empty roles never violate a constraint: a null target is
 allowed, and an anonymous actor remains allowed even with `whereActor()`.
 Constraints limit types; they do not make roles required.
 
-## Handling a Mismatch
+### Constraints on Groups
+
+Constraints can be declared on a verb, a class binding, a resource or a
+[group](/deeper/named-stories#nesting-groups). A Story constructed with data takes
+its constraints on the binding in `routes/feed.php`.
+
+An inner group replaces the outer constraint for that role. A verb's own
+constraint takes precedence over its groups.
+
+<a id="handling-a-mismatch"></a>
+
+## Handling Role Mismatches
 
 With only `User::class` allowed, publishing `place` about an order with a party
 actor throws `Storyfeed\Exceptions\StoryRoleMismatch`:
@@ -104,12 +109,16 @@ activities too. An object constraint checks every member of a composite.
 
 ## Inspecting Constraints
 
+### Listing Constraints
+
 ```bash
 php artisan storyfeed:list --type=order -v
 ```
 
 The verbose listing adds a **Where** column beside **Middleware**. JSON output
 always includes the constraints in `where`.
+
+### Checking Stored Activities
 
 ```bash
 php artisan storyfeed:doctor --only=role_constraints

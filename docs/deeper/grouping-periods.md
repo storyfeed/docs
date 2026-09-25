@@ -1,5 +1,7 @@
 # Grouping Periods
 
+## Introduction
+
 A verb can group activities by calendar hour, day, week, or month.
 Daily grouping is the default.
 
@@ -21,7 +23,9 @@ const weekly = { ...group({ id: 'period-week', verb: 'place', axis: 'repeat', co
   glyph_intent: null }
 </script>
 
-## Grouping a Verb by Week
+<a id="grouping-a-verb-by-week"></a>
+
+## Setting a Grouping Period
 
 ```php
 // routes/feed.php
@@ -45,7 +49,9 @@ The period sets the calendar boundary for grouping. The axis still decides
 which activities belong together; `repeat` keeps the actor, verb, object type,
 and target together. Other grouping criteria and thresholds still apply.
 
-## Choosing a Calendar Period
+<a id="choosing-a-calendar-period"></a>
+
+### Available Periods
 
 | Declaration | Calendar Boundary |
 |---|---|
@@ -54,6 +60,8 @@ and target together. Other grouping criteria and thresholds still apply.
 | `groupedWeekly()` | Monday at midnight, using ISO weeks |
 | `groupedMonthly()` | midnight on the first day of each month |
 
+### Timezones and Boundaries
+
 Boundaries use `app.timezone`. ISO weeks start on Monday regardless of locale.
 With hourly grouping, activities at 14:59 and 15:01 belong to different
 periods even though they are only two minutes apart.
@@ -61,7 +69,9 @@ periods even though they are only two minutes apart.
 `groupedPer('week')` is the equivalent when choosing the period in code. It
 accepts `hour`, `day`, `week`, or `month`, or a `Storyfeed\Grouping\Period` case.
 
-## Applying a Period to Every Verb
+<a id="applying-a-period-to-every-verb"></a>
+
+## Setting Default Periods
 
 ```php
 // routes/feed.php
@@ -100,7 +110,11 @@ sittings. The batch window tracks a sitting by inactivity: each batched activity
 can extend its closing time. `within` means a sliding window; calendar periods
 use `groupedHourly()`, `groupedDaily()`, `groupedWeekly()`, or `groupedMonthly()`.
 
-## Applying a Changed Period to Stored Activities
+## Applying Period Changes
+
+<a id="applying-a-changed-period-to-stored-activities"></a>
+
+### Rehashing Stored Activities
 
 ```bash
 php artisan storyfeed:curate --rehash # Recomputes grouping for stored activities.
@@ -110,7 +124,7 @@ A changed declaration affects newly published activities. Existing rows retain
 their grouping until rehashed. This command applies the current grouping
 strategy to stored activities, so it can change groups already shown in a feed.
 
-## Curation Look-Back
+### Curation Look-Back
 
 ```bash
 php artisan storyfeed:curate --window=2

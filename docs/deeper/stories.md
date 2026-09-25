@@ -1,5 +1,7 @@
 # Story Classes
 
+## Introduction
+
 A Story class can build an activity from the data you give it.
 Declarations can also stay in `routes/feed.php` or live in their own classes.
 
@@ -15,33 +17,11 @@ const gone = { ...activity({ ...placed,
   data: null, glyph_intent: null }
 </script>
 
-## Publishing an Activity
+<a id="publishing-an-activity"></a>
 
-::: code-group
-<<< @/snippets/place-order.php [Fluent Syntax]
-<<< @/snippets/place-order.named-arguments.php [Named Arguments]
-:::
+<a id="generating-a-story-class"></a>
 
-<FeedExample :items="[placed]" />
-
-The controller records the placed order. Its headline is declared separately:
-
-```php
-// routes/feed.php
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag');
-```
-
-<FeedExample :items="[placed]" />
-
-A line in the feed file is enough for this activity. Classes give the activity's
-construction or its declarations a home of their own.
-
-## Generating a Story Class
+## Generating Story Classes
 
 ```bash
 php artisan make:story
@@ -58,7 +38,34 @@ The command asks for the class name, then **What will this story describe?**
 Each choice prints a binding to add to `routes/feed.php`. The command does not
 edit that file.
 
-## One Activity, Published With Its Data
+<a id="generator-options"></a>
+
+| Command | Result |
+|---|---|
+| `php artisan make:story OrderWasPlaced --verb=place --object=Order` | an activity constructed with its data |
+| `php artisan make:story OrderStory --model=Order` | every activity for `Order`; `--model` implies `--resource` |
+| `php artisan make:story PlaceStory --invokable --verb=place --object=Order` | the `place` declaration in `__invoke()` |
+
+`--object` names the object of one verb. `--model` selects a resource class and
+takes precedence over `--invokable`. An invokable class accepts `--object='*'`
+for a verb shared by every type.
+
+<a id="spelling-the-past-tense"></a>
+
+A name containing `Was` supplies the headline's past tense. Otherwise the
+command derives it from the verb and asks when the spelling is uncertain.
+Choosing **None of these**, or running without a terminal, leaves uncertain
+headline lines commented out. Choose a line before compiling the definitions.
+
+<a id="one-activity-published-with-its-data"></a>
+
+## Publishing Story Classes
+
+### Defining the Activity
+
+```shell
+php artisan make:story OrderWasPlaced --verb=place --object=Order
+```
 
 ```php
 <?php
@@ -102,7 +109,9 @@ class OrderWasPlaced extends Story
 `toFeedActivity()` builds the activity. The inherited `$this->activity()` fills
 in the verb bound to this class. Return `null` to publish nothing.
 
-Use this binding in place of the inline declaration:
+### Registering the Story
+
+Bind the class to its object type and verb in the feed file:
 
 ```php
 // routes/feed.php
@@ -113,29 +122,107 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 ```
 
-The authenticated controller now gives the Story its data:
+### Publishing the Story
+
+An authenticated controller gives the Story its data:
 
 ```php
-// app/Http/Controllers/PlaceOrderController.php, __invoke()
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
 use App\Stories\OrderWasPlaced;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
 <FeedExample :items="[placed]" />
 
 `Storyfeed::publish()` returns the activity, or `null` when `toFeedActivity()`
 returns `null` or the Story implements `ShouldQueue`. `Storyfeed::publishNow()`
-publishes synchronously. Construct the Story when publishing this verb; a named
+publishes synchronously. See [Queued Publishing](/deeper/queues#queueing-story-classes)
+for queued Story classes. Construct the Story when publishing this verb; a named
 lookup cannot bypass its `toFeedActivity()` method.
+
+### Presentation Methods
 
 Presentation methods are read without calling the constructor. `headline()`,
 `icon()`, `intent()`, `groups()`, `missing()`, `keepFor()`, `keepForever()`,
 `keepLatest()`, `period()` and `middleware()` must be independent of constructor data.
 The data belongs in `toFeedActivity()`.
 
-## Every Activity for One Model
+<a id="a-single-verb"></a>
+
+## Single-Verb Stories
+
+### Generating an Invokable Story
+
+```shell
+php artisan make:story PlaceStory --invokable --verb=place --object=Order
+```
+
+```php
+<?php
+
+namespace App\Stories;
+
+use Storyfeed\Stories\Verb;
+
+class PlaceStory
+{
+    public function __invoke(Verb $verb): Verb
+    {
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag');
+    }
+}
+```
+
+### Registering an Invokable Story
+
+When `routes/feed.php` gets long, a single-verb class puts that verb's headlines
+in their own class. It extends nothing. Bind it instead of the inline declaration:
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use App\Stories\PlaceStory;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', PlaceStory::class);
+```
+
+<FeedExample :items="[placed]" />
+
+Publish this verb with [the activity builder](/basics/recording). An invokable declaration can return a
+`Verb` or a headline string, just like a resource method.
+`Story::verb('place', PlaceStory::class)` binds it across types;
+its headline then needs to make sense for every type it covers.
+
+<a id="every-activity-for-one-model"></a>
+
+## Resource Stories
+
+### Generating a Resource Story
+
+```shell
+php artisan make:story OrderStory --model=Order
+```
 
 ```php
 <?php
@@ -174,10 +261,12 @@ Story::resource(Order::class, OrderStory::class);
 
 <FeedExample :items="[placed]" />
 
-The original controller still publishes the activity. The resource class holds
+Publish the activity with [the activity builder](/basics/recording). The resource class holds
 the declarations. Keep helpers protected or private; public methods declare verbs.
 
-### Verbs From Method Names
+<a id="verbs-from-method-names"></a>
+
+### Verbs and Return Types
 
 The method name is the verb, snake-cased when it has more than one word:
 
@@ -191,7 +280,7 @@ The method name is the verb, snake-cased when it has more than one word:
 Nothing else is mapped: `store()` records `store`, and `create()` records
 `create`.
 
-### Action Return Types
+<a id="action-return-types"></a>
 
 Each method declares its return type:
 
@@ -219,7 +308,9 @@ Story::resource(Order::class, OrderStory::class)
     ->except('restore', 'confirm_payment');
 ```
 
-### Selecting Resource Verbs
+<a id="selecting-resource-verbs"></a>
+
+### Selecting Verbs
 
 ```php
 // routes/feed.php
@@ -243,7 +334,9 @@ resource routes do. Excluded verbs lose their resource names too.
 
 Both methods accept an array instead of separate arguments.
 
-### Registering Several Resources
+<a id="registering-several-resources"></a>
+
+### Registering Multiple Resources
 
 ```php
 // routes/feed.php
@@ -280,7 +373,9 @@ group. This example replaces the individual resource bindings.
 
 An unknown option throws.
 
-### Using the Request
+<a id="using-the-request"></a>
+
+### Request-Based Actors
 
 ```php
 // app/Stories/OrderStory.php: add the Request import and this method.
@@ -330,7 +425,9 @@ Changing a headline with the request throws when `grammar.strict` is on,
 including the default local and testing environments. Jobs dispatched during
 the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#request-based-actors).
 
-### Headlines for Deleted Objects
+<a id="headlines-for-deleted-objects"></a>
+
+### Deleted-Object Headlines
 
 ```php
 // app/Stories/OrderStory.php: replace place().
@@ -348,65 +445,9 @@ public function place(Verb $verb): Verb
 `missingHeadline()` supplies the verb's reading after its object is deleted.
 [Deleted Models](/deeper/deleted-models) covers the other missing-entity policies.
 
-## A Single Verb
+<a id="generating-from-doctor-findings"></a>
 
-```php
-<?php
-
-namespace App\Stories;
-
-use Storyfeed\Stories\Verb;
-
-class PlaceStory
-{
-    public function __invoke(Verb $verb): Verb
-    {
-        return $verb
-            ->headline(':actor placed :object with :target')
-            ->icon('shopping-bag');
-    }
-}
-```
-
-When `routes/feed.php` gets long, a single-verb class puts that verb's headlines
-in their own class. It extends nothing. Bind it instead of the inline declaration:
-
-```php
-// routes/feed.php
-use App\Models\Order;
-use App\Stories\PlaceStory;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place', PlaceStory::class);
-```
-
-<FeedExample :items="[placed]" />
-
-The original controller still works. An invokable declaration can return a
-`Verb` or a headline string, just like a resource method.
-`Story::verb('place', PlaceStory::class)` binds it across types;
-its headline then needs to make sense for every type it covers.
-
-## Generator Options
-
-| Command | Result |
-|---|---|
-| `php artisan make:story OrderWasPlaced --verb=place --object=Order` | an activity constructed with its data |
-| `php artisan make:story OrderStory --model=Order` | every activity for `Order`; `--model` implies `--resource` |
-| `php artisan make:story PlaceStory --invokable --verb=place --object=Order` | the `place` declaration in `__invoke()` |
-
-`--object` names the object of one verb. `--model` selects a resource class and
-takes precedence over `--invokable`. An invokable class accepts `--object='*'`
-for a verb shared by every type.
-
-### Spelling the Past Tense
-
-A name containing `Was` supplies the headline's past tense. Otherwise the
-command derives it from the verb and asks when the spelling is uncertain.
-Choosing **None of these**, or running without a terminal, leaves uncertain
-headline lines commented out. Choose a line before compiling the definitions.
-
-### Generating From Doctor Findings
+## Generating From Existing Activities
 
 ```bash
 php artisan make:story --from-doctor
@@ -417,7 +458,9 @@ a headline, named from the pair, such as `OrderWasPlaced`. It asks about
 uncertain past tenses. Without a terminal it skips those pairs and prints
 commands for the possible spellings; run the command with the correct one.
 
-## Listing Verbs
+<a id="listing-verbs"></a>
+
+## Listing and Caching Stories
 
 ```bash
 php artisan storyfeed:list --type=order
