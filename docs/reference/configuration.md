@@ -59,8 +59,7 @@ For named system attribution or a sentence without an actor slot, see
 The registry is the vocabulary the app declares, on top of the package's
 built-in verbs:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Enums\ActivityVerb;
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;

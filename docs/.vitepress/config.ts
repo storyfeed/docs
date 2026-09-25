@@ -22,30 +22,46 @@ export default defineConfig({
 
   markdown: {
     config(md) {
-      // Strip before code-group titles are read too: a memo may contain [brackets].
+      /*
+       * Code block memo: `memo="app/Providers/AppServiceProvider.php"` names
+       * where the snippet lives, and `at="boot()"` says where in that file,
+       * drawn on the right of the same bar. `at` needs a `memo`. Both are
+       * stripped before code-group titles are read, since a memo may contain
+       * [brackets].
+       */
+      const takeAttribute = (token: any, name: string): string | undefined => {
+        const start = new RegExp(`(?:^|\\s)${name}=`).exec(token.info)
+        if (!start) return undefined
+        const value = new RegExp(`^${name}="([^"]*)"(?=\\s|$)`).exec(token.info.slice(start.index).trimStart())
+        if (!value || !value[1].trim()) {
+          throw new Error(`Code ${name} requires a non-empty, double-quoted value: ${name}="…"`)
+        }
+        token.info = token.info.slice(0, start.index) + token.info.slice(start.index).replace(new RegExp(`^(\\s*)${name}="[^"]*"`), '$1')
+        if (new RegExp(`(?:^|\\s)${name}=`).test(token.info)) throw new Error(`Only one ${name} is allowed per code block`)
+        return value[1]
+      }
+
       md.core.ruler.push('code-memo', (state) => {
         for (const token of state.tokens) {
           if (token.type !== 'fence') continue
-          const start = /(?:^|\s)memo=/.exec(token.info)
-          if (!start) continue
-          const value = /^memo="([^"]*)"(?=\s|$)/.exec(token.info.slice(start.index).trimStart())
-          if (!value || !value[1].trim()) {
-            throw new Error('Code memo requires a non-empty, double-quoted value: memo="…"')
-          }
-          token.meta = { ...token.meta, memo: value[1] }
-          token.info = token.info.slice(0, start.index) + token.info.slice(start.index).replace(/^(\s*)memo="[^"]*"/, '$1')
-          if (/(?:^|\s)memo=/.test(token.info)) throw new Error('Only one memo is allowed per code block')
+          const memo = takeAttribute(token, 'memo')
+          const at = takeAttribute(token, 'at')
+          if (at !== undefined && memo === undefined) throw new Error('Code at="…" needs a memo="…" to sit beside')
+          if (memo !== undefined) token.meta = { ...token.meta, memo, at }
         }
       })
 
       const fence = md.renderer.rules.fence!
       md.renderer.rules.fence = (tokens, idx, options, env, self) => {
-        const memo = tokens[idx].meta?.memo
+        const { memo, at } = tokens[idx].meta ?? {}
         const html = fence(tokens, idx, options, env, self)
         if (memo === undefined) return html
+        const bar = `<div class="sf-code-memo__bar" v-pre><span class="sf-code-memo__file">${md.utils.escapeHtml(memo)}</span>`
+          + (at ? `<span class="sf-code-memo__at">${md.utils.escapeHtml(at)}</span>` : '')
+          + '</div>'
         // Keep button → language → pre siblings intact for VitePress's copy handler.
         return html.replace(/^(<div class="[^"]*)"([^>]*>)/,
-          (_, opening, closing) => `${opening} sf-code-memo"${closing}<div class="sf-code-memo__bar" v-pre>${md.utils.escapeHtml(memo)}</div>`)
+          (_, opening, closing) => `${opening} sf-code-memo"${closing}${bar}`)
       }
 
       /*

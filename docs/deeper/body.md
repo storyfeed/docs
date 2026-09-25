@@ -114,8 +114,7 @@ An `Excerpt` adds a caption saying where the words came from:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Order.php"
-// toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make()
@@ -123,8 +122,7 @@ return FeedEntity::make()
     ->body(Excerpt::make()->text($this->summary())->from('Ticket'));
 ```
 
-```php [Named Arguments] memo="app/Models/Order.php"
-// toFeed()
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make(
@@ -143,8 +141,7 @@ A `KeyValue` keeps each line apart as data:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Order.php"
-// toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make()
@@ -156,8 +153,7 @@ return FeedEntity::make()
         ->items('Total', $this->total->format()));
 ```
 
-```php [Named Arguments] memo="app/Models/Order.php"
-// toFeed()
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\KeyValue;
 
 return FeedEntity::make(
@@ -210,8 +206,7 @@ or one row its own with `KeyValue::missingAs()`:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Order.php"
-// toFeed()
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 KeyValue::make()
     ->missing('Not given')
     ->items([
@@ -220,8 +215,7 @@ KeyValue::make()
     ])
 ```
 
-```php [Named Arguments] memo="app/Models/Order.php"
-// toFeed()
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 KeyValue::make(
     missing: 'Not given',
     items: [
@@ -275,16 +269,14 @@ Each `body()` call adds to the list, in the order written:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/MenuItem.php"
-// toFeed()
+```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="toFeed()"
 return FeedEntity::make()
     ->label($this->name)
     ->body(Excerpt::make()->text($this->description))
     ->body(KeyValue::make()->items('Station', $this->station));
 ```
 
-```php [Named Arguments] memo="app/Models/MenuItem.php"
-// toFeed()
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
 return FeedEntity::make(
     label: $this->name,
     body: [
@@ -357,14 +349,12 @@ payload resolves it:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/MenuItem.php"
-// feedMedia()
+```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="feedMedia()"
 ->body(fn () => KeyValue::make()
     ->items('Portions left', $context->model()?->portions_left))
 ```
 
-```php [Named Arguments] memo="app/Models/MenuItem.php"
-// feedMedia()
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="feedMedia()"
 body: fn () => KeyValue::make(
     items: ['Portions left' => $context->model()?->portions_left],
 ),

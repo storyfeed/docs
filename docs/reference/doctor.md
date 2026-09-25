@@ -97,8 +97,7 @@ it.
 
 #### Declaring an Unrestricted Feed
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 

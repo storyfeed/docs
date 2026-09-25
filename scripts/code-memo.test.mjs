@@ -11,7 +11,7 @@ const block = (info, code = 'echo "hello";') => `\`\`\`${info}\n${code}\n\`\`\``
 test('memo is escaped literal text outside copied code, with language and highlights intact', async () => {
   const html = await render(block('php {1} memo="<b>& {{ value }} $& [context]"'));
   assert.match(html, /class="language-php sf-code-memo"/);
-  assert.match(html, /class="sf-code-memo__bar" v-pre>&lt;b&gt;&amp; \{\{ value \}\} \$&amp; \[context\]<\/div>/);
+  assert.match(html, /class="sf-code-memo__bar" v-pre><span class="sf-code-memo__file">&lt;b&gt;&amp; \{\{ value \}\} \$&amp; \[context\]<\/span><\/div>/);
   assert.match(html, /class="line highlighted"/);
   // The actual VitePress handler copies button.nextElementSibling.nextElementSibling.
   assert.match(html, /<button[^>]*class="copy"><\/button><span class="lang">php<\/span><pre[^>]*>/);
@@ -31,6 +31,15 @@ test('imported snippets preserve code and support memo metadata', async () => {
   assert.match(html, /sf-code-memo__bar/);
   assert.match(html, /OrderController/);
   assert.match(html, /namespace/);
+});
+
+test('at="…" draws the placement on the right of the memo, outside copied code', async () => {
+  const html = await render(block('php memo="app/Providers/AppServiceProvider.php" at="boot()"'));
+  assert.match(html, /<span class="sf-code-memo__file">app\/Providers\/AppServiceProvider\.php<\/span><span class="sf-code-memo__at">boot\(\)<\/span><\/div>/);
+  assert.doesNotMatch(html.match(/<pre[\s\S]*?<\/pre>/)[0], /boot/);
+  for (const info of ['php at="boot()"', 'php memo="x" at=""', 'php memo="x" at="a" at="b"']) {
+    await assert.rejects(() => render(block(info)), /at/i, info);
+  }
 });
 
 test('plain fences are unchanged and malformed memos fail', async () => {

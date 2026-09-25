@@ -42,8 +42,7 @@ customer's order page and the kitchen's screen can each read their own.
 
 Register each feed as a closure over the builder:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
@@ -200,8 +199,7 @@ CustomerFeed::make($order)->only(['place'])->summary();
 
 Register classes and closures in one list:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Feeds\CustomerFeed;
 use App\Feeds\KitchenFeed;
 use Storyfeed\Facades\Storyfeed;

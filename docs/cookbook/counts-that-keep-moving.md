@@ -117,8 +117,7 @@ can add a reply.
 
 ### Leaving the Stored Count Empty
 
-```php memo="app/Http/Controllers/CommentController.php"
-// store()
+```php memo="app/Http/Controllers/CommentController.php" at="store()"
 use Storyfeed\FeedThread;
 
 FeedThread::make(text: $excerpt, replies: null);

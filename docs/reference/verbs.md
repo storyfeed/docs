@@ -64,8 +64,7 @@ For example, `Act::Approve` stores `approve` and serializes as
 `Storyfeed::verbs()` takes a map of verb to activity type. `Act::only()`
 builds that map for the cases an application actually records.
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
@@ -85,8 +84,7 @@ a finding for each verb the application never uses.
 A word the enum does not ship is registered as a string, or through your own
 enum implementing `FeedVerb`.
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -101,8 +99,7 @@ Storyfeed::verbs([
 
 `Storyfeed::verbs()` merges by default, so both vocabularies register together.
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Enums\KitchenActivity;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;

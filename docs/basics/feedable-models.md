@@ -96,8 +96,7 @@ A model that sets no label gets the first of these that it has:
 To guess differently across the whole app, register a guesser in a service
 provider. Returning `null` falls through to the list above:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
@@ -466,8 +465,7 @@ A method the model writes takes precedence over the trait's.
 A model from another package can't implement `Feedable`. Register it in a
 service provider instead:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
 
@@ -513,8 +511,7 @@ It is the same builder as `Storyfeed::feed()->involving($kitchen)->get()`.
 Storyfeed stores morph aliases, never class names, so entities survive a
 namespace change. Enforce a map:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Models\Kitchen;
 use App\Models\MenuItem;
 use App\Models\Order;

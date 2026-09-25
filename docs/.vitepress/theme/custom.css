@@ -307,7 +307,11 @@
 
 /* Optional fence memo: part of the code container, outside the copied <pre>. */
 .vp-doc .sf-code-memo__bar {
-  padding: 10px 76px 10px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 10px 24px;
   border-bottom: 1px solid var(--vp-c-divider);
   color: var(--vp-c-text-2);
   background: var(--vp-code-block-bg);
@@ -316,4 +320,16 @@
   line-height: 20px;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+/* `at="boot()"`: where in the file, on the right of the memo bar. */
+.vp-doc .sf-code-memo__at {
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+
+/* The copy button appears top-right on hover; with a memo bar there, it
+   sits just below the bar instead of on top of the placement. */
+.vp-doc div.sf-code-memo > button.copy {
+  top: calc(41px + 12px);
 }

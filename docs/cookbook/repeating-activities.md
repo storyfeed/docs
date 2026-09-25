@@ -256,8 +256,7 @@ class OrderTransitionController extends Controller
 
 The order's page reads the timeline:
 
-```php memo="app/Http/Controllers/OrderController.php"
-// show()
+```php memo="app/Http/Controllers/OrderController.php" at="show()"
 use Storyfeed\Facades\Storyfeed;
 
 $timeline = Storyfeed::feed()->involving($order)->log()->get();
@@ -283,8 +282,7 @@ Story::for(Order::class)->verb('confirm')
     ->keepLatest();
 ```
 
-```php memo="app/Http/Controllers/OrderController.php"
-// show()
+```php memo="app/Http/Controllers/OrderController.php" at="show()"
 use Storyfeed\Facades\Storyfeed;
 
 $pulse = Storyfeed::feed()->involving($order)->live()->get();

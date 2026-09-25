@@ -98,8 +98,7 @@ activity builder with that context set.
 ### Sharing an Actor
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::actor($request->user(), function () use ($order) {
@@ -110,8 +109,7 @@ Storyfeed::actor($request->user(), function () use ($order) {
 });
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::actor($request->user(), function () use ($order) {

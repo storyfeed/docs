@@ -91,8 +91,7 @@ class PhotoApprovalController extends Controller
 
 ## Filtering Approval Activities
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 

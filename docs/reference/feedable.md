@@ -132,8 +132,7 @@ A label left unset is guessed, first match wins:
 | the registered noun and the key | `Dish #42` |
 | the class name as words and the key | `Menu Item #42` |
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
@@ -183,8 +182,7 @@ and `$this->storyfeed()` is the model's feed.
 
 ## Registering External Models
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
 
@@ -248,8 +246,7 @@ Payload shape: [entity object](/reference/payload#entity-object).
 
 ### `PendingTombstone`
 
-```php memo="app/Models/Order.php"
-// describeFeed()
+```php memo="app/Models/Order.php" at="describeFeed()"
 use Storyfeed\PendingTombstone;
 
 $this->feedEntity()

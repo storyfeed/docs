@@ -5,8 +5,7 @@ headline. Declare it with `grouped()` beside the single-activity headline.
 
 ## Defining a Group Headline
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -65,8 +64,7 @@ const crowd = group({
 *a minute later, another request*
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
-// store()
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -74,8 +72,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
-// store()
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -88,8 +85,7 @@ Storyfeed::record(
 *another minute later, a third request*
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
-// store()
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -97,8 +93,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
-// store()
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
 Storyfeed::record(
     verb: 'place',
     object: $order,

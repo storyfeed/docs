@@ -98,8 +98,7 @@ const confirmed = activity({
 
 <FeedExample context :items="[confirmed]" />
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -128,8 +127,7 @@ Story::for(Order::class)->verb('complete')
 
 Register the observer in your service provider:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Models\Order;
 use App\Observers\OrderObserver;
 

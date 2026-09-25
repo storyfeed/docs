@@ -136,8 +136,7 @@ class MenuItem extends Model implements Feedable, Bundleable
 }
 ```
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::bundleables(['menu_item']);

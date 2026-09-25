@@ -52,8 +52,7 @@ and restoration hooks. [Feedable Models](/basics/feedable-models) covers setup.
 
 ### Soft Deletions
 
-```php memo="app/Http/Controllers/OrderController.php"
-// destroy()
+```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
 $order->delete();
 ```
 
@@ -91,8 +90,7 @@ A deleted order's headline, icon and intent are still the ones defined for
 On a model that soft-deletes, restoring it points every activity back at it,
 and the tombstone goes:
 
-```php memo="app/Http/Controllers/OrderController.php"
-// restore()
+```php memo="app/Http/Controllers/OrderController.php" at="restore()"
 $order->restore();
 ```
 
@@ -104,8 +102,7 @@ $order->restore();
 
 A force delete can't be undone, so its tombstone is permanent:
 
-```php memo="app/Http/Controllers/OrderController.php"
-// destroy()
+```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
 // the activities stay; the tombstone is now their object for good
 $order->forceDelete();
 ```
@@ -299,8 +296,7 @@ its morph alias in place of the class.
 
 When the activities themselves must go, remove them before the model:
 
-```php memo="app/Http/Controllers/AccountController.php"
-// destroy()
+```php memo="app/Http/Controllers/AccountController.php" at="destroy()"
 $user->forceDeleteFromFeed();   // every activity involving the user, permanently
 $user->forceDelete();
 ```

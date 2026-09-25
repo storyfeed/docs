@@ -60,8 +60,7 @@ The `publish()` / `queue()` pair follows Laravel's explicit mailable queueing.
 
 ### Queue and Connection
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -90,8 +89,7 @@ The database connection needs Laravel's jobs table.
 
 Add `delay()` before `queue()` to choose when the job becomes available:
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -191,8 +189,7 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 
 An authenticated controller supplies the data:
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use App\Stories\OrderWasPlaced;
 use Storyfeed\Facades\Storyfeed;
 
@@ -246,8 +243,7 @@ Outside a transaction it publishes immediately.
 
 ## Publication Time and Model Snapshots
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -308,8 +304,7 @@ chooses its verb's actor at each publish. On a worker there is no request, so a
 job dispatched during the request carries what the method chose: a party name,
 or a model as its morph alias and key, never the request itself.
 
-```php memo="app/Http/Controllers/PaymentWebhookController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke()"
 use App\Jobs\ConfirmPayment;
 
 // its confirm_payment gets the actor the request chose

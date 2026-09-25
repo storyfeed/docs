@@ -55,8 +55,7 @@ class OrderPlaced implements PublishesToFeed
 Returning `null` publishes nothing. See
 [Publishing from Events](/deeper/events).
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
@@ -319,8 +318,7 @@ from the note. The renderer receives them as `node.thread.text`; drop the
 When the object is the discussion itself, each activity can carry the reply it
 is about:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 

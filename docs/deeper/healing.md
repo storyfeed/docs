@@ -86,8 +86,7 @@ Activities must be on the default database connection.
 
 Register the healer beside your feeds:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Storyfeed\AssetHealer;
 use Storyfeed\Facades\Storyfeed;
 

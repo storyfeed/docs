@@ -60,8 +60,7 @@ class PlaceOrderController extends Controller
 `story()` takes a name, just as Laravel's `route()` does. Its facade equivalent
 is `Storyfeed::route()`, corresponding to Laravel's `URL::route()`:
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
 
 $activity = Storyfeed::route('order.place', $order)
@@ -236,8 +235,7 @@ name beside its declaration; `--json` includes it too.
 
 ### Matching Names
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-// __invoke()
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Story;
 
 Story::has('order.place');         // true for the declaration above

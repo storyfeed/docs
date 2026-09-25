@@ -159,8 +159,7 @@ class DispatchOrderController extends Controller
 A name given to `Storyfeed::actor()`, or to a verb's own `->actor()`, may come
 from outside your code. Declare the names an actor may take:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::parties(['Stripe', 'Paddle', 'System']);

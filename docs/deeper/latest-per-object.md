@@ -128,8 +128,7 @@ that made it, `latestPer()` included.
 
 A feed that always shows the latest activity per object says so once:
 
-```php memo="app/Providers/AppServiceProvider.php"
-// boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 

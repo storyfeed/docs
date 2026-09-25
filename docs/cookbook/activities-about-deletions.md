@@ -108,8 +108,7 @@ const removedKeepingLabel = activity({
 The dish is a tombstone once it is deleted. To keep naming it, the model keeps
 its label on its tombstone:
 
-```php memo="app/Models/MenuItem.php"
-// describeFeed()
+```php memo="app/Models/MenuItem.php" at="describeFeed()"
 $this->feedEntity()
     ->label("{$this->code} {$this->name}")
     ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
@@ -136,8 +135,7 @@ covers what each of them says.
 Deleting a model keeps its activities unless a verb declares `forgetWhenMissing()`. When they must go, such as a
 customer asking to be forgotten, remove them before the model:
 
-```php memo="app/Http/Controllers/AccountController.php"
-// destroy()
+```php memo="app/Http/Controllers/AccountController.php" at="destroy()"
 $user->forceDeleteFromFeed();   // every activity involving the user, permanently
 $user->forceDelete();
 ```
