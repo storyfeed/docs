@@ -1,10 +1,14 @@
 # Feedable API
 
+## Introduction
+
 Everything a `Feedable` model can put on the feed, and everything it can read
 back at render time. [Feedable Models](/basics/feedable-models) shows the
 common path.
 
-## The Contract
+<span id="the-contract"></span>
+
+## The Feedable Contract
 
 ```php
 <?php
@@ -32,7 +36,7 @@ interface Feedable
 code is complete. A `toFeed()` or `feedMedia()` written on the model takes
 precedence over the trait's.
 
-## `InteractsWithFeed`
+## InteractsWithFeed
 
 | Method | Where | Runs | Use |
 |---|---|---|---|
@@ -50,24 +54,73 @@ A `feedMediaUsing()` closure receives the `FeedContext` and an empty
 link. Registering again replaces the closure. A model that registers none is
 not a link.
 
-```php
-// app/Models/Order.php
-public function describeFeed(): void
-{
-    $this->feedEntity()
-        ->label("Order #{$this->reference}")
-        ->body(Excerpt::make()->text($this->instructions));
-}
+::: code-group
 
-protected static function booted(): void
+```php [Fluent Syntax]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class Order extends Model implements Feedable
 {
-    static::feedMediaUsing(
-        fn ($context) => route('orders.show', $context->routeKey()),
-    );
+    use InteractsWithFeed;
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->label("Order #{$this->reference}")
+            ->body(Excerpt::make()->text($this->instructions));
+    }
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn ($context) => route('orders.show', $context->routeKey()),
+        );
+    }
 }
 ```
 
-### The Default Label
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->label("Order #{$this->reference}")
+            ->body(Excerpt::make(text: $this->instructions));
+    }
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn ($context) => route('orders.show', $context->routeKey()),
+        );
+    }
+}
+```
+
+:::
+
+<span id="the-default-label"></span>
+
+### Default Labels
 
 A label left unset is guessed, first match wins:
 
@@ -94,7 +147,41 @@ A model that writes its own `guessFeedLabel()` is not asked by the app-wide
 guesser. To reach the trait's guess from inside it, alias it:
 `use InteractsWithFeed { guessFeedLabel as guessedFeedLabel; }`.
 
-## Models You Don't Own
+### Snapshot Maintenance
+
+`InteractsWithFeed` listens to the model's events. None of them runs while
+recording is disabled.
+
+| Event | What happens |
+|---|---|
+| `saved` | the snapshot is refreshed |
+| `deleted` | the model's activities are pointed at a tombstone, and its snapshot is deleted |
+| `restored` | its activities are pointed back at the model, and the tombstone is deleted |
+| `forceDeleted` | the tombstone becomes permanent |
+
+Activities stay unless their verb declares `forgetWhenMissing()`.
+`deleteFromFeed()` and `forceDeleteFromFeed()` explicitly remove activities.
+[Deleted Models](/deeper/deleted-models) covers tombstones.
+
+Entities recorded before they had a snapshot (imports, backfills) are
+snapshotted by [`storyfeed:trickle`](/reference/commands). Until then they
+render with `label: null` and `url: null`, and your frontend can choose a placeholder. Activities are never hidden by the read path.
+
+<span id="the-model-s-own-feed"></span>
+
+### Reading the Model's Feed
+
+`$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
+argument filled in, and takes an optional feed name:
+`$model->storyfeed('customer')`. Both read `feed_participants`.
+
+The `storyfeed()` helper function is different: it returns the manager, or a
+pending activity when given a verb. Inside a model, `storyfeed()` is the helper
+and `$this->storyfeed()` is the model's feed.
+
+<span id="models-you-don-t-own"></span>
+
+## Registering External Models
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -199,7 +286,9 @@ so it should make no writes and no queries except `model()`.
 If the resolver throws, the exception is reported and the entity gets
 `url: null` and `media: null`; the rest of the feed renders.
 
-### `$context->model()`
+<span id="context-model"></span>
+
+### Loading the Model
 
 ```php
 $document = $context->model(with: ['project'], withTrashed: true);
@@ -265,42 +354,68 @@ The slots are Activity Streams 2.0 property names:
 ::: code-group
 
 ```php [Fluent Syntax]
-// app/Models/Document.php
-use Storyfeed\FeedImage;
+<?php
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+class Document extends Model implements Feedable
 {
-    return FeedMedia::make()
-        ->url(route('documents.show', $context->routeKey()))
-        ->preview(FeedImage::make()
-            // resolved here, at read time
-            ->src(route('documents.thumbnail', $context->routeKey()))
-            // the intrinsic facts come from the snapshot
-            ->mediaType($context->data('mediaType'))
-            ->width($context->data('width'))
-            ->height($context->data('height'))
-            ->alt($context->label()));
+    use InteractsWithFeed;
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()
+            ->url(route('documents.show', $context->routeKey()))
+            ->preview(FeedImage::make()
+                // resolved here, at read time
+                ->src(route('documents.thumbnail', $context->routeKey()))
+                // the intrinsic facts come from the snapshot
+                ->mediaType($context->data('mediaType'))
+                ->width($context->data('width'))
+                ->height($context->data('height'))
+                ->alt($context->label()));
+    }
 }
 ```
 
 ```php [Named Arguments]
-// app/Models/Document.php
-use Storyfeed\FeedImage;
+<?php
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+class Document extends Model implements Feedable
 {
-    return FeedMedia::make(
-        url: route('documents.show', $context->routeKey()),
-        preview: FeedImage::make(
-            // resolved here, at read time
-            src: route('documents.thumbnail', $context->routeKey()),
-            // the intrinsic facts come from the snapshot
-            mediaType: $context->data('mediaType'),
-            width: $context->data('width'),
-            height: $context->data('height'),
-            alt: $context->label(),
-        ),
-    );
+    use InteractsWithFeed;
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            url: route('documents.show', $context->routeKey()),
+            preview: FeedImage::make(
+                // resolved here, at read time
+                src: route('documents.thumbnail', $context->routeKey()),
+                // the intrinsic facts come from the snapshot
+                mediaType: $context->data('mediaType'),
+                width: $context->data('width'),
+                height: $context->data('height'),
+                alt: $context->label(),
+            ),
+        );
+    }
 }
 ```
 
@@ -324,51 +439,9 @@ Each argument below also has a method of the same name.
 
 Payload shape: [entity media](/reference/payload#entity-media).
 
-## Snapshot Maintenance
+<span id="rich-rendering"></span>
 
-`InteractsWithFeed` listens to the model's events. None of them runs while
-recording is disabled.
-
-| Event | What happens |
-|---|---|
-| `saved` | the snapshot is refreshed |
-| `deleted` | the model's activities are pointed at a tombstone, and its snapshot is deleted |
-| `restored` | its activities are pointed back at the model, and the tombstone is deleted |
-| `forceDeleted` | the tombstone becomes permanent |
-
-Activities stay unless their verb declares `forgetWhenMissing()`.
-`deleteFromFeed()` and `forceDeleteFromFeed()` explicitly remove activities.
-[Deleted Models](/deeper/deleted-models) covers tombstones.
-
-Entities recorded before they had a snapshot (imports, backfills) are
-snapshotted by [`storyfeed:trickle`](/reference/commands). Until then they
-render with `label: null` and `url: null`, and renderers show a neutral
-placeholder. Activities are never hidden by the read path.
-
-## The Model's Own Feed
-
-`$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
-argument filled in, and takes an optional feed name:
-`$model->storyfeed('customer')`. Both read `feed_participants`.
-
-The `storyfeed()` helper function is different: it returns the manager, or a
-pending activity when given a verb. Inside a model, `storyfeed()` is the helper
-and `$this->storyfeed()` is the model's feed.
-
-## Morph Aliases
-
-Aliases are read from the app's morph map, or from `morph_map` in
-`config/storyfeed.php`, which merges into it at boot. The package's own aliases
-resolve whether or not the app's map registers them.
-
-An activity whose role alias no longer resolves still shows, with a
-placeholder. The trickle counts it as unresolved, and soft-deletes it only with
-`storyfeed.trickle.prune` or `storyfeed:trickle --prune`.
-
-[Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
-map.
-
-## Rich Rendering
+### Rich Content
 
 ::: code-group
 
@@ -394,3 +467,15 @@ FeedEntity::make(
 The payload carries the `Component` body in `entity.body`, with its `name`
 and `props`; what your frontend draws for the name is yours.
 [Activity Body Content](/deeper/body#drawing-your-own-component) covers it.
+
+## Morph Aliases
+
+Aliases are read from the app's morph map, or from `morph_map` in
+`config/storyfeed.php`, which merges into it at boot. The package's own aliases
+resolve whether or not the app's map registers them.
+
+An activity whose role alias no longer resolves still appears in the payload with no resolved label or link. The trickle counts it as unresolved, and soft-deletes it only with
+`storyfeed.trickle.prune` or `storyfeed:trickle --prune`.
+
+[Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
+map.

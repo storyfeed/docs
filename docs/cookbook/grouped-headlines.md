@@ -3,6 +3,8 @@
 When a feed groups several activities into one row, the row needs its own
 headline. Declare it with `grouped()` beside the single-activity headline.
 
+## Defining a Group Headline
+
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\ActivityStreams\ActivityType;
@@ -49,6 +51,8 @@ const crowd = group({
   distinct: { actors: 5, objects: 5, targets: 1 },
 })
 </script>
+
+## Publishing and Reading a Group
 
 *A customer places an order with the kitchen.*
 
@@ -130,7 +134,9 @@ different customers have ordered. See [Aggregation](/deeper/aggregation).
 A group with no headline of its own gets a
 [generic one](/deeper/aggregation#group-headline-tokens).
 
-## Choosing Group Headline Keys
+<span id="choosing-group-headline-keys"></span>
+
+## Choosing Headline Keys
 
 | Axis | The Members Are | Sentence | Written On |
 |---|---|---|---|
@@ -139,9 +145,14 @@ A group with no headline of its own gets a
 | `object` | repeated acts on one object | `:actor changed the price of :object :count times` | the type |
 | `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` | the verb |
 
-A group on the type can say "orders", because every member is an order. A group
-on the verb can gather other types into the same row, so its sentence names
-none.
+### Single-Type Groups
+
+A group on the type can say "orders", because every member is an order.
+
+### Mixed-Type Groups
+
+A group on the verb can gather other types into the same row, so its sentence
+should describe the activity without assuming an object type.
 
 `:count` counts activities, not different objects. If the same order can be
 placed twice, write "placements", not "orders".
@@ -152,7 +163,9 @@ A group shows no quote or image of its own; those stay on the activities
 inside it. Where every comment must stay visible, read with `log()`, which
 doesn't group.
 
-## Defining Group Headlines in a Story Class
+<span id="defining-group-headlines-in-a-story-class"></span>
+
+## Defining Headlines in Story Classes
 
 A verb's method holds its headline and the group headlines for its type:
 

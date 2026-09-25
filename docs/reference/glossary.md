@@ -1,62 +1,67 @@
 # Glossary
 
-Every term the docs use, what it is, and what it is not. Terms are grouped by
-where you meet them.
+Terms used to define, publish and read an activity feed.
 
-## The Activity
+<span id="the-activity"></span>
 
-| Term | It Is | It Is **Not** |
-|---|---|---|
-| **activity** | one recorded fact | a log entry — you choose what gets recorded |
-| **verb** | what happened, as a string passed to `Storyfeed::activity()` | a closed set; enums are convenience |
-| **actor / object / target / context** | the roles a sentence needs; [Recording](/basics/recording#roles) covers all seven | interchangeable; target ≠ context |
-| **party** | a [named participant with no model](/deeper/parties) | a null actor (that means *unknown*; see [actorless voice](/deeper/parties#actorless-voice)) |
-| **[story class](/deeper/stories)** | an activity blueprint, bound in `routes/feed.php`; a resource class holds verbs, while a `Story` subclass receives data to publish | a required abstraction — a line in `routes/feed.php` is always enough |
-| **[composite](/deeper/composites)** | one authored activity about many objects | a derived group |
-| **batch** | a burst-detection window | anything a reader sees |
+## Activities and Roles
+
+| Term | Meaning |
+|---|---|
+| **activity** | One published fact, with a verb, roles and publication time. |
+| **verb** | The action recorded as a string, such as `upload`. See [Activity Verbs](/basics/verbs). |
+| **actor / object / target / context** | Who acted, what they acted on, what the action was directed at, and its container. [Recording](/basics/recording#roles) covers all seven roles. |
+| **party** | A [named participant without a model](/deeper/parties), such as a system or integration. A null actor records no participant. |
+
+## Definitions and Stories
+
+| Term | Meaning |
+|---|---|
+| **[Story class](/deeper/stories)** | A blueprint for activities. A resource class declares verbs; a `Story` subclass receives data and produces an activity. The activity is the published fact. |
+| **[feed file](/basics/the-feed-file)** | `routes/feed.php`, where `Story::` declares headlines and other activity behaviour. It defines no HTTP routes. |
+| **grammar** | The headline templates declared for activities and groups. |
 
 ## Grouping
 
-| Term | It Is | It Is **Not** |
-|---|---|---|
-| **axis** | the question you group by | a sort order, or a display label |
-| **curation** | choosing the winning axis at write time | editorial judgement, or anything at read time |
-| **eligibility** | the minimum that makes an axis worth applying | a limit on how big a group can get |
-| **group node** | an aggregate in its own right | a parent row with children attached |
-| **sample** | a few named participants, to print | the full membership — `distinct` has the totals |
-| **count** | activities in the group | distinct people (that's `distinct.actors`) |
+| Term | Meaning |
+|---|---|
+| **axis** | The roles and values used to group activities. See [Aggregation](/deeper/aggregation). |
+| **curation** | Choosing the winning grouping axis at write time. |
+| **eligibility** | The thresholds a set of activities must meet for an axis to apply. |
+| **group node** | An aggregate representation of several activities in the payload. |
+| **sample** | A limited list of distinct entities in a group; `distinct` carries the full counts. |
+| **count** | The number of activities in a group. `distinct.actors` counts different actors. |
+| **[composite](/deeper/composites)** | One authored activity about multiple objects. |
+| **batch** | A time window used to collect a burst of activity by one actor. |
+
+<span id="reading"></span>
+
+## Reading Feeds
+
+| Term | Meaning |
+|---|---|
+| **[named feed](/basics/named-feeds)** | A reusable feed definition that applies its scope, verb selection and read mode when read. |
+| **read mode** | The choice of timeline or grouping behaviour for a feed. See [Reading Feeds](/basics/reading). |
+| **cursor** | An opaque page position to send back when requesting another page. |
+| **sync_token** | An opaque value used to detect rewritten history. When it changes, discard accumulated nodes and refetch. See [Synchronization](/reference/payload#sync-tokens). |
 
 ## Rendering
 
-| Term | It Is | It Is **Not** |
-|---|---|---|
-| **[grammar](/basics/the-feed-file)** | the registry of headline templates | rendered prose |
-| **[feed file](/basics/the-feed-file)** | `routes/feed.php`, where `Story::` defines what each activity says | a route file; it defines no URLs |
-| **token** | a `:placeholder` your renderer fills | a value the server substituted |
-| **glyph** | a token the payload ships, e.g. `shopping-bag` | an image, or a set the package owns |
-| **[body](/deeper/body)** | a typed block beneath the sentence — an excerpt, a change, a list; its kind is its **body type** | part of the headline, or a place for markup |
+| Term | Meaning |
+|---|---|
+| **token** | A placeholder such as `:actor` in a headline template. |
+| **glyph** | An activity's icon token, such as `shopping-bag`. Your frontend resolves it to artwork. |
+| **icon** | An entity image in `entity.media.icon`. See [Image Slots](/reference/feedable#image-slots). |
+| **[body](/deeper/body)** | A typed block beneath the headline, such as an excerpt or a list. Its kind is its **body type**. |
 
-## Reading
+<span id="storage-maintenance"></span>
 
-| Term | It Is | It Is **Not** |
-|---|---|---|
-| **[named feed](/basics/named-feeds)** | an audience's scope and verb allowlist, declared once | a filter applied at read time |
-| **read mode** | how collapsed the reader wants it | a filter |
-| **cursor** | an opaque page position | an offset, or something to parse |
-| **sync_token** | "history was rewritten, resync" | a cursor, or optional metadata |
+## Storage and Maintenance
 
-## Storage & Maintenance
-
-| Term | It Is | It Is **Not** |
-|---|---|---|
-| **snapshot** | cached label, data, and body fields per entity | a copy of your model |
-| **trickle** | the sweep that fills snapshots recording could not, and finds deletions no event reported | a cache warmer you must run to read |
-| **[tombstone](/deeper/deleted-models)** | what a deleted model leaves in its activities: its former type and when it went | a deleted activity; the activities stay |
-| **[retention](/deeper/retention)** | how long a verb's activities are kept before `storyfeed:prune` deletes them | a soft delete; a pruned activity is gone, and nothing records it |
-| **[healer](/deeper/healing)** | an app-declared policy retiring activities whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
-
-::: tip Glyph and icon, null actor and party
-**`glyph`** is a token naming an activity; **`icon`** is an image, at
-`entity.media.icon`. **A null actor** means the actor is unknown; **a party**
-means something without a model did it.
-:::
+| Term | Meaning |
+|---|---|
+| **snapshot** | Cached label, data and body fields for an entity. |
+| **trickle** | The maintenance pass that fills missing or outdated snapshots and finds deletions no model event reported. |
+| **[tombstone](/deeper/deleted-models)** | The reference left by a deleted model, including its former type and deletion time. Its activities can remain. |
+| **[retention](/deeper/retention)** | How long activities are kept before `storyfeed:prune` permanently deletes them. |
+| **[healer](/deeper/healing)** | An application policy that identifies activities to retire because their source is permanently gone. |

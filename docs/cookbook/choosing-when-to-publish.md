@@ -2,6 +2,16 @@
 
 Publish when a record's status changes, not on every save.
 
+## Publishing a Status Transition
+
+Create an observer for the model whose status changes:
+
+```shell
+php artisan make:observer OrderObserver --model=Order
+```
+
+In its `updated` method, publish only the transitions the feed should show:
+
 ::: code-group
 ```php [Fluent Syntax]
 <?php
@@ -9,7 +19,6 @@ Publish when a record's status changes, not on every save.
 namespace App\Observers;
 
 use App\Models\Order;
-use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 class OrderObserver
@@ -116,7 +125,19 @@ Story::for(Order::class)->verb('complete')
     ->headline(':actor completed :object');
 ```
 
-## Status Transitions
+<span id="status-transitions"></span>
+
+Register the observer in your service provider:
+
+```php
+// app/Providers/AppServiceProvider.php, boot()
+use App\Models\Order;
+use App\Observers\OrderObserver;
+
+Order::observe(OrderObserver::class);
+```
+
+## Choosing Transitions to Record
 
 | What Happened | Activity | Verb |
 |---|---|---|
@@ -130,7 +151,9 @@ Use one verb per transition, not one `status` verb with the new state in
 `data`. [Repeating Activities](/cookbook/repeating-activities#matching-activities)
 explains why.
 
-## Publishing Status Transitions From Events
+<span id="publishing-status-transitions-from-events"></span>
+
+## Publishing From Domain Events
 
 When the transition already has a domain event, publish from the event:
 

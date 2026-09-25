@@ -1,9 +1,13 @@
 # The Payload Contract
 
+## Introduction
+
 The JSON a feed returns, payload **v1**. Every item arrives fully described, so
 a renderer needs no knowledge of your domain.
 
-## Envelope
+<span id="envelope"></span>
+
+## Response Envelope
 
 ```jsonc
 {
@@ -18,7 +22,9 @@ a renderer needs no knowledge of your domain.
 Empty PHP maps such as `data` and `attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
 
-## Entity Object
+<span id="entity-object"></span>
+
+## Entities
 
 Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`) is `null` or:
 
@@ -59,7 +65,9 @@ resolver's; each is a map naming its body type in `$body`
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
 non-null; an empty `content` string is preserved.
 
-### Tombstoned Entities
+<span id="tombstoned-entities"></span>
+
+### Tombstones
 
 A deleted model's activities stay, and each reference to it points at a
 tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
@@ -105,7 +113,9 @@ not when it happened. The headline, glyph and intent of an activity whose
 object is a tombstone resolve with `formerType`, so `order.place` still
 applies.
 
-### Entity Media
+<span id="entity-media"></span>
+
+### Media
 
 ```jsonc
 "media": {
@@ -152,7 +162,9 @@ A group's `sample` entities are ordinary entity objects and carry `media` the sa
 `attachments` is a list of resources carrying `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
-### One Payload, One Feed
+<span id="one-payload-one-feed"></span>
+
+### Feed-Specific Resolution
 
 The resolver's context names the feed being read, so one snapshot can resolve
 to a different URL on each feed. The name comes from the feed registry, never
@@ -165,7 +177,16 @@ reuses one feed's page for another audience, or a renderer that memoises
 entities across feeds by `type:id` shows one feed's links to another feed's
 audience.
 
-## Activity Node
+### Degraded Entities
+
+An entity with no snapshot is not omitted, and neither is its activity. It
+arrives with `label: null`, `url: null` and `media: null`, because the resolver
+is not called without a snapshot. A throwing `feedMedia()` gives `url: null`
+and `media: null`, and the exception is reported server-side.
+
+<span id="activity-node"></span>
+
+## Activity Nodes
 
 ```jsonc
 {
@@ -215,7 +236,9 @@ the activity's news is gone while the activity is still true as history, and
 `missing_headline_template` is the app's own sentence for it, when the verb
 declares one. A renderer may show either reading.
 
-## Group Node
+<span id="group-node"></span>
+
+## Group Nodes
 
 ```jsonc
 {
@@ -285,7 +308,9 @@ A renderer can rely on the group node's shape, but not on which groups appear:
 the axes, thresholds and windows that decide them are server-side and can
 change.
 
-## Glyphs
+## Presentation Fields
+
+### Glyphs
 
 `glyph` is a token naming an icon — the app's own name, resolved from the icon
 registry. The package ships no icon set, and an unresolved pair is `null`.
@@ -302,7 +327,7 @@ Both resolve on the same ladder and independently of each other:
 The Activity Streams 2.0 document carries neither: AS2 has no term for an icon
 token, and `icon` there is an image on the entity.
 
-## Headlines
+### Headlines
 
 Render from `headline_template`: tokenize it and substitute. `headline` is the
 pre-rendered fallback for closure-authored grammar, and is null whenever the
@@ -320,13 +345,19 @@ keep a role token when the group contains exactly one distinct entity.
 Noun substitution can change the emitted template even for the same grammar
 key, so cache rendered headlines per node, not per grammar key.
 
-## Cursor Semantics
+## Pagination and Synchronization
+
+<span id="cursor-semantics"></span>
+
+### Cursors
 
 - Opaque. Store and return them; they are not parseable.
 - Ordered by `published_at`, newest first.
 - `next_cursor: null` means the end.
 
-## Sync Token
+<span id="sync-token"></span>
+
+### Sync Tokens
 
 Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
@@ -336,10 +367,3 @@ This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#re
 moves a group past a live cursor and the next page is empty. Check the token
 before treating that response as the end of the feed. A client that ignores a
 changed token does not conform to the payload contract.
-
-## Degraded Entities
-
-An entity with no snapshot is not omitted, and neither is its activity. It
-arrives with `label: null`, `url: null` and `media: null`, because the resolver
-is not called without a snapshot. A throwing `feedMedia()` gives `url: null`
-and `media: null`, and the exception is reported server-side.

@@ -1,8 +1,13 @@
 # Schema
 
-Nine tables, created by the published migrations.
+## Introduction
 
-## `feed_activities`
+The published migrations create nine tables for activities, snapshots and
+feed maintenance. Table names can be changed in [Configuration](/reference/configuration#tables-and-models).
+
+## Activity Storage
+
+### `feed_activities`
 
 The atomic timeline.
 
@@ -17,7 +22,7 @@ The atomic timeline.
 | `published_at` | the sort key; nullable, stamped at publish |
 | timestamps, `deleted_at` | soft deletes |
 
-## `feed_snapshots`
+### `feed_snapshots`
 
 Denormalized entity labels, data, and optional body fields. Reads use these
 snapshots unless a [media resolver](/reference/feedable#the-contract) loads the
@@ -31,31 +36,35 @@ sorts or joins on is a real column, like `shape`. Your `toFeed()` values stay
 in `data`. The two are never merged, and `$context->data()` never returns
 `meta`. The `component` column is unused.
 
-## `feed_groupings`
+## Grouping and Batching
+
+### `feed_groupings`
 
 Grouping candidates, one row per activity per applicable axis, computed at
 publish time. The `winner` column records the selected axis. Batch membership
 rides these rows.
 
-## `feed_parties`
-
-Named participants with no model in your app.
-
-## `feed_batches`
+### `feed_batches`
 
 Bursts of activity by one actor, with `activities_count` and
 `last_activity_at`, a scheduled `closes_at`, and `closed_at` once closed.
 The quiet window sets `closes_at`; closing fires `BatchClosed` and can create
 composites.
 
-## `feed_batch_locks`
+### `feed_batch_locks`
 
 One row per actor that has been batched, keyed `(actor_type, actor_id)`, with
 the ids of the actor's open batches. A publish takes the actor's row before
 choosing a batch, so two publishes at once by one actor join the same batch.
 The key is a string, so UUID and ULID actors fit. Nothing in the feed reads it.
 
-## `feed_participants`
+## Participants
+
+### `feed_parties`
+
+Named participants with no model in your app.
+
+### `feed_participants`
 
 One row per (activity, filled role): `activity_id`, `role`, `entity_type`
 (alias), `entity_id`, and a denormalized `published_at`. Indexed
@@ -63,7 +72,9 @@ One row per (activity, filled role): `activity_id`, `role`, `entity_type`
 single ordered lookup. Written in the publish transaction; backfilled by
 `storyfeed:participants`.
 
-## `feed_tombstones`
+## Deletion and Metadata
+
+### `feed_tombstones`
 
 What a deleted model leaves behind, one row per deleted model. Every reference
 to the model, in every role column, its `cached_*_id` and `feed_participants`,
@@ -82,6 +93,6 @@ points at its tombstone instead. See [Deleted Models](/deeper/deleted-models).
 
 Its alias is `storyfeed.tombstone`, whatever your morph map says.
 
-## `feed_meta`
+### `feed_meta`
 
 Package-owned bookkeeping — the sync token lives here.

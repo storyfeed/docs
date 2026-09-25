@@ -3,6 +3,8 @@
 Before you record a new kind of activity, write its fields out in a line and
 check that they describe what happened.
 
+## Composing an Activity
+
 ```text
 :actor · :verb · :object · :target
 ```
@@ -36,7 +38,9 @@ invitee · accepted · invitation · project  coherent
 A repetition can be right: someone editing their own profile is both actor and
 object.
 
-## Coherence and Completeness
+<span id="coherence-and-completeness"></span>
+
+### Checking Completeness
 
 ```text
 user · moved · document · folder B
@@ -85,7 +89,9 @@ Story::for(Document::class)->verb('archive')
 The fields are fine, but the template names a role no publisher fills, so the
 headline shows a fallback where a name should be.
 
-## Repeated Rows
+<span id="repeated-rows"></span>
+
+## Inspecting Repeated Roles
 
 ```sh
 php artisan storyfeed:doctor --only=reflexive

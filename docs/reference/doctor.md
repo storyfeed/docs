@@ -1,22 +1,45 @@
 # Doctor
 
-```bash
+## Introduction
+
+Doctor checks your definitions, schema and recorded activities. Findings name
+the affected definitions or rows and describe the action you can take.
+
+## Running the Doctor
+
+```shell
 php artisan storyfeed:doctor
-
-# structured, for CI
-php artisan storyfeed:doctor --json
-
-# print routes/feed.php definitions for every gap
-php artisan storyfeed:doctor --stubs
-
-# one check
-php artisan storyfeed:doctor --only=grammar
 ```
 
-Doctor checks your registries, your schema and the activities in your feed.
-Each finding names its fix.
+### Selecting Checks
 
-## Checks
+List the check names, then select one or more with `--only`:
+
+```shell
+php artisan storyfeed:doctor --list
+php artisan storyfeed:doctor --only=grammar --only=verbs
+```
+
+### JSON Output
+
+Use `--json` to read the report from a script:
+
+```shell
+php artisan storyfeed:doctor --json
+```
+
+### Exit Status
+
+Findings do not change the exit status by default. Use `--fail-on=warning`
+to fail on warnings and errors, or `--fail-on=error` for errors alone:
+
+```shell
+php artisan storyfeed:doctor --fail-on=warning
+```
+
+<span id="checks"></span>
+
+## Available Checks
 
 | Check | Asks | Reports |
 |---|---|---|
@@ -52,7 +75,9 @@ Each finding names its fix.
 | `keep_latest` | multiple live rows on a declared key (`keep_latest.split`, warning), or superseded rows on an undeclared verb (`keep_latest.undeclared`, info); declarations with `within:` are excluded from the split check | warning · info |
 | `actions` | Story class methods that take the request and threw when a job was dispatched, and methods that read `request()` without taking `Request`. See [Actions](#actions) | warning |
 
-## Feed Coverage
+## Interpreting Findings
+
+### Feed Coverage
 
 The `feeds` check reports five findings:
 
@@ -70,7 +95,7 @@ classifies nothing. An app that never calls `Storyfeed::feeds()` gets no
 findings. A finding that names a feed ends with the file and line that declared
 it.
 
-### Declaring an Unrestricted Feed
+#### Declaring an Unrestricted Feed
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
@@ -96,7 +121,7 @@ Storyfeed::feed('portal')->only(['place', 'ready'])->get();
 One feed declaration cannot both filter and be `unrestricted()`, and `verb()`
 counts as a filter.
 
-### Group Reachability
+#### Group Reachability
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -106,14 +131,14 @@ counts as a filter.
 
 Register your feeds so this check can tell a real gap from a latent one.
 
-## Definitions
+### Definitions
 
 | Finding | Severity | Means |
 |---|---|---|
 | `verbs.dead` | info | a verb is declared but never recorded. Names the `file:line` that defined it |
 | `grammar.unrecorded` | info | a type-and-verb pair is defined but never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
 
-## Deleted Models
+### Deleted Models
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -124,7 +149,7 @@ Register your feeds so this check can tell a real gap from a latent one.
 The label matters beyond the feed: it is what a tombstone keeps when its model
 asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 
-## Parties
+### Parties
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -134,14 +159,14 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 | `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
 | `parties.used` | info | a party, and how many activities it has |
 
-## Retention
+### Retention
 
 | Finding | Severity | Means |
 |---|---|---|
 | `retention.backlog` | warning | a verb has rows more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them, with the snapshots and tombstones only they referred to. Usually a window just declared or shortened, or a prune nothing schedules; `storyfeed:prune --pretend` shows the run first |
 | `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it, so its rows are kept for the life of the table. A verb that says `->keepForever()` is never named |
 
-## Actions
+### Actions
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -149,7 +174,7 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 | `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched, where it runs to carry its actor to the worker. The dispatch went ahead, and the job published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade without taking `Illuminate\Http\Request $request`. It runs only when stories compile, never at a publish or in a queued job. Take the `Request` as a parameter instead. Found by reading the source, so it only ever warns |
 
-## Surface
+### Surface
 
 | Finding | Severity | Means |
 |---|---|---|
@@ -189,7 +214,7 @@ To appear as a type of its own, give it an alias in
 `Relation::enforceMorphMap()`. A model with no aliased parent gets only that
 second fix.
 
-## Entities
+### Entities
 
 The `entities` check resolves every morph alias recorded in the actor, object,
 target and context roles. Each finding names the role, the alias, the class,
@@ -208,7 +233,7 @@ The rows these findings name render without a label or a link, and the trickle
 counts them as unresolved on every run. A row that exists but is not yet cached
 is reported by `backlog`.
 
-## Hydration
+### Hydration
 
 The `hydration` check calls each `Feedable` model's `feedMedia()` with a
 context whose model loader is switched off, once per registered feed and once
@@ -228,7 +253,9 @@ snapshot for the alias, so a resolver that hydrates only under an unregistered
 feed name, or only for an older snapshot shape, is not seen. A class with no
 snapshot that throws on an empty one is not reported.
 
-## Generating Definitions
+<span id="generating-definitions"></span>
+
+## Generating Missing Definitions
 
 ```bash
 # routes/feed.php definitions, with their use lines
@@ -289,16 +316,21 @@ findings.
 headline instead. See
 [Generating from Doctor Findings](/deeper/stories#generating-from-doctor-findings).
 
-## Continuous Integration
+<span id="continuous-integration"></span>
+
+## Running in CI
 
 ```bash
 php artisan storyfeed:doctor --json --fail-on=warning   # or --fail-on=error
 ```
 
-Without `--fail-on` the exit code is always 0. The
-[coverage assertions](/deeper/testing#coverage-assertions) fail fast in the
+The [coverage assertions](/deeper/testing#coverage-assertions) fail fast in the
 suite; doctor reports against real traffic.
 
-## Empty Feeds
+<span id="empty-feeds"></span>
 
-With no data, doctor reports that there is nothing to diagnose.
+## Checking Empty Feeds
+
+With no activities, traffic-dependent checks have nothing to inspect.
+Configuration and declaration checks can still report findings, such as
+missing tables or an unaliased model.

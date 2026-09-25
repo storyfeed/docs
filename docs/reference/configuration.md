@@ -1,6 +1,12 @@
 # Configuration
 
+## Introduction
+
 Every key in `config/storyfeed.php`. All have working defaults.
+
+## Publishing Configuration
+
+Publish the configuration file when you need to change the defaults:
 
 ```bash
 php artisan vendor:publish --tag="storyfeed-config"
@@ -15,7 +21,9 @@ php artisan vendor:publish --tag="storyfeed-config"
 Once `storyfeed:cache` has run, the file isn't loaded at boot: the manifest
 holds what it defined.
 
-## Tables & Models
+<span id="tables-models"></span>
+
+## Tables and Models
 
 | Key | Default |  |
 |---|---|---|
@@ -42,7 +50,7 @@ For named system attribution or a sentence without an actor slot, see
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
 | `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/cookbook/repeating-activities#matching-activities) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
 
-## Verbs
+### Verbs
 
 | Key | Default |  |
 |---|---|---|
@@ -82,7 +90,7 @@ that records only through stories has nothing to register.
 | `grouping.policy.min_object_members` | `2` | members required on `object` |
 
 When grouping does not fire, check the [axis registry](/deeper/aggregation#built-in-axes)
-before changing thresholds: `repeat` pins the target id, while `targets` does not.
+before changing thresholds: `repeat` groups activities with the same target, while `targets` groups across targets.
 
 `sample_limits` is keyed by singular role — `actor`, `object`, `target`,
 `context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
@@ -101,7 +109,9 @@ bounds it. Each sampled entity is a resolver call: a group node listing six obje
 resolves six entities on every page. An invalid or missing limit falls back to
 `3`.
 
-## Batches & Composites
+<span id="batches-composites"></span>
+
+### Batches and Composites
 
 | Key | Default |  |
 |---|---|---|
@@ -116,7 +126,9 @@ resolves six entities on every page. An invalid or missing limit falls back to
 |---|---|---|
 | `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
 
-## AS2.0 Routes
+<span id="as2-0-routes"></span>
+
+## Activity Streams Routes
 
 | Key | Default |  |
 |---|---|---|

@@ -1,8 +1,12 @@
 # Commands
 
+## Introduction
+
 Artisan commands install, inspect and maintain the feed.
 
-## Installing
+<span id="installing"></span>
+
+## Installing Storyfeed
 
 | Command | Does |
 |---|---|
@@ -19,31 +23,52 @@ A `routes/feed.php` that isn't a Storyfeed file is left alone, and the command
 says how to point [`definitions`](/reference/configuration#definitions) at
 another file. With `definitions` set to `false`, no file is created.
 
-## Scheduled
+## Generating Classes
 
-| Command | Does | Suggested |
-|---|---|---|
-| `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, tombstones models deleted without a model event, restores tombstones whose model is back, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |
-| `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
-| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention), repairs the groups they leave, and deletes the snapshots and tombstones only they referred to. `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
+<span id="generators"></span>
 
-```php
-// routes/console.php
-use Illuminate\Support\Facades\Schedule;
+### Stories
 
-Schedule::command('storyfeed:trickle')->everyMinute();
-Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
-Schedule::command('storyfeed:prune')->daily();
-```
+| Command | Does |
+|---|---|
+| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
 
-## Diagnostics
+### Feeds
+
+| Command | Does |
+|---|---|
+| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |
+
+## Listing Definitions
+
+| Command | Does |
+|---|---|
+| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
+| `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
+| `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
+
+<span id="manifest"></span>
+
+## Caching Definitions
+
+| Command | Does |
+|---|---|
+| `storyfeed:cache` | compiles registered stories and `routes/feed.php` into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
+| `storyfeed:clear` | removes the cached manifest |
+
+`storyfeed:cache` caches `routes/feed.php` as `route:cache` caches route files:
+once cached, the file isn't loaded at boot. Closure headlines are serialised.
+A closure that can't be serialised fails the command, naming its `file:line`.
+The file holds story definitions only. Register the verb vocabulary in a
+service provider.
+
+<span id="diagnostics"></span>
+
+## Running Diagnostics
 
 | Command | Does |
 |---|---|
 | `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
-| `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
-| `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
 
 See [Doctor](/reference/doctor) for the checks.
 
@@ -68,19 +93,39 @@ php artisan about --only=storyfeed
 It reads no activity rows, and renders with no tables and no database. `--json`
 works as for every other section.
 
-## Maintenance
+
+<span id="scheduled"></span>
+
+## Scheduling Maintenance
+
+| Command | Does | Suggested |
+|---|---|---|
+| `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, tombstones models deleted without a model event, restores tombstones whose model is back, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |
+| `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
+| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention), repairs the groups they leave, and deletes the snapshots and tombstones only they referred to. `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
+
+```php
+// routes/console.php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('storyfeed:trickle')->everyMinute();
+Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
+Schedule::command('storyfeed:prune')->daily();
+```
+
+## Maintaining Stored Activities
+
+<span id="maintenance"></span>
+
+### Rebuilding Snapshots
 
 | Command | Does |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
-| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
-| `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
-| `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
-`bundle` and `curate` rewrite settled history and change the `sync_token`, so
-every client that accumulates nodes resyncs.
+<span id="rehashing-existing-rows"></span>
 
-### Rehashing Existing Rows
+### Rehashing Groups
 
 Grouping is computed at publish time from the role columns, the verb and its
 calendar period (a day by default). Existing rows keep the hash they were written with; nothing recomputes it
@@ -122,22 +167,13 @@ It changes the `sync_token`, and clients must then discard every accumulated
 node and refetch from the head, including after an empty response. See the
 [Sync token rule](/reference/payload#sync-token).
 
-## Manifest
+### Other Maintenance Commands
 
 | Command | Does |
 |---|---|
-| `storyfeed:cache` | compiles registered stories and `routes/feed.php` into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
-| `storyfeed:clear` | removes the cached manifest |
+| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
+| `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
+| `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
-`storyfeed:cache` caches `routes/feed.php` as `route:cache` caches route files:
-once cached, the file isn't loaded at boot. Closure headlines are serialised.
-A closure that can't be serialised fails the command, naming its `file:line`.
-The file holds story definitions only. Register the verb vocabulary in a
-service provider.
-
-## Generators
-
-| Command | Does |
-|---|---|
-| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
-| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |
+`bundle` and `curate` rewrite settled history and change the `sync_token`, so
+every client that accumulates nodes resyncs.

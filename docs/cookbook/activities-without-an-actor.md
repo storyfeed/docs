@@ -3,6 +3,144 @@
 Record the user when a person acted, a named party when a system acted, and
 no actor when nobody did.
 
+<span id="headlines-by-actor-type"></span>
+
+## Choosing an Actor
+
+| The Act Was Performed by | The Actor Is | The Sentence |
+|---|---|---|
+| a user | the user | `:actor placed :object with :target` |
+| a job, a command, an integration | a party, named | `:actor marked :object paid` |
+| nobody | none | `:object expired at :target` |
+
+<span id="the-default-actor"></span>
+
+## Recording the Authenticated User
+
+Without `by()`, Storyfeed resolves the logged-in user as the actor by default:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
+        $order = $kitchen->orders()->create($request->validated());
+
+        Storyfeed::activity()
+            ->action('place', $order)
+            ->to($kitchen)
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
+        $order = $kitchen->orders()->create($request->validated());
+
+        Storyfeed::record(
+            verb: 'place',
+            object: $order,
+            target: $kitchen,
+        );
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+:::
+
+<FeedExample :items="[placed]" />
+
+## Preserving an Actor in Background Work
+
+A job started from a console command or scheduler has no logged-in user.
+Without an actor scope, resolver or fallback party, its actor is `null`:
+
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
+{
+    public function __construct(public Order $order) {}
+
+    public function handle(): void
+    {
+        Storyfeed::activity()
+            ->action('place', $this->order) // no by(), no user: the actor is null
+            ->to($this->order->kitchen)
+            ->publish();
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Storyfeed\Facades\Storyfeed;
+
+class RecordOrder implements ShouldQueue
+{
+    public function __construct(public Order $order) {}
+
+    public function handle(): void
+    {
+        Storyfeed::record(
+            verb: 'place',
+            object: $this->order, // no actor:, no user: the actor is null
+            target: $this->order->kitchen,
+        );
+    }
+}
+```
+:::
+
+<FeedExample :items="[anonymous]" />
+
+To keep the author, pass the user into the job and call `->by()` with it, as
+the event below does.
+
+Pass the user who acted with the event or job, then assign that user with `by()`:
+
 ```php
 <?php
 
@@ -11,7 +149,6 @@ namespace App\Events;
 use App\Models\Order;
 use App\Models\User;
 use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\PendingActivity;
 
@@ -87,117 +224,6 @@ Story::for(Order::class)->verb('pay')
     ->headline(':actor marked :object paid');
 ```
 
-## The Default Actor
-
-Without `by()`, the actor is the logged-in user by default. A job started from
-a console command or the scheduler has no logged-in user, so its actor is
-`null`:
-
-::: code-group
-```php [Fluent Syntax]
-<?php
-
-namespace App\Jobs;
-
-use App\Models\Order;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Storyfeed\Facades\Storyfeed;
-
-class RecordOrder implements ShouldQueue
-{
-    public function __construct(public Order $order) {}
-
-    public function handle(): void
-    {
-        Storyfeed::activity()
-            ->action('place', $this->order) // no by(), no user: the actor is null
-            ->to($this->order->kitchen)
-            ->publish();
-    }
-}
-```
-
-```php [Named Arguments]
-<?php
-
-namespace App\Jobs;
-
-use App\Models\Order;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Storyfeed\Facades\Storyfeed;
-
-class RecordOrder implements ShouldQueue
-{
-    public function __construct(public Order $order) {}
-
-    public function handle(): void
-    {
-        Storyfeed::record(
-            verb: 'place',
-            object: $this->order, // no actor:, no user: the actor is null
-            target: $this->order->kitchen,
-        );
-    }
-}
-```
-:::
-
-<FeedExample :items="[anonymous]" />
-
-To keep the author, pass the user into the job and call `->by()` with it, as
-the event above does.
-
-## Explicit Anonymity
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(
-        PlaceOrderRequest $request,
-        Kitchen $kitchen,
-    ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
-
-        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
-
-        Storyfeed::activity()
-            ->by($knownAuthor) // User|null: null means anonymous
-            ->action('place', $order)
-            ->to($kitchen)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-
-| Spelling | Actor |
-|---|---|
-| omit `by()` | resolved from the request |
-| `->by(null)` or `->actor(null)` | anonymous |
-| `->anonymously()` | anonymous, on an existing builder |
-| `Storyfeed::anonymous()` | anonymous, from the start |
-
-`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
-one of the calls above instead.
-
-## Headlines By Actor Type
-
-| The Act Was Performed by | The Actor Is | The Sentence |
-|---|---|---|
-| a user | the user | `:actor placed :object with :target` |
-| a job, a command, an integration | a party, named | `:actor marked :object paid` |
-| nobody | none | `:object expired at :target` |
-
 ## Recording a System Actor
 
 ::: code-group
@@ -266,7 +292,56 @@ class StripeWebhookController extends Controller
 To name the party once for a whole job, wrap it in `Storyfeed::actor('System', …)`.
 See [Scoped Attribution](/deeper/parties#scoped-attribution).
 
-## Recording Without an Actor
+## Recording Anonymous Activities
+
+Use explicit anonymity when an activity must carry no actor, even in an authenticated request.
+
+### Explicit Anonymity
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Kitchen;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderController extends Controller
+{
+    public function store(
+        PlaceOrderRequest $request,
+        Kitchen $kitchen,
+    ): RedirectResponse {
+        $order = $kitchen->orders()->create($request->validated());
+
+        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
+
+        Storyfeed::activity()
+            ->by($knownAuthor) // User|null: null means anonymous
+            ->action('place', $order)
+            ->to($kitchen)
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
+```
+
+| Spelling | Actor |
+|---|---|
+| omit `by()` | resolved from the request |
+| `->by(null)` or `->actor(null)` | anonymous |
+| `->anonymously()` | anonymous, on an existing builder |
+| `Storyfeed::anonymous()` | anonymous, from the start |
+
+`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
+one of the calls above instead.
+
+<span id="recording-without-an-actor"></span>
+
+### Anonymous Headlines
 
 ```php
 // routes/feed.php

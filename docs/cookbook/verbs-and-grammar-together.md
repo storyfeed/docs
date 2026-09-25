@@ -8,6 +8,14 @@ while you develop.
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
+## Defining Verbs and Headlines Together
+
+Generate a resource Story class before adding its verb methods:
+
+```shell
+php artisan make:story OrderStory --model=Order
+```
+
 ```php
 <?php
 
@@ -35,29 +43,21 @@ use Storyfeed\Facades\Story;
 Story::resource(Order::class, OrderStory::class);
 ```
 
+## Publishing Declared Verbs
+
 Publish by the verb's name:
 
-```php
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity('place', $order)
-    ->by($customer)
-    ->to($kitchen)
-    ->publish();
-```
+::: code-group
+<<< @/snippets/publish-from-controller.php [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php [Named Arguments]
+:::
 
 <FeedExample context :items="[scenes.order]" />
 
-[Story Classes](/deeper/stories) covers the class.
+<span id="causes-of-verb-drift"></span>
 
-## Causes of Verb Drift
-
-| Verb Written in | Headline Written in | Drifts When |
-|---|---|---|
-| a call site | a `routes/feed.php` declaration | a verb is added at one and not the other |
-| an enum | a `routes/feed.php` declaration | a case's value changes |
-| a Story class method | the same method | a call site names a verb no method declares, which throws in `local` and `testing` |
+Keeping the verb and headline in one method makes their definition one edit.
+[Story Classes](/deeper/stories) covers the supported class shapes.
 
 ## Checking Verb Coverage
 
@@ -79,7 +79,9 @@ Storyfeed::verbs(['plcae' => ActivityType::Update]) or an enum implementing
 FeedVerb, or disable storyfeed.verbs.strict.
 ```
 
-## Unused Verbs
+<span id="unused-verbs"></span>
+
+## Keeping Definitions for Stored Activities
 
 Old rows keep their headline only while their verb stays declared, so keep the
 method:
@@ -93,7 +95,9 @@ public function print(): string
 }
 ```
 
-## Group Headlines in the Same Method
+<span id="group-headlines-in-the-same-method"></span>
+
+## Defining Group Headlines
 
 A verb's group headline for its type belongs beside its headline:
 
