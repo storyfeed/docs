@@ -29,6 +29,20 @@ snapshots unless a [media resolver](/reference/feedable#the-contract) loads the
 live model. Written at publish, refreshed on model save, backfilled by
 `storyfeed:trickle`.
 
+| Column | Holds |
+|---|---|
+| `id` | internal snapshot key |
+| `model_type`, `model_id` | morph alias and unsigned bigint model key, unique together; `model_id` does not store UUIDs |
+| `label` | nullable entity label |
+| `data` | nullable JSON snapshot data |
+| `body` | nullable JSON body list |
+| `content`, `media_type`, `attributed_to` | nullable authored text, its encoding and author IRI |
+| `source_updated_at` | nullable source-model timestamp with microsecond precision |
+| `shape` | nullable 40-character snapshot shape fingerprint |
+| `meta` | nullable JSON extras |
+| `component` | unused, nullable string |
+| `created_at`, `updated_at` | snapshot timestamps |
+
 The `meta` column is a JSON column that holds Storyfeed's own extras for a
 snapshot: today, the model's route key, when it is not the primary key.
 Nothing is ever queried or indexed through `meta`; anything a query filters,

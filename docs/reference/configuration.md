@@ -79,8 +79,9 @@ that records only through stories has nothing to register.
 | Key | Default |  |
 |---|---|---|
 | `grouping.strategy` | `MultiAxisStrategy::class` | use `NullStrategy` to disable grouping entirely |
-| `grouping.default` | `'summary'` | app-wide read mode: `'log'`, `'live'`, `'summary'` |
-| `grouping.curate` | `true` | select a winning axis at publish time |
+| `grouping.default` | `'live'` | app-wide read mode: `'log'` for individual activities, `'live'` for winning groups, `'summary'` for a per-person digest |
+| `grouping.curate` | `true` | select a winning axis at publish time; `false` makes `live()` read repeats only |
+| `grouping.summary.phrases` | `3` | maximum per-verb phrases in a digest row; `phrases_truncated` reports omitted phrases |
 | `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node |
 | `grouping.policy.min_actors` | `3` | distinct actors before the `actors` axis applies |
@@ -139,7 +140,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 | Key | Default |  |
 |---|---|---|
 | `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
-| `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs |
+| `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs; `null` or `0` makes the scheduled pass unbounded |
 | `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
 | `trickle.limit` | `200` | activities snapshotted, and snapshots checked for a deleted model, per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |

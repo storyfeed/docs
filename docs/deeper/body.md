@@ -98,7 +98,7 @@ use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(Excerpt::make()->text($this->summary())->from('Ticket'));
+    ->body(Excerpt::make()->text($this->summary())->from('Ticket')->truncated(false));
 ```
 
 ```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
@@ -106,7 +106,7 @@ use Storyfeed\Body\Excerpt;
 
 return FeedEntity::make(
     label: "Order #{$this->reference}",
-    body: Excerpt::make(text: $this->summary(), from: 'Ticket'),
+    body: Excerpt::make(text: $this->summary(), from: 'Ticket', truncated: false),
 );
 ```
 

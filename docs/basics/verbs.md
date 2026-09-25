@@ -75,7 +75,7 @@ class OrderController extends Controller
 
 <FeedExample :items="[placed]" />
 
-These verbs are free-form strings, and can be anything at all.
+Verb names are free-form strings. Give each verb a headline in `routes/feed.php`.
 
 <a id="using-your-own-enums"></a>
 
@@ -184,7 +184,17 @@ class OrderController extends Controller
 
 ## Using Storyfeed's Verbs
 
-Storyfeed also ships common verbs, as the `Storyfeed\Act` enum.
+Storyfeed also ships common verbs, as the `Storyfeed\Act` enum. Give the verb
+its headline before publishing:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Act;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb(Act::Confirm)
+    ->headline(':actor confirmed :object');
+```
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/ConfirmOrderController.php"

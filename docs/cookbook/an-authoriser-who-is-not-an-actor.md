@@ -16,9 +16,15 @@ menu, a release with no record of its own.
 
 ```php memo="routes/feed.php"
 use App\Models\Photo;
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Story;
 
-Story::for(Photo::class)->verb('approve')->headline(':actor approved :object');
+Story::for(Photo::class)->verb('approve')
+    ->type(ActivityType::Accept)
+    ->headline(':actor approved :object');
+
+Story::for(Photo::class)->verb('publish')
+    ->headline(':actor published :object to :target');
 ```
 
 ::: code-group

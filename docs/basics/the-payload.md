@@ -98,6 +98,13 @@ A group fills a singular role only when the grouping axis fixes the role and the
 has exactly one entity in it. For
 how many there are, read `distinct`; `sample` holds only a few.
 
+### Digest Rows
+
+`summary()` returns groups with `axis: "summary"`. A row carries its calendar
+`period` and per-verb `phrases`, each with its own count and headline fields.
+`phrases_truncated` says whether more phrases exist. A row spanning several
+verbs has no row-level verb or glyph; draw its actor and join its phrases.
+
 ## Activity Content
 
 ### Quoted Text

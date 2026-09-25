@@ -203,6 +203,7 @@ class OrderTransitionController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action($verb, $order)
+            ->to($verb === 'place' ? $order->shop : null)
             ->publish();
 
         return back();
@@ -235,6 +236,7 @@ class OrderTransitionController extends Controller
             verb: $verb,
             object: $order,
             actor: $request->user(),
+            target: $verb === 'place' ? $order->shop : null,
         );
 
         return back();
@@ -263,7 +265,7 @@ use App\Models\Order;
 use Storyfeed\Facades\Story;
 
 Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object')
+    ->headline(':actor placed :object with :target')
     ->keepLatest(); // removes earlier placements from every feed
 
 Story::for(Order::class)->verb('confirm')

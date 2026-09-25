@@ -110,8 +110,9 @@ enum OrderActivity: string implements FeedVerb
 ```
 
 - The mapping only sets the document's `type`.
-- An unmapped verb serializes as `"type": "Activity"`, with the verb in
-  `sf:verb`.
+- A verb with neither an app mapping nor a built-in AS2 mapping serializes
+  as `"type": "Activity"`, with the verb in `sf:verb`. An intransitive type
+  also falls back to `Activity` when the activity has an object.
 - Composite objects serialize as `OrderedCollection`.
 - An entity's [media](/reference/payload#entity-media) serializes as AS2
   `Link` objects under `icon`, `image` and `preview`. While serializing,

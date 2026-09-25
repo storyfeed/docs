@@ -82,8 +82,9 @@ class CompleteTasksController extends Controller
 <FeedExample :items="[authored]" />
 
 This writes a parent activity and one activity per task. In `log()` the tasks
-appear as ordinary rows; in the other modes the parent is one node with
-`axis: 'composite'`.
+appear as ordinary rows. In `live()`, the parent is one node with
+`axis: 'composite'`; in `summary()`, it contributes a phrase to its actor's
+digest row.
 
 <a id="headlines-for-a-composite"></a>
 

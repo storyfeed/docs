@@ -77,7 +77,7 @@ Storyfeed::feed()
 Summary is a digest: one row per person per day, across verbs. A row names
 the person once, then what they did, one phrase per verb: "placed 3 orders,
 asked about a product and paid". After three phrases, the rest are counted.
-Every activity is behind "Show all". People whose whole day is one identical
+"Show all" reveals the row’s included members (up to 25 by default). People whose whole day is one identical
 thing share a row. An activity with no actor keeps its own row.
 
 ```php memo="A controller, or wherever the feed is read"
@@ -214,7 +214,7 @@ Storyfeed::feed()
 
 ## Paginating Results
 
-Feeds are paginated with cursors, 30 activities to a page by default. Pass the
+Feeds are paginated with cursors, 30 rows to a page by default. Pass the
 previous page's `next_cursor` back to get the next one:
 
 ### Reading the Next Page

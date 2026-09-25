@@ -218,7 +218,8 @@ class UseServiceActor
 Use `hasActor()` before supplying an actor. It also returns `true` for an
 explicitly anonymous activity. Use `has('context')` before supplying context.
 These checks preserve the [actor and context precedence](/deeper/activity-scopes#actor-and-context-precedence).
-The party name must be [declared](/deeper/parties#declaring-parties).
+Declare the party name in the [party list](/deeper/parties#declaring-parties);
+`->by()` does not check that list.
 
 <a id="caching-closure-middleware"></a>
 

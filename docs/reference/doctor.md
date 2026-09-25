@@ -43,6 +43,9 @@ php artisan storyfeed:doctor --fail-on=warning
 
 | Check | Asks | Reports |
 |---|---|---|
+| `maintenance` | retained completed `curate` and `trickle` passes and their counts | info |
+| `actorless` | recorded actorless activities with no anonymous headline | info |
+| `reflexive` | activities naming the same entity as actor and object | info |
 | `grammar` | does every verb/type pair in the feed have a headline? | error · warning · info |
 | `aggregates` | does every group that formed — or *could* form — have aggregate grammar? | error · info |
 | `tokens` | does any aggregate template use a token its axis doesn't pin? | warning · info |
@@ -102,7 +105,7 @@ use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
-    'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->summary(),
+    'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->live(),
 ]);
 ```
 
@@ -128,6 +131,12 @@ counts as a filter.
 | `aggregates.reachability_unknown` | info | no feeds are registered, or one threw while being inspected. Every pair is then reported as `aggregates.missing`, at error |
 
 Register your feeds so this check can tell a real gap from a latent one.
+
+### Grouping
+
+| Finding | Severity | Means |
+|---|---|---|
+| `grouping.uncurated` | warning | activities have grouping rows but no winning axis, so they fall back to `repeat`. `storyfeed:curate` stamps winners; older rows may fall outside the scheduled window |
 
 ### Definitions
 
@@ -164,11 +173,16 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 | `retention.backlog` | warning | a verb has rows more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them, with the snapshots and tombstones only they referred to. Usually a window just declared or shortened, or a prune nothing schedules; `storyfeed:prune --pretend` shows the run first |
 | `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it, so its rows are kept for the life of the table. A verb that says `->keepForever()` is never named |
 
-### Actions
+### Role Constraints
 
 | Finding | Severity | Means |
 |---|---|---|
 | `role_constraints.violated` | warning | live stored rows have role types outside the [declared constraints](/deeper/constraining-roles); null roles and tombstones are skipped. The rows remain in the feed |
+
+### Actions
+
+| Finding | Severity | Means |
+|---|---|---|
 | `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched, where it runs to carry its actor to the worker. The dispatch went ahead, and the job published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade without taking `Illuminate\Http\Request $request`. It runs only when stories compile, never at a publish or in a queued job. Take the `Request` as a parameter instead. Found by reading the source, so it only ever warns |
 
@@ -214,16 +228,15 @@ second fix.
 
 ### Entities
 
-The `entities` check resolves every morph alias recorded in the actor, object,
-target and context roles. Each finding names the role, the alias, the class,
+The `entities` check resolves every morph alias recorded in all seven roles. Each finding names the role, the alias, the class,
 how many activities carry it, and example activity ids.
 
 | Finding | Severity | Means |
 |---|---|---|
 | `entities.auth_model` | warning | the authentication model does not implement `Feedable`. The actor role is filled from the authenticated user, so every request-time publish carries an actor that never resolves. Needs no traffic; skipped when `actor_resolver` is set |
-| `entities.unresolvable` | warning | the alias resolves to no class: no morph map entry, and no class by that name |
-| `entities.not_model` | warning | the alias resolves to a class that is not an Eloquent model, so it can never be snapshotted |
-| `entities.unfeedable` | warning | the alias resolves to a model without `Feedable`, so it is never snapshotted. Implement `Feedable`, then run `storyfeed:trickle` |
+| `entities.unresolvable` | error | the alias resolves to no class: no morph map entry, and no class by that name |
+| `entities.not_model` | error | the alias resolves to a class that is not an Eloquent model, so it can never be snapshotted |
+| `entities.unfeedable` | error | the alias resolves to a model without `Feedable`, so it is never snapshotted. Implement `Feedable`, then run `storyfeed:trickle` |
 | `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Sampled from the 50 most recent uncached rows per role and alias, never a scan. `storyfeed:trickle --prune` retires the activities |
 | `entities.opaque` | info | the model's table could not be queried, so nothing can be said about its rows |
 
@@ -294,7 +307,8 @@ where a [Story class](/deeper/stories) files it: the finding names the key
 `repeat.order.place`. A group that can hold several types, as an `actors`
 group can, gets its headline on the verb alone, over tokens that name no type.
 
-Each is a headline, an icon, an actorless verb, or a group headline. Where
+Each is a headline, an icon, an anonymous headline, a group headline, or a
+`keepLatest()` declaration. Where
 doctor can write the sentence, the stub is live: the verb in the past tense,
 over tokens that are safe for that headline. Where it cannot, the stub is
 commented out beneath the reason and the safe tokens, and doctor keeps

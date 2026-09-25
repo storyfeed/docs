@@ -43,11 +43,12 @@ precedence over the trait's.
 | `describeFeed(): void` | the model | when the snapshot is written | fill `$this->feedEntity()` |
 | `$this->feedEntity()` | inside `describeFeed()` | when the snapshot is written | the `FeedEntity` the snapshot is written from |
 | `static::feedMediaUsing(fn ($context, $media) => …)` | `booted()` | when the feed is read | the link and media |
+| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a `MediaSlot` reference to the corresponding read-time media slot |
 | `guessFeedLabel(): string` | the model, to override | when no label is set | the default label |
 | `updateFeedSnapshot()` | anywhere | when called | refresh the snapshot outside a save |
 | `deleteFromFeed()` | anywhere | when called | soft-delete every activity involving the model |
 | `forceDeleteFromFeed()` | anywhere | when called | permanently delete every activity involving the model, including soft-deleted ones, with their grouping and participant rows |
-| `storyfeed(?string $feed = null)` | anywhere | when called | the model's own feed |
+| `storyfeed(?string $preset = null)` | anywhere | when called | the model's own feed |
 
 A `feedMediaUsing()` closure receives the `FeedContext` and an empty
 `FeedMedia`, and returns a URL string, the `$media` it filled, or `null` for no

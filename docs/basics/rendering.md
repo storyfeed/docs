@@ -83,7 +83,7 @@ beside it and says what the shape means:
 ```json
 {
   "verb": "complete",
-  "glyph": "receipt",
+  "glyph": "square-check",
   "glyph_intent": "success"
 }
 ```
@@ -135,10 +135,40 @@ group has exactly one entity in it. For a
 there is one, and otherwise draw the plural list. An unconditional
 `?? sample[0]` names one person over a group of nine.
 
+### Digest Rows
+
+For `axis: "summary"`, name the actor once and join the per-verb phrases.
+Using `$entity` and `$list` from the examples above:
+
+```blade memo="resources/views/feed.blade.php"
+@if ($node['axis'] === 'summary')
+    {!! $node['actor'] ? $entity($node['actor'], 'Someone') : $list($node, 'actors') !!}
+    @foreach ($node['phrases'] as $phrase)
+        @php
+            $tokens = [':count' => $phrase['count']];
+            foreach (['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument'] as $role) {
+                $plural = $role.'s';
+                $tokens[':'.$plural] = $list($phrase, $plural);
+                $tokens[':'.$role] = ($phrase['distinct'][$plural] ?? 0) === 1
+                    ? $entity($phrase['sample'][$plural][0] ?? null, 'Something')
+                    : $list($phrase, $plural);
+            }
+        @endphp
+        {!! strtr(e($phrase['headline_template'] ?? $phrase['headline'] ?? $phrase['verb'].' ('.$phrase['count'].')'), $tokens) !!}{{ $loop->last ? '' : ', ' }}
+    @endforeach
+    @if ($node['phrases_truncated'])
+        and {{ $node['count'] - array_sum(array_column($node['phrases'], 'count')) }} more
+    @endif
+@endif
+```
+
+An authored row headline can use the group renderer above instead. For an
+unknown axis without a headline, fall back to “N activities”.
+
 ### Groups Without Headlines
 
 Some groups have no sentence: **both** `headline_template` and `headline` are
-null. Draw the count:
+null. After handling digest phrases, draw the count:
 
 ```blade memo="resources/views/feed.blade.php"
 @if ($node['headline_template'])

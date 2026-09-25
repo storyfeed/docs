@@ -102,9 +102,9 @@ They share a customer, a shop and a day, so `live()` groups them under the
 
 A headline doesn't make a group form. The group of three customers below forms
 only when the feed is read with `live()`, and only once at least three
-different customers have placed the shared order. See [Aggregation](/deeper/aggregation).
+different customers have placed orders with the same shop that day. See [Aggregation](/deeper/aggregation).
 
-*three customers, one shared order, three requests, the same shop*
+*three customers, three requests, the same shop and day*
 
 <FeedExample :items="[crowd]" />
 

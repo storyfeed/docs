@@ -95,7 +95,7 @@ More in [Reading Feeds](/basics/reading).
 ## A Week at a Glance
 
 ```php memo="A controller, or wherever the feed is read"
-Storyfeed::feed()->summary(Period::Week)->get();
+Storyfeed::feed()->summary('week')->get();
 ```
 
 <FeedExample :items="weekly" days height="420" />

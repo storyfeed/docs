@@ -84,7 +84,8 @@ class SaveOrderController extends Controller
 <FeedExample :items="[saved]" />
 
 The latest `published_at` wins, regardless of arrival order. A backdated activity
-older than a matching live activity is stored already superseded. Other objects
+older than a matching live activity is stored already superseded under
+`keep_latest.delete = soft`; under `force`, it is not stored. Other objects
 and other verbs keep their activities.
 
 <a id="keeping-the-latest-per-actor"></a>
@@ -142,8 +143,6 @@ Superseded activities are soft-deleted by default. The
 
 [`ShouldBeUnique`](/deeper/queues#unique-stories) keeps the first pending publish.
 `keepLatest()` supersedes matching stored activities after publication.
-[`latestPer()`](/deeper/latest-per-object) filters one feed's results while
-keeping every activity stored.
 
 Story classes do not support `#[DebounceFor]`. Use `keepLatest(within:)` when
 successive publications should supersede earlier stored activities within a

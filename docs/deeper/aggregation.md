@@ -94,7 +94,7 @@ The read mode chooses which groupings a read shows:
 |---|---|
 | `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
 | `live()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner. The default |
-| `summary()` | `summary`: one row per actor per calendar day, across verbs. See [Reading Feeds](/basics/reading#summary) |
+| `summary()` | `summary`: one row per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
 
 With `grouping.curate` enabled, publishing selects a winning axis. With it
 set to `false`, no winner is stamped and `live()` shows repeats only.
@@ -130,7 +130,8 @@ whichever axis wins.
 ],
 ```
 
-Below a threshold, activities stay ungrouped. Changing a threshold doesn't
+Below a threshold, that axis cannot win; activities fall back to `repeat`
+when no other axis wins. Changing a threshold doesn't
 regroup past activities until `storyfeed:curate` runs.
 
 `repeat` groups only orders placed with the same shop; `targets` groups
@@ -298,8 +299,8 @@ role's fields are in the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb and `d` its calendar period, a day by default. Without `v`, a group may mix verbs, so only
-a `scene.*` key applies to it.
+`v` adds the verb and `d` its calendar period, a day by default. Without `v`, a group may mix verbs, so a
+verb-agnostic key (`scene.*` or `*.*`) applies to it.
 
 ### Priority
 

@@ -220,3 +220,8 @@ ArgumentCountError on the first call.
 It installs through `phpstan/extension-installer` with no configuration. It
 checks the argument count only, and stays quiet where it cannot be certain:
 spread arguments, named arguments, `static::make()`, abstract classes.
+
+`StoryNameRule` also checks literal names passed to `story()`,
+`Storyfeed::route()` and `Story::has()` against the booted application's story
+names. It skips dynamic names and runs without findings when no application
+registry is available.

@@ -304,7 +304,7 @@ class ImportPriceHistory extends Command
 
 ## Recording Multiple Objects
 
-`->objects()` records one activity about many objects:
+`->objects()` records one parent story plus one activity per object:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/UploadPhotosController.php"

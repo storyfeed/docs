@@ -31,19 +31,19 @@ another file. With `definitions` set to `false`, no file is created.
 
 | Command | Does |
 |---|---|
-| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
+| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. `--axes=` selects comma-separated grouping axes to pre-fill; `--force` overwrites an existing story. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
 
 ### Feeds
 
 | Command | Does |
 |---|---|
-| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |
+| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |
 
 ## Listing Definitions
 
 | Command | Does |
 |---|---|
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
+| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
 | `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
 
@@ -120,7 +120,8 @@ Schedule::command('storyfeed:prune')->daily();
 
 | Command | Does |
 |---|---|
-| `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links |
+| `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links; `--recent=N` limits the pass to entities named by the newest N activities |
+| `storyfeed:cache-snapshots` | bounded snapshot refresh run by `php artisan optimize`; skips when the database is unavailable |
 
 <span id="rehashing-existing-rows"></span>
 
@@ -171,8 +172,15 @@ node and refetch from the head, including after an empty response. See the
 | Command | Does |
 |---|---|
 | `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
+| `storyfeed:heal` | [retires activities whose source is permanently absent](/deeper/healing). `--dry-run` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 
 `bundle` and `curate` rewrite settled history and change the `sync_token`, so
 every client that accumulates nodes resyncs.
+
+## Seeding Demo Data
+
+| Command | Does |
+|---|---|
+| `storyfeed:demo` | seeds a fictional demo tenant. `--days=7`, `--seed=1` select the history and deterministic seed; `--fresh` removes prior demo data first, `--clear` removes it without seeding, and `--force` allows production use |

@@ -109,8 +109,10 @@ php artisan storyfeed:heal --dry-run
 nothing:
 
 ```
-assets   Asset activity 81   retire      {"reason":"source permanently absent"}
-assets   Asset activity 82   unchanged   {"reason":"source permanently absent"}
+Dry run: preview only. Applying retirements rewrites history and bumps sync_token; accumulating clients must resync.
+assets  Asset activity 81  retire  {"reason":"source permanently absent"}
+assets  Asset activity 82  unchanged  {"reason":"source permanently absent"}
+Would retire: 1; unchanged: 1.
 ```
 
 | Outcome | When | Applying the Request |

@@ -149,7 +149,7 @@ A settled discussion's reply count may not be useful on this surface:
 ```php memo="Where the page is assembled, for each node"
 $node['thread']['replies'] = $node['verb'] === 'settle'
     ? null
-    : $counts[$subjectId] ?? null;
+    : $counts[$node['object']['id']] ?? null;
 ```
 
 <FeedExample :items="[live]" />

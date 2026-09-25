@@ -57,7 +57,7 @@ const copied = ref(false)
 const json = computed(() =>
     JSON.stringify(
         props.payload
-            ? { payload_version: 1, items: props.items, next_cursor: 'eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ', sync_token: '01J8Z3K4Q2V9WMX7R5T0B6N1CD', prev_cursor: null }
+            ? { payload_version: 1, items: props.items, next_cursor: 'eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ', sync_token: '01J8Z3K4Q2V9WMX7R5T0B6N1CD' }
             : props.items,
         null,
         2,

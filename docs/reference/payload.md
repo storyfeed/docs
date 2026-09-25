@@ -14,8 +14,7 @@ a renderer needs no knowledge of your domain.
   "payload_version": 1,
   "items": [ /* activity nodes and group nodes, newest first */ ],
   "next_cursor": "eyJ...",   // opaque string, or null at end of feed
-  "sync_token": "01J3…",     // opaque string, or null
-  "prev_cursor": null        // reserved, always null in v1
+  "sync_token": "01J3…"      // opaque string, or null
 }
 ```
 
@@ -194,7 +193,7 @@ and `media: null`, and the exception is reported server-side.
   // public ULID (uid), not the internal PK
   "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
-  "published_at": "1985-07-04T14:03:22Z",
+  "published_at": "1985-07-04T14:03:22.000000Z",
   "headline_template": ":actor confirmed :object for :target",
   // pre-rendered fallback; see below
   "headline": null,
@@ -244,14 +243,14 @@ declares one. A renderer may show either reading.
 {
   "kind": "group",
   // stable within its window
-  "id": "grp_01J1K2…",
+  "id": "grp_3f9a…",
   // unknown values: render as a generic group
   "axis": "actors",
   // true total members
   "count": 5,
   "verb": "place",
   // max of members; the sort key
-  "published_at": "1985-07-04T14:03:22Z",
+  "published_at": "1985-07-04T14:03:22.000000Z",
   "headline_template": ":actors ordered from :target",
   "headline": null,
   "glyph": "shopping-bag",
@@ -307,6 +306,38 @@ and a distinct count; an absent role has `[]` and `0`.
 A renderer can rely on the group node's shape, but not on which groups appear:
 the axes, thresholds and windows that decide them are server-side and can
 change.
+
+### Digest Rows
+
+A `summary()` group uses the group shape above with `axis: "summary"` and
+these additional fields:
+
+| Key | Holds |
+|---|---|
+| `period` | `"hour"`, `"day"`, `"week"` or `"month"`, the calendar period passed to `summary()`; `"day"` by default |
+| `phrases` | per-verb summaries, ordered by when each verb first occurred, limited by `grouping.summary.phrases` (default three) |
+| `phrases_truncated` | `true` when more per-verb phrases exist than are included |
+
+Each entry in `phrases` carries its own fields:
+
+| Key | Holds |
+|---|---|
+| `verb`, `count` | the verb and its total activity count |
+| `headline_template`, `headline` | grammar from `summary.{type}.{verb}` or `summary.{verb}`; both nullable |
+| `glyph`, `glyph_intent` | presentation for this phrase's verb; both nullable |
+| `sample`, `distinct` | sampled entities and true distinct counts per plural role, as on the group |
+
+The row's `headline_template` / `headline` come from `summary.*` and may both
+be null. A row spanning several verbs has `verb: null`, `glyph: null` and
+`glyph_intent: null`; its phrases retain their own values. To draw it, name
+the actor and join the phrases. People whose entire period is the same single
+activity can share a digest row; use `sample.actors` and `distinct.actors`
+when `actor` is null.
+
+When `phrases_truncated` is true, the number of remaining **activities** is
+`count - sum(phrases[*].count)`. This is the “N” in “and N more”, not a count
+of omitted verbs. `children` is independently capped by
+`grouping.children_limit`; `children_truncated` reports that cap.
 
 ## Presentation Fields
 
@@ -364,6 +395,7 @@ history was rewritten server-side — drop **all** accumulated nodes and refetch
 from the head. Compare for equality only; `null → non-null` is a change.
 
 This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows)
-moves a group past a live cursor and the next page is empty. Check the token
-before treating that response as the end of the feed. A client that ignores a
+moves a group past a live cursor. A read can skip up to five empty windows;
+check the token even when `items` is empty. `next_cursor: null` signals the
+end of the feed. A client that ignores a
 changed token does not conform to the payload contract.

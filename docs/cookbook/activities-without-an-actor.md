@@ -82,6 +82,7 @@ class OrderController extends Controller
 
 ## Preserving an Actor in Background Work
 
+A job dispatched from an authenticated request already carries that user.
 A job started from a console command or scheduler has no logged-in user.
 Without an actor scope, resolver or fallback party, its actor is `null`:
 
@@ -307,9 +308,10 @@ class OrderController extends Controller
 | `->by(null)` or `->actor(null)` | anonymous |
 | `->anonymously()` | anonymous, on an existing builder |
 | `Storyfeed::anonymous()` | anonymous, from the start |
+| `Storyfeed::record(..., anonymous: true)` | anonymous; supplying a non-null `actor:` too throws |
 
 `Storyfeed::record(..., actor: null)` still records the logged-in user. Use
-one of the calls above instead.
+`anonymous: true` for explicit anonymity with named arguments.
 
 <span id="recording-without-an-actor"></span>
 

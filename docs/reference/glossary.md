@@ -41,7 +41,8 @@ Terms used to define, publish and read an activity feed.
 | Term | Meaning |
 |---|---|
 | **[named feed](/basics/named-feeds)** | A reusable feed definition that applies its scope, verb selection and read mode when read. |
-| **read mode** | The choice of timeline or grouping behaviour for a feed. See [Reading Feeds](/basics/reading). |
+| **read mode** | The choice of `log()`, `live()` or `summary()` for a feed. See [Reading Feeds](/basics/reading). |
+| **summary** | A digest grouping each person’s activities by calendar period, with per-verb phrases. |
 | **cursor** | An opaque page position to send back when requesting another page. |
 | **sync_token** | An opaque value used to detect rewritten history. When it changes, discard accumulated nodes and refetch. See [Synchronization](/reference/payload#sync-tokens). |
 

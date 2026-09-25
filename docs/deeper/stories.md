@@ -299,7 +299,7 @@ use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
 
 Story::resource(Order::class, OrderStory::class)
-    ->except('restore', 'confirm_payment');
+    ->except('restore', 'complete');
 ```
 
 <a id="selecting-resource-verbs"></a>
@@ -323,7 +323,7 @@ resource routes do. Excluded verbs lose their resource names too.
 | Filter | Definitions Kept |
 |---|---|
 | `->only('place', 'complete')` | only these two verbs |
-| `->except('restore', 'confirm_payment')` | all except these stored verb names |
+| `->except('restore', 'complete')` | all except these stored verb names |
 
 Both methods accept an array instead of separate arguments.
 

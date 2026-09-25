@@ -213,7 +213,7 @@ On a named feed, `only()` can only narrow the declared list:
 use Storyfeed\Facades\Storyfeed;
 
 // reads only 'place': 'note' is not in the declared list
-Storyfeed::feed('customer')->only(['place', 'note'])->get();
+Storyfeed::feed('pulse')->only(['place', 'note'])->get();
 ```
 
 Groups count only the verbs the filter lets through.
