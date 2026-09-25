@@ -93,7 +93,7 @@ const oneActivity = [
 
 An activity is a recorded fact, shaped like a sentence with named roles:
 
-> {{ who.regular.label }} placed {{ orders.first.label }} with {{ where.kitchen.label }}
+<FeedExample :items="[oneActivity[1]]" />
 
 The **actor** is who did it. The **verb** is what happened. The **object** is
 what it was done to, and the **target** is what it was aimed at.
@@ -114,10 +114,6 @@ The recorded verb is still `place`, whichever headline describes it.
 
 
 <a id="examples-of-activities"></a>
-
-**{{ who.regular.label }}** *(actor)* **placed** *(verb)* **{{ orders.first.label }}** *(object)* with **{{ where.kitchen.label }}** *(target)*
-
-<FeedExample :items="[oneActivity[1]]" />
 
 **{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*. The object is the note itself, so the headline names the target.
 
