@@ -141,7 +141,7 @@ The recorded verb is still `place`, whichever headline describes it.
 
 The same roles fit any app.
 
-**{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*. The object is the note itself, so the headline names the target.
+**{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*
 
 <FeedExample :items="[oneActivity[0]]" />
 
@@ -153,7 +153,7 @@ The same roles fit any app.
 
 <FeedExample :items="[otherApps[1]]" />
 
-**{{ party.service.label }}** *(actor)* **marked** **{{ elsewhere.invoice.label }}** *(object)* **paid** *(verb)*. The actor is a service, not a user.
+**{{ party.service.label }}** *(actor)* **marked** **{{ elsewhere.invoice.label }}** *(object)* **paid** *(verb)*
 
 <FeedExample :items="[otherApps[2]]" />
 
@@ -161,11 +161,11 @@ The same roles fit any app.
 
 <FeedExample :items="[otherApps[3]]" />
 
-**{{ who.customer4.label }}** *(actor)* **assigned** *(verb)* **{{ elsewhere.ticket.label }}** *(object)* to **{{ who.customer5.label }}** *(target)*. The target is a person.
+**{{ who.customer4.label }}** *(actor)* **assigned** *(verb)* **{{ elsewhere.ticket.label }}** *(object)* to **{{ who.customer5.label }}** *(target)*
 
 <FeedExample :items="[otherApps[4]]" />
 
-**{{ who.runner.label }}** *(actor)* **joined** *(verb)* **{{ elsewhere.desk.label }}** *(target)*, with no object
+**{{ who.runner.label }}** *(actor)* **joined** *(verb)* **{{ elsewhere.desk.label }}** *(target)*
 
 <FeedExample :items="[otherApps[5]]" />
 
