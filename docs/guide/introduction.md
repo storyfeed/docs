@@ -130,8 +130,35 @@ const aroundTown = [
   otherApps[0],
 ]
 
+// The days before: a smaller rush yesterday, and the day the kitchen opened.
+const on = (date, time) => `2026-08-${date}T${time}.000000Z`
+const past = (id, date, time, verb, glyph, headline_template, actor, object = null, target = null) =>
+  activity({ id, verb, glyph, published_at: on(date, time), headline_template, actor, object, target })
+const hellfire = entity('club', 'hellfire', 'the Hellfire Club', '/clubs/hellfire')
+const earlier = [
+  past('y1', '13', '19:05:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.customer2, order(1039), where.kitchen),
+  past('y2', '13', '19:06:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1039)),
+  past('y3', '13', '19:12:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.regular, order(1040), where.kitchen),
+  past('y4', '13', '19:13:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1040)),
+  past('y5', '13', '19:20:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.newcomer, order(1041), where.kitchen),
+  past('y6', '13', '19:21:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1041)),
+  past('y7', '13', '19:34:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1039)),
+  past('y8', '13', '19:41:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1040)),
+  past('y9', '13', '15:10:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(210), elsewhere.repo),
+  past('y10', '13', '15:45:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(211), elsewhere.repo),
+  past('y11', '13', '11:30:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(18, 'Find the frequency'), elsewhere.project),
+  past('y12', '13', '12:05:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(19, 'Record the broadcast'), elsewhere.project),
+  past('y13', '13', '16:30:00', 'join', 'user-plus', ':actor joined :target', who.customer3, null, hellfire),
+  past('y14', '13', '16:32:00', 'join', 'user-plus', ':actor joined :target', who.customer5, null, hellfire),
+  past('y15', '13', '16:40:00', 'join', 'user-plus', ':actor joined :target', who.customer4, null, hellfire),
+  past('o1', '12', '10:00:00', 'open', 'building-2', ':actor opened :object', who.owner, where.kitchen),
+  past('o2', '12', '12:00:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.lassi),
+  past('o3', '12', '12:05:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.roti),
+  past('o4', '12', '12:10:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.cutlets),
+]
+
 const newestFirst = (rows) => [...rows].sort((a, b) => b.published_at.localeCompare(a.published_at))
-const worldLog = newestFirst([...kitchen, ...aroundTown])
+const worldLog = newestFirst([...kitchen, ...aroundTown, ...earlier])
 
 // Group headlines, per verb and axis.
 const heads = {
@@ -146,6 +173,7 @@ const heads = {
   merge:    { repeat: ':actor merged :count pull requests into :target' },
   complete: { repeat: ':actor completed :count tasks in :target' },
   join:     { actors: ':actors joined :target' },
+  publish:  { repeat: ':actor put :count dishes on the menu' },
 }
 const uniq = (list) => list.filter((e, i) => e && list.findIndex((x) => x && x.id === e.id && x.type === e.type) === i)
 const fold = (axis, members) => {
@@ -167,9 +195,11 @@ const fold = (axis, members) => {
 }
 const bucket = (rows, key) => rows.reduce((map, r) => map.set(key(r), [...(map.get(key(r)) ?? []), r]), new Map())
 const idOf = (e) => (e ? `${e.type}:${e.id}` : '-')
+// Groups never span days, as in core: the day is part of every key.
+const dayOf = (r) => r.published_at.slice(0, 10)
 
 // LIVE: repeats fold (one person, one verb, one target); nothing else does.
-const repeats = (rows) => [...bucket(rows, (r) => `${idOf(r.actor)}|${r.verb}|${idOf(r.target)}`).values()]
+const repeats = (rows) => [...bucket(rows, (r) => `${dayOf(r)}|${idOf(r.actor)}|${r.verb}|${idOf(r.target)}`).values()]
   .map((members) => (members.length > 1 && heads[members[0].verb]?.repeat ? fold('repeat', members) : members))
   .flat()
 const worldLive = newestFirst(repeats(worldLog))
@@ -179,13 +209,13 @@ const worldLive = newestFirst(repeats(worldLog))
 const worldSummary = (() => {
   let rest = worldLog
   const out = []
-  for (const members of bucket(rest, (r) => `${r.verb}|${idOf(r.target)}`).values()) {
+  for (const members of bucket(rest, (r) => `${dayOf(r)}|${r.verb}|${idOf(r.target)}`).values()) {
     if (heads[members[0].verb]?.actors && uniq(members.map((m) => m.actor)).length >= 3) {
       out.push(fold('actors', members))
       rest = rest.filter((r) => !members.includes(r))
     }
   }
-  for (const members of bucket(rest, (r) => `${idOf(r.actor)}|${r.verb}`).values()) {
+  for (const members of bucket(rest, (r) => `${dayOf(r)}|${idOf(r.actor)}|${r.verb}`).values()) {
     if (heads[members[0].verb]?.targets && uniq(members.map((m) => m.target)).length >= 2) {
       out.push(fold('targets', members))
       rest = rest.filter((r) => !members.includes(r))
