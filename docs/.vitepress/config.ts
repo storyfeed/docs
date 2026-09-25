@@ -139,6 +139,7 @@ export default defineConfig({
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
           { text: 'Deleted Models', link: '/deeper/deleted-models' },
           { text: 'Retention', link: '/deeper/retention' },
+          { text: 'Latest Activity per Object', link: '/deeper/latest-per-object' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
         ],
       },
