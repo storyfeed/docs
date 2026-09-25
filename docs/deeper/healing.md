@@ -4,14 +4,13 @@ A **healer** soft-deletes activities whose source is gone for good, such as an
 activity about a file that was hard-deleted. Your healer picks the activities,
 and `storyfeed:heal` retires them.
 
-## When to Use a Healer
+## Permanently Missing Sources
 
 Use a healer only for sources that are **permanently** gone, such as a
 hard-deleted asset. A source that can be restored doesn't qualify, and neither
 does one whose row still exists.
 
-Storyfeed never retires an activity itself. A healer retires only the
-activities it names. A deleted Feedable model needs no healer: its activities
+A healer retires only the activities it names. A deleted Feedable model needs no healer: its activities
 stay, and name a [tombstone](/deeper/deleted-models) instead.
 
 ::: warning Healing rewrites settled history
@@ -21,7 +20,7 @@ must refetch them, as under
 Preview first and run it at a quiet time. Healers are never scheduled for you.
 :::
 
-## A Healer
+## Defining a Healer
 
 A healer yields one `StoryRetirement` per activity that might need retiring.
 Here the object is an `asset_reference`, whose `assets` table hard-deletes:
@@ -50,7 +49,7 @@ class AssetHealer implements FeedHealer
             ->where('object_type', 'asset_reference')
             ->lazyById() as $activity) {
             yield new StoryRetirement(
-                label: "Asset story {$activity->id}",
+                label: "Asset activity {$activity->id}",
                 activityId: $activity->id,
                 whenAbsent: static fn (Activity $live): bool =>
                     $live->verb === 'publish'
@@ -86,7 +85,7 @@ Storyfeed::healers([AssetHealer::class]);
 
 A class or an instance works. `key()` names the healer for `--only`.
 
-## Running It
+## Running a Healer
 
 ```bash
 php artisan storyfeed:heal --dry-run
@@ -98,8 +97,8 @@ php artisan storyfeed:heal
 nothing:
 
 ```
-assets   Asset story 81   retire      {"reason":"source permanently absent"}
-assets   Asset story 82   unchanged   {"reason":"source permanently absent"}
+assets   Asset activity 81   retire      {"reason":"source permanently absent"}
+assets   Asset activity 82   unchanged   {"reason":"source permanently absent"}
 ```
 
 | Outcome | When | Applying the Request |

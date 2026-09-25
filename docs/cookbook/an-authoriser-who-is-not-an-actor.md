@@ -1,8 +1,16 @@
 # Recording an Authoriser
 
 When one person does something and another approves it, the doer is the actor
-of the story. Record the approval as a separate activity that no feed shows,
+of the activity. Record the approval separately and exclude its verb from each displayed feed,
 so you can still look up who approved.
+
+```php
+// routes/feed.php
+use App\Models\Photo;
+use Storyfeed\Facades\Story;
+
+Story::for(Photo::class)->verb('approve')->headline(':actor approved :object');
+```
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -21,7 +29,7 @@ class PhotoApprovalController extends Controller
     {
         $photo->update(['approved_at' => now()]);
 
-        Storyfeed::activity() // the contributor's story
+        Storyfeed::activity() // the contributor's activity
             ->by($photo->user)
             ->action('publish', $photo)
             ->to($photo->menuItem)
@@ -53,7 +61,7 @@ class PhotoApprovalController extends Controller
     {
         $photo->update(['approved_at' => now()]);
 
-        Storyfeed::record( // the contributor's story
+        Storyfeed::record( // the contributor's activity
             verb: 'publish',
             object: $photo,
             actor: $photo->user,
@@ -75,6 +83,7 @@ class PhotoApprovalController extends Controller
 ```php
 // app/Providers/AppServiceProvider.php, boot()
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
     'kitchen' => fn (FeedBuilder $feed) => $feed
@@ -108,19 +117,20 @@ $approval = Activity::query()
 $approvedBy = $approval?->cachedActor;
 ```
 
-The approval renders nowhere, because no feed admits its verb. It maps to the
+The `kitchen` feed excludes the approval. Other feeds must also exclude it
+if it should remain hidden. It maps to the
 Activity Streams `Accept` type, so the serialized document needs no extension
 term. The contributor stays the actor of their own story.
 
-## Showing the Approver on a Dense List
+## Showing the Approver On a Dense List
 
 On one photo's page, the lookup is one more query. On a long list it is one
 per row. There, also copy the approver's name into the story's `data` at
 publish time, and keep the approval activity as the record. The `data` copy
 can go stale; the activity is what `involving()` finds.
 
-## What the Reader Sees
+## Displaying an Approval
 
-Nothing, unless you draw it. The approval has no headline because no feed
-shows it. Draw the approver from the lookup as a name and a time under the
+Nothing, unless you draw it. Give the approval a headline even when displayed feeds exclude it;
+recording validates its definition. Draw the approver from the lookup as a name and a time under the
 story, not as a row of its own.

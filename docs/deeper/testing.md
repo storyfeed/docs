@@ -28,8 +28,9 @@ Storyfeed::assertNothingPublished();
 | `assertNothingPublished()` | nothing at all |
 | `published($verb = null)` | the captured activities, for custom assertions |
 
-Each accepts a closure in place of the verb. The fake uses your real
-registries, so grammar and axes behave as configured.
+Methods with a `$verb` argument also accept a closure there. The fake uses
+your real registries, but writes no snapshots or groupings and dispatches no
+`ActivityPublished` event.
 
 ## Coverage Assertions
 
@@ -80,6 +81,7 @@ Failed asserting that two arrays are identical.
 
 ```php
 // tests/Feature/FeedTest.php
+use App\Models\Kitchen;
 use Storyfeed\Testing\StorySurface;
 
 StorySurface::assertNoUnwiredSurface();

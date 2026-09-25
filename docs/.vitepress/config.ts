@@ -107,7 +107,7 @@ export default defineConfig({
           { text: 'Recording Activities', link: '/basics/recording' },
           { text: 'Verbs', link: '/basics/verbs' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
-          { text: 'What an Activity Shows', link: '/basics/activity-content' },
+          { text: 'Activity Content', link: '/basics/activity-content' },
           { text: 'Reading Feeds', link: '/basics/reading' },
           { text: 'The Payload', link: '/basics/the-payload' },
           { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
@@ -119,7 +119,7 @@ export default defineConfig({
         // Recording depth, then payload depth, then grouping, then operations.
         text: 'Digging Deeper',
         items: [
-          { text: 'Publishing from Events', link: '/deeper/events' },
+          { text: 'Publishing From Events', link: '/deeper/events' },
           { text: 'Containers & Context', link: '/deeper/context' },
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Story Classes', link: '/deeper/stories' },

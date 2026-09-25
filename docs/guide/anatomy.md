@@ -8,4 +8,4 @@ head:
 
 # Anatomy of an Activity Stream
 
-This page moved into the [introduction](/guide/introduction).
+An activity records a fact with named roles. See the [Introduction](/guide/introduction).

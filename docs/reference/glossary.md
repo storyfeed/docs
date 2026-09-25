@@ -8,11 +8,11 @@ where you meet them.
 | Term | It Is | It Is **Not** |
 |---|---|---|
 | **activity** | one recorded fact | a log entry — you choose what gets recorded |
-| **verb** | what happened, as a string, and the name a call site publishes by (`story('place', $order)`) | a closed set; enums are convenience |
+| **verb** | what happened, as a string passed to `Storyfeed::activity()` | a closed set; enums are convenience |
 | **actor / object / target / context** | the roles a sentence needs; [Recording](/basics/recording#roles) covers all seven | interchangeable; target ≠ context |
 | **party** | a [named participant with no model](/deeper/parties) | a null actor (that means *unknown*; see [actorless voice](/deeper/parties#actorless-voice)) |
-| **[story class](/deeper/stories)** | a declaration of what a model's verbs say, one method per verb, bound in `routes/feed.php` | a required abstraction — a line in `routes/feed.php` is always enough |
-| **[composite](/deeper/composites)** | one authored story about many objects | a derived group |
+| **[story class](/deeper/stories)** | an activity blueprint, bound in `routes/feed.php`; a resource class holds verbs, while a `Story` subclass receives data to publish | a required abstraction — a line in `routes/feed.php` is always enough |
+| **[composite](/deeper/composites)** | one authored activity about many objects | a derived group |
 | **batch** | a burst-detection window | anything a reader sees |
 
 ## Grouping
@@ -53,7 +53,7 @@ where you meet them.
 | **trickle** | the sweep that fills snapshots recording could not, and finds deletions no event reported | a cache warmer you must run to read |
 | **[tombstone](/deeper/deleted-models)** | what a deleted model leaves in its activities: its former type and when it went | a deleted activity; the activities stay |
 | **[retention](/deeper/retention)** | how long a verb's activities are kept before `storyfeed:prune` deletes them | a soft delete; a pruned activity is gone, and nothing records it |
-| **[healer](/deeper/healing)** | an app-declared policy retiring stories whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
+| **[healer](/deeper/healing)** | an app-declared policy retiring activities whose source is permanently gone | a way to discover missing sources, or to undo a deletion |
 
 ::: tip Glyph and icon, null actor and party
 **`glyph`** is a token naming an activity; **`icon`** is an image, at

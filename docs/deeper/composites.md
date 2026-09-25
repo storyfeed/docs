@@ -16,7 +16,7 @@ const authored = group({
 A composite is one activity whose object is a **collection**: several dishes
 put on the menu as a single activity.
 
-## Recording One Yourself
+## Recording a Composite
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -95,12 +95,13 @@ composite:
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Bundleable;
 use Storyfeed\Contracts\Feedable;
 
 class MenuItem extends Model implements Feedable, Bundleable
 {
-    // …
+    use InteractsWithFeed;
 }
 ```
 
@@ -125,8 +126,9 @@ Bundling happens when the actor's **batch** closes.
 
 ## Batches
 
-A batch is a burst of activity by one actor. It closes once the actor has been
-quiet for `quiet_minutes`.
+A batch is a burst of activity by one actor. Its quiet window defaults to `grouping.batch.quiet_minutes`; the verb can
+declare its own window with `batched(within:)`. Each publish sets the batch's
+`closes_at`.
 
 ```php
 // config/storyfeed.php

@@ -17,6 +17,13 @@ const { 'Storyfeed\\FeedLink': _live, ...withoutFeedLink } = api.classes;
 const retired = { ...api, classes: withoutFeedLink, removed: [...api.removed, 'Storyfeed\\FeedLink'], changelog: api.changelog + '\n- `Feedable::toFeedLink()` was removed.\n' };
 const scan = (text, a = api) => analyze(a, [{file:'docs/test.md', text}]);
 const php = code => '```php\n' + code + '\n```';
+// Keep closed-class checks independent of traits later added to real core types.
+const closedSurface = JSON.parse(execFileSync(process.env.PHP_BINARY || 'php', [resolve(here, 'surface.php')], {
+  input: JSON.stringify({'src/AuditValue.php': '<?php namespace Storyfeed; final class AuditValue { public static function make() {} }'}),
+  encoding: 'utf8',
+}));
+const closedApi = { ...api, classes: { ...api.classes, ...closedSurface.classes } };
+
 
 test('real main regression, pinned before the correction: all four pages and eight removed-method references', () => {
   const r = analyze(retired, documents(root, '244a79e'));
@@ -55,11 +62,11 @@ test('application imports and declarations shadow retired short names', () => {
   for (const code of ['use App\\FeedLink; FeedLink::make();', 'class FeedLink {} FeedLink::make();', 'class Thing { public static function toFeedLink() {} }', 'function toFeedLink() {} toFeedLink();', 'use App\\Noun; Noun::phrase(2);']) assert.equal(scan(php(code), retired).stale.length, 0, code);
 });
 test('explicit missing package imports and closed-class methods are stale', () => {
-  const r = scan(php('use Storyfeed\\DefinitelyMissing; FeedImage::notHere();'));
-  assert.deepEqual(r.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing', 'FeedImage::notHere']);
+  const r = scan(php('use Storyfeed\\DefinitelyMissing; AuditValue::notHere();'), closedApi);
+  assert.deepEqual(r.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing', 'AuditValue::notHere']);
 });
 test('aliased core imports resolve', () => {
-  const r = scan(php('use Storyfeed\\FeedImage as Picture; Picture::make("url"); Picture::notHere();'));
+  const r = scan(php('use Storyfeed\\AuditValue as Picture; Picture::make(); Picture::notHere();'), closedApi);
   assert.deepEqual(r.stale.map(s => s.identifier), ['Picture::notHere']);
 });
 test('grouped imports are unresolved rather than falsely stale namespace prefixes', () => {

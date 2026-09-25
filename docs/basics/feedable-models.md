@@ -69,8 +69,8 @@ That is a complete Feedable model. Its label is guessed, and it isn't a link.
 
 The feed stores a snapshot of the model: its label, and anything else it is
 given. The snapshot is taken when an activity is published, and refreshed every
-time the model saves. The feed reads the snapshot, never the model, so reading
-a feed runs no model queries.
+time the model saves. The feed reads those stored values. A resolver can also request the current
+model when it needs live values.
 
 ## The Default Label
 
@@ -189,7 +189,7 @@ class Order extends Model implements Feedable
 key, the id or slug `route()` expects. A string is the URL; `null` is no link.
 The URL is built on every read, so a changed route never leaves a stale link.
 
-## A Link per Feed
+## A Link Per Feed
 
 `$context->feed()` is the name the feed was
 [registered](/basics/named-feeds) under, so one snapshot can link somewhere
@@ -234,7 +234,7 @@ static::feedMediaUsing(fn ($context, $media) => $media
 `url()` is the link, and `preview()` is a picture of the entity. Every slot is
 listed in the [Feedable API](/reference/feedable) reference.
 
-## Writing `toFeed()` by Hand
+## Writing `toFeed()` By Hand
 
 `toFeed()` and `feedMedia()` are the two methods of the `Feedable` contract.
 `InteractsWithFeed` writes them from `describeFeed()` and `feedMediaUsing()`.
@@ -434,6 +434,3 @@ reads as `null`.
 
 ::: headless
 :::
-
-Attachments, the live model, and every argument each method accepts are in
-the [Feedable API](/reference/feedable) reference.

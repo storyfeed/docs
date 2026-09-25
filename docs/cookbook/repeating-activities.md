@@ -1,7 +1,7 @@
 # Repeating Activities
 
 When the same verb happens to the same object again, you can keep every
-occurrence as its own row, or call `->replace()` so only the latest one stays.
+occurrence as its own row, or declare `->keepLatest()` on the verb to keep its latest row.
 
 <script setup>
 import { who, orders, dishes, activity } from '../.vitepress/theme/samples'
@@ -84,6 +84,18 @@ class MenuItemController extends Controller
 ```
 :::
 
+Declare which price changes to keep:
+
+```php
+// routes/feed.php
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object')
+    ->keepLatest(); // superseded rows leave every feed, including log()
+```
+
 *Later, in another request, they change its price:*
 
 ::: code-group
@@ -108,7 +120,6 @@ class MenuItemPriceController extends Controller
         Storyfeed::activity() // replaces the earlier price change
             ->by($request->user())
             ->action('reprice', $dish)
-            ->replace()
             ->publish();
 
         return back();
@@ -138,7 +149,6 @@ class MenuItemPriceController extends Controller
             verb: 'reprice',
             object: $dish,
             actor: $request->user(),
-            replace: true,
         );
 
         return back();
@@ -151,41 +161,21 @@ After one new dish and two price changes:
 
 <FeedExample context :items="pricedTwice" />
 
-```php
-// app/Providers/AppServiceProvider.php, boot()
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::verbs([
-    'reprice' => ActivityType::Update,
-    'add' => ActivityType::Add,
-    'place' => ActivityType::Create,
-    'confirm' => ActivityType::Accept,
-]);
-
-Storyfeed::grammar([
-    'menu_item.reprice' => ':actor changed the price of :object',
-    'menu_item.add' => ':actor added a new dish, :object',
-    'order.place' => ':actor placed :object',
-    'order.confirm' => ':actor confirmed :object',
-]);
-```
-
-## Which Verbs Replace
+## Choosing Which Occurrences to Keep
 
 | Decision | Question | Consequence |
 |---|---|---|
 | occurrence | is this a retry of the same fact, or a new act? | an order placed again after an amendment is a new occurrence |
 | retention | does this feed need every occurrence? | append for a full timeline; replace only when earlier ones may leave the feed |
 
-Replacing publishes a new row and removes the earlier ones, so the row gets a
-new id and time.
+The latest `published_at` wins. A backdated activity older than the current
+row is stored already superseded.
 
-## A Full Timeline Beside a Latest-state Pulse
+## Keeping Every Occurrence or the Latest
 
-The order is placed, confirmed, amended, and placed again. Two ways to record
-it:
+The order is placed, confirmed, amended, and placed again. Choose one storage policy for those verbs:
 
-| Request | Full Timeline | Latest-state Pulse, per Verb |
+| Request | Full Timeline | Latest Row per Verb |
 |---|---|---|
 | first placement | append `placed` | replace `placed` |
 | confirmation | append `confirmed` | replace `confirmed` |
@@ -270,28 +260,22 @@ $timeline = Storyfeed::feed()->involving($order)->log()->get();
 
 <FeedExample :items="timeline" />
 
-For the pulse, each transition request instead runs:
+To keep only the latest occurrence of each verb, declare that policy. The
+controller publishes the same way:
 
-::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/OrderTransitionController.php, __invoke()
-Storyfeed::activity()
-    ->by($request->user())
-    ->action($verb, $order)
-    ->replace() // keeps only the latest row of each verb on the order // [!code highlight]
-    ->publish();
-```
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
 
-```php [Named Arguments]
-// app/Http/Controllers/OrderTransitionController.php, __invoke()
-Storyfeed::record(
-    verb: $verb,
-    object: $order,
-    actor: $request->user(),
-    replace: true, // keeps only the latest row of each verb on the order // [!code highlight]
-);
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object')
+    ->keepLatest(); // removes earlier placements from every feed
+
+Story::for(Order::class)->verb('confirm')
+    ->headline(':actor confirmed :object')
+    ->keepLatest();
 ```
-:::
 
 ```php
 // app/Http/Controllers/OrderController.php, show()
@@ -307,18 +291,24 @@ The pulse keeps one row per verb, not one row per order.
 Replaced rows are gone from every feed, including `log()`. If a page needs the
 full timeline, don't replace.
 
-## A Save-shaped Verb That Is Not Published at All
+## Matching Activities
 
-Don't publish a save the reader wouldn't notice. See
-[Choosing When to Publish](/cookbook/choosing-when-to-publish).
+By default, `keepLatest()` matches the object and verb. The actor, target,
+context and `data` do not count. `per:` chooses the roles to match, and
+`within:` limits the time between matching activities:
 
-## What `->replace()` Matches On
+```php
+// routes/feed.php
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
 
-The object and the verb. The actor, target, context and `data` don't count.
-So a single `status` verb with `data: ['from' => …, 'to' => …]` keeps only the
-latest transition.
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object')
+    ->keepLatest(per: ['object', 'actor'], within: '10 minutes');
+```
 
-Replaced rows are soft-deleted. To delete them outright, set
-[`replace.delete`](/reference/configuration) to `'force'`.
+A missing role in the key leaves the activity separate. Authored composites
+recorded with `objects()` are not superseded.
 
-`->publishAndReplace()` is `->replace()->publish()` in one call.
+Superseded rows are soft-deleted. To delete them outright, set
+[`keep_latest.delete`](/reference/configuration) to `'force'`.

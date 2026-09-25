@@ -43,7 +43,7 @@ export const dish = (id: string, label: string) => entity('menu_item', id, label
 export const order = (id: string, label: string) => entity('order', id, label, `/orders/${id}`)
 export const device = (id: string, label: string) => entity('kitchen_device', id, label, null)
 /**
- * A photo entity, carrying the media a resolver minted for it.
+ * A photo entity, carrying the media a resolver resolved for it.
  *
  * `preview` is the derivative a feed paints and `url` is the resource itself,
  * which for a photograph IS an image — the payload's own distinction, and the
@@ -56,6 +56,7 @@ export const photo = (id: string, label: string) => {
         media: {
             icon: null,
             image: null,
+            attachments: [],
             preview: { src: `/media/${file}.svg`, mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
             url: { src: `/media/${file}.svg`, mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
         },
@@ -269,8 +270,8 @@ function tombstoneFacts(over: Record<string, any>) {
 }
 
 /**
- * A group node. Note what is absent: no singular role keys. A group carries
- * the sample and distinct counts instead, which is contract, not styling.
+ * A group node with the singular roles pinned by its axis, plus samples and
+ * distinct counts for all roles.
  */
 export function group(over: Record<string, any>) {
   // Core's NodePresenter::groupNode(), key for key and in its order: seven
@@ -286,12 +287,15 @@ export function group(over: Record<string, any>) {
     distinct[key] = Math.max(over.distinct?.[key] ?? 0, sample[key].length)
   }
 
-  // Core fills a singular key when the axis pins its token and exactly one
-  // entity holds the role. The samples have no axis registry, so the template
-  // stands in for the pinned tokens: `:actor` pins, `:actors` does not.
+  // NodePresenter uses the axis's pinned roles, independently of its headline.
+  const pins: Record<string, string[]> = {
+    repeat: ['actor', 'target'], actors: ['target'], targets: ['actor'],
+    object: ['actor', 'object'], composite: ['actor', 'target', 'context'],
+    scene: ['context'],
+  }
   for (const role of roles) {
     const key = `${role}s`
-    const pinned = new RegExp(`:${role}(?![a-z_])`).test(over.headline_template ?? '')
+    const pinned = (pins[over.axis] ?? []).includes(role)
     singulars[role] = pinned && sample[key].length === 1 && distinct[key] === 1 ? sample[key][0] : null
   }
 
@@ -311,7 +315,7 @@ export function group(over: Record<string, any>) {
     sample,
     distinct,
     children: over.children ?? [],
-    children_truncated: over.children_truncated ?? false,
+    children_truncated: over.children_truncated ?? over.count > (over.children?.length ?? 0),
     ...groupTombstoneFacts(over, sample, distinct),
   }
 }

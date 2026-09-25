@@ -1,4 +1,4 @@
-# Publishing from Events
+# Publishing From Events
 
 If your app already dispatches an event when something happens, you can
 publish the activity from that event: from a listener, or from the event class
@@ -8,7 +8,7 @@ itself.
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
-## From a Listener
+## Publishing From a Listener
 
 ```php
 <?php
@@ -31,7 +31,7 @@ class OrderPlaced
 
 <FeedExample context :items="[scenes.order]" />
 
-## From the Event Itself
+## Publishing From an Event
 
 An event can build the activity itself, with no listener to register. Return
 it without calling `publish()`; dispatching the event publishes it:
@@ -57,7 +57,7 @@ public function toFeedActivity(): ?PendingActivity
 }
 ```
 
-## Events Storyfeed Emits
+## Storyfeed Events
 
 | Event | Payload |
 |---|---|

@@ -9,6 +9,7 @@ Publish when a record's status changes, not on every save.
 namespace App\Observers;
 
 use App\Models\Order;
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 class OrderObserver
@@ -105,7 +106,7 @@ Storyfeed::grammar([
 ]);
 ```
 
-## What Publishes
+## Status Transitions
 
 | What Happened | Activity | Verb |
 |---|---|---|
@@ -116,10 +117,10 @@ Storyfeed::grammar([
 | ready → completed | yes | `complete` |
 
 Use one verb per transition, not one `status` verb with the new state in
-`data`. [Repeating Activities](/cookbook/repeating-activities#what-replace-matches-on)
+`data`. [Repeating Activities](/cookbook/repeating-activities#matching-activities)
 explains why.
 
-## The Transition from the Event
+## Publishing Status Transitions From Events
 
 When the transition already has a domain event, publish from the event:
 
@@ -149,7 +150,7 @@ class OrderConfirmed implements PublishesToFeed
 
 See [Publishing from Events](/deeper/events).
 
-## Where to Publish From
+## Choosing a Publish Site
 
 | Site | Good For |
 |---|---|

@@ -11,6 +11,10 @@ common path.
 
 namespace Storyfeed\Contracts;
 
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
+
 interface Feedable
 {
     public function toFeed(): FeedEntity;
@@ -185,7 +189,7 @@ so it should make no writes and no queries except `model()`.
 |---|---|
 | `$context->type()` | the morph alias, as stored on the activity |
 | `$context->key()` | the entity's key, as `getKey()` returns it |
-| `$context->routeKey()` | the entity's route key, as `getRouteKey()` returned it when the snapshot was written; `key()` on a snapshot written before that |
+| `$context->routeKey()` | the entity's route key, as `getRouteKey()` returned it when the snapshot was written; `key()` when no route key is stored |
 | `$context->label()` | the cached label |
 | `$context->data()` | the `data` array the snapshot holds |
 | `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key reads as `null`, or as the second argument |
@@ -208,6 +212,7 @@ the resolver must handle `null`.
 | Argument | Effect |
 |---|---|
 | `with: ['project']` | eager loads the relation across the whole batch; nested access without it is an N+1 |
+| `withCount: ['comments']` | loads relationship counts with the model batch |
 | `withTrashed: true` | includes soft-deleted rows, on models that soft-delete |
 
 ## `FeedMedia`
@@ -331,8 +336,8 @@ recording is disabled.
 | `restored` | its activities are pointed back at the model, and the tombstone is deleted |
 | `forceDeleted` | the tombstone becomes permanent |
 
-The activities stay through all of them. `deleteFromFeed()` and
-`forceDeleteFromFeed()` remove them, and run only when called.
+Activities stay unless their verb declares `forgetWhenMissing()`.
+`deleteFromFeed()` and `forceDeleteFromFeed()` explicitly remove activities.
 [Deleted Models](/deeper/deleted-models) covers tombstones.
 
 Entities recorded before they had a snapshot (imports, backfills) are

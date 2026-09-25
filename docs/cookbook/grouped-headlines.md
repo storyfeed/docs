@@ -6,6 +6,7 @@ activity.
 
 ```php
 // app/Providers/AppServiceProvider.php, boot()
+use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
@@ -123,9 +124,9 @@ different customers have ordered. See [Aggregation](/deeper/aggregation).
 <FeedExample :items="[crowd]" />
 
 A group with no headline of its own gets a
-[generic one](/deeper/aggregation#tokens-a-group-headline-may-use).
+[generic one](/deeper/aggregation#group-headline-tokens).
 
-## One Entry per Axis the Verb Can Group on
+## Choosing Group Headline Keys
 
 | Axis | The Members Are | Sentence | Written On |
 |---|---|---|---|
@@ -141,13 +142,13 @@ none.
 `:count` counts activities, not different objects. If the same order can be
 placed twice, write "placements", not "orders".
 
-## When the Content Is the News
+## Keeping Individual Content Visible
 
 A group shows no quote or image of its own; those stay on the activities
 inside it. Where every comment must stay visible, read with `log()`, which
 doesn't group.
 
-## The Same Headlines in a Story Class
+## Defining Group Headlines in a Story Class
 
 A verb's method holds its headline and the group headlines for its type:
 

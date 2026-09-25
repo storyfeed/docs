@@ -231,7 +231,7 @@ KeyValue::make(
 Every row carries its word in `missing`, beside its `value`, or `null` when
 neither call gave one.
 
-## Where a Body Lives
+## Stored and Resolved Bodies
 
 The model writes the body, in one of two places:
 
@@ -243,14 +243,12 @@ The model writes the body, in one of two places:
 Neither freezes a value. To keep what was true at the time, point the activity
 at a model that never changes, such as a revision or a posted note.
 
-## Which Role's Body a Row Shows
+## Bodies By Role
 
-A row draws its **object's** body, so make the thing the reader cares about the
-object. The other roles carry their bodies in the payload too, but drawing them
-would repeat an actor's body under every row that person acts in. A row whose
-object has no body shows just its headline.
+Each entity can carry bodies, in any role. These examples show the object's
+body beneath the headline. Your frontend chooses which bodies to display.
 
-## More Than One Body
+## Multiple Bodies
 
 Each `body()` call adds to the list, in the order written:
 
@@ -313,12 +311,12 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 :::
 
-A renderer draws it like a stored one.
+Stored and resolved bodies share the same payload shape.
 
 ### Deferring the Work
 
 The resolver runs on every read. Pass a closure to build the body only when a
-read draws it:
+payload resolves it:
 
 ::: code-group
 
@@ -342,7 +340,7 @@ not one per row. If it throws, the error is reported and the body is left out.
 Use a closure when the body reads the live row; a body built from the snapshot
 is cheap enough to pass directly.
 
-## What a Resolved Body May Read
+## Data Available to Resolvers
 
 The resolver runs for every entity on the page, including ones a renderer never
 draws. These three reads cost no query per row:
@@ -468,8 +466,7 @@ final class Attachment implements FeedBody
 
     public static function upgrade(array $payload, int $from): array
     {
-        // Never throw: a row written by any version, even a newer one,
-        // still renders.
+        // Missing or unrecognised values become null.
         return [
             'size' => is_int($payload['size'] ?? null) ? $payload['size'] : null,
             'mediaType' => is_string($payload['mediaType'] ?? null)
@@ -507,18 +504,18 @@ The `$` prefix keeps them apart from your own keys.
 `Acme/Attachment`. Renderers match it exactly. It's a lookup key, not a class
 name, and stored rows keep it even if the class moves.
 
-### Versions Are Add-only
+### Body Versions
 
-Start `version()` at 1. A row with no `$v` is version 1. `upgrade()` runs when
-a row is read and never writes back, so a renderer always sees the current
-shape.
+Start `version()` at 1. The body's `upgrade()` method converts an older
+payload when your frontend calls it. Storyfeed preserves the stored body and
+its version.
 
-## Who Upgrades a Body
+## Upgrading Payload Values
 
 | Value | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
 |---|---|---|---|
-| `FeedThread` at `$thread` | `thread` | core, on read | no |
-| `FeedChange` at `$change` | `change` | core, on read | no |
+| `FeedThread` at `$thread` | `thread` | Storyfeed, on read | no |
+| `FeedChange` at `$change` | `change` | Storyfeed, on read | no |
 | a body type's value | stays in `body` | the renderer | yes |
 
 Storyfeed upgrades `$thread` and `$change` itself, because it uses them to build

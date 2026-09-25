@@ -1,5 +1,7 @@
 # Installation
 
+Install Storyfeed and create the tables that store your activities.
+
 ## Requirements
 
 | | |
@@ -14,7 +16,7 @@
 composer require storyfeed/storyfeed:dev-main
 ```
 
-The service provider and `Storyfeed` facade register via package discovery.
+The service provider registers through package discovery.
 Commit `composer.lock` to pin the revision.
 
 ## Migrations
@@ -33,6 +35,8 @@ php artisan migrate
 | `feed_batches` | bursts of activity by one actor |
 | `feed_participants` | the index `involving()` reads |
 | `feed_meta` | package bookkeeping |
+| `feed_tombstones` | references to deleted models |
+| `feed_batch_locks` | coordinates concurrent publishes by one actor |
 
 After an update, publish and migrate again. Never delete a migration you have
 already run.

@@ -1,6 +1,6 @@
 # Anatomy of a Row
 
-A feed row is made of a fixed set of zones: the rail, the headline, the time,
+These examples arrange a feed row into zones: the rail, the headline, the time,
 and a few more. Each zone is filled from one part of the payload, and your
 renderer decides where each one sits.
 
@@ -22,7 +22,7 @@ renderer decides where each one sits.
 | tiles | a group's `sample`, `distinct` | a sample of a collapsed group's pictures |
 | members | `children`, `count` | the group's own rows, when a reader opens it |
 
-Nothing else belongs in a row. A zone with nothing in it is absent, not empty.
+The examples omit zones with no content. Your frontend controls the layout.
 
 ## The Headline
 
@@ -44,9 +44,8 @@ picture gets no caption.
 
 ## Compared Values
 
-An address, an identifier, a user agent is checked character by character, not
-read. Give it one line, clip it with an ellipsis, and put the whole string on
-`title`.
+An address, identifier or user agent is checked character by character. Show
+the complete value, wrapping it or giving it its own row.
 
 ## Collapsed Groups
 

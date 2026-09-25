@@ -1,7 +1,30 @@
 # The Payload
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { scenes, who, where, orders, notes, party, photos, dishes, activity, group } from '../.vitepress/theme/samples'
+import { INSTRUCTIONS } from '../.vitepress/theme/manifest'
+
+const repeated = group({ id: 'payload-repeat', axis: 'repeat', verb: 'place', count: 3,
+  published_at: scenes.order.published_at, glyph: 'shopping-bag',
+  headline_template: ':actor placed :count orders with :target',
+  actors: [who.regular], objects: [orders.first, orders.second, orders.third], targets: [where.kitchen],
+  distinct: { actors: 1, objects: 3, targets: 1 } })
+const crowd = group({ id: 'payload-crowd', axis: 'actors', verb: 'place', count: 5,
+  published_at: scenes.order.published_at, glyph: 'shopping-bag',
+  headline_template: ':actors ordered from :target',
+  actors: [who.regular, who.customer2, who.customer3], objects: [orders.first, orders.second, orders.third],
+  targets: [where.kitchen], distinct: { actors: 5, objects: 5, targets: 1 } })
+const paid = activity({ ...scenes.order, id: 'payload-paid', verb: 'pay', actor: party.service,
+  headline_template: ':actor marked :object paid', glyph: 'credit-card' })
+const quoted = activity({ ...scenes.order, id: 'payload-quote', verb: 'note',
+  headline_template: ':actor sent a note about :object', glyph: 'message-circle',
+  thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false } })
+const body = activity({ ...scenes.order, id: 'payload-body',
+  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
+    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false }] } })
+const photograph = activity({ ...scenes.order, id: 'payload-photo', verb: 'publish', glyph: 'image',
+  headline_template: ':actor added a photo of :target', actor: who.cook,
+  object: photos.curry, target: dishes.chickenCurry })
 </script>
 
 Reading a feed returns one JSON document: the activities, newest first, with
@@ -35,145 +58,51 @@ A customer places an order. Every key is always present:
 
 <FeedExample expanded :items="[scenes.order]" />
 
-A renderer puts the entities' labels into the sentence's tokens. The nodes
-below show only the keys that differ.
+A renderer puts the entities' labels into the sentence's tokens. Each example
+below shows the complete node that draws it.
 
-## Three in a Row
+## Repeated Activities
 
 One customer, three orders, one group node:
 
-```jsonc
-{
-  "kind": "group",
-  "axis": "repeat",
-  "count": 3,
-  "verb": "place",
-  "headline_template": ":actor placed :count orders with :target",
-  // one actor, so the key is filled
-  "actor": { "type": "user", "label": "Steve Harrington", … },
-  // three of them
-  "object": null,
-  "sample": {
-    "actors": [ /* him */ ],
-    "objects": [ /* up to three orders, to name */ ],
-    "targets": [ /* the kitchen */ ]
-  },
-  "distinct": { "actors": 1, "objects": 3, "targets": 1 },
-  "children": [ /* the three activity nodes */ ],
-  "children_truncated": false
-}
-```
+<FeedExample expanded :items="[repeated]" />
 
-## A Crowd
+## Activities By Several People
 
 Five customers, the same kitchen:
 
-```jsonc
-{
-  "axis": "actors",
-  "count": 5,
-  "headline_template": ":actors ordered from :target",
-  "actor": null,                       // five of them; there is no single answer
-  "target": { /* the kitchen they share */ },
-  "distinct": { "actors": 5, "objects": 5, "targets": 1 }
-}
-```
+<FeedExample expanded :items="[crowd]" />
 
-A group fills a role key like `actor` only when that role has one entity. For
+A group fills a singular role only when its axis pins the role and the group
+has exactly one entity in it. For
 how many there are, read `distinct`; `sample` holds only a few.
 
-## Someone Who Is Not a User
+## Activities By a Payment Provider
 
 A payment provider marks an order paid:
 
-```jsonc
-{
-  "verb": "pay",
-  "headline_template": ":actor marked :object paid",
-  "actor": {
-    "type": "storyfeed.party",
-    "id": "1",
-    "label": "Stripe",
-    "url": null,                       // a party has nowhere to link
-    "data": {},
-    "media": null
-  }
-}
-```
+<FeedExample expanded :items="[paid]" />
 
 When nobody acted, `actor` is `null`.
 
-## The Words Someone Wrote
+## Quoted Text
 
-```jsonc
-{
-  "verb": "note",
-  "headline_template": ":actor sent a note about :object",
-  "thread": {
-    "text": "Can I pick this up at six instead of seven?",
-    "by": "Steve Harrington",
-    "kind": "note",
-    "replies": null,                   // null means nobody counted
-    "truncated": false
-  }
-}
-```
+<FeedExample expanded :items="[quoted]" />
 
-## A Body Inside `data`
+## Entity Bodies
 
-A body sits in the app's own `data`, marked by two reserved keys:
+An entity's `body` list carries structured content. Each body names its type
+and version with `$body` and `$v`.
 
-```jsonc
-{
-  "verb": "place",
-  "headline_template": ":actor placed :object with :target",
-  "data": {
-    "$body": "Storyfeed/Body/Excerpt",
-    "$v": 1,
-    "text": "Ring the bell twice, the gate sticks.",
-    "from": "Instructions",
-    "truncated": false
-  }
-}
-```
-
-[What an Activity Shows](/basics/activity-content) covers these forms.
+<FeedExample expanded :items="[body]" />
 
 ## A Photograph
 
 The picture is on the entity:
 
-```jsonc
-{
-  "verb": "publish",
-  "headline_template": ":actor added a photo of :target",
-  "object": {
-    "type": "photo",
-    "label": "chicken-curry.jpg",
-    "url": "/media/chicken-curry.jpg",
-    "media": {
-      "icon": null,
-      "image": null,
-      "preview": {                     // the derivative a feed paints
-        "src": "/media/chicken-curry-400.jpg",
-        "mediaType": "image/jpeg",
-        "width": 400,
-        "height": 300,
-        "alt": null
-      },
-      "url": {                         // the resource itself IS an image
-        "src": "/media/chicken-curry.jpg",
-        "mediaType": "image/jpeg",
-        "width": 4032,
-        "height": 3024,
-        "alt": null
-      }
-    }
-  }
-}
-```
+<FeedExample expanded :items="[photograph]" />
 
-## An Entity, in Every Role
+## Entity Fields
 
 | Key | Holds |
 |---|---|
@@ -188,9 +117,7 @@ The picture is on the entity:
 | `body` | the entity's bodies, or null |
 | `tombstone` | null, or what a [deleted model](/deeper/deleted-models) left behind |
 
-## What Is Not in It
+## Data and Presentation
 
-No markup, class names, colours, sizes or translated strings. Filling in and
-translating the headline are the renderer's job.
-
-Every key and type: [The Payload Contract](/reference/payload).
+Storyfeed supplies data rather than HTML. A headline declared with a translation
+key is translated on read; its role tokens remain for the renderer to fill in.
