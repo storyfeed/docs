@@ -1,8 +1,8 @@
 # Introduction
 
 Storyfeed is an implementation of the activity feed pattern in Laravel.
-Activities are recorded explicitly, displayed as a log, a live feed or a
-summary, and serialized following
+Activities are recorded explicitly, displayed as a live feed, a summary or
+a log, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
 <script setup>
@@ -131,7 +131,8 @@ The same recorded activities display three ways. [Reading Feeds](/basics/reading
 
 ### Live
 
-The familiar feed, and the typical home page: repeats collapse, so one person doing the same thing again reads as one row.
+The familiar feed, and the default. Repeats fold into one row, and so do
+several people doing the same thing at one place.
 
 <FeedExample :items="worldLive" days />
 
@@ -140,7 +141,12 @@ The familiar feed, and the typical home page: repeats collapse, so one person do
 
 ### Summary
 
-A grouped digest: many people in one place, one person across many things.
+A digest: one row per person per day, saying everything they did.
+
+::: tip Proposal
+This is the Summary proposed for the next release. Until then, `summary()`
+reads like Live.
+:::
 
 <FeedExample :items="worldSummary" days />
 
@@ -149,6 +155,6 @@ A grouped digest: many people in one place, one person across many things.
 
 ### Log
 
-The atomic timeline: every activity, one row each.
+The timeline: every activity, one row each.
 
 <FeedExample :items="worldLog" days />

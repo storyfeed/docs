@@ -1,9 +1,9 @@
 # Named Feeds
 
 <script setup>
-import { scene, logOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf } from '../.vitepress/theme/world'
 
-const shop = summaryOf(scene.basics.namedFeeds.shop)
+const shop = liveOf(scene.basics.namedFeeds.shop)
 const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
   ['place', 'confirm', 'ready'].includes(node.verb) && node.object?.id === scene.order.object.id))
 </script>

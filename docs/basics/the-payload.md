@@ -1,10 +1,10 @@
 # The Payload
 
 <script setup>
-import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, liveOf } from '../.vitepress/theme/world'
 
 const repeated = liveOf(scene.guide.usageExamples.repeatOrders)[0]
-const crowd = summaryOf(scene.busyPlace)[0]
+const crowd = liveOf(scene.busyPlace)[0]
 const paid = scene.basics.recording.paid
 const note = scene.basics.activityContent.note
 const quoted = { ...note,

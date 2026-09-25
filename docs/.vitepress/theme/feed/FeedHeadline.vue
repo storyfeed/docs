@@ -16,7 +16,7 @@ const props = defineProps<{
     distinct?: Partial<Record<FeedRole, number>>;
     count?: number;
     /** Last-resort fallback when no grammar was authored at all. */
-    verb: string;
+    verb: string | null;
     /**
      * Group nodes must never fall back to singular prose: a null headline
      * means the package refused to name roles the axis does not pin, so

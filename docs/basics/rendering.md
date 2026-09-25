@@ -1,11 +1,11 @@
 # Rendering
 
 <script setup>
-import { scene, summaryOf } from '../.vitepress/theme/world'
+import { scene, liveOf } from '../.vitepress/theme/world'
 
 const bare = { ...scene.order, glyph: null }
 const one = scene.order
-const grouped = summaryOf(scene.busyPlace)[0]
+const grouped = liveOf(scene.busyPlace)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
 const complete = scene.basics.feedFile.completed

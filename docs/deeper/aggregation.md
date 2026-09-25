@@ -6,19 +6,19 @@ Aggregation shows several related activities as one row: three orders from
 one customer read as one line, not three.
 
 <script setup>
-import { scene, logOf, liveOf, summaryOf, everything, group } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf, everything, group } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
 const repeat = liveOf(log)[0]
 const customers = logOf(scene.deeper.aggregation.customers)
 // The explicit actors axis permits different order objects; the general
-// summary helper conservatively keeps different objects apart.
+// live helper conservatively keeps different objects apart.
 const actors = group({ id: 'aggregation-customers', verb: 'place', axis: 'actors', count: customers.length,
   glyph: customers[0].glyph, published_at: customers[0].published_at,
   headline_template: ':actors ordered from :target',
   actors: customers.map(row => row.actor).slice(0, 3),
   objects: customers.map(row => row.object).slice(0, 3), targets: [customers[0].target],
   distinct: { actors: customers.length, objects: customers.length, targets: 1 }, children: customers })
-const summary = summaryOf(everything())
+const live = liveOf(everything())
 </script>
 
 ## Grouping Activities
@@ -86,17 +86,18 @@ activity is in only one group.
 A longer feed makes the difference visible: repeated actions and busy places
 fold into rows that expand to show their members.
 
-<FeedExample :items="summary" days />
+<FeedExample :items="live" days />
 
 The read mode chooses which groupings a read shows:
 
 | Mode | Reads |
 |---|---|
 | `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
-| `live()` | `repeat`, plus authored composites |
-| `summary()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner |
+| `live()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner. The default |
+| `summary()` | `summary`: one row per actor per calendar day, across verbs. See [Reading Feeds](/basics/reading#summary) |
 
-With `grouping.curate` enabled, publishing selects a winning axis.
+With `grouping.curate` enabled, publishing selects a winning axis. With it
+set to `false`, no winner is stamped and `live()` shows repeats only.
 `storyfeed:curate` also revisits recent activity hourly when Laravel's scheduler runs.
 
 ## Grouping Axes

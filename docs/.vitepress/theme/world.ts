@@ -52,24 +52,24 @@ export const WORLD_ANCHOR = env.VITE_WORLD_ANCHOR ? Date.parse(env.VITE_WORLD_AN
  */
 export const BASE_VERBS: Record<string, VerbWording> = {
   place:    { glyph: 'shopping-bag', headline: ':actor placed :object with :target',
-              repeat: ':actor placed :count orders with :target', actors: ':actors ordered from :target' },
-  confirm:  { glyph: 'circle-check', headline: ':actor confirmed :object', repeat: ':actor confirmed :count orders' },
+              repeat: ':actor placed :count orders with :target', actors: ':actors ordered from :target', summary: 'placed :object with :target|placed :count orders with :targets' },
+  confirm:  { glyph: 'circle-check', headline: ':actor confirmed :object', repeat: ':actor confirmed :count orders', summary: 'confirmed :object|confirmed :count orders' },
   ask:      { glyph: 'message-circle', headline: ':actor asked about :target',
-              repeat: ':actor asked about :target :count times', targets: ':actor asked about :targets' },
-  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor marked :count invoices paid' },
-  sign:     { glyph: 'file-pen', headline: ':actor signed :object', actors: ':actors signed :object' },
-  assign:   { glyph: 'ticket', headline: ':actor assigned :object to :target' },
-  open:     { glyph: 'ticket', headline: ':actor opened :object', repeat: ':actor opened :count tickets' },
-  resolve:  { glyph: 'circle-check', headline: ':actor resolved :object' },
-  join:     { glyph: 'user-plus', headline: ':actor joined :target', actors: ':actors joined :target' },
-  create:   { glyph: 'git-merge', headline: ':actor created :object' },
+              repeat: ':actor asked about :target :count times', targets: ':actor asked about :targets', summary: 'asked about :target|asked about :targets' },
+  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor marked :count invoices paid', summary: 'marked :object paid|marked :count invoices paid' },
+  sign:     { glyph: 'file-pen', headline: ':actor signed :object', actors: ':actors signed :object', summary: 'signed :object|signed :count documents' },
+  assign:   { glyph: 'ticket', headline: ':actor assigned :object to :target', summary: 'assigned :object to :target|assigned :count tickets' },
+  open:     { glyph: 'ticket', headline: ':actor opened :object', repeat: ':actor opened :count tickets', summary: 'opened :object|opened :count tickets' },
+  resolve:  { glyph: 'circle-check', headline: ':actor resolved :object', summary: 'resolved :object|resolved :count tickets' },
+  join:     { glyph: 'user-plus', headline: ':actor joined :target', actors: ':actors joined :target', summary: 'joined :target|joined :targets' },
+  create:   { glyph: 'git-merge', headline: ':actor created :object', summary: 'created :object|created :count things' },
   merge:    { glyph: 'git-merge', headline: ':actor merged :object into :target',
-              repeat: ':actor merged :count pull requests into :target' },
-  approve:  { glyph: 'circle-check', headline: ':actor approved :object' },
-  star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :object' },
+              repeat: ':actor merged :count pull requests into :target', summary: 'merged :object into :target|merged :count pull requests into :targets' },
+  approve:  { glyph: 'circle-check', headline: ':actor approved :object', summary: 'approved :object|approved :count pull requests' },
+  star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :object', summary: 'starred :object|starred :count things' },
   complete: { glyph: 'square-check', headline: ':actor completed :object on :target',
-              repeat: ':actor completed :count tasks on :target' },
-  upload:   { glyph: 'image', headline: ':actor uploaded :object to :target', repeat: ':actor uploaded :count photos to :target' },
+              repeat: ':actor completed :count tasks on :target', summary: 'completed :object on :target|completed :count tasks on :targets' },
+  upload:   { glyph: 'image', headline: ':actor uploaded :object to :target', repeat: ':actor uploaded :count photos to :target', summary: 'uploaded :object to :target|uploaded :count photos to :targets' },
 }
 
 const verbsOf = (p: WorldPack) => ({ ...BASE_VERBS, ...p.verbs })
@@ -114,16 +114,12 @@ const repeats = (rows: any[], verbs: Record<string, VerbWording>) =>
   [...bucket(rows, (r) => `${dayOf(r)}|${idOf(r.actor)}|${r.verb}|${idOf(r.target)}`).values()]
     .flatMap((members) => (members.length > 1 && verbs[members[0].verb]?.repeat ? [fold(verbs, 'repeat', newestFirst(members))] : members))
 
-/** Live: repeats fold (one person, one verb, one target, one day); nothing else does. */
-export function liveOf(rows: any[], verbs = VERBS) {
-  return newestFirst(repeats(rows, verbs))
-}
-
 /**
- * Summary: also many people into one target (3 or more), and one person
- * across targets (2 or more), before repeats.
+ * Live, today's feed: many people into one target (3 or more), one person
+ * across targets (2 or more), then repeats (one person, one verb, one target,
+ * one day).
  */
-export function summaryOf(rows: any[], verbs = VERBS) {
+export function liveOf(rows: any[], verbs = VERBS) {
   let rest = rows
   const out: any[] = []
   for (const members of bucket(rest, (r) => `${dayOf(r)}|${r.verb}|${idOf(r.target)}|${idOf(r.object)}`).values()) {
@@ -139,6 +135,92 @@ export function summaryOf(rows: any[], verbs = VERBS) {
     }
   }
   return newestFirst([...out, ...repeats(rest, verbs)])
+}
+
+/**
+ * A summary phrase's wording for `count` members: Laravel's pluralization
+ * form, `singular|plural`. Null when the verb has none, as core's is when no
+ * `summary.{verb}` grammar is registered.
+ */
+const phraseTemplate = (wording: VerbWording | undefined, count: number) => {
+  const [one, many] = (wording?.summary ?? '').split('|')
+  return (count === 1 ? one : many ?? one) || null
+}
+
+const samples = (members: any[]) => ({
+  actors: uniq(members.map((m) => m.actor)).slice(0, 3),
+  objects: uniq(members.map((m) => m.object)).slice(0, 3),
+  targets: uniq(members.map((m) => m.target)).slice(0, 3),
+  distinct: {
+    actors: uniq(members.map((m) => m.actor)).length,
+    objects: uniq(members.map((m) => m.object)).length,
+    targets: uniq(members.map((m) => m.target)).length,
+  },
+})
+
+/**
+ * One phrase per verb, in the order they first happened. `count` is the
+ * members; a crowd's phrase is worded for one person (`each`), because each of
+ * them did it once.
+ */
+const phrasesOf = (verbs: Record<string, VerbWording>, members: any[], each?: number) =>
+  [...bucket([...members].reverse(), (m) => m.verb).values()].map((own) => {
+    const { actors, distinct, ...sample } = samples(own)
+    return {
+      verb: own[0].verb,
+      count: own.length,
+      headline_template: phraseTemplate(verbs[own[0].verb], each ?? own.length),
+      headline: null,
+      glyph: own[0].glyph,
+      sample: { objects: sample.objects, targets: sample.targets },
+      distinct: { objects: distinct.objects, targets: distinct.targets },
+    }
+  })
+
+/** The calendar period a row falls in: its day, or the Monday of its ISO week. */
+const periodOf = (r: any, period: Period) => {
+  if (period === 'day') return dayOf(r)
+  const at = new Date(`${dayOf(r)}T00:00:00Z`)
+  return new Date(+at - ((at.getUTCDay() + 6) % 7) * 86_400_000).toISOString().slice(0, 10)
+}
+
+export type Period = 'day' | 'week'
+
+const digest = (verbs: Record<string, VerbWording>, period: Period, members: any[], each?: number) => {
+  const sorted = newestFirst(members)
+  const phrases = phrasesOf(verbs, sorted, each)
+  const single = phrases.length === 1
+  return group({
+    id: `summary-${period}-${sorted[0].id}`, axis: 'summary', period, count: sorted.length,
+    // A row across verbs names none, and wears no glyph: the rail shows the actor.
+    verb: single ? sorted[0].verb : null, glyph: single ? sorted[0].glyph : null,
+    published_at: sorted[0].published_at, headline_template: null,
+    ...samples(sorted), phrases,
+    children: sorted, children_truncated: false,
+  })
+}
+
+/**
+ * Summary, the digest: one row per person per day (or week), across verbs.
+ * People whose whole period is one identical thing share a row. Activities
+ * with no actor stay on their own, and a row of one is that activity.
+ */
+export function summaryOf(rows: any[], period: Period = 'day', verbs = VERBS) {
+  const out: any[] = rows.filter((r) => !r.actor)
+  const days = [...bucket(rows.filter((r) => r.actor), (r) => `${periodOf(r, period)}|${idOf(r.actor)}`).values()]
+  const one = (members: any[]) =>
+    members.length === 1 ? `${periodOf(members[0], period)}|${members[0].verb}|${idOf(members[0].object)}|${idOf(members[0].target)}|${members[0].headline_template}` : null
+  const crowds = bucket(days.filter(one), (members) => one(members)!)
+
+  for (const members of days) {
+    const crowd = one(members) ? crowds.get(one(members)!)! : null
+    if (crowd && crowd.length > 1) {
+      if (crowd[0] === members) out.push(digest(verbs, period, crowd.flat(), 1))
+    } else {
+      out.push(members.length === 1 ? members[0] : digest(verbs, period, members))
+    }
+  }
+  return newestFirst(out)
 }
 
 // ── Rows as payload nodes ────────────────────────────────────────────────────
@@ -245,7 +327,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   return {
     pack: p, anchor, scene, role: p.roles, everything, nodeOf,
     liveOf: (rows: any[]) => liveOf(rows, verbs),
-    summaryOf: (rows: any[]) => summaryOf(rows, verbs),
+    summaryOf: (rows: any[], period: Period = 'day') => summaryOf(rows, period, verbs),
   }
 }
 

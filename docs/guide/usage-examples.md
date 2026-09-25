@@ -3,11 +3,11 @@
 Record orders, quotes and photographs, and read them as individual or grouped activities.
 
 <script setup>
-import { scene, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf } from '../.vitepress/theme/world'
 
 const expanded = logOf(scene.guide.usageExamples.repeatOrders)
 const burst = liveOf(expanded)[0]
-const crowd = summaryOf(scene.busyPlace)[0]
+const crowd = liveOf(scene.busyPlace)[0]
 const paid = scene.basics.recording.paid
 const note = scene.basics.activityContent.note
 const noted = { ...note, verb: 'note', object: note.target, target: null,

@@ -8,7 +8,8 @@ const rows = everything().filter(node => Date.parse(node.published_at) >= WORLD_
 const log = logOf(rows)
 const live = liveOf(rows)
 const summary = summaryOf(rows)
-const scoped = summaryOf(scene.guide.usageExamples.repeatOrders)
+const weekly = summaryOf(rows, 'week')
+const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 </script>
 
 ## Introduction
@@ -44,9 +45,9 @@ For a feed containing three order placements, the response has this shape:
 
 | Call | Also Called | Returns |
 |---|---|---|
+| `->live()` | aggregated feed | repeats, and several people at one place, as one row each. **The default** |
+| `->summary()` | digest | one row per person per day, across everything they did |
 | `->log()` | timeline | one node per activity, no groups |
-| `->live()` | aggregated, active window | groups as they form |
-| `->summary()` | aggregated, collapsed | the best grouping of each burst. **The default** |
 
 Here is one week of activity across the apps, read three ways. Each feed below
 uses the same recorded facts. Groups expand to reveal their members; day
@@ -55,7 +56,8 @@ headings keep activity on different days separate. In an application, follow
 
 ### Live
 
-Live folds one person's repeated action while other people remain separate.
+Live folds one person's repeated action, and several people doing the same
+thing at one place. It is the default, so `->live()` can be left out.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -72,7 +74,16 @@ Storyfeed::feed()
 
 ### Summary
 
-Summary also folds several people doing the same thing at one place.
+::: tip Proposal
+This is the Summary proposed for the next release. Until then, `summary()`
+reads like Live.
+:::
+
+Summary is a digest: one row per person per day, across verbs. A row names
+the person once, then what they did, one phrase per verb: "placed 3 orders,
+asked about a product and paid". After three phrases, the rest are counted.
+Every activity is behind "Show all". People whose whole day is one identical
+thing share a row. An activity with no actor keeps its own row.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -86,6 +97,31 @@ Storyfeed::feed()
 ```
 
 <FeedExample :items="summary" days />
+
+#### Choosing the Period
+
+`summary()` reads one row per person per day. Pass a `Period` for a longer
+digest:
+
+```php memo="A controller, or wherever the feed is read"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Grouping\Period;
+
+Storyfeed::feed()->summary(Period::Week)->get();
+```
+
+<FeedExample :items="weekly" />
+
+| Period | One Row per Person per |
+|---|---|
+| `Period::Hour` | calendar hour |
+| `Period::Day` | calendar day. **The default** |
+| `Period::Week` | ISO week, starting Monday |
+| `Period::Month` | calendar month |
+
+A string works too: `->summary('week')`. Periods are calendar periods in
+`app.timezone`, never sliding windows. For "the last hour", filter the read:
+`->query(fn ($q) => $q->where('published_at', '>=', now()->subHour()))`.
 
 ### Log
 

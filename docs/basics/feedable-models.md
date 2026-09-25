@@ -1,13 +1,13 @@
 # Feedable Models
 
 <script setup>
-import { scene, role, summaryOf } from '../.vitepress/theme/world'
+import { scene, role, liveOf } from '../.vitepress/theme/world'
 
 // The same recorded fact, with and without a URL supplied by the model.
 const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
 const withLink = [scene.order]
 const withImage = [scene.basics.activityContent.product]
-const scoped = summaryOf(scene.basics.namedFeeds.shop)
+const scoped = liveOf(scene.basics.namedFeeds.shop)
 </script>
 
 ## Introduction

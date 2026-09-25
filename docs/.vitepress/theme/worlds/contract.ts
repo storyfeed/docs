@@ -17,6 +17,11 @@ export type VerbWording = {
   repeat?: string
   actors?: string
   targets?: string
+  /**
+   * A Summary phrase: the headline from the verb on, with no actor, as
+   * `singular|plural` (`'got :object|got :count things'`).
+   */
+  summary?: string
 }
 
 /** One dated activity in a pack. */

@@ -28,10 +28,10 @@ Story::verb('place')
 ```
 
 <script setup>
-import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, liveOf } from '../.vitepress/theme/world'
 const one = scene.cookbook.grouped.repeat[0]
 const [burst] = liveOf(scene.cookbook.grouped.repeat)
-const [crowd] = summaryOf(scene.cookbook.grouped.actors)
+const [crowd] = liveOf(scene.cookbook.grouped.actors)
 </script>
 
 ## Publishing and Reading a Group
@@ -101,7 +101,7 @@ They share a customer, a shop and a day, so `live()` groups them under the
 <FeedExample :items="[burst]" />
 
 A headline doesn't make a group form. The group of three customers below forms
-only when the feed is read with `summary()`, and only once at least three
+only when the feed is read with `live()`, and only once at least three
 different customers have placed the shared order. See [Aggregation](/deeper/aggregation).
 
 *three customers, one shared order, three requests, the same shop*

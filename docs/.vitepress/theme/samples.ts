@@ -194,7 +194,7 @@ export function group(over: Record<string, any>) {
   const pins: Record<string, string[]> = {
     repeat: ['actor', 'target'], actors: ['target'], targets: ['actor'],
     object: ['actor', 'object'], composite: ['actor', 'target', 'context'],
-    scene: ['context'],
+    scene: ['context'], summary: ['actor'],
   }
   for (const role of roles) {
     const key = `${role}s`
@@ -206,6 +206,8 @@ export function group(over: Record<string, any>) {
     kind: 'group',
     id: over.id,
     axis: over.axis,
+    // A summary row adds its period and its phrases, one per verb.
+    ...(over.phrases ? { period: over.period ?? 'day' } : {}),
     count: over.count,
     verb: over.verb,
     published_at: over.published_at,
@@ -217,6 +219,7 @@ export function group(over: Record<string, any>) {
     ...singulars,
     sample,
     distinct,
+    ...(over.phrases ? { phrases: over.phrases } : {}),
     children: over.children ?? [],
     children_truncated: over.children_truncated ?? over.count > (over.children?.length ?? 0),
     ...groupTombstoneFacts(over, sample, distinct),

@@ -43,11 +43,11 @@ Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 | `scene.order` | The customer places an order with the shop: the standard example | verb `place`, actor `role.customer`, target `role.shop` |
 | `scene.question` | The customer asks about a product | verb `ask`, a note as object, target `role.product` |
 | `scene.otherApps.{task, code, billing, signature, support, team}` | One row from each kind of app | verbs `complete`, `merge`, `pay`, `sign`, `assign`, `join` |
-| `scene.busyPlace` | Three or more people doing one thing at one place on one day | Summary folds them into one group; Live does not |
-| `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run, and only those |
+| `scene.busyPlace` | Three or more people doing one thing at one place on one day | Live folds them into one `actors` group |
+| `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run into a `repeat` group |
 | `scene.distant` | One row from long ago | 30 days or more before now |
 | `scene.cameo` | Jasper's rows | flagged `cameo` |
-| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live shows 10–14 rows over a few days with 3+ expanders; 6+ kinds of activity; Summary < Live < Log |
+| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live shows 10–14 rows over a few days with 3+ expanders; 6+ kinds of activity; Summary < Live < Log; Summary is one row per person per day |
 
 The cookbook also requires `scene.cookbook`: `actorless` (anonymous placement,
 service payment, actorless expiry), `transitions` (confirmation and a
@@ -58,7 +58,9 @@ software illustrations: a pack marks invented transactions as uncertain and
 cites its software premise, without claiming they happened on screen.
 
 `everything()` returns every row published by now, for the long feeds later
-in the docs. `liveOf`, `summaryOf` and `logOf` fold any list of rows.
+in the docs. `liveOf`, `summaryOf` and `logOf` fold any list of rows: Live by the
+axes, Summary as the digest (one row per person per day, a shared row for
+people whose whole day is one identical thing, actorless rows alone).
 
 **A page that needs a scene the contract lacks adds it to the contract** (a
 key in `SceneIds`, a line in `worldOf`, a check in `scripts/world.test.mjs`)
@@ -78,7 +80,10 @@ and supplies it in every pack. It never reaches into one pack.
    - `sources`: where each fact comes from. Every row's `src` must be a key.
      Mark anything unsettled with `uncertain`.
    - `verbs`: the pack's own verbs, and its own wording for the engine's
-     (`BASE_VERBS` in world.ts). Every row's verb needs wording.
+     (`BASE_VERBS` in world.ts). Every row's verb needs wording. `summary`
+     is the verb's Summary phrase, from the verb on, as `singular|plural`:
+     `'got :object|got :count things'`. Without it, a phrase reads as its
+     label (`get ×2`).
    - `roles` and `scenes`: see the tables above. Scenes name row ids.
 3. Register it in `worlds/index.ts`.
 4. Run `npm run test:world`. It checks every registered pack against the

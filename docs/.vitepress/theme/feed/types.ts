@@ -72,7 +72,6 @@ export interface FeedThread {
 
 interface BaseNode {
     id: string;
-    verb: string;
     published_at: string;
     headline_template: string | null;
     /** Pre-rendered fallback for closure-based grammar. */
@@ -94,6 +93,7 @@ interface BaseNode {
 
 export interface ActivityNode extends BaseNode {
     kind: 'activity';
+    verb: string;
     /**
      * The verb's own reading once `redundant` is true (additive): the app's
      * `->missingHeadline()`, as a template or pre-rendered. Null otherwise,
@@ -113,6 +113,12 @@ export interface ActivityNode extends BaseNode {
 export interface GroupNode extends BaseNode {
     kind: 'group';
     axis: string;
+    /** Null when the members span more than one verb (a summary row). */
+    verb: string | null;
+    /** A summary row's calendar period: `hour`, `day`, `week` or `month`. */
+    period?: string;
+    /** A summary row's members by verb, in the order they first happened. */
+    phrases?: FeedPhrase[];
     /**
      * Supplied ONLY where the axis pins that role — one sampled entity, one distinct
      * value. Absent everywhere else on purpose: an unpinned role has no single
@@ -132,6 +138,20 @@ export interface GroupNode extends BaseNode {
     distinct: Partial<Record<FeedRole, number>>;
     /** How many of the distinct entities per role are tombstones. */
     distinct_tombstoned?: Partial<Record<FeedRole, number>>;
+}
+
+/**
+ * One verb's share of a summary row. Its template starts at the verb, with
+ * no actor: the row names the actor once.
+ */
+export interface FeedPhrase {
+    verb: string;
+    count: number;
+    headline_template: string | null;
+    headline?: string | null;
+    glyph: string | null;
+    sample: Partial<Record<FeedRole, FeedEntity[]>>;
+    distinct: Partial<Record<FeedRole, number>>;
 }
 
 export type FeedNode = ActivityNode | GroupNode;
