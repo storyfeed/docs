@@ -133,6 +133,9 @@ what it was done to, and the **target** is what it was aimed at.
 > with **{{ where.kitchen.label }}** *(target)*
 
 **{{ who.regular.label }}** is the party that initiated the **placing** of **{{ orders.first.label }}**, with **{{ where.kitchen.label }}**.
+
+### Different Ways to Render the Same Activity
+
 The summary headline of the activity may take different forms, but the underlying fact is always the same.
 
 **{{ who.regular.label }}** *(actor)* **sent** *(verb)* **{{ orders.first.label }}** *(object)* to **{{ where.kitchen.label }}** *(target)*
