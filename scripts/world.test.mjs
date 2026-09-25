@@ -20,7 +20,7 @@ registerHooks({
   },
 })
 
-const { worldOf, BASE_VERBS } = await import('../docs/.vitepress/theme/world.ts')
+const { worldOf, BASE_VERBS, liveOf, summaryOf } = await import('../docs/.vitepress/theme/world.ts')
 const { PACKS } = await import('../docs/.vitepress/theme/worlds/index.ts')
 const { APP_KINDS } = await import('../docs/.vitepress/theme/worlds/contract.ts')
 
@@ -44,6 +44,18 @@ for (const [name, pack] of Object.entries(PACKS)) {
       assert.ok(r.src in pack.sources, `${r.id}: source "${r.src}"`)
     }
     for (const r of pack.rows.filter((r) => r.actor?.label === 'Jasper Tey')) assert.equal(r.cameo, true, `${r.id} is Jasper's`)
+  })
+
+  test(`${name}: every group headline names in the singular only what its axis pins`, () => {
+    // StoryfeedManager::defaultAxes(); core refuses anything else (StoryMisconfigured::unpinnedToken).
+    const pins = { repeat: ['actor', 'target'], actors: ['target'], targets: ['actor'], object: ['actor', 'object'] }
+    for (const [verb, wording] of Object.entries(verbs)) {
+      for (const [axis, pinned] of Object.entries(pins)) {
+        for (const [, role] of (wording[axis] ?? '').matchAll(/:(actor|object|target|context)\b/g)) {
+          assert.ok(pinned.includes(role), `${verb}.${axis}: :${role} is not pinned on ${axis}`)
+        }
+      }
+    }
   })
 
   test(`${name}: every role is an entity`, () => {
@@ -275,11 +287,11 @@ for (const [name, pack] of Object.entries(PACKS)) {
     const live = world.liveOf(glance)
     const summary = world.summaryOf(glance)
 
-    // Live stays glanceable: it folds every repeat, and the busy place into one crowd.
+    // Live stays glanceable: it folds every run, and the busy place into one crowd.
     assert.ok(live.length >= 10 && live.length <= 14, `Live shows ${live.length} rows`)
     assert.ok(scene.repeats.length >= 3, 'several expanders')
     const byFirst = (a, b) => a[0].localeCompare(b[0])
-    assert.deepEqual(groups(live).filter((g) => g.axis === 'repeat').map((g) => ids(g.children)).sort(byFirst),
+    assert.deepEqual(groups(live).filter((g) => ['repeat', 'object'].includes(g.axis)).map((g) => ids(g.children)).sort(byFirst),
       scene.repeats.map((run) => ids(run)).sort(byFirst))
     const busy = groups(live).filter((g) => g.axis === 'actors')
     assert.deepEqual(busy.map((g) => ids(g.children)), [ids(scene.busyPlace)])
@@ -450,4 +462,79 @@ test('guide and basics examples use the world without legacy padding', () => {
     if (/\$kitchen|\bKitchen\b/.test(text)) leaks.push(`${relative(docs, file)}: themed code names`)
   }
   assert.deepEqual(leaks, [])
+})
+
+// ── Core's grouping, rule by rule ───────────────────────────────────────────
+// CurateCluster and FeedBuilder::crowds(), on rows small enough to count.
+
+const who = (id) => ({ type: 'user', id, label: id })
+const it = (type, id) => ({ type, id, label: `${type} ${id}` })
+let serial = 0
+const act = (verb, actor, object, target, at = '2026-09-25T12:00') =>
+  ({ kind: 'activity', id: `r${String(++serial).padStart(3, '0')}`, verb, glyph: null, headline_template: `:actor ${verb}`,
+    published_at: `${at}:00.000000Z`, actor, object, target })
+const WORDS = { go: { glyph: 'x', headline: ':actor went', repeat: 'r', actors: 'a', targets: 't', object: 'o', summary: 'went|went :count times' } }
+const axes = (nodes) => nodes.map((n) => n.kind === 'group' ? `${n.axis}:${n.count}` : 'activity').sort()
+const fair = it('place', 'fair'), arcade = it('place', 'arcade'), mall = it('place', 'mall')
+
+test('actors: three people at one target, whatever each acted on', () => {
+  const rows = ['a', 'b', 'c'].map((p, i) => act('go', who(p), it('ticket', i), fair))
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors:3'])
+  assert.deepEqual(axes(liveOf(rows.slice(0, 2), WORDS)), ['activity', 'activity'], 'two people are not a crowd')
+})
+
+test('actors needs a target, and counts only people', () => {
+  const untargeted = ['a', 'b', 'c'].map((p) => act('go', who(p), null, null))
+  assert.deepEqual(axes(liveOf(untargeted, WORDS)), ['activity', 'activity', 'activity'])
+  const two = [act('go', who('a'), null, fair), act('go', who('b'), null, fair), act('go', null, null, fair)]
+  assert.deepEqual(axes(liveOf(two, WORDS)), ['activity', 'activity', 'activity'], 'anonymous is not a third person')
+})
+
+test('targets: one person at two targets or more, three times or more', () => {
+  const a = who('a')
+  assert.deepEqual(axes(liveOf([act('go', a, null, fair), act('go', a, null, arcade)], WORDS)), ['activity', 'activity'])
+  assert.deepEqual(axes(liveOf([act('go', a, null, fair), act('go', a, null, arcade), act('go', a, null, arcade)], WORDS)), ['targets:3'])
+})
+
+test('object: one person, one object, twice, before repeat', () => {
+  const a = who('a'), game = it('game', 'galaga')
+  assert.deepEqual(axes(liveOf([act('go', a, game, fair), act('go', a, game, fair)], WORDS)), ['object:2'])
+  assert.deepEqual(axes(liveOf([act('go', a, it('game', 1), fair), act('go', a, it('game', 2), fair)], WORDS)), ['repeat:2'])
+})
+
+test('repeat keys on the object type, and folds the anonymous too', () => {
+  const a = who('a')
+  assert.deepEqual(axes(liveOf([act('go', a, it('game', 1), fair), act('go', a, it('prize', 2), fair)], WORDS)), ['activity', 'activity'])
+  assert.deepEqual(axes(liveOf([act('go', null, it('game', 1), fair), act('go', null, it('game', 2), fair)], WORDS)), ['repeat:2'])
+})
+
+test('a cluster counts every member, whichever axis each one won', () => {
+  const [a, b, c] = ['a', 'b', 'c'].map(who)
+  // a's check-in at the fair wins actors; her targets cluster still counts it.
+  const rows = [act('go', a, null, fair), act('go', b, null, fair), act('go', c, null, fair),
+    act('go', a, null, arcade), act('go', a, null, mall)]
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors:3', 'targets:2'])
+})
+
+test('no group spans a day, and wording never decides a group', () => {
+  const a = who('a')
+  const days = [act('go', a, null, fair, '2026-09-24T23:59'), act('go', a, null, fair, '2026-09-25T00:01')]
+  assert.deepEqual(axes(liveOf(days, WORDS)), ['activity', 'activity'])
+  const [group] = liveOf([act('go', a, null, fair), act('go', a, null, fair)], { go: { glyph: 'x', headline: ':actor went' } })
+  assert.equal(group.axis, 'repeat')
+  assert.equal(group.headline_template, null)
+})
+
+test('at one instant a group reads before an activity', () => {
+  const a = who('a')
+  const rows = [act('go', who('z'), null, arcade), act('go', a, null, fair), act('go', a, null, fair)]
+  assert.deepEqual(liveOf(rows, WORDS).map((n) => n.kind), ['group', 'activity'])
+})
+
+test('a summary crowd is one activity each, the same verb at the same target, whatever the object', () => {
+  const rows = [act('go', who('a'), it('ticket', 1), fair), act('go', who('b'), it('ticket', 2), fair), act('go', who('c'), null, arcade)]
+  const digest = summaryOf(rows, 'day', WORDS)
+  assert.deepEqual(axes(digest), ['activity', 'summary:2'])
+  const twice = [act('go', who('a'), null, fair), act('go', who('b'), null, fair), act('go', who('b'), null, fair)]
+  assert.deepEqual(axes(summaryOf(twice, 'day', WORDS)), ['activity', 'summary:2'], 'twice keeps a row of their own')
 })
