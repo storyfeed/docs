@@ -166,7 +166,7 @@ class CancelUnpaidOrders extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('System', function () {
+        Storyfeed::actor('System', function () {
             Order::whereNull('paid_at')
                 ->where('created_at', '<', now()->subDay())
                 ->each(function (Order $order) {
@@ -196,7 +196,7 @@ class CancelUnpaidOrders extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('System', function () {
+        Storyfeed::actor('System', function () {
             Order::whereNull('paid_at')
                 ->where('created_at', '<', now()->subDay())
                 ->each(function (Order $order) {
@@ -218,7 +218,7 @@ still wins.
 
 ## Declaring Parties
 
-A name given to `Storyfeed::as()`, or to a verb's own `->actor()`, may come
+A name given to `Storyfeed::actor()`, or to a verb's own `->actor()`, may come
 from outside your code. Declare the names an actor may take:
 
 ```php

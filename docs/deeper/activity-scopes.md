@@ -1,7 +1,7 @@
 # Activity Scopes
 
-`Storyfeed::context()` supplies the context for activities published inside a callback.
-HTTP middleware can supply that context or an actor for a request.
+`Storyfeed::actor()` and `Storyfeed::context()` supply their roles inside a callback.
+HTTP middleware can supply either role for a request.
 
 <script setup>
 import { activity, scenes, where } from '../.vitepress/theme/samples'
@@ -120,6 +120,47 @@ Jobs dispatched inside the scope carry its context to the worker. The context
 is resolved from its identity there. The worker restores its previous scope
 after the job.
 
+## Sharing an Actor Within a Callback
+
+::: code-group
+```php [Fluent Syntax]
+// app/Http/Controllers/PlaceOrderController.php, __invoke()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::actor($request->user(), function () use ($order) {
+    Storyfeed::activity()
+        ->action('place', $order)
+        ->context($order->kitchen)
+        ->publish();
+});
+```
+
+```php [Named Arguments]
+// app/Http/Controllers/PlaceOrderController.php, __invoke()
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::actor($request->user(), function () use ($order) {
+    Storyfeed::record(
+        verb: 'place',
+        object: $order,
+        context: $order->kitchen,
+    );
+});
+```
+:::
+
+<FeedExample :items="[scoped]" expanded />
+
+`actor()` supplies the actor as `context()` supplies the context. Both accept
+an Eloquent model or a declared party name and return the callback's result.
+An explicit actor or explicit anonymity wins over the actor scope. Nested
+callbacks use the innermost actor and restore the previous scope when they
+finish, including when they throw.
+
+Without a callback, `Storyfeed::actor($user)` returns an activity builder with
+that actor set. Jobs dispatched inside the callback carry its actor to the
+worker; see [Queued Publishing](/deeper/queues#scoped-actors).
+
 ## Setting Context From a Route
 
 ```php
@@ -204,10 +245,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/kitchens/{kitchen}/orders/{order}/place', PlaceOrderController::class)
     ->scopeBindings()
-    ->middleware(['auth', 'storyfeed.context:kitchen', 'storyfeed.as:System']);
+    ->middleware(['auth', 'storyfeed.context:kitchen', 'storyfeed.actor:System']);
 ```
 
-`storyfeed.as:System` wraps the request in `Storyfeed::as('System', ...)`.
+`storyfeed.actor:System` wraps the request in `Storyfeed::actor('System', ...)`.
 Declare that [party](/deeper/parties#declaring-parties) in your service provider.
 The explicit `->by($request->user())` in the controller still wins; activities
 without an explicit actor inherit `System`.
@@ -217,7 +258,7 @@ without an explicit actor inherit `System`.
 | Priority | Actor | Context |
 |---|---|---|
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
-| Scope | `Storyfeed::as()` or `storyfeed.as:{Party}` | `Storyfeed::context()` or `storyfeed.context:{param}` |
+| Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}` | `Storyfeed::context()` or `storyfeed.context:{param}` |
 | Story middleware | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
 | Defaults | the verb's actor; otherwise a custom resolver (or authenticated user when no resolver is set), then the fallback party | none |
 

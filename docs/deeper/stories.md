@@ -269,7 +269,7 @@ For a request without the signature header:
 
 <FeedExample :items="[paid]" />
 
-The verb's actor applies when the call site names none and no `Storyfeed::as()`
+The verb's actor applies when the call site names none and no `Storyfeed::actor()`
 scope is open. A method runs at compilation with an empty request; only its
 actor may vary when it runs again at a publish.
 

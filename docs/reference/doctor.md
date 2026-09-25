@@ -129,7 +129,7 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 |---|---|---|
 | `parties.ignored` | warning | an actor named a party that [`Storyfeed::parties()`](/deeper/parties#declaring-parties) does not declare, so it was ignored and the activity kept the actor it would otherwise have had. Declare the name if it is real |
 | `parties.undeclared_actor` | warning | a verb's own `->actor()` names a party the list does not declare: it throws in `local` and `testing` and is ignored elsewhere |
-| `parties.undeclared_list` | info | parties are in use and no list is declared, so any name given to `Storyfeed::as()` or a verb's `->actor()` becomes one |
+| `parties.undeclared_list` | info | parties are in use and no list is declared, so any name given to `Storyfeed::actor()` or a verb's `->actor()` becomes one |
 | `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
 | `parties.used` | info | a party, and how many activities it has |
 

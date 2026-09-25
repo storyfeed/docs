@@ -254,7 +254,7 @@ It applies only when nothing else names the actor:
 |---|---|---|
 | an explicit actor | `->by($user)`, `->by('Nightly Import')` | ignored |
 | explicit anonymity | `->anonymously()`, `->by(null)` | ignored |
-| a `Storyfeed::as()` actor | around the dispatch, or inside the job | ignored |
+| a `Storyfeed::actor()` actor | around the dispatch, or inside the job | ignored |
 | the verb's own actor | `->actor('Stripe')` in its definition | ignored |
 | a registered resolver | `resolveActorUsing()`, `actor_resolver` | ignored, even when it returns null |
 | nothing above | | applied, ahead of `parties.fallback` |
@@ -276,7 +276,7 @@ ConfirmPayment::dispatch($order);
 
 Every such method runs at the first dispatch in a request, once per request,
 however many jobs follow. None runs when no job is dispatched, or inside
-`Storyfeed::as()`, which outranks them. A method that chose no actor chooses
+`Storyfeed::actor()`, which outranks them. A method that chose no actor chooses
 none on the worker either. An explicit actor in the job still wins, and an
 anonymous publish stays anonymous. A method that throws at the dispatch never
 fails it: the job publishes with the actor it would otherwise have had, and
@@ -284,7 +284,7 @@ the doctor names the method (`actions.carry_failed`).
 
 ### Scoped Actors
 
-A job dispatched inside `Storyfeed::as()` runs as that actor on the worker:
+A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 
 ```php
 <?php
@@ -301,7 +301,7 @@ class SyncMenus extends Command
 
     public function handle(): void
     {
-        Storyfeed::as('Nightly Import', fn () => SyncMenu::dispatch());
+        Storyfeed::actor('Nightly Import', fn () => SyncMenu::dispatch());
     }
 }
 ```
@@ -320,7 +320,7 @@ With no verb actor, custom resolver or other actor-setting middleware:
 | The Job Says | Actor Recorded | Batched |
 |---|---|---|
 | `->by('Nightly Import')` | the party *Nightly Import* | yes |
-| nothing, dispatched inside `Storyfeed::as('Nightly Import', …)` | the party *Nightly Import* | yes |
+| nothing, dispatched inside `Storyfeed::actor('Nightly Import', …)` | the party *Nightly Import* | yes |
 | nothing, with `'parties' => ['fallback' => 'Nightly Import']` | the party *Nightly Import* | yes |
 | `->anonymously()`, whatever the fallback | none | no |
 | nothing, no fallback | none | no |

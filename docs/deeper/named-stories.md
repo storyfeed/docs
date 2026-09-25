@@ -76,7 +76,7 @@ A declaration bound to a Story constructed with data still requires
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
-Story::name('order.')->group(function () {
+Story::as('billing.')->group(function () {
     Story::for(Order::class)->verb('place')
         ->name('place')
         ->headline(':actor placed :object with :target')
@@ -87,7 +87,10 @@ Story::name('order.')->group(function () {
 <FeedExample :items="[placed]" />
 
 This is an alternative to the preceding declaration. The prefix is appended
-exactly as written, including the dot, producing `order.place`.
+exactly as written, including the dot, producing `billing.place`.
+
+`Story::name()` is an alias for `Story::as()`, as `Route::as()` / `Route::name()`
+are in Laravel. An individual declaration keeps `->name()` to set its name.
 
 ## Resource Story Names
 

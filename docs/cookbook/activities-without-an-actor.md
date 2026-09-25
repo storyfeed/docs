@@ -255,7 +255,7 @@ class StripeWebhookController extends Controller
 
 <FeedExample :items="[paid]" />
 
-To name the party once for a whole job, wrap it in `Storyfeed::as('System', …)`.
+To name the party once for a whole job, wrap it in `Storyfeed::actor('System', …)`.
 See [Scoped Attribution](/deeper/parties#scoped-attribution).
 
 ## Recording Without an Actor
@@ -292,7 +292,7 @@ class ExpireOrders extends Command
         foreach ($unpaid as $order) {
             $order->update(['expired_at' => now()]);
 
-            Storyfeed::anonymous() // no actor, even inside Storyfeed::as()
+            Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
                 ->action('expire', $order)
                 ->to($order->kitchen)
                 ->publish();
