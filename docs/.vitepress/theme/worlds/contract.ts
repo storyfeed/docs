@@ -17,6 +17,8 @@ export type VerbWording = {
   repeat?: string
   actors?: string
   targets?: string
+  /** One person acting on one object again: core's `object` axis. */
+  object?: string
   /**
    * A Summary phrase: the headline from the verb on, with no actor, as
    * `singular|plural` (`'got :object|got :count things'`).
@@ -106,7 +108,7 @@ export type SceneIds = {
   question: string
   /** One row from each kind of app, with the verb APP_KINDS names. */
   otherApps: Record<AppKind, string>
-  /** Three or more people doing one thing at one place on one day: Summary folds them, Live does not. */
+  /** Three or more people doing one thing at one place on one day: Live folds them into one `actors` group. */
   busyPlace: string[]
   /** Runs of one person doing one thing at one target twice or more on one day: Live folds each. */
   repeats: string[][]

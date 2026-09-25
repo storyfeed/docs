@@ -250,7 +250,7 @@ const VERBS: Record<string, VerbWording> = {
   expire: { glyph: 'circle-x', headline: ':object expired at :target' },
   reply: { glyph: 'message-circle', headline: ':actor replied about :object', summary: 'replied about :object|replied :count times' },
   // The billing app records both orders and invoices.
-  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor processed :count payments', summary: 'marked :object paid|processed :count payments' },
+  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor processed :count payments', object: ':actor marked :object paid :count times', summary: 'marked :object paid|processed :count payments' },
   note:     { glyph: 'message-circle', headline: ':actor sent a note about :object', summary: 'sent a note about :object|sent :count notes' },
   post:     { glyph: 'message-circle', headline: ':actor sent a note about :target', summary: 'sent a note about :target|sent :count notes about :targets' },
   ready:    { glyph: 'utensils', headline: ':actor marked :object ready', summary: 'marked :object ready|marked :count orders ready' },
@@ -259,25 +259,25 @@ const VERBS: Record<string, VerbWording> = {
   call:     { glyph: 'radio', headline: ':actor radioed :target', repeat: ':actor radioed :target :count times', summary: 'radioed :target|radioed :targets :count times' },
   file:     { glyph: 'newspaper', headline: ':actor filed :object with :target', summary: 'filed :object with :target|filed :count things with :targets' },
   reject:   { glyph: 'circle-x', headline: ':actor turned down :object', summary: 'turned down :object|turned down :count things' },
-  dismiss:  { glyph: 'circle-x', headline: ':actor let :target go from :object', actors: ':actors were let go from :object', summary: 'let :target go from :object|let :count people go' },
+  dismiss:  { glyph: 'circle-x', headline: ':actor let :target go from :object', actors: ':actors let :target go from :objects', object: ':actor let :count people go from :object', summary: 'let :target go from :object|let :count people go' },
   check_in: { glyph: 'ferris-wheel', headline: ':actor checked in at :target', repeat: ':actor checked in at :target :count times',
               actors: ':actors checked in at :target', summary: 'checked in at :target|checked in :count times at :targets' },
   win:      { glyph: 'ferris-wheel', headline: ':actor won :object at :target', summary: 'won :object|won :count prizes' },
   get:      { glyph: 'ferris-wheel', headline: ':actor got :object at :target', summary: 'got :object|got :count things' },
   ride:     { glyph: 'ferris-wheel', headline: ':actor rode :object at :target', repeat: ':actor went on :count rides at :target',
-              actors: ':actors rode :object at :target', summary: 'rode :object|went on :count rides' },
+              actors: ':actors rode :objects at :target', summary: 'rode :object|went on :count rides' },
   buy:      { glyph: 'shopping-bag', headline: ':actor bought :object at :target', repeat: ':actor bought :count things at :target', summary: 'bought :object at :target|bought :count things at :targets' },
   eat:      { glyph: 'utensils', headline: ':actor had :object at :target', repeat: ':actor had :count things at :target',
-              actors: ':actors had :object at :target', summary: 'had :object at :target|had :count things at :targets' },
+              actors: ':actors had :objects at :target', summary: 'had :object at :target|had :count things at :targets' },
   drink:    { glyph: 'utensils', headline: ':actor had :object at :target', summary: 'had :object at :target|had :count drinks at :targets' },
-  watch:    { glyph: 'film', headline: ':actor watched :object at :target', actors: ':actors watched :object at :target', summary: 'watched :object at :target|watched :count films at :targets' },
+  watch:    { glyph: 'film', headline: ':actor watched :object at :target', actors: ':actors watched :objects at :target', summary: 'watched :object at :target|watched :count films at :targets' },
   score:    { glyph: 'gamepad-2', headline: ':actor set a new high score on :object at :target', summary: 'set a new high score on :object|set :count high scores' },
   play:     { glyph: 'gamepad-2', headline: ':actor played :object at :target', repeat: ':actor played :count games at :target',
-              actors: ':actors played :object at :target', summary: 'played :object|played :count games' },
+              actors: ':actors played :objects at :target', object: ':actor played :object :count times', summary: 'played :object|played :count games' },
   book:     { glyph: 'utensils', headline: ':actor booked a table at :target', summary: 'booked a table at :target|booked :count tables at :targets' },
   hang:     { glyph: 'eye', headline: ':actor hung :object', summary: 'hung :object|hung :count things' },
   leave:    { glyph: 'utensils', headline: ':actor left :object for :target', summary: 'left :object for :target|left :count things for :targets' },
-  attend:   { glyph: 'user-plus', headline: ':actor went to :object', actors: ':actors went to :object', summary: 'went to :object|went to :count events' },
+  attend:   { glyph: 'user-plus', headline: ':actor went to :object', actors: ':actors went to :objects', summary: 'went to :object|went to :count events' },
   wave:     { glyph: 'ferris-wheel', headline: ':actor waved at :target', summary: 'waved at :target|waved :count times' },
 }
 
@@ -571,8 +571,8 @@ const deeperRows: Row[] = [
     deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),
 ]
 ROWS.push(...deeperRows)
-VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', summary: 'marked :object ready|marked :count orders ready' }
-VERBS.save = { glyph: 'save', headline: ':actor saved :object', summary: 'saved :object|saved :objects :count times' }
+VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
+VERBS.save = { glyph: 'save', headline: ':actor saved :object', object: ':actor saved :object :count times', summary: 'saved :object|saved :objects :count times' }
 VERBS.view = { glyph: 'eye', headline: ':actor viewed :object', repeat: ':actor viewed :count orders', summary: 'viewed :object|viewed :count orders' }
 
 export default {

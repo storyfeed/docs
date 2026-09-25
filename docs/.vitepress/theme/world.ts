@@ -53,11 +53,11 @@ export const WORLD_ANCHOR = env.VITE_WORLD_ANCHOR ? Date.parse(env.VITE_WORLD_AN
 export const BASE_VERBS: Record<string, VerbWording> = {
   place:    { glyph: 'shopping-bag', headline: ':actor placed :object with :target',
               repeat: ':actor placed :count orders with :target', actors: ':actors ordered from :target', summary: 'placed :object with :target|placed :count orders with :targets' },
-  confirm:  { glyph: 'circle-check', headline: ':actor confirmed :object', repeat: ':actor confirmed :count orders', summary: 'confirmed :object|confirmed :count orders' },
+  confirm:  { glyph: 'circle-check', headline: ':actor confirmed :object', repeat: ':actor confirmed :count orders', object: ':actor confirmed :object :count times', summary: 'confirmed :object|confirmed :count orders' },
   ask:      { glyph: 'message-circle', headline: ':actor asked about :target',
               repeat: ':actor asked about :target :count times', targets: ':actor asked about :targets', summary: 'asked about :target|asked about :targets' },
-  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor marked :count invoices paid', summary: 'marked :object paid|marked :count invoices paid' },
-  sign:     { glyph: 'file-pen', headline: ':actor signed :object', actors: ':actors signed :object', summary: 'signed :object|signed :count documents' },
+  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor marked :count invoices paid', object: ':actor marked :object paid :count times', summary: 'marked :object paid|marked :count invoices paid' },
+  sign:     { glyph: 'file-pen', headline: ':actor signed :object', actors: ':actors signed :objects', summary: 'signed :object|signed :count documents' },
   assign:   { glyph: 'ticket', headline: ':actor assigned :object to :target', summary: 'assigned :object to :target|assigned :count tickets' },
   open:     { glyph: 'ticket', headline: ':actor opened :object', repeat: ':actor opened :count tickets', summary: 'opened :object|opened :count tickets' },
   resolve:  { glyph: 'circle-check', headline: ':actor resolved :object', summary: 'resolved :object|resolved :count tickets' },
@@ -66,7 +66,7 @@ export const BASE_VERBS: Record<string, VerbWording> = {
   merge:    { glyph: 'git-merge', headline: ':actor merged :object into :target',
               repeat: ':actor merged :count pull requests into :target', summary: 'merged :object into :target|merged :count pull requests into :targets' },
   approve:  { glyph: 'circle-check', headline: ':actor approved :object', summary: 'approved :object|approved :count pull requests' },
-  star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :object', summary: 'starred :object|starred :count things' },
+  star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :objects', summary: 'starred :object|starred :count things' },
   complete: { glyph: 'square-check', headline: ':actor completed :object on :target',
               repeat: ':actor completed :count tasks on :target', summary: 'completed :object on :target|completed :count tasks on :targets' },
   upload:   { glyph: 'image', headline: ':actor uploaded :object to :target', repeat: ':actor uploaded :count photos to :target', summary: 'uploaded :object to :target|uploaded :count photos to :targets' },
@@ -86,17 +86,23 @@ const dayOf = (r: any) => r.published_at.slice(0, 10)
 const bucket = (rows: any[], key: (r: any) => string) =>
   rows.reduce((map, r) => map.set(key(r), [...(map.get(key(r)) ?? []), r]), new Map<string, any[]>())
 
-const fold = (verbs: Record<string, VerbWording>, axis: 'repeat' | 'actors' | 'targets', members: any[]) => {
+type Axis = 'actors' | 'targets' | 'object' | 'repeat'
+
+/** Core's `grouping.children_limit`: the members one group node carries. */
+const CHILDREN_LIMIT = 25
+
+const fold = (verbs: Record<string, VerbWording>, axis: Axis, members: any[]) => {
   const first = members[0]
   return group({
     id: `${axis}-${first.id}`, verb: first.verb, axis, count: members.length, glyph: first.glyph,
-    published_at: first.published_at, headline_template: verbs[first.verb][axis],
+    // No aggregate grammar is a null template, never a reason not to group.
+    published_at: first.published_at, headline_template: verbs[first.verb]?.[axis] ?? null,
     // A read names a sample and counts the rest, as the payload does.
     actors: uniq(members.map((m) => m.actor)).slice(0, 3),
     objects: uniq(members.map((m) => m.object)).slice(0, 3),
     targets: uniq(members.map((m) => m.target)).slice(0, 3),
     // A group carries its members, as a real read does, so it expands.
-    children: members, children_truncated: false,
+    children: members.slice(0, CHILDREN_LIMIT), children_truncated: members.length > CHILDREN_LIMIT,
     distinct: {
       actors: uniq(members.map((m) => m.actor)).length,
       objects: uniq(members.map((m) => m.object)).length,
@@ -110,31 +116,53 @@ export function logOf(rows: any[]) {
   return newestFirst(rows)
 }
 
-const repeats = (rows: any[], verbs: Record<string, VerbWording>) =>
-  [...bucket(rows, (r) => `${dayOf(r)}|${idOf(r.actor)}|${r.verb}|${idOf(r.target)}`).values()]
-    .flatMap((members) => (members.length > 1 && verbs[members[0].verb]?.repeat ? [fold(verbs, 'repeat', newestFirst(members))] : members))
+/**
+ * Core's default axes (StoryfeedManager::defaultAxes()), in registration
+ * order, which is priority. A key is its recipe's fields, null when a
+ * required field (`!`) is missing and the axis does not apply.
+ *
+ *   actors   v:ta!:tid:d           eligible at 3+ distinct actors
+ *   targets  aa!:aid:v:d           eligible at 2+ distinct targets and 3+ members
+ *   object   aa:aid:v:oa!:oid!:d   eligible at 2+ members
+ *   repeat   aa:aid:v:oa:ta:tid:d  the fallback
+ *
+ * `repeat` carries the object's type and not its id: three orders are one
+ * repeat, an order and a question are not.
+ */
+const distinctOf = (members: any[], role: string) => uniq(members.map((m) => m[role])).length
+const AXES: { axis: Axis; key: (r: any) => string | null; eligible: (members: any[]) => boolean }[] = [
+  { axis: 'actors', key: (r) => (r.target ? `${r.verb}|${idOf(r.target)}|${dayOf(r)}` : null),
+    eligible: (members) => distinctOf(members, 'actor') >= 3 },
+  { axis: 'targets', key: (r) => (r.actor ? `${idOf(r.actor)}|${r.verb}|${dayOf(r)}` : null),
+    eligible: (members) => distinctOf(members, 'target') >= 2 && members.length >= 3 },
+  { axis: 'object', key: (r) => (r.object ? `${idOf(r.actor)}|${r.verb}|${idOf(r.object)}|${dayOf(r)}` : null),
+    eligible: (members) => members.length >= 2 },
+]
+const repeatKey = (r: any) => `${idOf(r.actor)}|${r.verb}|${r.object?.type ?? ''}|${idOf(r.target)}|${dayOf(r)}`
 
 /**
- * Live, today's feed: many people into one target (3 or more), one person
- * across targets (2 or more), then repeats (one person, one verb, one target,
- * one day).
+ * Live, today's feed, curated as core curates it (CurateCluster): each
+ * activity takes the first axis whose whole cluster is eligible, else
+ * `repeat`. A cluster counts every member, whichever axis each member won;
+ * a group is the members that won it, and a group of one is its activity.
  */
 export function liveOf(rows: any[], verbs = VERBS) {
-  let rest = rows
-  const out: any[] = []
-  for (const members of bucket(rest, (r) => `${dayOf(r)}|${r.verb}|${idOf(r.target)}|${idOf(r.object)}`).values()) {
-    if (verbs[members[0].verb]?.actors && uniq(members.map((m) => m.actor)).length >= 3) {
-      out.push(fold(verbs, 'actors', newestFirst(members)))
-      rest = rest.filter((r) => !members.includes(r))
-    }
-  }
-  for (const members of bucket(rest, (r) => `${dayOf(r)}|${idOf(r.actor)}|${r.verb}`).values()) {
-    if (verbs[members[0].verb]?.targets && uniq(members.map((m) => m.target)).length >= 2) {
-      out.push(fold(verbs, 'targets', newestFirst(members)))
-      rest = rest.filter((r) => !members.includes(r))
-    }
-  }
-  return newestFirst([...out, ...repeats(rest, verbs)])
+  const clusters = AXES.map(({ key }) => bucket(rows.filter((r) => key(r) !== null), (r) => key(r)!))
+  const winners = bucket(rows, (r) => {
+    const i = AXES.findIndex(({ key, eligible }, i) => key(r) !== null && eligible(clusters[i].get(key(r)!)!))
+    return i === -1 ? `repeat\u001f${repeatKey(r)}` : `${AXES[i].axis}\u001f${AXES[i].key(r)}`
+  })
+
+  const nodes = [...winners.entries()].map(([key, members]) => members.length === 1
+    ? { node: members[0], key: null }
+    : { node: fold(verbs, key.split('\u001f')[0] as Axis, newestFirst(members)), key })
+
+  // FeedBuilder::selectItems(): newest first; at one instant a group before
+  // an activity, groups by axis and key, activities by id, descending.
+  return nodes.sort((a, b) => b.node.published_at.localeCompare(a.node.published_at)
+    || (a.key === null ? 1 : 0) - (b.key === null ? 1 : 0)
+    || (a.key !== null ? a.key.localeCompare(b.key!) : String(b.node.id).localeCompare(String(a.node.id))))
+    .map(({ node }) => node)
 }
 
 /**
@@ -164,7 +192,10 @@ const samples = (members: any[]) => ({
  * them did it once.
  */
 const phrasesOf = (verbs: Record<string, VerbWording>, members: any[], each?: number) =>
-  [...bucket([...members].reverse(), (m) => m.verb).values()].map((own) => {
+  // Each verb where it first occurred, then by verb: FeedBuilder::summarySlices().
+  [...bucket([...members].reverse(), (m) => m.verb).values()]
+    .sort((a, b) => a[0].published_at.localeCompare(b[0].published_at) || a[0].verb.localeCompare(b[0].verb))
+    .map((own) => {
     const { actors, distinct, ...sample } = samples(own)
     return {
       verb: own[0].verb,
@@ -202,14 +233,17 @@ const digest = (verbs: Record<string, VerbWording>, period: Period, members: any
 
 /**
  * Summary, the digest: one row per person per day (or week), across verbs.
- * People whose whole period is one identical thing share a row. Activities
+ * People whose whole period is one activity, the same verb at the same
+ * target (or none), share a crowd row. Activities
  * with no actor stay on their own, and a row of one is that activity.
  */
 export function summaryOf(rows: any[], period: Period = 'day', verbs = VERBS) {
   const out: any[] = rows.filter((r) => !r.actor)
   const days = [...bucket(rows.filter((r) => r.actor), (r) => `${periodOf(r, period)}|${idOf(r.actor)}`).values()]
+  // FeedBuilder::crowds(): a period of ONE activity crowds with others of the
+  // same verb at the same target (or at none). The object is not asked.
   const one = (members: any[]) =>
-    members.length === 1 ? `${periodOf(members[0], period)}|${members[0].verb}|${idOf(members[0].object)}|${idOf(members[0].target)}|${members[0].headline_template}` : null
+    members.length === 1 ? `${periodOf(members[0], period)}|${members[0].verb}|${idOf(members[0].target)}` : null
   const crowds = bucket(days.filter(one), (members) => one(members)!)
 
   for (const members of days) {
@@ -290,7 +324,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     otherApps: Object.fromEntries(
       (Object.keys(APP_KINDS) as AppKind[]).map((kind) => [kind, one(s.otherApps[kind])]),
     ) as Record<AppKind, any>,
-    /** Three or more people at one place: Summary folds them. */
+    /** Three or more people at one place: Live folds them into one `actors` group. */
     busyPlace: many(s.busyPlace),
     /** Runs of one person doing one thing again: Live folds each. */
     repeats: s.repeats.map(many),

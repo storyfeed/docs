@@ -48,7 +48,7 @@ Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 | `scene.question` | The customer asks about a product | verb `ask`, a note as object, target `role.product` |
 | `scene.otherApps.{task, code, billing, signature, support, team}` | One row from each kind of app | verbs `complete`, `merge`, `pay`, `sign`, `assign`, `join` |
 | `scene.busyPlace` | Three or more people doing one thing at one place on one day | Live folds them into one `actors` group |
-| `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run into a `repeat` group |
+| `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run into one group: `repeat`, or `object` when it is one object again |
 | `scene.distant` | One row from long ago | 30 days or more before now |
 | `scene.cameo` | Jasper's rows | flagged `cameo` |
 | `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live shows 10–14 rows over a few days with 3+ expanders; 6+ kinds of activity; Summary < Live < Log; Summary is one row per person per day |
@@ -87,7 +87,12 @@ and supplies it in every pack. It never reaches into one pack.
      (`BASE_VERBS` in world.ts). Every row's verb needs wording. `summary`
      is the verb's Summary phrase, from the verb on, as `singular|plural`:
      `'got :object|got :count things'`. Without it, a phrase reads as its
-     label (`get ×2`).
+     label (`get ×2`). `repeat`, `actors`, `targets` and `object` are the
+     group headlines per axis, and name in the singular only what their
+     axis pins, as core requires: `repeat` the actor and target, `actors`
+     the target, `targets` the actor, `object` the actor and object. The
+     rest are plural (`:actors`, `:objects`). Grouping never waits on
+     wording: a group without one arrives unnamed and opens on its members.
    - `roles` and `scenes`: see the tables above. Scenes name row ids.
 3. Register it in `worlds/index.ts`.
 4. Run `npm run test:world`. It checks every registered pack against the

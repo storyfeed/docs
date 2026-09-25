@@ -6,18 +6,11 @@ Aggregation shows several related activities as one row: three orders from
 one customer read as one line, not three.
 
 <script setup>
-import { scene, logOf, liveOf, everything, group } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf, everything } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
 const repeat = liveOf(log)[0]
 const customers = logOf(scene.deeper.aggregation.customers)
-// The explicit actors axis permits different order objects; the general
-// live helper conservatively keeps different objects apart.
-const actors = group({ id: 'aggregation-customers', verb: 'place', axis: 'actors', count: customers.length,
-  glyph: customers[0].glyph, published_at: customers[0].published_at,
-  headline_template: ':actors ordered from :target',
-  actors: customers.map(row => row.actor).slice(0, 3),
-  objects: customers.map(row => row.object).slice(0, 3), targets: [customers[0].target],
-  distinct: { actors: customers.length, objects: customers.length, targets: 1 }, children: customers })
+const actors = liveOf(customers)[0]
 const live = liveOf(everything())
 </script>
 
