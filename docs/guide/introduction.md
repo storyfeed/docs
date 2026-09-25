@@ -153,7 +153,7 @@ A new order, **{{ orders.first.label }}** *(object)*, **came in** *(verb)* to **
 
 <a id="examples-of-activities"></a>
 
-### Examples of Activities
+### Other Examples
 
 The same roles fit any app.
 
