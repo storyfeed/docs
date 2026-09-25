@@ -1,5 +1,7 @@
 # Verb Vocabulary
 
+## Introduction
+
 `Storyfeed\Act` is a backed enum of common verbs you can record with instead
 of writing your own. Each case stores a plain English word as the verb, such as
 `approve`, and serializes as an Activity Streams 2.0 activity type, such as
@@ -8,7 +10,9 @@ of writing your own. Each case stores a plain English word as the verb, such as
 Verbs are still free-form strings in storage. An application can use its own
 words, these cases, or both.
 
-## The Vocabulary
+<span id="the-vocabulary"></span>
+
+## Available Verbs
 
 Seventy-two verbs, grouped by the activity type each one maps to. The stored
 verb is the value in the second column.
@@ -47,25 +51,15 @@ verb is the value in the second column.
 Every case is present tense: `send`, not `sent`. All twenty-eight Activity
 Streams activity types are reachable.
 
-## Recording With a Verb
+<span id="recording-with-a-verb"></span>
 
-A case records an activity the same way an application's own enum does.
+For example, `Act::Approve` stores `approve` and serializes as
+`"type": "Accept"` with `"sf:verb": "approve"`.
+[Activity Verbs](/basics/verbs) shows how to record with an enum case.
 
-```php
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Act;
+<span id="registering-the-verbs-you-use"></span>
 
-Act::Approve->by($editor)
-    ->object($photo)
-    ->to($menu)
-    ->publish();
-```
-
-The row stores `approve`, and the Activity Streams serializer emits
-`"type": "Accept"` alongside `"sf:verb": "approve"`. `->of($photo)` starts
-from the object instead: `Act::Approve->of($photo)->by($editor)`.
-
-## Registering the Verbs You Use
+## Registering Verbs
 
 `Storyfeed::verbs()` takes a map of verb to activity type. `Act::only()`
 builds that map for the cases an application actually records.
@@ -84,7 +78,9 @@ Register the cases you record, not the whole enum. Grammar coverage reports
 every registered verb with no headline, so registering all seventy-two produces
 a finding for each verb the application never uses.
 
-## Using Your Own Words
+<span id="using-your-own-words"></span>
+
+## Using Application Verbs
 
 A word the enum does not ship is registered as a string, or through your own
 enum implementing `FeedVerb`.
@@ -99,7 +95,9 @@ Storyfeed::verbs([
 ]);
 ```
 
-## Mixing an Enum With the Shipped Cases
+<span id="mixing-an-enum-with-the-shipped-cases"></span>
+
+## Combining Verb Enums
 
 `Storyfeed::verbs()` merges by default, so both vocabularies register together.
 

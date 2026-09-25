@@ -4,6 +4,25 @@ Publish an activity only when a reader of the feed would want to see it.
 Most events in an app, such as drafts, saves and background work, record
 nothing.
 
+<span id="events-to-omit"></span>
+
+## Choosing Events to Record
+
+| What Happened | Activity | Because |
+|---|---|---|
+| a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| the text of a note edited | no | the note is the story; its edit is not |
+| a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
+| someone typing, or coming online | no | it stops being true within seconds |
+| a field-level audit row | no | an audit log is its own surface |
+| a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| a question asked about a dish | yes | the sentence names what was asked about |
+| an order placed | yes | |
+| an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
+
+## Skipping Publication
+
 ```php
 <?php
 
@@ -55,21 +74,6 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target');
 ```
-
-## Events to Omit
-
-| What Happened | Activity | Because |
-|---|---|---|
-| a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| the text of a note edited | no | the note is the story; its edit is not |
-| a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
-| someone typing, or coming online | no | it stops being true within seconds |
-| a field-level audit row | no | an audit log is its own surface |
-| a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| a question asked about a dish | yes | the sentence names what was asked about |
-| an order placed | yes | |
-| an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
 
 ## Recording Notes
 
@@ -231,6 +235,8 @@ class Note extends Model implements Feedable
 The `Component` body names `Note`, a component your frontend supplies; here it
 shows the `excerpt` prop in a blockquote.
 
+### Updating the Note's Content
+
 Saving the note refreshes its snapshot, so every row that references it shows
 the edited text without a new activity. Without `InteractsWithFeed`, refresh
 the snapshot yourself.
@@ -310,8 +316,7 @@ class DishQuestionController extends Controller
 
 Use this when the words should be stored on the activity rather than read
 from the note. The renderer receives them as `node.thread.text`; drop the
-`Note` component body so the text is not shown twice. `FeedThread` also takes
-`by`, `kind` and `replies`.
+`Note` component body so the text is not shown twice. See [Activity Content](/basics/activity-content) for the quote fields.
 
 When the object is the discussion itself, each activity can carry the reply it
 is about:
@@ -408,8 +413,10 @@ class DiscussionReplyController extends Controller
 ```
 :::
 
+### Preserving Quoted Text
+
 Editing the note or discussion does not change a stored `FeedThread`. To keep
 only the latest reply, see [Repeating Activities](/cookbook/repeating-activities).
 
 `FeedThread` is for what a person said. A quoted passage with a source is the
-[`Excerpt` form](/basics/activity-content).
+[`Excerpt` body type](/basics/activity-content).

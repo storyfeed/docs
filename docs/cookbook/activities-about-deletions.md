@@ -4,6 +4,8 @@ To record a deletion, record it about the model you delete, with a verb that
 says it was removed. The activity stays after the delete, naming the model's
 tombstone.
 
+## Recording a Deletion
+
 ::: code-group
 ```php [Fluent Syntax]
 <?php
@@ -102,6 +104,8 @@ const removedKeepingLabel = activity({
 
 <FeedExample context :items="[removed]" />
 
+## Preserving a Deleted Model's Label
+
 The dish is a tombstone once it is deleted. To keep naming it, the model keeps
 its label on its tombstone:
 
@@ -114,7 +118,9 @@ $this->feedEntity()
 
 <FeedExample :items="[removedKeepingLabel]" />
 
-## References After Deletion
+<span id="references-after-deletion"></span>
+
+## Referencing Surviving Models
 
 | The Removal Story References | After the Delete |
 |---|---|
@@ -125,6 +131,8 @@ Every other activity that named the dish stays too. [Deleted Models](/deeper/del
 covers what each of them says.
 
 ## Removing Activities
+
+### Removing All Involving Activities
 
 Deleting a model keeps its activities unless a verb declares `forgetWhenMissing()`. When they must go, such as a
 customer asking to be forgotten, remove them before the model:
@@ -151,6 +159,8 @@ use Storyfeed\Actions\ForceDeleteFromFeed;
 (new DeleteFromFeed)($photo);        // soft
 (new ForceDeleteFromFeed)($photo);   // permanent
 ```
+
+### Forgetting Redundant Activities
 
 To forget only the activities a deletion made redundant, and keep the rest,
 declare [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-activities)

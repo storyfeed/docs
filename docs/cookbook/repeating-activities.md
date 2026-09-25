@@ -23,6 +23,8 @@ const timeline = [
 const pulse = [timeline[0], timeline[1]]
 </script>
 
+## Recording Repeated Occurrences
+
 *A cook adds a dish:*
 
 ::: code-group
@@ -161,17 +163,19 @@ After one new dish and two price changes:
 
 <FeedExample context :items="pricedTwice" />
 
-## Choosing Which Occurrences to Keep
+<span id="choosing-which-occurrences-to-keep"></span>
+
+## Choosing a Storage Policy
 
 | Decision | Question | Consequence |
 |---|---|---|
 | occurrence | is this a retry of the same fact, or a new act? | an order placed again after an amendment is a new occurrence |
 | retention | does this feed need every occurrence? | append for a full timeline; replace only when earlier ones may leave the feed |
 
-The latest `published_at` wins. A backdated activity older than the current
-row is stored already superseded.
+[Keeping the Latest Activity](/deeper/keeping-the-latest-activity) covers
+publication order and how superseded activities are removed.
 
-## Keeping Every Occurrence or the Latest
+<span id="keeping-every-occurrence-or-the-latest"></span>
 
 The order is placed, confirmed, amended, and placed again. Choose one storage policy for those verbs:
 
@@ -181,6 +185,8 @@ The order is placed, confirmed, amended, and placed again. Choose one storage po
 | confirmation | append `confirmed` | replace `confirmed` |
 | placed again after an amendment | append another `placed` | replace the earlier `placed` |
 | visible rows afterward | first placement, confirmation, second placement | confirmation, second placement |
+
+### Keeping Every Occurrence
 
 For the full timeline, each transition request runs this with its verb:
 
@@ -260,6 +266,8 @@ $timeline = Storyfeed::feed()->involving($order)->log()->get();
 
 <FeedExample :items="timeline" />
 
+### Keeping the Latest Occurrence
+
 To keep only the latest occurrence of each verb, declare that policy. The
 controller publishes the same way:
 
@@ -294,8 +302,31 @@ full timeline, don't replace.
 ## Matching Activities
 
 By default, `keepLatest()` matches the object and verb. The actor, target,
-context and `data` do not count. `per:` chooses the roles to match, and
-`within:` limits the time between matching activities:
+context and `data` do not count.
+
+### Matching Roles
+
+Use `per:` to choose the roles that identify a repeated occurrence:
+
+```php
+// routes/feed.php
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object')
+    ->keepLatest(per: ['object', 'actor']);
+```
+
+A missing role in the key leaves the activity separate. Authored composites
+recorded with `objects()` are not superseded.
+
+Superseded rows are soft-deleted. To delete them outright, set
+[`keep_latest.delete`](/reference/configuration) to `'force'`.
+
+### Limiting the Window
+
+Add `within:` when only nearby repetitions should replace one another:
 
 ```php
 // routes/feed.php
@@ -306,9 +337,3 @@ Story::for(MenuItem::class)->verb('reprice')
     ->headline(':actor changed the price of :object')
     ->keepLatest(per: ['object', 'actor'], within: '10 minutes');
 ```
-
-A missing role in the key leaves the activity separate. Authored composites
-recorded with `objects()` are not superseded.
-
-Superseded rows are soft-deleted. To delete them outright, set
-[`keep_latest.delete`](/reference/configuration) to `'force'`.

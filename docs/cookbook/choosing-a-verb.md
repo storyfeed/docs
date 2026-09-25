@@ -1,10 +1,12 @@
 # Choosing a Verb
 
 How to name a verb, and a test for each pair of verbs that are easy to
-choose between. The verb sets the Activity Streams type and is half of every
-grammar key.
+choose between. The verb's registered mapping sets the Activity Streams type. The object type and verb
+identify its headline definition.
 
-## Naming a Verb
+<span id="naming-a-verb"></span>
+
+## Naming Verbs
 
 A verb says what happened. It does not say what it happened to — the object
 already does that.
@@ -84,7 +86,14 @@ Where a verb seems to need an extra word, the word is usually a role:
 Write verbs in the present tense: `place`, not `placed`. The headline puts it
 in the past: `:actor placed :object`.
 
-## Create or Add
+## Choosing Between Related Verbs
+
+Choose the word that describes the event in your application. These distinctions
+are naming guidance; Storyfeed stores the verb you supply.
+
+<span id="create-or-add"></span>
+
+### Create and Add
 
 `create` when the object did not exist before this activity. `add` when it
 already had an identity and is now part of something.
@@ -208,7 +217,9 @@ class MenuDishController extends Controller
 
 `add` takes a target. With no target, the verb is probably `create`.
 
-## Delete or Remove
+<span id="delete-or-remove"></span>
+
+### Delete and Remove
 
 `delete` when nothing can be pointed at afterwards. `remove` when the object
 still exists and has only left a collection.
@@ -216,17 +227,22 @@ still exists and has only left a collection.
 Archiving is `remove`: the record is still there, and a feed row can still
 link to it.
 
-## Remove or Undo
+<span id="remove-or-undo"></span>
 
-`undo` reverses an activity. Its object is the earlier act, not the thing the
-act was about, so restoring a retired item is `undo`, not `create`.
+### Remove and Undo
+
+Use `undo` for a reversal. When recording a restored model, `restore` can
+name the action more precisely; the shipped vocabulary maps it to `Undo`.
+Choose the object that identifies the fact your application records.
 
 | The sentence you would say | Verb |
 | --- | --- |
 | "It left the collection." | `remove` |
 | "That should not have happened." | `undo` |
 
-## Offer or Invite
+<span id="offer-or-invite"></span>
+
+### Offer and Invite
 
 `offer` is directed at someone and expects an answer. `invite` is an offer
 whose object is an invitation to take part.
@@ -234,13 +250,17 @@ whose object is an invitation to take part.
 Sending a document is `offer`. Sending it for signature is `invite`, because
 the recipient is being asked to become a participant.
 
-## Accept or Like
+<span id="accept-or-like"></span>
+
+### Accept and Like
 
 `accept` answers a prior `offer` or `invite`. `like` is unprompted.
 
 An approval is `accept`, whatever the button says.
 
-## View or Read
+<span id="view-or-read"></span>
+
+### View and Read
 
 `view` for an impression — a page was opened, a preview loaded. `read` for
 deliberate consumption — a file was downloaded, a document taken away.
@@ -249,11 +269,8 @@ Neither changes the object. If the choice is not clear, it is `view`.
 
 ## Recording Outcomes
 
-A verb that fits none of the twenty-eight activity types usually means
-something in the domain is not modelled yet.
-
-An email that bounced, was delivered, or failed has no verb of its own. Make
-the delivery a record, and each outcome is an ordinary `create` against it:
+You can record delivery outcomes as their own models. Each outcome then
+uses `create` against that record:
 
 ```php
 <?php
@@ -286,13 +303,17 @@ class MailWebhookController extends Controller
 }
 ```
 
-Likewise, three verbs for three states of one record usually want one verb
-and a record of the transition.
+Use separate verbs when the transitions mean different things to the reader,
+as in [Choosing When to Publish](/cookbook/choosing-when-to-publish).
 
-## Distinguishing Activities
+<span id="distinguishing-activities"></span>
 
-Two activities with the same verb, object type and target are the same
-activity. Whatever separates them belongs somewhere other than the verb.
+## Distinguishing Activities With Roles and Data
+
+Separate occurrences can share a verb, object type and target. Use roles,
+data and publication time to describe what differs between them. Each publish
+creates an activity unless a [storage policy](/cookbook/repeating-activities)
+supersedes it.
 
 | What separates them | Where it belongs |
 | --- | --- |
