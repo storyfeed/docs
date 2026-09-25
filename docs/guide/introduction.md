@@ -36,31 +36,50 @@ const log = [
   published_at: `2026-08-14T${time}.000000Z`, actor, object, target, context,
 }))
 
-// The same window, collapsed. Counts reach back past 18:44.
+// The same window, three ways. Group counts reach back past 18:44 to the start
+// of the evening; the log shows only the eight minutes.
+const readyAll  = group({ id: 'r1', verb: 'ready', axis: 'repeat', count: 9, glyph: 'utensils',
+    published_at: '2026-08-14T18:52:02.000000Z', headline_template: ':actor marked :count orders ready',
+    actors: [who.cook], distinct: { actors: 1, objects: 9 } })
+const onTheWay  = group({ id: 'r2', verb: 'dispatch', axis: 'repeat', count: 4, glyph: 'bike',
+    published_at: '2026-08-14T18:51:02.000000Z', headline_template: ':actor is on the way with :count orders',
+    actors: [who.runner], objects: [orders.second, orders.first], distinct: { actors: 1, objects: 4 } })
+const confirmed = group({ id: 'r3', verb: 'confirm', axis: 'repeat', count: 11, glyph: 'circle-check',
+    published_at: '2026-08-14T18:50:02.000000Z', headline_template: ':actor confirmed :count orders',
+    actors: [who.cook], distinct: { actors: 1, objects: 11 } })
+const onMenu    = (axis) => group({ id: `m-${axis}`, verb: 'publish', axis, count: 3, glyph: 'chef-hat',
+    published_at: '2026-08-14T18:45:02.000000Z', headline_template: ':actor put :count dishes on the menu',
+    actors: [who.cook], objects: [dishes.lassi, dishes.roti, dishes.cutlets], distinct: { actors: 1, objects: 3 } })
+const at = (time) => log.find((row) => row.published_at === `2026-08-14T${time}.000000Z` && row.verb === 'place')
+
+// LIVE groups repeats only: one person doing one thing again. Orders from
+// different customers stay separate rows.
+const live = [
+  readyAll, onTheWay, confirmed,
+  at('18:49:02'),
+  group({ id: 'r4', verb: 'ask', axis: 'repeat', count: 2, glyph: 'message-circle',
+    published_at: '2026-08-14T18:49:02.000000Z', headline_template: ':actor asked about :count dishes',
+    actors: [who.customer4], distinct: { actors: 1, objects: 2 } }),
+  at('18:48:02'), at('18:46:56'),
+  log.find((row) => row.verb === 'note'),
+  at('18:45:08'),
+  onMenu('repeat'),
+  at('18:44:02'),
+]
+
+// SUMMARY collapses along every axis: several customers ordering from one
+// kitchen, one customer asking about several dishes.
 const summary = [
-  group({ id: 'g1', verb: 'ready', axis: 'repeat', count: 9, glyph: 'utensils',
-    published_at: '2026-08-14T18:52:02.000000Z',
-    headline_template: ':actor marked :count orders ready',
-    actors: [who.cook], distinct: { actors: 1, objects: 9 } }),
-  group({ id: 'g2', verb: 'dispatch', axis: 'repeat', count: 4, glyph: 'bike',
-    published_at: '2026-08-14T18:51:02.000000Z',
-    headline_template: ':actor is on the way with :count orders',
-    actors: [who.runner], objects: [orders.second, orders.first], distinct: { actors: 1, objects: 4 } }),
-  group({ id: 'g3', verb: 'place', axis: 'actors', count: 12, glyph: 'shopping-bag',
-    published_at: '2026-08-14T18:49:02.000000Z',
-    headline_template: ':actors ordered from :target',
+  readyAll, onTheWay, confirmed,
+  group({ id: 's1', verb: 'place', axis: 'actors', count: 12, glyph: 'shopping-bag',
+    published_at: '2026-08-14T18:49:02.000000Z', headline_template: ':actors ordered from :target',
     actors: [who.customer5, who.customer4, who.customer3], targets: [where.kitchen],
     distinct: { actors: 7, objects: 12, targets: 1 } }),
-  group({ id: 'g4', verb: 'ask', axis: 'targets', count: 5, glyph: 'message-circle',
-    published_at: '2026-08-14T18:49:02.000000Z',
-    headline_template: ':actor asked about :targets',
-    actors: [who.customer4], targets: [dishes.chickenCurry, dishes.kottu],
-    distinct: { actors: 1, targets: 2 } }),
-  group({ id: 'g5', verb: 'publish', axis: 'composite', count: 3, glyph: 'chef-hat',
-    published_at: '2026-08-14T18:45:02.000000Z',
-    headline_template: ':actor put :count dishes on the menu',
-    actors: [who.cook], objects: [dishes.lassi, dishes.roti, dishes.cutlets],
-    distinct: { actors: 1, objects: 3 } }),
+  group({ id: 's2', verb: 'ask', axis: 'targets', count: 2, glyph: 'message-circle',
+    published_at: '2026-08-14T18:49:02.000000Z', headline_template: ':actor asked about :targets',
+    actors: [who.customer4], targets: [dishes.chickenCurry, dishes.kottu], distinct: { actors: 1, targets: 2 } }),
+  log.find((row) => row.verb === 'note'),
+  onMenu('composite'),
 ]
 
 // Section 2 reuses one activity from the log, so the roles arrive on a sentence
@@ -216,18 +235,30 @@ After [installing Storyfeed](/guide/installation), record an activity where the 
 
 <a id="examples-of-feeds"></a>
 
-## Reading Feeds
+## Displaying Feeds
 
-A feed reads recorded activities as individual rows or groups. [Reading Feeds](/basics/reading) describes the read modes.
+The same recorded activities display three ways. [Reading Feeds](/basics/reading) shows how to choose one.
 
 <a id="as-a-timeline"></a>
+<a id="timeline-feeds"></a>
 
-### Timeline Feeds
+### Log
+
+Every activity, one row each.
 
 <FeedExample :items="log" />
 
-<a id="as-a-grouped-summary"></a>
+### Live
 
-### Aggregated Feeds
+Repeats collapse: one person doing the same thing again.
+
+<FeedExample :items="live" />
+
+<a id="as-a-grouped-summary"></a>
+<a id="aggregated-feeds"></a>
+
+### Summary
+
+Everything collapses that can: many people, one place; one person, many things. This is the default.
 
 <FeedExample :items="summary" />
