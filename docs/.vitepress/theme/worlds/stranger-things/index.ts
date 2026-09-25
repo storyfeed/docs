@@ -147,7 +147,7 @@ things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt'
   text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom, truncated: true }] }
 // The film is a real one (SOURCES.cinema): its facts, never its poster.
 things.film = { ...things.film, body: card(HOLDINGS.film, [
-  detail('Director', ENTITY_CONTENT.director), detail('Rated', 'R'), detail('Showing', ENTITY_CONTENT.showing)]) }
+  detail('Director', ENTITY_CONTENT.director), detail('Showing', ENTITY_CONTENT.showing)]) }
 things.repo = { ...things.repo, body: card(HOLDINGS.repo, [
   detail('About', ENTITY_CONTENT.repoAbout), detail('Visibility', 'Public')]) }
 // The things that have a photograph of their own (see PHOTO_CREDITS below).
