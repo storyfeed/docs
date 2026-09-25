@@ -7,8 +7,8 @@ data, supply roles, or decide whether to publish. Built-in batch middleware
 collects an actor's activities into a sitting.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
-const placed = { ...scenes.order, data: null, glyph_intent: null }
+import { scene } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
 const marked = { ...placed, data: { reviewed: true } }
 </script>
 

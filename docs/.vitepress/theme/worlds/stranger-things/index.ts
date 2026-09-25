@@ -380,6 +380,35 @@ ROWS.push(
 // ── Roles and scenes ─────────────────────────────────────────────────────────
 
 
+// Deeper-page software examples: the cast and shop are sourced above (S3E2,
+// scoops); these app actions are illustrative, not additional show canon.
+const deeperRow = (id: string, at: string, verb: string, actor: any, object: any, target: any = null) =>
+  row(`deeper-${id}`, at, verb, actor, object, target, 'splice',
+    { uncertain: 'Illustrative software action; not an on-screen event' })
+const deeperOrders = [order(2031), order(2032), order(2033)]
+const deeperRows: Row[] = [
+  ...deeperOrders.map((object, i) => deeperRow(`order-${i}`, `1985-07-02 12:${10 + i * 5}`, 'place', scout, object, v.scoops)),
+  ...[scout, radio, partyLeader, slinger, skater].map((actor, i) =>
+    deeperRow(`customer-${i}`, `1985-07-02 13:0${i}`, 'place', actor, order(2041 + i), v.scoops)),
+  deeperRow('confirm-0', '1985-07-02 12:26', 'confirm', scooper, deeperOrders[0], v.scoops),
+  deeperRow('confirm-1', '1985-07-02 12:27', 'confirm', scooper, deeperOrders[1], v.scoops),
+  deeperRow('confirm-2', '1985-07-02 12:28', 'confirm', scooper, deeperOrders[2], v.scoops),
+  deeperRow('ready', '1985-07-02 12:30', 'ready', scooper, deeperOrders[0], v.scoops),
+  deeperRow('paid', '1985-07-02 12:34', 'pay', stripe, deeperOrders[0], v.scoops),
+  deeperRow('save-early', '1985-07-02 11:00', 'save', scout, deeperOrders[0]),
+  deeperRow('save-latest', '1985-07-02 11:32', 'save', scout, deeperOrders[0]),
+  deeperRow('save-other', '1985-07-02 11:33', 'save', scooper, deeperOrders[0]),
+  ...['1985-07-01', '1985-07-02', '1985-07-03'].map((day, i) =>
+    deeperRow(`weekly-${i}`, `${day} 14:30`, 'place', scout, order(2051 + i), v.scoops)),
+  // Hourly retention crosses 18:00 while all five rows remain in one daily group.
+  ...['17:40', '17:45', '17:50', '18:10', '18:15'].map((time, i) =>
+    deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),
+]
+ROWS.push(...deeperRows)
+VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready' }
+VERBS.save = { glyph: 'save', headline: ':actor saved :object' }
+VERBS.view = { glyph: 'eye', headline: ':actor viewed :object', repeat: ':actor viewed :count orders' }
+
 export default {
   name: 'stranger-things',
   canonicalNow: '1985-07-04T19:00:00Z',
@@ -401,6 +430,17 @@ export default {
       deletion: 'cookbook-removed',
       discussion: 'cookbook-reply',
       grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
+    },
+    deeper: {
+      aggregation: { orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
+        customers: Array.from({ length: 5 }, (_, i) => `deeper-customer-${i}`) },
+      latestPerObject: { timeline: ['deeper-order-0', 'deeper-confirm-0', 'deeper-ready', 'deeper-paid'],
+        board: ['deeper-paid', 'deeper-confirm-1', 'deeper-order-2'],
+        confirmations: ['deeper-confirm-0', 'deeper-confirm-1', 'deeper-confirm-2'] },
+      keepingLatest: { saves: ['deeper-save-early', 'deeper-save-latest', 'deeper-save-other'] },
+      groupingPeriods: { orders: ['deeper-weekly-0', 'deeper-weekly-1', 'deeper-weekly-2'] },
+      retention: { views: Array.from({ length: 5 }, (_, i) => `deeper-view-${i}`) },
+      composites: { tasks: ['j65', 'j72'] },
     },
     order: 'j84',
     question: 'j85',

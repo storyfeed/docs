@@ -7,42 +7,10 @@ that happened to it. Every activity stays stored, so other feeds still show
 all of them.
 
 <script setup>
-import { who, where, orders, dishes, party, activity, group } from '../.vitepress/theme/samples'
-
-const placed = (id, at, actor, object) => activity({ id, verb: 'place', glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actor placed :object with :target',
-  actor, object, target: where.kitchen })
-
-const confirmed = (id, at, object) => activity({ id, verb: 'confirm', glyph: 'circle-check',
-  published_at: at, headline_template: ':actor confirmed :object',
-  actor: who.cook, object })
-
-const paid = activity({ id: 'lp7', verb: 'pay', glyph: 'credit-card',
-  published_at: '2026-08-14T14:52:00.000000Z', headline_template: ':actor marked :object paid',
-  actor: party.service, object: orders.first })
-
-const ready = activity({ id: 'lp6', verb: 'ready', glyph: 'utensils',
-  published_at: '2026-08-14T14:48:00.000000Z', headline_template: ':actor marked :object ready',
-  actor: who.cook, object: orders.first })
-
-const timeline = [
-  paid,
-  ready,
-  confirmed('lp4', '2026-08-14T14:36:00.000000Z', orders.first),
-  placed('lp1', '2026-08-14T14:30:00.000000Z', who.regular, orders.first),
-]
-
-const board = [
-  paid,
-  confirmed('lp5', '2026-08-14T14:41:00.000000Z', orders.second),
-  placed('lp3', '2026-08-14T14:33:00.000000Z', who.customer4, orders.third),
-]
-
-const repriced = group({ id: 'lp8', verb: 'reprice', axis: 'repeat', count: 3, glyph: 'tag',
-  published_at: '2026-08-14T11:20:00.000000Z',
-  headline_template: ':actor changed the prices of :count dishes',
-  actors: [who.cook], objects: [dishes.chickenCurry, dishes.kottu, dishes.roti],
-  distinct: { actors: 1, objects: 3 } })
+import { scene, logOf, liveOf } from '../.vitepress/theme/world'
+const timeline = logOf(scene.deeper.latestPerObject.timeline)
+const board = logOf(scene.deeper.latestPerObject.board)
+const confirmed = liveOf(scene.deeper.latestPerObject.confirmations)[0]
 </script>
 
 <a id="showing-the-latest-activity-per-object"></a>
@@ -58,13 +26,13 @@ $order->storyfeed()->log()->get();
 
 <FeedExample :items="timeline" />
 
-The kitchen's board shows each order once, at its latest step:
+The shop's board shows each order once, at its latest step:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()
-    ->involving($kitchen)
+    ->involving($shop)
     ->latestPer('object')
     ->log()
     ->get();
@@ -140,7 +108,7 @@ Storyfeed::feeds([
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::feed('board')->involving($kitchen)->get();
+Storyfeed::feed('board')->involving($shop)->get();
 ```
 
 <FeedExample :items="board" />
@@ -149,20 +117,19 @@ Storyfeed::feed('board')->involving($kitchen)->get();
 
 ## Aggregating Latest Activities
 
-Groups are formed from the activities the feed shows. A cook who changed the
-price of three dishes several times each this morning:
+Groups are formed from the activities the feed shows. A staff member who confirmed three orders several times each:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()
-    ->verb('reprice')
+    ->verb('confirm')
     ->latestPer('object')
     ->live()
     ->get();
 ```
 
-<FeedExample :items="[repriced]" />
+<FeedExample :items="[confirmed]" />
 
-The group holds the latest price change of each dish, so it counts three. A
+The group holds the latest confirmation of each order, so it counts three. A
 group left with one activity shows as that activity.

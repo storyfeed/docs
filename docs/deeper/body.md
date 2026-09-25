@@ -3,40 +3,19 @@
 ## Introduction
 
 <script setup>
-import { who, where, orders, dishes, notes, scenes, activity, ticketRows, ticketText } from '../.vitepress/theme/samples'
-
-const row = {
-  verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor placed :object with :target',
-  actor: who.regular, target: where.kitchen,
-}
-
-const asText = activity({
-  ...row, id: 'ab1',
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
-    content: ticketText('first'), mediaType: 'text/plain', verbatim: false, title: null }] },
-})
-
-const asExcerpt = activity({
-  ...row, id: 'ab2',
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-    text: ticketText('first'), from: 'Ticket', truncated: false }] },
-})
-
-const withTicket = activity({
-  ...row, id: 'ab3',
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
-    items: ticketRows('first') }] },
-})
-
-// notes.spice carries a Storyfeed/Body/Component body named Note.
-const withComponent = activity({
-  id: 'ab4', verb: 'ask', glyph: 'message-circle',
-  published_at: '2026-08-14T14:28:00.000000Z',
-  headline_template: ':actor asked about :target',
-  actor: who.customer4, object: notes.spice, target: dishes.chickenCurry,
-})
+import { scene, role, activity } from '../.vitepress/theme/world'
+const row = scene.order
+const ticket = [{ key: role.product.label, value: '1', verbatim: false, missing: null }]
+const text = `1 × ${role.product.label}`
+const asText = activity({ ...row,
+  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
+    content: text, mediaType: 'text/plain', verbatim: false, title: null }] } })
+const asExcerpt = activity({ ...row,
+  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
+    text, from: 'Ticket', truncated: false }] } })
+const withTicket = activity({ ...row,
+  object: { ...row.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: ticket }] } })
+const withComponent = scene.question
 </script>
 
 A body is what an activity shows beneath its headline: the lines of an order, a
@@ -45,7 +24,7 @@ renderer draws it.
 
 The order from [Usage Examples](/guide/usage-examples), with no body yet:
 
-<FeedExample :items="[scenes.order]">
+<FeedExample :items="[scene.order]">
   <template #body><BodyPlaceholder /></template>
 </FeedExample>
 

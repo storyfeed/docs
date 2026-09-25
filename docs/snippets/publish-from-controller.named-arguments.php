@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -11,15 +11,15 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::record(
             verb: 'place',
             object: $order,
             actor: $request->user(),
-            target: $kitchen,
+            target: $shop,
         );
 
         return to_route('orders.show', $order);

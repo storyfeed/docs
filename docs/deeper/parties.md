@@ -3,15 +3,8 @@
 ## Introduction
 
 <script setup>
-import { orders, party, activity } from '../.vitepress/theme/samples'
-
-const paid = activity({
-  id: 'pt1', verb: 'pay', glyph: 'credit-card',
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor marked :object paid',
-  actor: party.service,
-  object: orders.first,
-})
+import { scene } from '../.vitepress/theme/world'
+const paid = scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay')
 </script>
 
 An activity's actor doesn't have to be a user. It can be a **party**, such as
@@ -91,7 +84,7 @@ class StripeWebhookController extends Controller
 ```
 :::
 
-<FeedExample context :items="[paid]" />
+<FeedExample :items="[paid]" />
 
 ### Using Parties in Other Roles
 

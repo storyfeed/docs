@@ -7,40 +7,26 @@ Storyfeed puts a tombstone in the model's place: the activity still reads as a
 sentence, and the deleted model's details are gone from the feed's tables.
 
 <script setup>
-import { who, where, orders, dishes, activity, group, tombstone, scenes } from '../.vitepress/theme/samples'
-
-const deleted = '2026-08-14T15:05:00.000000Z'
-const removedOrder = tombstone('order', '17', deleted)
-
-const afterDelete = activity({ ...scenes.order, id: 'dm1', object: removedOrder })
-
-const voided = activity({ id: 'dm2', verb: 'void', glyph: 'x-circle',
-  published_at: deleted,
-  headline_template: ':actor voided :object',
-  actor: who.owner, object: removedOrder, redundant: false })
-
-const keptDish = tombstone('menu_item', '18', deleted, { label: dishes.lassi.label })
-
-const keptLabel = activity({ id: 'dm3', verb: 'publish', glyph: 'chef-hat',
-  published_at: '2026-08-14T09:00:00.000000Z',
-  headline_template: ':actor put :object on the menu',
-  actor: who.cook, object: keptDish })
-
-const removedKitchen = tombstone('kitchen', '19', deleted)
-
-const kitchenGone = activity({ ...scenes.order, id: 'dm4', target: removedKitchen, missing: ['object', 'target'] })
-
-const bulk = activity({ ...scenes.order, id: 'dm5',
-  object: tombstone('order', '20', '2026-08-15T03:00:00.000000Z', { approximate: true }) })
-
-const readsGone = activity({ ...scenes.order, id: 'dm7', object: removedOrder,
+import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
+// Hypothetical deletion states of the same catalogue entities.
+const deleted = new Date(WORLD_ANCHOR - 60 * 60 * 1000).toISOString()
+const removedOrder = tombstone(scene.order.object.type, scene.order.object.id, deleted)
+const afterDelete = activity({ ...scene.order, object: removedOrder })
+const voided = activity({ ...scene.order, verb: 'void', glyph: 'x-circle', published_at: deleted,
+  headline_template: ':actor voided :object', actor: role.staff, object: removedOrder, missing: [] })
+const keptDish = tombstone(role.product.type, role.product.id, deleted, { label: role.product.label })
+const keptLabel = activity({ ...scene.question, verb: 'publish', glyph: 'chef-hat',
+  headline_template: ':actor put :object on the menu', actor: role.staff, object: keptDish, target: null })
+const removedShop = tombstone(role.shop.type, role.shop.id, deleted)
+const shopGone = activity({ ...scene.order, target: removedShop, missing: ['object', 'target'] })
+const bulk = activity({ ...scene.order,
+  object: tombstone(scene.order.object.type, scene.order.object.id, deleted, { approximate: true }) })
+const readsGone = activity({ ...scene.order, object: removedOrder,
   missing_headline_template: ':actor placed an order, since deleted' })
-
-const mixed = group({ id: 'dm6', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor placed :count orders',
-  actors: [who.regular], objects: [orders.second, orders.third, removedOrder],
-  distinct: { actors: 1, objects: 3 } })
+const members = scene.deeper.aggregation.orders
+const children = members.map((row, i) => i === 0
+  ? activity({ ...row, object: tombstone(row.object.type, row.object.id, deleted) }) : row)
+const mixed = group({ ...liveOf(members)[0], objects: children.map(row => row.object), children })
 </script>
 
 Use `InteractsWithFeed` on an Eloquent `Feedable` model to attach the deletion
@@ -58,11 +44,11 @@ $order->delete();
 
 Before the delete:
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 After it:
 
-<FeedExample context expanded :items="[afterDelete]" />
+<FeedExample expanded :items="[afterDelete]" />
 
 Every activity that named the order now names its tombstone instead. A
 tombstone keeps only the kind of thing the model was and when it went, as
@@ -94,7 +80,7 @@ and the tombstone goes:
 $order->restore();
 ```
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 <a id="force-deleting-a-model"></a>
 
@@ -175,9 +161,9 @@ Story::for(Order::class)
     ->missing('object', 'target');
 ```
 
-Once the kitchen is deleted, placing an order with it is redundant too:
+Once the shop is deleted, placing an order with it is redundant too:
 
-<FeedExample :items="[kitchenGone]" expanded />
+<FeedExample :items="[shopGone]" expanded />
 
 `->missing()` replaces the default, and `->missing()` with no roles means the
 verb is about none of them. On `Story::for(Order::class)->missing(...)`, it

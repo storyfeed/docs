@@ -8,19 +8,10 @@ deletes them once they are older, along with anything only they referred to.
 [Keeping the Latest Activity](/deeper/keeping-the-latest-activity) keeps only the latest matching row for a verb.
 
 <script setup>
-import { who, orders, group } from '../.vitepress/theme/samples'
-
-const before = group({ id: 're1', verb: 'view', axis: 'repeat', count: 5, glyph: 'eye',
-  published_at: '2026-08-14T14:10:00.000000Z',
-  headline_template: ':actor viewed :count orders',
-  actors: [who.owner], objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 5 } })
-
-const after = group({ id: 're1', verb: 'view', axis: 'repeat', count: 2, glyph: 'eye',
-  published_at: '2026-08-14T14:10:00.000000Z',
-  headline_template: ':actor viewed :count orders',
-  actors: [who.owner], objects: [orders.fourth, orders.fifth],
-  distinct: { actors: 1, objects: 2 } })
+import { scene, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
+const views = scene.deeper.retention.views
+const before = liveOf(views)[0]
+const after = liveOf(views.filter(row => Date.parse(row.published_at) >= WORLD_ANCHOR - 60 * 60 * 1000))[0]
 </script>
 
 ## Defining Retention
@@ -113,7 +104,9 @@ Each run permanently deletes the `view` activities older than 30 days. Other ver
 
 ## Pruning Groups and Unused Entities
 
-A group loses the members that were pruned. Before the run:
+A group loses the members that were pruned. For this example, the verb uses
+`keepFor('1 hour')`: five views share one daily group, and three are more than
+an hour old. Before the run:
 
 <FeedExample :items="[before]" />
 

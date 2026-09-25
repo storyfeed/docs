@@ -6,14 +6,8 @@
 Earlier matching activities leave every read mode, including `log()`.
 
 <script setup>
-import { activity, who, orders } from '../.vitepress/theme/samples'
-const saved = { ...activity({ id: 'latest-save', verb: 'save', glyph: null,
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor saved :object', actor: who.regular, object: orders.first }), data: null }
-const otherActor = { ...saved, id: 'latest-save-other', actor: who.cook,
-  published_at: '2026-08-14T14:33:00.000000Z' }
-const earlier = { ...saved, id: 'earlier-save',
-  published_at: '2026-08-14T14:00:00.000000Z' }
+import { scene } from '../.vitepress/theme/world'
+const [earlier, saved, otherActor] = scene.deeper.keepingLatest.saves.map(row => ({ ...row, data: null, glyph: null }))
 </script>
 
 <a id="declaring-the-policy"></a>

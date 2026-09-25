@@ -17,7 +17,7 @@ using your application's model factories:
 ```php memo="tests/Feature/RecordOrderPlacedTest.php"
 use App\Events\OrderPlaced;
 use App\Listeners\RecordOrderPlaced;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +27,7 @@ uses(RefreshDatabase::class);
 
 it('records the placed order', function () {
     $customer = User::factory()->create();
-    $order = Order::factory()->for(Kitchen::factory())->create();
+    $order = Order::factory()->for(Shop::factory())->create();
 
     Storyfeed::fake();
 
@@ -75,7 +75,7 @@ a controller that ends its builder with `queue()`, assert the queued activity:
 
 ```php memo="tests/Feature/QueuedOrderTest.php"
 use App\Http\Controllers\PlaceOrderController;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -86,7 +86,7 @@ uses(RefreshDatabase::class);
 
 it('queues the placed order', function () {
     $customer = User::factory()->create();
-    $order = Order::factory()->for(Kitchen::factory())->create();
+    $order = Order::factory()->for(Shop::factory())->create();
     $request = Request::create('/orders/'.$order->getKey().'/place', 'POST');
     $request->setUserResolver(fn () => $customer);
 
@@ -182,12 +182,12 @@ Storyfeed aggregate grammar coverage is incomplete:
 ## Testing Feedable Coverage
 
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Storyfeed\Testing\StorySurface;
 
 StorySurface::assertNoUnwiredSurface();
 // Or exclude models intentionally absent from this application's feed:
-StorySurface::assertNoUnwiredSurface(except: [Kitchen::class]);
+StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 ```
 
 This fails for a `Feedable` model that nothing publishes about, and for one the

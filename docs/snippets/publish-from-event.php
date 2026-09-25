@@ -17,6 +17,6 @@ class OrderPlaced implements PublishesToFeed
         return Storyfeed::activity()
             ->by($this->customer)
             ->action('place', $this->order)
-            ->to($this->order->kitchen);
+            ->to($this->order->shop);
     }
 }

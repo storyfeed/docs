@@ -6,9 +6,8 @@ A headline or noun can use a translation key from your app's `lang` files.
 Storyfeed translates it when the feed is read, using the application's current locale.
 
 <script setup>
-import { activity, scenes } from '../.vitepress/theme/samples'
-
-const french = activity({ ...scenes.order, id: 'lc1',
+import { activity, scene } from '../.vitepress/theme/world'
+const french = activity({ ...scene.order,
   headline_template: ':actor a passé :object auprès de :target' })
 </script>
 

@@ -6,21 +6,13 @@ A verb can group activities by calendar hour, day, week, or month.
 Daily grouping is the default.
 
 <script setup>
-import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
-const placed = (id, object, at) => ({ ...activity({ id, verb: 'place', glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actor placed :object with :target',
-  actor: who.regular, object, target: where.kitchen }), data: null, glyph_intent: null })
-const children = [
-  placed('period-3', orders.third, '2026-09-25T14:30:00.000000Z'),
-  placed('period-2', orders.second, '2026-09-23T14:30:00.000000Z'),
-  placed('period-1', orders.first, '2026-09-21T14:30:00.000000Z'),
-]
-const weekly = { ...group({ id: 'period-week', verb: 'place', axis: 'repeat', count: 3,
+import { scene, logOf, group, role } from '../.vitepress/theme/world'
+const children = logOf(scene.deeper.groupingPeriods.orders)
+const weekly = group({ id: 'period-week', verb: 'place', axis: 'repeat', count: children.length,
   glyph: 'shopping-bag', published_at: children[0].published_at,
   headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], objects: [orders.third, orders.second, orders.first],
-  targets: [where.kitchen], distinct: { actors: 1, objects: 3, targets: 1 }, children }),
-  glyph_intent: null }
+  actors: [role.customer], objects: children.map(row => row.object), targets: [role.shop],
+  distinct: { actors: 1, objects: children.length, targets: 1 }, children })
 </script>
 
 <a id="grouping-a-verb-by-week"></a>
@@ -39,8 +31,8 @@ Story::for(Order::class)->verb('place')
     ->grouped(Group::repeat()->headline(':actor placed :count orders with :target'));
 ```
 
-A customer places orders with the same kitchen on Monday, Wednesday, and
-Friday. The grouped feed can show them together:
+A customer places orders with the same shop on three days in the same
+week. The grouped feed can show them together:
 
 <FeedExample :items="[weekly]" />
 
