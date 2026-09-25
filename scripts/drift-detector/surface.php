@@ -56,6 +56,8 @@ foreach (json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERRO
                 $visibility = null;
             }
             if ($id === T_VARIABLE && $visibility === T_PUBLIC) $result['classes'][$class]['properties'][] = substr($v, 1);
+            // An enum's cases are public members too: `Period::Week`.
+            if ($id === T_CASE && is_array($ts[$i+1] ?? null) && $ts[$i+1][0] === T_STRING) $result['classes'][$class]['properties'][] = value($ts[$i+1]);
             if ($v === ';') $visibility = null;
         }
         if ($v === '}') {
