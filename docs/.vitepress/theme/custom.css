@@ -332,3 +332,16 @@
 .vp-doc div.sf-code-memo > button.copy {
   top: calc(41px + 12px);
 }
+
+/* A code group whose tabs share a memo shows it once, above the tabs. */
+.vp-doc .sf-code-memo-group > .sf-code-memo__bar {
+  background: var(--vp-code-tab-bg);
+}
+@media (min-width: 640px) {
+  .vp-doc .sf-code-memo-group > .sf-code-memo__bar {
+    border-radius: 8px 8px 0 0;
+  }
+  .vp-doc .sf-code-memo-group > .tabs {
+    border-radius: 0;
+  }
+}

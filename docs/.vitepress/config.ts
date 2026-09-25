@@ -49,19 +49,45 @@ export default defineConfig({
           if (at !== undefined && memo === undefined) throw new Error('Code at="…" needs a memo="…" to sit beside')
           if (memo !== undefined) token.meta = { ...token.meta, memo, at }
         }
+
+        // A code group whose tabs all carry the same memo shows it once, above
+        // the tabs: it's one file written two ways. Different memos stay per tab.
+        const tokens = state.tokens
+        for (let i = 0; i < tokens.length; i++) {
+          if (tokens[i].type !== 'container_code-group_open') continue
+          const fences = []
+          for (let j = i + 1; j < tokens.length && tokens[j].type !== 'container_code-group_close'; j++) {
+            if (tokens[j].type === 'fence') fences.push(tokens[j])
+          }
+          const first = fences[0]?.meta?.memo
+          const same = first !== undefined && fences.every((f) => f.meta?.memo === first && f.meta?.at === fences[0].meta?.at)
+          if (!same) continue
+          tokens[i].meta = { ...tokens[i].meta, memo: first, at: fences[0].meta.at }
+          for (const f of fences) f.meta = { ...f.meta, memo: undefined, at: undefined }
+        }
       })
+
+      const memoBar = (memo: string, at?: string) =>
+        `<div class="sf-code-memo__bar" v-pre><span class="sf-code-memo__file">${md.utils.escapeHtml(memo)}</span>`
+        + (at ? `<span class="sf-code-memo__at">${md.utils.escapeHtml(at)}</span>` : '')
+        + '</div>'
+
+      const groupOpen = md.renderer.rules['container_code-group_open']!
+      md.renderer.rules['container_code-group_open'] = (tokens, idx, options, env, self) => {
+        const html = groupOpen(tokens, idx, options, env, self)
+        const { memo, at } = tokens[idx].meta ?? {}
+        if (memo === undefined) return html
+        return html.replace('<div class="vp-code-group">', `<div class="vp-code-group sf-code-memo-group">${memoBar(memo, at)}`)
+      }
 
       const fence = md.renderer.rules.fence!
       md.renderer.rules.fence = (tokens, idx, options, env, self) => {
         const { memo, at } = tokens[idx].meta ?? {}
         const html = fence(tokens, idx, options, env, self)
         if (memo === undefined) return html
-        const bar = `<div class="sf-code-memo__bar" v-pre><span class="sf-code-memo__file">${md.utils.escapeHtml(memo)}</span>`
-          + (at ? `<span class="sf-code-memo__at">${md.utils.escapeHtml(at)}</span>` : '')
-          + '</div>'
         // Keep button → language → pre siblings intact for VitePress's copy handler.
         return html.replace(/^(<div class="[^"]*)"([^>]*>)/,
-          (_, opening, closing) => `${opening} sf-code-memo"${closing}${bar}`)
+          (_, opening, closing) => `${opening} sf-code-memo"${closing}${memoBar(memo, at)}`)
       }
 
       /*

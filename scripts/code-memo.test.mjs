@@ -26,6 +26,12 @@ test('each tab keeps its label, active state and own memo', async () => {
   assert.equal((html.match(/sf-code-memo__bar/g) || []).length, 2);
 });
 
+test('a group whose tabs share a memo shows it once, above the tabs', async () => {
+  const html = await render(`::: code-group\n${block('php [Fluent] memo="app/X.php" at="store()"')}\n${block('php [Named] memo="app/X.php" at="store()"')}\n:::`);
+  assert.equal((html.match(/sf-code-memo__bar/g) || []).length, 1);
+  assert.match(html, /<div class="vp-code-group sf-code-memo-group"><div class="sf-code-memo__bar" v-pre><span class="sf-code-memo__file">app\/X\.php<\/span><span class="sf-code-memo__at">store\(\)<\/span><\/div><div class="tabs">/);
+});
+
 test('imported snippets preserve code and support memo metadata', async () => {
   const html = await render('<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Controller]');
   assert.match(html, /sf-code-memo__bar/);
