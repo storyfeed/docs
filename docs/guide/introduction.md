@@ -155,8 +155,6 @@ A new order, **{{ orders.first.label }}** *(object)*, **came in** *(verb)* to **
 
 ### Other Examples
 
-The same roles fit any app.
-
 **{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*
 
 <FeedExample :items="[oneActivity[0]]" />
