@@ -164,7 +164,9 @@ body: fn () => KeyValue::make(
 :::
 
 It runs after the page's models are loaded, so it costs one query per class,
-not one per row. If it throws, the error is reported and the body is left out.
+not one per row. If it throws, the error is reported once per class and that
+body is left out; the activity stays in the feed with its label, link and any
+other bodies.
 Use a closure when the body reads the live row; a body built from the snapshot
 is cheap enough to pass directly.
 
