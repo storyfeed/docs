@@ -307,6 +307,20 @@ a.sf-entity:hover {
     padding-top: 0.5rem;
 }
 
+/* Inside the docs the day heading is an <h2> in .vp-doc, which would take the
+   site's section-heading rule, margin and size. It's a feed label, not a
+   section of the page. */
+.vp-doc h2.sf-day {
+    margin: 0;
+    border-top: 0;
+    padding-top: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+.vp-doc h2.sf-day.sf-day--later {
+    padding-top: 0.5rem;
+}
+
 .sf-empty {
     border: 1px dashed var(--sf-line);
     border-radius: 0.5rem;
