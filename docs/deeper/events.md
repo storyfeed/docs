@@ -66,5 +66,5 @@ public function toFeedActivity(): ?PendingActivity
 | `Storyfeed\Events\BatchClosed` | `$event->batch`: the closed batch, with its activities |
 
 Each carries a snapshot of the facts, not a model, and is dispatched after the
-outermost transaction commits. [Queues](/deeper/queues) covers queued
+outermost transaction commits. [Queued Publishing](/deeper/queues) covers queued
 listeners on these events.

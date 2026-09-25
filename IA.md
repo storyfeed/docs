@@ -364,12 +364,12 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Publishing from Events — the listener, `PublishesToFeed`, events core emits
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
-- ✅ Story Classes — one class per model, one method per verb, bound in `routes/feed.php` like a resource controller. The verb is the public handle, as a route name is (`story('place', $order)`), and the class is a declaration call sites never touch: never instantiated, so no `publish()`. Request injection (only the actor varies), `missingHeadline()`, one-verb classes as the job-shaped exception, `make:story`, `storyfeed:list`
+- ✅ Story Classes (`deeper/stories`) — elementary publishing, the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors, single-verb declarations and generator options
 - ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, group headlines (per type or per verb), plural tokens, the tokens a group may use, nouns, thresholds, custom axes
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
 - ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
-- ✅ Queues — queued listeners and jobs, the actor on a worker
+- ✅ Queued Publishing (`deeper/queues`) — `queue()`, queued Story classes, publication time and snapshots, transactions, missing models, actor/context carry and first/last/latest behaviour
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 - ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()`, `->forgetWhenMissing()` on the verb, bulk deletes
