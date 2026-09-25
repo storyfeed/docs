@@ -35,6 +35,9 @@ const props = withDefaults(
 )
 
 const slots = useSlots()
+// The default slot is the example's caption, drawn as a bar at the top of the
+// card; every other slot belongs to the stream.
+const streamSlots = computed(() => Object.keys(slots).filter((name) => name !== 'default'))
 const open = ref(props.expanded || props.payload)
 const copied = ref(false)
 
@@ -130,9 +133,13 @@ async function copy() {
 
 <template>
     <div class="sf-example" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
+        <div v-if="slots.default" class="sf-example__caption">
+            <slot />
+        </div>
+
         <div v-if="!payload" class="sf-example__preview">
             <FeedStream :items="drawn" :grouped="false" v-bind="$attrs">
-                <template v-for="(_, name) in slots" #[name]="slotProps">
+                <template v-for="name in streamSlots" #[name]="slotProps">
                     <slot :name="name" v-bind="slotProps as any" />
                 </template>
             </FeedStream>
@@ -175,6 +182,26 @@ async function copy() {
 }
 .sf-example__preview {
     padding: 1.1rem 1.25rem;
+}
+/* The caption: what the example shows, in the card's own header bar, as a
+   code block's memo sits in its bar. */
+.sf-example__caption {
+    padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid var(--vp-c-divider);
+    background: var(--vp-code-block-bg);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--vp-c-text-2);
+}
+.sf-example__caption :deep(p) {
+    margin: 0;
+}
+.sf-example__caption :deep(strong) {
+    color: var(--vp-c-text-1);
+}
+/* A captioned example is a unit: give consecutive ones room to read apart. */
+.sf-example:has(.sf-example__caption) {
+    margin: 1.75rem 0;
 }
 .sf-example__code {
     border-top: 1px solid var(--vp-c-divider);

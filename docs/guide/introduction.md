@@ -138,50 +138,70 @@ what it was done to, and the **target** is what it was aimed at.
 
 The summary headline of the activity may take different forms, but the underlying fact is always the same.
 
+<FeedExample :items="[sameFact[0]]">
+
 **{{ who.regular.label }}** *(actor)* **sent** *(verb)* **{{ orders.first.label }}** *(object)* to **{{ where.kitchen.label }}** *(target)*
 
-<FeedExample :items="[sameFact[0]]" />
+</FeedExample>
+
+<FeedExample :items="[sameFact[1]]">
 
 A new order, **{{ orders.first.label }}** *(object)*, **came in** *(verb)* to **{{ where.kitchen.label }}** *(target)* from **{{ who.regular.label }}** *(actor)*
 
-<FeedExample :items="[sameFact[1]]" />
+</FeedExample>
+
+<FeedExample :items="[sameFact[2]]">
 
 **{{ where.kitchen.label }}** *(target)* **received** *(verb)* **{{ orders.first.label }}** *(object)* from **{{ who.regular.label }}** *(actor)*
 
-<FeedExample :items="[sameFact[2]]" />
+</FeedExample>
 
 
 <a id="examples-of-activities"></a>
 
 ### Other Examples
 
+<FeedExample :items="[oneActivity[0]]">
+
 **{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*
 
-<FeedExample :items="[oneActivity[0]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[0]]">
 
 **{{ who.customer2.label }}** *(actor)* **completed** *(verb)* **{{ elsewhere.task.label }}** *(object)* in **{{ elsewhere.project.label }}** *(target)*
 
-<FeedExample :items="[otherApps[0]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[1]]">
 
 **{{ who.customer3.label }}** *(actor)* **merged** *(verb)* **{{ elsewhere.pull.label }}** *(object)* into **{{ elsewhere.repo.label }}** *(target)*
 
-<FeedExample :items="[otherApps[1]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[2]]">
 
 **{{ party.service.label }}** *(actor)* **marked** **{{ elsewhere.invoice.label }}** *(object)* **paid** *(verb)*
 
-<FeedExample :items="[otherApps[2]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[3]]">
 
 **{{ who.regular.label }}** *(actor)* **signed** *(verb)* **{{ elsewhere.contract.label }}** *(object)*
 
-<FeedExample :items="[otherApps[3]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[4]]">
 
 **{{ who.customer4.label }}** *(actor)* **assigned** *(verb)* **{{ elsewhere.ticket.label }}** *(object)* to **{{ who.customer5.label }}** *(target)*
 
-<FeedExample :items="[otherApps[4]]" />
+</FeedExample>
+
+<FeedExample :items="[otherApps[5]]">
 
 **{{ who.runner.label }}** *(actor)* **joined** *(verb)* **{{ elsewhere.desk.label }}** *(target)*
 
-<FeedExample :items="[otherApps[5]]" />
+</FeedExample>
 
 ## Recording Activities
 
