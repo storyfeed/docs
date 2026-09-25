@@ -26,7 +26,11 @@ import { scene, role, logOf, liveOf, summaryOf } from '../.vitepress/theme/world
 
 <FeedExample :items="[scene.order]" />
 <FeedExample :items="liveOf(scene.glance)" days />
+<FeedExample :items="liveOf(everything())" days height="520" />
 ```
+
+A long feed takes `height`: it scrolls inside the card instead of taking over
+the page.
 
 Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 

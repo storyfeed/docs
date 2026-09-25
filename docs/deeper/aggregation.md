@@ -86,7 +86,7 @@ activity is in only one group.
 A longer feed makes the difference visible: repeated actions and busy places
 fold into rows that expand to show their members.
 
-<FeedExample :items="live" days />
+<FeedExample :items="live" days height="520" />
 
 The read mode chooses which groupings a read shows:
 

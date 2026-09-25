@@ -32,9 +32,20 @@ const props = withDefaults(
         payload?: boolean
         /** Draw the day headers a real feed has, for a whole feed rather than one row. */
         days?: boolean
+        /**
+         * Cap the feed at this height and scroll inside the card, so a long
+         * feed does not take over the page: `height="360"` (pixels) or any CSS
+         * length. The caption and the payload bar stay put.
+         */
+        height?: number | string
     }>(),
     { expanded: false, label: 'Payload', context: false, payload: false, days: false },
 )
+
+const maxHeight = computed(() => {
+    if (props.height === undefined || props.height === '') return null
+    return /^\d+(\.\d+)?$/.test(String(props.height)) ? `${props.height}px` : String(props.height)
+})
 
 const slots = useSlots()
 // The default slot is the example's caption, drawn as a bar at the top of the
@@ -139,7 +150,13 @@ async function copy() {
             <slot />
         </div>
 
-        <div v-if="!payload" class="sf-example__preview">
+        <div
+            v-if="!payload"
+            class="sf-example__preview"
+            :class="{ 'sf-example__preview--scroll': maxHeight }"
+            :style="maxHeight ? { maxHeight } : undefined"
+            :tabindex="maxHeight ? 0 : undefined"
+        >
             <FeedStream :items="drawn" :grouped="days" v-bind="$attrs">
                 <template v-for="name in streamSlots" #[name]="slotProps">
                     <slot :name="name" v-bind="slotProps as any" />
@@ -184,6 +201,16 @@ async function copy() {
 }
 .sf-example__preview {
     padding: 1.1rem 1.25rem;
+}
+/* A capped feed scrolls inside the card, and the scroll never hands off to
+   the page at either end. */
+.sf-example__preview--scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.sf-example__preview--scroll:focus-visible {
+    outline: 2px solid var(--vp-c-brand-1);
+    outline-offset: -2px;
 }
 /* The caption: what the example shows, in the card's own header bar, as a
    code block's memo sits in its bar. */

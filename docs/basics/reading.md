@@ -70,7 +70,7 @@ Storyfeed::feed()
     ->get();
 ```
 
-<FeedExample :items="live" days />
+<FeedExample :items="live" days height="520" />
 
 ### Summary
 
@@ -96,7 +96,7 @@ Storyfeed::feed()
     ->get();
 ```
 
-<FeedExample :items="summary" days />
+<FeedExample :items="summary" days height="520" />
 
 #### Choosing the Period
 
@@ -138,7 +138,7 @@ Storyfeed::feed()
     ->get();
 ```
 
-<FeedExample :items="log" days />
+<FeedExample :items="log" days height="520" />
 
 The payload uses the same node shapes in every mode. Choose the mode for each surface.
 

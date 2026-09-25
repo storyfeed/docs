@@ -134,7 +134,7 @@ The same recorded activities display three ways. [Reading Feeds](/basics/reading
 The familiar feed, and the default. Repeats fold into one row, and so do
 several people doing the same thing at one place.
 
-<FeedExample :items="worldLive" days />
+<FeedExample :items="worldLive" days height="420" />
 
 <a id="as-a-grouped-summary"></a>
 <a id="aggregated-feeds"></a>
@@ -148,7 +148,7 @@ This is the Summary proposed for the next release. Until then, `summary()`
 reads like Live.
 :::
 
-<FeedExample :items="worldSummary" days />
+<FeedExample :items="worldSummary" days height="420" />
 
 <a id="as-a-timeline"></a>
 <a id="timeline-feeds"></a>
@@ -157,4 +157,4 @@ reads like Live.
 
 The timeline: every activity, one row each.
 
-<FeedExample :items="worldLog" days />
+<FeedExample :items="worldLog" days height="420" />
