@@ -9,15 +9,21 @@ summary, and serialized following
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one.
+import { provide } from 'vue'
+import { FEED_NOW } from '../.vitepress/theme/feed/keys'
 import { who, where, orders, dishes, notes, party, entity, activity, group } from '../.vitepress/theme/samples'
+
+// This page is set in Hawkins, Indiana, on the Fourth of July, 1985: its own
+// clock, so "Today" and "Yesterday" read from there.
+provide(FEED_NOW, Date.parse('1985-07-04T19:00:00Z'))
 
 // Section 2 reuses one activity from the log, so the roles arrive on a sentence
 // the reader has already read.
 const oneActivity = [
-  activity({ id: 'a6', verb: 'ask', glyph: 'message-circle', published_at: '2026-08-14T18:49:02.000000Z',
+  activity({ id: 'a6', verb: 'ask', glyph: 'message-circle', published_at: '1985-07-04T18:49:02.000000Z',
     headline_template: ':actor asked about :target',
     actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'a5', verb: 'place', glyph: 'shopping-bag', published_at: '2026-08-14T18:44:02.000000Z',
+  activity({ id: 'a5', verb: 'place', glyph: 'shopping-bag', published_at: '1985-07-04T18:44:02.000000Z',
     headline_template: ':actor placed :object with :target',
     actor: who.regular, object: orders.first, target: where.kitchen }),
 ]
@@ -28,7 +34,7 @@ const sameFact = [
   'A new order, :object, came in to :target from :actor',
   ':target received :object from :actor',
 ].map((headline_template, i) => activity({ id: `h${i}`, verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T18:44:02.000000Z', headline_template,
+  published_at: '1985-07-04T18:44:02.000000Z', headline_template,
   actor: who.regular, object: orders.first, target: where.kitchen }))
 
 // The same shape in other apps, same cast: a task tracker, a code host,
@@ -39,7 +45,7 @@ const elsewhere = {
   pull:     entity('pull_request', '214', 'Pull request #214', '/pulls/214'),
   repo:     entity('repository', 'cerebro', 'cerebro', '/repositories/cerebro'),
   invoice:  entity('invoice', '1983', 'Scoops Ahoy invoice #1983', '/invoices/1983'),
-  contract: entity('document', 'fv-1', 'the Family Video employment contract', '/documents/fv-1'),
+  contract: entity('document', 'sa-1', 'the Scoops Ahoy employment contract', '/documents/sa-1'),
   ticket:   entity('ticket', '881', 'Ticket #881: Dig Dug high score reset', '/tickets/881'),
   desk:     entity('team', 'photo', 'the Hawkins Post photo desk', '/teams/photo'),
   keycard:  entity('task', '16', 'Find the keycard', '/tasks/16'),
@@ -49,22 +55,22 @@ const elsewhere = {
 }
 
 const otherApps = [
-  activity({ id: 'e1', verb: 'complete', glyph: 'square-check', published_at: '2026-08-14T16:20:00.000000Z',
+  activity({ id: 'e1', verb: 'complete', glyph: 'square-check', published_at: '1985-07-02T16:20:00.000000Z',
     headline_template: ':actor completed :object in :target',
     actor: who.customer2, object: elsewhere.task, target: elsewhere.project }),
-  activity({ id: 'e2', verb: 'merge', glyph: 'git-merge', published_at: '2026-08-14T15:05:00.000000Z',
+  activity({ id: 'e2', verb: 'merge', glyph: 'git-merge', published_at: '1985-07-04T15:05:00.000000Z',
     headline_template: ':actor merged :object into :target',
     actor: who.customer3, object: elsewhere.pull, target: elsewhere.repo }),
-  activity({ id: 'e3', verb: 'pay', glyph: 'receipt', published_at: '2026-08-14T14:00:00.000000Z',
+  activity({ id: 'e3', verb: 'pay', glyph: 'receipt', published_at: '1985-07-04T14:00:00.000000Z',
     headline_template: ':actor marked :object paid',
     actor: party.service, object: elsewhere.invoice }),
-  activity({ id: 'e4', verb: 'sign', glyph: 'file-pen', published_at: '2026-08-14T11:40:00.000000Z',
+  activity({ id: 'e4', verb: 'sign', glyph: 'file-pen', published_at: '1985-07-04T11:40:00.000000Z',
     headline_template: ':actor signed :object',
     actor: who.regular, object: elsewhere.contract }),
-  activity({ id: 'e5', verb: 'assign', glyph: 'ticket', published_at: '2026-08-14T10:15:00.000000Z',
+  activity({ id: 'e5', verb: 'assign', glyph: 'ticket', published_at: '1985-07-04T10:15:00.000000Z',
     headline_template: ':actor assigned :object to :target',
     actor: who.customer4, object: elsewhere.ticket, target: who.customer5 }),
-  activity({ id: 'e6', verb: 'join', glyph: 'user-plus', published_at: '2026-08-14T09:40:00.000000Z',
+  activity({ id: 'e6', verb: 'join', glyph: 'user-plus', published_at: '1985-07-04T09:40:00.000000Z',
     headline_template: ':actor joined :target',
     actor: who.runner, target: elsewhere.desk }),
 ]
@@ -72,12 +78,12 @@ const otherApps = [
 // ONE DAY IN HAWKINS: every activity the page has shown, and the rest of the
 // day around it. The three feeds below are COMPUTED from these rows, so a
 // group's count is always the rows it stands for.
-const at = (time) => `2026-08-14T${time}.000000Z`
+const at = (time) => `1985-07-04T${time}.000000Z`
 const row = (id, time, verb, glyph, headline_template, actor, object = null, target = null) =>
   activity({ id, verb, glyph, published_at: at(time), headline_template, actor, object, target })
 const order = (n) => entity('order', String(n), `Order #${n}`, `/orders/${n}`)
 const hawkinsPost = entity('publication', 'post', 'the Hawkins Post', '/publications/post')
-const familyVideo = entity('store', 'fv', 'Family Video', '/stores/fv')
+const funFair = entity('event', 'fair', 'the Hawkins Fun Fair', '/events/fair')
 const photoOf = (n, label) => entity('photo', `p${n}`, label, `/photos/p${n}`)
 const tape = (n, label) => entity('tape', `t${n}`, label, `/tapes/t${n}`)
 const task = (n, label) => entity('task', String(n), label, `/tasks/${n}`)
@@ -111,14 +117,13 @@ const kitchen = [
 
 const aroundTown = [
   row('t1', '08:45:00', 'join', 'user-plus', ':actor joined :target', who.cook, null, elsewhere.desk),
-  row('t2', '09:10:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, elsewhere.desk),
   otherApps[5],
   otherApps[4],
   ...['Starcourt at dusk', 'The Arcade line', 'Scoops Ahoy counter', 'Main Street parade', 'The quarry'].map((label, i) =>
     row(`t5${i}`, ['10:30:00', '10:50:00', '11:05:00', '11:20:00', '11:35:00'][i], 'upload', 'image', ':actor uploaded :object to :target', who.runner, photoOf(i, label), hawkinsPost)),
   otherApps[3],
-  ...['The Goonies', 'Back to the Future', 'Ghostbusters'].map((label, i) =>
-    row(`t6${i}`, ['12:10:00', '12:25:00', '12:40:00'][i], 'rent', 'tag', ':actor rented :object from :target', who.regular, tape(i, label), familyVideo)),
+  ...['a Ferris wheel ticket', 'a carousel ticket', 'a ring toss ticket'].map((label, i) =>
+    row(`t6${i}`, ['12:10:00', '12:25:00', '12:40:00'][i], 'buy', 'tag', ':actor bought :object for :target', who.customer5, entity('fair_ticket', `f${i}`, label, `/tickets/f${i}`), funFair)),
   ...[1980, 1981, 1982].map((n, i) =>
     row(`t7${i}`, ['13:00:00', '13:20:00', '13:40:00'][i], 'pay', 'receipt', ':actor marked :object paid', party.service, invoice(n))),
   otherApps[2],
@@ -131,42 +136,38 @@ const aroundTown = [
 ]
 
 // The days before: a smaller rush yesterday, and the day the kitchen opened.
-const on = (date, time) => `2026-08-${date}T${time}.000000Z`
+const on = (date, time) => `1985-07-${date}T${time}.000000Z`
 const past = (id, date, time, verb, glyph, headline_template, actor, object = null, target = null) =>
   activity({ id, verb, glyph, published_at: on(date, time), headline_template, actor, object, target })
-const hellfire = entity('club', 'hellfire', 'the Hellfire Club', '/clubs/hellfire')
-const scoopsAhoy = entity('store', 'scoops', 'Scoops Ahoy', '/stores/scoops')
+const scoopsTroop = entity('team', 'troop', 'the Scoops Troop', '/teams/troop')
+const digDug = entity('game', 'digdug', 'Dig Dug', '/games/digdug')
+const palaceArcade = entity('venue', 'palace', 'the Palace Arcade', '/venues/palace')
 const pastOn = (date, id, time, verb, glyph, headline_template, actor, object = null, target = null) =>
   activity({ id, verb, glyph, published_at: `${date}T${time}.000000Z`, headline_template, actor, object, target })
 const earlier = [
-  past('y1', '13', '19:05:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.customer2, order(1039), where.kitchen),
-  past('y2', '13', '19:06:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1039)),
-  past('y3', '13', '19:12:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.regular, order(1040), where.kitchen),
-  past('y4', '13', '19:13:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1040)),
-  past('y5', '13', '19:20:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.newcomer, order(1041), where.kitchen),
-  past('y6', '13', '19:21:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1041)),
-  past('y7', '13', '19:34:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1039)),
-  past('y8', '13', '19:41:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1040)),
-  past('y9', '13', '15:10:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(210), elsewhere.repo),
-  past('y10', '13', '15:45:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(211), elsewhere.repo),
-  past('y11', '13', '11:30:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(18, 'Find the frequency'), elsewhere.project),
-  past('y12', '13', '12:05:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(19, 'Record the broadcast'), elsewhere.project),
-  past('y13', '13', '16:30:00', 'join', 'user-plus', ':actor joined :target', who.customer3, null, hellfire),
-  past('y14', '13', '16:32:00', 'join', 'user-plus', ':actor joined :target', who.customer5, null, hellfire),
-  past('y15', '13', '16:40:00', 'join', 'user-plus', ':actor joined :target', who.customer4, null, hellfire),
-  past('o1', '12', '10:00:00', 'open', 'building-2', ':actor opened :object', who.owner, where.kitchen),
-  past('o2', '12', '12:00:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.lassi),
-  past('o3', '12', '12:05:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.roti),
-  past('o4', '12', '12:10:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.cutlets),
-  // Two weeks back: the code host and the operation begin.
-  pastOn('2026-08-01', 'a1', '09:30:00', 'create', 'git-merge', ':actor created :object', who.customer3, elsewhere.repo),
-  pastOn('2026-08-01', 'a2', '14:00:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, elsewhere.project),
-  pastOn('2026-08-01', 'a3', '14:20:00', 'join', 'user-plus', ':actor joined :target', who.regular, null, elsewhere.project),
-  pastOn('2026-08-01', 'a4', '14:45:00', 'join', 'user-plus', ':actor joined :target', who.customer3, null, elsewhere.project),
-  // A month back: Starcourt Mall opens on the Fourth of July.
-  pastOn('2026-07-04', 'm1', '10:00:00', 'join', 'user-plus', ':actor joined :target', who.regular, null, scoopsAhoy),
-  pastOn('2026-07-04', 'm2', '10:05:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, scoopsAhoy),
-  pastOn('2026-07-04', 'm3', '21:30:00', 'pay', 'receipt', ':actor marked :object paid', party.service, invoice(1001)),
+  past('y1', '03', '19:05:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.customer2, order(1039), where.kitchen),
+  past('y2', '03', '19:06:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1039)),
+  past('y3', '03', '19:12:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.regular, order(1040), where.kitchen),
+  past('y4', '03', '19:13:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1040)),
+  past('y5', '03', '19:20:00', 'place', 'shopping-bag', ':actor placed :object with :target', who.newcomer, order(1041), where.kitchen),
+  past('y6', '03', '19:21:00', 'confirm', 'circle-check', ':actor confirmed :object', who.cook, order(1041)),
+  past('y7', '03', '19:34:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1039)),
+  past('y8', '03', '19:41:00', 'ready', 'utensils', ':actor marked :object ready', who.cook, order(1040)),
+  past('y9', '03', '15:10:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(210), elsewhere.repo),
+  past('y10', '03', '15:45:00', 'merge', 'git-merge', ':actor merged :object into :target', who.customer3, pull(211), elsewhere.repo),
+  pastOn('1985-06-30', 'y11', '11:30:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(18, 'Find the frequency'), elsewhere.project),
+  pastOn('1985-07-01', 'y12', '12:05:00', 'complete', 'square-check', ':actor completed :object in :target', who.customer2, task(19, 'Record the broadcast'), elsewhere.project),
+  past('y13', '03', '16:30:00', 'join', 'user-plus', ':actor joined :target', who.customer3, null, scoopsTroop),
+  past('y14', '03', '16:32:00', 'join', 'user-plus', ':actor joined :target', who.regular, null, scoopsTroop),
+  past('y15', '03', '16:40:00', 'join', 'user-plus', ':actor joined :target', who.customer2, null, scoopsTroop),
+  past('o1', '01', '10:00:00', 'open', 'building-2', ':actor opened :object', who.owner, where.kitchen),
+  past('o2', '01', '12:00:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.lassi),
+  past('o3', '01', '12:05:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.roti),
+  past('o4', '01', '12:10:00', 'publish', 'chef-hat', ':actor put :object on the menu', who.cook, dishes.cutlets),
+  // Saturday, June 29, 1985: Dustin is back from Camp Know Where with Cerebro.
+  pastOn('1985-06-29', 'a1', '09:30:00', 'create', 'git-merge', ':actor created :object', who.customer3, elsewhere.repo),
+  // Sunday, October 28, 1984: MADMAX takes the Dig Dug high score at the Palace Arcade.
+  pastOn('1984-10-28', 'm1', '16:00:00', 'score', 'square-check', ':actor set a new high score on :object at :target', who.customer4, digDug, palaceArcade),
 ]
 
 const newestFirst = (rows) => [...rows].sort((a, b) => b.published_at.localeCompare(a.published_at))
@@ -180,7 +181,7 @@ const heads = {
   dispatch: { repeat: ':actor is on the way with :count orders' },
   ask:      { repeat: ':actor asked about :target :count times', targets: ':actor asked about :targets' },
   upload:   { repeat: ':actor uploaded :count photos to :target' },
-  rent:     { repeat: ':actor rented :count tapes from :target' },
+  buy:      { repeat: ':actor bought :count tickets for :target' },
   pay:      { repeat: ':actor marked :count invoices paid' },
   merge:    { repeat: ':actor merged :count pull requests into :target' },
   complete: { repeat: ':actor completed :count tasks in :target' },
