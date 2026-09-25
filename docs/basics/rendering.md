@@ -1,9 +1,5 @@
 # Rendering
 
-A renderer turns each node of the payload into a row. Every node carries its
-headline fields, entities, glyph and the app's `data`. Your frontend chooses
-how to display them.
-
 <script setup>
 import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
 
@@ -36,10 +32,20 @@ const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
   actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })
 </script>
 
+## Introduction
+
+A renderer turns each node of the payload into a row. Every node carries its
+headline fields, entities, glyph and the app's `data`. Your frontend chooses
+how to display them.
+
 ::: headless
 :::
 
-## Rendering a Headline
+## Rendering Activities
+
+<a id="rendering-a-headline"></a>
+
+### Headlines
 
 This activity names three roles. Substitute their labels into its template:
 
@@ -64,7 +70,9 @@ This activity names three roles. Substitute their labels into its template:
 
 <FeedExample expanded context :items="[bare]" />
 
-## Linking the Entities
+<a id="linking-the-entities"></a>
+
+### Entity Links
 
 Each entity carries its own `url`, so a link needs no route knowledge:
 
@@ -78,7 +86,7 @@ Each entity carries its own `url`, so a link needs no route knowledge:
             : e($e['label'] ?? $fallback));
 @endphp
 
-{!! strtr($node['headline_template'] ?? $node['headline'] ?? '', [
+{!! strtr(e($node['headline_template'] ?? $node['headline'] ?? ''), [
     ':actor' => $entity($node['actor'], 'Someone'),
     ':object' => $entity($node['object'], 'Something'),
     ':target' => $entity($node['target'], 'Something'),
@@ -87,7 +95,7 @@ Each entity carries its own `url`, so a link needs no route knowledge:
 
 <FeedExample :items="[one]" />
 
-## Glyphs and Intents
+### Glyphs and Intents
 
 The node's `glyph` is a token your app registered. Map it to your icon set,
 with a fallback icon for a token you don't recognise. `glyph_intent` sits
@@ -111,18 +119,11 @@ this example's words. Map them onto colours your frontend owns.
 Most verbs have no intent. Their `glyph_intent` is `null`: draw the plain
 glyph, as you would for an intent you have no colour for.
 
-## Degraded Entities
+<a id="groups"></a>
 
-An entity whose snapshot has not been written yet arrives with `label: null`
-and `url: null`. A null **actor** means the actor is unknown. The activity is
-still in the feed:
+## Rendering Groups
 
-<FeedExample :items="[degraded]" />
-
-The example uses placeholders for missing labels. For an unknown actor, a
-headline without an actor token can describe the activity directly.
-
-## Groups
+### Plural Roles
 
 A group node has `kind: "group"` and a plural sentence. `:count` is the member
 count, and a plural token draws the sample plus how many are not shown:
@@ -139,7 +140,7 @@ count, and a plural token draws the sample plus how many are not shown:
     };
 @endphp
 
-{!! strtr($node['headline_template'] ?? $node['headline'] ?? '', [
+{!! strtr(e($node['headline_template'] ?? $node['headline'] ?? ''), [
     ':actor' => $entity($node['actor'], 'Someone'),
     ':target' => $entity($node['target'], 'Something'),
     ':actors' => $list($node, 'actors'),
@@ -150,13 +151,13 @@ count, and a plural token draws the sample plus how many are not shown:
 
 <FeedExample :items="[grouped]" />
 
-A group fills a singular role only when its axis pins that role and the
+A group fills a singular role only when the grouping axis fixes that role and the
 group has exactly one entity in it. For a
 **singular** token, take a name from the sample only when `distinct` says
 there is one, and otherwise draw the plural list. An unconditional
 `?? sample[0]` names one person over a group of nine.
 
-## Groups Without Headlines
+### Groups Without Headlines
 
 Some groups have no sentence: **both** `headline_template` and `headline` are
 null. Draw the count:
@@ -179,21 +180,31 @@ activities names one actor over a many-actor group. `headline` is the
 pre-rendered sentence for grammar written as a PHP closure, and is null when
 the template is present.
 
-## Activity Data and Bodies
+<a id="activity-data-and-bodies"></a>
 
-Beneath the sentence, a row can carry an utterance or a
-[body](/basics/activity-content): a value in the app's own `data` with a known
-body type. Find one by walking `data` for a `$body` key. Draw the body types
-you recognise and **nothing** for the rest.
+## Rendering Content
 
-## Verifying Your Renderer
+### Activity Data
 
-Render every node your feed produces and count the fallback strings:
+An activity’s `data` contains values supplied when recording it. Your application decides which values to display. Quoted text is in `thread`; see [Activity Content](/basics/activity-content).
 
-```
-fallback leaks ("Someone"/"Something"): 0
-```
+### Bodies
 
-A leak means a token resolved to nothing, and it reads like an anonymous
-actor rather than a bug. Run it across every read mode. Degraded entities are
-the exception: they should render your placeholder.
+Structured entity content is in the entity’s `body` list. Each body identifies its type with `$body` and version with `$v`. Match the types your frontend supports; see [Activity Body Content](/deeper/body).
+
+<a id="degraded-entities"></a>
+
+## Handling Missing Values
+
+An entity whose snapshot has not been written yet arrives with `label: null`
+and `url: null`. A null **actor** means the actor is unknown. The activity is
+still in the feed:
+
+<FeedExample :items="[degraded]" />
+
+The example uses placeholders for missing labels. For an unknown actor, a
+headline without an actor token can describe the activity directly.
+
+<a id="verifying-your-renderer"></a>
+
+The headline example above uses `Someone` and `Something` when a label is missing. Apply a fallback where you read a nullable value. See [Testing](/deeper/testing) for testing activity publication.

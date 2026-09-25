@@ -1,8 +1,5 @@
 # Activity Content
 
-The headline is one sentence. Under it an activity can show the words someone
-wrote, the facts behind a change, or what a file is.
-
 <script setup>
 import { who, orders, dishes, notes, scenes, activity, INSTRUCTIONS } from '../.vitepress/theme/samples'
 
@@ -57,7 +54,12 @@ const withFile = activity({
 })
 </script>
 
-## Headlines
+## Introduction
+
+The headline is one sentence. Under it an activity can show the words someone
+wrote, the facts behind a change, or what a file is.
+
+<a id="headlines"></a>
 
 Most activities need nothing more. The sentence is the whole row:
 
@@ -68,58 +70,149 @@ Most activities need nothing more. The sentence is the whole row:
 
 <FeedExample context :items="[scenes.order]" />
 
-## Quoted Text
+<a id="quoted-text"></a>
+
+## Adding Quoted Text
 
 When the activity is *about* an utterance, the utterance belongs on the
 activity. `->thread()` carries it:
 
-```php
-// where the fact happens: a controller, an action, a listener
+::: code-group
+```php [Fluent Syntax]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreNoteRequest;
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedThread;
 
-Storyfeed::activity()
-    ->by($customer)
-    ->action('post', $note)
-    ->on($order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
-    ->publish();
+class OrderNoteController extends Controller
+{
+    public function store(StoreNoteRequest $request, Order $order): RedirectResponse
+    {
+        $customer = $request->user();
+        $note = $order->notes()->create($request->validated());
+
+        Storyfeed::activity()
+            ->by($customer)
+            ->action('post', $note)
+            ->on($order)
+            ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
+            ->publish();
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreNoteRequest;
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+class OrderNoteController extends Controller
+{
+    public function store(StoreNoteRequest $request, Order $order): RedirectResponse
+    {
+        $customer = $request->user();
+        $note = $order->notes()->create($request->validated());
+
+        Storyfeed::record(
+            verb: 'post',
+            object: $note,
+            actor: $customer,
+            target: $order,
+            thread: FeedThread::make(
+                text: $note->body,
+                by: $customer->name,
+                kind: 'note',
+            ),
+        );
+
+        return back();
+    }
+}
+```
+:::
 
 <FeedExample :items="[withThread]" />
 
 The text is stored on the activity, so editing the note afterwards does not
 change what the row quotes.
 
-## Entity Bodies
+<a id="entity-bodies"></a>
+
+## Adding Entity Bodies
 
 An entity's **body** carries structured content. The model supplies it in
 `toFeed()`, and your frontend chooses how to draw each body type.
 
+### Text and Labelled Values
+
 ::: code-group
 
 ```php [Fluent Syntax]
-// app/Models/Order.php
-use Storyfeed\Body\Excerpt;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
 {
-    return FeedEntity::make()
-        ->label("Order #{$this->reference}")
-        ->body(Excerpt::make()->text($this->instructions)->from('Instructions'));
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label("Order #{$this->reference}")
+            ->body(Excerpt::make()
+                ->text($this->instructions)
+                ->from('Instructions')
+                ->truncated(false));
+    }
 }
 ```
 
 ```php [Named Arguments]
-// app/Models/Order.php
-use Storyfeed\Body\Excerpt;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
 {
-    return FeedEntity::make(
-        label: "Order #{$this->reference}",
-        body: Excerpt::make(text: $this->instructions, from: 'Instructions'),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+            body: Excerpt::make(
+                text: $this->instructions,
+                from: 'Instructions',
+                truncated: false,
+            ),
+        );
+    }
 }
 ```
 
@@ -127,43 +220,67 @@ public function toFeed(): FeedEntity
 
 <FeedExample :items="[withExcerpt]" />
 
-A body on the snapshot shows wherever the entity appears, so the model writes
+`truncated: false` marks the instructions as complete text. A body on the snapshot shows wherever the entity appears, so the model writes
 it, not the line that records an activity:
 
 ::: code-group
 
 ```php [Fluent Syntax]
-// app/Models/Order.php
-use Storyfeed\Body\KeyValue;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
 {
-    return FeedEntity::make()
-        ->label("Order #{$this->reference}")
-        ->body(KeyValue::make()->items([
-            'Pickup' => $this->pickup_at->format('g:i a'),
-            'Items' => $this->items->count(),
-            'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
-        ]));
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label("Order #{$this->reference}")
+            ->body(KeyValue::make()->items([
+                'Pickup' => $this->pickup_at->format('g:i a'),
+                'Items' => $this->items->count(),
+                'Reference' => KeyValue::verbatim($this->reference),
+                'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            ]));
+    }
 }
 ```
 
 ```php [Named Arguments]
-// app/Models/Order.php
-use Storyfeed\Body\KeyValue;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
 {
-    return FeedEntity::make(
-        label: "Order #{$this->reference}",
-        body: KeyValue::make(items: [
-            'Pickup' => $this->pickup_at->format('g:i a'),
-            'Items' => $this->items->count(),
-            'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
-        ]),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+            body: KeyValue::make(items: [
+                'Pickup' => $this->pickup_at->format('g:i a'),
+                'Items' => $this->items->count(),
+                'Reference' => KeyValue::verbatim($this->reference),
+                'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            ]),
+        );
+    }
 }
 ```
 
@@ -175,41 +292,65 @@ A missing value can carry a label for your renderer: one row with
 `KeyValue::missingAs()`, or the whole body with `->missing()`. A value that is
 compared rather than read, a reference or an address, is marked `verbatim`.
 
-## File Details
+### File Details
 
 ::: code-group
 
 ```php [Fluent Syntax]
-// app/Models/Photo.php
-use Storyfeed\Body\File;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\File;
+use Storyfeed\FeedEntity;
+
+class Photo extends Model implements Feedable
 {
-    return FeedEntity::make()
-        ->label($this->name)
-        ->body(
-            File::make()
-                ->size($this->bytes)
-                ->mediaType($this->mime)
-                ->name($this->name)
-        );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->body(
+                File::make()
+                    ->size($this->bytes)
+                    ->mediaType($this->mime)
+                    ->name($this->name)
+            );
+    }
 }
 ```
 
 ```php [Named Arguments]
-// app/Models/Photo.php
-use Storyfeed\Body\File;
+<?php
 
-public function toFeed(): FeedEntity
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\Body\File;
+use Storyfeed\FeedEntity;
+
+class Photo extends Model implements Feedable
 {
-    return FeedEntity::make(
-        label: $this->name,
-        body: File::make(
-            size: $this->bytes,
-            mediaType: $this->mime,
-            name: $this->name,
-        ),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            body: File::make(
+                size: $this->bytes,
+                mediaType: $this->mime,
+                name: $this->name,
+            ),
+        );
+    }
 }
 ```
 
@@ -220,43 +361,9 @@ public function toFeed(): FeedEntity
 `File` says what a file is, never where it lives: the URL comes from
 [`feedMedia()`](/basics/feedable-models#the-link) at read time.
 
-## Modal Links
+<a id="built-in-body-types"></a>
 
-Some entities are better opened than navigated to, like a photograph or a
-document preview. `modal()` on the media marks the link, and the entity
-carries `modal: true`.
-
-::: code-group
-
-```php [Fluent Syntax]
-// app/Models/Photo.php
-public static function feedMedia(FeedContext $context): ?FeedMedia
-{
-    return FeedMedia::make()
-        ->url(route('photos.show', $context->routeKey()))
-        ->modal();
-}
-```
-
-```php [Named Arguments]
-// app/Models/Photo.php
-public static function feedMedia(FeedContext $context): ?FeedMedia
-{
-    return FeedMedia::make(
-        url: route('photos.show', $context->routeKey()),
-        modal: true,
-    );
-}
-```
-
-:::
-
-<FeedExample :items="[openInPlace]" />
-
-`modal` is a boolean in the payload. Opening a dialog is your renderer's job;
-the flag does not open a dialog by itself.
-
-## Built-In Body Types
+### Available Body Types
 
 | Body Type | Shows |
 |---|---|
@@ -271,3 +378,73 @@ the flag does not open a dialog by itself.
 
 They live in `Storyfeed\Body`. Each carries a version, so a renderer can
 upgrade an old row before drawing it. An app may write its own body types.
+
+See [Activity Body Content](/deeper/body) for body construction and custom types.
+
+## Linking to Content
+
+Entity links and images are resolved when the feed is read. [Feedable Models](/basics/feedable-models#resolving-links-and-images) covers the resolver.
+
+### Modal Links
+
+Some entities are better opened than navigated to, like a photograph or a
+document preview. `modal()` on the media marks the link, and the entity
+carries `modal: true`.
+
+::: code-group
+
+```php [Fluent Syntax]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class Photo extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()
+            ->url(route('photos.show', $context->routeKey()))
+            ->modal();
+    }
+}
+```
+
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class Photo extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            url: route('photos.show', $context->routeKey()),
+            modal: true,
+        );
+    }
+}
+```
+
+:::
+
+<FeedExample :items="[openInPlace]" />
+
+`modal` is a boolean in the payload. Opening a dialog is your renderer's job;
+the flag does not open a dialog by itself.

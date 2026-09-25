@@ -1,8 +1,5 @@
 # Reading Feeds
 
-`Storyfeed::feed()` starts a read, and `get()` returns a page of the feed,
-ready to render or to return from a route.
-
 <script setup>
 import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
 
@@ -32,6 +29,11 @@ const summary = [repeat, log[3]]
 const scoped = [repeat, log[3]]
 </script>
 
+## Introduction
+
+`Storyfeed::feed()` starts a read, and `get()` returns a page of the feed,
+ready to render or to return from a route.
+
 ## Reading a Feed
 
 Return the feed from a route:
@@ -55,7 +57,9 @@ The response is the following JSON:
 
 <FeedExample context :items="scoped" />
 
-## Read Modes
+<a id="read-modes"></a>
+
+## Choosing a Read Mode
 
 | Call | Also Called | Returns |
 |---|---|---|
@@ -85,9 +89,13 @@ Storyfeed::feed()->involving($kitchen)->summary()->get();
 
 <FeedExample :items="summary" />
 
-The payload uses the same node shapes in every mode. A read chooses its mode:
+The payload uses the same node shapes in every mode. Choose the mode for each surface.
 
-## Scoping
+## Filtering Activities
+
+<a id="scoping"></a>
+
+### Filtering by Entity or Role
 
 An entity's own page uses `involving()`: every activity that mentions it, in
 any role.
@@ -112,19 +120,21 @@ Narrower filters:
 
 Scopes combine. A group counts only the activities inside the scope.
 
-::: tip The difference between involving and context
-`context()` returns only activities recorded inside a container. "Dish put on
-the menu" records the dish as the **object**, so a dish's page scoped with
-`context()` misses it. `involving()` finds it.
-:::
-
-## Custom Query Constraints
+> [!NOTE]
+> **The difference between involving and context**
+>
+> `context()` returns only activities recorded inside a container. "Dish put on
+> the menu" records the dish as the **object**, so a dish's page scoped with
+> `context()` misses it. `involving()` finds it.
+### Custom Query Constraints
 
 `query()` gives you the activity query, for anything the filters can't
 express:
 
 ```php
 // a controller, or wherever the feed is read
+use Storyfeed\Models\Builders\ActivityBuilder;
+
 // everything except notes
 $kitchen->storyfeed()
     ->query(fn (ActivityBuilder $q) => $q->whereNot('verb', 'note'))
@@ -144,36 +154,9 @@ only narrow the read: `orWhere` can't reach past the scope, ordering is
 ignored, and `limit()` or `offset()` throws. Size the page with `limit()` on
 the builder.
 
-## Pagination
+<a id="conditional-building"></a>
 
-Feeds are paginated with cursors, 30 activities to a page by default. Pass the
-previous page's `next_cursor` back to get the next one:
-
-```php
-// routes/web.php
-use Illuminate\Support\Facades\Route;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function (Request $request) {
-    return Storyfeed::feed()
-        ->limit(20)
-        ->cursor($request->query('cursor'))
-        ->get();
-});
-```
-
-Each response carries what the next request needs:
-
-| Key | What to Do With It |
-|---|---|
-| `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
-| `items` | the page's activities |
-| `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
-
-A cursor only works with the query that made it: the same scope, filters, mode
-and `query()` callbacks.
-
-## Conditional Building
+### Conditional Constraints
 
 `FeedBuilder` is `Conditionable`:
 
@@ -185,3 +168,39 @@ Storyfeed::feed()
     ->when($request->kitchen, fn ($feed, $kitchen) => $feed->involving($kitchen))
     ->get();
 ```
+
+<a id="pagination"></a>
+
+## Paginating Results
+
+Feeds are paginated with cursors, 30 activities to a page by default. Pass the
+previous page's `next_cursor` back to get the next one:
+
+### Reading the Next Page
+
+```php
+// routes/web.php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function (Request $request) {
+    return Storyfeed::feed()
+        ->limit(20)
+        ->cursor($request->query('cursor'))
+        ->get();
+});
+```
+
+### Handling a Changed Feed
+
+Each response carries what the next request needs:
+
+| Key | What to Do With It |
+|---|---|
+| `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
+| `items` | the page's activities |
+| `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
+
+A cursor only works with the query that made it: the same scope, filters, mode
+and `query()` callbacks.

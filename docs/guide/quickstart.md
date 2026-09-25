@@ -1,18 +1,25 @@
 # Quickstart
 
-Recording an activity takes three things: models that say how they read in a
-feed, a headline for the verb, and one call where the fact happens. The example
-is a customer placing an order with a kitchen.
-
 <script setup>
 import { scenes } from '../.vitepress/theme/samples'
 </script>
 
-## Making the Models Feedable
+## Introduction
+
+Recording an activity takes three things: models that say how they read in a
+feed, a headline for the verb, and one call where the fact happens. The example
+is a customer placing an order with a kitchen.
+
+<a id="making-the-models-feedable"></a>
+
+## Preparing the Models
+
+[Install Storyfeed](/guide/installation) before defining your models and headline.
 
 A model that appears in the feed says how it should read:
 
-```php
+::: code-group
+```php [Fluent Syntax]
 <?php
 
 namespace App\Models;
@@ -28,14 +35,40 @@ class Order extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make(label: "Order #{$this->reference}");
+        return FeedEntity::make()->label("Order #{$this->reference}");
     }
 }
 ```
 
+```php [Named Arguments]
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+        );
+    }
+}
+```
+:::
+
 `Kitchen` and `User` get the same treatment, each returning its own label.
 
-## Giving the Verb a Headline
+<a id="giving-the-verb-a-headline"></a>
+
+## Defining a Headline
 
 ```php
 // routes/feed.php
@@ -57,7 +90,7 @@ On the feed:
 
 <FeedExample context :items="[scenes.order]" />
 
-## Rendering the Feed
+## Reading the Feed
 
 Return the feed from a route:
 
@@ -71,11 +104,15 @@ Route::get('/', function () {
 });
 ```
 
+## Rendering the Feed
+
+### Displaying the Payload
+
 With the demo records, links and glyph configured, the response looks like this:
 
 <FeedExample payload :items="[scenes.order]" />
 
-### Rendered Feed
+<a id="rendered-feed"></a>
 
 The activity carries a headline template and the entities that fill its tokens:
 

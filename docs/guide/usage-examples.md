@@ -75,19 +75,23 @@ const posted = activity({
   actor: who.cook,
   object: { ...dishes.chickenCurry,
     media: { icon: null, image: null,
+      attachments: [],
       preview: { src: '/media/chicken-curry.svg', mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
       url: null },
-    data: { $body: 'Storyfeed/Body/MediaObject', $v: 1,
+    body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
       subject: { label: 'Chicken Curry', href: '/menu/1' },
       content: 'Slow-cooked with roasted curry powder and coconut milk. Mild, unless you ask.',
-      image: 'preview', attachments: [], footnote: 'Photographed by Nancy' } },
+      image: 'preview', attachments: [], footnote: 'Photographed by Nancy' }] },
 })
-
 
 
 </script>
 
-## One Activity
+## Recording Activities
+
+<a id="one-activity"></a>
+
+### Recording an Order
 
 ::: code-group
 <<< @/snippets/publish.php [Fluent Syntax]
@@ -96,7 +100,142 @@ const posted = activity({
 
 <FeedExample context :items="[scenes.order]" />
 
-## Repeated Orders
+<a id="activities-by-a-payment-provider"></a>
+
+### Recording a Payment
+
+A payment provider reports an order paid, and it has no row in your database.
+
+::: code-group
+```php [Fluent Syntax]
+// app/Http/Controllers/StripeWebhookController.php
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by('Stripe')
+    ->action('pay', $order)
+    ->publish();
+```
+
+```php [Named Arguments]
+// app/Http/Controllers/StripeWebhookController.php
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'pay',
+    object: $order,
+    actor: 'Stripe',
+);
+```
+:::
+
+<FeedExample :items="[paid]" />
+
+[Parties & Anonymous Actors](/deeper/parties).
+
+## Adding Activity Content
+
+[Activity Content](/basics/activity-content) explains how quotes and entity bodies accompany a headline.
+
+<a id="quoted-text"></a>
+
+### Quoting Text
+
+::: code-group
+```php [Fluent Syntax]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+Storyfeed::activity()
+    ->by($customer)
+    ->action('note', $order)
+    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
+    ->publish();
+```
+
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedThread;
+
+Storyfeed::record(
+    verb: 'note',
+    object: $order,
+    actor: $customer,
+    thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'),
+);
+```
+:::
+
+<FeedExample :items="[noted]" />
+
+<a id="a-photograph"></a>
+
+### Including a Photograph
+
+::: code-group
+```php [Fluent Syntax]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($cook)
+    ->action('publish', $photo)
+    ->to($dish)
+    ->publish();
+```
+
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'publish',
+    object: $photo,
+    actor: $cook,
+    target: $dish,
+);
+```
+:::
+
+<FeedExample :items="[photographed]" />
+
+<a id="dish-content"></a>
+
+### Including Entity Content
+
+::: code-group
+```php [Fluent Syntax]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($cook)
+    ->action('add', $dish)
+    ->publish();
+```
+
+```php [Named Arguments]
+// where the fact happens: a controller, an action, a listener
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'add',
+    object: $dish,
+    actor: $cook,
+);
+```
+:::
+
+<FeedExample :items="[posted]" />
+
+The card comes from the dish's own `toFeed()`, covered in
+[Activity Body Content](/deeper/body).
+
+## Grouping Activities
+
+### Repeated Orders
 
 The same customer orders three times in a few minutes, in three requests.
 
@@ -136,7 +275,7 @@ As a timeline:
 [Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
 decides the grouping.
 
-## Orders From Several Customers
+### Orders From Several Customers
 
 Five customers, five orders, five separate requests.
 
@@ -144,96 +283,7 @@ Five customers, five orders, five separate requests.
 
 [Aggregation](/deeper/aggregation) covers the axes and what each one may say.
 
-## Activities By a Payment Provider
-
-A payment provider reports an order paid, and it has no row in your database.
-
-::: code-group
-```php [Fluent Syntax]
-// app/Http/Controllers/StripeWebhookController.php
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by('Stripe')
-    ->action('pay', $order)
-    ->publish();
-```
-
-```php [Named Arguments]
-// app/Http/Controllers/StripeWebhookController.php
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'pay',
-    object: $order,
-    actor: 'Stripe',
-);
-```
-:::
-
-<FeedExample :items="[paid]" />
-
-[Parties & Anonymous Actors](/deeper/parties).
-
-## Quoted Text
-
-::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($customer)
-    ->action('note', $order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
-    ->publish();
-```
-
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'note',
-    object: $order,
-    actor: $customer,
-    thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'),
-);
-```
-:::
-
-<FeedExample :items="[noted]" />
-
-## A Photograph
-
-::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($cook)
-    ->action('publish', $photo)
-    ->to($dish)
-    ->publish();
-```
-
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'publish',
-    object: $photo,
-    actor: $cook,
-    target: $dish,
-);
-```
-:::
-
-<FeedExample :items="[photographed]" />
-
-## Grouped Photographs
+### Grouped Photographs
 
 The cook uploads a set, one request each.
 
@@ -261,33 +311,3 @@ Storyfeed::record(
 :::
 
 <FeedExample :items="[photoBurst]" />
-
-## Dish Content
-
-::: code-group
-```php [Fluent Syntax]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($cook)
-    ->action('add', $dish)
-    ->publish();
-```
-
-```php [Named Arguments]
-// where the fact happens: a controller, an action, a listener
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'add',
-    object: $dish,
-    actor: $cook,
-);
-```
-:::
-
-<FeedExample :items="[posted]" />
-
-The card comes from the dish's own `toFeed()`, covered in
-[Activity Body Content](/deeper/body).
