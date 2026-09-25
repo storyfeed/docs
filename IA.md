@@ -252,30 +252,34 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     enums under their Laravel-conventional namespaces; a package type under
     its real one. The snippet opens with `<?php`, then the namespace, then the
     `use` block, so it reads as the file it is.
-    **For a snippet with a known file, the file path goes in the block's
-    `memo`; extra placement goes in a `//` comment.** For example,
-    `memo="app/Providers/AppServiceProvider.php"` with `// boot()` in the code.
-    A snippet with no specific file keeps its placement comment, such as
-    `// where the fact happens: a controller, an action, a listener`.
-    A reader of any snippet must never have to ask "where do I put this?".
-    Exempt: an API fragment on a Reference page (an argument list, a chain segment).
+    **Every block's context sits in its memo bar, never in the code**
+    (owner, 2026-09-25). A known file goes in `memo`, and where in that file
+    goes in `at`: `memo="app/Providers/AppServiceProvider.php" at="boot()"`
+    renders as `app/Providers/AppServiceProvider.php → boot()`. A call site
+    with no single file is the memo itself:
+    `memo="where the fact happens: a controller, an action, a listener"`.
+    A `//` comment in the code explains the code; it never says where the code
+    goes. A reader of any snippet must never have to ask "where do I put this?".
+    Exempt: an API fragment on a Reference page (an argument list, a chain
+    segment), shell commands and payload samples, which have no memo. Don't
+    invent paths.
 
-    **Code fences accept an optional `memo="…"` attribute**, a short memo shown
-    above the code and excluded from copying. For now, use only the known file
-    path; do not invent paths for shell commands, payloads or unlocated fragments.
-    Each fence in a code group can have its own memo. Imported snippets use
-    `<<< @/snippets/file.php {php memo="app/Path/File.php"} [Label]`.
-    Empty values and unterminated quotes fail the build.
+    **Syntax.** `memo="…"` and `at="…"` are fence attributes, shown in a bar
+    above the code and never copied. `at` needs a `memo`. Each fence in a code
+    group carries its own. Imported snippets use
+    `<<< @/snippets/file.php {php memo="app/Path/File.php"} [Label]`. An empty
+    value, an unterminated quote, a repeated attribute, or `at` without a
+    `memo` fails the build. Code blocks show no language label.
 
 33. **Getting Started hooks; the teaching pages leave nothing to guess**
     (ruled 2026-09-22). Introduction, Usage Examples, Installation and
-    Quickstart show fragments under a file-path memo or placement comment,
+    Quickstart show fragments under a memo,
     because their job is to intrigue. From The Basics on, a recording example is the **full call
     site**: the class with its namespace and imports, the method, where each
     variable comes from, and what the method returns, so a developer can
     follow along in their own app. The whole class
     reads at once, with no focus markers (rule 22). A later snippet in the same section may be a fragment of a
-    class already shown in full, with `memo="app/…/File.php"` and `// method()`.
+    class already shown in full, with `memo="app/…/File.php" at="method()"`.
     The same holds for a model's feed code (`describeFeed()`, `toFeed()`,
     `feedMedia()`, the `booted()` that registers `feedMediaUsing()`): the
     first snippet in a section is the model class, namespace and imports
