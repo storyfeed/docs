@@ -143,11 +143,6 @@ several people doing the same thing at one place.
 
 A digest: one row per person per day, saying everything they did.
 
-::: tip Proposal
-This is the Summary proposed for the next release. Until then, `summary()`
-reads like Live.
-:::
-
 <FeedExample :items="worldSummary" days height="420" />
 
 <a id="as-a-timeline"></a>

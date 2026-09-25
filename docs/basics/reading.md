@@ -74,11 +74,6 @@ Storyfeed::feed()
 
 ### Summary
 
-::: tip Proposal
-This is the Summary proposed for the next release. Until then, `summary()`
-reads like Live.
-:::
-
 Summary is a digest: one row per person per day, across verbs. A row names
 the person once, then what they did, one phrase per verb: "placed 3 orders,
 asked about a product and paid". After three phrases, the rest are counted.
