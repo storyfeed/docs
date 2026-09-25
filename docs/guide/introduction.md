@@ -115,15 +115,29 @@ The recorded verb is still `place`, whichever headline describes it.
 
 <a id="examples-of-activities"></a>
 
-<FeedExample context :items="oneActivity">
-  <template #annotations="{ node }">
-    <Annotation><SlotMapping :node="node" :slots="['actor', 'verb', 'object', 'target']" /></Annotation>
-  </template>
-</FeedExample>
+**{{ who.regular.label }}** *(actor)* **placed** *(verb)* **{{ orders.first.label }}** *(object)* with **{{ where.kitchen.label }}** *(target)*
 
-In the question, the headline names the **target**, not the object. The object
-is the note, and its label is the note's whole text; the dish is what the
-sentence needs.
+<FeedExample :items="[oneActivity[1]]" />
+
+**{{ who.customer4.label }}** *(actor)* **asked** *(verb)* about **{{ dishes.chickenCurry.label }}** *(target)*. The object is the note itself, so the headline names the target.
+
+<FeedExample :items="[oneActivity[0]]" />
+
+**{{ who.cook.label }}** *(actor)* **put** **{{ dishes.chickenCurry.label }}** *(object)* **on the menu** *(verb)*
+
+<FeedExample :items="[oneActivity[2]]" />
+
+**{{ who.cook.label }}** *(actor)* **paired** *(verb)* **{{ devices.ipad.label }}** *(object)*
+
+<FeedExample :items="[oneActivity[3]]" />
+
+**{{ who.newcomer.label }}** *(actor)* **joined** *(verb)* **{{ where.table.label }}** *(target)*, with no object
+
+<FeedExample :items="[oneActivity[4]]" />
+
+**{{ who.owner.label }}** *(actor)* **opened** *(verb)* **{{ where.kitchen.label }}** *(object)*
+
+<FeedExample :items="[oneActivity[5]]" />
 
 ## Recording Activities
 
