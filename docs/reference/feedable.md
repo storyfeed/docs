@@ -10,7 +10,7 @@ common path.
 
 ## The Feedable Contract
 
-```php memo="src/Contracts/Feedable.php"
+```php memo="vendor/storyfeed/storyfeed/src/Contracts/Feedable.php"
 <?php
 
 namespace Storyfeed\Contracts;
@@ -162,10 +162,6 @@ recording is disabled.
 Activities stay unless their verb declares `forgetWhenMissing()`.
 `deleteFromFeed()` and `forceDeleteFromFeed()` explicitly remove activities.
 [Deleted Models](/deeper/deleted-models) covers tombstones.
-
-Entities recorded before they had a snapshot (imports, backfills) are
-snapshotted by [`storyfeed:trickle`](/reference/commands). Until then they
-render with `label: null` and `url: null`, and your frontend can choose a placeholder. Activities are never hidden by the read path.
 
 <span id="the-model-s-own-feed"></span>
 

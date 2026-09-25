@@ -87,15 +87,33 @@ in the past: `:actor placed :object`.
 
 ## Choosing Between Related Verbs
 
-Choose the word that describes the event in your application. These distinctions
-are naming guidance; Storyfeed stores the verb you supply.
+Choose the word that describes the event in your application.
+[Verb Vocabulary](/reference/verbs) lists every built-in verb.
 
 <span id="create-or-add"></span>
+<span id="delete-or-remove"></span>
+<span id="delete-and-remove"></span>
+<span id="remove-or-undo"></span>
+<span id="remove-and-undo"></span>
+<span id="offer-or-invite"></span>
+<span id="offer-and-invite"></span>
+<span id="accept-or-like"></span>
+<span id="accept-and-like"></span>
+<span id="view-or-read"></span>
+<span id="view-and-read"></span>
+
+| Pair | Use the first when | Use the second when |
+| --- | --- | --- |
+| `create` / `add` | the object did not exist before this activity | the object already existed and is now part of something, its target |
+| `delete` / `remove` | nothing can be pointed at afterwards | the object still exists and has only left a collection, as when it is archived |
+| `remove` / `undo` | "It left the collection." | "That should not have happened." `restore` also records a reversal, for a restored model |
+| `offer` / `invite` | something is sent to someone who is expected to answer, such as a document | the recipient is asked to take part, such as signing the document |
+| `accept` / `like` | the activity answers a prior `offer` or `invite`; an approval is `accept`, whatever the button says | nothing prompted it |
+| `view` / `read` | a page was opened or a preview loaded; if the choice is not clear, it is `view` | the object was deliberately taken away, such as a downloaded file |
 
 ### Create and Add
 
-`create` when the object did not exist before this activity. `add` when it
-already had an identity and is now part of something.
+A new menu item is `create`:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
@@ -151,6 +169,8 @@ class MenuItemController extends Controller
 }
 ```
 :::
+
+Putting an existing menu item on a menu is `add`:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/MenuDishController.php"
@@ -216,171 +236,9 @@ class MenuDishController extends Controller
 
 `add` takes a target. With no target, the verb is probably `create`.
 
-<span id="delete-or-remove"></span>
-
-### Delete and Remove
-
-`delete` when nothing can be pointed at afterwards. `remove` when the object
-still exists and has only left a collection.
-
-Archiving is `remove`: the record is still there, and a feed row can still
-link to it.
-
-<span id="remove-or-undo"></span>
-
-### Remove and Undo
-
-Use `undo` for a reversal. When recording a restored model, `restore` can
-name the action more precisely; the shipped vocabulary maps it to `Undo`.
-Choose the object that identifies the fact your application records.
-
-| The sentence you would say | Verb |
-| --- | --- |
-| "It left the collection." | `remove` |
-| "That should not have happened." | `undo` |
-
-<span id="offer-or-invite"></span>
-
-### Offer and Invite
-
-`offer` is directed at someone and expects an answer. `invite` is an offer
-whose object is an invitation to take part.
-
-Sending a document is `offer`. Sending it for signature is `invite`, because
-the recipient is being asked to become a participant.
-
-<span id="accept-or-like"></span>
-
-### Accept and Like
-
-`accept` answers a prior `offer` or `invite`. `like` is unprompted.
-
-An approval is `accept`, whatever the button says.
-
-<span id="view-or-read"></span>
-
-### View and Read
-
-`view` for an impression — a page was opened, a preview loaded. `read` for
-deliberate consumption — a file was downloaded, a document taken away.
-
-Neither changes the object. If the choice is not clear, it is `view`.
-
-## Recording Outcomes
-
-You can record delivery outcomes as their own models. Each outcome then
-uses `create` against that record:
-
-```php memo="app/Http/Controllers/MailWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Document;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Act;
-
-class MailWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $document = Document::where('message_id', $request->input('message_id'))
-            ->firstOrFail();
-
-        $deliveryEvent = $document->deliveryEvents()->create([
-            'outcome' => $request->input('event'),
-        ]);
-
-        Act::Create->anonymously()
-            ->object($deliveryEvent)
-            ->to($document)
-            ->publish();
-
-        return response()->noContent();
-    }
-}
-```
-
-Use separate verbs when the transitions mean different things to the reader,
-as in [Choosing When to Publish](/cookbook/choosing-when-to-publish).
-
+<span id="recording-outcomes"></span>
 <span id="distinguishing-activities"></span>
+<span id="distinguishing-activities-with-roles-and-data"></span>
 
-## Distinguishing Activities With Roles and Data
-
-Separate occurrences can share a verb, object type and target. Use roles,
-data and publication time to describe what differs between them. Each publish
-creates an activity unless a [storage policy](/cookbook/repeating-activities)
-supersedes it.
-
-| What separates them | Where it belongs |
-| --- | --- |
-| A field moved | [a change in the body](/deeper/body) |
-| Something was produced | the `result` role |
-| One happened earlier | `publishedAt()` |
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\UpdateMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
-
-class MenuItemController extends Controller
-{
-    public function update(
-        UpdateMenuItemRequest $request,
-        MenuItem $product,
-    ): RedirectResponse {
-        $product->update($request->validated());
-
-        $revision = $product->revisions()->create($request->validated());
-
-        Act::Update->by($request->user())
-            ->object($product)
-            ->resulting($revision) // what the update produced
-            ->publish();
-
-        return back();
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\UpdateMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuItemController extends Controller
-{
-    public function update(
-        UpdateMenuItemRequest $request,
-        MenuItem $product,
-    ): RedirectResponse {
-        $product->update($request->validated());
-
-        $revision = $product->revisions()->create($request->validated());
-
-        Storyfeed::record(
-            verb: Act::Update,
-            object: $product,
-            actor: $request->user(),
-            result: $revision, // what the update produced
-        );
-
-        return back();
-    }
-}
-```
-:::
+When several occurrences share a verb, [Recording Activities](/basics/recording)
+covers the roles and `publishedAt()` that tell them apart.

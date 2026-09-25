@@ -14,8 +14,9 @@ words, these cases, or both.
 
 ## Available Verbs
 
-Seventy-two verbs, grouped by the activity type each one maps to. The stored
-verb is the value in the second column.
+Seventy-two verbs, grouped by the activity type each one maps to. Each case is
+its verb with a capital first letter: `Act::TentativelyAccept` stores
+`tentativelyAccept`.
 
 | Activity type | Verbs |
 | --- | --- |
@@ -73,9 +74,9 @@ Storyfeed::verbs(Act::only(
 ));
 ```
 
-Register the cases you record, not the whole enum. Headline coverage reports
-every registered verb with no headline, so registering all seventy-two produces
-a finding for each verb the application never uses.
+Register the cases you record, not the whole enum. The doctor reports each
+registered verb that is never recorded (`verbs.dead`), so registering all
+seventy-two produces a finding for each verb the application never uses.
 
 <span id="using-your-own-words"></span>
 

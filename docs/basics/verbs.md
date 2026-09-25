@@ -14,68 +14,8 @@ case of an enum.
 
 <a id="using-strings"></a>
 
-## Recording With Strings
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
-    {
-        $order = $shop->orders()->create($request->validated());
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('place', $order)
-            ->to($shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
-    {
-        $order = $shop->orders()->create($request->validated());
-
-        Storyfeed::record(
-            verb: 'place',
-            object: $order,
-            actor: $request->user(),
-            target: $shop,
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
-```
-:::
-
-<FeedExample :items="[placed]" />
-
-Verb names are free-form strings. Give each verb a headline in `routes/feed.php`.
+`->action('place', $order)` records the string `place`, and `routes/feed.php`
+gives it a headline. An enum defines those strings once, for the whole app.
 
 <a id="using-your-own-enums"></a>
 
@@ -97,6 +37,25 @@ enum OrderActivity: string
     case Ready = 'ready';
 }
 ```
+
+### Defining Headlines for Enum Verbs
+
+A case names its verb in `routes/feed.php` too:
+
+```php memo="routes/feed.php"
+use App\Enums\OrderActivity;
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)
+    ->verb(OrderActivity::Placed)
+    ->headline(':actor placed :object with :target');
+```
+
+<FeedExample :items="[placed]" />
+
+The headline is for the case's value, `place`, the same as
+`->verb('place')`.
 
 ### Adding Fluent Recording
 
@@ -120,7 +79,8 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-`Storyfeed::record()` accepts the backed enum with or without the trait:
+With the trait, record straight from the case. `Storyfeed::record()` takes the
+case as its `verb`, with or without the trait:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
@@ -178,7 +138,6 @@ class OrderController extends Controller
 }
 ```
 :::
-
 
 <FeedExample :items="[placed]" />
 

@@ -27,8 +27,26 @@ run it again.
 
 | Key | Default |  |
 |---|---|---|
-| `tables.*` | `feed_activities`, `feed_snapshots`, `feed_groupings`, `feed_parties`, `feed_batches`, `feed_meta`, `feed_participants`, `feed_tombstones`, `feed_batch_locks` | remap on collision, or point at pre-existing feed tables |
-| `models.*` | the package models, including `tombstone` (`FeedTombstone`) | swap in your own; they should extend the defaults |
+| `tables.activities` | `'feed_activities'` | the activities |
+| `tables.snapshots` | `'feed_snapshots'` | entity snapshots |
+| `tables.groupings` | `'feed_groupings'` | each activity's groupings |
+| `tables.participants` | `'feed_participants'` | the index `involving()` reads |
+| `tables.parties` | `'feed_parties'` | named participants |
+| `tables.batches` | `'feed_batches'` | bursts by one actor |
+| `tables.meta` | `'feed_meta'` | Storyfeed's bookkeeping |
+| `tables.tombstones` | `'feed_tombstones'` | deleted models |
+| `tables.batch_locks` | `'feed_batch_locks'` | one row per batched actor |
+| `models.activity` | `Activity::class` | |
+| `models.snapshot` | `Snapshot::class` | |
+| `models.grouping` | `Grouping::class` | |
+| `models.party` | `Party::class` | |
+| `models.batch` | `Batch::class` | |
+| `models.meta` | `Meta::class` | |
+| `models.tombstone` | `FeedTombstone::class` | |
+
+Rename a table on a collision, or point it at a pre-existing feed table. The
+default models are in `Storyfeed\Models`; a model you swap in should extend the
+one it replaces. [Schema](/reference/schema) describes each table.
 
 ## Identity
 
@@ -41,7 +59,7 @@ run it again.
 | `parties.strict` | `null` | once [`Storyfeed::parties()`](/deeper/parties#declaring-parties) declares a list, throw on an undeclared name; otherwise it is ignored. `null` = strict in local/testing only |
 
 For named system attribution or a sentence without an actor slot, see
-[Parties and actorless voice](/deeper/parties).
+[Parties & Anonymous Actors](/deeper/parties).
 
 ## Recording
 
@@ -56,23 +74,8 @@ For named system attribution or a sentence without an actor slot, see
 |---|---|---|
 | `verbs.strict` | `null` | throw on a verb with no registry entry. `null` = strict in local/testing only |
 
-The registry is the vocabulary the app declares, on top of the package's
-built-in verbs:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use App\Enums\ActivityVerb;
-use Storyfeed\ActivityStreams\ActivityType;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::verbs(ActivityVerb::class); // a backed enum implementing FeedVerb
-Storyfeed::verbs(['confirm' => ActivityType::Update]); // or a verb => type map
-```
-
-Once a verb is registered, `verbs.strict` throws on any verb outside the
-registry, `storyfeed:verbs --used` and doctor report verbs recorded but never
-registered (and the reverse), and the Activity Streams document carries the
-verb's type. A registered story class registers its verb too, so an app
-that records only through stories has nothing to register.
+The registry is the verbs declared with `Storyfeed::verbs()` or by a story
+class. [Verb Vocabulary](/reference/verbs#registering-verbs) covers registering them.
 
 ## Grouping
 
@@ -83,14 +86,11 @@ that records only through stories has nothing to register.
 | `grouping.curate` | `true` | choose each activity's group across every axis when it is published; `false` makes `live()` group repeats only |
 | `grouping.summary.phrases` | `3` | maximum per-verb phrases in a digest row; `phrases_truncated` reports omitted phrases |
 | `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
-| `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node |
+| `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node. Each sampled entity is resolved on every page read; an invalid or missing limit falls back to `3` |
 | `grouping.policy.min_actors` | `3` | distinct actors before the `actors` axis applies |
 | `grouping.policy.min_targets` | `2` | distinct targets before `targets` applies |
 | `grouping.policy.min_target_members` | `3` | members required on `targets` |
 | `grouping.policy.min_object_members` | `2` | members required on `object` |
-
-When grouping does not fire, check the [axis registry](/deeper/aggregation#built-in-axes)
-before changing thresholds: `repeat` groups activities with the same target, while `targets` groups across targets.
 
 `sample_limits` is keyed by singular role — `actor`, `object`, `target`,
 `context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
@@ -103,9 +103,7 @@ one where a surface shows more:
 ],
 ```
 
-`children_limit` still caps the sample. Each sampled entity is resolved on
-every page read, so raise a limit only where the surface shows it. An invalid
-or missing limit falls back to `3`.
+`children_limit` still caps the sample.
 
 <span id="batches-composites"></span>
 
@@ -138,10 +136,10 @@ or missing limit falls back to `3`.
 
 | Key | Default |  |
 |---|---|---|
-| `curate.schedule` | `true` | schedules `storyfeed:curate` hourly; requires Laravel’s scheduler |
+| `curate.schedule` | `true` | schedules [`storyfeed:curate`](/reference/commands#other-maintenance-commands) hourly, to repeat [curation](/reference/glossary#grouping) for recent activities; requires Laravel’s scheduler |
 | `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs; `null` or `0` makes the scheduled pass unbounded |
 | `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
-| `trickle.limit` | `200` | activities processed per `storyfeed:trickle` run |
+| `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
 
 ## Diagnostics

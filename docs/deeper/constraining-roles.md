@@ -3,7 +3,9 @@
 ## Introduction
 
 Role constraints limit which model types may fill an activity's roles.
-A publish with a different type throws before the activity is stored.
+A headline written for a shop target reads wrongly about any other target, so
+a constraint makes a publish with a different type throw before the activity
+is stored.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -101,9 +103,12 @@ The verb's ->whereActor() says which types may be its actor; add 'party' to allo
 a Party, or publish ->anonymously() when nobody is known.
 ```
 
-The exception names the verb's declaration key, role, allowed types and actual
-type. A queued publish checks on the worker; `Storyfeed::fake()` checks queued
-activities too. An object constraint checks every member of a composite.
+The exception names the verb, its role, the allowed types and the actual type.
+
+> [!NOTE]
+> A [queued publish](/deeper/queues) is checked on the worker, and
+> `Storyfeed::fake()` checks queued activities too. An object constraint checks
+> every member of a [composite](/deeper/composites).
 
 ## Inspecting Constraints
 
@@ -122,6 +127,6 @@ always includes the constraints in `where`.
 php artisan storyfeed:doctor --only=role_constraints
 ```
 
-The doctor reports `role_constraints.violated` as a warning for live stored
+The [doctor](/reference/doctor#role-constraints) reports `role_constraints.violated` as a warning for live stored
 rows whose role types violate a constraint. Null roles and tombstones are
 skipped. The rows remain in the feed; the check does not rewrite them.

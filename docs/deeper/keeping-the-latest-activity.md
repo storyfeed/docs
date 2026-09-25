@@ -3,7 +3,7 @@
 ## Introduction
 
 `keepLatest()` leaves the latest activity for a verb in the feed.
-Earlier matching activities leave every read mode, including `log()`.
+Earlier matching activities are removed from the feed, including `log()`.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -12,7 +12,7 @@ const [earlier, saved, otherActor] = scene.deeper.keepingLatest.saves.map(row =>
 
 <a id="declaring-the-policy"></a>
 
-## Keeping the Latest Activity
+## Replacing Earlier Activities
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -20,12 +20,8 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)->verb('save')
     ->headline(':actor saved :object')
-    ->keepLatest(); // Earlier saves of this order leave log() too.
+    ->keepLatest(); // Earlier saves of this order are removed from log() too.
 ```
-
-After successive saves of the same order, the feed contains the latest save:
-
-<FeedExample :items="[saved]" />
 
 Publish normally. The verb's declaration applies at every call site:
 
@@ -81,11 +77,11 @@ class SaveOrderController extends Controller
 ```
 :::
 
+After successive saves of the same order, the feed contains the latest save:
+
 <FeedExample :items="[saved]" />
 
-The latest `published_at` wins, regardless of arrival order. A backdated
-activity older than a matching one is stored already superseded, or not stored
-at all under `keep_latest.delete = force`. Other objects and other verbs keep their activities.
+Other objects and other verbs keep their activities.
 
 <a id="keeping-the-latest-per-actor"></a>
 
@@ -137,15 +133,28 @@ Only matching activities within ten minutes of the new activity's
 
 ## Deleting Superseded Activities
 
-Superseded activities are soft-deleted by default. The
-`storyfeed.keep_latest.delete` setting controls their deletion mode: set it to
-`'force'` to delete them outright.
+Superseded activities are soft-deleted by default. They leave the feed but
+stay in the activities table until [pruning](/deeper/retention#pruning-activities)
+removes them with the rest. To delete them as they are superseded:
 
-## Queue Uniqueness and Read Filtering
+```php memo="config/storyfeed.php"
+'keep_latest' => [
+    'delete' => 'force',
+],
+```
 
-[`ShouldBeUnique`](/deeper/queues#unique-stories) keeps the first pending publish.
+| Value | Superseded Activities |
+|---|---|
+| `'soft'` | soft-deleted; the default |
+| `'force'` | deleted |
+
+The latest `published_at` wins, regardless of arrival order. A backdated
+activity older than a matching one is stored already soft-deleted, or not
+stored at all under `'force'`.
+
+<a id="queue-uniqueness-and-read-filtering"></a>
+
+## Comparing With Unique Stories
+
+[`ShouldBeUnique`](/deeper/stories#queueing-stories) keeps the first pending publish.
 `keepLatest()` supersedes matching stored activities after publication.
-
-Story classes do not support `#[DebounceFor]`. Use `keepLatest(within:)` when
-successive publications should supersede earlier stored activities within a
-window.

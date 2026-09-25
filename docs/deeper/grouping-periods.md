@@ -22,13 +22,14 @@ const weekly = group({ id: 'period-week', verb: 'place', axis: 'repeat', count: 
 ```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
-use Storyfeed\Grouping\Group;
+use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->groupedWeekly()
-    ->grouped(Group::repeat()->headline(':actor placed :count orders with :target'));
+    ->grouped(fn (GroupBuilder $group) => $group
+        ->repeat(':actor placed :count orders with :target'));
 ```
 
 A customer places orders with the same shop on three days in the same
@@ -36,9 +37,9 @@ week. The grouped feed can show them together:
 
 <FeedExample :items="[weekly]" />
 
-The period sets the calendar boundary for grouping. The axis still decides
-which activities belong together; `repeat` keeps the actor, verb, object type,
-and target together. Other grouping criteria and thresholds still apply.
+The period sets the calendar boundary for grouping. The
+[axis](/deeper/aggregation#built-in-axes) still decides which activities
+belong together.
 
 <a id="choosing-a-calendar-period"></a>
 
@@ -50,15 +51,13 @@ and target together. Other grouping criteria and thresholds still apply.
 | `groupedDaily()` | midnight; the default |
 | `groupedWeekly()` | Monday at midnight, using ISO weeks |
 | `groupedMonthly()` | midnight on the first day of each month |
+| `groupedPer('week')` | the period named: `hour`, `day`, `week` or `month`, or a `Storyfeed\Grouping\Period` case |
 
 ### Timezones and Boundaries
 
 Boundaries use `app.timezone`. ISO weeks start on Monday regardless of locale.
 With hourly grouping, activities at 14:59 and 15:01 belong to different
 periods even though they are only two minutes apart.
-
-`groupedPer('week')` is the equivalent when choosing the period in code. It
-accepts `hour`, `day`, `week`, or `month`, or a `Storyfeed\Grouping\Period` case.
 
 <a id="applying-a-period-to-every-verb"></a>
 
@@ -77,48 +76,22 @@ types. A type-and-verb declaration takes precedence over both.
 Activities that need to group together need the same period. A grouping axis
 that combines verbs still separates activities with different periods.
 
-## Calendar Periods and Batch Windows
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-use Storyfeed\Grouping\Group;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag')
-    ->groupedWeekly()
-    ->grouped(Group::repeat()->headline(':actor placed :count orders with :target'))
-    ->batched(within: '5 minutes');
-```
-
-<FeedExample :items="[weekly]" />
-
-This replaces the first declaration. The weekly group can span separate
-sittings. The batch window tracks a sitting by inactivity: each batched activity
-can extend its closing time. `within` means a sliding window; calendar periods
-use `groupedHourly()`, `groupedDaily()`, `groupedWeekly()`, or `groupedMonthly()`.
-
-## Applying Period Changes
+> [!NOTE]
+> **The difference between a grouping period and a batch window**
+>
+> A grouping period is a fixed stretch of the calendar, so a weekly group can
+> span separate sittings. A [batch window](/deeper/story-middleware-and-batching#batch-windows)
+> tracks one sitting by inactivity: each batched activity can extend its
+> closing time.
 
 <a id="applying-a-changed-period-to-stored-activities"></a>
 
-### Rehashing Stored Activities
+## Applying Period Changes
+
+A changed period applies to newly published activities. Activities already
+published keep their groups until you
+[rehash them](/reference/commands#rehashing-existing-rows):
 
 ```bash
-php artisan storyfeed:curate --rehash # Recomputes grouping for stored activities.
+php artisan storyfeed:curate --rehash
 ```
-
-A changed declaration affects newly published activities. Existing activities
-keep their grouping until you run this command, which regroups them under the
-current declarations and can change groups already shown in a feed.
-
-### Curation Look-Back
-
-```bash
-php artisan storyfeed:curate --window=2
-```
-
-For verbs grouped weekly or monthly, the window is widened to cover the whole
-period: eight days for a week, 32 for a month. Other verbs keep the window you
-pass. The scheduled pass widens `storyfeed.curate.window` the same way.

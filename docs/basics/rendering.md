@@ -43,11 +43,23 @@ A field with no value leaves its part out.
 
 ### Headlines
 
-This activity names three roles. Substitute their labels into its template:
+Pass the page of the feed to a view:
 
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', ['page' => Storyfeed::feed()->get()]);
+});
+```
+
+`headline_template` is the headline with its tokens, such as `:actor`,
+still in it. `headline` is a finished sentence with nothing to substitute. At
+most one of the two is set. This activity names three roles. Substitute their
+labels into its template:
 
 ```blade memo="resources/views/feed.blade.php"
-{{-- This example draws the activity above; groups use the section below. --}}
 @foreach ($page['items'] as $node)
     <article>
         {{ strtr($node['headline_template'] ?? $node['headline'] ?? '', [
@@ -95,15 +107,7 @@ The node's `glyph` is a token your app registered. Map it to your icon set,
 with a fallback icon for a token you don't recognise. `glyph_intent` sits
 beside it and says what the shape means:
 
-```json
-{
-  "verb": "complete",
-  "glyph": "square-check",
-  "glyph_intent": "success"
-}
-```
-
-<FeedExample :items="[complete, scene.order]" />
+<FeedExample expanded :items="[complete, scene.order]" />
 
 The value is **your** string, from the verb's
 [`intent()`](/basics/the-feed-file#adding-an-icon). Storyfeed ships no intents
@@ -184,8 +188,10 @@ unknown `axis` value without a headline, fall back to “N activities”.
 
 ### Groups Without Headlines
 
-Some groups have no sentence: **both** `headline_template` and `headline` are
-null. After handling digest phrases, draw the count:
+A group has no sentence when its verb declares no group headline and its
+members' own headline can't be reused for several activities. **Both**
+`headline_template` and `headline` are then null. After handling digest
+phrases, draw the count:
 
 ```blade memo="resources/views/feed.blade.php"
 @if ($node['headline_template'])
@@ -200,38 +206,68 @@ null. After handling digest phrases, draw the count:
 <FeedExample :items="[unnamed]" />
 
 Don't assemble prose from the node's entities: a branch written for single
-activities names one actor over a many-actor group. `headline` is the
-finished sentence for a headline written as a PHP closure, and is null when
-the template is present.
+activities names one actor over a many-actor group.
 
 <a id="activity-data-and-bodies"></a>
 
 ## Rendering Content
 
-### Activity Data
+<a id="activity-data"></a>
 
-An activity’s `data` contains values supplied when recording it. Your application decides which values to display. Quoted text is in `thread`; see [Activity Content](/basics/activity-content).
+### Quoted Text
+
+An activity that quotes what someone said carries it in `thread`:
+
+```blade memo="resources/views/feed.blade.php"
+@if ($node['thread'])
+    <blockquote>{{ $node['thread']['text'] }}</blockquote>
+@endif
+```
+
+An activity's `data` holds the values supplied when recording it. Your
+application decides which of them to display.
 
 ### Bodies
 
-Structured entity content is in the entity’s `body` list. Each body identifies its type with `$body` and version with `$v`. Match the types your frontend supports; see [Activity Content](/basics/activity-content) and [Custom Body Types](/deeper/body).
+An entity's `body` list holds its structured content. Each body names its type
+in `$body`. Draw the types your frontend supports:
+
+```blade memo="resources/views/feed.blade.php"
+@foreach ($node['object']['body'] ?? [] as $body)
+    @switch ($body['$body'])
+        @case ('Storyfeed/Body/KeyValue')
+            <dl>
+                @foreach ($body['items'] as $item)
+                    <dt>{{ $item['key'] }}</dt>
+                    <dd>{{ $item['value'] }}</dd>
+                @endforeach
+            </dl>
+            @break
+        @case ('Storyfeed/Body/Excerpt')
+            <blockquote>{{ $body['text'] }}</blockquote>
+            @break
+    @endswitch
+@endforeach
+```
+
+[Activity Content](/basics/activity-content#available-body-types) lists every
+body type and its keys, and [Custom Body Types](/deeper/body) covers writing
+your own.
 
 <a id="degraded-entities"></a>
 
 ## Handling Missing Values
 
-An entity whose snapshot has not been written yet arrives with `label: null`
-and `url: null`. A null **actor** means the actor is unknown. The activity is
-still in the feed:
+An entity's `label` and `url` can be `null`. A null **actor** means the actor
+is unknown. The activity is still in the feed:
 
 <FeedExample :items="[degraded]" />
 
-The example uses placeholders for missing labels. For an unknown actor, a
-headline without an actor token can describe the activity directly.
+The [headline example](#headlines) draws `Someone` and `Something` when a label
+is missing. For an unknown actor, a headline without an actor token can
+describe the activity directly.
 
 <a id="verifying-your-renderer"></a>
-
-The headline example above uses `Someone` and `Something` when a label is missing. Apply a fallback where you read a nullable value. See [Testing](/deeper/testing) for testing activity publication.
 
 ## Rendering With Vue
 

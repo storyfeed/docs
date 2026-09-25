@@ -5,6 +5,8 @@ import { scene, group } from '../.vitepress/theme/world'
 
 const paid = scene.basics.recording.paid
 const priced = { ...scene.basics.recording.priced, data: { from: 275, to: 295 } }
+// The same change, imported with a date from long ago.
+const backdated = { ...priced, published_at: scene.distant.published_at }
 // The same catalogue photos, recorded together in one request instead of separately.
 const photos = scene.basics.recording.photos
 const composite = group({
@@ -18,7 +20,7 @@ const composite = group({
 
 ## Introduction
 
-An activity is a verb plus the entities in its roles. You record one with an
+An activity is a verb plus the models it involves. You record one with an
 explicit call, wherever the fact happens: an action, an observer, an event
 listener.
 
@@ -43,10 +45,10 @@ happened. `place` is this app's own word, not one the package knows. The stored
 verb is the string you pass, and [The Feed File](/basics/the-feed-file) gives it
 the headline the feed prints.
 
-### Named Arguments
+<a id="named-arguments"></a>
 
-Select the Named Arguments tab above to use `Storyfeed::record()`. It records the same activity in one call, with each role as
-a named argument. The two calls record the same roles.
+`Storyfeed::record()` records the same activity in one call, with each role as
+a named argument.
 
 <a id="roles"></a>
 
@@ -81,8 +83,7 @@ Aliases let the call site read as the sentence:
 | `->resulting()` | `result` | what they produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
 
-An alias and its setter record the same activity. `context` is set only by
-`->context()`; `->in()` and `->from()` set the target, not the container.
+An alias and its setter record the same activity.
 
 <a id="the-actor"></a>
 
@@ -162,7 +163,8 @@ unknown.
 
 ## Adding Activity Data
 
-`->data()` adds values to the activity itself. They arrive in its node:
+`->data()` adds values to the activity itself. They are stored with the
+activity and returned in its `data` when the feed is read:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
@@ -229,7 +231,7 @@ class MenuItemPriceController extends Controller
 ```
 :::
 
-<FeedExample :items="[priced]" />
+<FeedExample :items="[priced]" expanded />
 
 ## Setting the Publication Time
 
@@ -298,14 +300,14 @@ class ImportPriceHistory extends Command
 ```
 :::
 
-
-<FeedExample :items="[priced]" />
+<FeedExample :items="[backdated]" />
 
 <a id="recording-many-objects-at-once"></a>
 
 ## Recording Multiple Objects
 
-`->objects()` records one activity whose object is the whole set:
+`->objects()` records one activity about a set of objects. It stores a parent
+activity, plus one activity per object:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/UploadPhotosController.php"
@@ -367,6 +369,20 @@ class UploadPhotosController extends Controller
 ```
 :::
 
+The parent has no object of its own, so it needs its own headline, beside the
+headline for the set:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::verb('upload')->grouped(fn (GroupBuilder $group) => $group->composite(
+    ':actor uploaded :count photos', // the set
+    ':actor uploaded photos',        // the parent activity
+));
+```
+
 <FeedExample :items="[composite]" />
 
-With the group headline defined, the selected photos read as one group. [Composites](/deeper/composites) covers how that activity reads and groups.
+[Composites](/deeper/composites) covers how the parent and its activities read
+in each mode.

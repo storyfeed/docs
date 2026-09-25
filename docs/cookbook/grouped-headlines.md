@@ -31,15 +31,20 @@ Story::for(Order::class)->verb('place')
 <FeedExample :items="[burst]" />
 
 <span id="choosing-group-headline-keys"></span>
+<span id="choosing-headline-keys"></span>
 
-## Choosing Headline Keys
+## Choosing Where to Declare a Group Headline
 
-| Axis | The Members Are | Sentence | Written On |
+Each kind of group has a name, its axis. The table shows what the activities in
+each group share, and where its headline is declared. A day is the default
+[grouping period](/deeper/grouping-periods).
+
+| Groups Activities That Share | Axis | Sentence | Declared On |
 |---|---|---|---|
-| `repeat` | one actor, one verb, one target, one kind of object | `:actor placed :count orders with :target` | the type |
-| `actors` | several actors' acts on one target | `:actors ordered from :target` | the verb |
-| `object` | repeated acts on one object | `:actor changed the price of :object :count times` | the type |
-| `targets` | one actor's acts across targets | `:actor asked :count questions about :targets` | the verb |
+| one actor, verb, target and object type, on one day | `repeat` | `:actor placed :count orders with :target` | the type |
+| one verb and target on one day, from several actors | `actors` | `:actors ordered from :target` | the verb |
+| one actor, verb and object, on one day | `object` | `:actor changed the price of :object :count times` | the type |
+| one actor and verb on one day, across several targets | `targets` | `:actor asked :count questions about :targets` | the verb |
 
 ### Single-Type Groups
 

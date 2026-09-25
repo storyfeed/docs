@@ -1,14 +1,12 @@
-# What You Can Build with Storyfeed
+# What You Can Build
 
 What you write, and the feed it gives you, from rich activities to a week in
 one glance. Each example links to the page that covers it.
 
 <script setup>
-import { scene, activity, everything, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, everything, logOf, summaryOf } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
-const withThread = { ...content.note,
-  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
 const withKeyValue = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
     title: content.confirmed.object.label, items: [
@@ -16,13 +14,9 @@ const withKeyValue = { ...content.confirmed,
     { key: 'Items', value: '1', verbatim: false, missing: null },
     { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
   ] }] } }
-const previews = logOf([withThread, withKeyValue, content.photo, content.product,
-  ...liveOf(scene.guide.usageExamples.photos)])
 
-const actorless = logOf(Object.values(scene.cookbook.actorless))
+const paidByWebhook = logOf([scene.cookbook.actorless.paid])
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)
-const live = liveOf(scene.glance)
-const daily = summaryOf(scene.glance)
 const weekly = summaryOf(everything(), 'week')
 </script>
 
@@ -33,7 +27,12 @@ const weekly = summaryOf(everything(), 'week')
 
 ## Activities With Content Previews
 
+An order shows its pickup details under the headline:
+
 ```php memo="app/Models/Order.php" at="toFeed()"
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->body(KeyValue::make()->title("Order #{$this->reference}")->items([
@@ -43,24 +42,30 @@ return FeedEntity::make()
     ]));
 ```
 
-<FeedExample :items="previews" />
+<FeedExample :items="[withKeyValue]" />
 
 More in [Activity Content](/basics/activity-content).
 
 ## Actors Beyond Your Users
 
+A payment webhook tells your app an order was paid:
+
 ```php memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
-    ->by(Storyfeed::party('Stripe'))
+    ->by('Stripe')
     ->action('pay', $order)
     ->publish();
 ```
 
-<FeedExample :items="actorless" />
+<FeedExample :items="paidByWebhook" />
 
 More in [Parties & Anonymous Actors](/deeper/parties).
 
 ## One Order's Story
+
+An order's page lists everything that happened to it:
 
 ```php memo="A controller, or wherever the feed is read"
 $order->storyfeed()->log()->get();
@@ -72,29 +77,13 @@ More in [Reading Feeds](/basics/reading#filtering-by-entity-or-role).
 
 <a id="grouping-activities"></a>
 
-## A Home Page Feed
-
-```php memo="A controller, or wherever the feed is read"
-Storyfeed::feed()->live()->get();
-```
-
-<FeedExample :items="live" days height="360" />
-
-More in [Reading Feeds](/basics/reading).
-
-## A Daily Recap
-
-```php memo="A controller, or wherever the feed is read"
-Storyfeed::feed()->summary()->get();
-```
-
-<FeedExample :items="daily" days height="360" />
-
-More in [Reading Feeds](/basics/reading).
-
 ## A Week at a Glance
 
+A weekly recap shows each person's week in one row:
+
 ```php memo="A controller, or wherever the feed is read"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->summary('week')->get();
 ```
 

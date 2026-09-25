@@ -83,25 +83,18 @@ class OrderObserver
 ```
 :::
 
-<script setup>
-import { scene } from '../.vitepress/theme/world'
-const confirmed = scene.cookbook.transitions.confirmed
-</script>
+<span id="status-transitions"></span>
 
-*The staff member moves an order from placed to confirmed.*
-
-<FeedExample :items="[confirmed]" />
+Register the observer in your service provider:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\ActivityStreams\ActivityType;
-use Storyfeed\Facades\Storyfeed;
+use App\Models\Order;
+use App\Observers\OrderObserver;
 
-Storyfeed::verbs([
-    'confirm' => ActivityType::Accept,
-    'ready' => ActivityType::Update,
-    'complete' => ActivityType::Update,
-]);
+Order::observe(OrderObserver::class);
 ```
+
+Give each verb a headline:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -117,16 +110,14 @@ Story::for(Order::class)->verb('complete')
     ->headline(':actor completed :object');
 ```
 
-<span id="status-transitions"></span>
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const confirmed = scene.cookbook.transitions.confirmed
+</script>
 
-Register the observer in your service provider:
+*The staff member moves an order from placed to confirmed.*
 
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use App\Models\Order;
-use App\Observers\OrderObserver;
-
-Order::observe(OrderObserver::class);
-```
+<FeedExample :items="[confirmed]" />
 
 ## Choosing Transitions to Record
 
@@ -139,8 +130,9 @@ Order::observe(OrderObserver::class);
 | ready → completed | yes | `complete` |
 
 Use one verb per transition, not one `status` verb with the new state in
-`data`. [Repeating Activities](/cookbook/repeating-activities#keeping-the-latest-occurrence)
-explains why.
+`data`. Each verb gets its own headline, and
+[`keepLatest()`](/cookbook/repeating-activities#keeping-the-latest-occurrence)
+keeps the latest row of each verb.
 
 <span id="publishing-status-transitions-from-events"></span>
 
@@ -180,4 +172,4 @@ See [Publishing from Events](/deeper/events).
 |---|---|
 | an action or service class | the common case: the fact and the record in one place |
 | a domain event via `PublishesToFeed` | when several things already react to the event |
-| a model observer | lifecycle facts (created, deleted) with no domain event |
+| a model observer | status transitions and lifecycle facts (created, deleted) with no domain event |

@@ -16,7 +16,7 @@ A healer retires only the activities it names. A deleted Feedable model needs no
 stay, and name a [tombstone](/deeper/deleted-models) instead.
 
 > [!WARNING]
-> **Healing rewrites settled history**
+> **Healing makes clients refetch their pages**
 >
 > Every retirement changes the feed's `sync_token`, so clients holding pages
 > must refetch them, as under
@@ -26,6 +26,10 @@ stay, and name a [tombstone](/deeper/deleted-models) instead.
 <a id="defining-a-healer"></a>
 
 ## Defining Healers
+
+> [!NOTE]
+> Healers work on activities stored on the default database connection. On any
+> other connection, `storyfeed:heal` throws.
 
 ### Selecting Candidates
 
@@ -77,10 +81,10 @@ or permissions doesn't look deleted.
 
 ### Rechecking Missing Sources
 
-`whenAbsent` receives a freshly loaded copy of the activity. Check it
-and the source again there, and return `false` if the source exists now.
-
-Activities must be on the default database connection.
+The activity or its source can change between `candidates()` and the
+retirement. So `whenAbsent` receives a freshly loaded copy of the activity,
+locked while it is retired. Check it and the source again there, and return
+`false` if the source exists now.
 
 ## Registering Healers
 
@@ -109,7 +113,7 @@ php artisan storyfeed:heal --pretend
 nothing:
 
 ```
-Dry run: preview only. Applying retirements rewrites history and bumps sync_token; accumulating clients must resync.
+Preview only. Applying retirements rewrites history and bumps sync_token; accumulating clients must resync.
 assets  Asset activity 81  retire  {"reason":"source permanently absent"}
 assets  Asset activity 82  unchanged  {"reason":"source permanently absent"}
 Would retire: 1; unchanged: 1.
@@ -135,19 +139,18 @@ one fails, the earlier ones stand.
 ## Testing Healers
 
 Test through the command. With `AssetHealer` registered, and two activities,
-one whose asset exists and one whose asset was deleted:
+`$existingAssetActivity` about an asset that exists and
+`$deletedAssetActivity` about one that was deleted:
 
 ```php memo="tests/Feature/FeedTest.php"
 $this->artisan('storyfeed:heal', ['--pretend' => true, '--only' => ['assets']])
     ->assertSuccessful();
 
-expect($absentSourceStory->fresh()->trashed())->toBeFalse();
+expect($deletedAssetActivity->fresh()->trashed())->toBeFalse();
 
 $this->artisan('storyfeed:heal', ['--only' => ['assets']])
     ->assertSuccessful();
 
-expect($absentSourceStory->fresh()->trashed())->toBeTrue()
-    ->and($presentSourceStory->fresh()->trashed())->toBeFalse();
+expect($deletedAssetActivity->fresh()->trashed())->toBeTrue()
+    ->and($existingAssetActivity->fresh()->trashed())->toBeFalse();
 ```
-
-Also test that a source whose row still exists stays `unchanged`.

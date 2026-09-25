@@ -6,8 +6,6 @@
 such as the shop a dish belongs to. Record it, and you can read everything
 that happened in that shop.
 
-[Activity Scopes](/deeper/activity-scopes) supplies context across a callback or an HTTP request.
-
 <script setup>
 import { activity, scene, role } from '../.vitepress/theme/world'
 const inside = activity({ ...scene.question, context: role.shop,
@@ -118,10 +116,8 @@ Set `context` when something reads it:
 
 | You Want | Why It Needs `context` |
 |---|---|
-| a group like "three customers asked about dishes in the same shop today" | grouping reads roles, so the container has to *be* a role |
-| `Storyfeed::feed()->context($shop)` | the scope finds only activities recorded with a context |
+| `Storyfeed::feed()->context($shop)` | the read finds only activities recorded with a context |
 | `:context` in a headline | a headline can only name a role the activity carries |
-| `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
 
 <a id="the-container-query"></a>
 
@@ -135,11 +131,14 @@ shop itself, such as its creation.
 
 ## Using Non-Model Containers
 
-When the container is a plain value, such as a folder name, record it one of
-three ways:
+When the container is a plain value, such as a service name, pass the string:
+`->context('Saturday service')`. It becomes a [party](/deeper/parties), so
+`:context` names it in the headline, and
+`Storyfeed::feed()->context('Saturday service')` reads what happened in it.
 
-| Home | In the Headline | Groups by It | In the AS2 Document | Cost |
-|---|---|---|---|---|
-| `->context('Saturday service')` | yes, as `:context` | yes | yes, as a [party](/deeper/parties) | one party per distinct string |
-| `->data(['folder' => $name])` | no — templates read roles, not `data` | no | no | the value arrives in the node for your renderer to show beneath |
-| a closure in the grammar | yes, pre-rendered | no | no | `headline_template` is null; the renderer gets a string it cannot tokenize or link |
+Each distinct string is its own party. For a value that should not become a
+role, use `->data(['service' => $name])`: it arrives in the activity's `data`,
+and headlines cannot name it.
+
+[Activity Scopes](/deeper/activity-scopes) supplies context across a callback
+or an HTTP request.
