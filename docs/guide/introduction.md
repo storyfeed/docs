@@ -239,18 +239,9 @@ After [installing Storyfeed](/guide/installation), record an activity where the 
 
 The same recorded activities display three ways. [Reading Feeds](/basics/reading) shows how to choose one.
 
-<a id="as-a-timeline"></a>
-<a id="timeline-feeds"></a>
-
-### Log
-
-Every activity, one row each.
-
-<FeedExample :items="log" />
-
 ### Live
 
-Repeats collapse: one person doing the same thing again.
+The familiar feed, and the typical home page: repeats collapse, so one person doing the same thing again reads as one row.
 
 <FeedExample :items="live" />
 
@@ -259,6 +250,15 @@ Repeats collapse: one person doing the same thing again.
 
 ### Summary
 
-Everything collapses that can: many people, one place; one person, many things. This is the default.
+A grouped digest: many people in one place, one person across many things.
 
 <FeedExample :items="summary" />
+
+<a id="as-a-timeline"></a>
+<a id="timeline-feeds"></a>
+
+### Log
+
+The atomic timeline: every activity, one row each.
+
+<FeedExample :items="log" />
