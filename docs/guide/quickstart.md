@@ -102,13 +102,13 @@ Route::get('/', function () {
 });
 ```
 
-## Rendering the Feed
-
-### Displaying the Payload
+<a id="displaying-the-payload"></a>
 
 With the demo records, links and glyph configured, the response looks like this:
 
 <FeedExample payload :items="[scene.order]" />
+
+## Rendering the Feed
 
 <a id="rendered-feed"></a>
 
