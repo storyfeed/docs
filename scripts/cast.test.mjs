@@ -1,5 +1,5 @@
 // A manifest value must never appear literally in a page. Prose that names the
-// cast reads the manifest ({{ who.designer.label }}) or a world pack's role
+// cast reads a world pack's role
 // ({{ role.customer.label }}); a literal name is what a recast would miss. Every
 // pack's own manifest (theme/worlds/<pack>/manifest.ts) counts. Code fences are exempt: a printed verification report is
 // example output, not prose.
@@ -12,7 +12,6 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'docs')
 const worlds = resolve(root, '.vitepress/theme/worlds')
 const manifests = [
-  resolve(root, '.vitepress/theme/manifest.ts'),
   ...readdirSync(worlds, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => resolve(worlds, e.name, 'manifest.ts')),
 ]
 const manifest = manifests.map(file => readFileSync(file, 'utf8')).join('\n')

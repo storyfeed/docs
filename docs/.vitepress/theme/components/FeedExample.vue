@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useSlots } from 'vue'
-import { surrounding } from '../samples'
+import { surrounding } from '../world'
 
 /**
  * A rendered feed and the payload behind it, in one card.

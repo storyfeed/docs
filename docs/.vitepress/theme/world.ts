@@ -258,3 +258,15 @@ export const role = active.role
 /** The whole pack, for the long feeds later in the docs. */
 export const everything = active.everything
 
+
+/**
+ * One row to sit around an example (`<FeedExample context>`): an ordinary
+ * activity from the active pack, re-dated beside the row it surrounds, so the
+ * padding swaps with the world like everything else.
+ */
+let pool: any[] | null = null
+export function surrounding(index: number, at: string, id: string) {
+  pool ??= everything().filter((node: any) => node.kind === 'activity')
+
+  return { ...pool[index % pool.length], id, published_at: at }
+}
