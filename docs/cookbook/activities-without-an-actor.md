@@ -26,7 +26,7 @@ Without `by()`, Storyfeed resolves the logged-in user as the actor by default:
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -34,13 +34,13 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::activity()
             ->action('place', $order)
-            ->to($kitchen)
+            ->to($shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -54,7 +54,7 @@ class OrderController extends Controller
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -62,14 +62,14 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::record(
             verb: 'place',
             object: $order,
-            target: $kitchen,
+            target: $shop,
         );
 
         return to_route('orders.show', $order);
@@ -103,7 +103,7 @@ class RecordOrder implements ShouldQueue
     {
         Storyfeed::activity()
             ->action('place', $this->order) // no by(), no user: the actor is null
-            ->to($this->order->kitchen)
+            ->to($this->order->shop)
             ->publish();
     }
 }
@@ -127,7 +127,7 @@ class RecordOrder implements ShouldQueue
         Storyfeed::record(
             verb: 'place',
             object: $this->order, // no actor:, no user: the actor is null
-            target: $this->order->kitchen,
+            target: $this->order->shop,
         );
     }
 }
@@ -161,44 +161,18 @@ class OrderPlaced implements PublishesToFeed
         return Storyfeed::activity()
             ->by($this->customer) // the actor travels on the event
             ->action('place', $this->order)
-            ->to($this->order->kitchen);
+            ->to($this->order->shop);
     }
 }
 ```
 
 <script setup>
-import { who, where, orders, party, activity } from '../.vitepress/theme/samples'
-
-const placed = activity({
-  id: 'ck6a', verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T15:02:00.000000Z',
-  headline_template: ':actor placed :object with :target',
-  actor: who.regular, object: orders.first, target: where.kitchen,
-})
-
-const anonymous = activity({
-  id: 'ck6b', verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T15:02:00.000000Z',
-  headline_template: ':actor placed :object with :target',
-  actor: null, object: orders.first, target: where.kitchen,
-})
-
-const paid = activity({
-  id: 'ck6c', verb: 'pay', glyph: 'credit-card',
-  published_at: '2026-08-14T16:10:00.000000Z',
-  headline_template: ':actor marked :object paid',
-  actor: party.service, object: orders.second,
-})
-
-const expired = activity({
-  id: 'ck6d', verb: 'expire', glyph: 'circle-x',
-  published_at: '2026-08-21T00:00:00.000000Z',
-  headline_template: ':object expired at :target',
-  actor: null, object: orders.fifth, target: where.kitchen,
-})
+import { scene } from '../.vitepress/theme/world'
+const placed = scene.order
+const { anonymous, paid, expired } = scene.cookbook.actorless
 </script>
 
-<FeedExample context :items="[placed]" />
+<FeedExample :items="[placed]" />
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
@@ -302,7 +276,7 @@ Use explicit anonymity when an activity must carry no actor, even in an authenti
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -310,16 +284,16 @@ class OrderController extends Controller
 {
     public function store(
         PlaceOrderRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
 
         Storyfeed::activity()
             ->by($knownAuthor) // User|null: null means anonymous
             ->action('place', $order)
-            ->to($kitchen)
+            ->to($shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -374,7 +348,7 @@ class ExpireOrders extends Command
 
             Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
                 ->action('expire', $order)
-                ->to($order->kitchen)
+                ->to($order->shop)
                 ->publish();
         }
     }

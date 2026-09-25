@@ -84,19 +84,13 @@ class OrderObserver
 :::
 
 <script setup>
-import { who, where, orders, activity } from '../.vitepress/theme/samples'
-
-const confirmed = activity({
-  id: 'ck2', verb: 'confirm', glyph: 'circle-check',
-  published_at: '2026-08-14T15:02:00.000000Z',
-  headline_template: ':actor confirmed :object',
-  actor: who.cook, object: orders.first,
-})
+import { scene } from '../.vitepress/theme/world'
+const confirmed = scene.cookbook.transitions.confirmed
 </script>
 
-*The cook moves an order from placed to confirmed.*
+*The staff member moves an order from placed to confirmed.*
 
-<FeedExample context :items="[confirmed]" />
+<FeedExample :items="[confirmed]" />
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
@@ -167,12 +161,12 @@ use Storyfeed\PendingActivity;
 
 class OrderConfirmed implements PublishesToFeed
 {
-    public function __construct(public Order $order, public User $cook) {}
+    public function __construct(public Order $order, public User $staff) {}
 
     public function toFeedActivity(): ?PendingActivity
     {
         return Storyfeed::activity()
-            ->by($this->cook)
+            ->by($this->staff)
             ->action('confirm', $this->order);
     }
 }

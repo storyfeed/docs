@@ -4,28 +4,17 @@ When the same verb happens to the same object again, you can keep every
 occurrence as its own row, or declare `->keepLatest()` on the verb to keep its latest row.
 
 <script setup>
-import { who, orders, dishes, activity } from '../.vitepress/theme/samples'
-
-const on = (id, verb, glyph, at, actor, object, template) => activity({ id, verb, glyph,
-  published_at: at, headline_template: template, actor, object })
-
-const pricedTwice = [
-  on('rp1', 'reprice', 'tag', '2026-08-14T14:32:00.000000Z', who.cook, dishes.kottu, ':actor changed the price of :object'),
-  on('rp2', 'add', 'chef-hat', '2026-08-14T14:20:00.000000Z', who.cook, dishes.kottu, ':actor added a new dish, :object'),
-]
-
-const timeline = [
-  on('rp3', 'place', 'shopping-bag', '2026-08-14T14:40:00.000000Z', who.regular, orders.first, ':actor placed :object'),
-  on('rp4', 'confirm', 'circle-check', '2026-08-14T14:30:00.000000Z', who.cook, orders.first, ':actor confirmed :object'),
-  on('rp5', 'place', 'shopping-bag', '2026-08-14T14:20:00.000000Z', who.regular, orders.first, ':actor placed :object'),
-]
-
-const pulse = [timeline[0], timeline[1]]
+import { scene, logOf } from '../.vitepress/theme/world'
+const pricedTwice = logOf(scene.cookbook.pricing)
+const timeline = logOf(scene.cookbook.transitions.timeline)
+// keepLatest removes the earlier placement before a reader groups the rows.
+const pulse = timeline.filter((row, index) => timeline.findIndex((other) =>
+  other.verb === row.verb && other.object.id === row.object.id) === index)
 </script>
 
 ## Recording Repeated Occurrences
 
-*A cook adds a dish:*
+*A staff member adds a menu item:*
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
@@ -34,7 +23,7 @@ const pulse = [timeline[0], timeline[1]]
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -42,16 +31,16 @@ class MenuItemController extends Controller
 {
     public function store(
         StoreMenuItemRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $dish = $kitchen->menuItems()->create($request->validated());
+        $product = $shop->menuItems()->create($request->validated());
 
-        Storyfeed::activity() // every new dish is its own row
+        Storyfeed::activity() // every new menu item is its own row
             ->by($request->user())
-            ->action('add', $dish)
+            ->action('add', $product)
             ->publish();
 
-        return to_route('menu-items.edit', $dish);
+        return to_route('menu-items.edit', $product);
     }
 }
 ```
@@ -62,7 +51,7 @@ class MenuItemController extends Controller
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
@@ -70,17 +59,17 @@ class MenuItemController extends Controller
 {
     public function store(
         StoreMenuItemRequest $request,
-        Kitchen $kitchen,
+        Shop $shop,
     ): RedirectResponse {
-        $dish = $kitchen->menuItems()->create($request->validated());
+        $product = $shop->menuItems()->create($request->validated());
 
-        Storyfeed::record( // every new dish is its own row
+        Storyfeed::record( // every new menu item is its own row
             verb: 'add',
-            object: $dish,
+            object: $product,
             actor: $request->user(),
         );
 
-        return to_route('menu-items.edit', $dish);
+        return to_route('menu-items.edit', $product);
     }
 }
 ```
@@ -114,13 +103,13 @@ class MenuItemPriceController extends Controller
 {
     public function update(
         UpdatePriceRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $dish->update(['price' => $request->integer('price')]);
+        $product->update(['price' => $request->integer('price')]);
 
         Storyfeed::activity() // replaces the earlier price change
             ->by($request->user())
-            ->action('reprice', $dish)
+            ->action('reprice', $product)
             ->publish();
 
         return back();
@@ -142,13 +131,13 @@ class MenuItemPriceController extends Controller
 {
     public function update(
         UpdatePriceRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $dish->update(['price' => $request->integer('price')]);
+        $product->update(['price' => $request->integer('price')]);
 
         Storyfeed::record( // replaces the earlier price change
             verb: 'reprice',
-            object: $dish,
+            object: $product,
             actor: $request->user(),
         );
 
@@ -158,9 +147,9 @@ class MenuItemPriceController extends Controller
 ```
 :::
 
-After one new dish and two price changes:
+After one new menu item and two price changes:
 
-<FeedExample context :items="pricedTwice" />
+<FeedExample :items="pricedTwice" />
 
 <span id="choosing-which-occurrences-to-keep"></span>
 

@@ -49,6 +49,14 @@ Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 | `scene.cameo` | Jasper's rows | flagged `cameo` |
 | `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | 10–14 rows, a few days, 6+ kinds of activity, Summary < Live < Log |
 
+The cookbook also requires `scene.cookbook`: `actorless` (anonymous placement,
+service payment, actorless expiry), `transitions` (confirmation and a
+place/confirm/place timeline for the same order), `pricing` (add and latest
+reprice of the product), `deletion`, `discussion`, and `grouped` (three orders
+by one customer, and three customers placing one shared order). These are
+software illustrations: a pack marks invented transactions as uncertain and
+cites its software premise, without claiming they happened on screen.
+
 `everything()` returns every row published by now, for the long feeds later
 in the docs. `liveOf`, `summaryOf` and `logOf` fold any list of rows.
 

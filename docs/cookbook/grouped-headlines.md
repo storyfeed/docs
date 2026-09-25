@@ -28,38 +28,22 @@ Story::verb('place')
 ```
 
 <script setup>
-import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
-
-const one = scenes.order
-
-const burst = group({
-  id: 'ck5b', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:33:00.000000Z',
-  headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 3, targets: 1 },
-})
-
-const crowd = group({
-  id: 'ck5c', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors ordered from :target',
-  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
-  distinct: { actors: 5, objects: 5, targets: 1 },
-})
+import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
+const one = scene.cookbook.grouped.repeat[0]
+const [burst] = liveOf(scene.cookbook.grouped.repeat)
+const [crowd] = summaryOf(scene.cookbook.grouped.actors)
 </script>
 
 ## Publishing and Reading a Group
 
-*A customer places an order with the kitchen.*
+*A customer places an order with the shop.*
 
 ::: code-group
 <<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
 <<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
-<FeedExample context :items="[one]" />
+<FeedExample :items="[one]" />
 
 *a minute later, another request*
 
@@ -68,7 +52,7 @@ const crowd = group({
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($kitchen)
+    ->to($shop)
     ->publish();
 ```
 
@@ -77,7 +61,7 @@ Storyfeed::record(
     verb: 'place',
     object: $order,
     actor: $request->user(),
-    target: $kitchen,
+    target: $shop,
 );
 ```
 :::
@@ -89,7 +73,7 @@ Storyfeed::record(
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($kitchen)
+    ->to($shop)
     ->publish();
 ```
 
@@ -98,7 +82,7 @@ Storyfeed::record(
     verb: 'place',
     object: $order,
     actor: $request->user(),
-    target: $kitchen,
+    target: $shop,
 );
 ```
 :::
@@ -108,19 +92,19 @@ Read the feed with grouping:
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
-$feed = Storyfeed::feed()->involving($kitchen)->live()->get();
+$feed = Storyfeed::feed()->involving($shop)->live()->get();
 ```
 
-They share a customer, a kitchen and a day, so `live()` groups them under the
+They share a customer, a shop and a day, so `live()` groups them under the
 `repeat` headline:
 
 <FeedExample :items="[burst]" />
 
-A headline doesn't make a group form. The group of five customers below forms
+A headline doesn't make a group form. The group of three customers below forms
 only when the feed is read with `summary()`, and only once at least three
-different customers have ordered. See [Aggregation](/deeper/aggregation).
+different customers have placed the shared order. See [Aggregation](/deeper/aggregation).
 
-*five customers, five different orders, five requests, the same kitchen*
+*three customers, one shared order, three requests, the same shop*
 
 <FeedExample :items="[crowd]" />
 

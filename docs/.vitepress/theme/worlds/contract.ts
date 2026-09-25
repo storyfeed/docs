@@ -76,6 +76,15 @@ export type Roles = {
  * payload nodes on the present anchor.
  */
 export type SceneIds = {
+  /** Cookbook software examples; illustrative interactions, not new plot claims. */
+  cookbook: {
+    actorless: { anonymous: string; paid: string; expired: string }
+    transitions: { confirmed: string; timeline: string[] }
+    pricing: string[]
+    deletion: string
+    discussion: string
+    grouped: { repeat: string[]; actors: string[] }
+  }
   /** `role.customer` places an order (`place`) with `role.shop`: the standard example. */
   order: string
   /** `role.customer` asks about `role.product` (`ask`), with a note as the object. */

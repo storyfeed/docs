@@ -7,17 +7,15 @@ look it up when the feed is read.
 <span id="recording-a-count"></span>
 
 <script setup>
-import { who, notes, activity } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
+import { activity } from '../.vitepress/theme/samples'
 
-const fixed = activity({
-  id: 'count-fixed', verb: 'reply', glyph: 'message-circle',
-  published_at: '2026-08-14T14:28:00.000000Z',
-  headline_template: ':actor replied about :object',
-  actor: who.customer4, object: { ...notes.spice, type: 'discussion', body: null },
-  thread: { text: notes.spice.label, by: null, kind: null, replies: 3, truncated: false },
+const reply = scene.cookbook.discussion
+const fixed = activity({ ...reply,
+  thread: { text: reply.object.label, by: null, kind: null, replies: 3, truncated: false },
 })
-const withoutCount = activity({ ...fixed, id: 'count-empty', thread: { ...fixed.thread, replies: null } })
-const live = activity({ ...fixed, id: 'count-live', thread: { ...fixed.thread, replies: 4 } })
+const withoutCount = activity({ ...fixed, thread: { ...fixed.thread, replies: null } })
+const live = activity({ ...fixed, thread: { ...fixed.thread, replies: 4 } })
 </script>
 
 ## Recording a Fixed Count

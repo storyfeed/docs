@@ -23,15 +23,15 @@ class MenuDishController extends Controller
     public function destroy(
         Request $request,
         Menu $menu,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
         Storyfeed::activity()
             ->by($request->user())
-            ->action('remove', $dish)
+            ->action('remove', $product)
             ->to($menu)
             ->publish();
 
-        $dish->delete();
+        $product->delete();
 
         return back();
     }
@@ -54,16 +54,16 @@ class MenuDishController extends Controller
     public function destroy(
         Request $request,
         Menu $menu,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
         Storyfeed::record(
             verb: 'remove',
-            object: $dish,
+            object: $product,
             target: $menu,
             actor: $request->user(),
         );
 
-        $dish->delete();
+        $product->delete();
 
         return back();
     }
@@ -79,33 +79,28 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)
     ->verb('remove')
     ->headline(':actor removed :object from :target')
-    ->type(ActivityType::Remove); // a removal: the dish being gone is expected
+    ->type(ActivityType::Remove); // a removal: the menu item being gone is expected
 ```
 
 <script setup>
-import { who, where, dishes, activity, tombstone } from '../.vitepress/theme/samples'
+import { scene, role } from '../.vitepress/theme/world'
+import { activity, tombstone } from '../.vitepress/theme/samples'
 
-const deleted = '2026-08-14T17:05:00.000000Z'
-
-const removed = activity({
-  id: 'ck8', verb: 'remove', glyph: 'circle-x',
-  published_at: deleted,
-  headline_template: ':actor removed :object from :target',
-  actor: who.cook, target: where.menu,
-  object: tombstone('menu_item', '31', deleted),
+// Two renderings of the same deletion: discard or preserve the snapshot label.
+const source = scene.cookbook.deletion
+const removed = activity({ ...source,
+  object: tombstone(source.object.type, source.object.id, source.published_at),
 })
-
-const removedKeepingLabel = activity({
-  ...removed, id: 'ck9',
-  object: tombstone('menu_item', '31', deleted, { label: dishes.cutlets.label }),
+const removedKeepingLabel = activity({ ...source,
+  object: tombstone(source.object.type, source.object.id, source.published_at, { label: role.product.label }),
 })
 </script>
 
-<FeedExample context :items="[removed]" />
+<FeedExample :items="[removed]" />
 
 ## Preserving a Deleted Model's Label
 
-The dish is a tombstone once it is deleted. To keep naming it, the model keeps
+The menu item is a tombstone once it is deleted. To keep naming it, the model keeps
 its label on its tombstone:
 
 ```php memo="app/Models/MenuItem.php" at="describeFeed()"
@@ -125,7 +120,7 @@ $this->feedEntity()
 | the deleted model, in any role | names its tombstone; its label only with `keepLabel()` |
 | a surviving parent, such as the menu | renders and links |
 
-Every other activity that named the dish stays too. [Deleted Models](/deeper/deleted-models)
+Every other activity that named the menu item stays too. [Deleted Models](/deeper/deleted-models)
 covers what each of them says.
 
 ## Removing Activities

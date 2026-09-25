@@ -5,7 +5,7 @@ the same method. Call sites name the verb, and a verb nothing declares throws
 while you develop.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
 </script>
 
 ## Defining Verbs and Headlines Together
@@ -51,7 +51,7 @@ Publish by the verb's name:
 <<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 <span id="causes-of-verb-drift"></span>
 

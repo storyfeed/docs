@@ -100,10 +100,10 @@ Storyfeed::verbs([
 `Storyfeed::verbs()` merges by default, so both vocabularies register together.
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use App\Enums\KitchenActivity;
+use App\Enums\ShopActivity;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs(Act::only(Act::Create, Act::Confirm));
-Storyfeed::verbs(KitchenActivity::class);
+Storyfeed::verbs(ShopActivity::class);
 ```
