@@ -128,8 +128,8 @@ Story::middleware('batch:5 minutes')->as('billing.')->for(Order::class)
 This alternative declaration names the story `billing.place` and gives it a
 five-minute batch window. The attributes chain in any order, as
 `Route::middleware()->as()->group()` does in Laravel. `for()`, `middleware()`,
-`withoutMiddleware()`, `as()` / `name()` and the role constraints each return a
-`PendingGroup` that accepts the other attributes.
+`withoutMiddleware()`, `as()` / `name()` and the role constraints can each
+follow any of the others.
 
 For one declaration, omit `group()`:
 
@@ -199,8 +199,7 @@ Story::resource(Order::class, OrderStory::class);
 
 With `Order` mapped to the morph alias `order`, every resource verb receives
 `order.{verb}` as its name. Resource names are singular: the morph alias exactly
-as stored. The default name **is the key**: `order.confirm` is both the name and
-the `order` + `confirm` declaration key.
+as written.
 
 | Resource Verb | Default Name |
 |---|---|
@@ -208,8 +207,8 @@ the `order` + `confirm` declaration key.
 | `update` | `order.update` |
 | `confirm` declared by `OrderStory::confirm()` | `order.confirm` |
 
-Leaving these defaults keeps the name and key the same. `names()` can override
-them; each row below is an alternative suffix on the resource declaration.
+`names()` overrides them; each row below is an alternative suffix on the
+resource declaration.
 
 | Suffix | Result |
 |---|---|
@@ -248,9 +247,9 @@ $activity->storyIs('checkout.*');  // false
 exists. `storyIs()` accepts several patterns and matches if any one matches.
 These correspond to Laravel's `Route::has()` and `routeIs()`.
 
-Names live in the declarations, not in activity rows. `storyName()` resolves
-from the activity's object type and verb using the current definitions. An
-unnamed key returns `null`; `storyIs()` returns `false` for it.
+Names are not stored with activities. `storyName()` looks up the name from the
+activity's object type and verb in the current definitions. An activity whose
+declaration has no name returns `null`, and `storyIs()` returns `false` for it.
 
 <a id="checking-names-during-deployment"></a>
 

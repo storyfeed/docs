@@ -163,8 +163,7 @@ body: fn () => KeyValue::make(
 
 :::
 
-It runs after the page's models are loaded, so it costs one query per class,
-not one per row. If it throws, the error is reported once per class and that
+It costs one query per model class on the page, not one per row. If it throws, the error is reported once per class and that
 body is left out; the activity stays in the feed with its label, link and any
 other bodies.
 Use a closure when the body reads the live row; a body built from the snapshot
@@ -340,7 +339,7 @@ name, and stored rows keep it even if the class moves.
 | Key | Constant | Holds |
 |---|---|---|
 | `$body` | `FeedBody::KEY` | the body type's name, verbatim |
-| `$v` | `FeedBody::VERSION` | the version that wrote the row |
+| `$v` | `FeedBody::VERSION` | the version that wrote the body |
 
 The `$` prefix keeps them apart from your own keys.
 
@@ -362,9 +361,9 @@ its version.
 | `FeedChange` at `$change` | `change` | Storyfeed, on read | no |
 | a body type's value | stays in `body` | the renderer | yes |
 
-Storyfeed upgrades `$thread` and `$change` itself, because it uses them to build
-the node. It never looks inside a body, so your renderer calls `upgrade()`
-before drawing one, even a `FeedThread` placed in a body.
+Storyfeed upgrades `$thread` and `$change` itself. It hands a body back
+unchanged, so your renderer calls `upgrade()` before drawing one, even a
+`FeedThread` placed in a body.
 
 
 ::: headless

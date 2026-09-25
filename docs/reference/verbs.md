@@ -7,7 +7,7 @@ of writing your own. Each case stores a plain English word as the verb, such as
 `approve`, and serializes as an Activity Streams 2.0 activity type, such as
 `Accept`, so you need no mapping of your own.
 
-Verbs are still free-form strings in storage. An application can use its own
+Verbs are free-form strings. An application can use its own
 words, these cases, or both.
 
 <span id="the-vocabulary"></span>

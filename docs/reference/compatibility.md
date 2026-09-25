@@ -12,5 +12,5 @@ Storyfeed requires PHP 8.4 or newer and Laravel 12 or 13.
 
 ## Tested Environments
 
-The CI matrix runs on Ubuntu and Windows, with PHP 8.4/8.5 × Laravel 12/13 × prefer-lowest/prefer-stable.
-An additional Ubuntu job runs the suite in parallel on PHP 8.5 and Laravel 13.
+Storyfeed is tested on Ubuntu and Windows, on PHP 8.4 and 8.5 with Laravel 12
+and 13, against both the lowest and the latest allowed dependency versions.

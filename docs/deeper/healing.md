@@ -77,7 +77,7 @@ or permissions doesn't look deleted.
 
 ### Rechecking Missing Sources
 
-`whenAbsent` receives a freshly loaded, locked copy of the activity. Check it
+`whenAbsent` receives a freshly loaded copy of the activity. Check it
 and the source again there, and return `false` if the source exists now.
 
 Activities must be on the default database connection.
@@ -117,7 +117,7 @@ Would retire: 1; unchanged: 1.
 
 | Outcome | When | Applying the Request |
 |---|---|---|
-| `retire` | the activity is live and `whenAbsent` returns true | soft-delete the activity and bump `sync_token` in the same transaction |
+| `retire` | the activity is live and `whenAbsent` returns true | soft-deletes the activity and changes `sync_token` |
 | `unchanged` | the activity is deleted or gone, or `whenAbsent` returns false | nothing |
 
 ### Applying Retirements

@@ -207,7 +207,7 @@ Add `--json` for structured findings. See [Diagnosing Your Feed](/deeper/diagnos
 
 ## Static Analysis
 
-The package ships a PHPStan rule that checks each `Feed::make()` call against
+Storyfeed ships a PHPStan rule that checks each `Feed::make()` call against
 the constructor of the feed class it builds:
 
 ```

@@ -86,18 +86,18 @@ The read mode chooses which groupings a read shows:
 | Mode | Reads |
 |---|---|
 | `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
-| `live()` | the winning axis on any bucket, falling back to `repeat` where nothing has been stamped a winner. The default |
+| `live()` | one grouping per activity, chosen from the axes that fit it, falling back to `repeat`. The default |
 | `summary()` | `summary`: one row per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
 
-With `grouping.curate` enabled, publishing selects a winning axis. With it
-set to `false`, no winner is stamped and `live()` shows repeats only.
-`storyfeed:curate` also revisits recent activity hourly when Laravel's scheduler runs.
+With `grouping.curate` set to `false`, `live()` shows repeats only.
+`storyfeed:curate` regroups recent activity, and runs hourly when Laravel's
+scheduler runs.
 
 ## Grouping Axes
 
 ### Built-In Axes
 
-| Axis | Collapses | Pins (Safe Singular Tokens) | One Type | Example Headline |
+| Axis | Collapses | Singular Tokens Allowed | One Type | Example Headline |
 |---|---|---|---|---|
 | `repeat` | one actor repeating a verb | `:actor` `:target` | yes | ":actor placed :count orders with :target" |
 | `actors` | many actors, same verb and target | `:target` | no | ":actors ordered from :target" |
@@ -108,7 +108,7 @@ set to `false`, no winner is stamped and `live()` shows repeats only.
 A headline for a **One Type** axis can go in a Story class or inside
 `Story::for()`. The others go on the verb alone. Inside `grouped()`,
 `$group->axis('scene', …)` names a custom axis, and `$group->any(…)` matches
-whichever axis wins.
+whichever axis groups the activity.
 
 ### Thresholds
 
@@ -185,8 +185,8 @@ activities in the group.
 <a id="group-headline-tokens"></a>
 
 A group headline may only use tokens that are true of **every** activity in
-it. A singular token is allowed only where the axis pins it; a plural token is
-allowed everywhere.
+it. A singular token is allowed only where every member shares it (the
+**Singular Tokens Allowed** column above); a plural token is allowed everywhere.
 
 ```php
 // a repeat group: one customer, many dishes
@@ -203,9 +203,9 @@ compile.
 Both of these are token-safe; only one is readable:
 
 ```php
-// an actors group, which pins :target
+// an actors group: every member shares :target
 ':actors placed :objects with :targets' // ✗ three lists of names
-':actors ordered from :target'          // ✓ one list, one pinned role
+':actors ordered from :target'          // ✓ one list, one shared role
 ```
 
 Keep one list per template and collapse the others to `:count`.
@@ -260,7 +260,8 @@ link.
 
 ## Defining Custom Axes
 
-An axis is a key recipe and a rule for which activities it takes:
+An axis names what its activities share and how many it needs before it
+groups them:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -268,7 +269,7 @@ use Storyfeed\Grouping\Axis;
 
 Storyfeed::axes([
     Axis::make('scene')
-        ->key('v:ca!:cid!:d')                      // verb + context identity + day
+        ->key('v:ca!:cid!:d')                      // same verb, same context, same day
         ->eligibleWhenDistinct('actor', min: 2),
 ]);
 ```
@@ -276,11 +277,12 @@ Storyfeed::axes([
 `scene` groups activities in the same [context](/deeper/context), such as
 three customers asking about dishes in one shop.
 
-### Keys
+<a id="keys"></a>
 
-The recipe names the fields two activities must share; `!` marks a field that
-must be present. A singular token like `:context` is safe when both of its
-role's fields are in the key.
+### Axis Keys
+
+The key lists, separated by `:`, the fields two activities must share. `!`
+after a field means an activity without it never joins the axis.
 
 | Role | Type Field | Id Field |
 |---|---|---|
@@ -292,8 +294,10 @@ role's fields are in the key.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb and `d` its calendar period, a day by default. Without `v`, a group may mix verbs, so a
-verb-agnostic key (`scene.*` or `*.*`) applies to it.
+`v` adds the verb, and `d` the calendar period, a day by default. A singular
+token such as `:context` is allowed in the axis's headlines when both of its
+role's fields are in the key. Without `v`, a group may mix verbs, so its
+headline goes on a verb-agnostic key (`scene.*` or `*.*`).
 
 ### Priority
 

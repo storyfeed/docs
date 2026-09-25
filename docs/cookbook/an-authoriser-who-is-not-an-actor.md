@@ -112,27 +112,30 @@ The `shop` feed excludes the approval. Other feeds must also exclude it
 if it should remain hidden.
 
 This fits moderation queues, four-eyes approval, and a draft someone else
-releases. A role would put the approver in the sentence; a `data` key would
-keep them out of the participant index. A separate activity does neither.
+releases. A role would put the approver in the sentence, and a `data` key can't
+be read with `involving()` or `actor()`. A separate activity does neither.
 
 ## Finding the Approver
 
-The approver is the actor of a real row, so the participant index has them:
+Read the photo's latest `approve` activity. The approver is its `actor`:
 
 ```php memo="Where the approver is shown: a controller or a view model"
-use Storyfeed\Models\Activity;
+use Storyfeed\Facades\Storyfeed;
 
-$approval = Activity::query()
+$approval = Storyfeed::feed()
     ->involving($photo)
-    ->where('verb', 'approve')
-    ->latest('published_at')
-    ->first();
+    ->verb('approve')
+    ->log()
+    ->limit(1)
+    ->get()
+    ->items()[0] ?? null;
 
-$approvedBy = $approval?->cachedActor;
+$approvedBy = $approval['actor']['label'] ?? null;
+$approvedAt = $approval['published_at'] ?? null;
 ```
 
-The approval maps to the Activity Streams `Accept` type, so the serialized document needs no extension
-term. The contributor stays the actor of their own story.
+`ActivityType::Accept` marks the approval as an Activity Streams `Accept`. The
+contributor stays the actor of their own activity.
 
 ## Displaying Approvals
 
@@ -140,15 +143,15 @@ term. The contributor stays the actor of their own story.
 
 ### Displaying an Approval on One Item
 
-Give the approval a headline even when displayed feeds exclude it;
-recording validates its definition. Draw the approver from the lookup as a name and a time under the
-story, not as a row of its own.
+Give the approval a headline even when displayed feeds exclude it: recording
+checks its definition. Show the approver from the lookup as a name and a time
+under the activity, not as a row of its own.
 
 <span id="showing-the-approver-on-a-dense-list"></span>
 
 ### Displaying Approvals in Lists
 
 On one photo's page, the lookup is one more query. On a long list it is one
-per row. There, also copy the approver's name into the story's `data` at
-publish time, and keep the approval activity as the record. The `data` copy
-can go stale; the activity is what `involving()` finds.
+per row. There, also copy the approver's name into the published activity's
+`data`, and keep the approval activity as the record. The `data` copy can go
+stale; the approval activity is what `involving()` finds.

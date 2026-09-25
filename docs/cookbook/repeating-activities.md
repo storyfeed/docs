@@ -140,5 +140,4 @@ full timeline, don't replace.
 <a id="matching-activities"></a>
 
 [Keeping the Latest Activity](/deeper/keeping-the-latest-activity) covers
-which roles make two activities match, limiting the match to a time window, and
-how replaced rows are deleted.
+which roles make two activities match, and limiting the match to a time window.

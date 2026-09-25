@@ -81,7 +81,7 @@ Aliases let the call site read as the sentence:
 | `->resulting()` | `result` | what they produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
 
-An alias and its setter record identical rows. `context` is set only by
+An alias and its setter record the same activity. `context` is set only by
 `->context()`; `->in()` and `->from()` set the target, not the container.
 
 <a id="the-actor"></a>
@@ -305,7 +305,7 @@ class ImportPriceHistory extends Command
 
 ## Recording Multiple Objects
 
-`->objects()` records one parent story plus one activity per object:
+`->objects()` records one activity whose object is the whole set:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/UploadPhotosController.php"

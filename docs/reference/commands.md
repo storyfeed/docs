@@ -90,8 +90,7 @@ php artisan about --only=storyfeed
 | Curate, Trickle and Close-batches schedules | whether `storyfeed:curate`, `storyfeed:trickle` and `storyfeed:close-batches` are scheduled |
 | Doctor | what the `tables`, `recording` and `manifest` checks report; `storyfeed:doctor` runs them all |
 
-It reads no activity rows, and renders with no tables and no database. `--json`
-works as for every other section.
+It works without a database. `--json` works as for every other section.
 
 
 <span id="scheduled"></span>
@@ -104,9 +103,9 @@ runs, Storyfeed schedules `storyfeed:curate` hourly on its own; set
 
 | Command | Does | Suggested |
 |---|---|---|
-| `storyfeed:trickle` | snapshots uncached activities (newest first), re-takes snapshots whose shape no longer matches `toFeed()`, tombstones models deleted without a model event, restores tombstones whose model is back, and counts activities with an unresolvable role. `--limit=`; `--prune` deletes the unresolvable ones instead | every minute |
+| `storyfeed:trickle` | keeps stored entity snapshots current with `toFeed()`, marks models deleted without a model event (such as a query builder delete) as deleted, restores those whose model is back, and counts activities with a role that no longer resolves. `--limit=`; `--prune` deletes those activities instead | every minute |
 | `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
-| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention), repairs the groups they leave, and deletes the snapshots and tombstones only they referred to. `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
+| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
 
 ```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
@@ -124,58 +123,53 @@ Schedule::command('storyfeed:prune')->daily();
 
 | Command | Does |
 |---|---|
-| `storyfeed:rebuild` | rebuilds every entity snapshot and backfills cached links; `--recent=N` limits the pass to entities named by the newest N activities |
+| `storyfeed:rebuild` | rebuilds every entity snapshot and link from `toFeed()`; `--recent=N` limits the pass to entities named by the newest N activities |
 | `storyfeed:cache-snapshots` | bounded snapshot refresh run by `php artisan optimize`; skips when the database is unavailable |
 
 <span id="rehashing-existing-rows"></span>
 
 ### Rehashing Groups
 
-Grouping is computed at publish time from the role columns, the verb and its
-calendar period (a day by default). Existing rows keep the hash they were written with; nothing recomputes it
-on read. These change what the hash would be:
+Storyfeed groups an activity when it is published. Activities already
+published keep their groups after you:
 
-- registering a new axis
-- editing an axis recipe key
-- tuning `grouping.policy` thresholds
-- migrating a verb or a role on rows already published
+- register a new axis
+- edit an axis recipe key
+- tune `grouping.policy` thresholds
+- change the verb or a role on activities already published
 
-`storyfeed:rebuild` rebuilds snapshots, not hashes, and a plain
-`storyfeed:curate` re-picks a winner from the hashes already stored. Only
-`--rehash` re-runs grouping first, so existing rows adopt the new recipe:
+Neither `storyfeed:rebuild` nor a plain `storyfeed:curate` regroups them. Run
+`--rehash` to regroup existing activities with the new settings:
 
 ```bash
 php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
 
-The hourly scheduled `curate` runs without `--rehash`, so rows are rehashed
-only when you run it yourself.
-
-### Releasing Orphaned Composites
-
-A force-deleted composite parent hands its members back to ordinary grouping.
-Where members are still claimed by a parent that no longer exists, the
-composite keeps rendering from them: a story that outlived its erasure. The
-doctor counts them (`claims.parent_gone`), and `--release` ends it:
-
-```bash
-php artisan storyfeed:curate --release   # a second run changes nothing
-```
-
-The members go back to ordinary grouping, their groups are re-decided, and
-the `sync_token` moves when anything changed. A trashed parent still owns its
-members, so it is left alone.
+The scheduled `curate` never rehashes, so run it yourself.
 
 `--rehash` can move a group past a live cursor, leaving the next page empty.
 It changes the `sync_token`, and clients must then discard every accumulated
 node and refetch from the head, including after an empty response. See the
 [Sync token rule](/reference/payload#sync-token).
 
+### Releasing Orphaned Composites
+
+When a composite's parent has been force-deleted but its members still render
+as that composite, the doctor reports `claims.parent_gone`. `--release` returns
+the members to ordinary grouping:
+
+```bash
+php artisan storyfeed:curate --release   # a second run changes nothing
+```
+
+The `sync_token` changes when anything was released. A soft-deleted parent
+keeps its members.
+
 ### Other Maintenance Commands
 
 | Command | Does |
 |---|---|
-| `storyfeed:curate` | selects the winning grouping axis for activities (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
+| `storyfeed:curate` | picks the group each activity shows in with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
 | `storyfeed:heal` | [retires activities whose source is permanently absent](/deeper/healing). `--dry-run` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |

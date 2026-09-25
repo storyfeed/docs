@@ -250,6 +250,6 @@ context stays empty.
 
 ## Passing Scopes to Queued Jobs
 
-Jobs dispatched inside an actor or context scope carry its identity to the
+Jobs dispatched inside an actor or context scope run inside that scope on the
 worker. [Queued Publishing](/deeper/queues#carrying-actors-and-context) covers
-restoration, nested jobs and dispatch methods that run after the scope closes.
+nested jobs and dispatch methods that run after the scope closes.

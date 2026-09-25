@@ -201,7 +201,7 @@ null. After handling digest phrases, draw the count:
 
 Don't assemble prose from the node's entities: a branch written for single
 activities names one actor over a many-actor group. `headline` is the
-pre-rendered sentence for grammar written as a PHP closure, and is null when
+finished sentence for a headline written as a PHP closure, and is null when
 the template is present.
 
 <a id="activity-data-and-bodies"></a>
@@ -235,37 +235,102 @@ The headline example above uses `Someone` and `Something` when a label is missin
 
 ## Rendering With Vue
 
-With Inertia, pass the feed to the page as a prop,
-`Inertia::render('Home', ['feed' => Storyfeed::feed()->get()])`, and the page
-hands it to the app's own composable and stream component:
+With Inertia, pass the feed to the page as a prop. The route reads the cursor
+from the query string, so the same route serves every page:
 
-```vue memo="resources/js/Pages/Home.vue"
+```php memo="routes/web.php"
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function (Request $request) {
+    return Inertia::render('Home', [
+        'feed' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+    ]);
+});
+```
+
+The page keeps the nodes it has drawn, and asks for the next page with a
+partial reload of the `feed` prop:
+
+```vue memo="resources/js/pages/Home.vue"
 <script setup lang="ts">
-import { usePoll } from '@inertiajs/vue3'
-import { toRef } from 'vue'
-import FeedStream from '@/feed/FeedStream.vue'   // the app's own component
-import { useFeed } from '@/feed/useFeed'         // the app's own composable
-import type { FeedPayload } from '@/feed/types'
+import { router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
-const props = defineProps<{ feed: FeedPayload }>()
+type FeedNode = Record<string, any>
+type Feed = { items: FeedNode[]; next_cursor: string | null; sync_token: string | null }
 
-const { items, nextCursor, loadingMore, loadMore } = useFeed(
-    toRef(() => props.feed),
-    (cursor) => `/?cursor=${cursor}`,
-)
+const props = defineProps<{ feed: Feed }>()
 
-usePoll(10_000, { only: ['feed'] })
+const items = ref<FeedNode[]>([...props.feed.items])
+const nextCursor = ref(props.feed.next_cursor)
+const syncToken = props.feed.sync_token
+const loading = ref(false)
+
+const tokens = /:(actors|objects|targets|contexts|origins|results|instruments|actor|object|target|context|origin|result|instrument|count)\b/g
+
+function headline(node: FeedNode): string {
+    if (!node.headline_template) {
+        return node.headline ?? `${node.count} activities`
+    }
+
+    return node.headline_template.replace(tokens, (_: string, name: string) => {
+        if (name === 'count') {
+            return String(node.count)
+        }
+
+        if (name.endsWith('s')) {
+            const shown: FeedNode[] = node.sample?.[name] ?? []
+            const more = (node.distinct?.[name] ?? 0) - shown.length
+
+            return shown.map((e) => e.label ?? 'Something').join(', ')
+                + (more > 0 ? ` and ${more} more` : '')
+        }
+
+        return node[name]?.label ?? (name === 'actor' ? 'Someone' : 'Something')
+    })
+}
+
+function loadMore() {
+    router.reload({
+        only: ['feed'],
+        data: { cursor: nextCursor.value },
+        preserveUrl: true,
+        onStart: () => (loading.value = true),
+        onFinish: () => (loading.value = false),
+        onSuccess: (page) => {
+            const feed = page.props.feed as Feed
+
+            if (feed.sync_token !== syncToken) {
+                router.visit(window.location.pathname)   // earlier pages changed: start again
+
+                return
+            }
+
+            items.value.push(...feed.items)
+            nextCursor.value = feed.next_cursor
+        },
+    })
+}
 </script>
 
 <template>
-    <FeedStream
-        :items="items"
-        :next-cursor="nextCursor"
-        :loading-more="loadingMore"
-        @load-more="loadMore"
-    />
+    <article v-for="node in items" :key="node.id">
+        {{ headline(node) }}
+        <time :datetime="node.published_at">
+            {{ new Date(node.published_at).toLocaleString() }}
+        </time>
+    </article>
+
+    <button v-if="nextCursor" :disabled="loading" @click="loadMore">
+        Load more
+    </button>
 </template>
 ```
 
-The composable holds the paging, the stream draws nodes, and the page supplies
-the payload and the URL of the next page. None of it knows what an order is.
+`headline()` follows the Blade examples above, with labels as plain text: the
+sample and how many more for a plural token, and the count for a group with no
+sentence. A `null` `next_cursor` hides the button. Digest phrases, links and
+bodies are drawn as the sections above describe.

@@ -421,16 +421,11 @@ For a request without the signature header:
 <FeedExample :items="[paid]" />
 
 The verb's actor applies when the call site names none and no `Storyfeed::actor()`
-scope is open. A method runs at compilation with an empty request; only its
-actor may vary when it runs again at a publish.
-
-| Read From the Compiled Definition | Read at Each Publish |
-|---|---|
-| headlines, icon, intent, grouping and every other setting | `->actor()` |
-
+scope is open. Only `->actor()` may depend on the request: the headline, icon,
+intent, grouping and every other setting must be the same for every request.
 Changing a headline with the request throws when `grammar.strict` is on,
 including the default local and testing environments. Jobs dispatched during
-the request carry the chosen actor; see [Request-Based Actors](/deeper/queues#request-based-actors).
+the request publish with the chosen actor; see [Request-Based Actors](/deeper/queues#request-based-actors).
 
 <a id="generating-from-doctor-findings"></a>
 

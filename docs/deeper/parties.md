@@ -166,7 +166,7 @@ Once a list is declared, a name outside it:
 | `local`, `testing` | throws `UndeclaredParty`, naming the call and the list |
 | everywhere else | is ignored: the activity keeps the actor it would have had without the name, and `storyfeed:doctor` reports it |
 
-With no list, any name becomes a party. Names match as party keys do, so
+With no list, any name becomes a party. Names match by their slug, so
 `'Stripe'` and `'stripe'` are one party. `parties.strict` in
 `config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
 `local` and `testing` only.

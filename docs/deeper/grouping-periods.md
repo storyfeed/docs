@@ -109,9 +109,9 @@ use `groupedHourly()`, `groupedDaily()`, `groupedWeekly()`, or `groupedMonthly()
 php artisan storyfeed:curate --rehash # Recomputes grouping for stored activities.
 ```
 
-A changed declaration affects newly published activities. Existing rows retain
-their grouping until rehashed. This command applies the current grouping
-strategy to stored activities, so it can change groups already shown in a feed.
+A changed declaration affects newly published activities. Existing activities
+keep their grouping until you run this command, which regroups them under the
+current declarations and can change groups already shown in a feed.
 
 ### Curation Look-Back
 
@@ -119,9 +119,6 @@ strategy to stored activities, so it can change groups already shown in a feed.
 php artisan storyfeed:curate --window=2
 ```
 
-A bounded curation pass widens its look-back for declarations that need a longer
-period. A weekly verb reaches back eight days; a monthly verb reaches back
-32 days. Other verbs keep the requested window. A wildcard declaration widens
-the scan for the rows it matches, including more specific overrides.
-
-The scheduled curation pass applies the same widening to `storyfeed.curate.window`.
+For verbs grouped weekly or monthly, the window is widened to cover the whole
+period: eight days for a week, 32 for a month. Other verbs keep the window you
+pass. The scheduled pass widens `storyfeed.curate.window` the same way.

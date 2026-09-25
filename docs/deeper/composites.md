@@ -157,8 +157,8 @@ Bundling happens when the actor's **batch** closes.
 ### Closing Batches
 
 A batch is a burst of activity by one actor. Its quiet window defaults to `grouping.batch.quiet_minutes`; the verb can
-declare its own window with [`batched(within:)`](/deeper/story-middleware-and-batching#batch-windows). Each publish sets the batch's
-`closes_at`.
+declare its own window with [`batched(within:)`](/deeper/story-middleware-and-batching#batch-windows). Each publish by the actor
+starts the quiet window again.
 
 ```php memo="config/storyfeed.php"
 'grouping' => [

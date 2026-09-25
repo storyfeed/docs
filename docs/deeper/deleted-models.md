@@ -4,7 +4,7 @@
 
 When a model is deleted, the activities it took part in stay in the feed.
 Storyfeed puts a tombstone in the model's place: the activity still reads as a
-sentence, and the deleted model's details are gone from the feed's tables.
+sentence, and Storyfeed no longer keeps the deleted model's details.
 
 <script setup>
 import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
@@ -51,8 +51,8 @@ After it:
 <FeedExample expanded :items="[afterDelete]" />
 
 Every activity that named the order now names its tombstone instead. A
-tombstone keeps only the kind of thing the model was and when it went, as
-Activity Streams 2.0 recommends. The payload says so:
+tombstone keeps only the kind of thing the model was and when it went. The
+payload says so:
 
 | Key | What it says |
 |---|---|

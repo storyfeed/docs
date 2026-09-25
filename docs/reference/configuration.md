@@ -16,10 +16,10 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | Key | Default |  |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | the file that holds your [feed file](/basics/the-feed-file), loaded once every service provider has booted. Another path to use another file; `false` turns loading off |
+| `definitions` | `base_path('routes/feed.php')` | the file that holds your [feed file](/basics/the-feed-file). Another path to use another file; `false` turns loading off |
 
-Once `storyfeed:cache` has run, the file isn't loaded at boot: the manifest
-holds what it defined.
+Once `storyfeed:cache` has run, changes to the file take effect only after you
+run it again.
 
 <span id="tables-models"></span>
 
@@ -34,7 +34,7 @@ holds what it defined.
 
 | Key | Default |  |
 |---|---|---|
-| `morph_alias` | `'storyfeed.party'` | alias stored for parties; resolved independently of your morph map |
+| `morph_alias` | `'storyfeed.party'` | the morph alias for parties |
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | party name for otherwise-anonymous publishes (jobs, commands) |
@@ -48,7 +48,7 @@ For named system attribution or a sentence without an actor slot, see
 | Key | Default |  |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) does to the rows it supersedes. `'soft'` keeps them with `deleted_at` set until `storyfeed:prune`, and removes their participant rows; `'force'` hard-deletes them, grouping and participant rows included, inside the publish transaction. Any other value throws at publish time |
+| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) does to the rows it supersedes. `'soft'` soft-deletes them until `storyfeed:prune` removes them; `'force'` deletes them immediately. Any other value throws when publishing |
 
 ### Verbs
 
@@ -70,8 +70,8 @@ Storyfeed::verbs(['confirm' => ActivityType::Update]); // or a verb => type map
 
 Once a verb is registered, `verbs.strict` throws on any verb outside the
 registry, `storyfeed:verbs --used` and doctor report verbs recorded but never
-registered (and the reverse), and the serializer emits the verb's Activity
-Streams 2.0 type. A registered story class registers its verb too, so an app
+registered (and the reverse), and the Activity Streams document carries the
+verb's type. A registered story class registers its verb too, so an app
 that records only through stories has nothing to register.
 
 ## Grouping
@@ -80,7 +80,7 @@ that records only through stories has nothing to register.
 |---|---|---|
 | `grouping.strategy` | `MultiAxisStrategy::class` | use `NullStrategy` to disable grouping entirely |
 | `grouping.default` | `'live'` | app-wide read mode: `'log'` for individual activities, `'live'` for winning groups, `'summary'` for a per-person digest |
-| `grouping.curate` | `true` | select a winning axis at publish time; `false` makes `live()` read repeats only |
+| `grouping.curate` | `true` | choose each activity's group across every axis when it is published; `false` makes `live()` group repeats only |
 | `grouping.summary.phrases` | `3` | maximum per-verb phrases in a digest row; `phrases_truncated` reports omitted phrases |
 | `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node |
@@ -103,10 +103,9 @@ one where a surface shows more:
 ],
 ```
 
-The sample is drawn from the members already loaded, so `children_limit` still
-bounds it. Each sampled entity is a resolver call: a group node listing six objects
-resolves six entities on every page. An invalid or missing limit falls back to
-`3`.
+`children_limit` still caps the sample. Each sampled entity is resolved on
+every page read, so raise a limit only where the surface shows it. An invalid
+or missing limit falls back to `3`.
 
 <span id="batches-composites"></span>
 
@@ -123,7 +122,7 @@ resolves six entities on every page. An invalid or missing limit falls back to
 
 | Key | Default |  |
 |---|---|---|
-| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model: one query per class per page. Off, it returns `null` with no query and no exception, and the resolver takes its null branch |
+| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model, with one query per class per page. Off, it returns `null` and your resolver's `null` branch runs |
 
 <span id="as2-0-routes"></span>
 
@@ -139,10 +138,10 @@ resolves six entities on every page. An invalid or missing limit falls back to
 
 | Key | Default |  |
 |---|---|---|
-| `curate.schedule` | `true` | package schedules hourly curation with overlap protection; requires Laravel’s scheduler |
+| `curate.schedule` | `true` | schedules `storyfeed:curate` hourly; requires Laravel’s scheduler |
 | `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs; `null` or `0` makes the scheduled pass unbounded |
 | `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
-| `trickle.limit` | `200` | activities snapshotted, and snapshots checked for a deleted model, per `storyfeed:trickle` run |
+| `trickle.limit` | `200` | activities processed per `storyfeed:trickle` run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
 
 ## Diagnostics
@@ -151,5 +150,5 @@ resolves six entities on every page. An invalid or missing limit falls back to
 |---|---|---|
 | `doctor.stale_after` | `30` | days without new activity before doctor flags a forgotten feed; `null` disables |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
-| `discovery.paths` | `null` | where `storyfeed:stories` and doctor scan for feed surface; `null` = `app_path()`. Dev-time only |
+| `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |
 | `demo.enabled` | `false` | register the vocabulary `storyfeed:demo` seeds with, so a seeded demo renders. On in the environment showing the demo, not in production |

@@ -253,5 +253,5 @@ class ConfirmOrderController extends Controller
 
 <FeedExample :items="[confirmed]" />
 
-The stored verb is the case's value, `confirm`, so the row is the same as one
-recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.
+The recorded verb is the case's value, `confirm`, so the activity is the same
+as one recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.

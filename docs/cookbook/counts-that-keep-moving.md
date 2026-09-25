@@ -105,8 +105,7 @@ class CommentController extends Controller
 
 A row recorded at three replies says three. A fourth reply publishes a new
 activity with a new count, and the older row beside it still says three.
-Nothing recomputes it: not `storyfeed:rebuild`, not `curate --rehash`, not the
-trickle.
+No Storyfeed command recomputes it.
 
 That is right for something finished, and wrong on a surface where the reader
 can add a reply.

@@ -43,7 +43,7 @@ precedence over the trait's.
 | `describeFeed(): void` | the model | when the snapshot is written | fill `$this->feedEntity()` |
 | `$this->feedEntity()` | inside `describeFeed()` | when the snapshot is written | the `FeedEntity` the snapshot is written from |
 | `static::feedMediaUsing(fn ($context, $media) => …)` | `booted()` | when the feed is read | the link and media |
-| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a `MediaSlot` reference to the corresponding read-time media slot |
+| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a reference to the matching media slot, filled at read time |
 | `guessFeedLabel(): string` | the model, to override | when no label is set | the default label |
 | `updateFeedSnapshot()` | anywhere | when called | refresh the snapshot outside a save |
 | `deleteFromFeed()` | anywhere | when called | soft-delete every activity involving the model |
@@ -173,7 +173,7 @@ render with `label: null` and `url: null`, and your frontend can choose a placeh
 
 `$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
 argument filled in, and takes an optional feed name:
-`$model->storyfeed('customer')`. Both read `feed_participants`.
+`$model->storyfeed('customer')`.
 
 The `storyfeed()` helper function is different: it returns the manager, or a
 pending activity when given a verb. Inside a model, `storyfeed()` is the helper
@@ -196,7 +196,7 @@ Storyfeed::feedable(Media::class)
 
 | Method | Receives | Returns |
 |---|---|---|
-| `Storyfeed::feedable($class)` | a model class | a `FeedableRegistration` |
+| `Storyfeed::feedable($class)` | a model class | a registration to chain the methods below on |
 | `->toFeedUsing(fn ($model, $entity) => …)` | the model and an empty `FeedEntity` | the entity, or nothing; an unset label is guessed |
 | `->feedMediaUsing(fn ($context, $media) => …)` | the `FeedContext` and an empty `FeedMedia` | a URL string, the `$media`, or `null` |
 
@@ -469,8 +469,8 @@ and `props`; what your frontend draws for the name is yours.
 ## Morph Aliases
 
 Aliases are read from the app's morph map, or from `morph_map` in
-`config/storyfeed.php`, which merges into it at boot. The package's own aliases
-resolve whether or not the app's map registers them.
+`config/storyfeed.php`, which merges into it. Storyfeed's own aliases resolve
+whether or not the app's map registers them.
 
 An activity whose role alias no longer resolves still appears in the payload with no resolved label or link. The trickle counts it as unresolved, and soft-deletes it only with
 `storyfeed.trickle.prune` or `storyfeed:trickle --prune`.

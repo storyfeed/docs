@@ -183,8 +183,7 @@ job batch.
 
 Each batched activity extends the closing time to its `published_at` plus its
 verb's window, if that is later. An activity before that closing time joins the
-open sitting. One at or after it starts another. Anonymous activities have no
-actor's sitting to join.
+open sitting. One at or after it starts another. Anonymous activities have no actor's sitting to join.
 
 | Declaration | Batch Behaviour |
 |---|---|

@@ -341,10 +341,10 @@ the [link resolver](/basics/feedable-models#the-link) at read time.
 | `MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
 | `Component` | a component of your own, by name, with its props | `name`, `props` |
 
-They live in `Storyfeed\Body`, and each is stored under its name in `$body`,
-such as `Storyfeed/Body/KeyValue`. A string passed as a body is stored as a
-`Prose` body. Each carries a version, so a renderer can
-upgrade an old row before drawing it. An app may write its own body types.
+They live in `Storyfeed\Body`. In the payload, each body names its type in
+`$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`, so a
+renderer can choose how to draw it. A string passed as a body becomes a `Prose`
+body. An app may write its own body types.
 
 See [Custom Body Types](/deeper/body) for bodies resolved at read time, custom components and writing your own body types.
 

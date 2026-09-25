@@ -83,10 +83,9 @@ class SaveOrderController extends Controller
 
 <FeedExample :items="[saved]" />
 
-The latest `published_at` wins, regardless of arrival order. A backdated activity
-older than a matching live activity is stored already superseded under
-`keep_latest.delete = soft`; under `force`, it is not stored. Other objects
-and other verbs keep their activities.
+The latest `published_at` wins, regardless of arrival order. A backdated
+activity older than a matching one is stored already superseded, or not stored
+at all under `keep_latest.delete = force`. Other objects and other verbs keep their activities.
 
 <a id="keeping-the-latest-per-actor"></a>
 

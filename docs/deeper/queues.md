@@ -287,22 +287,20 @@ declaration. `snapshotNow()` does not exempt models from restoration.
 
 ## Carrying Actors and Context
 
-The user authenticated at dispatch travels with the job, as a morph alias and
-key in Laravel's hidden [Context](https://laravel.com/docs/context), and is
-applied on the worker. Jobs dispatched from that job inherit it.
+A job dispatched during a request publishes as the request's authenticated
+user, even though the worker has no logged-in user. Jobs dispatched from that
+job inherit the same user.
 
-The transported user is a default. Explicit roles, scopes, story middleware,
-the verb's actor and a registered resolver take precedence; see
-[Role Precedence](/deeper/activity-scopes#role-precedence). A registered resolver
-also takes precedence when it returns null. The transported user applies before
-`parties.fallback`.
+That user is a default. Explicit roles, scopes, story middleware, the verb's
+actor and a registered resolver take precedence, even a resolver that returns
+null; see [Role Precedence](/deeper/activity-scopes#role-precedence). It takes
+precedence over `parties.fallback`.
 
 ### Request-Based Actors
 
-A [Story class method that takes the `Request`](/deeper/stories#using-the-request)
-chooses its verb's actor at each publish. On a worker there is no request, so a
-job dispatched during the request carries what the method chose: a party name,
-or a model as its morph alias and key, never the request itself.
+A job dispatched during a request publishes with the actor that a
+[Story class method that takes the `Request`](/deeper/stories#using-the-request)
+chose for that request:
 
 ```php memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke()"
 use App\Jobs\ConfirmPayment;
@@ -311,13 +309,11 @@ use App\Jobs\ConfirmPayment;
 ConfirmPayment::dispatch($order);
 ```
 
-Every such method runs at the first dispatch in a request, once per request,
-however many jobs follow. None runs when no job is dispatched, or inside
-`Storyfeed::actor()`, which outranks them. A method that chose no actor chooses
-none on the worker either. An explicit actor in the job still wins, and an
-anonymous publish stays anonymous. A method that throws at the dispatch never
-fails it: the job publishes with the actor it would otherwise have had, and
-the doctor names the method (`actions.carry_failed`).
+An explicit actor in the job still wins, an anonymous publish stays anonymous,
+and a `Storyfeed::actor()` scope outranks the method. If the method throws when
+the job is dispatched, the dispatch still succeeds, the job publishes with the
+actor it would otherwise have had, and `storyfeed:doctor` names the method
+(`actions.carry_failed`).
 
 ### Scoped Actors
 
@@ -366,10 +362,10 @@ See [Parties & Anonymous Actors](/deeper/parties).
 
 ### Scoped Context
 
-Jobs dispatched inside `Storyfeed::context($model, $callback)` carry that
-context's identity to the worker. An explicit context on an activity wins;
-otherwise the job inherits the scope. Jobs it dispatches inherit the context,
-and the worker restores its previous scope after each job, including failures.
+Jobs dispatched inside `Storyfeed::context($model, $callback)` run inside that
+context on the worker. An explicit context on an activity wins; otherwise the
+job inherits the scope. Jobs it dispatches inherit the context, and the scope
+ends with the job, even when the job throws.
 See [Activity Scopes](/deeper/activity-scopes) for callback and route examples.
 
 <a id="publishing-from-your-own-job"></a>
@@ -464,8 +460,7 @@ Using `queue()` directly already captures publication time at dispatch.
 ## Queueing Publication Listeners
 
 A listener for `ActivityPublished` can implement `ShouldQueue`. Storyfeed's
-[events](/deeper/events) carry immutable publication snapshots and dispatch
-after the database transaction commits. `Storyfeed::fake()` does not dispatch
+[events](/deeper/events) dispatch after the database transaction commits. `Storyfeed::fake()` does not dispatch
 these events; use `Queue::fake()` alone when asserting that a listener was queued.
 
 ## Testing Queued Publishing

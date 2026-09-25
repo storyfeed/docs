@@ -119,7 +119,7 @@ Set `context` when something reads it:
 | You Want | Why It Needs `context` |
 |---|---|
 | a group like "three customers asked about dishes in the same shop today" | grouping reads roles, so the container has to *be* a role |
-| `Storyfeed::feed()->context($shop)` | the scope reads the `context` column |
+| `Storyfeed::feed()->context($shop)` | the scope finds only activities recorded with a context |
 | `:context` in a headline | a headline can only name a role the activity carries |
 | `context` on the Activity Streams 2.0 document | the serializer emits each role that is filled, and omits each that is not |
 

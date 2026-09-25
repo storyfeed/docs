@@ -190,7 +190,7 @@ and `media: null`, and the exception is reported server-side.
 ```jsonc
 {
   "kind": "activity",
-  // public ULID (uid), not the internal PK
+  // a ULID
   "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
   "published_at": "1985-07-04T14:03:22.000000Z",
@@ -230,10 +230,8 @@ and `media: null`, and the exception is reported server-side.
 | `missing_headline_template` | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
 | `missing_headline` | the pre-rendered fallback for a closure-authored `->missingHeadline()`, as `headline` is for `headline_template`; otherwise `null` |
 
-Storyfeed gives the facts, never its own wording. `redundant` is the fact that
-the activity's news is gone while the activity is still true as history, and
-`missing_headline_template` is the app's own sentence for it, when the verb
-declares one. A renderer may show either reading.
+`redundant` means the activity's news is gone while the activity is still true
+as history. A renderer may show either reading.
 
 <span id="group-node"></span>
 
@@ -355,8 +353,8 @@ See [what a glyph means](/basics/rendering#glyphs-and-intents).
 Both resolve on the same ladder and independently of each other:
 `type.verb`, `type.*`, `*.verb`, `*.*`.
 
-The Activity Streams 2.0 document carries neither: AS2 has no term for an icon
-token, and `icon` there is an image on the entity.
+The Activity Streams 2.0 document carries neither; its `icon` is the entity
+image.
 
 ### Headlines
 
@@ -394,8 +392,7 @@ Cursor-grained and opaque. Store it; when a later page's token differs, settled
 history was rewritten server-side — drop **all** accumulated nodes and refetch
 from the head. Compare for equality only; `null → non-null` is a change.
 
-This rule also applies when [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows)
-moves a group past a live cursor. A read can skip up to five empty windows;
-check the token even when `items` is empty. `next_cursor: null` signals the
-end of the feed. A client that ignores a
+[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows)
+can change it mid-scroll. A page can arrive with an empty `items` and a
+non-null `next_cursor`, so check the token then too. A client that ignores a
 changed token does not conform to the payload contract.

@@ -31,8 +31,8 @@ Story::for(Order::class)
 ```
 
 `keepFor()` takes a string Carbon reads as an interval: `'30 days'`,
-`'6 months'`, or a `DateInterval`. It sits on the same ladder as a headline,
-so `Story::verb('view')->keepFor(…)` applies to views of every type.
+`'6 months'`, or a `DateInterval`. Like a headline, it can be declared for
+every type: `Story::verb('view')->keepFor(…)` applies to views of anything.
 
 ### Default Retention
 

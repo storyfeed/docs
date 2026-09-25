@@ -1,8 +1,7 @@
 # Choosing a Verb
 
 How to name a verb, and a test for each pair of verbs that are easy to
-choose between. The verb's registered mapping sets the Activity Streams type. The object type and verb
-identify its headline definition.
+choose between.
 
 <span id="naming-a-verb"></span>
 
@@ -72,9 +71,9 @@ class OrderController extends Controller
 ```
 :::
 
-A grammar key is already the object's morph alias plus the verb, so a verb
-that names its object gives `order.order.place`. A plain `place` also works for
-anything else the app places.
+A headline is already defined for an object type and a verb, so a verb that
+names its object says it twice. A plain `place` also works for anything else
+the app places.
 
 Where a verb seems to need an extra word, the word is usually a role:
 
