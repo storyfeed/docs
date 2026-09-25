@@ -5,39 +5,17 @@ icon, and how a group of them reads, the way `routes/web.php` declares your
 routes.
 
 <script setup>
-import { who, where, orders, activity, group, scenes } from '../.vitepress/theme/samples'
+import { scene, liveOf } from '../.vitepress/theme/world'
 
-const at = '2026-08-14T14:30:00.000000Z'
-const withoutIcon = activity({ ...scenes.order, id: 'hl1', glyph: null })
-
-const complete = activity({ id: 'hl2', verb: 'complete', glyph: 'receipt',
-  published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actor completed :object',
-  actor: who.cook, object: orders.first })
-
-const completeWithoutIcon = activity({ ...complete, id: 'hl8', glyph: null })
-
-const placedAtCounter = activity({ id: 'hl3', verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor placed :object',
-  actor: who.customer2, object: orders.second })
-
-const rushed = activity({ id: 'hl5', verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor rushed :object to :target',
-  actor: who.customer2, object: orders.second, target: where.kitchen,
-  data: { rush: true } })
-
-const created = activity({ id: 'hl6', verb: 'create', glyph: 'plus',
-  published_at: '2026-08-14T14:40:00.000000Z',
-  headline_template: ':actor created :object',
-  actor: who.owner, object: orders.third })
-
-const repeated = group({ id: 'hl7', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: at,
-  headline_template: ':actor placed :count orders',
-  actors: [who.regular], objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 3 } })
+// Presentation variants of catalogue facts, as different feed definitions render them.
+const withoutIcon = { ...scene.order, glyph: null }
+const complete = scene.basics.feedFile.completed
+const completeWithoutIcon = { ...complete, glyph: null }
+const placedAtCounter = { ...scene.order, target: null, headline_template: ':actor placed :object' }
+const rushed = { ...scene.order, headline_template: ':actor rushed :object to :target', data: { rush: true } }
+const created = scene.basics.feedFile.created
+const repeated = { ...liveOf(scene.guide.usageExamples.repeatOrders)[0],
+  headline_template: ':actor placed :count orders' }
 </script>
 
 ## Basic Definitions
@@ -63,7 +41,7 @@ Story::for(Order::class)
     ->headline(':actor placed :object with :target');
 ```
 
-<FeedExample context :items="[withoutIcon]" />
+<FeedExample :items="[withoutIcon]" />
 
 Storyfeed loads `routes/feed.php` once every service provider has booted, so
 your morph map is already in place.
@@ -75,7 +53,7 @@ The template names roles, never models:
 
 ```php
 // ✗ not tokens: these render as text
-->headline(':customer placed :order with :kitchen')
+->headline(':customer placed :order with :shop')
 
 // ✓
 ->headline(':actor placed :object with :target')
@@ -107,7 +85,7 @@ class CheckoutController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action('place', $order)
-            ->to($order->kitchen)
+            ->to($order->shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -135,7 +113,7 @@ class CheckoutController extends Controller
             verb: 'place',
             object: $order,
             actor: $request->user(),
-            target: $order->kitchen,
+            target: $order->shop,
         );
 
         return to_route('orders.show', $order);
@@ -144,7 +122,7 @@ class CheckoutController extends Controller
 ```
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 ## Headline Templates
 
@@ -179,10 +157,10 @@ Story::for(Order::class)
     ->headline(':actor placed :object[ with :target]');
 ```
 
-<FeedExample :items="[placedAtCounter, scenes.order]" />
+<FeedExample :items="[placedAtCounter, scene.order]" />
 
 Storyfeed resolves the brackets before the template reaches the payload. An
-order placed with a kitchen keeps ` with :target`; one placed without a target
+order placed with a shop keeps ` with :target`; one placed without a target
 drops it. Without brackets, an unfilled role leaves its token in the template. Use optional segments for roles the activity may omit.
 
 <a id="choosing-a-headline-per-activity"></a>
@@ -203,7 +181,7 @@ Story::for(Order::class)
         : ':actor placed :object with :target');
 ```
 
-<FeedExample :items="[rushed, scenes.order]" />
+<FeedExample :items="[rushed, scene.order]" />
 
 The closure runs when the feed is read. Its tokens become links, like any other
 template.
@@ -229,7 +207,7 @@ Story::for(Order::class)->group(function () {
 Story::verb('publish')->icon('chef-hat');   // any object type
 ```
 
-<FeedExample :items="[complete, scenes.order]" />
+<FeedExample :items="[complete, scene.order]" />
 
 `intent()` names what the icon means, in your app's own word:
 

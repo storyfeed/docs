@@ -1,57 +1,23 @@
 # Activity Content
 
 <script setup>
-import { who, orders, dishes, notes, scenes, activity, INSTRUCTIONS } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
 
-const at = '2026-08-14T14:32:00.000000Z'
-
-// The note is the thing posted; the order is what it was posted on.
-const withThread = activity({
-  id: 'ac2', verb: 'post', glyph: 'message-circle', published_at: at,
-  headline_template: ':actor sent a note about :target',
-  actor: who.regular, object: notes.pickup, target: orders.first,
-  thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false },
-})
-
-// A different activity, the same order entity: the excerpt travels with it.
-const withExcerpt = activity({
-  id: 'ac3', verb: 'ready', glyph: 'utensils', published_at: at,
-  headline_template: ':actor marked :object ready',
-  actor: who.cook,
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false }] },
-})
-
-const withKeyValue = activity({
-  id: 'ac4', verb: 'confirm', glyph: 'circle-check', published_at: at,
-  headline_template: ':actor confirmed :object',
-  actor: who.cook,
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
-    { key: 'Pickup', value: '7:00 pm', verbatim: false, missing: null },
-    { key: 'Items', value: '3', verbatim: false, missing: null },
-    { key: 'Reference', value: 'ORD-1042-8KQ', verbatim: true, missing: null },
+const content = scene.basics.activityContent
+const withThread = { ...content.note,
+  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
+const withExcerpt = content.ready
+const withKeyValue = { ...content.confirmed,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
+    { key: 'Items', value: '1', verbatim: false, missing: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
     { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
-  ] }] },
-})
-
-const openInPlace = activity({
-  id: 'ac7', verb: 'publish', glyph: 'image',
-  published_at: '2026-08-14T10:05:00.000000Z',
-  headline_template: ':actor added :object to :target',
-  actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '9', label: 'chicken-curry.jpg', url: '/media/chicken-curry.svg',
-    attributes: {}, modal: true, data: {}, media: null, body: null, tombstone: null },
-})
-
-const withFile = activity({
-  id: 'ac6', verb: 'publish', glyph: 'image', published_at: '2026-08-14T10:00:00.000000Z',
-  headline_template: ':actor added a photo of :target',
-  actor: who.cook, target: dishes.chickenCurry,
-  object: { type: 'photo', id: '1', label: 'chicken-curry.jpg', url: '/photos/1',
-    attributes: {}, modal: false, data: {}, media: null, tombstone: null,
-    body: [{ $body: 'Storyfeed/Body/File', $v: 1,
-      name: 'chicken-curry.jpg', size: 284160, mediaType: 'image/jpeg' }] },
-})
+  ] }] } }
+const openInPlace = { ...content.photo, object: { ...content.photo.object, modal: true } }
+const withFile = { ...content.photo, object: { ...content.photo.object,
+  body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+    name: content.photo.object.label, size: 512, mediaType: 'image/svg+xml' }] } }
 </script>
 
 ## Introduction
@@ -68,7 +34,7 @@ Most activities need nothing more. The sentence is the whole row:
 <<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 <a id="quoted-text"></a>
 

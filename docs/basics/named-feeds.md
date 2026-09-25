@@ -1,38 +1,17 @@
 # Named Feeds
 
 <script setup>
-import { who, where, orders, dishes, notes, activity } from '../.vitepress/theme/samples'
+import { scene, logOf, summaryOf } from '../.vitepress/theme/world'
 
-const kitchen = [
-  activity({ id: 'nf1', verb: 'ready', glyph: 'utensils',
-    published_at: '2026-08-14T14:50:00.000000Z',
-    headline_template: ':actor marked :object ready',
-    actor: who.cook, object: orders.first }),
-  activity({ id: 'nf2', verb: 'ask', glyph: 'message-circle',
-    published_at: '2026-08-14T14:40:00.000000Z',
-    headline_template: ':actor asked about :target',
-    actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'nf3', verb: 'confirm', glyph: 'circle-check',
-    published_at: '2026-08-14T14:35:00.000000Z',
-    headline_template: ':actor confirmed :object',
-    actor: who.cook, object: orders.first }),
-  activity({ id: 'nf4', verb: 'place', glyph: 'shopping-bag',
-    published_at: '2026-08-14T14:30:00.000000Z',
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.first, target: where.kitchen }),
-  activity({ id: 'nf5', verb: 'reprice', glyph: 'tag',
-    published_at: '2026-08-14T09:10:00.000000Z',
-    headline_template: ':actor changed the price of :object',
-    actor: who.cook, object: dishes.kottu }),
-]
-
-const customer = kitchen.filter(node => ['place', 'confirm', 'ready'].includes(node.verb))
+const shop = summaryOf(scene.basics.namedFeeds.shop)
+const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
+  ['place', 'confirm', 'ready'].includes(node.verb) && node.object?.id === scene.order.object.id))
 </script>
 
 ## Introduction
 
 A named feed is a list of verbs you declare once and read by name. A
-customer's order page and the kitchen's screen can each read their own.
+customer's order page and the shop's screen can each read their own.
 
 ## Defining Named Feeds
 
@@ -50,7 +29,7 @@ Storyfeed::feeds([
     'customer' => fn (FeedBuilder $feed) => $feed
         ->only(['place', 'confirm', 'ready'])
         ->log(),
-    'kitchen' => fn (FeedBuilder $feed) => $feed,
+    'shop' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```
 
@@ -61,12 +40,10 @@ Read it by name, from the facade or from the model:
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::feed('kitchen')->involving($kitchen)->get();
+Storyfeed::feed('shop')->involving($shop)->get();
 ```
 
-<FeedExample context :items="kitchen">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedExample>
+<FeedExample :items="shop" />
 
 ```php memo="A controller, or wherever the feed is read"
 $order->storyfeed('customer')->get();
@@ -149,7 +126,7 @@ CustomerFeed::make($order)->get();
 
 `define()` sets the vocabulary and read mode without reading constructor state. A feed with no subject declares no constructor and no `scope()`:
 
-```php memo="app/Feeds/KitchenFeed.php"
+```php memo="app/Feeds/ShopFeed.php"
 <?php
 
 namespace App\Feeds;
@@ -157,7 +134,7 @@ namespace App\Feeds;
 use Storyfeed\Feed;
 use Storyfeed\FeedBuilder;
 
-class KitchenFeed extends Feed
+class ShopFeed extends Feed
 {
     public function define(FeedBuilder $feed): void
     {
@@ -167,9 +144,9 @@ class KitchenFeed extends Feed
 ```
 
 ```php memo="A controller, or wherever the feed is read"
-use App\Feeds\KitchenFeed;
+use App\Feeds\ShopFeed;
 
-KitchenFeed::make()->get();
+ShopFeed::make()->get();
 ```
 
 ### Scoping by Subject
@@ -195,13 +172,13 @@ Register classes and closures in one list:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Feeds\CustomerFeed;
-use App\Feeds\KitchenFeed;
+use App\Feeds\ShopFeed;
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
 Storyfeed::feeds([
     'customer' => CustomerFeed::class,     // named explicitly
-    KitchenFeed::class,                    // name derived: 'kitchen'
+    ShopFeed::class,                    // name derived: 'shop'
     'pulse' => fn (FeedBuilder $feed) => $feed->only(['place', 'ready'])->live(),
 ]);
 ```

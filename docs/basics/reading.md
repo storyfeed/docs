@@ -1,32 +1,14 @@
 # Reading Feeds
 
 <script setup>
-import { who, where, orders, dishes, notes, activity, group } from '../.vitepress/theme/samples'
+import { scene, everything, WORLD_ANCHOR, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const placed = (id, at, actor, object) => activity({ id, verb: 'place', glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actor placed :object with :target',
-  actor, object, target: where.kitchen })
-
-const log = [
-  placed('rd4', '2026-08-14T14:30:00.000000Z', who.regular, orders.third),
-  placed('rd5', '2026-08-14T14:29:00.000000Z', who.regular, orders.second),
-  placed('rd6', '2026-08-14T14:27:00.000000Z', who.regular, orders.first),
-  activity({ id: 'rd7', verb: 'publish', glyph: 'chef-hat',
-    published_at: '2026-08-14T09:00:00.000000Z',
-    headline_template: ':actor put :object on the menu',
-    actor: who.cook, object: dishes.kottu }),
-]
-
-const repeat = group({ id: 'rd1', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:30:00.000000Z',
-  headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 3, targets: 1 } })
-
-const summary = [repeat, log[3]]
-
-const scoped = [repeat, log[3]]
+// One week, ending at the shared clock. The same rows drive all three modes.
+const rows = everything().filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
+const log = logOf(rows)
+const live = liveOf(rows)
+const summary = summaryOf(rows)
+const scoped = summaryOf(scene.guide.usageExamples.repeatOrders)
 </script>
 
 ## Introduction
@@ -47,14 +29,14 @@ Route::get('/', function () {
 });
 ```
 
-The response is the following JSON:
+For a feed containing three order placements, the response has this shape:
 
 <FeedExample payload :items="scoped" />
 
 `get()` returns a `FeedPage`, which reads like an array in PHP:
 `$page['items']` holds the same nodes. Drawn, the page reads:
 
-<FeedExample context :items="scoped" />
+<FeedExample :items="scoped" />
 
 <a id="read-modes"></a>
 
@@ -66,25 +48,61 @@ The response is the following JSON:
 | `->live()` | aggregated, active window | groups as they form |
 | `->summary()` | aggregated, collapsed | the best grouping of each burst. **The default** |
 
-The same four activities as a log:
+Here is one week of activity across the apps, read three ways. Each feed below
+uses the same recorded facts. Groups expand to reveal their members; day
+headings keep activity on different days separate. In an application, follow
+[cursors](#pagination) to read the whole range; these examples draw the range together.
+
+### Live
+
+Live folds one person's repeated action while other people remain separate.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Builders\ActivityBuilder;
 
-Storyfeed::feed()->involving($kitchen)->log()->get();
+Storyfeed::feed()
+    ->query(fn (ActivityBuilder $query) => $query
+        ->whereBetween('published_at', [now()->subWeek(), now()]))
+    ->live()
+    ->get();
 ```
 
-<FeedExample :items="log" />
+<FeedExample :items="live" days />
 
-And as a summary:
+### Summary
+
+Summary also folds several people doing the same thing at one place.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Builders\ActivityBuilder;
 
-Storyfeed::feed()->involving($kitchen)->summary()->get();
+Storyfeed::feed()
+    ->query(fn (ActivityBuilder $query) => $query
+        ->whereBetween('published_at', [now()->subWeek(), now()]))
+    ->summary()
+    ->get();
 ```
 
-<FeedExample :items="summary" />
+<FeedExample :items="summary" days />
+
+### Log
+
+The log keeps every activity as its own row.
+
+```php memo="A controller, or wherever the feed is read"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Builders\ActivityBuilder;
+
+Storyfeed::feed()
+    ->query(fn (ActivityBuilder $query) => $query
+        ->whereBetween('published_at', [now()->subWeek(), now()]))
+    ->log()
+    ->get();
+```
+
+<FeedExample :items="log" days />
 
 The payload uses the same node shapes in every mode. Choose the mode for each surface.
 
@@ -109,9 +127,9 @@ Narrower filters:
 | Call | Returns |
 |---|---|
 | `->involving($model)` | every activity where the model is actor, object, target, context, origin, result or instrument |
-| `->context($kitchen)` | only activities recorded inside that container |
+| `->context($shop)` | only activities recorded inside that container |
 | `->actor($customer)` | only what that customer did |
-| `->object($order)` / `->target($kitchen)` | only that exact role |
+| `->object($order)` / `->target($shop)` | only that exact role |
 | `->verb('place')` | one verb |
 
 Scopes combine. A group counts only the activities inside the scope.
@@ -119,8 +137,8 @@ Scopes combine. A group counts only the activities inside the scope.
 > [!NOTE]
 > **The difference between involving and context**
 >
-> `context()` returns only activities recorded inside a container. "Dish put on
-> the menu" records the dish as the **object**, so a dish's page scoped with
+> `context()` returns only activities recorded inside a container. "Product put on
+> the menu" records the product as the **object**, so a product's page scoped with
 > `context()` misses it. `involving()` finds it.
 ### Custom Query Constraints
 
@@ -131,18 +149,16 @@ express:
 use Storyfeed\Models\Builders\ActivityBuilder;
 
 // everything except notes
-$kitchen->storyfeed()
+$shop->storyfeed()
     ->query(fn (ActivityBuilder $q) => $q->whereNot('verb', 'note'))
     ->get();
 
 // tonight's service
-$kitchen->storyfeed()
+$shop->storyfeed()
     ->query(fn (ActivityBuilder $q) => $q
         ->where('published_at', '>=', today()->setHour(17)))
     ->get();
 ```
-
-<FeedExample :items="[repeat]" />
 
 The constraint applies to the whole read, groups included. A callback can
 only narrow the read: `orWhere` can't reach past the scope, ordering is
@@ -159,7 +175,7 @@ the builder.
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()
-    ->when($request->kitchen, fn ($feed, $kitchen) => $feed->involving($kitchen))
+    ->when($request->shop, fn ($feed, $shop) => $feed->involving($shop))
     ->get();
 ```
 

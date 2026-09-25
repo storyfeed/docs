@@ -1,35 +1,16 @@
 # Rendering
 
 <script setup>
-import { who, where, orders, dishes, notes, activity, group, scenes } from '../.vitepress/theme/samples'
+import { scene, summaryOf } from '../.vitepress/theme/world'
 
-const at = '2026-08-14T14:30:00.000000Z'
-
-const bare = { ...scenes.order, id: 'rn0', glyph: null }
-const one = scenes.order
-
-const grouped = group({ id: 'rn2', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
-  published_at: at,
-  headline_template: ':actors ordered from :target',
-  actors: [who.regular, who.customer2, who.customer3, who.customer4], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 4, objects: 5, targets: 1 } })
-
-const unnamed = group({ id: 'rn3', verb: 'note', axis: 'targets', count: 6, glyph: 'message-circle',
-  published_at: '2026-08-14T14:10:00.000000Z',
-  headline_template: null, headline: null,
-  actors: [who.regular, who.customer2], targets: [],
-  distinct: { actors: 2, targets: 0 } })
-
-const complete = activity({ id: 'rn5', verb: 'complete', glyph: 'receipt',
-  published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actor completed :object',
-  actor: who.cook, object: orders.first })
-
-const degraded = activity({ id: 'rn4', verb: 'place', glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:05:00.000000Z',
-  headline_template: ':actor placed :object with :target',
-  actor: null, object: { ...orders.second, label: null, url: null }, target: where.kitchen })
+const bare = { ...scene.order, glyph: null }
+const one = scene.order
+const grouped = summaryOf(scene.busyPlace)[0]
+// Remove presentation fields to show the renderer's fallback, keeping real members.
+const unnamed = { ...grouped, headline_template: null, headline: null }
+const complete = scene.basics.feedFile.completed
+const degraded = { ...scene.order, actor: null,
+  object: { ...scene.order.object, label: null, url: null } }
 </script>
 
 ## Introduction
@@ -67,7 +48,7 @@ This activity names three roles. Substitute their labels into its template:
 @endforeach
 ```
 
-<FeedExample expanded context :items="[bare]" />
+<FeedExample expanded :items="[bare]" />
 
 <a id="linking-the-entities"></a>
 
@@ -107,7 +88,7 @@ beside it and says what the shape means:
 }
 ```
 
-<FeedExample :items="[complete, scenes.order]" />
+<FeedExample :items="[complete, scene.order]" />
 
 The value is **your** string, from the verb's
 [`intent()`](/basics/the-feed-file#adding-an-icon). Storyfeed ships no intents

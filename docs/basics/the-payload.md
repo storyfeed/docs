@@ -1,30 +1,16 @@
 # The Payload
 
 <script setup>
-import { scenes, who, where, orders, notes, party, photos, dishes, activity, group } from '../.vitepress/theme/samples'
-import { INSTRUCTIONS } from '../.vitepress/theme/manifest'
+import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const repeated = group({ id: 'payload-repeat', axis: 'repeat', verb: 'place', count: 3,
-  published_at: scenes.order.published_at, glyph: 'shopping-bag',
-  headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], objects: [orders.first, orders.second, orders.third], targets: [where.kitchen],
-  distinct: { actors: 1, objects: 3, targets: 1 } })
-const crowd = group({ id: 'payload-crowd', axis: 'actors', verb: 'place', count: 5,
-  published_at: scenes.order.published_at, glyph: 'shopping-bag',
-  headline_template: ':actors ordered from :target',
-  actors: [who.regular, who.customer2, who.customer3], objects: [orders.first, orders.second, orders.third],
-  targets: [where.kitchen], distinct: { actors: 5, objects: 5, targets: 1 } })
-const paid = activity({ ...scenes.order, id: 'payload-paid', verb: 'pay', actor: party.service,
-  headline_template: ':actor marked :object paid', glyph: 'credit-card' })
-const quoted = activity({ ...scenes.order, id: 'payload-quote', verb: 'note',
-  headline_template: ':actor sent a note about :object', glyph: 'message-circle',
-  thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false } })
-const body = activity({ ...scenes.order, id: 'payload-body',
-  object: { ...orders.first, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-    text: INSTRUCTIONS.first, from: 'Instructions', truncated: false }] } })
-const photograph = activity({ ...scenes.order, id: 'payload-photo', verb: 'publish', glyph: 'image',
-  headline_template: ':actor added a photo of :target', actor: who.cook,
-  object: photos.curry, target: dishes.chickenCurry })
+const repeated = liveOf(scene.guide.usageExamples.repeatOrders)[0]
+const crowd = summaryOf(scene.busyPlace)[0]
+const paid = scene.basics.recording.paid
+const note = scene.basics.activityContent.note
+const quoted = { ...note,
+  thread: { text: note.object.label, by: note.actor.label, kind: 'note', replies: null, truncated: false } }
+const body = scene.basics.activityContent.ready
+const photograph = scene.basics.activityContent.photo
 </script>
 
 ## Introduction
@@ -49,7 +35,7 @@ Route::get('/', function () {
 
 The response is the following JSON:
 
-<FeedExample payload :items="[scenes.order]" />
+<FeedExample payload :items="[scene.order]" />
 
 Your app sends `next_cursor` back to read the next page. See
 [Reading Feeds](/basics/reading#pagination).
@@ -60,7 +46,7 @@ Your app sends `next_cursor` back to read the next page. See
 
 A customer places an order. Every key is always present:
 
-<FeedExample expanded :items="[scenes.order]" />
+<FeedExample expanded :items="[scene.order]" />
 
 A renderer puts the entities' labels into the sentence's tokens. Each example
 below shows the complete node that draws it.
@@ -104,7 +90,7 @@ One customer, three orders, one group node:
 
 ### Activities by Several Actors
 
-Five customers, the same kitchen:
+Several people, the same place:
 
 <FeedExample expanded :items="[crowd]" />
 

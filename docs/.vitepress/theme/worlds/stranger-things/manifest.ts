@@ -131,3 +131,11 @@ export const WORLD_NOTES = {
 export const SERVICES = {
   billing: 'Stripe',
 }
+
+/** Illustrative shop-app content; not dialogue, prices or products newly claimed as canon. */
+export const APP_CONTENT = {
+  instructions: 'A spoon with the order, please.',
+  note: 'Can I collect this at the counter?',
+  photo: 'counter-menu.svg',
+  description: 'Available at the counter.',
+}

@@ -1,28 +1,18 @@
 # Recording Activities
 
 <script setup>
-import { who, where, orders, dishes, party, activity, group, scenes } from '../.vitepress/theme/samples'
+import { scene, group } from '../.vitepress/theme/world'
 
-const paid = activity({
-  id: 'r2', verb: 'pay', glyph: 'credit-card',
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor marked :object paid',
-  actor: party.service, object: orders.first,
-})
-
-const priced = activity({
-  id: 'r3', verb: 'reprice', glyph: 'tag',
-  published_at: '2026-08-14T09:10:00.000000Z',
-  headline_template: ':actor changed the price of :object',
-  actor: who.cook, object: dishes.kottu,
-  data: { from: 1200, to: 1400 },
-})
+const paid = scene.basics.recording.paid
+const priced = { ...scene.basics.recording.priced, data: { from: 1200, to: 1400 } }
+// The same catalogue photos, recorded together in one request instead of separately.
+const photos = scene.basics.recording.photos
 const composite = group({
-  id: 'recording-composite', verb: 'publish', axis: 'composite', count: 2, glyph: 'chef-hat',
-  published_at: '2026-08-14T09:20:00.000000Z',
-  headline_template: ':actor put :count dishes on the menu',
-  actors: [who.cook], objects: [dishes.cutlets, dishes.roti],
-  distinct: { actors: 1, objects: 2 },
+  id: 'recording-composite', verb: 'upload', axis: 'composite', count: photos.length,
+  glyph: photos[0].glyph, published_at: photos[0].published_at,
+  headline_template: ':actor uploaded :count photos',
+  actors: [photos[0].actor], objects: photos.map(node => node.object),
+  distinct: { actors: 1, objects: photos.length },
 })
 </script>
 
@@ -46,7 +36,7 @@ the headline it produces:
 <<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 The first argument to `action()` is the **verb**: a plain string naming what
 happened. `place` is this app's own word, not one the package knows. Declare the verb and its headline in [the feed file](/basics/the-feed-file). The stored verb is
@@ -65,7 +55,7 @@ a named argument. The two calls record the same roles.
 |---|---|---|
 | `actor` | who did it | the customer |
 | `object` | what it was done to | the order |
-| `target` | what the act was directed at | the kitchen |
+| `target` | what the act was directed at | the shop |
 | `context` | where it happened | the surrounding container |
 | `origin` | where it came from | the source of an accepted invitation |
 | `result` | what it produced | a receipt, a generated artifact |
@@ -188,16 +178,16 @@ class MenuItemPriceController extends Controller
 {
     public function update(
         UpdatePriceRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $from = $dish->price;
+        $from = $product->price;
 
-        $dish->update(['price' => $request->integer('price')]);
+        $product->update(['price' => $request->integer('price')]);
 
         Storyfeed::activity()
             ->by($request->user())
-            ->action('reprice', $dish)
-            ->data(['from' => $from, 'to' => $dish->price])
+            ->action('reprice', $product)
+            ->data(['from' => $from, 'to' => $product->price])
             ->publish();
 
         return back();
@@ -219,17 +209,17 @@ class MenuItemPriceController extends Controller
 {
     public function update(
         UpdatePriceRequest $request,
-        MenuItem $dish,
+        MenuItem $product,
     ): RedirectResponse {
-        $from = $dish->price;
+        $from = $product->price;
 
-        $dish->update(['price' => $request->integer('price')]);
+        $product->update(['price' => $request->integer('price')]);
 
         Storyfeed::record(
             verb: 'reprice',
-            object: $dish,
+            object: $product,
             actor: $request->user(),
-            data: ['from' => $from, 'to' => $dish->price],
+            data: ['from' => $from, 'to' => $product->price],
         );
 
         return back();
@@ -317,28 +307,28 @@ class ImportPriceHistory extends Command
 `->objects()` records one activity about many objects:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PublishMenuController.php"
+```php [Fluent Syntax] memo="app/Http/Controllers/UploadPhotosController.php"
 <?php
 
 namespace App\Http\Controllers;
 
-use App\Models\MenuItem;
+use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-class PublishMenuController extends Controller
+class UploadPhotosController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+        $photos = Photo::whereIn('id', $request->input('photos'))->get();
 
-        $dishes->each->update(['published_at' => now()]);
+        $photos->each->update(['published_at' => now()]);
 
         Storyfeed::activity()
             ->by($request->user())
-            ->verb('publish')
-            ->objects($dishes)
+            ->verb('upload')
+            ->objects($photos)
             ->publish();
 
         return back();
@@ -346,27 +336,27 @@ class PublishMenuController extends Controller
 }
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PublishMenuController.php"
+```php [Named Arguments] memo="app/Http/Controllers/UploadPhotosController.php"
 <?php
 
 namespace App\Http\Controllers;
 
-use App\Models\MenuItem;
+use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-class PublishMenuController extends Controller
+class UploadPhotosController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+        $photos = Photo::whereIn('id', $request->input('photos'))->get();
 
-        $dishes->each->update(['published_at' => now()]);
+        $photos->each->update(['published_at' => now()]);
 
         Storyfeed::record(
-            verb: 'publish',
-            objects: $dishes,
+            verb: 'upload',
+            objects: $photos,
             actor: $request->user(),
         );
 
@@ -378,4 +368,4 @@ class PublishMenuController extends Controller
 
 <FeedExample :items="[composite]" />
 
-With the group headline defined, the selected dishes read as one group. [Composites](/deeper/composites) covers how that activity reads and groups.
+With the group headline defined, the selected photos read as one group. [Composites](/deeper/composites) covers how that activity reads and groups.

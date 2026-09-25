@@ -1,16 +1,10 @@
 # Activity Verbs
 
 <script setup>
-import { activity, scenes } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
 
-const placed = scenes.order
-const confirmed = activity({
-  ...scenes.order,
-  id: 'verb-confirm',
-  verb: 'confirm',
-  glyph: 'circle-check',
-  headline_template: ':actor confirmed :object',
-})
+const placed = scene.order
+const confirmed = scene.basics.activityContent.confirmed
 </script>
 
 ## Introduction
@@ -29,20 +23,20 @@ case of an enum.
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
     {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::activity()
             ->by($request->user())
             ->action('place', $order)
-            ->to($kitchen)
+            ->to($shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -56,21 +50,21 @@ class OrderController extends Controller
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
     {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::record(
             verb: 'place',
             object: $order,
             actor: $request->user(),
-            target: $kitchen,
+            target: $shop,
         );
 
         return to_route('orders.show', $order);
@@ -79,7 +73,7 @@ class OrderController extends Controller
 ```
 :::
 
-<FeedExample context :items="[placed]" />
+<FeedExample :items="[placed]" />
 
 These verbs are free-form strings, and can be anything at all.
 
@@ -136,18 +130,18 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderActivity;
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
     {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         OrderActivity::Placed->by($request->user())
             ->object($order)
-            ->to($kitchen)
+            ->to($shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -162,21 +156,21 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderActivity;
 use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Kitchen;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
 class OrderController extends Controller
 {
-    public function store(PlaceOrderRequest $request, Kitchen $kitchen): RedirectResponse
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
     {
-        $order = $kitchen->orders()->create($request->validated());
+        $order = $shop->orders()->create($request->validated());
 
         Storyfeed::record(
             verb: OrderActivity::Placed,
             object: $order,
             actor: $request->user(),
-            target: $kitchen,
+            target: $shop,
         );
 
         return to_route('orders.show', $order);
@@ -186,7 +180,7 @@ class OrderController extends Controller
 :::
 
 
-<FeedExample context :items="[placed]" />
+<FeedExample :items="[placed]" />
 
 ## Using Storyfeed's Verbs
 
@@ -247,7 +241,7 @@ class ConfirmOrderController extends Controller
 ```
 :::
 
-<FeedExample context :items="[confirmed]" />
+<FeedExample :items="[confirmed]" />
 
 The stored verb is the case's value, `confirm`, so the row is the same as one
 recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.

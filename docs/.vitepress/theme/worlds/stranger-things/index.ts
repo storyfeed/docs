@@ -1,6 +1,6 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
-import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES } from './manifest'
+import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -117,6 +117,20 @@ const pull = (n: number) => entity('pull_request', String(n), `Pull request #${n
 const invoice = (n: number) => entity('invoice', String(n), `Scoops Ahoy invoice #${n}`, `/invoices/${n}`)
 const photo = (n: number) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`)
 
+// A schematic preview, not a claimed photograph from the show. Kept inside
+// the pack so another world supplies its own media as well as its own labels.
+const preview = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" rx="20" fill="#e3eff5"/><path d="M130 170h140l-35 65h-70z" fill="#76aabd"/><circle cx="170" cy="145" r="42" fill="#e7b97d"/><circle cx="230" cy="145" r="42" fill="#f6dfb9"/><path d="M200 235v25m-35 0h70" stroke="#52798a" stroke-width="10" stroke-linecap="round"/></svg>')
+const productMedia = { icon: null, image: null, attachments: [],
+  preview: { src: preview, mediaType: 'image/svg+xml', width: 400, height: 300, alt: FARE.butterscotch },
+  url: { src: preview, mediaType: 'image/svg+xml', width: 400, height: 300, alt: FARE.butterscotch } }
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, preview, { media: productMedia })
+const menuProduct = { ...fare.butterscotch, media: productMedia,
+  body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+    subject: { label: fare.butterscotch.label, href: fare.butterscotch.url },
+    content: APP_CONTENT.description, image: 'preview', attachments: [], footnote: null }] }
+const instructedOrder = { ...order(1035), body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
+  text: APP_CONTENT.instructions, from: 'Instructions', truncated: false }] }
+
 // ── The verbs ────────────────────────────────────────────────────────────────
 
 /** This pack's own verbs. The rest (place, ask, pay, merge…) are the engine's. */
@@ -126,6 +140,12 @@ const VERBS: Record<string, VerbWording> = {
   remove: { glyph: 'circle-x', headline: ':actor removed :object from :target' },
   expire: { glyph: 'circle-x', headline: ':object expired at :target' },
   reply: { glyph: 'message-circle', headline: ':actor replied about :object' },
+  // The billing app records both orders and invoices.
+  pay:      { glyph: 'receipt', headline: ':actor marked :object paid', repeat: ':actor marked :count items paid' },
+  note:     { glyph: 'message-circle', headline: ':actor sent a note about :object' },
+  post:     { glyph: 'message-circle', headline: ':actor sent a note about :target' },
+  ready:    { glyph: 'utensils', headline: ':actor marked :object ready' },
+  publish:  { glyph: 'ice-cream-cone', headline: ':actor put :object on the menu', repeat: ':actor put :count items on the menu' },
   serve:    { glyph: 'ice-cream-cone', headline: ':actor served :object', repeat: ':actor served :count orders' },
   call:     { glyph: 'radio', headline: ':actor radioed :target', repeat: ':actor radioed :target :count times' },
   file:     { glyph: 'newspaper', headline: ':actor filed :object with :target' },
@@ -377,6 +397,29 @@ ROWS.push(
   cookbookRow('crowd3', '1985-07-01 12:02', 'place', linguist, order(1104), v.scoops),
 )
 
+// Basics/guide examples use the modern app premise. These are software
+// transactions, not additional on-screen events or quoted dialogue. The existing
+// j84 order is itself an illustrative transaction (troop/S3E4).
+const demo = { uncertain: 'Illustrative shop-app transaction, not an on-screen event' }
+ROWS.push(
+  // splice: one customer's three separate order requests, near the existing j84.
+  row('a-order-2', '1985-07-02 12:01', 'place', scout, order(1040), v.scoops, 'splice', demo),
+  row('a-order-3', '1985-07-02 12:02', 'place', scout, order(1041), v.scoops, 'splice', demo),
+  // splice: the staff member handles the same order, through the shop app.
+  row('a-confirm', '1985-07-02 12:03', 'confirm', scooper, order(1035), v.scoops, 'splice', demo),
+  row('a-note', '1985-07-02 12:04', 'post', scout, note('201', APP_CONTENT.note), order(1035), 'splice', demo),
+  row('a-ready', '1985-07-02 12:06', 'ready', scooper, instructedOrder, v.scoops, 'splice', demo),
+  row('a-paid', '1985-07-02 12:07', 'pay', stripe, order(1035), null, 'splice', demo),
+  row('a-complete', '1985-07-02 12:08', 'complete', scooper, order(1035), v.scoops, 'splice',
+    { ...demo, headline: ':actor completed :object' }),
+  row('a-created', '1985-07-02 11:59', 'create', scooper, order(1035), v.scoops, 'splice', demo),
+  // splice: the catalogue item is already sourced in the pack; prices and media are illustrative.
+  row('a-price', '1985-07-02 11:00', 'reprice', scooper, fare.butterscotch, v.scoops, 'splice', demo),
+  row('a-product', '1985-07-02 10:00', 'publish', scooper, menuProduct, v.scoops, 'splice', demo),
+  row('a-photo', '1985-07-02 10:05', 'publish', scooper, menuPhoto, fare.butterscotch, 'splice',
+    { ...demo, headline: ':actor added a photo of :target' }),
+)
+
 // ── Roles and scenes ─────────────────────────────────────────────────────────
 
 
@@ -450,5 +493,14 @@ export default {
     distant: 'w10',
     cameo: ['k35'],
     around: ['k42', 'k31', 'k22', 'k09', 'k03', 'j42', 'j31'],
+    guide: {
+      usageExamples: { repeatOrders: ['j84', 'a-order-2', 'a-order-3'], photos: ['j54', 'j55', 'j56'] },
+    },
+    basics: {
+      activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product' },
+      recording: { paid: 'a-paid', priced: 'a-price', photos: ['j54', 'j55', 'j56'] },
+      feedFile: { completed: 'a-complete', created: 'a-created' },
+      namedFeeds: { shop: ['j84', 'a-confirm', 'a-ready', 'a-price', 'a-product'] },
+    },
   },
 } satisfies WorldPack
