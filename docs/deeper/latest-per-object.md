@@ -6,6 +6,11 @@
 that happened to it. Every activity stays stored, so other feeds still show
 all of them.
 
+::: tip Proposal
+`latestPer()` is planned and not yet in Storyfeed. This page describes it as
+proposed; the examples will not run until it ships.
+:::
+
 <script setup>
 import { scene, logOf, liveOf } from '../.vitepress/theme/world'
 const timeline = logOf(scene.deeper.latestPerObject.timeline)
