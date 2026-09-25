@@ -342,10 +342,13 @@ reading and drawing, a second audience, then renderer-specific pages.
 
 - ✅ Feedable Models — the guessed label, `describeFeed()` / `feedMediaUsing()`, a link per feed, `toFeed()` by hand, models you don't own, the model's own feed, morph aliases
 - ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, replace
-- ✅ Verbs — the same verb typed, as a `FeedVerb` enum (owner's page). Named
+- ✅ Activity Verbs (`basics/verbs`) — the same verb typed, as a `FeedVerb` enum (owner's page). Named
   `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
   a definition Recording Activities now gives, and AS2.0 has no term "verb"
-  while every reader of an activity feed does
+  while every reader of an activity feed does. Then `Verbs`, until the owner
+  chose `Activity Verbs` on 2026-09-24: it says whose verbs they are beside
+  Recording Activities and Activity Content, and stays apart from Reference's
+  Verb Vocabulary. The slug stays `basics/verbs`, so no link moves
 - ✅ The Feed File (`basics/the-feed-file`) — `routes/feed.php` and the `Story` facade: headlines, tokens, optional segments, icons and intents, `Story::resource()`, group headlines, `->missing()`, `story()` at the call site, loading, listing and caching. Named `Headlines` until 2026-09-23; renamed for the file's job, as Laravel's Routing page is. Declaration only: what a glyph means moved to Rendering, translation to Localization
 - ✅ What an Activity Shows — a headline alone, a quoted utterance, the body types
 - ✅ Reading Feeds — the builder, read modes, scoping, `query()`, pagination
