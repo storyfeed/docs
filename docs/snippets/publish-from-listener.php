@@ -12,7 +12,7 @@ class RecordOrderPlaced
         Storyfeed::activity()
             ->by($event->customer)
             ->action('place', $event->order)
-            ->to($event->order->kitchen)
+            ->to($event->order->shop)
             ->publish();
     }
 }

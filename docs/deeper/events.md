@@ -7,7 +7,7 @@ publish the activity from that event: from a listener, or from the event class
 itself.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
 </script>
 
 ## Generating Events and Listeners
@@ -40,7 +40,7 @@ class OrderPlaced
 <<< @/snippets/publish-from-listener.named-arguments.php {php memo="app/Listeners/RecordOrderPlaced.php"} [Named Arguments]
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 ### Registering the Listener
 
@@ -56,7 +56,7 @@ it without calling `publish()`; dispatching the event publishes it:
 
 <<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPlaced.php"}
 
-<FeedExample :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 ### Skipping Publication
 
@@ -72,7 +72,7 @@ public function toFeedActivity(): ?PendingActivity
     return Storyfeed::activity()
         ->by($this->customer)
         ->action('place', $this->order)
-        ->to($this->order->kitchen);
+        ->to($this->order->shop);
 }
 ```
 

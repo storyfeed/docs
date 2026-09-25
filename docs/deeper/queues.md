@@ -6,8 +6,8 @@
 `publish()` writes it in the current process.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
-const placed = { ...scenes.order, data: null, glyph_intent: null }
+import { scene } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
 </script>
 
 Configure a [Laravel queue worker](https://laravel.com/docs/13.x/queues#running-the-queue-worker)
@@ -38,7 +38,7 @@ class PlaceOrderController extends Controller
         Storyfeed::activity()
             ->by($request->user())
             ->action('place', $order)
-            ->to($order->kitchen)
+            ->to($order->shop)
             ->queue();
 
         return to_route('orders.show', $order);
@@ -66,7 +66,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($order->kitchen)
+    ->to($order->shop)
     ->onConnection('database')
     ->onQueue('feed')
     ->queue();
@@ -95,7 +95,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($order->kitchen)
+    ->to($order->shop)
     ->delay(now()->addSeconds(10))
     ->queue();
 ```
@@ -161,7 +161,7 @@ class OrderWasPlaced extends Story implements ShouldQueue
     {
         return $this->activity($this->order)
             ->by($this->customer)
-            ->to($this->order->kitchen);
+            ->to($this->order->shop);
     }
 
     public function headline(): string
@@ -249,7 +249,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($order->kitchen)
+    ->to($order->shop)
     ->snapshotNow()
     ->queue();
 ```
@@ -408,7 +408,7 @@ class RecordOrder implements ShouldQueue
     public function handle(): void
     {
         Storyfeed::activity('place', $this->order)
-            ->to($this->order->kitchen)
+            ->to($this->order->shop)
             ->publishedAt($this->occurredAt)
             ->publish();
     }
@@ -444,7 +444,7 @@ class RecordOrder implements ShouldQueue
         Storyfeed::record(
             verb: 'place',
             object: $this->order,
-            target: $this->order->kitchen,
+            target: $this->order->shop,
             publishedAt: $this->occurredAt,
         );
     }

@@ -6,8 +6,8 @@
 HTTP middleware can supply either role for a request.
 
 <script setup>
-import { activity, scenes, where } from '../.vitepress/theme/samples'
-const scoped = { ...activity({ ...scenes.order, target: null, context: where.kitchen,
+import { activity, scene, role } from '../.vitepress/theme/world'
+const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
   headline_template: ':actor placed :object in :context' }), data: null, glyph_intent: null }
 </script>
 
@@ -39,7 +39,7 @@ class PlaceOrderController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::context($order->kitchen, function () use ($request, $order) {
+        Storyfeed::context($order->shop, function () use ($request, $order) {
             Storyfeed::activity()
                 ->by($request->user())
                 ->action('place', $order)
@@ -67,7 +67,7 @@ class PlaceOrderController extends Controller
     {
         $order->update(['status' => 'placed']);
 
-        Storyfeed::context($order->kitchen, function () use ($request, $order) {
+        Storyfeed::context($order->shop, function () use ($request, $order) {
             Storyfeed::record(
                 verb: 'place',
                 object: $order,
@@ -104,7 +104,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::actor($request->user(), function () use ($order) {
     Storyfeed::activity()
         ->action('place', $order)
-        ->context($order->kitchen)
+        ->context($order->shop)
         ->publish();
 });
 ```
@@ -116,7 +116,7 @@ Storyfeed::actor($request->user(), function () use ($order) {
     Storyfeed::record(
         verb: 'place',
         object: $order,
-        context: $order->kitchen,
+        context: $order->shop,
     );
 });
 ```
@@ -148,12 +148,12 @@ activity still takes precedence over the scope.
 use App\Http\Controllers\PlaceOrderController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/kitchens/{kitchen}/orders/{order}/place', PlaceOrderController::class)
+Route::post('/shops/{shop}/orders/{order}/place', PlaceOrderController::class)
     ->scopeBindings()
-    ->middleware(['auth', 'storyfeed.context:kitchen']);
+    ->middleware(['auth', 'storyfeed.context:shop']);
 ```
 
-`storyfeed.context:kitchen` takes the bound `kitchen` route parameter.
+`storyfeed.context:shop` takes the bound `shop` route parameter.
 The parameter must be an Eloquent model; a missing or unbound value throws.
 Implicit binding needs the controller to receive that parameter:
 
@@ -163,7 +163,7 @@ Implicit binding needs the controller to receive that parameter:
 
 namespace App\Http\Controllers;
 
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -171,7 +171,7 @@ use Storyfeed\Facades\Storyfeed;
 
 class PlaceOrderController extends Controller
 {
-    public function __invoke(Request $request, Kitchen $kitchen, Order $order): RedirectResponse
+    public function __invoke(Request $request, Shop $shop, Order $order): RedirectResponse
     {
         $order->update(['status' => 'placed']);
 
@@ -187,7 +187,7 @@ class PlaceOrderController extends Controller
 
 namespace App\Http\Controllers;
 
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -195,7 +195,7 @@ use Storyfeed\Facades\Storyfeed;
 
 class PlaceOrderController extends Controller
 {
-    public function __invoke(Request $request, Kitchen $kitchen, Order $order): RedirectResponse
+    public function __invoke(Request $request, Shop $shop, Order $order): RedirectResponse
     {
         $order->update(['status' => 'placed']);
 
@@ -213,7 +213,7 @@ class PlaceOrderController extends Controller
 
 <FeedExample :items="[scoped]" expanded />
 
-The `Kitchen` model needs an `orders()` relationship for the scoped binding.
+The `Shop` model needs an `orders()` relationship for the scoped binding.
 The middleware supplies the context to every activity published in this request.
 
 <a id="setting-a-route-s-actor"></a>
@@ -224,9 +224,9 @@ The middleware supplies the context to every activity published in this request.
 use App\Http\Controllers\PlaceOrderController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/kitchens/{kitchen}/orders/{order}/place', PlaceOrderController::class)
+Route::post('/shops/{shop}/orders/{order}/place', PlaceOrderController::class)
     ->scopeBindings()
-    ->middleware(['auth', 'storyfeed.context:kitchen', 'storyfeed.actor:System']);
+    ->middleware(['auth', 'storyfeed.context:shop', 'storyfeed.actor:System']);
 ```
 
 `storyfeed.actor:System` wraps the request in `Storyfeed::actor('System', ...)`.

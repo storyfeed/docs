@@ -6,8 +6,8 @@ A named story gives a declaration a handle you can use when publishing.
 The name selects the verb and checks the object's type.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
-const placed = { ...scenes.order, data: null, glyph_intent: null }
+import { scene } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
 </script>
 
 <a id="naming-a-story"></a>
@@ -47,7 +47,7 @@ class PlaceOrderController extends Controller
 
         $activity = story('order.place', $order)
             ->by($request->user())
-            ->to($order->kitchen)
+            ->to($order->shop)
             ->publish();
 
         return to_route('orders.show', $order);
@@ -65,7 +65,7 @@ use Storyfeed\Facades\Storyfeed;
 
 $activity = Storyfeed::route('order.place', $order)
     ->by($request->user())
-    ->to($order->kitchen)
+    ->to($order->shop)
     ->publish();
 ```
 

@@ -13,7 +13,7 @@ class RecordOrderPlaced
             verb: 'place',
             object: $event->order,
             actor: $event->customer,
-            target: $event->order->kitchen,
+            target: $event->order->shop,
         );
     }
 }

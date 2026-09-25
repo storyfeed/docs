@@ -6,30 +6,19 @@ Aggregation shows several related activities as one row: three orders from
 one customer read as one line, not three.
 
 <script setup>
-import { who, where, orders, activity, group } from '../.vitepress/theme/samples'
-
-const at = '2026-08-14T14:30:00.000000Z'
-const placed = (id, actor, object) => activity({ id, verb: 'place', glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actor placed :object with :target',
-  actor, object, target: where.kitchen })
-
-const log = [
-  placed('ag1', who.regular, orders.third),
-  placed('ag2', who.regular, orders.second),
-  placed('ag3', who.regular, orders.first),
-]
-
-const repeat = group({ id: 'ag4', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 3, targets: 1 } })
-
-const actors = group({ id: 'ag5', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
-  published_at: at, headline_template: ':actors ordered from :target',
-  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 5, objects: 5, targets: 1 } })
+import { scene, logOf, liveOf, summaryOf, everything, group } from '../.vitepress/theme/world'
+const log = logOf(scene.deeper.aggregation.orders)
+const repeat = liveOf(log)[0]
+const customers = logOf(scene.deeper.aggregation.customers)
+// The explicit actors axis permits different order objects; the general
+// summary helper conservatively keeps different objects apart.
+const actors = group({ id: 'aggregation-customers', verb: 'place', axis: 'actors', count: customers.length,
+  glyph: customers[0].glyph, published_at: customers[0].published_at,
+  headline_template: ':actors ordered from :target',
+  actors: customers.map(row => row.actor).slice(0, 3),
+  objects: customers.map(row => row.object).slice(0, 3), targets: [customers[0].target],
+  distinct: { actors: customers.length, objects: customers.length, targets: 1 }, children: customers })
+const summary = summaryOf(everything())
 </script>
 
 ## Grouping Activities
@@ -40,7 +29,7 @@ const actors = group({ id: 'ag5', verb: 'place', axis: 'actors', count: 5, glyph
 
 Three orders from one customer, minutes apart, as a log:
 
-<FeedExample context :items="log" />
+<FeedExample :items="log" />
 
 The same three, grouped by the verb's `grouped()`:
 
@@ -69,7 +58,7 @@ class OrderStory
 
 ### Activities Along Other Axes
 
-Five customers ordering from the same kitchen need a different sentence. Each
+Five customers ordering from the same shop need a different sentence. Each
 group names an **axis**: what its activities have in common.
 
 ```php memo="routes/feed.php"
@@ -93,6 +82,11 @@ activity is in only one group.
 <a id="axes-by-read-mode"></a>
 
 ## Choosing a Read Mode
+
+A longer feed makes the difference visible: repeated actions and busy places
+fold into rows that expand to show their members.
+
+<FeedExample :items="summary" days />
 
 The read mode chooses which groupings a read shows:
 
@@ -138,8 +132,8 @@ whichever axis wins.
 Below a threshold, activities stay ungrouped. Changing a threshold doesn't
 regroup past activities until `storyfeed:curate` runs.
 
-`repeat` groups only orders placed with the same kitchen; `targets` groups
-across kitchens.
+`repeat` groups only orders placed with the same shop; `targets` groups
+across shops.
 
 See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
 boundary shared by grouped activities.
@@ -285,7 +279,7 @@ Storyfeed::axes([
 ```
 
 `scene` groups activities in the same [context](/deeper/context), such as
-three customers asking about dishes in one kitchen.
+three customers asking about dishes in one shop.
 
 ### Keys
 

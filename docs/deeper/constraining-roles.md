@@ -6,8 +6,8 @@ Role constraints limit which model types may fill an activity's roles.
 A publish with a different type throws before the activity is stored.
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
-const placed = { ...scenes.order, data: null, glyph_intent: null }
+import { scene } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
 </script>
 
 <a id="publishing-an-activity"></a>
@@ -17,7 +17,7 @@ const placed = { ...scenes.order, data: null, glyph_intent: null }
 ## Defining Role Constraints
 
 ```php memo="routes/feed.php"
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use App\Models\User;
 use Storyfeed\Facades\Story;
@@ -26,12 +26,12 @@ Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->whereActor(User::class)
-    ->whereTarget(Kitchen::class);
+    ->whereTarget(Shop::class);
 ```
 
 <FeedExample :items="[placed]" />
 
-Publishing an order placed by a user with a kitchen target satisfies both constraints. Like Laravel's
+Publishing an order placed by a user with a shop target satisfies both constraints. Like Laravel's
 `Route::where()` and `whereIn()`, these methods restrict allowed values;
 Storyfeed checks role types at publish time instead of matching a URL.
 
@@ -39,9 +39,9 @@ Storyfeed checks role types at publish time instead of matching a URL.
 |---|---|
 | `whereActor(User::class)` | actor |
 | `whereObject(Order::class)` | object |
-| `whereTarget(Kitchen::class)` | target |
-| `whereContext(Kitchen::class)` | context |
-| `whereRole('origin', Kitchen::class)` | origin; also accepts `result`, `instrument` or any role above |
+| `whereTarget(Shop::class)` | target |
+| `whereContext(Shop::class)` | context |
+| `whereRole('origin', Shop::class)` | origin; also accepts `result`, `instrument` or any role above |
 
 ### Model Types and Morph Aliases
 
@@ -55,7 +55,7 @@ declaration. Repeating a constraint replaces the allowed types for that role.
 ### Parties and Empty Roles
 
 ```php memo="routes/feed.php"
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\Order;
 use App\Models\User;
 use Storyfeed\Facades\Story;
@@ -64,7 +64,7 @@ Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->whereActor(User::class, 'party')
-    ->whereTarget(Kitchen::class);
+    ->whereTarget(Shop::class);
 ```
 
 <FeedExample :items="[placed]" />

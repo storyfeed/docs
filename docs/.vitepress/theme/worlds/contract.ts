@@ -75,7 +75,17 @@ export type Roles = {
  * The scenes, by the ids of the pack's rows. The engine turns them into
  * payload nodes on the present anchor.
  */
+export type DeeperSceneIds = {
+  aggregation: { orders: string[]; customers: string[] }
+  latestPerObject: { timeline: string[]; board: string[]; confirmations: string[] }
+  keepingLatest: { saves: string[] }
+  groupingPeriods: { orders: string[] }
+  retention: { views: string[] }
+  composites: { tasks: string[] }
+}
+
 export type SceneIds = {
+  deeper: DeeperSceneIds
   /** `role.customer` places an order (`place`) with `role.shop`: the standard example. */
   order: string
   /** `role.customer` asks about `role.product` (`ask`), with a note as the object. */

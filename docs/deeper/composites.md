@@ -3,48 +3,45 @@
 ## Introduction
 
 <script setup>
-import { who, dishes, group } from '../.vitepress/theme/samples'
-
-const authored = group({
-  id: 'cp1', verb: 'publish', axis: 'composite', count: 2, glyph: 'chef-hat',
-  published_at: '2026-08-14T09:20:00.000000Z',
-  headline_template: ':actor put :count dishes on the menu',
-  actors: [who.cook],
-  objects: [dishes.cutlets, dishes.roti],
-  distinct: { actors: 1, objects: 2 },
-})
+import { scene, group } from '../.vitepress/theme/world'
+const children = scene.deeper.composites.tasks
+// A hypothetical single publish of the catalogue's task objects.
+const authored = group({ id: 'composite-tasks', verb: 'complete', axis: 'composite', count: children.length,
+  glyph: children[0].glyph, published_at: children[1].published_at,
+  headline_template: ':actor completed :count tasks', actors: [children[0].actor],
+  objects: children.map(row => row.object), distinct: { actors: 1, objects: children.length } })
 </script>
 
-A composite is one activity whose object is a **collection**: several dishes
-put on the menu as a single activity.
+A composite is one activity whose object is a **collection**: several tasks
+completed as a single activity.
 
 <a id="recording-a-composite"></a>
 
 ## Recording Composites
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PublishMenuController.php"
+```php [Fluent Syntax] memo="app/Http/Controllers/CompleteTasksController.php"
 <?php
 
 namespace App\Http\Controllers;
 
-use App\Models\MenuItem;
+use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-class PublishMenuController extends Controller
+class CompleteTasksController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+        $tasks = Task::whereIn('id', $request->input('tasks'))->get();
 
-        $dishes->each->update(['published_at' => now()]);
+        $tasks->each->update(['completed_at' => now()]);
 
         Storyfeed::activity()
             ->by($request->user())
-            ->action('publish')
-            ->objects($dishes)
+            ->action('complete')
+            ->objects($tasks)
             ->publish();
 
         return back();
@@ -52,27 +49,27 @@ class PublishMenuController extends Controller
 }
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PublishMenuController.php"
+```php [Named Arguments] memo="app/Http/Controllers/CompleteTasksController.php"
 <?php
 
 namespace App\Http\Controllers;
 
-use App\Models\MenuItem;
+use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-class PublishMenuController extends Controller
+class CompleteTasksController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $dishes = MenuItem::whereIn('id', $request->input('dishes'))->get();
+        $tasks = Task::whereIn('id', $request->input('tasks'))->get();
 
-        $dishes->each->update(['published_at' => now()]);
+        $tasks->each->update(['completed_at' => now()]);
 
         Storyfeed::record(
-            verb: 'publish',
-            objects: $dishes,
+            verb: 'complete',
+            objects: $tasks,
             actor: $request->user(),
         );
 
@@ -82,9 +79,9 @@ class PublishMenuController extends Controller
 ```
 :::
 
-<FeedExample context :items="[authored]" />
+<FeedExample :items="[authored]" />
 
-This writes a parent activity and one activity per dish. In `log()` the dishes
+This writes a parent activity and one activity per task. In `log()` the tasks
 appear as ordinary rows; in the other modes the parent is one node with
 `axis: 'composite'`.
 
@@ -100,9 +97,9 @@ headline reaches it.
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('publish')->grouped(fn (GroupBuilder $group) => $group->composite(
-    ':actor put :count dishes on the menu', // the group
-    ':actor put dishes on the menu',        // the parent activity
+Story::verb('complete')->grouped(fn (GroupBuilder $group) => $group->composite(
+    ':actor completed :count tasks', // the group
+    ':actor completed tasks',        // the parent activity
 ));
 ```
 
@@ -120,7 +117,7 @@ parent's headline is an error when stories compile.
 Mark a model `Bundleable`, and a burst of activities on it becomes one
 composite:
 
-```php memo="app/Models/MenuItem.php"
+```php memo="app/Models/Task.php"
 <?php
 
 namespace App\Models;
@@ -130,7 +127,7 @@ use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Bundleable;
 use Storyfeed\Contracts\Feedable;
 
-class MenuItem extends Model implements Feedable, Bundleable
+class Task extends Model implements Feedable, Bundleable
 {
     use InteractsWithFeed;
 }
@@ -139,7 +136,7 @@ class MenuItem extends Model implements Feedable, Bundleable
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::bundleables(['menu_item']);
+Storyfeed::bundleables(['task']);
 ```
 
 ```php memo="config/storyfeed.php"

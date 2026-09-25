@@ -1,4 +1,5 @@
 import { activity, group } from './samples'
+export { activity, group, tombstone } from './samples'
 import { APP_KINDS, type AppKind, type Row, type VerbWording, type WorldPack } from './worlds/contract'
 import { PACKS } from './worlds'
 
@@ -180,7 +181,17 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const unique = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) === i)
   const glanceIds = unique([...s.busyPlace, ...s.repeat, s.distant, ...s.cameo, ...s.around])
 
+  const deeper = s.deeper
   const scene = {
+    deeper: {
+      aggregation: { orders: many(deeper.aggregation.orders), customers: many(deeper.aggregation.customers) },
+      latestPerObject: { timeline: many(deeper.latestPerObject.timeline), board: many(deeper.latestPerObject.board),
+        confirmations: many(deeper.latestPerObject.confirmations) },
+      keepingLatest: { saves: many(deeper.keepingLatest.saves) },
+      groupingPeriods: { orders: many(deeper.groupingPeriods.orders) },
+      retention: { views: many(deeper.retention.views) },
+      composites: { tasks: many(deeper.composites.tasks) },
+    },
     /** A customer places an order with the shop: the standard example. */
     order: one(s.order),
     /** A customer asks about a product, with a note. */

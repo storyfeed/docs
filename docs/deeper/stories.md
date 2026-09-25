@@ -6,15 +6,13 @@ A Story class can build an activity from the data you give it.
 Declarations can also stay in `routes/feed.php` or live in their own classes.
 
 <script setup>
-import { scenes, activity, party, orders, tombstone } from '../.vitepress/theme/samples'
-const placed = { ...scenes.order, data: null, glyph_intent: null }
-const paid = { ...activity({ id: 'sc2', published_at: '2026-08-14T14:34:00.000000Z', verb: 'confirm_payment', actor: party.service,
-  object: orders.first, headline_template: ':actor confirmed payment for :object',
-  glyph: 'credit-card' }), data: null, glyph_intent: null }
-const gone = { ...activity({ ...placed,
-  object: tombstone('order', '31', '2026-08-14T15:05:00.000000Z'),
-  missing_headline_template: ':actor placed an order, since deleted' }),
-  data: null, glyph_intent: null }
+import { scene, activity, tombstone, WORLD_ANCHOR } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
+const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay'),
+  verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
+const gone = activity({ ...placed,
+  object: tombstone(placed.object.type, placed.object.id, new Date(WORLD_ANCHOR - 60 * 60 * 1000).toISOString()),
+  missing_headline_template: ':actor placed an order, since deleted' })
 </script>
 
 <a id="publishing-an-activity"></a>
@@ -88,7 +86,7 @@ class OrderWasPlaced extends Story
     {
         return $this->activity($this->order)
             ->by($this->customer)
-            ->to($this->order->kitchen);
+            ->to($this->order->shop);
     }
 
     public function headline(): string
