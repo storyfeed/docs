@@ -45,7 +45,9 @@ const replies = computed(() => {
 });
 
 const meta = computed(() =>
-    [[by.value, props.thread.kind].filter(Boolean).join(' '), replies.value]
+    // The kind ("note") only means something beside a name; alone, under a
+    // headline that already said "sent a note", it is an orphaned word.
+    [by.value ? [by.value, props.thread.kind].filter(Boolean).join(' ') : null, replies.value]
         .filter((part) => part !== null && part !== '')
         .join(' · '),
 );

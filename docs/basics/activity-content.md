@@ -6,9 +6,10 @@ import { scene } from '../.vitepress/theme/world'
 const content = scene.basics.activityContent
 const withThread = { ...content.note,
   thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
-const withExcerpt = content.ready
+const withProse = content.ready
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+    title: content.confirmed.object.label, items: [
     { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
     { key: 'Items', value: '1', verbatim: false, missing: null },
     { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
@@ -134,7 +135,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\Prose;
 use Storyfeed\FeedEntity;
 
 class Order extends Model implements Feedable
@@ -145,10 +146,9 @@ class Order extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label("Order #{$this->reference}")
-            ->body(Excerpt::make()
-                ->text($this->instructions)
-                ->from('Instructions')
-                ->truncated(false));
+            ->body(Prose::make()
+                ->content($this->instructions)
+                ->title("Order #{$this->reference} instructions"));
     }
 }
 ```
@@ -161,7 +161,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\Prose;
 use Storyfeed\FeedEntity;
 
 class Order extends Model implements Feedable
@@ -172,10 +172,9 @@ class Order extends Model implements Feedable
     {
         return FeedEntity::make(
             label: "Order #{$this->reference}",
-            body: Excerpt::make(
-                text: $this->instructions,
-                from: 'Instructions',
-                truncated: false,
+            body: Prose::make(
+                content: $this->instructions,
+                title: "Order #{$this->reference} instructions",
             ),
         );
     }
@@ -184,9 +183,9 @@ class Order extends Model implements Feedable
 
 :::
 
-<FeedExample :items="[withExcerpt]" />
+<FeedExample :items="[withProse]" />
 
-`truncated: false` marks the instructions as complete text. A body on the snapshot shows wherever the entity appears, so the model writes
+The title names the order, so the body reads on its own wherever it appears. A body on the snapshot shows wherever the entity appears, so the model writes
 it, not the line that records an activity:
 
 ::: code-group
@@ -210,7 +209,7 @@ class Order extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label("Order #{$this->reference}")
-            ->body(KeyValue::make()->items([
+            ->body(KeyValue::make()->title("Order #{$this->reference}")->items([
                 'Pickup' => $this->pickup_at->format('g:i a'),
                 'Items' => $this->items->count(),
                 'Reference' => KeyValue::verbatim($this->reference),
@@ -239,7 +238,7 @@ class Order extends Model implements Feedable
     {
         return FeedEntity::make(
             label: "Order #{$this->reference}",
-            body: KeyValue::make(items: [
+            body: KeyValue::make(title: "Order #{$this->reference}", items: [
                 'Pickup' => $this->pickup_at->format('g:i a'),
                 'Items' => $this->items->count(),
                 'Reference' => KeyValue::verbatim($this->reference),

@@ -6,7 +6,10 @@ import { scene, role, liveOf } from '../.vitepress/theme/world'
 // The same recorded fact, with and without a URL supplied by the model.
 const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
 const withLink = [scene.order]
-const withImage = [scene.basics.activityContent.product]
+// The customer feed's MenuItem supplies a preview image: the item, with its photo.
+const product = scene.basics.activityContent.product
+const withImage = [{ ...product, object: { ...product.object, body: null,
+  media: scene.basics.activityContent.photo.object.media } }]
 const scoped = liveOf(scene.basics.namedFeeds.shop)
 </script>
 

@@ -168,14 +168,22 @@ for (const [key, file] of Object.entries(photographed)) things[key] = { ...thing
 venues.scoops = { ...venues.scoops, media: mediaOf('parlour') }
 fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel') }
 fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
-const productMedia = mediaOf('sundae')
-const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: productMedia })
-const menuProduct = { ...fare.butterscotch, media: productMedia,
-  body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
-    subject: { label: fare.butterscotch.label, href: fare.butterscotch.url },
-    content: APP_CONTENT.description, image: 'preview', attachments: [], footnote: null }] }
-const instructedOrder = { ...order(1035), body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-  text: APP_CONTENT.instructions, from: 'Instructions', truncated: false }] }
+// The photo belongs to the photo activity; the menu item's own preview is a
+// details card, because its object is the item, not a picture. A body is
+// self-contained: it names its item even though the headline does too.
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: mediaOf('sundae') })
+const detail = (key: string, value: string) => ({ key, value, verbatim: false, missing: null })
+const menuProduct = { ...fare.butterscotch,
+  body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title: fare.butterscotch.label, items: [
+    detail('Price', APP_CONTENT.price),
+    detail('Section', APP_CONTENT.section),
+    detail('Available', APP_CONTENT.available),
+  ] }] }
+// Instructions are a field of the order, not a passage quoted from somewhere,
+// so they are Prose under a title that names the order.
+const instructedOrder = { ...order(1035), body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
+  content: APP_CONTENT.instructions, mediaType: 'text/plain', verbatim: false,
+  title: `${order(1035).label} instructions` }] }
 
 // ── The verbs ────────────────────────────────────────────────────────────────
 

@@ -141,6 +141,8 @@ export const SERVICES = {
 export const APP_CONTENT = {
   instructions: 'A spoon with the order, please.',
   note: 'Can I collect this at the counter?',
-  photo: 'counter-menu.svg',
-  description: 'Available at the counter.',
+  photo: 'uss-butterscotch.jpg',
+  price: '$2.95',
+  section: 'Sundaes',
+  available: 'At the counter',
 }

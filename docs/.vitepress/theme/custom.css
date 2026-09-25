@@ -148,6 +148,17 @@
   margin: 0;
 }
 
+/* The same rule's paragraph margin outranks every margin the kit sets on its
+   own paragraphs (prose, a card's subject and footnote) and opened 16px gaps
+   inside rows. Reset them all, then restore the one the kit spaces. */
+.vp-doc .sf-example p,
+.vp-doc .sf-feed p {
+  margin: 0;
+}
+.vp-doc .sf-media-object__footnote {
+  margin-top: 2px;
+}
+
 /* The last row's rail should not run into the well's floor. */
 .vp-doc .sf-feed > *:last-child {
   margin-bottom: 0;

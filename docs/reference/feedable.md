@@ -62,7 +62,7 @@ not a link.
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 
@@ -74,7 +74,7 @@ class Order extends Model implements Feedable
     {
         $this->feedEntity()
             ->label("Order #{$this->reference}")
-            ->body(Excerpt::make()->text($this->instructions));
+            ->body(Prose::make($this->instructions));
     }
 
     protected static function booted(): void
@@ -92,7 +92,7 @@ class Order extends Model implements Feedable
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 
@@ -104,7 +104,7 @@ class Order extends Model implements Feedable
     {
         $this->feedEntity()
             ->label("Order #{$this->reference}")
-            ->body(Excerpt::make(text: $this->instructions));
+            ->body(Prose::make(content: $this->instructions));
     }
 
     protected static function booted(): void
@@ -216,14 +216,14 @@ same name, and each method changes the entity and returns it.
 FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->data(['total' => $this->total])
-    ->body(Excerpt::make()->text($this->instructions));
+    ->body(Prose::make($this->instructions));
 ```
 
 ```php [Named Arguments]
 FeedEntity::make(
     label: "Order #{$this->reference}",
     data: ['total' => $this->total],
-    body: Excerpt::make(text: $this->instructions),
+    body: Prose::make(content: $this->instructions),
 );
 ```
 

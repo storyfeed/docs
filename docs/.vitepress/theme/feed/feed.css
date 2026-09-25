@@ -414,6 +414,13 @@ a.sf-entity:hover {
    the label it reads as prose, which is the one thing a structured form must
    not look like: a reader cannot tell it apart from a line of text, and then
    the structure the app kept has bought nothing. */
+.sf-facts__title {
+    padding: 3px 0 5px;
+    border-bottom: 1px solid var(--sf-line);
+    font-weight: 600;
+    color: var(--sf-text);
+}
+.sf-facts__rows { display: flex; flex-direction: column; margin: 0; }
 .sf-facts__row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, auto);

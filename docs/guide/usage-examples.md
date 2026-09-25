@@ -10,12 +10,13 @@ const content = scene.basics.activityContent
 const withThread = { ...content.note,
   thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+    title: content.confirmed.object.label, items: [
     { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
     { key: 'Items', value: '1', verbatim: false, missing: null },
     { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
   ] }] } }
-const previews = logOf([withThread, content.ready, withKeyValue, content.photo, content.product,
+const previews = logOf([withThread, withKeyValue, content.photo, content.product,
   ...liveOf(scene.guide.usageExamples.photos)])
 
 const actorless = logOf(Object.values(scene.cookbook.actorless))
@@ -36,7 +37,11 @@ const weekly = summaryOf(everything(), 'week')
 ```php memo="app/Models/Order.php" at="toFeed()"
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(Excerpt::make()->text($this->instructions)->from('Instructions'));
+    ->body(KeyValue::make()->title("Order #{$this->reference}")->items([
+        'Pickup' => $this->pickup_at->format('g:i a'),
+        'Items' => $this->items->count(),
+        'Reference' => KeyValue::verbatim($this->reference),
+    ]));
 ```
 
 <FeedExample :items="previews" />
