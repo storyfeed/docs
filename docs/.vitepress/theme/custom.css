@@ -307,10 +307,6 @@
 
 /* Optional fence memo: part of the code container, outside the copied <pre>. */
 .vp-doc .sf-code-memo__bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 2px 16px;
   padding: 10px 24px;
   border-bottom: 1px solid var(--vp-c-divider);
   color: var(--vp-c-text-2);
@@ -322,10 +318,13 @@
   white-space: normal;
 }
 
-/* `at="boot()"`: where in the file, on the right of the memo bar. */
+/* `at="boot()"`: where in the file, after the path: `path → boot()`. */
 .vp-doc .sf-code-memo__at {
-  color: var(--vp-c-text-3);
   white-space: nowrap;
+}
+.vp-doc .sf-code-memo__at::before {
+  content: ' → ';
+  color: var(--vp-c-text-3);
 }
 
 /* The copy button appears top-right on hover; with a memo bar there, it

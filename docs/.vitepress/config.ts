@@ -25,7 +25,7 @@ export default defineConfig({
       /*
        * Code block memo: `memo="app/Providers/AppServiceProvider.php"` names
        * where the snippet lives, and `at="boot()"` says where in that file,
-       * drawn on the right of the same bar. `at` needs a `memo`. Both are
+       * drawn after the path as `path → boot()`. `at` needs a `memo`. Both are
        * stripped before code-group titles are read, since a memo may contain
        * [brackets].
        */
