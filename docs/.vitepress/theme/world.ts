@@ -1,4 +1,5 @@
 import { activity, group } from './samples'
+export { group } from './samples'
 import { APP_KINDS, type AppKind, type Row, type VerbWording, type WorldPack } from './worlds/contract'
 import { PACKS } from './worlds'
 
@@ -199,6 +200,25 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     cameo: many(s.cameo),
     /** The short, wide feed: every scene above that belongs in one, and the rows around them. Newest first. */
     glance: logOf(many(glanceIds)),
+    guide: {
+      usageExamples: {
+        repeatOrders: many(s.guide.usageExamples.repeatOrders),
+        photos: many(s.guide.usageExamples.photos),
+      },
+    },
+    basics: {
+      activityContent: Object.fromEntries(Object.entries(s.basics.activityContent).map(([key, id]) => [key, one(id)])) as Record<keyof typeof s.basics.activityContent, any>,
+      recording: {
+        paid: one(s.basics.recording.paid),
+        priced: one(s.basics.recording.priced),
+        photos: many(s.basics.recording.photos),
+      },
+      feedFile: {
+        completed: one(s.basics.feedFile.completed),
+        created: one(s.basics.feedFile.created),
+      },
+      namedFeeds: { shop: many(s.basics.namedFeeds.shop) },
+    },
   }
 
   /** Every row published by the anchor (the future is left out), newest first. */

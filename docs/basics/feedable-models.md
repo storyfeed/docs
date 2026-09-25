@@ -1,46 +1,13 @@
 # Feedable Models
 
 <script setup>
-import { who, where, orders, dishes, notes, photos, activity, group } from '../.vitepress/theme/samples'
+import { scene, role, summaryOf } from '../.vitepress/theme/world'
 
-const unlinked = { ...orders.first, url: null }
-const at = '2026-08-14T14:30:00.000000Z'
-
-const withSnapshot = [
-  activity({ id: 'fm1', verb: 'place', glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: unlinked, target: where.kitchen }),
-]
-
-const withLink = [
-  activity({ id: 'fm2', verb: 'place', glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.first, target: where.kitchen }),
-]
-
-// A dish whose media carries a photo preview as well as its link.
-const withImage = [
-  activity({ id: 'fm6', verb: 'publish', glyph: 'chef-hat', published_at: '2026-08-14T09:00:00.000000Z',
-    headline_template: ':actor put :object on the menu',
-    actor: who.cook, object: { ...dishes.chickenCurry, media: photos.curry.media } }),
-]
-
-// The kitchen's own feed: orders placed with it, and the dish it put live.
-const scoped = [
-  group({ id: 'fm3', verb: 'place', axis: 'actors', count: 3, glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actors ordered from :target',
-    actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
-    objects: [orders.first, orders.second, orders.third],
-    distinct: { actors: 3, objects: 3, targets: 1 } }),
-  activity({ id: 'fm4', verb: 'ask', glyph: 'message-circle',
-    published_at: '2026-08-14T14:28:00.000000Z',
-    headline_template: ':actor asked about :target',
-    actor: who.customer4, object: notes.spice, target: dishes.chickenCurry }),
-  activity({ id: 'fm5', verb: 'publish', glyph: 'chef-hat',
-    published_at: '2026-08-14T09:00:00.000000Z',
-    headline_template: ':actor put :object on the menu',
-    actor: who.cook, object: dishes.chickenCurry }),
-]
+// The same recorded fact, with and without a URL supplied by the model.
+const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
+const withLink = [scene.order]
+const withImage = [scene.basics.activityContent.product]
+const scoped = summaryOf(scene.basics.namedFeeds.shop)
 </script>
 
 ## Introduction
@@ -67,7 +34,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-<FeedExample context :items="withSnapshot" />
+<FeedExample :items="withSnapshot" />
 
 That is a complete Feedable model. Its label is guessed, and it isn't a link.
 
@@ -86,9 +53,9 @@ A model that sets no label gets the first of these that it has:
 
 | Guess | Example |
 |---|---|
-| its `name` attribute | `Chicken Curry` |
+| its `name` attribute | {{ role.product.label }} |
 | its `title` attribute | `Spring Menu` |
-| its registered noun and its key | `Dish #42` |
+| its registered noun and its key | `Menu item #42` |
 | its class name and its key | `Order #1042` |
 
 ### Custom Labels
@@ -255,7 +222,7 @@ class Order extends Model implements Feedable
     protected static function booted(): void
     {
         static::feedMediaUsing(fn ($context) => match ($context->feed()) {
-            'kitchen' => route('kitchen.ticket', $context->routeKey()),
+            'shop' => route('shop.ticket', $context->routeKey()),
             'customer' => route('orders.status', $context->routeKey()),
             // an ad-hoc feed reports no name; without this arm the match throws
             default => null,
@@ -264,7 +231,7 @@ class Order extends Model implements Feedable
 }
 ```
 
-On the `kitchen` feed:
+On the `shop` feed:
 
 <FeedExample :items="withLink" />
 
@@ -299,7 +266,7 @@ class MenuItem extends Model implements Feedable
     protected static function booted(): void
     {
         static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
-            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
+            'shop' => route('shop.menu.edit', $context->routeKey()),
             'customer' => $media
                 ->url(route('menu.show', $context->routeKey()))
                 ->preview(FeedImage::make()
@@ -345,7 +312,7 @@ class MenuItem extends Model implements Feedable
     protected static function booted(): void
     {
         static::feedMediaUsing(fn ($context, $media) => match ($context->feed()) {
-            'kitchen' => route('kitchen.menu.edit', $context->routeKey()),
+            'shop' => route('shop.menu.edit', $context->routeKey()),
             'customer' => $media
                 ->url(route('menu.show', $context->routeKey()))
                 ->preview(FeedImage::make(
@@ -494,14 +461,14 @@ also be registered.
 `InteractsWithFeed` also gives the model a feed of everything it took part in:
 
 ```php memo="A controller, or wherever the feed is read"
-$kitchen->storyfeed()->get();
+$shop->storyfeed()->get();
 ```
 
 <FeedExample :items="scoped">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 
-It is the same builder as `Storyfeed::feed()->involving($kitchen)->get()`.
+It is the same builder as `Storyfeed::feed()->involving($shop)->get()`.
 
 <a id="morph-aliases"></a>
 
@@ -511,7 +478,7 @@ Storyfeed stores morph aliases, never class names, so entities survive a
 namespace change. Enforce a map:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use App\Models\Kitchen;
+use App\Models\Shop;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\User;
@@ -520,7 +487,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 Relation::enforceMorphMap([
     'order' => Order::class,
     'menu_item' => MenuItem::class,
-    'kitchen' => Kitchen::class,
+    'shop' => Shop::class,
     // Aliases are permanent: an activity whose alias no longer resolves still
     // shows, with a placeholder. Renaming a key means keeping the old one
     // pointed somewhere.

@@ -95,6 +95,17 @@ export type SceneIds = {
    * scenes above they make `scene.glance`: 10 to 14 rows over a few days.
    */
   around: string[]
+  /** Guide demonstrations: three separate orders and a photographer's upload burst. */
+  guide: {
+    usageExamples: { repeatOrders: string[]; photos: string[] }
+  }
+  /** Basics demonstrations. Rows describe illustrative app transactions, not new canon. */
+  basics: {
+    activityContent: { note: string; ready: string; confirmed: string; photo: string; product: string }
+    recording: { paid: string; priced: string; photos: string[] }
+    feedFile: { completed: string; created: string }
+    namedFeeds: { shop: string[] }
+  }
 }
 
 export type WorldPack = {

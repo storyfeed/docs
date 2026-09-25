@@ -1,14 +1,14 @@
 # Quickstart
 
 <script setup>
-import { scenes } from '../.vitepress/theme/samples'
+import { scene } from '../.vitepress/theme/world'
 </script>
 
 ## Introduction
 
 Recording an activity takes three things: models that say how they read in a
 feed, a headline for the verb, and one call where the fact happens. The example
-is a customer placing an order with a kitchen.
+is a customer placing an order with a shop.
 
 <a id="making-the-models-feedable"></a>
 
@@ -64,7 +64,7 @@ class Order extends Model implements Feedable
 ```
 :::
 
-`Kitchen` and `User` get the same treatment, each returning its own label.
+`Shop` and `User` get the same treatment, each returning its own label.
 
 <a id="giving-the-verb-a-headline"></a>
 
@@ -87,7 +87,7 @@ Story::for(Order::class)->verb('place')
 
 On the feed:
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 ## Reading the Feed
 
@@ -108,15 +108,15 @@ Route::get('/', function () {
 
 With the demo records, links and glyph configured, the response looks like this:
 
-<FeedExample payload :items="[scenes.order]" />
+<FeedExample payload :items="[scene.order]" />
 
 <a id="rendered-feed"></a>
 
 The activity carries a headline template and the entities that fill its tokens:
 
-<FeedExample :items="[scenes.order]">
+<FeedExample :items="[scene.order]">
   <template #annotations="{ node }">
-    <Annotation v-if="node.id === scenes.order.id" label="Published above">An order placement</Annotation>
+    <Annotation v-if="node.id === scene.order.id" label="Published above">An order placement</Annotation>
   </template>
 </FeedExample>
 

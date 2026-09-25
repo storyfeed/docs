@@ -77,6 +77,94 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.ok(now - Date.parse(scene.distant.published_at) >= 30 * DAY, 'distant is 30 days back or more')
   })
 
+  test(`${name}: guide and basics scenes support their teaching examples`, () => {
+    const { activityContent: content, recording, feedFile, namedFeeds } = scene.basics
+    const { repeatOrders, photos } = scene.guide.usageExamples
+    const rows = [...repeatOrders, ...photos, ...Object.values(content), recording.paid,
+      recording.priced, ...recording.photos, ...Object.values(feedFile), ...namedFeeds.shop]
+    for (const node of rows) {
+      assert.ok(Date.parse(node.published_at) < now, `${node.id}: dated before now`)
+      assert.ok(pack.rows.some(row => row.id === node.id), `${node.id}: from the catalogue`)
+    }
+    assert.equal(repeatOrders.length, 3, 'three separately recorded orders')
+    for (const node of repeatOrders) {
+      assert.equal(node.verb, 'place')
+      assert.ok(same(node.actor, role.customer))
+      assert.ok(same(node.target, role.shop))
+      assert.equal(node.object.type, 'order')
+    }
+    assert.equal(new Set(repeatOrders.map(node => node.object.id)).size, 3)
+    const orderGroup = world.liveOf(repeatOrders)
+    assert.equal(orderGroup.length, 1)
+    assert.equal(orderGroup[0].axis, 'repeat')
+    assert.deepEqual(ids(orderGroup[0].children), ids(repeatOrders))
+
+    for (const list of [photos, recording.photos]) {
+      assert.ok(list.length >= 2)
+      for (const node of list) {
+        assert.equal(node.verb, 'upload')
+        assert.equal(node.object.type, 'photo')
+        assert.ok(same(node.actor, list[0].actor))
+        assert.ok(same(node.target, list[0].target))
+      }
+      assert.equal(world.liveOf(list).length, 1)
+    }
+    assert.equal(content.note.verb, 'post')
+    assert.equal(content.note.object.type, 'note')
+    assert.ok(same(content.note.target, scene.order.object))
+    assert.ok(same(content.note.actor, role.customer))
+    for (const [key, verb] of [['ready', 'ready'], ['confirmed', 'confirm']]) {
+      assert.equal(content[key].verb, verb)
+      assert.ok(same(content[key].object, scene.order.object))
+      assert.ok(same(content[key].actor, role.staff))
+    }
+    assert.ok(content.ready.object.body.some(body => body.$body === 'Storyfeed/Body/Excerpt' && body.text && body.truncated === false))
+    assert.ok(content.photo.object.media?.preview?.src)
+    assert.ok(content.photo.object.url)
+    assert.ok(same(content.photo.target, role.product))
+    assert.ok(same(content.product.object, role.product))
+    assert.ok(content.product.object.body.some(body => body.$body === 'Storyfeed/Body/MediaObject'))
+    assert.equal(recording.paid.verb, 'pay')
+    assert.ok(same(recording.paid.actor, role.service))
+    assert.ok(same(recording.paid.object, scene.order.object))
+    assert.equal(recording.priced.verb, 'reprice')
+    assert.ok(same(recording.priced.object, role.product))
+    assert.equal(feedFile.completed.verb, 'complete')
+    assert.equal(feedFile.created.verb, 'create')
+    for (const node of Object.values(feedFile)) assert.ok(same(node.object, scene.order.object))
+    assert.ok(namedFeeds.shop.some(node => !['place', 'confirm', 'ready'].includes(node.verb)))
+    for (const verb of ['place', 'confirm', 'ready']) {
+      assert.ok(namedFeeds.shop.some(node => node.verb === verb && same(node.object, scene.order.object)))
+    }
+    for (const node of namedFeeds.shop) assert.ok(same(node.target, role.shop), 'shop scope is truthful')
+
+    const shifted = worldOf(pack, MOVED)
+    const scenes = value => Array.isArray(value) ? value.flatMap(scenes)
+      : value?.kind === 'activity' ? [value] : Object.values(value).flatMap(scenes)
+    const before = scenes({ guide: scene.guide, basics: scene.basics })
+    const after = scenes({ guide: shifted.scene.guide, basics: shifted.scene.basics })
+    assert.deepEqual(ids(before), ids(after))
+    for (const [i, node] of before.entries()) {
+      assert.equal(MOVED - Date.parse(after[i].published_at), now - Date.parse(node.published_at))
+    }
+  })
+
+  test(`${name}: the long reading feed keeps the same facts in all three modes`, () => {
+    const rows = world.everything().filter(node => Date.parse(node.published_at) >= now - 7 * DAY)
+    const live = world.liveOf(rows)
+    const summary = world.summaryOf(rows)
+    assert.ok(rows.length > scene.glance.length * 2, 'a long feed')
+    assert.ok(summary.length < live.length && live.length < rows.length)
+    const members = nodes => nodes.flatMap(node => node.kind === 'group' ? node.children : [node])
+    assert.deepEqual(ids(members(live)), ids(rows))
+    assert.deepEqual(ids(members(summary)), ids(rows))
+    for (const node of [...live, ...summary].filter(node => node.kind === 'group')) {
+      assert.equal(node.count, node.children.length)
+      assert.equal(node.children_truncated, false)
+      assert.equal(new Set(node.children.map(child => child.published_at.slice(0, 10))).size, 1)
+    }
+  })
+
   test(`${name}: the glance is short and wide, and each mode does its one job`, () => {
     const glance = scene.glance
     assert.ok(glance.length >= 10 && glance.length <= 14, `glance has ${glance.length} rows`)
@@ -134,6 +222,20 @@ test('no page or snippet imports a pack or picks a pack\'s rows', () => {
     const text = readFileSync(file, 'utf8')
     if (/theme\/worlds\//.test(text)) leaks.push(`${relative(docs, file)}: imports a pack`)
     if (/\b(worldOf|pack\.rows|pack\.scenes)\b/.test(text)) leaks.push(`${relative(docs, file)}: reaches into a pack`)
+  }
+  assert.deepEqual(leaks, [])
+})
+
+// W28-A: migrated pages must not silently bring back the legacy kitchen via
+// imports or FeedExample's context padding. Other lanes migrate independently.
+test('guide and basics examples use the world without legacy padding', () => {
+  const leaks = []
+  for (const file of [...files(resolve(docs, 'guide'), /\.md$/), ...files(resolve(docs, 'basics'), /\.md$/)]) {
+    if (file.endsWith('/introduction.md')) continue
+    const text = readFileSync(file, 'utf8')
+    if (/theme\/(samples|manifest)|\bscenes\.|2026-\d\d-\d\d/.test(text)) leaks.push(relative(docs, file))
+    if (/<FeedExample[^>]*\scontext(?:\s|=|>)/.test(text)) leaks.push(`${relative(docs, file)}: legacy padding`)
+    if (/\$kitchen|\bKitchen\b/.test(text)) leaks.push(`${relative(docs, file)}: themed code names`)
   }
   assert.deepEqual(leaks, [])
 })

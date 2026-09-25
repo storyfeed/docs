@@ -3,88 +3,19 @@
 Record orders, quotes and photographs, and read them as individual or grouped activities.
 
 <script setup>
-import { who, where, orders, dishes, photos, notes, party, activity, group, scenes } from '../.vitepress/theme/samples'
+import { scene, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const at = '2026-08-14T14:30:00.000000Z'
-
-const burst = group({
-  id: 'i2', verb: 'place', axis: 'repeat', count: 3, glyph: 'shopping-bag',
-  published_at: at,
-  headline_template: ':actor placed :count orders with :target',
-  actors: [who.regular], targets: [where.kitchen],
-  objects: [orders.first, orders.second, orders.third],
-  distinct: { actors: 1, objects: 3, targets: 1 },
-})
-
-const expanded = [
-  activity({ id: 'i2a', verb: 'place', glyph: 'shopping-bag', published_at: at,
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.third, target: where.kitchen }),
-  activity({ id: 'i2b', verb: 'place', glyph: 'shopping-bag', published_at: '2026-08-14T14:29:00.000000Z',
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.second, target: where.kitchen }),
-  activity({ id: 'i2c', verb: 'place', glyph: 'shopping-bag', published_at: '2026-08-14T14:27:00.000000Z',
-    headline_template: ':actor placed :object with :target',
-    actor: who.regular, object: orders.first, target: where.kitchen }),
-]
-
-const crowd = group({
-  id: 'i7', verb: 'place', axis: 'actors', count: 5, glyph: 'shopping-bag',
-  published_at: '2026-08-14T14:35:00.000000Z',
-  headline_template: ':actors ordered from :target',
-  actors: [who.regular, who.customer2, who.customer3], targets: [where.kitchen],
-  distinct: { actors: 5, objects: 5, targets: 1 },
-})
-
-
-const paid = activity({
-  id: 'i9', verb: 'pay', glyph: 'credit-card',
-  published_at: '2026-08-14T14:32:00.000000Z',
-  headline_template: ':actor marked :object paid',
-  actor: party.service, object: orders.first,
-})
-
-const noted = activity({
-  id: 'i10', verb: 'note', glyph: 'message-circle',
-  published_at: '2026-08-14T14:34:00.000000Z',
+const expanded = logOf(scene.guide.usageExamples.repeatOrders)
+const burst = liveOf(expanded)[0]
+const crowd = summaryOf(scene.busyPlace)[0]
+const paid = scene.basics.recording.paid
+const note = scene.basics.activityContent.note
+const noted = { ...note, verb: 'note', object: note.target, target: null,
   headline_template: ':actor sent a note about :object',
-  actor: who.regular, object: orders.first,
-  thread: { text: notes.pickup.label, by: who.regular.label, kind: 'note', replies: null, truncated: false },
-})
-
-const photographed = activity({
-  id: 'i14', verb: 'publish', glyph: 'image',
-  published_at: '2026-08-14T11:20:00.000000Z',
-  headline_template: ':actor added a photo of :target',
-  actor: who.cook, object: photos.curry, target: dishes.chickenCurry,
-})
-
-const photoBurst = group({
-  id: 'i15', verb: 'publish', axis: 'repeat', count: 6, glyph: 'image',
-  published_at: '2026-08-14T11:30:00.000000Z',
-  headline_template: ':actor added :count photos',
-  actors: [who.cook],
-  objects: [photos.curry, photos.kottu, photos.cutlets, photos.roti, photos.lassi],
-  distinct: { actors: 1, objects: 6 },
-})
-
-const posted = activity({
-  id: 'i16', verb: 'add', glyph: 'chef-hat',
-  published_at: '2026-08-14T09:00:00.000000Z',
-  headline_template: ':actor added a new dish',
-  actor: who.cook,
-  object: { ...dishes.chickenCurry,
-    media: { icon: null, image: null,
-      attachments: [],
-      preview: { src: '/media/chicken-curry.svg', mediaType: 'image/svg+xml', width: 400, height: 300, alt: null },
-      url: null },
-    body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
-      subject: { label: 'Chicken Curry', href: '/menu/1' },
-      content: 'Slow-cooked with roasted curry powder and coconut milk. Mild, unless you ask.',
-      image: 'preview', attachments: [], footnote: 'Photographed by Nancy' }] },
-})
-
-
+  thread: { text: note.object.label, by: note.actor.label, kind: 'note', replies: null, truncated: false } }
+const photographed = scene.basics.activityContent.photo
+const photoBurst = liveOf(scene.guide.usageExamples.photos)[0]
+const posted = scene.basics.activityContent.product
 </script>
 
 ## Recording Activities
@@ -98,7 +29,7 @@ const posted = activity({
 <<< @/snippets/publish.named-arguments.php {php memo="Where the order is placed: a controller, an action, a listener"} [Named Arguments]
 :::
 
-<FeedExample context :items="[scenes.order]" />
+<FeedExample :items="[scene.order]" />
 
 <a id="activities-by-a-payment-provider"></a>
 
@@ -175,9 +106,9 @@ Storyfeed::record(
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
-    ->by($cook)
+    ->by($staff)
     ->action('publish', $photo)
-    ->to($dish)
+    ->to($product)
     ->publish();
 ```
 
@@ -187,8 +118,8 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::record(
     verb: 'publish',
     object: $photo,
-    actor: $cook,
-    target: $dish,
+    actor: $staff,
+    target: $product,
 );
 ```
 :::
@@ -204,8 +135,9 @@ Storyfeed::record(
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
-    ->by($cook)
-    ->action('add', $dish)
+    ->by($staff)
+    ->action('publish', $product)
+    ->to($shop)
     ->publish();
 ```
 
@@ -213,16 +145,17 @@ Storyfeed::activity()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
-    verb: 'add',
-    object: $dish,
-    actor: $cook,
+    verb: 'publish',
+    object: $product,
+    actor: $staff,
+    target: $shop,
 );
 ```
 :::
 
 <FeedExample :items="[posted]" />
 
-The card comes from the dish's own `toFeed()`, covered in
+The card comes from the product's own `toFeed()`, covered in
 [Activity Body Content](/deeper/body).
 
 ## Grouping Activities
@@ -238,7 +171,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($customer)
     ->action('place', $order)
-    ->to($kitchen)
+    ->to($shop)
     ->publish();
 ```
 
@@ -249,7 +182,7 @@ Storyfeed::record(
     verb: 'place',
     object: $order,
     actor: $customer,
-    target: $kitchen,
+    target: $shop,
 );
 ```
 :::
@@ -265,9 +198,11 @@ As a timeline:
 [Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
 decides the grouping.
 
-### Orders From Several Customers
+<a id="orders-from-several-customers"></a>
 
-Five customers, five orders, five separate requests.
+### Activities From Several People
+
+Several people check in at the same place, in separate requests.
 
 <FeedExample :items="[crowd]" />
 
@@ -275,15 +210,16 @@ Five customers, five orders, five separate requests.
 
 ### Grouped Photographs
 
-The cook uploads a set, one request each.
+The photographer uploads a set to a collection, one request each.
 
 ::: code-group
 ```php [Fluent Syntax] memo="Where the fact happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
-    ->by($cook)
-    ->action('publish', $photo)
+    ->by($photographer)
+    ->action('upload', $photo)
+    ->to($collection)
     ->publish();
 ```
 
@@ -291,9 +227,10 @@ Storyfeed::activity()
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
-    verb: 'publish',
+    verb: 'upload',
     object: $photo,
-    actor: $cook,
+    actor: $photographer,
+    target: $collection,
 );
 ```
 :::
