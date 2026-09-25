@@ -371,6 +371,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 - ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()`, `->forgetWhenMissing()` on the verb, bulk deletes
 - ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept. Taught with `view`; ephemeral state is Choosing What Not to Record
+- ✅ Latest Activity per Object — `latestPer()` on a feed: one row per key in that view, every activity still stored; the key table, which activity is the latest, groups formed from what the feed shows. Contrasted with `keepLatest()` in one tip
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
 
 ### Cookbook
