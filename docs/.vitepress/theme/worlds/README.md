@@ -94,8 +94,17 @@ and supplies it in every pack. It never reaches into one pack.
 moves. An anchor at the same clock time as `canonicalNow` keeps every row on
 the same day as before.
 
-## Jasper
+## Cameos
 
-Jasper Tey is the one real person in any pack. His rows are flagged `cameo`
-for his review, and a test fails if one isn't. In a pack set in the past he
-is his true age then. His birth date is never printed.
+Rows come, in order of preference, from:
+
+1. What happened in the setting, sourced.
+2. What could have: invented events the setting would plausibly hold (an
+   order at the shop, a fourth try at a stall game). Mark them `uncertain`.
+3. A cameo, only when the setting reaches a dead end: an act it cannot hold
+   at all (a pull request, a review, a deploy, a webhook). Jasper carries it,
+   anachronism and all; that is the charm, not a mistake to hide.
+
+Cameo rows are flagged `cameo` for Jasper's review, and a test fails if one
+isn't. Jasper is the one real person; in a pack set in the past he is his
+true age then, and his birth date is never printed.
