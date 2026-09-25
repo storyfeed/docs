@@ -74,6 +74,15 @@ const oneActivity = [
     actor: who.regular, object: orders.first, target: where.kitchen }),
 ]
 
+// One fact, three headlines: the verb stays `place`; only the wording moves.
+const sameFact = [
+  ':actor sent :object to :target',
+  'A new order, :object, came in to :target from :actor',
+  ':target received :object from :actor',
+].map((headline_template, i) => activity({ id: `h${i}`, verb: 'place', glyph: 'shopping-bag',
+  published_at: '2026-08-14T18:44:02.000000Z', headline_template,
+  actor: who.regular, object: orders.first, target: where.kitchen }))
+
 // The same shape in other apps, same cast: a task tracker, a code host,
 // billing, e-signature, a support desk, a newsroom.
 const elsewhere = {
@@ -126,13 +135,17 @@ what it was done to, and the **target** is what it was aimed at.
 **{{ who.regular.label }}** is the party that initiated the **placing** of **{{ orders.first.label }}**, with **{{ where.kitchen.label }}**.
 The summary headline of the activity may take different forms, but the underlying fact is always the same.
 
-> **{{ who.regular.label }}** sent **{{ orders.first.label }}** to **{{ where.kitchen.label }}**
+**{{ who.regular.label }}** *(actor)* **sent** *(verb)* **{{ orders.first.label }}** *(object)* to **{{ where.kitchen.label }}** *(target)*
 
-> A new order, **{{ orders.first.label }}**, came in to **{{ where.kitchen.label }}** from **{{ who.regular.label }}**
+<FeedExample :items="[sameFact[0]]" />
 
-> **{{ where.kitchen.label }}** received **{{ orders.first.label }}** from **{{ who.regular.label }}**
+A new order, **{{ orders.first.label }}** *(object)*, **came in** *(verb)* to **{{ where.kitchen.label }}** *(target)* from **{{ who.regular.label }}** *(actor)*
 
-The recorded verb is still `place`, whichever headline describes it.
+<FeedExample :items="[sameFact[1]]" />
+
+**{{ where.kitchen.label }}** *(target)* **received** *(verb)* **{{ orders.first.label }}** *(object)* from **{{ who.regular.label }}** *(actor)*
+
+<FeedExample :items="[sameFact[2]]" />
 
 
 <a id="examples-of-activities"></a>
