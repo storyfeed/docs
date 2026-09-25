@@ -316,6 +316,44 @@ wrong data shown to a user, or data loss. `warning` = all three, recoverable.
 Fails 1 or 2 → prose, or delete. Fails 3 → one sentence and a link, on the page
 that does pass 3.
 
+### Amended 2026-09-25: the pages follow Laravel's docs
+
+The owner asked for every page to follow the page structure and teaching style
+of its Laravel counterpart (Laravel 13.x docs; the audit is in the lead's
+Solo scratchpad 355). **Laravel wins on page skeleton and teaching style.** The
+rules above still hold where Laravel says nothing. Where a rule above conflicts,
+this section overrides it:
+
+- **1, 6, 21: a page opens with its purpose, then its own simplest useful
+  operation.** A short introduction or prerequisite is allowed. The first
+  snippet shows *this page's* operation (naming, constraining, generating), not
+  a repeated elementary publish. Generators come before the class they generate
+  (`make:story`, `make:feed`), as `make:controller` does on Controllers.
+- **4, 5: prose may explain why and when inline.** Use tables for comparisons
+  and options, H3s for tasks that can be taught separately, and lists for short
+  inventories.
+- **8, 20, 28: a capability page teaches its variants, its setup, and how to
+  inspect it** (list, cache, doctor), as Routing teaches `route:list` and
+  caching. Reference stays exhaustive; the Cookbook keeps application recipes,
+  and when to use a feature stays with the feature.
+- **9: callouts use Laravel's `> [!NOTE]` / `> [!WARNING]`** for prerequisites,
+  limits and guarded mistakes. The silent/unguarded/in-hand gate below no longer
+  decides *whether* to warn; it still decides `WARNING` over `NOTE`.
+- **10, 26: one canonical home, with a link wherever it's needed.** Links to
+  prerequisites and later pages are allowed; an optional, purposeful "next
+  steps" is allowed. Don't append one to every page mechanically.
+- **13: irrelevant boilerplate may be elided;** never shorten what the example
+  teaches.
+- **29: headings are task-shaped** ("Generating Story Classes", "Registering
+  Middleware") or precise capability nouns. The fixed What Is / Using /
+  Examples trio is retired. Title Case stays.
+- **Unchanged:** 3, 7, 11 (shipped API only, no history), 12 (string-first *in
+  Recording*), 14–19, 22–25, 27, 30, 31, and **32–35 (namespace, full call
+  sites, both forms as tabs, `use` lines)**. The lead kept those pending the
+  owner's morning review, since they're his recent rulings.
+- **No protected pages.** Introduction and Activity Verbs are ordinary pages
+  (owner, 2026-09-24).
+
 Models studied for register: Laravel docs (guide/reference split, code-first),
 Spatie package docs (one page per capability, ruthless brevity), Inertia
 (short pages, no page over ~1500 words), Tailwind (tables + live examples).

@@ -88,65 +88,77 @@ export default defineConfig({
     // planned-but-unwritten pages live in IA.md, never here.
     sidebar: [
       {
+        // Laravel's order: set up, get it working, then see what it can do.
         text: 'Getting Started',
         items: [
           { text: 'Introduction', link: '/guide/introduction' },
-          { text: 'Usage Examples', link: '/guide/usage-examples' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Quickstart', link: '/guide/quickstart' },
+          { text: 'Usage Examples', link: '/guide/usage-examples' },
         ],
       },
       {
-        // Feedable Models stays first: a model must be feedable before recording
-        // does anything, and the failure is silent. After that, simple to complex:
-        // the elementary act, then the typed layer over it, then reading and
-        // drawing, then a second audience, then renderer-specific pages.
+        // Definitions before publishing, as Routing comes before Controllers.
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
+          { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Recording Activities', link: '/basics/recording' },
           { text: 'Activity Verbs', link: '/basics/verbs' },
-          { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Content', link: '/basics/activity-content' },
-          { text: 'Reading Feeds', link: '/basics/reading' },
-          { text: 'The Payload', link: '/basics/the-payload' },
-          { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
-          { text: 'Rendering', link: '/basics/rendering' },
-          { text: 'Named Feeds', link: '/basics/named-feeds' },
         ],
       },
       {
-        // Recording depth, then payload depth, then grouping, then operations.
+        // Choose the feed, then inspect it, then draw it.
+        text: 'Reading and Rendering',
+        items: [
+          { text: 'Reading Feeds', link: '/basics/reading' },
+          { text: 'Named Feeds', link: '/basics/named-feeds' },
+          { text: 'Latest Activity per Object', link: '/deeper/latest-per-object' },
+          { text: 'The Payload', link: '/basics/the-payload' },
+          { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
+          { text: 'Rendering', link: '/basics/rendering' },
+        ],
+      },
+      {
+        // Grouped by capability family, as Laravel's Digging Deeper is.
         text: 'Digging Deeper',
         items: [
-          { text: 'Publishing From Events', link: '/deeper/events' },
-          { text: 'Containers & Context', link: '/deeper/context' },
-          { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Story Classes', link: '/deeper/stories' },
           { text: 'Named Stories', link: '/deeper/named-stories' },
           { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
-          { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
           { text: 'Story Middleware & Batching', link: '/deeper/story-middleware-and-batching' },
+          { text: 'Publishing From Events', link: '/deeper/events' },
+          { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
+          { text: 'Containers & Context', link: '/deeper/context' },
+          { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
+          { text: 'Queued Publishing', link: '/deeper/queues' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
-          { text: 'Activity Body Content', link: '/deeper/body' },
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Grouping Periods', link: '/deeper/grouping-periods' },
           { text: 'Composites', link: '/deeper/composites' },
+          { text: 'Activity Body Content', link: '/deeper/body' },
           { text: 'Localization', link: '/deeper/localization' },
-          { text: 'Queued Publishing', link: '/deeper/queues' },
-          { text: 'Testing', link: '/deeper/testing' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
+        ],
+      },
+      {
+        // Keeping a feed correct over time.
+        text: 'Testing and Maintenance',
+        items: [
+          { text: 'Testing', link: '/deeper/testing' },
+          { text: 'Doctor', link: '/reference/doctor' },
           { text: 'Deleted Models', link: '/deeper/deleted-models' },
           { text: 'Retention', link: '/deeper/retention' },
-          { text: 'Latest Activity per Object', link: '/deeper/latest-per-object' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
         ],
       },
       {
-        // In the order a reader meets the problem.
+        // Application recipes, in the order a reader meets the problem.
         text: 'Cookbook',
         items: [
           { text: 'Composing a Coherent Activity', link: '/cookbook/read-the-fields-back' },
+          { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
           { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
@@ -154,24 +166,22 @@ export default defineConfig({
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Keeping Verbs and Grammar Together', link: '/cookbook/verbs-and-grammar-together' },
           { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
         ],
       },
       {
-        // Vocabulary, then what you type, then the shapes, then the policy pages.
+        // What you type, then the shapes, then policy.
         text: 'Reference',
         items: [
-          { text: 'Glossary', link: '/reference/glossary' },
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
-          { text: 'Verb Vocabulary', link: '/reference/verbs' },
-          { text: 'Doctor', link: '/reference/doctor' },
           { text: 'Feedable API', link: '/reference/feedable' },
+          { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
           { text: 'Compatibility', link: '/reference/compatibility' },
+          { text: 'Glossary', link: '/reference/glossary' },
         ],
       },
     ],
