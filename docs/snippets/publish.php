@@ -3,5 +3,5 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($customer)
     ->action('place', $order)
-    ->to($kitchen)
+    ->to($shop)
     ->publish();
