@@ -153,8 +153,11 @@ const fold = (axis, members) => {
   return group({
     id: `${axis}-${first.id}`, verb: first.verb, axis, count: members.length, glyph: first.glyph,
     published_at: members[0].published_at, headline_template: heads[first.verb][axis],
-    actors: uniq(members.map((m) => m.actor)), objects: uniq(members.map((m) => m.object)).slice(0, 3),
-    targets: uniq(members.map((m) => m.target)),
+    // A read names a sample and counts the rest, as the payload does.
+    actors: uniq(members.map((m) => m.actor)).slice(0, 3), objects: uniq(members.map((m) => m.object)).slice(0, 3),
+    targets: uniq(members.map((m) => m.target)).slice(0, 3),
+    // A group carries its members, as a real read does, so it expands.
+    children: members, children_truncated: false,
     distinct: {
       actors: uniq(members.map((m) => m.actor)).length,
       objects: uniq(members.map((m) => m.object)).length,
@@ -298,7 +301,7 @@ The same recorded activities display three ways. [Reading Feeds](/basics/reading
 
 The familiar feed, and the typical home page: repeats collapse, so one person doing the same thing again reads as one row.
 
-<FeedExample :items="worldLive" />
+<FeedExample :items="worldLive" days />
 
 <a id="as-a-grouped-summary"></a>
 <a id="aggregated-feeds"></a>
@@ -307,7 +310,7 @@ The familiar feed, and the typical home page: repeats collapse, so one person do
 
 A grouped digest: many people in one place, one person across many things.
 
-<FeedExample :items="worldSummary" />
+<FeedExample :items="worldSummary" days />
 
 <a id="as-a-timeline"></a>
 <a id="timeline-feeds"></a>
@@ -316,4 +319,4 @@ A grouped digest: many people in one place, one person across many things.
 
 The atomic timeline: every activity, one row each.
 
-<FeedExample :items="worldLog" />
+<FeedExample :items="worldLog" days />

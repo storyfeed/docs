@@ -30,8 +30,10 @@ const props = withDefaults(
          * serialised from `items`, so the drawn step below cannot disagree.
          */
         payload?: boolean
+        /** Draw the day headers a real feed has, for a whole feed rather than one row. */
+        days?: boolean
     }>(),
-    { expanded: false, label: 'Payload', context: false, payload: false },
+    { expanded: false, label: 'Payload', context: false, payload: false, days: false },
 )
 
 const slots = useSlots()
@@ -138,7 +140,7 @@ async function copy() {
         </div>
 
         <div v-if="!payload" class="sf-example__preview">
-            <FeedStream :items="drawn" :grouped="false" v-bind="$attrs">
+            <FeedStream :items="drawn" :grouped="days" v-bind="$attrs">
                 <template v-for="name in streamSlots" #[name]="slotProps">
                     <slot :name="name" v-bind="slotProps as any" />
                 </template>
