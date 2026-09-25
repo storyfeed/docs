@@ -64,14 +64,16 @@ expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
 ```
 
 > [!NOTE]
-> The fake uses your real registries and story middleware, but writes no
-> snapshots or groupings and dispatches no `ActivityPublished` event. Use a
-> database-backed test without this fake to check persistence or grouped reads.
+> The fake uses your real registries and story middleware, but saves nothing,
+> so grouped reads and model snapshots don't reflect the captured activities.
+> It dispatches no `ActivityPublished` event. Use a database-backed test
+> without this fake to check persistence or grouped reads.
 
 ## Testing Queued and Event Publishing
 
 Queued activities are captured separately from synchronous publications. For
-a controller that ends its builder with `queue()`, assert the queued activity:
+the [queued controller](/deeper/queues#queueing-activities), which ends its
+builder with `queue()`, assert the queued activity:
 
 ```php memo="tests/Feature/QueuedOrderTest.php"
 use App\Http\Controllers\PlaceOrderController;
@@ -92,7 +94,6 @@ it('queues the placed order', function () {
 
     Storyfeed::fake();
 
-    // Use the controller from Queued Publishing, which calls queue().
     (new PlaceOrderController)($request, $order);
 
     Storyfeed::assertQueued('place', $order);
@@ -100,9 +101,6 @@ it('queues the placed order', function () {
     Storyfeed::assertNothingPublished();
 });
 ```
-
-The [queued controller](/deeper/queues#queueing-activities) also uses the
-application's `orders.show` route for its redirect.
 
 | Method | Purpose |
 |---|---|
@@ -181,6 +179,9 @@ Storyfeed group headline coverage is incomplete:
 
 ## Testing Feedable Coverage
 
+Check that every `Feedable` model appears in the feed: some activity names it,
+or a headline is defined for its type.
+
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use App\Models\Shop;
 use Storyfeed\Testing\StorySurface;
@@ -190,20 +191,16 @@ StorySurface::assertNoUnwiredSurface();
 StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 ```
 
-This fails for a `Feedable` model that nothing publishes about, and for one the
-enforced morph map has no alias for. See [Surface](/reference/doctor#surface).
-It also fails when the check cannot run or no activities are recorded. It
-works under the fake.
+It also fails for a `Feedable` model the enforced morph map has no alias for,
+when the check cannot run, and when no activities are recorded. It works under
+the fake. See [Surface](/reference/doctor#surface).
 
 <a id="diagnostics-in-ci"></a>
 
 ## Running Diagnostics in CI
 
-```shell
-php artisan storyfeed:doctor --fail-on=warning # Fails on a warning or an error.
-```
-
-Add `--json` for structured findings. See [Diagnosing Your Feed](/deeper/diagnosing#running-the-doctor-in-ci).
+The doctor can fail a CI build on its findings. See
+[Running the Doctor in CI](/deeper/diagnosing#running-the-doctor-in-ci).
 
 ## Static Analysis
 
@@ -221,7 +218,5 @@ It installs through `phpstan/extension-installer` with no configuration. It
 checks the argument count only, and stays quiet where it cannot be certain:
 spread arguments, named arguments, `static::make()`, abstract classes.
 
-`StoryNameRule` also checks literal names passed to `story()`,
-`Storyfeed::route()` and `Story::has()` against the booted application's story
-names. It skips dynamic names and runs without findings when no application
-registry is available.
+The same extension checks story names. See
+[Checking Names With Static Analysis](/deeper/named-stories#checking-names-with-phpstan).

@@ -26,24 +26,15 @@ The command asks for the class name, then **What will this story describe?**
 
 | Choice | Laravel Analogy | What the Class Contains |
 |---|---|---|
-| One activity, published with its data | like an event | constructor data and `toFeedActivity()` |
+| One activity, published with its data | like a notification | constructor data and `toFeedActivity()` |
 | Every activity for one model | like a resource controller | one declaration method per verb |
 | A single verb | like a single action controller | that verb's headlines in their own class |
 
 Each choice prints a binding to add to `routes/feed.php`. The command does not
-edit that file.
+edit that file. Each shape's section below shows its command, and
+[Commands](/reference/commands#stories) lists every option.
 
 <a id="generator-options"></a>
-
-| Command | Result |
-|---|---|
-| `php artisan make:story OrderWasPlaced --verb=place --object=Order` | an activity constructed with its data |
-| `php artisan make:story OrderStory --model=Order` | every activity for `Order`; `--model` implies `--resource` |
-| `php artisan make:story PlaceStory --invokable --verb=place --object=Order` | the `place` declaration in `__invoke()` |
-
-`--object` names the object of one verb. `--model` selects a resource class and
-takes precedence over `--invokable`. An invokable class accepts `--object='*'`
-for a verb shared by every type.
 
 <a id="spelling-the-past-tense"></a>
 
@@ -104,6 +95,10 @@ class OrderWasPlaced extends Story
 `toFeedActivity()` builds the activity. The inherited `$this->activity()` fills
 in the verb bound to this class. Return `null` to publish nothing.
 
+An [event that implements `PublishesToFeed`](/deeper/events#publishing-from-an-event) has the same `toFeedActivity()`
+method, and dispatching the event publishes it. A Story is published on its own,
+as a notification is sent, so it suits an activity with no event behind it.
+
 ### Registering the Story
 
 Bind the class to its object type and verb in the feed file:
@@ -147,17 +142,75 @@ class PlaceOrderController extends Controller
 <FeedExample :items="[placed]" />
 
 `Storyfeed::publish()` returns the activity, or `null` when `toFeedActivity()`
-returns `null` or the Story implements `ShouldQueue`. `Storyfeed::publishNow()`
-publishes synchronously. See [Queued Publishing](/deeper/queues#queueing-story-classes)
-for queued Story classes. Construct the Story when publishing this verb; a named
-lookup cannot bypass its `toFeedActivity()` method.
+returns `null` or the Story is queued.
+
+<a id="queueing-a-story-class"></a>
+
+### Queueing Stories
+
+Implement `ShouldQueue` and use `Queueable`, as a queued notification does:
+
+```php memo="app/Stories/OrderWasPlaced.php"
+<?php
+
+namespace App\Stories;
+
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Bus\Queueable; // [!code highlight]
+use Illuminate\Contracts\Queue\ShouldQueue; // [!code highlight]
+use Storyfeed\PendingActivity;
+use Storyfeed\Stories\Story;
+
+class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
+{
+    use Queueable; // [!code highlight]
+
+    // ...
+}
+```
+
+`Storyfeed::publish()` now queues the Story. `Queueable`'s methods choose the
+queue:
+
+```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
+use App\Stories\OrderWasPlaced;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::publish(
+    (new OrderWasPlaced($order, $request->user()))->onQueue('feed'),
+);
+```
+
+After the worker calls `toFeedActivity()` and publishes its result:
+
+<FeedExample :items="[placed]" />
+
+The call returns `null`. `Storyfeed::publishNow()` publishes the Story
+synchronously, as a notification's `sendNow()` skips the queue. Model
+properties are serialized by their identifiers. The publication time is the
+moment of `Storyfeed::publish()`, unless `toFeedActivity()` sets one.
+
+A queued Story may implement `ShouldBeUnique` and define `uniqueId()`. Its
+`middleware()` method declares [story middleware](/deeper/story-middleware-and-batching);
+`Queueable`'s `through()` sets job middleware. [Queued Publishing](/deeper/queues)
+covers connections, transactions and missing models.
 
 ### Presentation Methods
 
-Presentation methods are read without calling the constructor. `headline()`,
-`icon()`, `intent()`, `groups()`, `missing()`, `keepFor()`, `keepForever()`,
-`keepLatest()`, `period()` and `middleware()` must be independent of constructor data.
-The data belongs in `toFeedActivity()`.
+`headline()` and `icon()` are read without calling the constructor, so they
+cannot use its data. The data belongs in `toFeedActivity()`. The same holds for
+every other definition method a Story declares:
+
+| Method | Declares |
+|---|---|
+| `intent()` | the [icon's intent](/basics/the-feed-file#icons-and-intents) |
+| `groups()` | [group headlines](/deeper/aggregation) |
+| `missing()` | the [roles that make it redundant](/deeper/deleted-models#redundant-roles) once deleted |
+| `keepFor()`, `keepForever()` | its [retention](/deeper/retention) |
+| `keepLatest()` | [keeping the latest activity](/deeper/keeping-the-latest-activity) |
+| `period()` | its [grouping period](/deeper/grouping-periods) |
+| `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
 
 <a id="a-single-verb"></a>
 
@@ -254,7 +307,7 @@ Story::resource(Order::class, OrderStory::class);
 <FeedExample :items="[placed]" />
 
 Publish the activity with [the activity builder](/basics/recording). The resource class holds
-the declarations. Keep helpers protected or private; public methods declare verbs.
+the declarations.
 
 <a id="verbs-from-method-names"></a>
 
@@ -282,7 +335,7 @@ Each method declares its return type:
 | `string` | the headline, and nothing else |
 
 Use `Verb` when setting several options, or `string` for a headline alone.
-Make helpers protected or private.
+Keep helpers protected or private, because public methods declare verbs.
 
 <a id="keeping-definitions-for-stored-activities"></a>
 
@@ -305,24 +358,15 @@ A resource method's `Verb` takes every definition method, including
 `missingHeadline()` for once its object is deleted:
 [Deleted Models](/deeper/deleted-models#missing-headlines) covers it.
 
-### Conventional Verbs
-
-`Story::resource()` always defines `create`, `update`, `delete` and
-`restore`. A method named for one of them replaces its default whole; the
-others keep theirs. `only()` and `except()` name verbs as they are stored:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resource(Order::class, OrderStory::class)
-    ->except('restore', 'complete');
-```
-
+<a id="conventional-verbs"></a>
 <a id="selecting-resource-verbs"></a>
 
 ### Selecting Verbs
+
+A resource class adds its methods to the
+[conventional verbs](/basics/the-feed-file#resource-definitions) that
+`Story::resource()` defines. A method named for one of them replaces that
+default whole. `only()` and `except()` filter both, by stored verb name:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -334,16 +378,8 @@ Story::resource(Order::class, OrderStory::class)->only('place', 'complete');
 
 <FeedExample :items="[placed]" />
 
-Use this in place of the unfiltered resource binding. `only()` and `except()`
-filter both conventional verbs and the class's public methods, as Laravel's
-resource routes do. Excluded verbs lose their resource names too.
-
-| Filter | Definitions Kept |
-|---|---|
-| `->only('place', 'complete')` | only these two verbs |
-| `->except('restore', 'complete')` | all except these stored verb names |
-
-Both methods accept an array instead of separate arguments.
+Use this in place of the unfiltered resource binding. Excluded verbs lose their
+resource names too.
 
 <a id="registering-several-resources"></a>
 
@@ -352,36 +388,22 @@ Both methods accept an array instead of separate arguments.
 ```php memo="routes/feed.php"
 use App\Models\MenuItem;
 use App\Models\Order;
-use App\Models\User;
 use App\Stories\OrderStory;
 use Storyfeed\Facades\Story;
 
 Story::resources([
     Order::class => OrderStory::class,
     MenuItem::class => null,
-], [
-    'except' => ['restore'],
-    'middleware' => 'batch:5 minutes',
-    'wheres' => ['actor' => [User::class, 'party']],
-]);
+], ['except' => ['restore']]);
 ```
 
 <FeedExample :items="[placed]" />
 
 `Story::resources()` registers each model with the same options, as
 `Route::resources()` does. A `null` class supplies the four conventional verbs.
-The call returns nothing; put shared settings in its options or on an enclosing
-group. This example replaces the individual resource bindings.
-
-| Option | Applied to Each Resource |
-|---|---|
-| `only` | keeps the named verbs |
-| `except` | removes the named verbs |
-| `middleware` | appends story middleware |
-| `excluded_middleware` | removes matching middleware |
-| `wheres` | sets [role constraints](/deeper/constraining-roles), keyed by role |
-
-An unknown option throws.
+The options take `only` and `except`. This example replaces the individual
+resource bindings. For shared middleware or role constraints, wrap the call in
+a [group](/deeper/named-stories#shared-attributes).
 
 <a id="using-the-request"></a>
 
@@ -425,7 +447,7 @@ scope is open. Only `->actor()` may depend on the request: the headline, icon,
 intent, grouping and every other setting must be the same for every request.
 Changing a headline with the request throws when `grammar.strict` is on,
 including the default local and testing environments. Jobs dispatched during
-the request publish with the chosen actor; see [Request-Based Actors](/deeper/queues#request-based-actors).
+the request publish with the chosen actor; see [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#request-based-actors).
 
 <a id="generating-from-doctor-findings"></a>
 

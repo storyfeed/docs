@@ -10,8 +10,9 @@ const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
 
 ## Introduction
 
-A named feed is a list of verbs you declare once and read by name. A
-customer's order page and the shop's screen can each read their own.
+A named feed is a read you declare once and read by name: its verbs and its
+mode, and for a feed class its scope. A customer's order page and the shop's
+screen can each read their own.
 
 ## Defining Named Feeds
 
@@ -19,7 +20,7 @@ customer's order page and the shop's screen can each read their own.
 
 ### Registering a Closure
 
-Register each feed as a closure over the builder:
+Register each feed as a closure over the builder, in a service provider:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -32,6 +33,9 @@ Storyfeed::feeds([
     'shop' => fn (FeedBuilder $feed) => $feed,
 ]);
 ```
+
+Named feeds don't go in `routes/feed.php`: once `storyfeed:cache` has run, that
+file isn't loaded, and the cache holds only definitions.
 
 ### Reading a Named Feed
 
@@ -51,8 +55,7 @@ $order->storyfeed('customer')->get();
 
 <FeedExample :items="customer" />
 
-An unknown name throws `UnknownFeed`. A call site may change the mode, but not
-add verbs.
+An unknown name throws `UnknownFeed`.
 
 <a id="verbs-and-scope"></a>
 
@@ -81,7 +84,7 @@ Generate a feed class when each read needs a subject, such as an order:
 php artisan make:feed Customer --subject='App\Models\Order' --role=involving --only=place,confirm,ready --mode=log
 ```
 
-This creates `app/Feeds/CustomerFeed.php` with a typed constructor and a scope. `--role=involving` includes the order in any role; the generator's default role is `context`.
+This creates `app/Feeds/CustomerFeed.php` with a typed constructor and a scope. `--role=involving` includes the order in any role. [Commands](/reference/commands) lists every option.
 
 <a id="feed-classes"></a>
 
@@ -149,7 +152,9 @@ use App\Feeds\ShopFeed;
 ShopFeed::make()->get();
 ```
 
-### Scoping by Subject
+<a id="scoping-by-subject"></a>
+
+### Defining and Scoping Hooks
 
 | Hook | Declares | May Read Constructor State |
 |---|---|---|
@@ -185,29 +190,12 @@ Storyfeed::feeds([
 
 A feed class works without registering. Registering gives it a name.
 
-## Filtering Verbs
+<a id="filtering-verbs"></a>
 
-Both work on any read, named or not:
+## Narrowing a Named Feed
 
-```php memo="A controller, or wherever the feed is read"
-use App\Enums\OrderActivity;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::feed()->only(['place', 'ready'])->get();
-// ready, reprice, confirm
-Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();
-Storyfeed::feed()->except(['note'])->get();
-```
-
-| | |
-|---|---|
-| accepts | verb strings and enum cases, mixed in one list |
-| `re*` | a trailing `*` is a prefix wildcard |
-| an unrecognised verb | never throws; a verb nobody records is a query matching nothing |
-| `only([])` | throws |
-| repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
-
-On a named feed, `only()` can only narrow the declared list:
+A call site may change a named feed's mode, but not add verbs. `only()` on a
+named feed can only narrow the declared list:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -216,7 +204,8 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed('pulse')->only(['place', 'note'])->get();
 ```
 
-Groups count only the verbs the filter lets through.
+[Filtering by Verb](/basics/reading#filtering-by-verb) covers `only()` and
+`except()` on any read.
 
 <a id="feeds-and-access-control"></a>
 
@@ -228,8 +217,6 @@ A feed only filters rows.
   is a policy check in your controller.
 - It filters **verbs, not fields**. Everything in a shown activity's `data` is
   in the payload.
-- The [Activity Streams controller](/deeper/activity-streams) ignores feed
-  names.
 
 For a customer-facing screen, use `only()`. `except()` and wildcards let in
 every new verb as soon as it's recorded.

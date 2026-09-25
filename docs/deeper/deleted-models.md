@@ -36,11 +36,15 @@ and restoration hooks. [Feedable Models](/basics/feedable-models) covers setup.
 
 <a id="deleting-a-model"></a>
 
-### Soft Deletions
+### Deleting Models
 
 ```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
 $order->delete();
 ```
+
+On a model that uses Laravel's `SoftDeletes` trait, `delete()` soft-deletes
+it, and a restore can undo the tombstone. On a model without the trait,
+`delete()` is permanent, and so is the tombstone.
 
 Before the delete:
 
@@ -60,11 +64,8 @@ payload says so:
 | `object.tombstone.formerType` | the deleted model's morph alias: `order` |
 | `object.tombstone.deleted` | when it was deleted |
 | `tombstoned` | the roles holding a tombstone: `["object"]` |
-| `redundant` | `true`: the activity was about the order, and the order is gone |
 
-What `redundant` means, and how a verb changes it, is in
-[Redundant Roles](#redundant-roles). The full shape is in
-[The Payload Contract](/reference/payload).
+The full shape is in [The Payload Contract](/reference/payload#tombstones).
 
 A deleted order's headline, icon and intent are still the ones defined for
 `order.place`.
@@ -73,8 +74,8 @@ A deleted order's headline, icon and intent are still the ones defined for
 
 ### Restoring Models
 
-On a model that soft-deletes, restoring it points every activity back at it,
-and the tombstone goes:
+On a model using `SoftDeletes`, restoring it points every activity back at
+it, and the tombstone goes:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="restore()"
 $order->restore();
@@ -84,9 +85,10 @@ $order->restore();
 
 <a id="force-deleting-a-model"></a>
 
-### Permanent Deletions
+### Force Deleting Models
 
-A force delete can't be undone, so its tombstone is permanent:
+On a model using `SoftDeletes`, a force delete can't be undone, so its
+tombstone is permanent, whether or not the model was soft-deleted first:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
 // the activities stay; the tombstone is now their object for good
@@ -134,15 +136,15 @@ The label stays, and the link goes.
 
 ### Grouped Entities
 
-A group counts its tombstones per role, beside `distinct`:
+A group whose members name a deleted model counts its tombstones per role in
+`distinct_tombstoned`. Here, one of the three orders is gone:
 
 <FeedExample :items="[mixed]" expanded />
 
-`distinct_tombstoned.objects` is `1`: one of the three orders is gone. The
-group's `sample` lists live entities before tombstones. `redundant` on a group
-is `true` only when every member is redundant.
+The group's tombstone keys are in
+[The Payload Contract](/reference/payload#group-nodes).
 
-## Defining Missing-Model Behaviour
+## Configuring Verbs for Deleted Models
 
 <a id="roles-that-determine-redundancy"></a>
 
@@ -161,7 +163,8 @@ Story::for(Order::class)
     ->missing('object', 'target');
 ```
 
-Once the shop is deleted, placing an order with it is redundant too:
+Once the shop is deleted, placing an order with it is redundant too, and the
+payload says `redundant: true`:
 
 <FeedExample :items="[shopGone]" expanded />
 
@@ -244,18 +247,17 @@ The order's other activities stay, naming its tombstone. On
 | The Order Is | Its `view` Activities |
 |---|---|
 | soft-deleted | stay, so a restore brings them back |
-| force-deleted | are permanently deleted |
-| deleted by a query, then passed to `Storyfeed::tombstone()` | are permanently deleted, when the rows are gone for good |
-| found deleted by `storyfeed:trickle` | are permanently deleted, when the rows are gone for good |
+| force-deleted, or deleted without `SoftDeletes` | are permanently deleted |
 
 <a id="bulk-deletions"></a>
 
 ## Handling Bulk Deletions
 
 A query that deletes rows directly, such as `Order::whereKey($ids)->delete()`,
-fires no model events. `storyfeed:trickle` finds those models on its next run
-and tombstones them, and marks each tombstone `approximate`, because the
-deletion time is when it was found:
+fires no model events. `storyfeed:trickle`, a maintenance command you
+[schedule](/reference/commands#scheduling-maintenance) every minute, finds
+those models on its next run and tombstones them. It marks each tombstone
+`approximate`, because the deletion time is when it was found:
 
 <FeedExample :items="[bulk]" expanded />
 
@@ -272,7 +274,7 @@ Storyfeed::tombstone(Order::class, $ids);
 ```
 
 Neither path has a model to ask, so `keepLabel()` is not applied. A verb's
-`forgetWhenMissing()` is. For a `Feedable` that isn't an Eloquent model, pass
+`forgetWhenMissing()` is, for rows that are gone for good. For a `Feedable` that isn't an Eloquent model, pass
 its morph alias in place of the class.
 
 <a id="removing-activities-entirely"></a>
@@ -286,9 +288,7 @@ $user->forceDeleteFromFeed();   // every activity involving the user, permanentl
 $user->forceDelete();
 ```
 
-`deleteFromFeed()` soft-deletes them instead. These are explicit calls. A deleted model normally leaves a tombstone; a
-verb with `forgetWhenMissing()` also removes activities after permanent deletion.
-A model registered with `Storyfeed::feedable()` has neither method; call the
+`deleteFromFeed()` soft-deletes them instead. A model registered with `Storyfeed::feedable()` has neither method; call the
 actions instead:
 
 ```php

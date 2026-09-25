@@ -381,9 +381,9 @@ leans on one further down.
 ### Getting Started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Installation — `guide/installation`: install, run the installer, configure. Maintenance scheduling lives on Retention, with a one-line pointer here
+- ✅ Installation — `guide/installation`: install, run the installer, configure. Maintenance scheduling lives on Reference › Commands (pruning on Retention), with a one-line pointer here
 - ✅ Quickstart — three steps until the app is recording; reading and drawing are choices, not setup. Its model uses `toFeed()`, the style The Basics teaches first
-- ✅ What You Can Build (`guide/usage-examples`) — the showcase: a snippet, the feed it renders, and the page that teaches it
+- ✅ What You Can Build (`guide/usage-examples`) — the showcase: a snippet, the feed it renders, and the page that teaches it. The three read modes are shown once, on Introduction; this page keeps only the weekly summary
 
 ### The Basics
 

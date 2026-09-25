@@ -40,26 +40,33 @@ Add auth or throttling through `middleware`.
 
 ## Serving Collections
 
-There is no collection route. `CollectionSerializer::collection()` turns a page
-of activities, such as a [named feed](/basics/named-feeds)'s, into an
-`OrderedCollection` or `OrderedCollectionPage` with a `next` cursor. Pass the
-page and its IRI:
+`CollectionSerializer::collection()` turns a cursor-paginated page of
+activities into an `OrderedCollection`, or an `OrderedCollectionPage` with a
+`next` link. Your application chooses which activities, and serves the route:
 
-```php memo="A controller, after obtaining an authorised page of Activity models"
+```php memo="A controller that serves the collection"
+use Storyfeed\Models\Activity;
 use Storyfeed\Serialization\CollectionSerializer;
 
-$document = app(CollectionSerializer::class)->collection($page, $iri, $cursor);
+$page = Activity::query()
+    ->published()
+    ->involving($project) // without a scope, this is every activity
+    ->orderBy('published_at', 'desc')
+    ->orderBy('id', 'desc')
+    ->cursorPaginate(20);
+
+$document = app(CollectionSerializer::class)
+    ->collection($page, route('projects.activity', $project), $request->query('cursor'));
 ```
 
-`$page` is an `Illuminate\Contracts\Pagination\CursorPaginator` of activity
-models. `$iri` is the absolute URL your application serves for this collection;
-`$cursor` is the incoming cursor string, or `null` for the first page.
+The second argument is the absolute URL your application serves the
+collection at; the third is the incoming cursor, or `null` for the first page.
 
 ## Activity Streams Fields
 
 <a id="source-outcome-and-means"></a>
 
-### Roles
+### Origin, Result and Instrument
 
 | Role | AS2 Meaning |
 |---|---|
@@ -67,15 +74,10 @@ models. `$iri` is the absolute URL your application serves for this collection;
 | [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
 | [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
 
-<a id="the-context"></a>
-
-### JSON-LD Context
-
-Documents reference `https://ns.storyfeed.dev`, which defines `sf:verb`.
-
 ## Mapping Activity Types
 
 <a id="verb-mapping"></a>
+<a id="the-context"></a>
 
 ### Verb Mappings
 
@@ -111,7 +113,8 @@ enum OrderActivity: string implements FeedVerb
 
 - The mapping only sets the document's `type`.
 - A verb with neither an app mapping nor a built-in AS2 mapping serializes
-  as `"type": "Activity"`, with the verb in `sf:verb`. An intransitive type
+  as `"type": "Activity"`, with the verb in `sf:verb`, which the documents'
+  JSON-LD context, `https://ns.storyfeed.dev`, defines. An intransitive type
   also falls back to `Activity` when the activity has an object.
 - Composite objects serialize as `OrderedCollection`.
 - An entity's [media](/reference/payload#entity-media) serializes as AS2

@@ -1,8 +1,9 @@
 # Recording Deletions
 
 To record a deletion, record it about the model you delete, with a verb that
-says it was removed. The activity stays after the delete, naming the model's
-tombstone.
+says it was removed. The activity stays after the delete. In place of the
+model it names a tombstone: the reference a deleted model leaves behind, with
+its former type and when it was deleted.
 
 ## Recording a Deletion
 
@@ -79,7 +80,7 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)
     ->verb('remove')
     ->headline(':actor removed :object from :target')
-    ->type(ActivityType::Remove); // a removal: the menu item being gone is expected
+    ->type(ActivityType::Remove); // a removal verb keeps its headline after the delete
 ```
 
 <script setup>

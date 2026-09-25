@@ -76,6 +76,10 @@ public function toFeedActivity(): ?PendingActivity
 }
 ```
 
+To test either form, use [the Storyfeed fake](/deeper/testing#testing-queued-and-event-publishing)
+and leave the application event unfaked, so its listener or `toFeedActivity()`
+can run.
+
 <a id="storyfeed-events"></a>
 
 ## Listening for Storyfeed Events
@@ -87,20 +91,18 @@ public function toFeedActivity(): ?PendingActivity
 | `Storyfeed\Events\ActivityPublished` | `$event->activity`: the published activity's facts |
 | `Storyfeed\Events\ActivityDeleted` | `$event->activity`: the deleted activity's facts |
 
-These events carry a snapshot of the facts, not a model, and are dispatched after the
-outermost transaction commits. [Queued Publishing](/deeper/queues) covers queued
-listeners on these events.
+`$event->activity` is a read-only copy of the activity, not an Eloquent model.
+Both are dispatched after the outermost transaction commits; a rollback
+dispatches nothing.
+
+A listener for these events can implement `ShouldQueue`. `Storyfeed::fake()`
+does not dispatch them, so use `Queue::fake()` alone when asserting that a
+listener was queued.
 
 ### Batch Events
 
 `Storyfeed\Events\BatchClosed` carries the closed
 [batch](/deeper/story-middleware-and-batching#batching-activities) and its activities in
-`$event->batch`. It also carries a snapshot and dispatches after the outermost
+`$event->batch`, as a read-only copy. It is also dispatched after the outermost
 transaction commits. Register a Laravel listener for this event to act when a
 batch closes.
-
-## Testing Event Publishing
-
-Use [the Storyfeed fake](/deeper/testing#testing-queued-and-event-publishing) to
-assert the activity your application event publishes. Keep that application
-event unfaked so its listener or `PublishesToFeed` integration can run.

@@ -27,20 +27,90 @@ invitee · accepted · invitation · project  coherent
 | Invitee · joined · invitee · — | The invitee is repeated as the object, and nothing says what they joined. |
 | Invitee · accepted · invitation · project | Who accepted, what they accepted, and which project it was for. |
 
-## Checking Role Values
+<span id="checking-role-values"></span>
 
-| Failure Mode | Inspect Each Field for |
-|---|---|
-| A bystander | someone who did not take part in this event |
-| A repetition | the same entity in two fields |
-| Noise | something that is not part of the event at all |
-
-A repetition can be right: someone editing their own profile is both actor and
+Each field should name something that took part in this event, once. A
+repetition can be right: someone editing their own profile is both actor and
 object.
+
+Record the coherent composition where the invitation is accepted:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/InvitationController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Invitation;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class InvitationController extends Controller
+{
+    public function accept(
+        Request $request,
+        Invitation $invitation,
+    ): RedirectResponse {
+        $invitation->update(['accepted_at' => now()]);
+
+        $invitation->project->members()->attach($request->user());
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('accept', $invitation)
+            ->to($invitation->project)
+            ->publish();
+
+        return to_route('projects.show', $invitation->project);
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/InvitationController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Invitation;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class InvitationController extends Controller
+{
+    public function accept(
+        Request $request,
+        Invitation $invitation,
+    ): RedirectResponse {
+        $invitation->update(['accepted_at' => now()]);
+
+        $invitation->project->members()->attach($request->user());
+
+        Storyfeed::record(
+            verb: 'accept',
+            object: $invitation,
+            actor: $request->user(),
+            target: $invitation->project,
+        );
+
+        return to_route('projects.show', $invitation->project);
+    }
+}
+```
+:::
+
+```php memo="routes/feed.php"
+use App\Models\Invitation;
+use Storyfeed\Facades\Story;
+
+Story::for(Invitation::class)->verb('accept')
+    ->headline(':actor accepted :object to :target');
+```
 
 <span id="coherence-and-completeness"></span>
 
-### Checking Completeness
+## Checking Completeness
 
 ```text
 user · moved · document · folder B
@@ -53,25 +123,16 @@ it.
 Read the stored values, not the headline. The headline can change later; the
 record stays.
 
+<span id="duplicate-occurrences"></span>
+
 ## Checking Multiple Activities
 
-Two mistakes look correct in any single row.
+Three autosaves recorded as three revisions each look coherent alone.
+[Choosing When to Publish](/cookbook/choosing-when-to-publish) covers where the
+call belongs, and [Repeating Activities](/cookbook/repeating-activities) covers
+keeping only the latest.
 
-### Duplicate Occurrences
-
-```text
-user · revised · proposal · —   coherent
-user · revised · proposal · —   coherent
-user · revised · proposal · —   coherent
-```
-
-Three autosaves, one revision as a reader would count it. Look at several rows
-for the verb, not one. [Choosing When to Publish](/cookbook/choosing-when-to-publish)
-covers where the call belongs, and
-[Repeating Activities](/cookbook/repeating-activities) covers collapsing the
-rest.
-
-### Unfilled Headline Tokens
+## Unfilled Headline Tokens
 
 ```text
 user · archived · document · —   coherent — nothing was aimed at
@@ -89,13 +150,4 @@ The fields are fine, but the template names a role no publisher fills, so the
 headline shows a fallback where a name should be.
 
 <span id="repeated-rows"></span>
-
-## Inspecting Repeated Roles
-
-```sh
-php artisan storyfeed:doctor --only=reflexive
-```
-
-The check lists activities with the same entity as `actor` and `object`,
-grouped by verb, at `info` severity. It does not find bystanders, noise, or
-repetition in other fields. Read the rows it lists back with the test above.
+<span id="inspecting-repeated-roles"></span>

@@ -1,7 +1,7 @@
 # Activity Content
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const withThread = { ...content.note,
@@ -15,7 +15,9 @@ const withKeyValue = { ...content.confirmed,
     { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
     { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
   ] }] } }
-const openInPlace = { ...content.photo, object: { ...content.photo.object, modal: true } }
+// The pack's own passage from a source: the oldest row whose object quotes one.
+const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
+const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withFile = { ...content.photo, object: { ...content.photo.object,
   body: [{ $body: 'Storyfeed/Body/File', $v: 1,
     name: content.photo.object.label, size: 512, mediaType: 'image/svg+xml' }] } }
@@ -23,19 +25,10 @@ const withFile = { ...content.photo, object: { ...content.photo.object,
 
 ## Introduction
 
-The headline is one sentence. Under it an activity can show the words someone
-wrote, the facts behind a change, or what a file is.
+The headline is one sentence, and often the whole row. Under it an activity
+can show the words someone wrote, the facts behind a change, or what a file is.
 
 <a id="headlines"></a>
-
-Most activities need nothing more. The sentence is the whole row:
-
-::: code-group
-<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
-:::
-
-<FeedExample :items="[scene.order]" />
 
 <a id="quoted-text"></a>
 
@@ -121,7 +114,9 @@ change what the row quotes.
 ## Adding Entity Bodies
 
 An entity's **body** carries structured content. The model supplies it in
-`toFeed()`, and your frontend chooses how to draw each body type.
+`toFeed()`, and your frontend chooses how to draw each body type. A body belongs
+to the model, so it shows wherever the entity appears, not only under one
+activity.
 
 ### Text and Labelled Values
 
@@ -185,8 +180,8 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="[withProse]" />
 
-The title names the order, so the body reads on its own wherever it appears. A body on the snapshot shows wherever the entity appears, so the model writes
-it, not the line that records an activity:
+The title names the order, so the body reads on its own wherever it appears.
+`KeyValue` holds labelled values:
 
 ::: code-group
 
@@ -253,9 +248,77 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="[withKeyValue]" />
 
-A missing value can carry a label for your renderer: one row with
-`KeyValue::missingAs()`, or the whole body with `->missing()`. A value that is
-compared rather than read, a reference or an address, is marked `verbatim`.
+`KeyValue::missingAs()` gives an empty value its own word. `KeyValue::verbatim()`
+marks a value to reproduce exactly as written, such as a reference number.
+
+<a id="passages-from-a-source"></a>
+
+### Passages From a Source
+
+`Excerpt` quotes a passage, and `from` says where it came from:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Article.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Article extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->title)
+            ->body(Excerpt::make()
+                ->text($this->lede)
+                ->from("Draft for {$this->publication->name}"));
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/Article.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Article extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->title,
+            body: Excerpt::make(
+                text: $this->lede,
+                from: "Draft for {$this->publication->name}",
+            ),
+        );
+    }
+}
+```
+
+:::
+
+<FeedExample :items="[withExcerpt]" />
+
+An excerpt is `truncated` by default: the passage is part of something longer.
+Pass `truncated(false)` when the text is complete.
 
 ### File Details
 
@@ -344,72 +407,6 @@ the [link resolver](/basics/feedable-models#the-link) at read time.
 They live in `Storyfeed\Body`. In the payload, each body names its type in
 `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`, so a
 renderer can choose how to draw it. A string passed as a body becomes a `Prose`
-body. An app may write its own body types.
+body.
 
 See [Custom Body Types](/deeper/body) for bodies resolved at read time, custom components and writing your own body types.
-
-## Linking to Content
-
-Entity links and images are resolved when the feed is read. [Feedable Models](/basics/feedable-models#resolving-links-and-images) covers the resolver.
-
-### Modal Links
-
-Some entities are better opened than navigated to, like a photograph or a
-document preview. `modal()` on the media marks the link, and the entity
-carries `modal: true`.
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(fn ($context, $media) => $media
-            ->url(route('photos.show', $context->routeKey()))
-            ->modal()
-        );
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedMedia;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(fn ($context) => FeedMedia::make(
-            url: route('photos.show', $context->routeKey()),
-            modal: true,
-        ));
-    }
-}
-```
-
-:::
-
-<FeedExample :items="[openInPlace]" />
-
-`modal` is a boolean in the payload. Opening a dialog is your renderer's job;
-the flag does not open a dialog by itself.

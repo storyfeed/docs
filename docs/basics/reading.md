@@ -58,9 +58,7 @@ group and how their headlines are declared.
 | `->log()` | timeline | one node per activity, no groups |
 
 Here is one week of activity across the apps, read three ways. Each feed below
-uses the same recorded facts. Groups expand to reveal their members; day
-headings keep activity on different days separate. In an application, follow
-[cursors](#pagination) to read the whole range; these examples draw the range together.
+uses the same recorded facts.
 
 ### Live
 
@@ -69,13 +67,8 @@ thing at one place. It is the default, so `->live()` can be left out.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Builders\ActivityBuilder;
 
-Storyfeed::feed()
-    ->query(fn (ActivityBuilder $query) => $query
-        ->whereBetween('published_at', [now()->subWeek(), now()]))
-    ->live()
-    ->get();
+Storyfeed::feed()->live()->get();
 ```
 
 <FeedExample :items="live" days height="520" />
@@ -84,24 +77,34 @@ Storyfeed::feed()
 
 Summary is a digest: one row per person per day, across verbs. A row names
 the person once, then what they did, one phrase per verb: "placed 3 orders,
-asked about a product and paid". After three phrases, the rest are counted.
-"Show all" reveals the row’s included members (up to 25 by default). People whose whole day is one identical
-thing share a row. An activity with no actor keeps its own row.
+asked about a product and paid". An activity with no actor keeps its own row.
+[Digest Rows](/reference/payload#digest-rows) lists what a row holds.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Builders\ActivityBuilder;
 
-Storyfeed::feed()
-    ->query(fn (ActivityBuilder $query) => $query
-        ->whereBetween('published_at', [now()->subWeek(), now()]))
-    ->summary()
-    ->get();
+Storyfeed::feed()->summary()->get();
 ```
 
 <FeedExample :items="summary" days height="520" />
 
-#### Choosing the Period
+### Log
+
+The log keeps every activity as its own row.
+
+```php memo="A controller, or wherever the feed is read"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->log()->get();
+```
+
+<FeedExample :items="log" days height="520" />
+
+The payload uses the same node shapes in every mode.
+
+<a id="choosing-the-period"></a>
+
+### Choosing the Summary Period
 
 `summary()` reads one row per person per day. Pass a `Period` for a longer
 digest:
@@ -123,27 +126,12 @@ Storyfeed::feed()->summary(Period::Week)->get();
 | `Period::Month` | calendar month |
 
 A string works too: `->summary('week')`. Periods are calendar periods in
-`app.timezone`, never sliding windows. For "the last hour", filter the read:
+`app.timezone`, never sliding windows. For "the last hour", filter the read
+with [`query()`](#custom-query-constraints):
 `->query(fn ($q) => $q->where('published_at', '>=', now()->subHour()))`.
 
-### Log
-
-The log keeps every activity as its own row.
-
-```php memo="A controller, or wherever the feed is read"
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Builders\ActivityBuilder;
-
-Storyfeed::feed()
-    ->query(fn (ActivityBuilder $query) => $query
-        ->whereBetween('published_at', [now()->subWeek(), now()]))
-    ->log()
-    ->get();
-```
-
-<FeedExample :items="log" days height="520" />
-
-The payload uses the same node shapes in every mode. Choose the mode for each surface.
+This period applies to `summary()` only. A verb's own grouping period is set
+where the verb is declared; see [Grouping Periods](/deeper/grouping-periods).
 
 ## Filtering Activities
 
@@ -166,19 +154,46 @@ Narrower filters:
 | Call | Returns |
 |---|---|
 | `->involving($model)` | every activity where the model is actor, object, target, context, origin, result or instrument |
-| `->context($shop)` | only activities recorded inside that container |
+| `->context($shop)` | only activities whose `context` role is that model |
 | `->actor($customer)` | only what that customer did |
 | `->object($order)` / `->target($shop)` | only that exact role |
-| `->verb('place')` | one verb |
 
 Scopes combine. A group counts only the activities inside the scope.
 
 > [!NOTE]
 > **The difference between involving and context**
 >
-> `context()` returns only activities recorded inside a container. "Product put on
-> the menu" records the product as the **object**, so a product's page scoped with
-> `context()` misses it. `involving()` finds it.
+> `context()` returns only activities whose `context` role is that model. "Product
+> put on the menu" records the product as the **object**, so a product's page
+> scoped with `context()` misses it. `involving()` finds it.
+> [Containers & Context](/deeper/context) covers the `context` role.
+
+<a id="filtering-verbs"></a>
+
+### Filtering by Verb
+
+`verb()` reads one verb. `only()` and `except()` take a list:
+
+```php memo="A controller, or wherever the feed is read"
+use App\Enums\OrderActivity;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->verb('place')->get();
+Storyfeed::feed()->only(['place', 'ready'])->get();
+Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get(); // matches ready, reprice and confirm
+Storyfeed::feed()->except(['note'])->get();
+```
+
+| Input | Behaviour |
+|---|---|
+| a list | verb strings and enum cases, mixed |
+| `re*` | a trailing `*` is a prefix wildcard |
+| an unrecognised verb | never throws; a verb nobody records matches nothing |
+| `only([])` or `except([])` | throws |
+| repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
+
+Groups count only the verbs the filter lets through.
+
 ### Custom Query Constraints
 
 `query()` gives you the activity query, for anything the filters can't
@@ -208,7 +223,7 @@ the builder.
 
 ### Conditional Constraints
 
-`FeedBuilder` is `Conditionable`:
+Use `when()` to apply a filter only when a value is present:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -225,7 +240,7 @@ Storyfeed::feed()
 Feeds are paginated with cursors, 30 rows to a page by default. Pass the
 previous page's `next_cursor` back to get the next one:
 
-### Reading the Next Page
+<a id="reading-the-next-page"></a>
 
 ```php memo="routes/web.php"
 use Illuminate\Http\Request;
@@ -247,7 +262,6 @@ Each response carries what the next request needs:
 | Key | What to Do With It |
 |---|---|
 | `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
-| `items` | the page's activities |
 | `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
 
 A cursor only works with the query that made it: the same scope, filters, mode

@@ -41,40 +41,35 @@ what it was done to, and the **target** is what it was aimed at.
 > **{{ role.customer.label }}** *(actor)* **placed** *(verb)* **{{ scene.order.object.label }}** *(object)*
 > with **{{ role.shop.label }}** *(target)*
 
-**{{ role.customer.label }}** is the party that initiated the **placing** of **{{ scene.order.object.label }}**, with **{{ role.shop.label }}**.
+<a id="different-ways-to-render-the-same-activity"></a>
 
-### Different Ways to Render the Same Activity
+### Different Headlines for the Same Activity
 
-The summary headline of the activity may take different forms, but the underlying fact is always the same.
+Your app chooses the headline; the fact stays the same. In each of these, the
+verb is still `place`. Only the headline's wording changes.
 
 <FeedExample :items="[sameFact[0]]">
 
-**{{ role.customer.label }}** *(actor)* **sent** *(verb)* **{{ scene.order.object.label }}** *(object)* to **{{ role.shop.label }}** *(target)*
+**{{ role.customer.label }}** *(actor)* **sent** *(headline)* **{{ scene.order.object.label }}** *(object)* to **{{ role.shop.label }}** *(target)*
 
 </FeedExample>
 
 <FeedExample :items="[sameFact[1]]">
 
-A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(verb)* to **{{ role.shop.label }}** *(target)* from **{{ role.customer.label }}** *(actor)*
+A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(headline)* to **{{ role.shop.label }}** *(target)* from **{{ role.customer.label }}** *(actor)*
 
 </FeedExample>
 
 <FeedExample :items="[sameFact[2]]">
 
-**{{ role.shop.label }}** *(target)* **received** *(verb)* **{{ scene.order.object.label }}** *(object)* from **{{ role.customer.label }}** *(actor)*
+**{{ role.shop.label }}** *(target)* **received** *(headline)* **{{ scene.order.object.label }}** *(object)* from **{{ role.customer.label }}** *(actor)*
 
 </FeedExample>
-
 
 <a id="examples-of-activities"></a>
+<a id="other-examples"></a>
 
-### Other Examples
-
-<FeedExample :items="[scene.question]">
-
-**{{ scene.question.actor.label }}** *(actor)* **asked** *(verb)* about **{{ scene.question.target.label }}** *(target)*
-
-</FeedExample>
+### Activities in Other Apps
 
 <FeedExample :items="[scene.otherApps.task]">
 
@@ -82,27 +77,9 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(verb)*
 
 </FeedExample>
 
-<FeedExample :items="[scene.otherApps.code]">
-
-**{{ scene.otherApps.code.actor.label }}** *(actor)* **merged** *(verb)* **{{ scene.otherApps.code.object.label }}** *(object)* into **{{ scene.otherApps.code.target.label }}** *(target)*
-
-</FeedExample>
-
-<FeedExample :items="[scene.otherApps.billing]">
-
-**{{ scene.otherApps.billing.actor.label }}** *(actor)* **marked** **{{ scene.otherApps.billing.object.label }}** *(object)* **paid** *(verb)*
-
-</FeedExample>
-
 <FeedExample :items="[scene.otherApps.signature]">
 
 **{{ scene.otherApps.signature.actor.label }}** *(actor)* **signed** *(verb)* **{{ scene.otherApps.signature.object.label }}** *(object)*
-
-</FeedExample>
-
-<FeedExample :items="[scene.otherApps.support]">
-
-**{{ scene.otherApps.support.actor.label }}** *(actor)* **assigned** *(verb)* **{{ scene.otherApps.support.object.label }}** *(object)* to **{{ scene.otherApps.support.target.label }}** *(target)*
 
 </FeedExample>
 
@@ -114,7 +91,7 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(verb)*
 
 ## Recording Activities
 
-After [installing Storyfeed](/guide/installation), record an activity where the order is placed:
+After [installing Storyfeed](/guide/installation), and with the models and headline from the [Quickstart](/guide/quickstart) in place, record an activity where the order is placed:
 
 ::: code-group
 <<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]

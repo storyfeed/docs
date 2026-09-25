@@ -2,23 +2,25 @@
 
 ## Introduction
 
+An activity's actor doesn't have to be a user. It can be a **party**, such as
+a payment provider, or **anonymous**.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const paid = scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay')
 const { anonymous } = scene.cookbook.actorless
 </script>
 
-An activity's actor doesn't have to be a user. It can be a **party**, such as
-a payment provider, or **anonymous**.
-
 |  | Means | In the Payload |
 |---|---|---|
-| **anonymous** | the actor is genuinely unknown | `actor: null` — actorless grammar or a renderer fallback |
+| **anonymous** | the actor is genuinely unknown | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
 | **party** | a named participant with no model in your app | an ordinary entity, `type: "storyfeed.party"`, real `label`, `url: null` |
 
 <a id="parties"></a>
 
 ## Recording a Party
+
+A string in any role names a party. Give the actor's name to `by()`:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
@@ -40,10 +42,8 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        $party = Storyfeed::party('Stripe');
-
         Storyfeed::activity()
-            ->by($party)
+            ->by('Stripe')
             ->action('pay', $order)
             ->publish();
 
@@ -71,12 +71,10 @@ class StripeWebhookController extends Controller
 
         $order->update(['paid_at' => now()]);
 
-        $party = Storyfeed::party('Stripe');
-
         Storyfeed::record(
             verb: 'pay',
             object: $order,
-            actor: $party,
+            actor: 'Stripe',
         );
 
         return response()->noContent();
@@ -86,6 +84,8 @@ class StripeWebhookController extends Controller
 :::
 
 <FeedExample :items="[paid]" />
+
+The first activity with a name creates its party; later ones reuse it.
 
 ### Using Parties in Other Roles
 
@@ -109,7 +109,7 @@ class DispatchOrderController extends Controller
 
         Storyfeed::activity()
             ->action('dispatch', $order)
-            ->to(Storyfeed::party('Front desk'))
+            ->to('Front desk')
             ->publish();
 
         return back();
@@ -135,7 +135,7 @@ class DispatchOrderController extends Controller
         Storyfeed::record(
             verb: 'dispatch',
             object: $order,
-            target: Storyfeed::party('Front desk'),
+            target: 'Front desk',
         );
 
         return back();
@@ -144,14 +144,15 @@ class DispatchOrderController extends Controller
 ```
 :::
 
-`party()` finds or creates the party by name.
+`Storyfeed::party('Front desk')` returns the party's model, finding or creating
+it by name, for code that needs the model rather than its name.
 
 <a id="declaring-parties"></a>
 
 ## Declaring Party Names
 
-A name given to `Storyfeed::actor()`, or to a verb's own `->actor()`, may come
-from outside your code. Declare the names an actor may take:
+Each distinct name is its own party, so a misspelt `'Strpie'` records a second
+party beside `'Stripe'`. Declare the names an actor may take:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -166,8 +167,11 @@ Once a list is declared, a name outside it:
 | `local`, `testing` | throws `UndeclaredParty`, naming the call and the list |
 | everywhere else | is ignored: the activity keeps the actor it would have had without the name, and `storyfeed:doctor` reports it |
 
-With no list, any name becomes a party. Names match by their slug, so
-`'Stripe'` and `'stripe'` are one party. `parties.strict` in
+The list applies to names given to
+[`Storyfeed::actor()`](/deeper/activity-scopes#sharing-an-actor) and to a
+[verb's own `->actor()`](/deeper/stories#request-based-actors); `->by()` does
+not check it. With no list, any name becomes a party. Names match by their
+slug, so `'Stripe'` and `'stripe'` are one party. `parties.strict` in
 `config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
 `local` and `testing` only.
 
@@ -180,12 +184,40 @@ With no list, any name becomes a party. Names match by their slug, so
     // e.g. 'System' — a name for otherwise-anonymous publishes
     'fallback' => null,
 ],
-
-// an invokable class; null = the authenticated user
-'actor_resolver' => null,
 ```
 
 With no fallback, an activity with no user is anonymous.
+
+<a id="resolving-the-default-actor"></a>
+
+### Resolving the Default Actor
+
+By default, an activity published without an actor records the authenticated
+user. When your app authenticates with another guard, set `actor_resolver` to
+an invokable class that returns the actor:
+
+```php memo="app/Support/ResolveFeedActor.php"
+<?php
+
+namespace App\Support;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class ResolveFeedActor
+{
+    public function __invoke(): ?Model
+    {
+        return Auth::guard('admin')->user() ?? Auth::user();
+    }
+}
+```
+
+```php memo="config/storyfeed.php"
+'actor_resolver' => App\Support\ResolveFeedActor::class,
+```
+
+When the resolver returns `null`, the fallback party applies.
 
 ## Recording Anonymous Activities
 
@@ -268,12 +300,3 @@ Story::for(Order::class)->verb('expire')
 
 Leaving `:actor` out of a headline only changes the sentence. A stored actor
 stays stored.
-
-<a id="scoped-attribution"></a>
-
-## Sharing an Actor
-
-Use `Storyfeed::actor($party, $callback)` to supply an actor to every activity
-published inside a callback. A declared party name such as `System` also works.
-[Activity Scopes](/deeper/activity-scopes#sharing-an-actor) covers the callback,
-its lifecycle and role precedence.

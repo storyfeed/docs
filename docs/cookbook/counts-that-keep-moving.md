@@ -4,6 +4,19 @@ A count you record in an activity, such as "3 replies", is stored as it was at
 publish and never recomputed. If the count can still change, store nothing and
 look it up when the feed is read.
 
+<span id="choosing-counts-to-resolve"></span>
+
+## Choosing Fixed or Live Counts
+
+Any count about something that keeps changing after the activity: replies,
+unread items, "3 photos waiting", members of an open collection. Ask:
+
+> **Can anything on the surface this renders on change it?**
+
+If yes, resolve it when the feed is read. A feed that only displays
+discussions can record the count, but the day it gains a reply box every
+stored count goes stale.
+
 <span id="recording-a-count"></span>
 
 <script setup>
@@ -126,57 +139,68 @@ FeedThread::make(text: $excerpt, replies: null);
 
 ### Loading Counts for the Page
 
-Count the whole page in one query. One query per row is an N+1:
+Read the page, count every discussion on it in one query, and write each count
+into its node. One query per row is an N+1:
 
-```php memo="Where the page is assembled: a controller, before the nodes are rendered"
+```php memo="app/Http/Controllers/DiscussionFeedController.php"
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\Comment;
+use Illuminate\Http\JsonResponse;
+use Storyfeed\Facades\Storyfeed;
 
-$counts = Comment::query()
-    ->selectRaw('discussion_id, count(*) as total')
-    ->whereIn('discussion_id', $ids)      // every discussion on the page
-    ->groupBy('discussion_id')
-    ->pluck('total', 'discussion_id');
+class DiscussionFeedController extends Controller
+{
+    public function __invoke(): JsonResponse
+    {
+        $feed = Storyfeed::feed()->get()->toArray();
+
+        $ids = collect($feed['items'])
+            ->where('kind', 'activity')
+            ->whereNotNull('thread')
+            ->pluck('object.id');
+
+        $counts = Comment::query()
+            ->selectRaw('discussion_id, count(*) as total')
+            ->whereIn('discussion_id', $ids)
+            ->groupBy('discussion_id')
+            ->pluck('total', 'discussion_id');
+
+        foreach ($feed['items'] as $index => $node) {
+            if ($node['kind'] !== 'activity' || $node['thread'] === null) {
+                continue;
+            }
+
+            $feed['items'][$index]['thread']['replies'] = $node['verb'] === 'settle'
+                ? null
+                : $counts[$node['object']['id']] ?? null;
+        }
+
+        return response()->json($feed);
+    }
+}
 ```
 
 Do this where the page is assembled, not inside a row's renderer, which cannot
 see the other rows.
 
-### Selecting Which Counts to Display
-
-A settled discussion's reply count may not be useful on this surface:
-
-```php memo="Where the page is assembled, for each node"
-$node['thread']['replies'] = $node['verb'] === 'settle'
-    ? null
-    : $counts[$node['object']['id']] ?? null;
-```
-
 <FeedExample :items="[live]" />
 
 After a fourth reply, the page-wide lookup supplies four for the same activity.
 
-Set `null` explicitly. A backfill or a hand-repaired row can put a stored
-count back, and it would show in place of the live one.
+### Selecting Which Counts to Display
 
-<span id="choosing-counts-to-resolve"></span>
+A settled discussion's reply count may not be useful on this surface, so the
+loop sets `null` for the `settle` verb.
 
-## Choosing Fixed or Live Counts
-
-Any count about something that keeps changing after the activity: replies,
-unread items, "3 photos waiting", members of an open collection. Ask:
-
-> **Can anything on the surface this renders on change it?**
-
-If yes, resolve it when the feed is read. A feed that only displays
-discussions can record the count, but the day it gains a reply box every
-stored count goes stale.
+Set `null` explicitly rather than skipping the node. A backfill or a
+hand-repaired row can put a stored count back, and it would show in place of
+the live one.
 
 <span id="healing-recorded-counts"></span>
 
 ## Handling Previously Recorded Counts
 
-Override previously stored counts while assembling the response, using the same
-page-wide lookup. Set `null` explicitly for verbs that should display no count.
-
-[Healing a Feed](/deeper/healing) retires activities whose source is permanently
-gone. It does not replace activities or update their stored counts.
+The same loop overrides counts that older activities stored at publish.

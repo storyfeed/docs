@@ -2,6 +2,12 @@
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
+
+// What these three steps produce: no links and no icon are defined yet, so
+// every url and the glyph are null.
+const unlinked = (entity) => entity && { ...entity, url: null, media: null }
+const order = { ...scene.order, glyph: null, glyph_intent: null,
+  actor: unlinked(scene.order.actor), object: unlinked(scene.order.object), target: unlinked(scene.order.target) }
 </script>
 
 ## Introduction
@@ -64,11 +70,13 @@ class Order extends Model implements Feedable
 ```
 :::
 
-`Shop` and `User` get the same treatment, each returning its own label.
+`Shop` and `User` implement `Feedable` and use `InteractsWithFeed` too. Without a `toFeed()` method, each gets a [guessed label](/basics/feedable-models#default-labels), such as its `name` attribute.
 
 <a id="giving-the-verb-a-headline"></a>
 
 ## Defining a Headline
+
+The installer created `routes/feed.php`. Add the headline there:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -87,7 +95,7 @@ Story::for(Order::class)->verb('place')
 
 On the feed:
 
-<FeedExample :items="[scene.order]" />
+<FeedExample :items="[order]" />
 
 ## Reading the Feed
 
@@ -104,12 +112,11 @@ Route::get('/', function () {
 
 <a id="displaying-the-payload"></a>
 
-With the demo records, links and glyph configured, the response looks like this:
+The response looks like this:
 
-<FeedExample payload :items="[scene.order]" />
+<FeedExample payload :items="[order]" />
 
-## Rendering the Feed
-
+<a id="rendering-the-feed"></a>
 <a id="rendered-feed"></a>
 <a id="rendering-with-vue"></a>
 

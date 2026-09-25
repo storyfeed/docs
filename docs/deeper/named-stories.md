@@ -3,7 +3,10 @@
 ## Introduction
 
 A named story gives a declaration a handle you can use when publishing.
-The name selects the verb and checks the object's type.
+The name selects the verb and checks the object's type, so a misspelt name or
+an object of the wrong type throws instead of recording an activity, and
+[static analysis](#checking-names-with-static-analysis) can check the names
+in your code.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -57,19 +60,9 @@ class PlaceOrderController extends Controller
 
 <FeedExample :items="[placed]" />
 
-`story()` takes a name, just as Laravel's `route()` does. Its facade equivalent
-is `Storyfeed::route()`, corresponding to Laravel's `URL::route()`:
-
-```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
-use Storyfeed\Facades\Storyfeed;
-
-$activity = Storyfeed::route('order.place', $order)
-    ->by($request->user())
-    ->to($order->shop)
-    ->publish();
-```
-
-<FeedExample :items="[placed]" />
+`story()` takes a name, just as Laravel's `route()` does.
+`Storyfeed::route('order.place', $order)` is its facade equivalent, as
+`URL::route()` is for `route()`.
 
 An unknown name throws `Story [x] not defined.` A supplied object of another
 morph type throws `StoryObjectMismatch`. Neither call treats its first argument

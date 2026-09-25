@@ -29,9 +29,21 @@ another file. With `definitions` set to `false`, no file is created.
 
 ### Stories
 
-| Command | Does |
+`make:story` creates a [Story class](/deeper/stories). With no arguments, it
+asks for the class name and shape. A name alone writes one activity,
+constructed with its data and published. The command prints the binding for
+`routes/feed.php` without editing it.
+
+| Option | Effect |
 |---|---|
-| `make:story` | creates a [Story class](/deeper/stories). With no arguments, asks for its name and shape. A name alone writes one activity, constructed with its data and published. `--model=Order` or `--resource` selects a resource class; `--invokable` selects a single verb's `__invoke()` declaration. `--verb=` and `--object=` supply a single activity or verb's binding. `--model` takes precedence over `--invokable`. `--axes=` selects comma-separated grouping axes to pre-fill; `--force` overwrites an existing story. The command prints the binding for `routes/feed.php` without editing it. `--from-doctor` generates classes for recorded type/verb pairs without headlines; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
+| `--model=Order` | a resource class for that model. Takes precedence over `--invokable` |
+| `--resource` | a resource class: one method per verb |
+| `--invokable` | a single verb's `__invoke()` declaration |
+| `--verb=` | the stored verb |
+| `--object=` | the object model or morph alias, or `*` for none |
+| `--axes=` | comma-separated grouping axes to pre-fill; default, every axis that applies |
+| `--from-doctor` | one class per recorded type and verb without a headline; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
+| `--force` | overwrites an existing story |
 
 ### Feeds
 
@@ -44,7 +56,7 @@ another file. With `definitions` set to `false`, no file is created.
 | Command | Does |
 |---|---|
 | `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
-| `storyfeed:verbs` | lists registered verbs, AS2 types, grammar/icon coverage. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
+| `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
 
 <span id="manifest"></span>
@@ -68,7 +80,7 @@ service provider.
 
 | Command | Does |
 |---|---|
-| `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
+| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
 
 See [Diagnosing Your Feed](/deeper/diagnosing) for running it, and [Doctor Checks](/reference/doctor) for every check.
 
@@ -103,7 +115,7 @@ runs, Storyfeed schedules `storyfeed:curate` hourly on its own; set
 
 | Command | Does | Suggested |
 |---|---|---|
-| `storyfeed:trickle` | keeps stored entity snapshots current with `toFeed()`, marks models deleted without a model event (such as a query builder delete) as deleted, restores those whose model is back, and counts activities with a role that no longer resolves. `--limit=`; `--prune` deletes those activities instead | every minute |
+| `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` deletes activities with a role that no longer resolves | every minute |
 | `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
 | `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
 

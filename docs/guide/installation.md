@@ -19,7 +19,6 @@ composer require storyfeed/storyfeed:dev-main
 ```
 
 The service provider registers through package discovery.
-Commit `composer.lock` to pin the revision.
 
 ### Running the Installer
 
@@ -51,11 +50,3 @@ The installer creates `config/storyfeed.php`. Every setting has a default; see [
 <a id="scheduling-maintenance"></a>
 
 The feed works without a scheduler; once it is live, Storyfeed has [maintenance commands](/reference/commands#scheduling-maintenance) worth scheduling.
-
-### Publishing Configuration
-
-You may publish the configuration separately:
-
-```bash
-php artisan vendor:publish --tag="storyfeed-config"
-```

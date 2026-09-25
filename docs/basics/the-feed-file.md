@@ -2,28 +2,28 @@
 
 `routes/feed.php` declares what each verb's activities say: the headline, the
 icon, and how a group of them reads, the way `routes/web.php` declares your
-routes.
+routes. The [installer](/guide/installation#running-the-installer) creates it.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 
 // Presentation variants of catalogue facts, as different feed definitions render them.
 const withoutIcon = { ...scene.order, glyph: null }
-const complete = scene.basics.feedFile.completed
+const complete = { ...scene.basics.feedFile.completed, glyph: 'receipt' }
+const completeWithIntent = { ...complete, glyph_intent: 'success' }
 const completeWithoutIcon = { ...complete, glyph: null }
 const placedAtCounter = { ...scene.order, target: null, headline_template: ':actor placed :object' }
 const rushed = { ...scene.order, headline_template: ':actor rushed :object to :target', data: { rush: true } }
 const created = scene.basics.feedFile.created
+// An order verb with no definition of its own, read through the order fallback.
+const ready = scene.basics.activityContent.ready
+const fellBack = { ...ready, headline_template: ':actor updated :object', glyph: null,
+  object: { ...ready.object, body: null } }
 </script>
 
 ## Basic Definitions
 
 <a id="loading-the-feed-file"></a>
-
-### The Feed File
-
-The [installer](/guide/installation#running-the-installer) creates `routes/feed.php`. Define your activity headlines in this file.
-
 <a id="registering-a-headline"></a>
 
 ### Defining a Headline
@@ -40,9 +40,6 @@ Story::for(Order::class)
 ```
 
 <FeedExample :items="[withoutIcon]" />
-
-Storyfeed loads `routes/feed.php` once every service provider has booted, so
-your morph map is already in place.
 
 <a id="publishing-a-verb"></a>
 
@@ -119,8 +116,9 @@ Story::for(Order::class)
 
 <FeedExample :items="[rushed, scene.order]" />
 
-The closure runs when the feed is read. Its tokens become links, like any other
-template.
+The closure runs when the feed is read. When it returns role tokens, they
+become links, like any other template. Text with no role tokens prints as
+written.
 
 <a id="adding-an-icon"></a>
 
@@ -130,22 +128,22 @@ template.
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
-Story::for(Order::class)->group(function () {
-    Story::verb('place')
-        ->headline(':actor placed :object with :target')
-        ->icon('shopping-bag');
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag');
 
-    Story::verb('complete')
-        ->headline(':actor completed :object')
-        ->icon('receipt');
-});
-
-Story::verb('publish')->icon('chef-hat');   // any object type
+Story::for(Order::class)
+    ->verb('complete')
+    ->headline(':actor completed :object')
+    ->icon('receipt');
 ```
 
 <FeedExample :items="[complete, scene.order]" />
 
-`intent()` names what the icon means, in your app's own word:
+`intent()` names what the icon means, in your app's own word, such as
+`success` or `danger`. It arrives in the payload as `glyph_intent`, beside the
+icon:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -153,6 +151,8 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
 ```
+
+<FeedExample :items="[completeWithIntent]" expanded />
 
 [Rendering](/basics/rendering#glyphs-and-intents) covers drawing it.
 
@@ -222,7 +222,17 @@ The most specific definition wins:
 | `Story::verb('place')` | that verb on any object type |
 | `Story::fallback()` | everything with no more specific entry |
 
-The same order applies to headlines and to intents.
+The same order applies to headlines and to intents. A fallback gives every
+order verb without its own definition one headline:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->fallback()->headline(':actor updated :object');
+```
+
+<FeedExample :items="[fellBack]" />
 
 
 <a id="headlines-for-a-group"></a>
@@ -263,4 +273,4 @@ definitions. To remove it:
 php artisan storyfeed:clear
 ```
 
-Closure headlines are serialised into the cache. A closure that cannot be serialised fails the command and identifies its source location. Keep verb vocabulary registration in a service provider; the feed file contains story definitions. See [Commands](/reference/commands#manifest).
+Closure headlines are serialised into the cache. A closure that cannot be serialised fails the command and identifies its source location. See [Commands](/reference/commands#manifest).

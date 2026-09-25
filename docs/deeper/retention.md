@@ -5,8 +5,6 @@
 A verb can say how long its activities are worth keeping. `storyfeed:prune`
 deletes them once they are older, along with anything only they referred to.
 
-[Keeping the Latest Activity](/deeper/keeping-the-latest-activity) keeps only the latest matching row for a verb.
-
 <script setup>
 import { scene, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
 const views = scene.deeper.retention.views
@@ -117,8 +115,8 @@ After it, with three of the five views past their window:
 A group whose members are all pruned is gone. A run that changes a group moves
 the `sync_token`, so a client paging an old cursor starts again from the head.
 
-The run also deletes the snapshots and tombstones that only pruned activities
-referred to, so a pruned entity's label and data leave the database too.
+The run also deletes what Storyfeed stored about entities that only pruned
+activities named, so a pruned entity's label and data leave the database too.
 Nothing records what a run removed.
 
 > [!NOTE]

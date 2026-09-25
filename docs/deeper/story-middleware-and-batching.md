@@ -145,7 +145,17 @@ Story::middleware('review')->group(function () {
 
 The `place` activity receives the review data; `complete` skips that middleware.
 The built-in `default` group runs first, followed by enclosing groups and the
-verb's own middleware. Identical resolved strings run once.
+verb's own middleware. Identical resolved strings run once. The `default` group
+holds the `batch` middleware; redefine it to run your own middleware for every
+verb:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Facades\Story;
+
+Story::middlewareGroup('default', ['batch', 'reviewed']);
+```
+
+A queued activity runs its story middleware on the worker.
 
 ### Excluding Middleware
 
@@ -216,8 +226,9 @@ The activity remains in the feed. It does not affect the actor's open batch.
 `unbatched()` removes batch middleware, including a window inherited from a group.
 
 <a id="preserving-an-actor-or-context"></a>
+<a id="preserving-actor-and-context-values"></a>
 
-## Preserving Actor and Context Values
+## Supplying Default Roles
 
 ```php memo="app/StoryMiddleware/UseServiceActor.php"
 <?php

@@ -170,17 +170,15 @@ to a different URL on each feed. The name comes from the feed registry, never
 from the request. A shop feed can carry a signed operational link that the
 customer feed never shows.
 
-A node does not say which feed produced it, so anything that stores or forwards
-a payload must key it by feed. A cache keyed only by cursor, a digest that
-reuses one feed's page for another audience, or a renderer that memoises
-entities across feeds by `type:id` shows one feed's links to another feed's
-audience.
+A node does not say which feed produced it, so key any cache of a payload by
+feed name.
 
 ### Degraded Entities
 
 An entity with no snapshot is not omitted, and neither is its activity. It
 arrives with `label: null`, `url: null` and `media: null`, because the resolver
-is not called without a snapshot. A throwing `feedMedia()` gives `url: null`
+is not called without a snapshot. [`storyfeed:trickle`](/reference/commands#scheduled)
+writes missing snapshots. A throwing `feedMedia()` gives `url: null`
 and `media: null`, and the exception is reported server-side.
 
 <span id="activity-node"></span>
@@ -223,15 +221,48 @@ and `media: null`, and the exception is reported server-side.
 }
 ```
 
-| Key | Holds |
-|---|---|
-| `tombstoned` | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
-| `redundant` | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
-| `missing_headline_template` | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
-| `missing_headline` | the pre-rendered fallback for a closure-authored `->missingHeadline()`, as `headline` is for `headline_template`; otherwise `null` |
+| Key | Type | Holds |
+|---|---|---|
+| `kind` | string | always `"activity"` |
+| `id` | string | the activity's stable, opaque id |
+| `verb` | string | the recorded verb |
+| `published_at` | string | ISO 8601 with microseconds |
+| `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
+| `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
+| `glyph` | string or null | the icon token; see [Glyphs](#glyphs) |
+| `glyph_intent` | string or null | what the glyph means; see [Glyphs](#glyphs) |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
+| `data` | map or null | what the recording call passed to `data()` |
+| `thread` | object or null | the utterance the activity is about; see [Threads](#threads) |
+| `change` | object or null | before and after values; see [Changes](#changes) |
+| `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
+| `redundant` | boolean | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
+| `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
+| `missing_headline` | string or null | the finished text when `->missingHeadline()` is a closure that returns text without role tokens, as `headline` is for `headline_template`; otherwise `null` |
 
 `redundant` means the activity's news is gone while the activity is still true
 as history. A renderer may show either reading.
+
+### Threads
+
+`thread` is set with `FeedThread` when the activity is about something someone
+said:
+
+| Key | Type | Holds |
+|---|---|---|
+| `text` | string | the utterance to show, as recorded; Storyfeed does not shorten it |
+| `by` | string or null | its author, when the headline does not already name them |
+| `kind` | string or null | the app's word for the act, such as `"replied"` |
+| `replies` | int or null | the size of the conversation, or `null` when not counted |
+| `truncated` | boolean | `true` when the app shortened `text` |
+
+### Changes
+
+`change` is set with `FeedChange`:
+
+| Key | Type | Holds |
+|---|---|---|
+| `changes` | list | one entry per changed field: `label` (string), `before` and `after` (each a string or `null`) |
 
 <span id="group-node"></span>
 
@@ -288,17 +319,28 @@ as history. A renderer may show either reading.
 }
 ```
 
-| Key | Holds |
-|---|---|
-| `sample` | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
-| `distinct` | per role, the true count of distinct entities across all members |
-| `tombstoned` | the roles with at least one tombstone among their distinct entities |
-| `redundant` | `true` only when every member is redundant |
-| `distinct_tombstoned` | per role, how many of the `distinct` entities are tombstones |
+| Key | Type | Holds |
+|---|---|---|
+| `kind` | string | always `"group"` |
+| `id` | string | `grp_` and a hash; stable within its window |
+| `axis` | string | the axis that grouped the members, or `"summary"` on a [digest row](#digest-rows). Render an unknown value as a generic group |
+| `count` | int | the true number of members |
+| `verb` | string or null | the members' verb; `null` on a digest row spanning several verbs |
+| `published_at` | string | the newest member's; the sort key |
+| `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
+| `glyph`, `glyph_intent` | string or null | as on an activity node; `null` when `verb` is |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the role's one entity, when every member shares it; see below |
+| `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
+| `distinct` | map of ints | per role, the true count of distinct entities across all members |
+| `children` | list | member activity nodes, newest first, at most `grouping.children_limit` |
+| `children_truncated` | boolean | `true` when `count` is more than the `children` included |
+| `tombstoned` | list | the roles with at least one tombstone among their distinct entities |
+| `redundant` | boolean | `true` only when every member is redundant |
+| `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones |
 
-Each singular role key is an entity only when the axis pins the role, its
-sample list has exactly one entry, and its distinct count is exactly one.
-Otherwise it is `null`. Each plural role has a limited sample list
+Each singular role key is an entity only when the axis groups on that role, so
+every member shares it, its sample list has exactly one entry, and its
+distinct count is exactly one. Otherwise it is `null`. Each plural role has a limited sample list
 and a distinct count; an absent role has `[]` and `0`.
 
 A renderer can rely on the group node's shape, but not on which groups appear:
@@ -321,7 +363,7 @@ Each entry in `phrases` carries its own fields:
 | Key | Holds |
 |---|---|
 | `verb`, `count` | the verb and its total activity count |
-| `headline_template`, `headline` | grammar from `summary.{type}.{verb}` or `summary.{verb}`; both nullable |
+| `headline_template`, `headline` | the headline declared as `summary.{type}.{verb}` or `summary.{verb}`; both nullable |
 | `glyph`, `glyph_intent` | presentation for this phrase's verb; both nullable |
 | `sample`, `distinct` | sampled entities and true distinct counts per plural role, as on the group |
 
@@ -341,38 +383,42 @@ of omitted verbs. `children` is independently capped by
 
 ### Glyphs
 
-`glyph` is a token naming an icon — the app's own name, resolved from the icon
-registry. The package ships no icon set, and an unresolved pair is `null`.
+`glyph` is a token naming an icon, in the app's own words, declared with
+[`->icon()`](/basics/the-feed-file#adding-an-icon). The package ships no icon
+set, and a type and verb with no icon is `null`.
 
-`glyph_intent` is a second token beside it, from a registry of its own, saying
+`glyph_intent` is a second token beside it, declared with `->intent()`, saying
 what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
 Like the verb it is free-form: no vocabulary is shipped or validated, and any
 string passes through. It is `null` for every pair with no registered intent.
 See [what a glyph means](/basics/rendering#glyphs-and-intents).
 
-Both resolve on the same ladder and independently of each other:
-`type.verb`, `type.*`, `*.verb`, `*.*`.
+Each is declared per model type and verb, with `*` fallbacks, and the two are
+looked up independently in this order: `type.verb`, `type.*`, `*.verb`, `*.*`.
 
 The Activity Streams 2.0 document carries neither; its `icon` is the entity
 image.
 
 ### Headlines
 
-Render from `headline_template`: tokenize it and substitute. `headline` is the
-pre-rendered fallback for closure-authored grammar, and is null whenever the
-template is non-null, so a test should not assert a non-null `headline`.
+Render from `headline_template`: tokenize it and substitute. `headline` is
+finished text from a closure headline, and is null whenever the template is
+non-null. On an activity node, a closure that returns role tokens fills
+`headline_template`, and one that returns text with no role tokens fills
+`headline`. On a group node, a closure always fills `headline`. A test should
+not assert a non-null `headline` for a closure that returns tokens.
 
 Both are null on a group node when no sentence is true of the whole group.
 Renderers **must** handle it; see
 [Rendering](/basics/rendering#groups-without-headlines).
 
 Token availability per axis is in
-[Aggregation](/deeper/aggregation). Authored aggregate grammar uses the axis’s
-pinned roles; the [singular fallback](/deeper/aggregation#group-headline-tokens) can also
+[Aggregation](/deeper/aggregation). A group headline can use the singular
+tokens of the roles its axis groups on; the [singular fallback](/deeper/aggregation#group-headline-tokens) can also
 keep a role token when the group contains exactly one distinct entity.
 
-Noun substitution can change the emitted template even for the same grammar
-key, so cache rendered headlines per node, not per grammar key.
+Noun substitution can change the emitted template even for the same headline
+definition, so cache rendered headlines per node, not per definition.
 
 ## Pagination and Synchronization
 

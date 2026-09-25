@@ -91,9 +91,9 @@ digest row. A composite is never replaced by
 
 ## Defining Composite Headlines
 
-A composite needs two headlines: one for the group, and one for its parent
-activity. The parent has **no object of its own**, so no object type's
-headline reaches it.
+A composite takes two headlines: one for the group of tasks, and one for the
+composite activity itself. Neither is about a single task, so both go on the
+verb:
 
 ```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
@@ -101,12 +101,9 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::verb('complete')->grouped(fn (GroupBuilder $group) => $group->composite(
     ':actor completed :count tasks', // the group
-    ':actor completed tasks',        // the parent activity
+    ':actor completed tasks',        // the activity itself; required
 ));
 ```
-
-A composite grouping in `routes/feed.php` or a Story class without the
-parent's headline is an error when stories compile.
 
 <FeedExample :items="[authored]" />
 
@@ -135,50 +132,29 @@ class Task extends Model implements Feedable, Bundleable
 }
 ```
 
+For a model you don't own, register its morph alias instead:
+
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::bundleables(['task']);
 ```
 
-```php memo="config/storyfeed.php"
-'grouping' => [
-    'composite' => [
-        'auto' => true,
-        'min_objects' => 2,   // fewest distinct objects that make a composite
-    ],
-],
-```
+Auto-bundling is on by default. These `config/storyfeed.php` keys control it:
 
-Bundling happens when the actor's **batch** closes.
+| Key | Default | Meaning |
+|---|---|---|
+| `grouping.composite.auto` | `true` | bundle bursts of `Bundleable` activities |
+| `grouping.composite.min_objects` | `2` | fewest different objects that make a composite |
 
 <a id="batches"></a>
 
 ### Closing Batches
 
-A batch is a burst of activity by one actor. Its quiet window defaults to `grouping.batch.quiet_minutes`; the verb can
-declare its own window with [`batched(within:)`](/deeper/story-middleware-and-batching#batch-windows). Each publish by the actor
-starts the quiet window again.
-
-```php memo="config/storyfeed.php"
-'grouping' => [
-    'batch' => [
-        'enabled' => true,
-        'quiet_minutes' => 10,
-    ],
-],
-```
-
-To close batches on time, schedule the command. Otherwise a batch closes at
-the actor's next publish.
-
-```php memo="routes/console.php"
-use Illuminate\Support\Facades\Schedule;
-
-Schedule::command('storyfeed:close-batches')->everyFiveMinutes();
-```
-
-Closing fires `BatchClosed`, which you can listen to for digest emails.
+Bundling happens when the actor's [batch](/deeper/story-middleware-and-batching#batch-windows)
+closes, so batching must stay enabled. A batch closes at the actor's next
+publish after its window, or on time when
+[`storyfeed:close-batches` is scheduled](/reference/commands#scheduling-maintenance).
 
 <a id="backfilling"></a>
 
@@ -191,5 +167,6 @@ php artisan storyfeed:bundle
 php artisan storyfeed:bundle --window=30   # only batches closed in the last 30 days
 ```
 
-It is safe to run twice. Run it when few people are reading, because it
-regroups past days.
+It is safe to run twice. When it creates a composite, it changes the
+`sync_token`, and clients must discard their accumulated nodes and refetch
+from the head. See the [sync token rule](/reference/payload#sync-token).

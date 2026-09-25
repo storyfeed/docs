@@ -36,7 +36,7 @@ it finds.
 | `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) none of their activities carry, so the placeholder shows as text. `:actor` over activities that are all anonymous is info | error · info |
 | `actorless` | anonymous activities whose verb has no anonymous headline | info |
 | `reflexive` | activities naming the same entity as actor and object | info |
-| `verbs` | recorded verbs you never registered (usually typos), registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
+| `verbs` | recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
 | `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
 | `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
 | `removals` | recorded verbs that read like removals (`cancel`, `trash`) but are treated as being about their object. See [Deleted Models](#deleted-models) | info |
@@ -56,15 +56,33 @@ it finds.
 | `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
 | `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
 | `grouping` | activities with no grouping rows, or grouping rows never curated. See [Grouping](#grouping) | warning |
-| `participants` | activities missing from the index `involving()` reads. `storyfeed:participants` backfills it | warning |
-| `dangling` | grouping and participant rows whose activity no longer exists, left by a bulk hard-delete | info |
+| `participants` | activities `involving()` cannot find. `storyfeed:participants` backfills them | warning |
+| `dangling` | rows left behind when activities were deleted by a query. They change nothing a feed shows | info |
 | `claims` | composite members still held by a deleted composite. `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
-| `freshness` | nothing published for `doctor.stale_after` days: a forgotten feed, not a broken one | warning · info |
+| `freshness` | nothing published for `doctor.stale_after` days | warning · info |
 | `maintenance` | the last completed `storyfeed:curate` and `storyfeed:trickle` runs, and what they did | info |
 
 <a id="interpreting-findings"></a>
 
 ## Findings
+
+### Group Reachability
+
+| Finding | Severity | Means |
+|---|---|---|
+| `aggregates.missing` | error | activities of a type and verb group, have no group headline, and a registered feed reads that kind of group. Its groups fall back to the single headline where that reads true, and otherwise arrive with no headline |
+| `aggregates.latent` | info | the same, but no registered feed reads that kind of group. `--stubs` writes nothing for it, and `--fail-on=warning` ignores it |
+| `aggregates.reachability_unknown` | info | no feeds are registered, or one threw while the doctor read it, so every gap reports as `aggregates.missing` |
+
+Register your feeds so this check can tell a real gap from a latent one.
+
+### Definitions
+
+| Finding | Severity | Means |
+|---|---|---|
+| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/basics/verbs) |
+| `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
+| `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
 
 ### Feed Coverage
 
@@ -98,42 +116,6 @@ and a call site can still narrow it. A verb only this feed covers reports as
 declaration cannot both filter and be `unrestricted()`, and `verb()` counts as
 a filter.
 
-#### Group Reachability
-
-| Finding | Severity | Means |
-|---|---|---|
-| `aggregates.missing` | error | activities of a type and verb group, have no group headline, and a registered feed reads that kind of group. Its groups fall back to the single headline where that reads true, and otherwise arrive with no headline |
-| `aggregates.latent` | info | the same, but no registered feed reads that kind of group. `--stubs` writes nothing for it, and `--fail-on=warning` ignores it |
-| `aggregates.reachability_unknown` | info | no feeds are registered, or one threw while the doctor read it, so every gap reports as `aggregates.missing` |
-
-Register your feeds so this check can tell a real gap from a latent one.
-
-### Grouping
-
-| Finding | Severity | Means |
-|---|---|---|
-| `grouping.ungrouped` | warning | activities have no grouping rows, so they can only show one by one. Run `storyfeed:curate --rehash` |
-| `grouping.uncurated` | warning | activities have grouping rows that were never curated, so they cannot join the group they belong to. Run `storyfeed:curate` |
-
-### Definitions
-
-| Finding | Severity | Means |
-|---|---|---|
-| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/basics/verbs) |
-| `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
-| `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
-
-### Deleted Models
-
-| Finding | Severity | Means |
-|---|---|---|
-| `removals.unclassified` | info | a recorded verb reads like a removal, but its activities are treated as being about their object, so they go when the object is deleted. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
-| `labels.guessed` | info | the listed models' labels are guessed. Fine when the guess reads well; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable#models-you-don-t-own) |
-| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events never fire. Says whether its tombstone is written at the delete (a class in the morph map, or registered with `Storyfeed::feedable()`) or waits for `storyfeed:trickle`. An update through the parent waits for the trickle either way |
-
-A model's label is also what its tombstone keeps under `keepLabel()`.
-[Deleted Models](/deeper/deleted-models) covers both.
-
 ### Parties
 
 | Finding | Severity | Means |
@@ -144,25 +126,16 @@ A model's label is also what its tombstone keeps under `keepLabel()`.
 | `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
 | `parties.used` | info | a party, and how many activities it has |
 
-### Retention
+### Deleted Models
 
 | Finding | Severity | Means |
 |---|---|---|
-| `retention.backlog` | warning | a verb has activities more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them; `storyfeed:prune --pretend` shows the run first. Usually a window just declared or shortened, or a prune nothing schedules |
-| `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it. A verb declared `->keepForever()` is never named |
+| `removals.unclassified` | info | a recorded verb reads like a removal, but its activities are treated as being about their object, so they become [redundant](/deeper/deleted-models#redundant-roles) when the object is deleted. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
+| `labels.guessed` | info | the listed models' labels are guessed. Fine when the guess reads well; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable#models-you-don-t-own) |
+| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events never fire. Says whether its tombstone is written at the delete (a class in the morph map, or registered with `Storyfeed::feedable()`) or waits for `storyfeed:trickle`. An update through the parent waits for the trickle either way |
 
-### Role Constraints
-
-| Finding | Severity | Means |
-|---|---|---|
-| `role_constraints.violated` | warning | stored activities have role types outside the [declared constraints](/deeper/constraining-roles). Empty roles and deleted models are skipped. The activities stay in the feed |
-
-### Actions
-
-| Finding | Severity | Means |
-|---|---|---|
-| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
-| `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade instead of taking `Illuminate\Http\Request $request`. It reads the request only when stories are compiled, never when an activity publishes. Take the `Request` as a parameter |
+A model's label is also what its tombstone keeps under `keepLabel()`.
+[Deleted Models](/deeper/deleted-models) covers both.
 
 ### Surface
 
@@ -223,15 +196,41 @@ exists and has no label yet is reported by `backlog`.
 
 ### Hydration
 
-The check calls each `Feedable` model's `feedMedia()` without running a query,
-once per registered feed and once with no feed, and reports the ones that ask
-for `$context->model()`.
+Reports `Feedable` models whose `feedMedia()` loads the model, and the queries
+that adds to a page.
 
 | Finding | Severity | Means |
 |---|---|---|
 | `hydration.model` | info | the class loads its model in `feedMedia()`, and under which feeds: one query per class on every page it appears on. Says so when `hydration.enabled` is off and the call returns `null` instead |
 | `hydration.page` | info | how many loading classes the 30 most recent activities carry, so how many queries that page adds |
 | `hydration.opaque` | info | `feedMedia()` threw when called, so whether it loads its model is unknown |
+
+### Role Constraints
+
+| Finding | Severity | Means |
+|---|---|---|
+| `role_constraints.violated` | warning | stored activities have role types outside the [declared constraints](/deeper/constraining-roles). Empty roles and deleted models are skipped. The activities stay in the feed |
+
+### Retention
+
+| Finding | Severity | Means |
+|---|---|---|
+| `retention.backlog` | warning | a verb has activities more than a day past its [retention window](/deeper/retention). The next `storyfeed:prune` deletes them; `storyfeed:prune --pretend` shows the run first. Usually a window just declared or shortened, or a prune nothing schedules |
+| `retention.unbounded` | info | a verb was recorded 10,000 times in the last 30 days and no window reaches it. A verb declared `->keepForever()` is never named |
+
+### Actions
+
+| Finding | Severity | Means |
+|---|---|---|
+| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
+| `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade instead of taking `Illuminate\Http\Request $request`. It reads the request only when stories are compiled, never when an activity publishes. Take the `Request` as a parameter |
+
+### Grouping
+
+| Finding | Severity | Means |
+|---|---|---|
+| `grouping.ungrouped` | warning | activities have no grouping rows, so they can only show one by one. Run `storyfeed:curate --rehash` |
+| `grouping.uncurated` | warning | activities have grouping rows that were never curated, so they cannot join the group they belong to. Run `storyfeed:curate` |
 
 <span id="generating-definitions"></span>
 
@@ -261,14 +260,9 @@ Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->actors(':actor
 Story::for(Order::class)->verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat(':actor placed :objects'));
 ```
 
+The `actors` stub names two lists. Before you keep it, rewrite it with one, as
+[Aggregation](/deeper/aggregation#plural-lists-in-headlines) advises.
+
 The output has no headings or counts, so it can be piped.
 `// Nothing to author` means no finding implies a definition, not that there
 were no findings. In `--json`, each fix's `definition` is the same line.
-
-<a id="checking-empty-feeds"></a>
-
-## Empty Feeds
-
-With no activities, the checks that read recorded activities have nothing to
-report. The configuration, definition and schema checks still run, so a
-missing table or an unaliased model is still found.

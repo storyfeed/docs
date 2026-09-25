@@ -10,13 +10,13 @@ nothing.
 
 | What Happened | Activity | Because |
 |---|---|---|
-| a model created as a draft | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
-| a save with no status change | no | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| a model created as a draft | no | nothing has happened yet that a reader would act on |
+| a save with no status change | no | nothing a reader would notice has changed |
 | the text of a note edited | no | the note is the story; its edit is not. Its [body](/basics/activity-content#adding-entity-bodies) shows the current text |
 | a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
 | someone typing, or coming online | no | it stops being true within seconds |
 | a field-level audit row | no | an audit log is its own surface |
-| a status transition | yes | see [Choosing when to publish](/cookbook/choosing-when-to-publish) |
+| a status transition | yes | one verb per transition, as in [Choosing When to Publish](/cookbook/choosing-when-to-publish) |
 | a question asked about a menu item | yes | the sentence names what was asked about; the activity can [quote the question](/basics/activity-content#adding-quoted-text) |
 | an order placed | yes | |
 | an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |

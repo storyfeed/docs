@@ -173,17 +173,12 @@ is cheap enough to pass directly.
 
 ### Resolver Data
 
-The resolver runs for every entity on the page, including ones a renderer never
-draws. These three reads cost no query per row:
-
-- the snapshot, through `$context->data()`
-- a column on the live row, through `$context->model()`, which loads every model
-  of that class on the page in one query
-- a relation named in `$context->model(with: […])`, loaded in the same batch
-
-Anything else runs once per row: `$dish->orders()->count()` in a resolver
-queries for every row that names a dish. Keep a counter column on the model
-instead.
+The resolver runs for every entity on the page. Read the snapshot with
+`$context->data()`, and the live row with `$context->model()`, which loads
+every model of that class on the page together. Name relations in
+`$context->model(with: […])` to load them in the same batch. A query of your
+own, such as `$dish->orders()->count()`, runs once per row, so keep a counter
+column on the model instead.
 
 <a id="drawing-your-own-component"></a>
 
@@ -257,8 +252,7 @@ It is stored as `Storyfeed/Body/Component`, with `name` and `props` as given.
 
 The name is kept verbatim, so it can be a path such as `Orders/Ticket`. Your
 frontend decides which component it means. `props()` merges, as `data()` does:
-an array adds keys, and `->props('pinned', true)` sets one. A body without a
-name throws `IncompleteFeedValue` when it is used.
+an array adds keys, and `->props('pinned', true)` sets one.
 
 A `Component` suits props you control. When the shape will change over time,
 write a body type with its own `upgrade()`.
@@ -312,6 +306,7 @@ final class Attachment implements FeedBody
 
     public function toPayload(): array
     {
+        // Values only: no markup, and never another body.
         return [
             self::KEY => self::bodyType(),
             self::VERSION => self::version(),
@@ -322,7 +317,7 @@ final class Attachment implements FeedBody
 }
 ```
 
-`HasPayload` builds `toArray()` from `toPayload()`. A body holds values, not markup, and never contains another body.
+`HasPayload` builds `toArray()` from `toPayload()`.
 
 <a id="names"></a>
 
@@ -353,17 +348,9 @@ its version.
 
 <a id="upgrading-payload-values"></a>
 
-## Upgrading Other Payload Values
-
-| Value | Node Key | Who Upgrades | Does `$v` Reach the Renderer? |
-|---|---|---|---|
-| `FeedThread` at `$thread` | `thread` | Storyfeed, on read | no |
-| `FeedChange` at `$change` | `change` | Storyfeed, on read | no |
-| a body type's value | stays in `body` | the renderer | yes |
-
-Storyfeed upgrades `$thread` and `$change` itself. It hands a body back
-unchanged, so your renderer calls `upgrade()` before drawing one, even a
-`FeedThread` placed in a body.
+Storyfeed upgrades an activity's `thread` and `change` itself. A body arrives
+as it was stored, `$v` included, so your renderer calls `upgrade()` before
+drawing one, even a `FeedThread` placed in a body.
 
 
 ::: headless
