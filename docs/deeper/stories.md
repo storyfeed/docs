@@ -231,6 +231,68 @@ Story::resource(Order::class, OrderStory::class)
     ->except('restore', 'confirm_payment');
 ```
 
+### Selecting Resource Verbs
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class)->only('place', 'complete');
+```
+
+<FeedExample :items="[placed]" />
+
+Use this in place of the unfiltered resource binding. `only()` and `except()`
+filter both conventional verbs and the class's public methods, as Laravel's
+resource routes do. Excluded verbs lose their resource names too.
+
+| Filter | Definitions Kept |
+|---|---|
+| `->only('place', 'complete')` | only these two verbs |
+| `->except('restore', 'confirm_payment')` | all except these stored verb names |
+
+Both methods accept an array instead of separate arguments.
+
+### Registering Several Resources
+
+```php
+// routes/feed.php
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\User;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resources([
+    Order::class => OrderStory::class,
+    MenuItem::class => null,
+], [
+    'except' => ['restore'],
+    'middleware' => 'batch:5 minutes',
+    'wheres' => ['actor' => [User::class, 'party']],
+]);
+```
+
+<FeedExample :items="[placed]" />
+
+`Story::resources()` registers each model with the same options, as
+`Route::resources()` does. A `null` class supplies the four conventional verbs.
+The call returns nothing; put shared settings in its options or on an enclosing
+group. This example replaces the individual resource bindings.
+
+| Option | Applied to Each Resource |
+|---|---|
+| `only` | keeps the named verbs |
+| `except` | removes the named verbs |
+| `middleware` | appends story middleware |
+| `excluded_middleware` | removes matching middleware |
+| `wheres` | sets [role constraints](/deeper/constraining-roles), keyed by role |
+
+An unknown option throws. The resource options use `wheres`; an individual
+array definition uses `where`.
+
 ### Using the Request
 
 ```php
@@ -375,7 +437,7 @@ php artisan storyfeed:list --type=order
 ```
 
 The table shows each verb's name, presentation, grouping, calendar period,
-keep-latest policy and source. `-v` adds middleware; `--verb=place` narrows the
+keep-latest policy and source. `-v` adds middleware and role constraints; `--verb=place` narrows the
 selection and `--json` returns machine-readable rows.
 
 A new resource method becomes a verb when definitions compile again. Run

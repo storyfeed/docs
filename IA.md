@@ -365,6 +365,7 @@ Recording depth, then payload depth, then grouping, then operations.
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Parties & Anonymous Actors — null actor vs named non-model participant
 - ✅ Story Classes (`deeper/stories`) — elementary publishing, the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors, single-verb declarations and generator options
+- ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches, array definitions and inspection
 - ✅ Activity Body Content (`deeper/body`) — typed blocks in `data`, body types, versions
 - ✅ Aggregation — grouping repeats, axes, group headlines (per type or per verb), plural tokens, the tokens a group may use, nouns, thresholds, custom axes
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines

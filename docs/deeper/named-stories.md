@@ -92,6 +92,84 @@ exactly as written, including the dot, producing `billing.place`.
 `Story::name()` is an alias for `Story::as()`, as `Route::as()` / `Route::name()`
 are in Laravel. An individual declaration keeps `->name()` to set its name.
 
+## Chaining Group Attributes
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::middleware('batch:5 minutes')->as('billing.')->for(Order::class)
+    ->group(function () {
+        Story::verb('place')
+            ->name('place')
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag');
+    });
+```
+
+<FeedExample :items="[placed]" />
+
+This alternative declaration names the story `billing.place` and gives it a
+five-minute batch window. The attributes chain in any order, as
+`Route::middleware()->as()->group()` does in Laravel. `for()`, `middleware()`,
+`withoutMiddleware()`, `as()` / `name()` and the role constraints each return a
+`PendingGroup` that accepts the other attributes.
+
+For one declaration, omit `group()`:
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->as('billing.')->middleware('batch:5 minutes')
+    ->verb('place')
+    ->name('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag');
+```
+
+<FeedExample :items="[placed]" />
+
+The same direct form accepts `fallback()`, `resource()`, `resources()`,
+`noun()`, `missing()` and `activityStreamsType()`.
+
+### Nesting Groups
+
+```php
+// routes/feed.php
+use App\Models\Order;
+use App\Models\User;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->as('billing.')->middleware('batch:5 minutes')
+    ->whereActor(User::class, 'party')->group(function () {
+        Story::as('orders.')->whereActor(User::class)
+            ->withoutMiddleware('batch:5 minutes')->group(function () {
+                Story::verb('place')
+                    ->name('place')
+                    ->headline(':actor placed :object with :target')
+                    ->icon('shopping-bag');
+            });
+    });
+```
+
+<FeedExample :items="[placed]" />
+
+The name is `billing.orders.place`. The inner group allows only a user as its
+actor and removes the inherited five-minute batch middleware. The built-in
+`batch` middleware still applies; exclusions match resolved strings exactly.
+
+| Attribute | Nested Behaviour |
+|---|---|
+| name prefix | concatenates outer and inner prefixes exactly as written |
+| middleware and exclusions | append to the enclosing group's lists |
+| role constraints | the inner constraint replaces the outer one for that role; a verb's own constraint wins over its groups |
+| object type | one `for()` scope; nesting another throws |
+
+[Constraining Roles](/deeper/constraining-roles) covers the allowed role types.
+
 ## Resource Story Names
 
 ```php

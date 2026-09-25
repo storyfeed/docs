@@ -124,6 +124,7 @@ export default defineConfig({
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Story Classes', link: '/deeper/stories' },
           { text: 'Named Stories', link: '/deeper/named-stories' },
+          { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
           { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
           { text: 'Story Middleware & Batching', link: '/deeper/story-middleware-and-batching' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },

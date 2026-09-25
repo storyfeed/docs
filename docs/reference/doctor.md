@@ -35,6 +35,7 @@ Each finding names its fix.
 | `columns` | are write-path columns present? (catches missing write-path columns) | error |
 | `recording` | is anything being written? `storyfeed.recording.enabled` off, or `stopRecording()` at boot, makes every `publish()` return an unsaved row — an error outside `testing`, info under it | error · info |
 | `roles` | does a singular template name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) that none of its activities carry? The placeholder renders as content. `:actor` over all-anonymous rows is info | error · info |
+| `role_constraints` | do live stored rows satisfy the allowed role types? Null roles and tombstones are skipped | warning |
 | `grouping` | activities with no grouping row that today's axes would group — an import that ran `storyfeed:rebuild` before `storyfeed:trickle` | warning |
 | `entities` | a model filling a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the row is gone. See [Entities](#entities) | error · warning · info |
 | `hydration` | which `Feedable` models load their live model in `feedMedia()`, and what a page pays for it. See [Hydration](#hydration) | info |
@@ -144,6 +145,7 @@ asks for `keepLabel()`. [Deleted Models](/deeper/deleted-models) covers both.
 
 | Finding | Severity | Means |
 |---|---|---|
+| `role_constraints.violated` | warning | live stored rows have role types outside the [declared constraints](/deeper/constraining-roles); null roles and tombstones are skipped. The rows remain in the feed |
 | `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/stories#using-the-request) threw when a job was dispatched, where it runs to carry its actor to the worker. The dispatch went ahead, and the job published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade without taking `Illuminate\Http\Request $request`. It runs only when stories compile, never at a publish or in a queued job. Take the `Request` as a parameter instead. Found by reading the source, so it only ever warns |
 
