@@ -94,8 +94,8 @@ const posted = activity({
 ### Recording an Order
 
 ::: code-group
-<<< @/snippets/publish.php [Fluent Syntax]
-<<< @/snippets/publish.named-arguments.php [Named Arguments]
+<<< @/snippets/publish.php {php memo="where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php {php memo="where the order is placed: a controller, an action, a listener"} [Named Arguments]
 :::
 
 <FeedExample context :items="[scenes.order]" />
