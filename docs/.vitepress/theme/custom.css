@@ -298,6 +298,13 @@
     margin-bottom: 0;
 }
 
+/* No language label on code blocks. The memo names the file, the code names
+   itself, and the label sat out of line with the memo bar. The copy button
+   keeps its place on hover. */
+.vp-doc div[class*='language-'] > span.lang {
+  display: none;
+}
+
 /* Optional fence memo: part of the code container, outside the copied <pre>. */
 .vp-doc .sf-code-memo__bar {
   padding: 10px 76px 10px 24px;
