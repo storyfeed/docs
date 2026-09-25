@@ -410,8 +410,7 @@ Choose the feed, then inspect it, then draw it.
 - ✅ Reading Feeds — the builder, the one plain definition of a group, read modes, filtering, `query()`, pagination
 - ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
 - ✅ The Payload — the envelope, one activity node, one group node; every key is in Reference › The Payload Contract
-- ✅ Anatomy of a Row — the zones of a row and the payload values that fill them
-- ✅ Rendering — the smallest loop, links, what a glyph means, degraded entities, groups, details
+- ✅ Rendering — which payload field fills which part of a row (moved from Anatomy of a Row, deleted 2026-09-25), the smallest loop, links, what a glyph means, degraded entities, groups, details
 
 ### Recording in Depth
 
@@ -442,7 +441,7 @@ How stored activities become the rows a feed shows, grouping first.
 ### Testing and Maintenance
 
 - ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
-- ✅ Doctor (`reference/doctor`)
+- ✅ Diagnosing Your Feed (`deeper/diagnosing`) — running the doctor, reading a finding, the findings a developer acts on, `--stubs`, CI. Every check is in Reference › Doctor Checks
 - ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()` (the one home for deleted-model headlines), `->forgetWhenMissing()`, bulk deletes
 - ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept, and the maintenance schedule. Taught with `view`; ephemeral state is Choosing What Not to Record
 - ✅ Healing a Feed — retiring stories whose source is permanently gone
@@ -461,7 +460,7 @@ example; the mechanics stay on the concept page it links.
 
 What you type, then the shapes, then the policy pages.
 
-- ✅ Configuration · Commands · Feedable API · Verb Vocabulary · The Payload
+- ✅ Configuration · Commands · Doctor Checks (`reference/doctor`: every check and finding) · Feedable API · Verb Vocabulary · The Payload
   Contract · Schema · Compatibility · Glossary
 
 ## Pending coverage

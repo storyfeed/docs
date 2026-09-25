@@ -22,6 +22,21 @@ how to display them.
 ::: headless
 :::
 
+## Payload Fields in a Row
+
+| Part of a Row | Payload Fields | Holds |
+|---|---|---|
+| icon | `glyph`, `glyph_intent`, `actor` | the verb's icon and the actor's picture |
+| headline | `headline_template` or `headline`, the role keys | the sentence, with entity labels substituted in |
+| time | `published_at` | when the activity happened |
+| quote | `thread` | what someone said, quoted on this activity |
+| media | `object.media.preview`, `object.media.url` | the object's picture |
+| body | an entity's `body` list | structured content, one [body type](/basics/activity-content) at a time |
+| group pictures | a group's `sample`, `distinct` | a few members' pictures, and how many more there are |
+| group members | `children`, `count` | the group's own activities, when a reader opens it |
+
+A field with no value leaves its part out.
+
 ## Rendering Activities
 
 <a id="rendering-a-headline"></a>

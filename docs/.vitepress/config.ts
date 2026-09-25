@@ -184,7 +184,6 @@ export default defineConfig({
           { text: 'Reading Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'The Payload', link: '/basics/the-payload' },
-          { text: 'Anatomy of a Row', link: '/basics/anatomy-of-a-row' },
           { text: 'Rendering', link: '/basics/rendering' },
         ],
       },
@@ -222,7 +221,7 @@ export default defineConfig({
         text: 'Testing and Maintenance',
         items: [
           { text: 'Testing', link: '/deeper/testing' },
-          { text: 'Doctor', link: '/reference/doctor' },
+          { text: 'Diagnosing Your Feed', link: '/deeper/diagnosing' },
           { text: 'Deleted Models', link: '/deeper/deleted-models' },
           { text: 'Retention', link: '/deeper/retention' },
           { text: 'Healing a Feed', link: '/deeper/healing' },
@@ -250,6 +249,7 @@ export default defineConfig({
         items: [
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
+          { text: 'Doctor Checks', link: '/reference/doctor' },
           { text: 'Feedable API', link: '/reference/feedable' },
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },

@@ -203,7 +203,7 @@ works under the fake.
 php artisan storyfeed:doctor --fail-on=warning # Fails on a warning or an error.
 ```
 
-Add `--json` for structured findings. See [Doctor](/reference/doctor).
+Add `--json` for structured findings. See [Diagnosing Your Feed](/deeper/diagnosing#running-the-doctor-in-ci).
 
 ## Static Analysis
 

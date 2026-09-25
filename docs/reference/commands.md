@@ -70,7 +70,7 @@ service provider.
 |---|---|
 | `storyfeed:doctor` | audits grammar/icon/mapping coverage and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
 
-See [Doctor](/reference/doctor) for the checks.
+See [Diagnosing Your Feed](/deeper/diagnosing) for running it, and [Doctor Checks](/reference/doctor) for every check.
 
 ### `php artisan about`
 
