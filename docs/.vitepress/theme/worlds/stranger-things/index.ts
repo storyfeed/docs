@@ -112,22 +112,64 @@ const holding: Record<keyof typeof HOLDINGS, [string, string]> = {
   teacups: ['ride', '/rides/teacups'],
   carousel: ['ride', '/rides/carousel'],
   ponyRide: ['ride', '/rides/pony'],
+  pretzelBag: ['menu_item', '/menu/pretzel-bag'],
 }
 const things = build(HOLDINGS, (id, label, key) => entity(holding[key][0], id, label, holding[key][1]))
+// The things that have a photograph of their own (see PHOTO_CREDITS below).
+const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel: 'ferris', fireworks: 'fireworks', pretzelBag: 'pretzels' }
 
 /** Minted, not named: orders, pull requests, invoices and photos are numbered. */
 const order = (n: number) => entity('order', String(n), `Order #${n}`, `/orders/${n}`)
 const pull = (n: number) => entity('pull_request', String(n), `Pull request #${n}`, `/pulls/${n}`)
 const invoice = (n: number) => entity('invoice', String(n), `Scoops Ahoy invoice #${n}`, `/invoices/${n}`)
-const photo = (n: number) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`)
+// ── Photographs ──────────────────────────────────────────────────────────────
+// Free photos from Unsplash (unsplash.com/license), self-hosted under
+// public/media/worlds/stranger-things/, 960x720. Stock pictures of ordinary
+// things, never of the show: no brands, logos or recognisable faces.
+// Kept inside the pack so another world supplies its own media.
+export const PHOTO_CREDITS: Record<string, { photographer: string, profile: string, photo: string }> = {
+  sundae: { photographer: 'Molly Keesling', profile: 'https://unsplash.com/@mollysuek', photo: 'https://unsplash.com/photos/7YhrOw6Kngo' },
+  fair: { photographer: 'Natasha Reddy', profile: 'https://unsplash.com/@natashareddy', photo: 'https://unsplash.com/photos/cM9GERALoC0' },
+  carousel: { photographer: 'Sally K', profile: 'https://unsplash.com/@salivan_91', photo: 'https://unsplash.com/photos/Oc-gVHId6lo' },
+  ferris: { photographer: 'Steve Shreve', profile: 'https://unsplash.com/@steveshreve', photo: 'https://unsplash.com/photos/MarV8zURg78' },
+  fireworks: { photographer: 'DESIGNECOLOGIST', profile: 'https://unsplash.com/@designecologist', photo: 'https://unsplash.com/photos/5mj5jLhYWpY' },
+  arcade: { photographer: 'Carl Raw', profile: 'https://unsplash.com/@carltraw', photo: 'https://unsplash.com/photos/m3hn2Kn5Bns' },
+  parlour: { photographer: 'Donald Teel', profile: 'https://unsplash.com/@epartner', photo: 'https://unsplash.com/photos/Arxi6Y5_pTQ' },
+  pretzel: { photographer: 'Sven Mieke', profile: 'https://unsplash.com/@sxoxm', photo: 'https://unsplash.com/photos/Bxo33Q-YUjM' },
+  pretzels: { photographer: 'Khushal Shah Lakhnavi', profile: 'https://unsplash.com/@legitimages', photo: 'https://unsplash.com/photos/iqc0gENef7c' },
+  hotdog: { photographer: 'Jessica Loaiza', profile: 'https://unsplash.com/@jessicaloaizar', photo: 'https://unsplash.com/photos/glqTtszXfM0' },
+  darkroom: { photographer: 'Vladimir Fedotov', profile: 'https://unsplash.com/@fedotov_vs', photo: 'https://unsplash.com/photos/RSN0hnHOclQ' },
+  newspapers: { photographer: 'Jonathan Gong', profile: 'https://unsplash.com/@jonathangongphotography', photo: 'https://unsplash.com/photos/izRQ870yJO8' },
+  street: { photographer: 'Nils Huenerfuerst', profile: 'https://unsplash.com/@nhuenerfuerst', photo: 'https://unsplash.com/photos/pBmOfkly5eg' },
+}
+const ALT: Record<string, string> = {
+  sundae: 'A sundae with whipped cream, sauce and a cherry',
+  fair: 'A fairground at night',
+  carousel: 'A carousel lit up at night',
+  ferris: 'A Ferris wheel at dusk',
+  fireworks: 'Fireworks over a crowd',
+  arcade: 'Arcade machines in a dark room',
+  street: 'A small-town street from above',
+  parlour: 'An ice cream counter',
+  pretzel: 'Soft pretzels on a stand',
+  pretzels: 'Soft pretzels on a board',
+  hotdog: 'A hot dog with mustard and ketchup',
+  darkroom: 'A room lit red',
+  newspapers: 'Rolled newspapers',
+}
+const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
+  mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
+const mediaOf = (file: string) => ({ icon: null, image: null, attachments: [],
+  preview: picture(file), url: picture(file) })
 
-// A schematic preview, not a claimed photograph from the show. Kept inside
-// the pack so another world supplies its own media as well as its own labels.
-const preview = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" rx="20" fill="#e3eff5"/><path d="M130 170h140l-35 65h-70z" fill="#76aabd"/><circle cx="170" cy="145" r="42" fill="#e7b97d"/><circle cx="230" cy="145" r="42" fill="#f6dfb9"/><path d="M200 235v25m-35 0h70" stroke="#52798a" stroke-width="10" stroke-linecap="round"/></svg>')
-const productMedia = { icon: null, image: null, attachments: [],
-  preview: { src: preview, mediaType: 'image/svg+xml', width: 400, height: 300, alt: FARE.butterscotch },
-  url: { src: preview, mediaType: 'image/svg+xml', width: 400, height: 300, alt: FARE.butterscotch } }
-const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, preview, { media: productMedia })
+const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,
+  file ? { media: mediaOf(file) } : {})
+for (const [key, file] of Object.entries(photographed)) things[key] = { ...things[key], media: mediaOf(file) }
+venues.scoops = { ...venues.scoops, media: mediaOf('parlour') }
+fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel') }
+fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
+const productMedia = mediaOf('sundae')
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: productMedia })
 const menuProduct = { ...fare.butterscotch, media: productMedia,
   body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
     subject: { label: fare.butterscotch.label, href: fare.butterscotch.url },
@@ -269,9 +311,10 @@ const ROWS: Row[] = [
   row('j51', '1985-06-30 09:20', 'assign', clerk, tickets.magnets, teacher, 'S3E2'),
   row('j52', '1985-06-30 10:30', 'file', reporter, t.ratStory, v.post, 'post'),
   row('j53', '1985-06-30 10:45', 'reject', editor, t.ratStory, null, 'post', { uncertain: 'laughed at "the next day" by the post page' }),
-  row('j54', '1985-06-30 11:00', 'upload', photographer, photo(3101), v.post, 'S3E2', { uncertain: 'the Driscoll visit; the photos are ours' }),
-  row('j55', '1985-06-30 11:02', 'upload', photographer, photo(3102), v.post, 'S3E2', { uncertain: 'as j54' }),
-  row('j56', '1985-06-30 11:05', 'upload', photographer, photo(3103), v.post, 'S3E2', { uncertain: 'as j54' }),
+  row('j54', '1985-06-30 11:00', 'upload', photographer, photo(3101, 'street'), v.post, 'S3E2', { uncertain: 'the Driscoll visit; the photos are ours' }),
+  row('j55', '1985-06-30 11:02', 'upload', photographer, photo(3102, 'arcade'), v.post, 'S3E2', { uncertain: 'as j54' }),
+  row('j56', '1985-06-30 11:05', 'upload', photographer, photo(3103, 'darkroom'), v.post, 'S3E2', { uncertain: 'as j54' }),
+  row('j56a', '1985-06-30 11:07', 'upload', photographer, photo(3105, 'newspapers'), v.post, 'S3E2', { uncertain: 'as j54' }),
   row('j57', '1985-06-30 12:00', 'check_in', radio, null, v.scoops, 'S3E2'),
   row('j58', '1985-06-30 12:10', 'place', radio, order(1034), v.scoops, 'S3E2', { uncertain: 'he visits Steve; the order is ours' }),
   row('j59', '1985-06-30 12:12', 'serve', scooper, order(1034), null, 'S3E2', { uncertain: 'as j58' }),
@@ -291,7 +334,7 @@ const ROWS: Row[] = [
   row('j72', '1985-07-01 14:00', 'complete', linguist, tasks.locations, t.board, 'S3E3'),
   row('j73', '1985-07-01 15:00', 'merge', visitor, pull(4), t.repo, 'splice', { cameo: true, uncertain: 'a dead end for 1985: no pull requests yet, so a cameo carries it' }),
   row('j75', '1985-07-01 15:30', 'merge', visitor, pull(5), t.repo, 'splice', { cameo: true, uncertain: 'a dead end for 1985: no pull requests yet, so a cameo carries it' }),
-  row('j76', '1985-07-01 18:00', 'upload', photographer, photo(3104), v.post, 'S3E3', { uncertain: 'the photo is ours' }),
+  row('j76', '1985-07-01 18:00', 'upload', photographer, photo(3104, 'fair'), v.post, 'S3E3', { uncertain: 'the photo is ours' }),
   row('j77', '1985-07-01 11:00', 'resolve', teacher, tickets.magnets, null, 'S3E3', { uncertain: 'Mr. Clarke explains; "resolved" is ours' }),
   row('j78', '1985-07-01 22:00', 'check_in', clerk, null, v.lab, 'S3E3'),
   row('j79', '1985-07-01 22:01', 'check_in', chief, null, v.lab, 'S3E3'),
@@ -361,6 +404,8 @@ const ROWS: Row[] = [
   row('k36a', '1985-07-04 17:55', 'ride', visitor, t.teacups, v.fair, 'fair', { cameo: true, uncertain: 'the rides at a 1985 fair; which ones are ours' }),
   row('k36b', '1985-07-04 18:05', 'ride', visitor, t.carousel, v.fair, 'fair', { cameo: true, uncertain: 'as k36a' }),
   row('k36c', '1985-07-04 18:15', 'ride', visitor, t.ponyRide, v.fair, 'fair', { cameo: true, uncertain: 'as k36a' }),
+  // Invented: a bag of pretzels to share, bought before the Ferris wheel.
+  row('k36d', '1985-07-04 18:10', 'buy', poolside, t.pretzelBag, v.fair, 'fair', { uncertain: 'the pretzel stand is on screen; her bag is ours' }),
   row('k37', '1985-07-04 18:00', 'check_in', mayor, null, v.fair, 'fair', { headline: ':actor opened :target', uncertain: 'he opens it "on the night"' }),
   row('k38', '1985-07-04 18:20', 'check_in', investigator, null, v.fair, 'fair'),
   row('k39', '1985-07-04 18:21', 'check_in', scientist, null, v.fair, 'fair'),

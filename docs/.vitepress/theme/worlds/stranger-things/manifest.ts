@@ -106,6 +106,7 @@ export const HOLDINGS = {
   teacups:     'the teacups',
   carousel:    'the carousel',
   ponyRide:    'the ponies',
+  pretzelBag:  'a bag of soft pretzels',
 }
 
 /** Tasks on the Scoops Troop board, in the order the show resolves them. */

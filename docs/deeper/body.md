@@ -22,7 +22,7 @@ A body is what an activity shows beneath its headline: the lines of an order, a
 quoted passage, a before and after. The model writes it in `toFeed()`, and a
 renderer draws it.
 
-The order from [Usage Examples](/guide/usage-examples), with no body yet:
+The order from the [Quickstart](/guide/quickstart), with no body yet:
 
 <FeedExample :items="[scene.order]">
   <template #body><BodyPlaceholder /></template>

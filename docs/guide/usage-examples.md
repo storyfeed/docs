@@ -1,238 +1,108 @@
-# Usage Examples
+# What You Can Build with Storyfeed
 
-Record orders, quotes and photographs, and read them as individual or grouped activities.
+What you write, and the feed it gives you, from rich activities to a week in
+one glance. Each example links to the page that covers it.
 
 <script setup>
-import { scene, logOf, liveOf } from '../.vitepress/theme/world'
+import { scene, activity, everything, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const expanded = logOf(scene.guide.usageExamples.repeatOrders)
-const burst = liveOf(expanded)[0]
-const crowd = liveOf(scene.busyPlace)[0]
-const paid = scene.basics.recording.paid
-const note = scene.basics.activityContent.note
-const noted = { ...note, verb: 'note', object: note.target, target: null,
-  headline_template: ':actor sent a note about :object',
-  thread: { text: note.object.label, by: note.actor.label, kind: 'note', replies: null, truncated: false } }
-const photographed = scene.basics.activityContent.photo
-const photoBurst = liveOf(scene.guide.usageExamples.photos)[0]
-const posted = scene.basics.activityContent.product
+const content = scene.basics.activityContent
+const withThread = { ...content.note,
+  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
+const withKeyValue = { ...content.confirmed,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, items: [
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
+    { key: 'Items', value: '1', verbatim: false, missing: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
+  ] }] } }
+const previews = logOf([withThread, content.ready, withKeyValue, content.photo, content.product])
+
+const actorless = logOf(Object.values(scene.cookbook.actorless))
+const orderStory = logOf(scene.deeper.latestPerObject.timeline)
+const board = logOf(scene.deeper.latestPerObject.board)
+const live = liveOf(scene.glance)
+const daily = summaryOf(scene.glance)
+const weekly = summaryOf(everything(), 'week')
 </script>
 
-## Recording Activities
-
 <a id="one-activity"></a>
+<a id="recording-activities"></a>
 
-### Recording an Order
+<a id="adding-activity-content"></a>
 
-::: code-group
-<<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
-<<< @/snippets/publish.named-arguments.php {php memo="Where the order is placed: a controller, an action, a listener"} [Named Arguments]
-:::
+## Activities With Content Previews
 
-<FeedExample :items="[scene.order]" />
+```php memo="app/Models/Order.php" at="toFeed()"
+return FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(Excerpt::make()->text($this->instructions)->from('Instructions'));
+```
 
-<a id="activities-by-a-payment-provider"></a>
+<FeedExample :items="previews" />
 
-### Recording a Payment
+More in [Activity Content](/basics/activity-content).
 
-A payment provider reports an order paid, and it has no row in your database.
+## Actors Beyond Your Users
 
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
-use Storyfeed\Facades\Storyfeed;
-
+```php memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
 Storyfeed::activity()
-    ->by('Stripe')
+    ->by(Storyfeed::party('Stripe'))
     ->action('pay', $order)
     ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
-use Storyfeed\Facades\Storyfeed;
+<FeedExample :items="actorless" />
 
-Storyfeed::record(
-    verb: 'pay',
-    object: $order,
-    actor: 'Stripe',
-);
-```
-:::
+More in [Parties & Anonymous Actors](/deeper/parties).
 
-<FeedExample :items="[paid]" />
+## One Order's Story
 
-[Parties & Anonymous Actors](/deeper/parties).
-
-## Adding Activity Content
-
-[Activity Content](/basics/activity-content) explains how quotes and entity bodies accompany a headline.
-
-<a id="quoted-text"></a>
-
-### Quoting Text
-
-::: code-group
-```php [Fluent Syntax] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
-
-Storyfeed::activity()
-    ->by($customer)
-    ->action('note', $order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
-    ->publish();
+```php memo="A controller, or wherever the feed is read"
+$order->storyfeed()->log()->get();
 ```
 
-```php [Named Arguments] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
+<FeedExample :items="orderStory" />
 
-Storyfeed::record(
-    verb: 'note',
-    object: $order,
-    actor: $customer,
-    thread: FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'),
-);
-```
-:::
+More in [Latest Activity per Object](/deeper/latest-per-object).
 
-<FeedExample :items="[noted]" />
+## The Latest for Each Order
 
-<a id="a-photograph"></a>
-
-### Including a Photograph
-
-::: code-group
-```php [Fluent Syntax] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($staff)
-    ->action('publish', $photo)
-    ->to($product)
-    ->publish();
+```php memo="A controller, or wherever the feed is read"
+Storyfeed::feed()->involving($shop)->latestPer('object')->log()->get();
 ```
 
-```php [Named Arguments] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
+<FeedExample :items="board" />
 
-Storyfeed::record(
-    verb: 'publish',
-    object: $photo,
-    actor: $staff,
-    target: $product,
-);
-```
-:::
+More in [Latest Activity per Object](/deeper/latest-per-object).
 
-<FeedExample :items="[photographed]" />
+<a id="grouping-activities"></a>
 
-<a id="dish-content"></a>
+## A Home Page Feed
 
-### Including Entity Content
-
-::: code-group
-```php [Fluent Syntax] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($staff)
-    ->action('publish', $product)
-    ->to($shop)
-    ->publish();
+```php memo="A controller, or wherever the feed is read"
+Storyfeed::feed()->live()->get();
 ```
 
-```php [Named Arguments] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
+<FeedExample :items="live" days height="360" />
 
-Storyfeed::record(
-    verb: 'publish',
-    object: $product,
-    actor: $staff,
-    target: $shop,
-);
-```
-:::
+More in [Reading Feeds](/basics/reading).
 
-<FeedExample :items="[posted]" />
+## A Daily Recap
 
-The card comes from the product's own `toFeed()`, covered in
-[Activity Body Content](/deeper/body).
-
-## Grouping Activities
-
-### Repeated Orders
-
-The same customer orders three times in a few minutes, in three requests.
-
-::: code-group
-```php [Fluent Syntax] memo="Where the order is placed: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $order)
-    ->to($shop)
-    ->publish();
+```php memo="A controller, or wherever the feed is read"
+Storyfeed::feed()->summary()->get();
 ```
 
-```php [Named Arguments] memo="Where the order is placed: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
+<FeedExample :items="daily" days height="360" />
 
-Storyfeed::record(
-    verb: 'place',
-    object: $order,
-    actor: $customer,
-    target: $shop,
-);
-```
-:::
+More in [Reading Feeds](/basics/reading).
 
-On the feed:
+## A Week at a Glance
 
-<FeedExample :items="[burst]" />
-
-As a timeline:
-
-<FeedExample :items="expanded" />
-
-[Reading Feeds](/basics/reading) picks the mode. [Aggregation](/deeper/aggregation)
-decides the grouping.
-
-<a id="orders-from-several-customers"></a>
-
-### Activities From Several People
-
-Several people check in at the same place, in separate requests.
-
-<FeedExample :items="[crowd]" />
-
-[Aggregation](/deeper/aggregation) covers the axes and what each one may say.
-
-### Grouped Photographs
-
-The photographer uploads a set to a collection, one request each.
-
-::: code-group
-```php [Fluent Syntax] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($photographer)
-    ->action('upload', $photo)
-    ->to($collection)
-    ->publish();
+```php memo="A controller, or wherever the feed is read"
+Storyfeed::feed()->summary(Period::Week)->get();
 ```
 
-```php [Named Arguments] memo="Where the fact happens: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
+<FeedExample :items="weekly" days height="420" />
 
-Storyfeed::record(
-    verb: 'upload',
-    object: $photo,
-    actor: $photographer,
-    target: $collection,
-);
-```
-:::
-
-<FeedExample :items="[photoBurst]" />
+More in [Grouping Periods](/deeper/grouping-periods).
