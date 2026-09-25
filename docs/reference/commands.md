@@ -170,7 +170,7 @@ keeps its members.
 | Command | Does |
 |---|---|
 | `storyfeed:curate` | picks the group each activity shows in with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
-| `storyfeed:heal` | [retires activities whose source is permanently absent](/deeper/healing). `--dry-run` previews; repeat `--only=` to select healers |
+| `storyfeed:heal` | [retires activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
 | `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
 

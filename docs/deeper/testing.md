@@ -132,10 +132,10 @@ to dispatch that event after the transaction commits.
 Check the type and verb pairs your application records:
 
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
-use Storyfeed\Testing\GrammarCoverage;
+use Storyfeed\Testing\HeadlineCoverage;
 
-GrammarCoverage::assertCoversRecorded();  // Pairs in the database.
-GrammarCoverage::assertCoversPublished(); // Pairs published in this test.
+HeadlineCoverage::assertCoversRecorded();  // Pairs in the database.
+HeadlineCoverage::assertCoversPublished(); // Pairs published in this test.
 ```
 
 ### Possible Groups
@@ -143,13 +143,13 @@ GrammarCoverage::assertCoversPublished(); // Pairs published in this test.
 Check both groups that formed and groups the configured axes could form:
 
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
-use Storyfeed\Testing\GrammarCoverage;
+use Storyfeed\Testing\HeadlineCoverage;
 
-GrammarCoverage::assertCoversAggregates();
-GrammarCoverage::assertCoversPossibleAggregates();
+HeadlineCoverage::assertCoversGroups();
+HeadlineCoverage::assertCoversPossibleGroups();
 ```
 
-`assertCoversPossibleAggregates()` checks possible groups before real traffic
+`assertCoversPossibleGroups()` checks possible groups before real traffic
 forms them. A type-specific headline such as `repeat.order.place` covers that
 type only. For axes that hold one type, the assertion checks each type recorded
 with the verb.
@@ -160,10 +160,10 @@ Choose a set of activities and group combinations explicitly:
 
 ```php memo="tests/Feature/FeedCoverageTest.php"
 use App\Models\Order;
-use Storyfeed\Testing\GrammarCoverage;
+use Storyfeed\Testing\HeadlineCoverage;
 
-GrammarCoverage::assertCovers([['order', 'place']]);
-GrammarCoverage::assertCoversAggregateMatrix(
+HeadlineCoverage::assertCovers([['order', 'place']]);
+HeadlineCoverage::assertCoversAggregateMatrix(
     axes: ['repeat', 'actors'],
     verbs: ['place', 'ask'],
     objectTypes: [Order::class],
@@ -174,7 +174,7 @@ GrammarCoverage::assertCoversAggregateMatrix(
 checks the verb alone. A missing headline is named by its key:
 
 ```text
-Storyfeed aggregate grammar coverage is incomplete:
+Storyfeed group headline coverage is incomplete:
   - repeat.order.place (no aggregate headline)
   - actors.place (no aggregate headline)
 ```

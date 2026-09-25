@@ -29,7 +29,7 @@ stay, and name a [tombstone](/deeper/deleted-models) instead.
 
 ### Selecting Candidates
 
-A healer yields one `StoryRetirement` per activity that might need retiring.
+A healer yields one `ActivityRetirement` per activity that might need retiring.
 Here the object is an `asset_reference`, whose `assets` table hard-deletes:
 
 ```php memo="app/Storyfeed/AssetHealer.php"
@@ -39,7 +39,7 @@ namespace App\Storyfeed;
 
 use Illuminate\Support\Facades\DB;
 use Storyfeed\Contracts\FeedHealer;
-use Storyfeed\Healing\StoryRetirement;
+use Storyfeed\Healing\ActivityRetirement;
 use Storyfeed\Models\Activity;
 
 class AssetHealer implements FeedHealer
@@ -55,7 +55,7 @@ class AssetHealer implements FeedHealer
             ->where('verb', 'publish')
             ->where('object_type', 'asset_reference')
             ->lazyById() as $activity) {
-            yield new StoryRetirement(
+            yield new ActivityRetirement(
                 label: "Asset activity {$activity->id}",
                 activityId: $activity->id,
                 whenAbsent: static fn (Activity $live): bool =>
@@ -102,10 +102,10 @@ A class or an instance works. `key()` names the healer for `--only`.
 ### Previewing Retirements
 
 ```shell
-php artisan storyfeed:heal --dry-run
+php artisan storyfeed:heal --pretend
 ```
 
-`--dry-run` prints each request's label, outcome and `meta`, and writes
+`--pretend` prints each request's label, outcome and `meta`, and writes
 nothing:
 
 ```
@@ -138,7 +138,7 @@ Test through the command. With `AssetHealer` registered, and two activities,
 one whose asset exists and one whose asset was deleted:
 
 ```php memo="tests/Feature/FeedTest.php"
-$this->artisan('storyfeed:heal', ['--dry-run' => true, '--only' => ['assets']])
+$this->artisan('storyfeed:heal', ['--pretend' => true, '--only' => ['assets']])
     ->assertSuccessful();
 
 expect($absentSourceStory->fresh()->trashed())->toBeFalse();
