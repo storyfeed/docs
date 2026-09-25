@@ -12,6 +12,7 @@ import RowAnatomy from './components/RowAnatomy.vue'
 import FeedExample from './components/FeedExample.vue'
 import SampleLink from './components/SampleLink.vue'
 import { FEED_LINK, FEED_NOW } from './feed/keys'
+import { WORLD_ANCHOR } from './world'
 import './feed/feed.css'
 import './custom.css'
 
@@ -23,9 +24,10 @@ import './custom.css'
  * further from the truth every day the site was not rebuilt. Pinning it also
  * stops the ticking timer from ever starting.
  *
- * This instant is the one the sample payloads were captured against.
+ * It is the world's present anchor (see world.ts): the Fourth of July, 1985,
+ * in Hawkins, unless the anchor is set to another moment.
  */
-const DOCS_NOW = Date.parse('2026-08-14T15:00:00Z')
+const DOCS_NOW = WORLD_ANCHOR
 
 // The feed widgets are the demo app's own renderer, ported (see feed/README.md).
 // Registered globally so any page can show a feed without an import block, and

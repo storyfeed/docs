@@ -25,6 +25,13 @@ import {
     Eye,
     GitMerge,
     Ticket,
+    IceCreamCone,
+    Radio,
+    Star,
+    Newspaper,
+    Gamepad2,
+    FerrisWheel,
+    Film,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { Component } from 'vue';
@@ -80,6 +87,13 @@ const ICONS: Record<string, Component> = {
     'git-merge': GitMerge,
     ticket: Ticket,
     eye: Eye,
+    'ice-cream-cone': IceCreamCone,
+    radio: Radio,
+    star: Star,
+    newspaper: Newspaper,
+    'gamepad-2': Gamepad2,
+    'ferris-wheel': FerrisWheel,
+    film: Film,
 };
 
 const component = computed<Component>(
