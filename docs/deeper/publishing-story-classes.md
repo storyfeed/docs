@@ -119,13 +119,13 @@ Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
 <FeedExample :items="[placed]" />
 
 `Storyfeed::publish()` returns the activity, or `null` when `toFeedActivity()`
-returns `null`. `Storyfeed::publishNow()` publishes immediately. Construct the
-Story when publishing this verb; `story('place', $order)` cannot bypass its
-`toFeedActivity()` method.
+returns `null` or the Story implements `ShouldQueue`. `Storyfeed::publishNow()`
+publishes synchronously. Construct the Story when publishing this verb; a named
+lookup cannot bypass its `toFeedActivity()` method.
 
 Presentation methods are read without calling the constructor. `headline()`,
 `icon()`, `intent()`, `groups()`, `missing()`, `keepFor()`, `keepForever()`,
-`keepLatest()` and `middleware()` must be independent of constructor data.
+`keepLatest()`, `period()` and `middleware()` must be independent of constructor data.
 The data belongs in `toFeedActivity()`.
 
 ## Every Activity for One Model
