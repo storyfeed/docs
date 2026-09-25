@@ -15,7 +15,8 @@ const withKeyValue = { ...content.confirmed,
     { key: 'Items', value: '1', verbatim: false, missing: null },
     { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
   ] }] } }
-const previews = logOf([withThread, content.ready, withKeyValue, content.photo, content.product])
+const previews = logOf([withThread, content.ready, withKeyValue, content.photo, content.product,
+  ...liveOf(scene.guide.usageExamples.photos)])
 
 const actorless = logOf(Object.values(scene.cookbook.actorless))
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)

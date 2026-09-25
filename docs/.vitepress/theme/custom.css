@@ -142,6 +142,12 @@
   margin-top: 8px;
 }
 
+/* VitePress gives every `.vp-doc img` a 16px vertical margin; inside a feed
+   thumbnail that pushed the photo down and left a grey lip above it. */
+.vp-doc .sf-media img {
+  margin: 0;
+}
+
 /* The last row's rail should not run into the well's floor. */
 .vp-doc .sf-feed > *:last-child {
   margin-bottom: 0;

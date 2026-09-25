@@ -70,8 +70,11 @@ const strip = computed(() => {
         .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
         .filter((t: any) => t.image !== null);
     const distinct = (props.item as any).distinct?.objects ?? tiles.length;
+    // A sample with pictureless members means the unseen ones may have none
+    // either, so "+N more" would promise photos that do not exist.
+    const mixed = tiles.length < sample.length;
 
-    return { tiles, overflow: Math.max(distinct - tiles.length, 0) };
+    return { tiles, overflow: mixed ? 0 : Math.max(distinct - tiles.length, 0) };
 });
 
 /**

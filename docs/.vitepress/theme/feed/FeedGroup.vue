@@ -131,13 +131,17 @@ const entities = computed(() => ({
  * you are already looking at is noise.
  */
 const strip = computed(() => {
-    const tiles = (props.item.sample.objects ?? [])
+    const sample = props.item.sample.objects ?? [];
+    const tiles = sample
         .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
         .filter((t: any) => t.image !== null);
+    // A sample with pictureless members means the unseen ones may have none
+    // either, so "+N more" would promise photos that do not exist.
+    const mixed = tiles.length < sample.length;
 
     return {
         tiles,
-        overflow: Math.max((props.item.distinct.objects ?? tiles.length) - tiles.length, 0),
+        overflow: mixed ? 0 : Math.max((props.item.distinct.objects ?? tiles.length) - tiles.length, 0),
     };
 });
 
