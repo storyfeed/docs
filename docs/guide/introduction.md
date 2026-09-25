@@ -1,8 +1,8 @@
 # Introduction
 
 Storyfeed is an implementation of the activity feed pattern in Laravel.
-Activities are recorded explicitly, read back as a timeline or an aggregated
-feed, and serialized following
+Activities are recorded explicitly, displayed as a log, a live feed or a
+summary, and serialized following
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
 
 <script setup>
