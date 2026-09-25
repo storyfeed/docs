@@ -113,6 +113,10 @@ const elsewhere = {
   contract: entity('document', 'fv-1', 'the Family Video employment contract', '/documents/fv-1'),
   ticket:   entity('ticket', '881', 'Ticket #881: Dig Dug high score reset', '/tickets/881'),
   desk:     entity('team', 'photo', 'the Hawkins Post photo desk', '/teams/photo'),
+  keycard:  entity('task', '16', 'Find the keycard', '/tasks/16'),
+  tunnels:  entity('task', '15', 'Map the tunnels', '/tasks/15'),
+  pull213:  entity('pull_request', '213', 'Pull request #213', '/pulls/213'),
+  invoice82: entity('invoice', '1982', 'Scoops Ahoy invoice #1982', '/invoices/1982'),
 }
 
 const otherApps = [
@@ -135,6 +139,44 @@ const otherApps = [
     headline_template: ':actor joined :target',
     actor: who.runner, target: elsewhere.desk }),
 ]
+
+// Everything the page has shown, in one workspace's day, with a little more
+// around it: the kitchen's dinner rush, and the other apps' own repeats.
+const newestFirst = (rows) => [...rows].sort((a, b) => b.published_at.localeCompare(a.published_at))
+const also = [
+  activity({ id: 'x1', verb: 'complete', glyph: 'square-check', published_at: '2026-08-14T16:05:00.000000Z',
+    headline_template: ':actor completed :object in :target', actor: who.customer2, object: elsewhere.keycard, target: elsewhere.project }),
+  activity({ id: 'x2', verb: 'complete', glyph: 'square-check', published_at: '2026-08-14T15:50:00.000000Z',
+    headline_template: ':actor completed :object in :target', actor: who.customer2, object: elsewhere.tunnels, target: elsewhere.project }),
+  activity({ id: 'x3', verb: 'merge', glyph: 'git-merge', published_at: '2026-08-14T14:40:00.000000Z',
+    headline_template: ':actor merged :object into :target', actor: who.customer3, object: elsewhere.pull213, target: elsewhere.repo }),
+  activity({ id: 'x4', verb: 'pay', glyph: 'receipt', published_at: '2026-08-14T13:30:00.000000Z',
+    headline_template: ':actor marked :object paid', actor: party.service, object: elsewhere.invoice82 }),
+  activity({ id: 'x5', verb: 'join', glyph: 'user-plus', published_at: '2026-08-14T09:10:00.000000Z',
+    headline_template: ':actor joined :target', actor: who.customer2, target: elsewhere.desk }),
+  activity({ id: 'x6', verb: 'join', glyph: 'user-plus', published_at: '2026-08-14T08:45:00.000000Z',
+    headline_template: ':actor joined :target', actor: who.cook, target: elsewhere.desk }),
+]
+const worldLog = newestFirst([...log, ...otherApps, ...also])
+
+const tasks = group({ id: 'w1', verb: 'complete', axis: 'repeat', count: 3, glyph: 'square-check',
+  published_at: '2026-08-14T16:20:00.000000Z', headline_template: ':actor completed :count tasks in :target',
+  actors: [who.customer2], targets: [elsewhere.project], distinct: { actors: 1, objects: 3, targets: 1 } })
+const merges = group({ id: 'w2', verb: 'merge', axis: 'repeat', count: 2, glyph: 'git-merge',
+  published_at: '2026-08-14T15:05:00.000000Z', headline_template: ':actor merged :count pull requests into :target',
+  actors: [who.customer3], targets: [elsewhere.repo], distinct: { actors: 1, objects: 2, targets: 1 } })
+const invoices = group({ id: 'w3', verb: 'pay', axis: 'repeat', count: 2, glyph: 'receipt',
+  published_at: '2026-08-14T14:00:00.000000Z', headline_template: ':actor marked :count invoices paid',
+  actors: [party.service], distinct: { actors: 1, objects: 2 } })
+const singles = otherApps.filter((row) => ['sign', 'assign'].includes(row.verb))
+const joins = worldLog.filter((row) => row.verb === 'join')
+
+const worldLive = newestFirst([...live, tasks, merges, invoices, ...singles, ...joins])
+const worldSummary = newestFirst([...summary, tasks, merges, invoices, ...singles,
+  group({ id: 'w4', verb: 'join', axis: 'actors', count: 3, glyph: 'user-plus',
+    published_at: '2026-08-14T09:10:00.000000Z', headline_template: ':actors joined :target',
+    actors: [who.customer2, who.cook, who.runner], targets: [elsewhere.desk], distinct: { actors: 3, targets: 1 } }),
+])
 </script>
 
 <a id="what-is-an-activity"></a>
@@ -243,7 +285,7 @@ The same recorded activities display three ways. [Reading Feeds](/basics/reading
 
 The familiar feed, and the typical home page: repeats collapse, so one person doing the same thing again reads as one row.
 
-<FeedExample :items="live" />
+<FeedExample :items="worldLive" />
 
 <a id="as-a-grouped-summary"></a>
 <a id="aggregated-feeds"></a>
@@ -252,7 +294,7 @@ The familiar feed, and the typical home page: repeats collapse, so one person do
 
 A grouped digest: many people in one place, one person across many things.
 
-<FeedExample :items="summary" />
+<FeedExample :items="worldSummary" />
 
 <a id="as-a-timeline"></a>
 <a id="timeline-feeds"></a>
@@ -261,4 +303,4 @@ A grouped digest: many people in one place, one person across many things.
 
 The atomic timeline: every activity, one row each.
 
-<FeedExample :items="log" />
+<FeedExample :items="worldLog" />
