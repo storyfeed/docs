@@ -105,7 +105,7 @@ export default defineConfig({
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
           { text: 'Recording Activities', link: '/basics/recording' },
-          { text: 'Verbs', link: '/basics/verbs' },
+          { text: 'Activity Verbs', link: '/basics/verbs' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Content', link: '/basics/activity-content' },
           { text: 'Reading Feeds', link: '/basics/reading' },

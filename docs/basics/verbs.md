@@ -1,4 +1,4 @@
-# Verbs
+# Activity Verbs
 
 <script setup>
 import { activity, scenes } from '../.vitepress/theme/samples'
