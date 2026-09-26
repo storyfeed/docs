@@ -246,17 +246,19 @@ const ALT: Record<string, string> = {
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
 const mediaOf = (file: string) => ({ icon: null, image: null, files: [],
-  preview: picture(file), url: picture(file) })
+  preview: picture(file), url: null })
+const imageBody = (caption: string) => [{ $body: 'Storyfeed/Body/Image', $v: 1,
+  caption, alt: caption, width: null, height: null, image: 'preview' }]
 
 const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,
-  file ? { media: mediaOf(file) } : {})
-for (const [key, file] of Object.entries(photographed)) things[key] = { ...things[key], media: mediaOf(file) }
-venues.scoops = { ...venues.scoops, media: mediaOf('parlour') }
-fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel') }
-fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
+  file ? { media: mediaOf(file), body: imageBody(ALT[file]) } : {})
+for (const [key, file] of Object.entries(photographed)) things[key] = { ...things[key], media: mediaOf(file), body: [...(things[key].body ?? []), ...imageBody(things[key].label)] }
+venues.scoops = { ...venues.scoops, media: mediaOf('parlour'), body: [...(venues.scoops.body ?? []), ...imageBody(venues.scoops.label)] }
+fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel'), body: [...(fare.pretzel.body ?? []), ...imageBody(fare.pretzel.label)] }
+fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog'), body: [...(fare.hotDog.body ?? []), ...imageBody(fare.hotDog.label)] }
 // The photo belongs to the photo activity; the menu item's own preview is its
 // details card (set with the other bodies above).
-const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: mediaOf('sundae') })
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { media: mediaOf('sundae'), body: imageBody(APP_CONTENT.photo) })
 
 // ── The verbs ────────────────────────────────────────────────────────────────
 

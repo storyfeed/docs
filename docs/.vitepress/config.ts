@@ -171,6 +171,7 @@ export default defineConfig({
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
+          { text: 'Feed Media', link: '/basics/feed-media' },
           { text: 'Recording Activities', link: '/basics/recording' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Verbs', link: '/basics/verbs' },

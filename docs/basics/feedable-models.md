@@ -138,61 +138,22 @@ To add snapshot values while retaining a default label, use [`describeFeed()`](/
 <a id="links"></a>
 <a id="adding-links"></a>
 
-## Customizing a Model's Link
+## Linking Models and Showing Media
 
-Storyfeed resolves links when retrieving the feed. To set a model's link,
-define its static `feedMedia` method:
+Use `feedMedia()` to resolve a model's links, files, pictures, and actor avatar
+when the feed is retrieved. See [Feed Media](/basics/feed-media) for each job
+and its feed outcome.
 
-```php memo="app/Models/Order.php"
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-public static function feedMedia(FeedContext $context): ?FeedMedia // [!code highlight]
-{
-    return FeedMedia::make()->url(route('orders.show', $context->routeKey()));
-}
-```
-
-<FeedExample :items="withLink" />
-
-The method receives the snapshot through `$context`. Its `routeKey` method
-returns the model's route key, such as the ID or slug accepted by `route`.
-Return a `FeedMedia` with the URL, or `null` for no link.
-
-Alternatively, use the trait's implementation by registering a resolver in
-the model's `booted` method:
-
-```php memo="app/Models/Order.php" at="booted()"
-use Storyfeed\FeedContext;
-
-static::feedMediaUsing(
-    fn (FeedContext $context) => route('orders.show', $context->routeKey()), // [!code highlight]
-);
-```
-
-The trait calls the registered resolver, which may return a URL string,
-a `FeedMedia`, or `null`. Without a resolver, it returns `null`.
-A `feedMedia` method defined on the model takes precedence over the trait's
-implementation.
-
+<a id="the-link"></a>
+<a id="customizing-a-models-link"></a>
 <a id="a-link-per-feed"></a>
-
-A resolver may return a different URL for each
-[named feed](/basics/named-feeds#linking-each-feed-somewhere-different).
-
 <a id="storing-snapshot-data"></a>
 <a id="a-complete-model"></a>
-
-For snapshot data, see [Storing Snapshot Data](/reference/feedable#storing-snapshot-data).
-
 <a id="images"></a>
 <a id="showing-image-previews"></a>
-
-For images, see [Showing Image Previews](/reference/feedable#showing-image-previews).
-
 <a id="modal-links"></a>
 
-To mark a link for display in a modal, see [Modal Links](/reference/feedable#modal-links).
+For stored resolver inputs, see [Storing Snapshot Data](/reference/feedable#storing-snapshot-data).
 
 ::: headless
 :::

@@ -2,13 +2,8 @@
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-
 const withLink = [scene.order]
-const product = scene.basics.activityContent.product
-const withImage = [{ ...product, object: { ...product.object, body: null,
-  media: scene.basics.activityContent.photo.object.media } }]
-const openInPlace = [{ ...scene.basics.activityContent.photo,
-  object: { ...scene.basics.activityContent.photo.object, modal: true } }]
+
 </script>
 
 ## Introduction
@@ -130,7 +125,6 @@ A method defined on the model takes precedence over the trait's implementation.
 | `describeFeed(): void` | the model | when the snapshot is written | fill `$this->feedEntity()` |
 | `$this->feedEntity()` | inside `describeFeed()` | when the snapshot is written | the `FeedEntity` the snapshot is written from |
 | `static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => …)` | `booted()` | when the feed is retrieved | the link and media |
-| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a reference to the matching media slot, resolved when retrieved |
 | `guessFeedLabel(): string` | the model, to override | when no label is set | the default label |
 | `updateFeedSnapshot()` | anywhere | when called | refresh the snapshot outside a save |
 | `deleteFromFeed()` | anywhere | when called | soft-delete every activity involving the model |
@@ -533,69 +527,8 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 
 ### Modal Links
 
-To mark a photo or document link for display in a modal, call the `modal`
-method on its media. This sets `modal: true` on the entity:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context, FeedMedia $media) => $media
-                ->url(route('photos.show', $context->routeKey()))
-                ->modal(),
-        );
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context) => FeedMedia::make(
-                url: route('photos.show', $context->routeKey()),
-                modal: true,
-            ),
-        );
-    }
-}
-```
-
-:::
-
-<FeedExample :items="openInPlace" />
-
-The payload's `modal` field is a boolean.
+See [Linking to the Model](/basics/feed-media#linking-to-the-model) for URL,
+modal, and attribute examples.
 
 ### Storing Snapshot Data
 
@@ -655,165 +588,13 @@ retrieve them through `$context->data('mediaType')`; a missing key returns `null
 
 ### Showing Image Previews
 
-Add a media resolver to the `MenuItem` model's `booted` method. Use `preview`
-for the image and `url` for the link:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="booted()"
-use Storyfeed\FeedContext;
-use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
-
-static::feedMediaUsing(
-    fn (FeedContext $context, FeedMedia $media) => $media
-        ->url(route('menu.show', $context->routeKey()))
-        ->preview( // [!code highlight]
-            FeedImage::make()
-                ->src(route('menu.photo', $context->routeKey()))
-                ->mediaType($context->data('mediaType'))
-                ->width($context->data('width'))
-                ->height($context->data('height'))
-                ->alt($context->label()),
-        ),
-);
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php" at="booted()"
-use Storyfeed\FeedContext;
-use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
-
-static::feedMediaUsing(
-    fn (FeedContext $context, FeedMedia $media) => $media
-        ->url(route('menu.show', $context->routeKey()))
-        ->preview( // [!code highlight]
-            FeedImage::make(
-                src: route('menu.photo', $context->routeKey()),
-                mediaType: $context->data('mediaType'),
-                width: $context->data('width'),
-                height: $context->data('height'),
-                alt: $context->label(),
-            ),
-        ),
-);
-```
-
-:::
-
-<FeedExample :items="withImage" />
-
-The resolver receives the snapshot's values in `$context` and an empty
-`FeedMedia` in `$media`. Return the populated media to include the preview.
-See [Feedable API](/reference/feedable#feedmedia) for all media properties.
+See [Showing Pictures](/basics/feed-media#showing-pictures). A picture appears
+only when a body names its slot; the entity URL is only a link destination.
 
 ### Image Slots
 
-Non-image resources use the separate `files` list. Set it with
-`FeedMedia::make()->files($resource)` or `FeedMedia::make(files: [$resource])`,
-where `$resource` is a `Storyfeed\FeedResource`. The feed resolves each file
-when retrieved and exposes the list as `entity.media.files`.
-
-The slots are Activity Streams 2.0 property names:
-
-| Slot | Content |
-|---|---|
-| `icon` | small, square icon image, about 32×32, such as an avatar or logo |
-| `preview` | resource thumbnail for a compact feed |
-| `image` | larger image representing a non-image resource |
-| `url` | `FeedImage` instead of a string when the resource itself is an image |
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Document.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
-
-class Document extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        return FeedMedia::make()
-            ->url(route('documents.show', $context->routeKey()))
-            ->preview(
-                FeedImage::make()
-                    // resolved here, at read time
-                    ->src(route('documents.thumbnail', $context->routeKey()))
-                    // the intrinsic facts come from the snapshot
-                    ->mediaType($context->data('mediaType'))
-                    ->width($context->data('width'))
-                    ->height($context->data('height'))
-                    ->alt($context->label()),
-            );
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Document.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
-
-class Document extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        return FeedMedia::make(
-            url: route('documents.show', $context->routeKey()),
-            preview: FeedImage::make(
-                // resolved here, at read time
-                src: route('documents.thumbnail', $context->routeKey()),
-                // the intrinsic facts come from the snapshot
-                mediaType: $context->data('mediaType'),
-                width: $context->data('width'),
-                height: $context->data('height'),
-                alt: $context->label(),
-            ),
-        );
-    }
-}
-```
-
-:::
-
-Each argument below also has a method of the same name.
-
-| `FeedImage::make()` | Type |
-|---|---|
-| `src` | string, required when the image is used |
-| `mediaType` | `?string` |
-| `width`, `height` | `?int`; zero or negative values return `null` |
-| `alt` | `?string` |
-
-| `FeedResource::make()` | Type |
-|---|---|
-| `href` | string, required when the resource is used |
-| `mediaType` | `?string` |
-| `name` | `?string` |
-| `type` | string, default `Document` |
-
-Payload shape: [entity media](/reference/payload#entity-media).
-
-<span id="rich-rendering"></span>
+See [Feed Media](/basics/feed-media#showing-pictures) for the three slots and
+their Activity Streams meanings.
 
 ### Rich Content
 

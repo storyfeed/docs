@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { imageOf } from './body'
 import { computed, toRef } from 'vue';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedThread from './FeedThread.vue';
 import { formsIn, resolve } from './body';
-import FeedMedia from './FeedMedia.vue';
 import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
 import { useRelativeTime } from './useRelativeTime';
@@ -66,15 +66,9 @@ const resolved = computed<Rail>(() => {
  */
 const strip = computed(() => {
     const sample = (props.item as any).sample?.objects ?? [];
-    const tiles = sample
-        .map((e: any) => ({ image: e.media?.preview ?? e.media?.url ?? null, href: e.url ?? null }))
-        .filter((t: any) => t.image !== null);
-    const distinct = (props.item as any).distinct?.objects ?? tiles.length;
-    // A sample with pictureless members means the unseen ones may have none
-    // either, so "+N more" would promise photos that do not exist.
-    const mixed = tiles.length < sample.length;
-
-    return { tiles, overflow: mixed ? 0 : Math.max(distinct - tiles.length, 0) };
+    const tiles = sample.map((entity: any) => ({ image: imageOf(entity), href: entity.url ?? null }))
+        .filter((tile: any) => tile.image !== null);
+    return { tiles, overflow: 0 };
 });
 
 /**
@@ -110,26 +104,6 @@ const forms = computed(() => {
         ...resolve(object?.body).map(attributed),
         ...formsIn(object?.data).map(attributed),
     ];
-});
-
-/**
- * The row's own picture: the object's preview, or the object itself when the
- * resource IS an image. Never `icon`, which is representational rather than a
- * look at the thing.
- */
-const media = computed(() => {
-    const slots = (props.item as any).object?.media;
-
-    if (!slots) return null;
-
-    // A FORM THAT NAMES A SLOT OWNS IT. `MediaObject` stores `image: "preview"`
-    // and draws that slot itself, so the row must not paint the same picture
-    // above it — one photograph, in the place the form put it.
-    const claimed = forms.value.map((found: any) => found.payload?.image).filter(Boolean);
-
-    if (claimed.includes('preview') || claimed.includes('url')) return null;
-
-    return slots.preview ?? slots.url ?? null;
 });
 
 const slots = computed(() =>
@@ -227,10 +201,9 @@ const slots = computed(() =>
             />
             <slot v-else name="body" :node="item" />
 
-            <FeedMedia v-if="media" :image="media" />
 
             <FeedMediaStrip
-                v-else-if="strip.tiles.length"
+                v-if="strip.tiles.length"
                 :tiles="strip.tiles"
                 :overflow="strip.overflow"
             />

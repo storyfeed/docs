@@ -21,9 +21,11 @@ const withKeyValue = { ...content.confirmed,
 // The pack's own passage from a source: the oldest row whose object quotes one.
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
-const withFile = { ...content.photo, object: { ...content.photo.object,
+const withImage = content.photo
+const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
+  type: 'document', label: 'Signed Agreement.pdf', url: '/documents/signed-agreement', media: null,
   body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
-    name: content.photo.object.label, size: 137767, mediaType: 'image/jpeg' }] } }
+    name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 </script>
 
 ## Introduction
@@ -257,13 +259,40 @@ and marks the text as complete:
 
 <FeedExample :items="[content.planck]" />
 
+### Adding an Image
+
+Use an `Image` body to show a photograph with a caption. The body names a
+`feedMedia` slot; it never stores the picture's URL. `withPreview()` selects
+the preview slot, which is also the default:
+
+```php memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\Image;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label($this->name)
+    ->body(
+        Image::make()
+            ->caption($this->subject)
+            ->alt($this->description)
+            ->withPreview()
+    );
+```
+
+<FeedExample :items="[withImage]" />
+
+Use `withImage()` for the image slot or `withIcon()` for the icon slot.
+The renderer uses `alt`, then the caption, then an empty alt attribute. An empty
+slot draws nothing, including the caption. See [Feed Media](/basics/feed-media#showing-pictures)
+for the resolver that supplies the picture.
+
 ### File Attachment
 
-Use `FileAttachment` in a `Photo` model's `toFeed` method to include the photo's file details:
+Use `FileAttachment` in a `Document` model's `toFeed` method to describe a PDF, such as a signed agreement:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Photo.php" at="toFeed()"
+```php [Fluent Syntax] memo="app/Models/Document.php" at="toFeed()"
 use Storyfeed\Body\FileAttachment;
 use Storyfeed\FeedEntity;
 
@@ -272,12 +301,12 @@ return FeedEntity::make()
     ->body( // [!code highlight]
         FileAttachment::make()
             ->size($this->bytes)
-            ->mediaType($this->mime)
+            ->mediaType('application/pdf')
             ->name($this->name)
     );
 ```
 
-```php [Named Arguments] memo="app/Models/Photo.php" at="toFeed()"
+```php [Named Arguments] memo="app/Models/Document.php" at="toFeed()"
 use Storyfeed\Body\FileAttachment;
 use Storyfeed\FeedEntity;
 
@@ -285,7 +314,7 @@ return FeedEntity::make(
     label: $this->name,
     body: FileAttachment::make( // [!code highlight]
         size: $this->bytes,
-        mediaType: $this->mime,
+        mediaType: 'application/pdf',
         name: $this->name,
     ),
 );
@@ -296,7 +325,7 @@ return FeedEntity::make(
 <FeedExample :items="[withFile]" />
 
 The `FileAttachment` body stores file details. Configure the URL separately with the
-[link resolver](/basics/feedable-models#the-link).
+[link resolver](/basics/feed-media#linking-to-the-model).
 
 ### Lists of Items
 
@@ -469,6 +498,7 @@ body fields that accept it.
 |---|---|---|
 | `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
+| `Image` | a picture and caption | `caption`, `alt`, `width`, `height`, `image` (slot name) |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | named items with optional links | `title`, `defaultPlaceholder`, `items[]`, `ordered`, `totalItems`, `more` |

@@ -4,6 +4,7 @@ import Excerpt from './Excerpt.vue'
 import FileAttachment from './FileAttachment.vue'
 import Prose from './Prose.vue'
 import ItemList from './ItemList.vue'
+import Image from './Image.vue'
 import MediaObject from './MediaObject.vue'
 
 /**
@@ -23,6 +24,7 @@ const FORMS: Record<string, Component> = {
     'Storyfeed/Body/File': FileAttachment,
     'Storyfeed/Body/Prose': Prose,
     'Storyfeed/Body/ItemList': ItemList,
+    'Storyfeed/Body/Image': Image,
     'Storyfeed/Body/MediaObject': MediaObject,
 }
 
@@ -66,4 +68,17 @@ export function resolve(body: unknown): ResolvedDetail[] {
 
         return component ? [{ component, payload: form }] : []
     })
+}
+
+/** Only an Image body opts a sampled entity into the photograph strip. */
+export function imageOf(entity: any): any {
+    const bodies = [...resolve(entity?.body), ...formsIn(entity?.data)]
+    for (const { payload } of bodies) {
+        if (payload.$body !== 'Storyfeed/Body/Image') continue
+        const slot = payload.image ?? 'preview'
+        if (!['icon', 'preview', 'image'].includes(slot)) continue
+        const image = entity?.media?.[slot]
+        if (image?.src) return { ...image, alt: payload.alt ?? payload.caption ?? '' }
+    }
+    return null
 }
