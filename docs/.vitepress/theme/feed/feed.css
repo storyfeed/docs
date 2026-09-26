@@ -524,9 +524,26 @@ a.sf-entity:hover {
     font-size: 13px;
 }
 
-.sf-media-object { display: flex; flex-direction: column; gap: 4px; }
-.sf-media-object__subject { margin: 0; font-weight: 600; font-size: 13.5px; }
-.sf-media-object__footnote { margin: 2px 0 0; font-size: 12.5px; color: var(--sf-faint); }
+.sf-media-object {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 32rem;
+    margin-top: 6px;
+    padding: 12px;
+    border: 1px solid var(--sf-line);
+    border-radius: 8px;
+    background: var(--sf-hover);
+    min-width: 0;
+}
+.sf-media-object__image { flex: 0 0 64px; width: 64px; }
+.sf-media-object__image .sf-media { width: 64px; height: 64px; margin: 0; border-radius: 6px; }
+.sf-media-object__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; overflow-wrap: anywhere; }
+.sf-media-object__subject { margin: 0; font-weight: 500; font-size: 13.5px; color: var(--sf-text); }
+.sf-media-object__content { color: var(--sf-muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.sf-media-object__attachments { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 0; padding: 0; list-style: none; }
+.sf-media-object__footnote { margin: 2px 0 0; font-size: 12px; color: var(--sf-faint); }
 
 /* PROSE AND VERBATIM. `verbatim` is a fact about the text — reproduced
    exactly — and fixed width is this renderer's conclusion from it, not an

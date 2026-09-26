@@ -45,23 +45,28 @@ const footnote = computed(() => {
 
 <template>
     <div class="sf-media-object">
-        <p v-if="subject" class="sf-media-object__subject">
-            <component :is="linkComponent" v-if="subject.href" :href="subject.href">{{ subject.label }}</component>
-            <template v-else>{{ subject.label }}</template>
-        </p>
+        <div v-if="picture" class="sf-media-object__image">
+            <FeedMedia :image="picture" />
+        </div>
+        <div class="sf-media-object__body">
+            <p v-if="subject" class="sf-media-object__subject">
+                <component :is="linkComponent" v-if="subject.href" :href="subject.href">{{ subject.label }}</component>
+                <template v-else>{{ subject.label }}</template>
+            </p>
 
-        <p v-if="payload.content" class="sf-prose">{{ payload.content }}</p>
+            <p v-if="payload.content" class="sf-prose sf-media-object__content">{{ payload.content }}</p>
 
-        <FeedMedia v-if="picture" :image="picture" />
+            <ul v-if="payload.attachments?.length" class="sf-media-object__attachments">
+            <li v-for="(file, i) in payload.attachments ?? []" :key="i" class="sf-file">
+                <component :is="linkComponent" :href="file.href">{{ file.name ?? file.href }}</component>
+                <span v-if="file.mediaType"> · {{ file.mediaType }}</span>
+            </li>
+            </ul>
 
-        <p v-for="(file, i) in payload.attachments ?? []" :key="i" class="sf-file">
-            <component :is="linkComponent" :href="file.href">{{ file.name ?? file.href }}</component>
-            <span v-if="file.mediaType"> · {{ file.mediaType }}</span>
-        </p>
-
-        <p v-if="footnote" class="sf-media-object__footnote">
-            <component :is="linkComponent" v-if="footnote.href" :href="footnote.href">{{ footnote.label }}</component>
-            <template v-else>{{ footnote.label }}</template>
-        </p>
+            <p v-if="footnote" class="sf-media-object__footnote">
+                <component :is="linkComponent" v-if="footnote.href" :href="footnote.href">{{ footnote.label }}</component>
+                <template v-else>{{ footnote.label }}</template>
+            </p>
+        </div>
     </div>
 </template>
