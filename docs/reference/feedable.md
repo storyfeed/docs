@@ -2,9 +2,8 @@
 
 ## Introduction
 
-Everything a `Feedable` model can put on the feed, and everything it can read
-back at render time. [Feedable Models](/basics/feedable-models) shows the
-common path.
+The `Feedable` API defines model snapshots and resolves current links and
+media. See [Feedable Models](/basics/feedable-models) for setup.
 
 <span id="the-contract"></span>
 
@@ -27,14 +26,13 @@ interface Feedable
 }
 ```
 
-| Method | Runs At | Produces |
+| Method | Runs At | Returns |
 |---|---|---|
-| `toFeed()` | publish time, and again on every save | the snapshot: label, data, bodies |
-| `feedMedia()` | read time, statically, from the snapshot | links and media, fresh on every read |
+| `toFeed()` | publication and every model save | snapshot labels, data, and bodies |
+| `feedMedia()` | feed retrieval, called statically with snapshot data | current links and media |
 
-`InteractsWithFeed` writes both methods, so a model with the trait and no feed
-code is complete. A `toFeed()` or `feedMedia()` written on the model takes
-precedence over the trait's.
+`InteractsWithFeed` implements both methods. You may use its defaults or
+override either method on the model.
 
 ## InteractsWithFeed
 
@@ -42,18 +40,17 @@ precedence over the trait's.
 |---|---|---|---|
 | `describeFeed(): void` | the model | when the snapshot is written | fill `$this->feedEntity()` |
 | `$this->feedEntity()` | inside `describeFeed()` | when the snapshot is written | the `FeedEntity` the snapshot is written from |
-| `static::feedMediaUsing(fn ($context, $media) => …)` | `booted()` | when the feed is read | the link and media |
-| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a reference to the matching media slot, filled at read time |
+| `static::feedMediaUsing(fn ($context, $media) => …)` | `booted()` | when the feed is retrieved | the link and media |
+| `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a reference to the matching media slot, resolved when retrieved |
 | `guessFeedLabel(): string` | the model, to override | when no label is set | the default label |
 | `updateFeedSnapshot()` | anywhere | when called | refresh the snapshot outside a save |
 | `deleteFromFeed()` | anywhere | when called | soft-delete every activity involving the model |
-| `forceDeleteFromFeed()` | anywhere | when called | permanently delete every activity involving the model, including soft-deleted ones, with their grouping and participant rows |
+| `forceDeleteFromFeed()` | anywhere | when called | permanently delete every activity involving the model, including soft-deleted ones, with their grouping and participant records |
 | `storyfeed(?string $preset = null)` | anywhere | when called | the model's own feed |
 
-A `feedMediaUsing()` closure receives the `FeedContext` and an empty
-`FeedMedia`, and returns a URL string, the `$media` it filled, or `null` for no
-link. Registering again replaces the closure. A model that registers none is
-not a link.
+A `feedMediaUsing()` closure receives a `FeedContext` and an empty `FeedMedia`.
+Return a URL string, the populated `$media`, or `null` for no link. Registering
+another closure replaces the first. Without a resolver, the model has no link.
 
 ::: code-group
 
@@ -123,7 +120,7 @@ class Order extends Model implements Feedable
 
 ### Default Labels
 
-A label left unset is guessed, first match wins:
+Unset labels use the first available value:
 
 | Guess | Example |
 |---|---|
@@ -143,14 +140,13 @@ Storyfeed::guessFeedLabelsUsing(
 );
 ```
 
-A model that writes its own `guessFeedLabel()` is not asked by the app-wide
-guesser. To reach the trait's guess from inside it, alias it:
+Overriding `guessFeedLabel()` bypasses the application-wide guesser. To call
+the trait's implementation from your override, alias it:
 `use InteractsWithFeed { guessFeedLabel as guessedFeedLabel; }`.
 
 ### Snapshot Maintenance
 
-`InteractsWithFeed` listens to the model's events. None of them runs while
-recording is disabled.
+`InteractsWithFeed` handles these model events while recording is enabled:
 
 | Event | What happens |
 |---|---|
@@ -167,13 +163,12 @@ Activities stay unless their verb declares `forgetWhenMissing()`.
 
 ### Reading the Model's Feed
 
-`$model->storyfeed()` is `Storyfeed::feed()->involving($model)` with the
-argument filled in, and takes an optional feed name:
-`$model->storyfeed('customer')`.
+`$model->storyfeed()` is shorthand for `Storyfeed::feed()->involving($model)`.
+Pass a feed name to use a named feed: `$model->storyfeed('customer')`.
 
-The `storyfeed()` helper function is different: it returns the manager, or a
-pending activity when given a verb. Inside a model, `storyfeed()` is the helper
-and `$this->storyfeed()` is the model's feed.
+The global `storyfeed()` helper returns the manager, or a pending activity
+when passed a verb. Inside a model, use `$this->storyfeed()` to retrieve that
+model's feed.
 
 <span id="models-you-don-t-own"></span>
 
@@ -196,16 +191,15 @@ Storyfeed::feedable(Media::class)
 | `->toFeedUsing(fn ($model, $entity) => …)` | the model and an empty `FeedEntity` | the entity, or nothing; an unset label is guessed |
 | `->feedMediaUsing(fn ($context, $media) => …)` | the `FeedContext` and an empty `FeedMedia` | a URL string, the `$media`, or `null` |
 
-Both closures are optional. The registered class is `Feedable` everywhere
-Storyfeed checks: its saves refresh its snapshot, and its deletes, force
-deletes and restores reach the feed. Registration is by exact class, so
-register the class that is instantiated, not a parent. A class that implements
-`Feedable` can't also be registered.
+Both closures are optional. Storyfeed treats the registered class as Feedable:
+saves refresh snapshots, and deletion and restoration update its activities.
+Register the exact instantiated class; parent registrations do not apply to
+subclasses. Classes implementing `Feedable` cannot also be registered.
 
 ## `FeedEntity`
 
-`FeedEntity::make()` starts empty. Every argument it takes has a method of the
-same name, and each method changes the entity and returns it.
+`FeedEntity::make()` starts empty. Each argument has a matching method that
+updates and returns the entity.
 
 ::: code-group
 
@@ -229,15 +223,15 @@ FeedEntity::make(
 | Method | Type | On the Payload |
 |---|---|---|
 | `label()` | `?string` | `entity.label` |
-| `data()` | array or `Arrayable`, merged; or a key and a value | `entity.data`, what `feedMedia()` reads back |
+| `data()` | array or `Arrayable`, merged; or a key and a value | `entity.data`, available to `feedMedia()` |
 | `body()` | a body, a string, or a list; each call appends | `entity.body` |
 | `content()` | `?string` | authored text, for comments and posts |
 | `mediaType()` | `?string` | the encoding of `content` |
 | `attributedTo()` | `?string` | the author's IRI |
 | `tombstone()` | `Closure(PendingTombstone)` | not on the payload: what the model's tombstone keeps |
 
-`FeedEntity` is `Conditionable`, so `->when()` and `->unless()` work in a
-chain. Body types are listed in [Activity Content](/basics/activity-content#built-in-body-types).
+`FeedEntity` supports `when()` and `unless()` through `Conditionable`.
+See [Activity Content](/basics/activity-content#built-in-body-types) for body types.
 
 Payload shape: [entity object](/reference/payload#entity-object).
 
@@ -253,18 +247,18 @@ $this->feedEntity()
 
 | Method | Effect |
 |---|---|
-| `keepLabel(bool $keep = true)` | the tombstone keeps the model's label, so its activities go on naming it |
+| `keepLabel(bool $keep = true)` | the tombstone keeps the model's label, for display in its activities |
 
-It applies when a model event reports the delete. A tombstone made by the
-trickle or by `Storyfeed::tombstone()` keeps no label. Deleting a model's
-activities with it is the verb's decision, `->forgetWhenMissing()`.
-[Deleted Models](/deeper/deleted-models) covers the whole lifecycle.
+`keepLabel()` applies only to model-event deletions. Tombstones created by
+`storyfeed:trickle` or `Storyfeed::tombstone()` omit labels. Use the verb's
+`forgetWhenMissing()` setting to delete affected activities.
+See [Deleted Models](/deeper/deleted-models).
 
 ## `FeedContext`
 
-`feedMedia()` receives a `FeedContext`. The resolver runs for every entity with
-a snapshot on a page, including sampled group entities that are never drawn as links,
-so it should make no writes and no queries except `model()`.
+`feedMedia()` receives a `FeedContext` for each entity with a snapshot,
+including sampled group entities that may not display as links. Resolvers
+should not write data or query the database except through `model()`.
 
 | Accessor | Returns |
 |---|---|
@@ -273,12 +267,12 @@ so it should make no writes and no queries except `model()`.
 | `$context->routeKey()` | the entity's route key, as `getRouteKey()` returned it when the snapshot was written; `key()` when no route key is stored |
 | `$context->label()` | the cached label |
 | `$context->data()` | the `data` array the snapshot holds |
-| `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key reads as `null`, or as the second argument |
-| `$context->feed()` | the registered name of the feed being read, or `null` on an ad-hoc feed and in the Activity Streams serializer |
-| `$context->model()` | the live model, or `null` |
+| `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key returns `null`, or as the second argument |
+| `$context->feed()` | the registered name of the feed being retrieved, or `null` on an ad-hoc feed and in the Activity Streams serializer |
+| `$context->model()` | the current model, or `null` |
 
-If the resolver throws, the exception is reported and the entity gets
-`url: null` and `media: null`; the rest of the feed renders.
+If the resolver throws, Storyfeed reports the exception and returns
+`url: null` and `media: null` for that entity. The rest of the feed still renders.
 
 <span id="context-model"></span>
 
@@ -288,15 +282,15 @@ If the resolver throws, the exception is reported and the entity gets
 $document = $context->model(with: ['project'], withTrashed: true);
 ```
 
-One query per class per page, however many entities ask. It returns `null` when
-the row is gone, soft-deleted, or `storyfeed.hydration.enabled` is `false`, so
-the resolver must handle `null`.
+`model()` loads all entities of a class with one query per page. It returns
+`null` for missing or soft-deleted models, or when `storyfeed.hydration.enabled`
+is `false`. Handle `null` in your resolver.
 
 | Argument | Effect |
 |---|---|
-| `with: ['project']` | eager loads the relation across the whole batch; nested access without it is an N+1 |
-| `withCount: ['comments']` | loads relationship counts with the model batch |
-| `withTrashed: true` | includes soft-deleted rows, on models that soft-delete |
+| `with: ['project']` | eager loads the relation for all loaded models; nested access without it is an N+1 |
+| `withCount: ['comments']` | loads relationship counts for all loaded models |
+| `withTrashed: true` | includes soft-deleted records, on models that soft-delete |
 
 ## `FeedMedia`
 
@@ -332,18 +326,18 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 | `modal()` | bool, default `true` | `entity.modal` |
 | `icon()`, `preview()`, `image()` | `FeedImage`, or a bare src string | `entity.media` |
 | `attachments()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.attachments` |
-| `body()` | a body, a list, or a closure called only when the body is read; each call appends | `entity.body`, after the stored bodies |
+| `body()` | a body, a list, or a closure called when the body is resolved; each call appends | `entity.body`, after the stored bodies |
 
 ### Image Slots
 
 The slots are Activity Streams 2.0 property names:
 
-| Slot | Holds |
+| Slot | Content |
 |---|---|
-| `icon` | small and representational, about 32×32 and square: an avatar, a logo |
-| `preview` | a preview of the resource: the thumbnail a dense feed paints |
-| `image` | a larger visual representation of a non-image resource: a hero shot |
-| `url` | a `FeedImage` in place of a string when the resource itself is an image |
+| `icon` | small, square icon image, about 32×32, such as an avatar or logo |
+| `preview` | resource thumbnail for a compact feed |
+| `image` | larger image representing a non-image resource |
+| `url` | `FeedImage` instead of a string when the resource itself is an image |
 
 ::: code-group
 
@@ -421,7 +415,7 @@ Each argument below also has a method of the same name.
 |---|---|
 | `src` | string, required when the image is used |
 | `mediaType` | `?string` |
-| `width`, `height` | `?int`; a zero or negative value reads as `null` |
+| `width`, `height` | `?int`; zero or negative values return `null` |
 | `alt` | `?string` |
 
 | `FeedResource::make()` | Type |
@@ -458,18 +452,19 @@ FeedEntity::make(
 
 :::
 
-The payload carries the `Component` body in `entity.body`, with its `name`
-and `props`; what your frontend draws for the name is yours.
-[Custom Body Types](/deeper/body#drawing-your-own-component) covers it.
+A `Component` body appears in `entity.body` with its `name` and `props`.
+Your frontend maps the name to a component. See
+[Custom Body Types](/deeper/body#drawing-your-own-component).
 
 ## Morph Aliases
 
-Aliases are read from the app's morph map, or from `morph_map` in
-`config/storyfeed.php`, which merges into it. Storyfeed's own aliases resolve
-whether or not the app's map registers them.
+Aliases come from the application's morph map. The `morph_map` configuration
+in `config/storyfeed.php` is merged into it. Storyfeed's own aliases resolve
+without an application mapping.
 
-An activity whose role alias no longer resolves still appears in the payload with no resolved label or link. The trickle counts it as unresolved, and soft-deletes it only with
-`storyfeed.trickle.prune` or `storyfeed:trickle --prune`.
+Activities with unresolved role aliases remain in the payload without a
+label or link for that role. `storyfeed:trickle` counts them as unresolved
+and soft-deletes them only with `storyfeed.trickle.prune` or `--prune`.
 
 [Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
 map.
