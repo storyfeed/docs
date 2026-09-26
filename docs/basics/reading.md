@@ -241,22 +241,82 @@ Storyfeed::feed()
 
 ## Paginating Results
 
-Feeds use cursor pagination with 30 items per page by default. Pass the
-previous page's `next_cursor` to retrieve the next page:
+To paginate a feed, call the `cursorPaginate` method. It returns a
+`Storyfeed\FeedPaginator` and retrieves the cursor from the current request:
 
 <a id="reading-the-next-page"></a>
 
 ```php memo="routes/web.php"
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::get('/', function (Request $request) {
-    return Storyfeed::feed()
-        ->limit(20)
-        ->cursor($request->query('cursor'))
-        ->get();
+Route::get('/', function () {
+    return view('feed', [
+        'page' => Storyfeed::feed()->cursorPaginate(15),
+    ]);
 });
+```
+
+The argument specifies the number of items per page. If you omit it, the
+paginator uses the builder's limit, which defaults to 30. Iterating over the
+paginator returns `Storyfeed\Support\FeedItem` instances.
+
+To display pagination links in Blade, call the `links` method:
+
+```blade memo="resources/views/feed.blade.php"
+@foreach ($page as $item)
+    {{ $item->headline() }}
+@endforeach
+
+{{ $page->links() }}
+```
+
+The paginator uses Laravel's simple pagination views, including any views you
+have customized in your application. Feeds paginate forward only, so the
+previous-page link is disabled. The `nextPageUrl` method returns the next
+page's URL, or `null` on the last page. The `previousPageUrl` method returns
+`null`.
+
+### Customizing Pagination URLs
+
+To use a different query string parameter, pass its name as the second argument:
+
+```php
+$page = Storyfeed::feed()->cursorPaginate(15, 'feed_cursor');
+```
+
+Use the `withQueryString` method to include the current request's query string
+in pagination links. You may also append specific values or a URL fragment:
+
+```php
+$page = Storyfeed::feed()->cursorPaginate(15)->withQueryString();
+
+$page->appends(['filter' => 'mine'])->fragment('activity');
+```
+
+### Returning JSON
+
+Returning the paginator from a route produces JSON with Laravel's `data`,
+`path`, `per_page`, `next_cursor`, `next_page_url`, `prev_cursor`, and
+`prev_page_url` keys. It also includes the feed's `payload_version`, `items`,
+and `sync_token` keys. The `data` and `items` arrays contain the same items;
+`prev_cursor` and `prev_page_url` are `null`.
+
+Cursor strings are opaque. Pass them back unchanged without decoding or
+constructing them. In PHP, the paginator's `nextCursor` method returns a
+Laravel cursor object; its `encode` method returns the opaque string.
+
+### Paginating Without a Request
+
+For jobs and commands, use the `get` method. It returns a `FeedPage`, whose
+`nextCursor` method returns the opaque string for the next page:
+
+```php
+$page = Storyfeed::feed()->limit(15)->get();
+
+if ($cursor = $page->nextCursor()) {
+    $nextPage = Storyfeed::feed()->limit(15)->cursor($cursor)->get();
+}
 ```
 
 ### Handling a Changed Feed

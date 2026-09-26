@@ -120,7 +120,9 @@ Use its methods to access the [payload](/reference/payload):
 
 Echo `$item->headline()` to render the headline with linked entity labels.
 Items also support array access, such as `$item['verb']`. The `$page->items()`
-method returns the underlying arrays. See [FeedItem API](/reference/feed-item)
+method on a `FeedPage` returns the underlying arrays. On a
+`FeedPaginator`, it returns `FeedItem` instances; use `toArray()['items']`
+for the payload arrays. See [FeedItem API](/reference/feed-item)
 for all methods.
 
 ### Parts of a Row
@@ -140,17 +142,16 @@ Omit elements whose corresponding fields are empty.
 
 ### Displaying the Feed
 
-Pass the feed page to a view. Use the query string's cursor to retrieve
-[subsequent pages](/basics/reading#pagination):
+Pass a paginator to the view. The `cursorPaginate` method retrieves the
+current request's cursor for [subsequent pages](/basics/reading#pagination):
 
 ```php memo="routes/web.php"
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::get('/', function (Request $request) {
+Route::get('/', function () {
     return view('feed', [
-        'page' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
     ]);
 });
 ```
@@ -452,24 +453,15 @@ The feed component renders each item, followed by the pagination link:
     @endforeach
 </div>
 
-<x-feed.pager :cursor="$page->nextCursor()" />
+{{ $page->links() }}
 ```
 
 Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
 feed's root element.
 
-The pagination link uses the same URL with the next cursor. On the last page,
-`nextCursor` returns `null` and the link is omitted:
-
-```blade memo="resources/views/components/feed/pager.blade.php"
-@props(['cursor'])
-
-@if ($cursor)
-    <nav {{ $attributes }}>
-        <a href="{{ request()->fullUrlWithQuery(['cursor' => $cursor]) }}" rel="next">Older activity</a>
-    </nav>
-@endif
-```
+The `links` method renders Laravel's simple pagination view. You may customize
+it through Laravel's pagination views. Feeds support forward pagination only;
+the previous-page link is disabled and no links appear on the last page.
 
 <a id="degraded-entities"></a>
 
