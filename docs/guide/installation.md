@@ -73,6 +73,17 @@ Relation::enforceMorphMap([ // [!code highlight]
 in your application. Choose whether to enforce this requirement for your
 application, and keep aliases used by existing activities in the map.
 
+To require aliases only for Feedable models, call
+`Storyfeed::requireFeedableMorphMap()` in your service provider's `boot()` method.
+It is off by default. Enable it outside production to catch unaliased models
+when publishing; the doctor also reports them, and `storyfeed:cache` (including
+`php artisan optimize`) refuses to cache while required aliases are missing.
+
+```php
+// AppServiceProvider::boot()
+Storyfeed::requireFeedableMorphMap(! $this->app->isProduction());
+```
+
 ## Configuration
 
 The installer creates `config/storyfeed.php`. Every setting has a default; see [Configuration](/reference/configuration) for the available options.
