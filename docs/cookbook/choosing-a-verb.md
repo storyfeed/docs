@@ -11,63 +11,21 @@ A verb says what happened. It does not say what it happened to — the object
 already does that.
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(
-        PlaceOrderRequest $request,
-        Shop $shop,
-    ): RedirectResponse {
-        $order = $shop->orders()->create($request->validated());
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('place', $order)   // not 'order.place'
-            ->to($shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)   // not 'order.place' [!code highlight]
+    ->to($shop)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(
-        PlaceOrderRequest $request,
-        Shop $shop,
-    ): RedirectResponse {
-        $order = $shop->orders()->create($request->validated());
-
-        Storyfeed::record(
-            verb: 'place',   // not 'order.place'
-            object: $order,
-            actor: $request->user(),
-            target: $shop,
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'place',   // not 'order.place' [!code highlight]
+    object: $order,
+    actor: $request->user(),
+    target: $shop,
+);
 ```
 :::
 
@@ -118,121 +76,41 @@ Choose the word that describes the event in your application.
 A new menu item is `create`:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
-<?php
+```php [Fluent Syntax]
+$product = MenuItem::create($request->validated());   // a new menu item
 
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
-
-class MenuItemController extends Controller
-{
-    public function store(StoreMenuItemRequest $request): RedirectResponse
-    {
-        // the menu item is written here
-        $product = MenuItem::create($request->validated());
-
-        Act::Create->by($request->user())->object($product)->publish();
-
-        return to_route('menu-items.show', $product);
-    }
-}
+Act::Create->by($request->user())->object($product)->publish(); // [!code highlight]
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
-<?php
+```php [Named Arguments]
+$product = MenuItem::create($request->validated());   // a new menu item
 
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuItemController extends Controller
-{
-    public function store(StoreMenuItemRequest $request): RedirectResponse
-    {
-        // the menu item is written here
-        $product = MenuItem::create($request->validated());
-
-        Storyfeed::record(
-            verb: Act::Create,
-            object: $product,
-            actor: $request->user(),
-        );
-
-        return to_route('menu-items.show', $product);
-    }
-}
+Storyfeed::record(
+    verb: Act::Create, // [!code highlight]
+    object: $product,
+    actor: $request->user(),
+);
 ```
 :::
 
 Putting an existing menu item on a menu is `add`:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/MenuDishController.php"
-<?php
+```php [Fluent Syntax]
+$menu->menuItems()->attach($product);   // the menu item already existed
 
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Act;
-
-class MenuDishController extends Controller
-{
-    public function store(
-        Request $request,
-        Menu $menu,
-        MenuItem $product,
-    ): RedirectResponse {
-        $menu->menuItems()->attach($product);   // the menu item already existed
-
-        Act::Add->by($request->user())->object($product)->to($menu)->publish();
-
-        return back();
-    }
-}
+Act::Add->by($request->user())->object($product)->to($menu)->publish(); // [!code highlight]
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/MenuDishController.php"
-<?php
+```php [Named Arguments]
+$menu->menuItems()->attach($product);   // the menu item already existed
 
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Act;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuDishController extends Controller
-{
-    public function store(
-        Request $request,
-        Menu $menu,
-        MenuItem $product,
-    ): RedirectResponse {
-        $menu->menuItems()->attach($product);   // the menu item already existed
-
-        Storyfeed::record(
-            verb: Act::Add,
-            object: $product,
-            actor: $request->user(),
-            target: $menu,
-        );
-
-        return back();
-    }
-}
+Storyfeed::record(
+    verb: Act::Add, // [!code highlight]
+    object: $product,
+    actor: $request->user(),
+    target: $menu,
+);
 ```
 :::
 
