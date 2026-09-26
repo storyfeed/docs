@@ -65,10 +65,18 @@ class StripeWebhookController extends Controller
 }
 ```
 
-The event builds the activity. Return it without calling `publish()`;
-dispatching the event publishes it, with no listener to register:
+The event describes the activity, and returns it without calling `publish()`:
 
 <<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
+
+Storyfeed publishes it for you. It listens for every event that implements
+`PublishesToFeed`, and when one is dispatched, it calls `toFeedActivity()` and
+publishes the activity it returns. There is no listener to register.
+
+> [!WARNING]
+> Never call `publish()` on the activity yourself, in the event or in a
+> listener. Storyfeed already publishes it when the event is dispatched, so the
+> payment would be recorded twice.
 
 The payment itself is a side effect, so it moves to a listener, as any other
 consequence of the event would:
