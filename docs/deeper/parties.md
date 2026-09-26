@@ -6,8 +6,8 @@ An activity's actor doesn't have to be a user. It can be a **party**, such as
 a payment provider, or **anonymous**.
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
-const paid = scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay')
+import { scene, role } from '../.vitepress/theme/world'
+const cancelled = scene.deeper.parties.system
 const { anonymous } = scene.cookbook.actorless
 </script>
 
@@ -20,26 +20,29 @@ const { anonymous } = scene.cookbook.actorless
 
 ## Recording a Party
 
-A string in any role names a party. Give the actor's name to `by()`:
+When {{ role.mall.label }} closes for the night, a scheduled Artisan command
+cancels any {{ role.shop.label }} order left unpaid. A command runs with no
+signed-in user, so it names the actor it runs as. A string in any role names a
+party:
 
 ::: code-group
 ```php [Fluent Syntax]
 Storyfeed::activity()
-    ->by('Stripe') // [!code highlight]
-    ->action('pay', $order)
+    ->by('System') // [!code highlight]
+    ->action('cancel', $order)
     ->publish();
 ```
 
 ```php [Named Arguments]
 Storyfeed::record(
-    verb: 'pay',
+    verb: 'cancel',
     object: $order,
-    actor: 'Stripe', // [!code highlight]
+    actor: 'System', // [!code highlight]
 );
 ```
 :::
 
-<FeedExample :items="[paid]" />
+<FeedExample :items="[cancelled]" />
 
 The first activity with a name creates its party; later ones reuse it.
 

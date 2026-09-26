@@ -101,6 +101,8 @@ const tasks = build(TASKS, (id, label) => entity('task', id, label, `/tasks/${id
 const tickets = build(TICKETS, (id, label) => entity('ticket', id, `Ticket #${id}: ${label}`, `/tickets/${id}`))
 const worldNotes = build(WORLD_NOTES, (id, label) => note(id, label))
 const stripe = entity('storyfeed.party', '101', SERVICES.billing, null)
+// The name an app's Artisan commands act under.
+const system = entity('storyfeed.party', '102', 'System', null)
 
 const holding: Record<keyof typeof HOLDINGS, [string, string]> = {
   repo: ['repository', '/repositories/cerebro'],
@@ -561,11 +563,13 @@ const deeperRows: Row[] = [
     deeperRow(`weekly-${i}`, `${day} 14:30`, 'place', scout, order(2051 + i), v.scoops)),
   // Hourly retention crosses 18:00 while all five rows remain in one daily group.
   ...['17:40', '17:45', '17:50', '18:10', '18:15'].map((time, i) =>
-    deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),
+    deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),  // At closing time a scheduled command cancels an order nobody paid for.
+  deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', system, order(2071), v.scoops),
 ]
 ROWS.push(...deeperRows)
 VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
 VERBS.save = { glyph: 'save', headline: ':actor saved :object', object: ':actor saved :object :count times', summary: 'saved :object|saved :objects :count times' }
+VERBS.cancel = { glyph: 'circle-x', headline: ':actor cancelled :object', summary: 'cancelled :object|cancelled :count orders' }
 VERBS.view = { glyph: 'eye', headline: ':actor viewed :object', repeat: ':actor viewed :count orders', summary: 'viewed :object|viewed :count orders' }
 
 export default {
@@ -577,6 +581,7 @@ export default {
   roles: {
     customer: scout,
     shop: v.scoops,
+    mall: v.mall,
     product: fare.butterscotch,
     staff: scooper,
     service: stripe,
@@ -596,6 +601,7 @@ export default {
       latestPerObject: { timeline: ['deeper-order-0', 'deeper-confirm-0', 'deeper-ready', 'deeper-paid'],
         board: ['deeper-paid', 'deeper-confirm-1', 'deeper-order-2'],
         confirmations: ['deeper-confirm-0', 'deeper-confirm-1', 'deeper-confirm-2'] },
+      parties: { system: 'deeper-system-cancel' },
       keepingLatest: { saves: ['deeper-save-early', 'deeper-save-latest', 'deeper-save-other'] },
       groupingPeriods: { orders: ['deeper-weekly-0', 'deeper-weekly-1', 'deeper-weekly-2'] },
       retention: { views: Array.from({ length: 5 }, (_, i) => `deeper-view-${i}`) },
