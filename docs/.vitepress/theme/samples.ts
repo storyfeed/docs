@@ -141,7 +141,6 @@ export function activity(over: Record<string, any>) {
     instrument: over.instrument ?? null,
     data: over.data ?? {},
     thread: over.thread ?? null,
-    change: over.change ?? null,
     ...tombstoneFacts(over),
   }
 }

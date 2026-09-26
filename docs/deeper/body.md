@@ -348,7 +348,7 @@ its version.
 
 <a id="upgrading-payload-values"></a>
 
-Storyfeed upgrades an activity's `thread` and `change` itself. A body arrives
+Storyfeed upgrades an activity's `thread` itself. A body arrives
 as it was stored, `$v` included, so your renderer calls `upgrade()` before
 drawing one, even a `FeedThread` placed in a body.
 

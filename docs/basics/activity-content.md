@@ -258,7 +258,6 @@ the [link resolver](/basics/feedable-models#the-link) at read time.
 |---|---|---|
 | `KeyValue` | labelled pairs | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
 | `Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Change` | before and after, for one field or several | `items`, a map of field to `[before, after]` |
 | `File` | what an artefact is and how big | `name`, `size`, `mediaType` |
 | `Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
