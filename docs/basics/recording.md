@@ -1,22 +1,13 @@
 # Recording Activities
 
 <script setup>
-import { scene, group } from '../.vitepress/theme/world'
+import { scene } from '../.vitepress/theme/world'
 
 // A price change draws no card: the item's details would show today's price, not the change.
 const recorded = scene.basics.recording.priced
 const priced = { ...recorded, object: { ...recorded.object, body: null }, data: { from: 275, to: 295 } }
 // The same change, imported with a date from long ago.
 const backdated = { ...priced, published_at: scene.distant.published_at }
-// The same catalogue photos, recorded together in one request instead of separately.
-const photos = scene.basics.recording.photos
-const composite = group({
-  id: 'recording-composite', verb: 'upload', axis: 'composite', count: photos.length,
-  glyph: photos[0].glyph, published_at: photos[0].published_at,
-  headline_template: ':actor uploaded :count photos',
-  actors: [photos[0].actor], objects: photos.map(node => node.object),
-  distinct: { actors: 1, objects: photos.length },
-})
 </script>
 
 ## Introduction
@@ -122,67 +113,29 @@ authenticated user as the actor.
 activity and returned in its `data` when the feed is read:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
-<?php
+```php [Fluent Syntax]
+$from = $product->price;
 
-namespace App\Http\Controllers;
+$product->update(['price' => $request->integer('price')]);
 
-use App\Http\Requests\UpdatePriceRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuItemPriceController extends Controller
-{
-    public function update(
-        UpdatePriceRequest $request,
-        MenuItem $product,
-    ): RedirectResponse {
-        $from = $product->price;
-
-        $product->update(['price' => $request->integer('price')]);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('reprice', $product)
-            ->data(['from' => $from, 'to' => $product->price])
-            ->publish();
-
-        return back();
-    }
-}
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('reprice', $product)
+    ->data(['from' => $from, 'to' => $product->price]) // [!code highlight]
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/MenuItemPriceController.php"
-<?php
+```php [Named Arguments]
+$from = $product->price;
 
-namespace App\Http\Controllers;
+$product->update(['price' => $request->integer('price')]);
 
-use App\Http\Requests\UpdatePriceRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuItemPriceController extends Controller
-{
-    public function update(
-        UpdatePriceRequest $request,
-        MenuItem $product,
-    ): RedirectResponse {
-        $from = $product->price;
-
-        $product->update(['price' => $request->integer('price')]);
-
-        Storyfeed::record(
-            verb: 'reprice',
-            object: $product,
-            actor: $request->user(),
-            data: ['from' => $from, 'to' => $product->price],
-        );
-
-        return back();
-    }
-}
+Storyfeed::record(
+    verb: 'reprice',
+    object: $product,
+    actor: $request->user(),
+    data: ['from' => $from, 'to' => $product->price], // [!code highlight]
+);
 ```
 :::
 
@@ -193,64 +146,26 @@ class MenuItemPriceController extends Controller
 `->publishedAt()` backdates an activity, for imports and backfills:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Console/Commands/ImportPriceHistory.php"
-<?php
-
-namespace App\Console\Commands;
-
-use App\Models\MenuItem;
-use App\Models\User;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class ImportPriceHistory extends Command
-{
-    protected $signature = 'menu:import-prices {file}';
-
-    public function handle(): void
-    {
-        $rows = json_decode(file_get_contents($this->argument('file')), true);
-
-        foreach ($rows as $row) {
-            Storyfeed::activity()
-                ->by(User::findOrFail($row['user_id']))
-                ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
-                ->data(['from' => $row['from'], 'to' => $row['to']])
-                ->publishedAt($row['changed_at'])
-                ->publish();
-        }
-    }
+```php [Fluent Syntax]
+foreach ($rows as $row) {
+    Storyfeed::activity()
+        ->by(User::findOrFail($row['user_id']))
+        ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
+        ->data(['from' => $row['from'], 'to' => $row['to']])
+        ->publishedAt($row['changed_at']) // [!code highlight]
+        ->publish();
 }
 ```
 
-```php [Named Arguments] memo="app/Console/Commands/ImportPriceHistory.php"
-<?php
-
-namespace App\Console\Commands;
-
-use App\Models\MenuItem;
-use App\Models\User;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class ImportPriceHistory extends Command
-{
-    protected $signature = 'menu:import-prices {file}';
-
-    public function handle(): void
-    {
-        $rows = json_decode(file_get_contents($this->argument('file')), true);
-
-        foreach ($rows as $row) {
-            Storyfeed::record(
-                verb: 'reprice',
-                object: MenuItem::findOrFail($row['menu_item_id']),
-                actor: User::findOrFail($row['user_id']),
-                data: ['from' => $row['from'], 'to' => $row['to']],
-                publishedAt: $row['changed_at'],
-            );
-        }
-    }
+```php [Named Arguments]
+foreach ($rows as $row) {
+    Storyfeed::record(
+        verb: 'reprice',
+        object: MenuItem::findOrFail($row['menu_item_id']),
+        actor: User::findOrFail($row['user_id']),
+        data: ['from' => $row['from'], 'to' => $row['to']],
+        publishedAt: $row['changed_at'], // [!code highlight]
+    );
 }
 ```
 :::
@@ -265,79 +180,22 @@ class ImportPriceHistory extends Command
 activity, plus one activity per object:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/UploadPhotosController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Photo;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class UploadPhotosController extends Controller
-{
-    public function __invoke(Request $request): RedirectResponse
-    {
-        $photos = Photo::whereIn('id', $request->input('photos'))->get();
-
-        $photos->each->update(['published_at' => now()]);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->verb('upload')
-            ->objects($photos)
-            ->publish();
-
-        return back();
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->verb('upload')
+    ->objects($photos) // [!code highlight]
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/UploadPhotosController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Photo;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class UploadPhotosController extends Controller
-{
-    public function __invoke(Request $request): RedirectResponse
-    {
-        $photos = Photo::whereIn('id', $request->input('photos'))->get();
-
-        $photos->each->update(['published_at' => now()]);
-
-        Storyfeed::record(
-            verb: 'upload',
-            objects: $photos,
-            actor: $request->user(),
-        );
-
-        return back();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'upload',
+    objects: $photos, // [!code highlight]
+    actor: $request->user(),
+);
 ```
 :::
 
-The parent has no object of its own, so it needs its own headline, beside the
-headline for the set:
-
-```php memo="routes/feed.php"
-use Storyfeed\Facades\Story;
-use Storyfeed\Grouping\GroupBuilder;
-
-Story::verb('upload')->grouped(fn (GroupBuilder $group) => $group->composite(
-    ':actor uploaded :count photos', // the set
-    ':actor uploaded photos',        // the parent activity
-));
-```
-
-<FeedExample :items="[composite]" />
-
-[Composites](/deeper/composites) covers how the parent and its activities read
-in each mode.
+[Composites](/deeper/composites) covers how the set and its activities read in
+the feed, and the headlines they need.
