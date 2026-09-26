@@ -26,54 +26,16 @@ Story::for(Order::class)->verb('save')
 Publish normally. The verb's declaration applies at every call site:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/SaveOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class SaveOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update($request->validate(['notes' => ['nullable', 'string']]));
-
-        Storyfeed::activity()->by($request->user())->action('save', $order)->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()->by($request->user())->action('save', $order)->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/SaveOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class SaveOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update($request->validate(['notes' => ['nullable', 'string']]));
-
-        Storyfeed::record(
-            verb: 'save',
-            object: $order,
-            actor: $request->user(),
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'save',
+    object: $order,
+    actor: $request->user(),
+);
 ```
 :::
 
