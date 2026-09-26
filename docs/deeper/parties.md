@@ -23,63 +23,19 @@ const { anonymous } = scene.cookbook.actorless
 A string in any role names a party. Give the actor's name to `by()`:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::activity()
-            ->by('Stripe')
-            ->action('pay', $order)
-            ->publish();
-
-        return response()->noContent();
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by('Stripe') // [!code highlight]
+    ->action('pay', $order)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::record(
-            verb: 'pay',
-            object: $order,
-            actor: 'Stripe',
-        );
-
-        return response()->noContent();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'pay',
+    object: $order,
+    actor: 'Stripe', // [!code highlight]
+);
 ```
 :::
 
