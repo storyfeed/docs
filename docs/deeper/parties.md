@@ -21,9 +21,9 @@ const { anonymous } = scene.cookbook.actorless
 ## Recording a Party
 
 When {{ role.mall.label }} closes for the night, a scheduled Artisan command
-cancels any {{ role.shop.label }} order left unpaid. A command runs with no
-signed-in user, so it names the actor it runs as. A string in any role names a
-party:
+cancels any {{ role.shop.label }} order left unpaid. The command runs from the
+console, where no user is signed in, so Storyfeed has nobody to record as the
+actor. Name one with a string. A string in any role names a party:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php"
@@ -89,6 +89,9 @@ class CancelUnpaidOrders extends Command
 <FeedExample :items="[cancelled]" />
 
 The first activity with a name creates its party; later ones reuse it.
+
+Without `by('System')`, the command's activity would have no actor at all: an
+[anonymous activity](#recording-anonymous-activities).
 
 ### Using Parties in Other Roles
 
