@@ -89,7 +89,8 @@ An alias and its setter record the same activity.
 
 ## Assigning the Actor
 
-The actor is whoever did it. Pass them to `by()`:
+The actor is the user or model that performed the activity. You may specify
+the actor using the `by` method:
 
 ::: code-group
 ```php [Fluent Syntax] memo="Wherever the order is placed"
@@ -112,8 +113,8 @@ Storyfeed::record(
 
 <FeedExample :items="[scene.order]" />
 
-Leave out `by()` and Storyfeed records the signed-in user, so code handling
-that user's own request doesn't need it.
+If you do not call the `by` method, Storyfeed will record the currently
+authenticated user as the actor.
 
 ## Adding Activity Data
 
