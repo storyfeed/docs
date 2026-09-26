@@ -80,7 +80,7 @@ Storyfeed::feed()->live()->get();
 
 Summary is a digest: one row per person per day, across verbs. A row names
 the person once, then what they did, one phrase per verb: "placed 3 orders,
-asked about a product and paid". An activity with no actor keeps its own row.
+asked about a product and paid".
 [Digest Rows](/reference/payload#digest-rows) lists what a row holds.
 
 ```php memo="A controller, or wherever the feed is read"
