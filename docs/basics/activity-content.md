@@ -11,18 +11,18 @@ const withProse = { ...content.ready,
     content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
     title: `${content.ready.object.label} instructions` }] } }
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
-    { key: 'Items', value: '1', verbatim: false, missing: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
-    { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
+    { key: 'Items', value: '1', verbatim: false, placeholder: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
+    { key: 'Table', value: null, verbatim: false, placeholder: 'not seated' },
   ] }] } }
 // The pack's own passage from a source: the oldest row whose object quotes one.
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withFile = { ...content.photo, object: { ...content.photo.object,
-  body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
     name: content.photo.object.label, size: 137767, mediaType: 'image/jpeg' }] } }
 </script>
 
@@ -161,7 +161,7 @@ FeedEntity::make()
             'Pickup' => $this->pickup_at->format('g:i a'),
             'Items' => $this->items->count(),
             'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            'Table' => KeyValue::placeholder($this->table, 'not seated'),
         ]),
     );
 ```
@@ -175,7 +175,7 @@ FeedEntity::make(
             'Pickup' => $this->pickup_at->format('g:i a'),
             'Items' => $this->items->count(),
             'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            'Table' => KeyValue::placeholder($this->table, 'not seated'),
         ],
     ),
 );
@@ -185,7 +185,9 @@ FeedEntity::make(
 
 <FeedExample :items="[withKeyValue]" />
 
-Use the `KeyValue::missingAs` method to specify text for an empty value.
+Use the `KeyValue::placeholder` method to specify text for an empty value.
+Use `->defaultPlaceholder('—')` to set the default for every row without its own placeholder,
+or pass `defaultPlaceholder:` to `KeyValue::make()`.
 The `KeyValue::verbatim` method marks a value for display without formatting,
 such as a reference number.
 
@@ -255,20 +257,20 @@ and marks the text as complete:
 
 <FeedExample :items="[content.planck]" />
 
-### File Details
+### File Attachment
 
-Use `File` in a `Photo` model's `toFeed` method to include the photo's file details:
+Use `FileAttachment` in a `Photo` model's `toFeed` method to include the photo's file details:
 
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/Photo.php" at="toFeed()"
-use Storyfeed\Body\File;
+use Storyfeed\Body\FileAttachment;
 use Storyfeed\FeedEntity;
 
 return FeedEntity::make()
     ->label($this->name)
     ->body( // [!code highlight]
-        File::make()
+        FileAttachment::make()
             ->size($this->bytes)
             ->mediaType($this->mime)
             ->name($this->name)
@@ -276,12 +278,12 @@ return FeedEntity::make()
 ```
 
 ```php [Named Arguments] memo="app/Models/Photo.php" at="toFeed()"
-use Storyfeed\Body\File;
+use Storyfeed\Body\FileAttachment;
 use Storyfeed\FeedEntity;
 
 return FeedEntity::make(
     label: $this->name,
-    body: File::make( // [!code highlight]
+    body: FileAttachment::make( // [!code highlight]
         size: $this->bytes,
         mediaType: $this->mime,
         name: $this->name,
@@ -293,7 +295,7 @@ return FeedEntity::make(
 
 <FeedExample :items="[withFile]" />
 
-The `File` body stores file details. Configure the URL separately with the
+The `FileAttachment` body stores file details. Configure the URL separately with the
 [link resolver](/basics/feedable-models#the-link).
 
 ### Lists of Items
@@ -465,12 +467,12 @@ body fields that accept it.
 
 | Body Type | Content | Payload Keys |
 |---|---|---|
-| `KeyValue` | labelled values | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
+| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
-| `File` | file name, size, and media type | `name`, `size`, `mediaType` |
+| `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
-| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `MediaObject` | a title, text, image, and attachments | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `ItemList` | named items with optional links | `title`, `defaultPlaceholder`, `items[]`, `ordered`, `totalItems`, `more` |
+| `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
 | `Component` | a custom component name and props | `name`, `props` |
 
 These classes use the `Storyfeed\Body` namespace. Each body's payload includes

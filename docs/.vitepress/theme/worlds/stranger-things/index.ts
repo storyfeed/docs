@@ -85,7 +85,7 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // A body belongs to its entity, so it is set here, once, and every row that
 // names the thing shows the same preview. Each names its subject, even where
 // the headline already does. Its form follows what the thing is: a record is a
-// card, a description is titled Prose, a signed document is a File, a passage
+// card, a description is titled Prose, a signed document is a FileAttachment, a passage
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
 // standard example, and its pages teach the bare `toFeed()`. A page that
 // teaches a body on an order builds it on its own example.
@@ -145,7 +145,7 @@ for (const key of Object.keys(TICKETS) as (keyof typeof TICKETS)[])
 // A signed document is its file. Sizes are ours.
 const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, internship: 61870, farmSale: 132406 }
 for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
-  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
     name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
 // Nancy's story quotes the woman she interviewed (SOURCES.post: Driscoll's rats, S3E2).
 // The words are Doris Driscoll's, so `from` names her. The wording is ours, not a canon line.
@@ -177,14 +177,14 @@ const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $
     FARE.pretzel,
   ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042' } }] }
 const hoursTitle = `${VENUES.scoops} opening hours`
-const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
   subject: { label: hoursTitle, href: '/notices/101' },
   content: 'The counter opens at 10 am. Orders are available until 9 pm.',
-  image: null, attachments: [], footnote: null }] })
-const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+  image: null, files: [], footnote: null }] })
+const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
   subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.url}/guide` },
   content: 'The visitor guide includes entrances, parking and shop locations.',
-  image: null, attachments: [], footnote: null }] })
+  image: null, files: [], footnote: null }] })
 
 // uncertain: the branches, file counts and titles are invented for the cameo merges.
 const PULLS: Record<number, [string, number]> = {
@@ -245,7 +245,7 @@ const ALT: Record<string, string> = {
 }
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
-const mediaOf = (file: string) => ({ icon: null, image: null, attachments: [],
+const mediaOf = (file: string) => ({ icon: null, image: null, files: [],
   preview: picture(file), url: picture(file) })
 
 const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,

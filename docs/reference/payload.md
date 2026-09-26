@@ -139,14 +139,14 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
     "height": 3024,
     "alt": "Pad thai, table 4"
   },
-  "attachments": []
+  "files": []
 }
 ```
 
 | Value | Meaning |
 |---|---|
 | `media: null` | the entity has no media; the common case |
-| `media: {…}` | all four image keys present, each an image object or `null`, plus `attachments` (an empty list when none) |
+| `media: {…}` | all four image keys present, each an image object or `null`, plus `files` (an empty list when none) |
 | `media.url !== null` | `entity.url` identifies an image |
 | `width`, `height` | dimensions for reserving display space before loading; `null` when unknown, never `0` |
 
@@ -156,7 +156,7 @@ use Activity Streams 2.0 definitions: for a photo, `url` identifies the full
 image and `preview` its thumbnail. Group `sample` entities use the same media
 structure.
 
-`attachments` is a list of resources carrying `type`, `href`, `mediaType`,
+`files` is a list of resources carrying `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 <span id="one-payload-one-feed"></span>

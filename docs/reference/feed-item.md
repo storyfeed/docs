@@ -156,8 +156,8 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 | `attributes()` | `array` | `attributes` |
 | `isModal()` | `bool` | `modal` |
 | `data()` | `Fluent` | `data` |
-| `media()` | `?Fluent` with `icon`, `image`, `preview`, `url`, `attachments` | `media` |
-| `attachments()` | `Collection` | `media.attachments` |
+| `media()` | `?Fluent` with `icon`, `image`, `preview`, `url`, `files` | `media` |
+| `files()` | `Collection` | `media.files` |
 | `bodies()` | `Collection` of bodies | `body` |
 | `content()`, `mediaType()`, `attributedTo()` | `?string` | `content`, `mediaType`, `attributedTo` |
 | `isDegraded()` | `bool`: no label yet, and not deleted | `label`, `tombstone` |

@@ -43,6 +43,15 @@ export interface FeedMedia {
     image: FeedImage | null;
     preview: FeedImage | null;
     url: FeedImage | null;
+    /** Absent in older cached payloads. */
+    files?: FeedResource[];
+}
+
+export interface FeedResource {
+    type: string;
+    href: string;
+    mediaType: string | null;
+    name: string | null;
 }
 
 /** width/height are int or null, never zero, so an aspect box is safe when both are set. */

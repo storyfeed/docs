@@ -1,7 +1,7 @@
 import type { Component } from 'vue'
 import KeyValue from './KeyValue.vue'
 import Excerpt from './Excerpt.vue'
-import File from './File.vue'
+import FileAttachment from './FileAttachment.vue'
 import Prose from './Prose.vue'
 import ItemList from './ItemList.vue'
 import MediaObject from './MediaObject.vue'
@@ -18,7 +18,9 @@ import MediaObject from './MediaObject.vue'
 const FORMS: Record<string, Component> = {
     'Storyfeed/Body/KeyValue': KeyValue,
     'Storyfeed/Body/Excerpt': Excerpt,
-    'Storyfeed/Body/File': File,
+    'Storyfeed/Body/FileAttachment': FileAttachment,
+    // Stored rows retain the old token.
+    'Storyfeed/Body/File': FileAttachment,
     'Storyfeed/Body/Prose': Prose,
     'Storyfeed/Body/ItemList': ItemList,
     'Storyfeed/Body/MediaObject': MediaObject,

@@ -31,6 +31,12 @@ const subject = computed(() => {
     return label ? { label, href: typeof value === 'string' ? null : value.href ?? props.entityUrl ?? null } : null
 })
 
+const files = computed(() => {
+    const listed = 'files' in props.payload ? props.payload.files
+        : (props.payload.$v ?? 1) < 2 ? props.payload.attachments : []
+    return Array.isArray(listed) ? listed : []
+})
+
 const picture = computed(() =>
     props.payload.image ? (props.entityMedia?.[props.payload.image] ?? null) : null,
 )
@@ -56,8 +62,8 @@ const footnote = computed(() => {
 
             <p v-if="payload.content" class="sf-prose sf-media-object__content">{{ payload.content }}</p>
 
-            <ul v-if="payload.attachments?.length" class="sf-media-object__attachments">
-            <li v-for="(file, i) in payload.attachments ?? []" :key="i" class="sf-file">
+            <ul v-if="files.length" class="sf-media-object__attachments">
+            <li v-for="(file, i) in files ?? []" :key="i" class="sf-file">
                 <component :is="linkComponent" :href="file.href">{{ file.name ?? file.href }}</component>
                 <span v-if="file.mediaType"> · {{ file.mediaType }}</span>
             </li>
