@@ -2,8 +2,8 @@
 
 ## Introduction
 
-A Story class can build an activity from the data you give it.
-Declarations can also stay in `routes/feed.php` or live in their own classes.
+A Story class can build an activity from the data you give it. You may also
+keep verb definitions in `routes/feed.php` or separate declaration classes.
 
 <script setup>
 import { scene, activity } from '../.vitepress/theme/world'
@@ -30,18 +30,19 @@ The command asks for the class name, then **What will this story describe?**
 | Every activity for one model | like a resource controller | one declaration method per verb |
 | A single verb | like a single action controller | that verb's headlines in their own class |
 
-Each choice prints a binding to add to `routes/feed.php`. The command does not
-edit that file. Each shape's section below shows its command, and
-[Commands](/reference/commands#stories) lists every option.
+Each choice prints a registration to add to `routes/feed.php` without editing
+that file. The sections below show the command for each class type. See
+[Commands](/reference/commands#stories) for all options.
 
 <a id="generator-options"></a>
 
 <a id="spelling-the-past-tense"></a>
 
-A name containing `Was` supplies the headline's past tense. Otherwise the
+A name containing `Was` supplies the headline's past tense. Otherwise, the
 command derives it from the verb and asks when the spelling is uncertain.
-Choosing **None of these**, or running without a terminal, leaves uncertain
-headline lines commented out. Choose a line before compiling the definitions.
+Choosing **None of these**, or running without a terminal, leaves those
+headline lines commented out. Select and uncomment a line before compiling
+the definitions.
 
 <a id="one-activity-published-with-its-data"></a>
 
@@ -92,16 +93,17 @@ class OrderWasPlaced extends Story
 
 <FeedExample :items="[placed]" />
 
-`toFeedActivity()` builds the activity. The inherited `$this->activity()` fills
-in the verb bound to this class. Return `null` to publish nothing.
+The `toFeedActivity` method builds the activity. The inherited `activity`
+method sets the verb registered for this class. Return `null` to skip publishing.
 
-An [event that implements `PublishesToFeed`](/deeper/events#publishing-from-an-event) has the same `toFeedActivity()`
-method, and dispatching the event publishes it. A Story is published on its own,
-as a notification is sent, so it suits an activity with no event behind it.
+An [event implementing `PublishesToFeed`](/deeper/events#publishing-from-an-event)
+uses the same `toFeedActivity` method and publishes when dispatched. A Story
+can be published independently, like a notification, so use it when the
+activity has no corresponding application event.
 
 ### Registering the Story
 
-Bind the class to its object type and verb in the feed file:
+Register the class for its object type and verb in the feed file:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -150,8 +152,8 @@ class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
 }
 ```
 
-`Storyfeed::publish()` now queues the Story. `Queueable`'s methods choose the
-queue:
+The `Storyfeed::publish` method now queues the Story. Use the `Queueable`
+trait's methods to select the connection and queue:
 
 ```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use App\Stories\OrderWasPlaced;
@@ -166,21 +168,22 @@ After the worker calls `toFeedActivity()` and publishes its result:
 
 <FeedExample :items="[placed]" />
 
-The call returns `null`. `Storyfeed::publishNow()` publishes the Story
-synchronously, as a notification's `sendNow()` skips the queue. Model
-properties are serialized by their identifiers. The publication time is the
-moment of `Storyfeed::publish()`, unless `toFeedActivity()` sets one.
+Queued publishing returns `null`. Use `Storyfeed::publishNow()` to publish
+synchronously, as you would use `sendNow()` for a notification. Model properties
+are serialized by their identifiers. The publication time is captured when
+`Storyfeed::publish()` is called, unless `toFeedActivity()` sets it explicitly.
 
-A queued Story may implement `ShouldBeUnique` and define `uniqueId()`. Its
-`middleware()` method declares [story middleware](/deeper/story-middleware-and-batching);
-`Queueable`'s `through()` sets job middleware. [Queued Publishing](/deeper/queues)
-covers connections, transactions and missing models.
+A queued Story may implement `ShouldBeUnique` and define a `uniqueId` method.
+Its `middleware` method declares
+[story middleware](/deeper/story-middleware-and-batching), while the `Queueable`
+trait's `through` method sets job middleware. See [Queued Publishing](/deeper/queues)
+for connections, transactions, and missing models.
 
 ### Presentation Methods
 
-`headline()` and `icon()` are read without calling the constructor, so they
-cannot use its data. The data belongs in `toFeedActivity()`. The same holds for
-every other definition method a Story declares:
+Storyfeed calls `headline` and `icon` without running the constructor, so these
+methods cannot use constructor data. Use that data in `toFeedActivity` instead.
+The same restriction applies to all definition methods:
 
 | Method | Declares |
 |---|---|
@@ -222,8 +225,9 @@ class PlaceStory
 
 ### Registering an Invokable Story
 
-When `routes/feed.php` gets long, a single-verb class puts that verb's headlines
-in their own class. It extends nothing. Bind it instead of the inline declaration:
+When `routes/feed.php` becomes difficult to maintain, move a verb's headlines
+to a single-verb declaration class. It does not require a base class. Register
+it in place of the inline definition:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -235,10 +239,10 @@ Story::for(Order::class)->verb('place', PlaceStory::class);
 
 <FeedExample :items="[placed]" />
 
-Publish this verb with [the activity builder](/basics/recording). An invokable declaration can return a
-`Verb` or a headline string, just like a resource method.
-`Story::verb('place', PlaceStory::class)` binds it across types;
-its headline then needs to make sense for every type it covers.
+Publish the verb with [the activity builder](/basics/recording). An invokable
+declaration may return a `Verb` or headline string, as a resource method does.
+Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
+object types, so its headline must describe each supported type.
 
 <a id="every-activity-for-one-model"></a>
 
@@ -273,8 +277,8 @@ class OrderStory
 }
 ```
 
-Each public method declares a verb. The class extends nothing and receives no
-order to publish. Bind it instead of the other `place` declarations:
+Each public method declares a verb. The class requires no base class or order
+instance. Register it in place of the other `place` definitions:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -286,14 +290,14 @@ Story::resource(Order::class, OrderStory::class);
 
 <FeedExample :items="[placed]" />
 
-Publish the activity with [the activity builder](/basics/recording). The resource class holds
-the declarations.
+Use the resource class to define verbs and
+[the activity builder](/basics/recording) to publish activities.
 
 <a id="verbs-from-method-names"></a>
 
 ### Verbs and Return Types
 
-The method name is the verb, snake-cased when it has more than one word:
+The method name becomes the stored verb in snake_case:
 
 | Method | Stored Verb |
 |---|---|
@@ -302,8 +306,8 @@ The method name is the verb, snake-cased when it has more than one word:
 | `confirmPayment()` | `confirm_payment` |
 | `markAsPaid()` | `mark_as_paid` |
 
-Nothing else is mapped: `store()` records `store`, and `create()` records
-`create`.
+No other name conversion applies: `store()` records `store`, and `create()`
+records `create`.
 
 <a id="action-return-types"></a>
 
@@ -311,17 +315,17 @@ Each method declares its return type:
 
 | Return Type | The Method Returns |
 |---|---|
-| `Storyfeed\Stories\Verb` | the definition it received, filled in |
-| `string` | the headline, and nothing else |
+| `Storyfeed\Stories\Verb` | the supplied definition with its options set |
+| `string` | the headline |
 
 Use `Verb` when setting several options, or `string` for a headline alone.
 Keep helpers protected or private, because public methods declare verbs.
 
 <a id="keeping-definitions-for-stored-activities"></a>
 
-Keep a method after nothing publishes its verb. A stored activity reads its
-headline from the verb's declaration when the feed is read, so removing the
-method leaves old rows without a headline:
+Keep a verb's method while stored activities still use it. Storyfeed resolves
+headlines from the current definitions when retrieving the feed, so removing
+the method leaves those activities without a headline:
 
 ```php memo="app/Stories/OrderStory.php"
 // Nothing publishes `print` any more; old rows still read.
@@ -334,19 +338,20 @@ public function print(): string
 <a id="headlines-for-deleted-objects"></a>
 <a id="deleted-object-headlines"></a>
 
-A resource method's `Verb` takes every definition method, including
-`missingHeadline()` for once its object is deleted:
-[Deleted Models](/deeper/deleted-models#missing-headlines) covers it.
+The supplied `Verb` supports every definition method, including
+`missingHeadline()` for deleted objects. See
+[Deleted Models](/deeper/deleted-models#missing-headlines).
 
 <a id="conventional-verbs"></a>
 <a id="selecting-resource-verbs"></a>
 
 ### Selecting Verbs
 
-A resource class adds its methods to the
-[conventional verbs](/basics/the-feed-file#resource-definitions) that
-`Story::resource()` defines. A method named for one of them replaces that
-default whole. `only()` and `except()` filter both, by stored verb name:
+A resource class adds its verbs to the
+[conventional verbs](/basics/the-feed-file#resource-definitions) defined by
+`Story::resource()`. A method with a conventional verb's name replaces its
+complete default definition. Use `only()` or `except()` to filter both sets
+by stored verb name:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -358,8 +363,8 @@ Story::resource(Order::class, OrderStory::class)->only('place', 'complete');
 
 <FeedExample :items="[placed]" />
 
-Use this in place of the unfiltered resource binding. Excluded verbs lose their
-resource names too.
+Replace the unfiltered resource registration with this example. Excluded
+verbs also lose their resource names.
 
 <a id="registering-several-resources"></a>
 
@@ -379,11 +384,11 @@ Story::resources([
 
 <FeedExample :items="[placed]" />
 
-`Story::resources()` registers each model with the same options, as
-`Route::resources()` does. A `null` class supplies the four conventional verbs.
-The options take `only` and `except`. This example replaces the individual
-resource bindings. For shared middleware or role constraints, wrap the call in
-a [group](/deeper/named-stories#shared-attributes).
+The `Story::resources` method registers several models with shared options,
+as `Route::resources` does. A `null` class defines the four conventional verbs.
+The options accept `only` and `except`. Use this example in place of individual
+resource registrations. To share middleware or role constraints, wrap it in a
+[group](/deeper/named-stories#shared-attributes).
 
 <a id="using-the-request"></a>
 
@@ -422,12 +427,13 @@ For a request without the signature header:
 
 <FeedExample :items="[paid]" />
 
-The verb's actor applies when the call site names none and no `Storyfeed::actor()`
-scope is open. Only `->actor()` may depend on the request: the headline, icon,
-intent, grouping and every other setting must be the same for every request.
-Changing a headline with the request throws when `grammar.strict` is on,
-including the default local and testing environments. Jobs dispatched during
-the request publish with the chosen actor; see [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#request-based-actors).
+The verb's actor applies when no actor is assigned explicitly or through a
+`Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
+headlines, icons, intents, grouping, and other settings must remain consistent.
+A request-dependent headline throws an exception when `grammar.strict` is
+enabled, as it is by default in local and testing environments. Dispatched
+jobs retain the selected actor; see
+[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#request-based-actors).
 
 <a id="generating-from-doctor-findings"></a>
 
@@ -437,16 +443,17 @@ the request publish with the chosen actor; see [Carrying Roles Into Queued Jobs]
 php artisan make:story --from-doctor
 ```
 
-The command writes an activity class for each recorded type/verb pair without
-a headline, named from the pair, such as `OrderWasPlaced`. It asks about
-uncertain past tenses. Without a terminal it skips those pairs and prints
-commands for the possible spellings; run the command with the correct one.
+The command generates an activity class for each recorded type and verb without
+a headline, using a name such as `OrderWasPlaced`. It prompts for uncertain
+past tenses. Without an interactive terminal, it skips those pairs and prints
+commands for the possible spellings. Run the command with the correct spelling.
 
 <a id="listing-verbs"></a>
 
 ## Listing and Caching Stories
 
-A new resource method becomes a verb when definitions compile again: it
-appears in `storyfeed:list`, and a cached manifest needs `storyfeed:cache`
-again, as The Feed File's [Listing Definitions](/basics/the-feed-file#listing-definitions)
-and [Caching Definitions](/basics/the-feed-file#caching-definitions) describe.
+New resource methods become available when definitions are compiled again.
+If definitions are cached, run `storyfeed:cache` to include the new verbs.
+Use `storyfeed:list` to inspect them; see
+[Listing Definitions](/basics/the-feed-file#listing-definitions) and
+[Caching Definitions](/basics/the-feed-file#caching-definitions).
