@@ -26,13 +26,84 @@ const withKeyValue = { ...content.confirmed,
 
 ## Introduction
 
-A feed page reads a page of the feed and draws each item as a row. On this
-page you build that as Blade components: one tag in your view, and a small
-anonymous component for each part of a row. The components carry no styling,
-so they fit any design.
+Storyfeed draws nothing itself: a page of the feed is data, and your frontend
+renders it. For Blade, Storyfeed UI renders a page with one component, and its
+views are yours to publish and change. To draw rows your own way, the rest of
+this page builds the same components from scratch.
 
 ::: headless
 :::
+
+<a id="using-storyfeed-ui"></a>
+
+## Using Storyfeed UI
+
+### Installing Storyfeed UI
+
+```bash
+composer require storyfeed/ui
+```
+
+### Rendering a Page
+
+Pass a page of the feed to your view, then render it with the `feed`
+component. `@storyfeedStyles` adds the default look:
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', ['page' => Storyfeed::feed()->get()]);
+});
+```
+
+```blade memo="resources/views/feed.blade.php"
+@storyfeedStyles
+
+<x-storyfeed::feed :page="$page" />
+```
+
+<FeedExample :items="[one, withKeyValue]" />
+
+### Customizing the Views
+
+To change the markup, publish the views:
+
+```bash
+php artisan vendor:publish --tag=storyfeed-views
+```
+
+They land in `resources/views/vendor/storyfeed`. A view there replaces the
+package's, so you only keep the files you change.
+
+### Styling the Feed
+
+`@storyfeedStyles` inlines the stylesheet, so there's no build step. Set its
+colors on an ancestor of the feed:
+
+```css
+.sf-feed {
+    --sf-text-color: #111827;
+    --sf-muted-color: #4b5563;
+    --sf-line-color: #e5e7eb;
+}
+```
+
+To serve or bundle the stylesheet yourself, publish it to
+`public/vendor/storyfeed/storyfeed.css`:
+
+```bash
+php artisan vendor:publish --tag=storyfeed-assets
+```
+
+<a id="building-your-own"></a>
+
+## Building Your Own Components
+
+The rest of this page builds the same kind of components from scratch, for an
+app that wants full control of its rows. The components carry no styling, so
+they fit any design.
 
 ## Reading Feed Items
 
