@@ -23,33 +23,15 @@ nothing.
 
 ## Skipping Publication
 
-```php memo="app/Events/OrderPlaced.php"
-<?php
-
-namespace App\Events;
-
-use App\Models\Order;
-use App\Models\User;
-use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\PendingActivity;
-
-class OrderPlaced implements PublishesToFeed
-{
-    public function __construct(public Order $order, public User $customer) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        if ($this->order->status === 'draft') {
-            return null;                                 // not an activity
-        }
-
-        return Storyfeed::activity()
-            ->by($this->customer)
-            ->action('place', $this->order)
-            ->to($this->order->shop);
-    }
+```php memo="app/Events/OrderPlaced.php" at="toFeedActivity()"
+if ($this->order->status === 'draft') {
+    return null;                                 // not an activity [!code highlight]
 }
+
+return Storyfeed::activity()
+    ->by($this->customer)
+    ->action('place', $this->order)
+    ->to($this->order->shop);
 ```
 
 Returning `null` publishes nothing. See
