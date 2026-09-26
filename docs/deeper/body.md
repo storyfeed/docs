@@ -37,8 +37,8 @@ Each `body()` call appends a body in the order given:
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
@@ -51,7 +51,7 @@ class MenuItem extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label($this->name)
-            ->body(Excerpt::make()->text($this->description))
+            ->body(Prose::make($this->description))
             ->body(KeyValue::make()->items('Station', $this->station));
     }
 }
@@ -63,8 +63,8 @@ class MenuItem extends Model implements Feedable
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
@@ -78,7 +78,7 @@ class MenuItem extends Model implements Feedable
         return FeedEntity::make(
             label: $this->name,
             body: [
-                Excerpt::make(text: $this->description),
+                Prose::make($this->description),
                 KeyValue::make(items: ['Station' => $this->station]),
             ],
         );

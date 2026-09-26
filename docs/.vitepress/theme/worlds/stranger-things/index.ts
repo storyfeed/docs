@@ -145,7 +145,8 @@ const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, i
 for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
   things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/File', $v: 1,
     name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
-// Nancy's story, quoted from her draft (SOURCES.post: Driscoll's rats, S3E2). The wording is ours.
+// Nancy's story quotes the woman she interviewed (SOURCES.post: Driscoll's rats, S3E2).
+// The words are Doris Driscoll's, so `from` names her. The wording is ours, not a canon line.
 things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
   text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom, truncated: true }] }
 // The film is a real one (SOURCES.cinema): its facts, never its poster.

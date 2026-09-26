@@ -190,9 +190,12 @@ such as a reference number.
 
 <a id="passages-from-a-source"></a>
 
-### Passages From a Source
+<a id="passages-from-a-source"></a>
 
-Use `Excerpt` to quote a passage and its `from` argument to identify the source:
+### Quoting a Source
+
+Use `Excerpt` to quote someone else's words, such as a person interviewed for a
+story. The `from` argument names who said them or where they came from:
 
 ::: code-group
 
@@ -201,8 +204,8 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         Excerpt::make() // [!code highlight]
-            ->text($this->lede)
-            ->from("Draft for {$this->publication->name}"),
+            ->text($this->pull_quote)
+            ->from($this->pull_quote_source),
     );
 ```
 
@@ -210,8 +213,8 @@ FeedEntity::make()
 FeedEntity::make(
     label: $this->title,
     body: Excerpt::make( // [!code highlight]
-        text: $this->lede,
-        from: "Draft for {$this->publication->name}",
+        text: $this->pull_quote,
+        from: $this->pull_quote_source,
     ),
 );
 ```
@@ -221,7 +224,8 @@ FeedEntity::make(
 <FeedExample :items="[withExcerpt]" />
 
 Excerpts are marked as `truncated` by default. Call `truncated(false)` when the
-text is complete.
+text is complete. For the entity's own text, such as an article's opening
+paragraph, use `Prose` instead.
 
 ### File Details
 

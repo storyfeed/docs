@@ -186,8 +186,8 @@ export const DOCUMENT_FILES = {
 
 /** The rest of the bodies. */
 export const ENTITY_CONTENT = {
-  ratStory:     'Rats have been getting into Doris Driscoll\'s cellar and eating her fertilizer, bag after bag.',
-  ratStoryFrom: 'Draft for the Hawkins Post',
+  ratStory:     'They came back every night for my fertilizer, bag after bag',
+  ratStoryFrom: 'Doris Driscoll',
   director:     'George A. Romero',
   showing:      'Sneak preview',
   repoAbout:    'The radio built at camp, to reach Utah from Weathertop',

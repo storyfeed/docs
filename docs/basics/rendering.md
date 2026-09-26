@@ -422,7 +422,13 @@ Add a component for each body type you render:
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
 
-<blockquote {{ $attributes }}>{{ $body['text'] }}</blockquote>
+<figure {{ $attributes }}>
+    <blockquote>{{ $body['text'] }}@if ($body['truncated'])…@endif</blockquote>
+
+    @if ($body['from'])
+        <figcaption>{{ $body['from'] }}</figcaption>
+    @endif
+</figure>
 ```
 
 See [Activity Content](/basics/activity-content#available-body-types) for body
