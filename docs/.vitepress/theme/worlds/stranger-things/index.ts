@@ -258,7 +258,7 @@ fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel'), body: [...(fare.pre
 fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog'), body: [...(fare.hotDog.body ?? []), ...imageBody(fare.hotDog.label)] }
 // The photo belongs to the photo activity; the menu item's own preview is its
 // details card (set with the other bodies above).
-const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { media: mediaOf('sundae'), body: imageBody(APP_CONTENT.photo) })
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { media: mediaOf('sundae'), body: imageBody(fare.butterscotch.label) })
 
 // ── The verbs ────────────────────────────────────────────────────────────────
 
