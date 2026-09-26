@@ -2,8 +2,9 @@
 
 ## Introduction
 
-A verb can say how long its activities are worth keeping. `storyfeed:prune`
-deletes them once they are older, along with anything only they referred to.
+Set retention per verb to control how long activities remain in the feed.
+`storyfeed:prune` permanently deletes expired activities and entity details
+no remaining activity uses.
 
 <script setup>
 import { scene, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
@@ -16,7 +17,7 @@ const after = liveOf(views.filter(row => Date.parse(row.published_at) >= WORLD_A
 
 ### Per-Verb Retention
 
-A viewed order matters for a month, and then it doesn't:
+To keep order views for 30 days, call `keepFor()`:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -28,13 +29,13 @@ Story::for(Order::class)
     ->keepFor('30 days');
 ```
 
-`keepFor()` takes a string Carbon reads as an interval: `'30 days'`,
-`'6 months'`, or a `DateInterval`. Like a headline, it can be declared for
-every type: `Story::verb('view')->keepFor(…)` applies to views of anything.
+`keepFor()` accepts a Carbon interval string, such as `'30 days'` or
+`'6 months'`, or a `DateInterval`. Declare it on `Story::verb('view')` to
+apply it across object types.
 
 ### Default Retention
 
-`prune.after_days` sets a window for every verb that declares none.
+Set `prune.after_days` for verbs without a retention declaration:
 
 ```php memo="config/storyfeed.php"
 'prune' => [
@@ -44,7 +45,7 @@ every type: `Story::verb('view')->keepFor(…)` applies to views of anything.
 
 ### Keeping Activities Forever
 
-`keepForever()` exempts a verb from default retention:
+Call `keepForever()` to exempt a verb from default retention:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -55,12 +56,12 @@ Story::for(Order::class)->verb('refund')->keepForever();
 
 | The Verb Declares | Its Activities Are Pruned After |
 |---|---|
-| `keepFor('30 days')` | 30 days, whatever `prune.after_days` says |
+| `keepFor('30 days')` | 30 days, overriding `prune.after_days` |
 | `keepForever()` | never |
 | nothing | `prune.after_days`, or never when it is `null` |
 
-`storyfeed:prune --days=` overrides `prune.after_days` for one run. A verb's own
-window still wins.
+Use `storyfeed:prune --days=` to override `prune.after_days` for one run.
+Per-verb retention still takes precedence.
 
 ## Pruning Activities
 
@@ -81,8 +82,8 @@ php artisan storyfeed:prune --pretend
 Would prune 3 activities, 2 snapshots and 0 tombstones. Nothing was deleted.
 ```
 
-Run it after declaring or shortening a window: the next run deletes everything
-already past it.
+Preview changes after setting or shortening retention: the next pruning run
+permanently deletes all activities already past the limit.
 
 ### Running and Scheduling Pruning
 
@@ -102,26 +103,25 @@ Each run permanently deletes the `view` activities older than 30 days. Other ver
 
 ## Pruning Groups and Unused Entities
 
-A group loses the members that were pruned. For this example, the verb uses
-`keepFor('1 hour')`: five views share one daily group, and three are more than
-an hour old. Before the run:
+Pruning removes expired members from groups. Here, `keepFor('1 hour')` applies
+to five views in one daily group, three of which are over an hour old.
+Before pruning:
 
 <FeedExample :items="[before]" />
 
-After it, with three of the five views past their window:
+After pruning the three expired views:
 
 <FeedExample :items="[after]" />
 
-A group whose members are all pruned is gone. A run that changes a group moves
-the `sync_token`, so a client paging an old cursor starts again from the head.
+Groups are deleted when all their members are pruned. Changing a group
+updates the `sync_token`, so clients using old cursors must fetch the feed
+from the start.
 
-The run also deletes what Storyfeed stored about entities that only pruned
-activities named, so a pruned entity's label and data leave the database too.
-Nothing records what a run removed.
+Pruning also deletes stored entity labels and data that no remaining
+activity uses. The command keeps no record of what it removed.
 
 > [!NOTE]
 > **Pruning and not recording**
 >
-> A state that stops mattering within seconds, such as someone typing, is not an
-> activity at all. [Choosing What Not to Record](/cookbook/choosing-what-not-to-record)
-> covers it.
+> Avoid recording short-lived state such as typing indicators. See
+> [Choosing What Not to Record](/cookbook/choosing-what-not-to-record).
