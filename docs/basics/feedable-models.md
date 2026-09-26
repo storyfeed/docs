@@ -201,65 +201,11 @@ each add a part. A model that writes `toFeed()` itself never calls
 
 A link is resolved when the feed is read. Register a resolver in `booted()` to build it from the stored snapshot:
 
-::: code-group
-```php [Fluent Syntax] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn ($context) => route('orders.show', $context->routeKey()),
-        );
-    }
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()->label("Order #{$this->reference}");
-    }
-}
+```php memo="app/Models/Order.php" at="booted()"
+static::feedMediaUsing(
+    fn ($context) => route('orders.show', $context->routeKey()),
+);
 ```
-
-```php [Named Arguments] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn ($context) => route('orders.show', $context->routeKey()),
-        );
-    }
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-        );
-    }
-}
-```
-:::
 
 <FeedExample :items="withLink" />
 
