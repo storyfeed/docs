@@ -220,7 +220,9 @@ context's `feed` method to get the registered feed name. Use it to return a
 kitchen ticket URL, customer status URL, or no link:
 
 ```php memo="app/Models/Order.php" at="booted()"
-static::feedMediaUsing(fn ($context) => match ($context->feed()) {
+use Storyfeed\FeedContext;
+
+static::feedMediaUsing(fn (FeedContext $context) => match ($context->feed()) {
     'kitchen' => route('kitchen.ticket', $context->routeKey()),
     'customer' => route('orders.status', $context->routeKey()),
     // an ad-hoc feed reports no name; without this arm the match throws

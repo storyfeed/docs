@@ -40,7 +40,7 @@ override either method on the model.
 |---|---|---|---|
 | `describeFeed(): void` | the model | when the snapshot is written | fill `$this->feedEntity()` |
 | `$this->feedEntity()` | inside `describeFeed()` | when the snapshot is written | the `FeedEntity` the snapshot is written from |
-| `static::feedMediaUsing(fn ($context, $media) => …)` | `booted()` | when the feed is retrieved | the link and media |
+| `static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => …)` | `booted()` | when the feed is retrieved | the link and media |
 | `feedMediaIcon()`, `feedMediaPreview()`, `feedMediaImage()` | `toFeed()` or `describeFeed()` | when building a body | a reference to the matching media slot, resolved when retrieved |
 | `guessFeedLabel(): string` | the model, to override | when no label is set | the default label |
 | `updateFeedSnapshot()` | anywhere | when called | refresh the snapshot outside a save |
@@ -63,6 +63,7 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 
 class Order extends Model implements Feedable
 {
@@ -78,7 +79,7 @@ class Order extends Model implements Feedable
     protected static function booted(): void
     {
         static::feedMediaUsing(
-            fn ($context) => route('orders.show', $context->routeKey()),
+            fn (FeedContext $context) => route('orders.show', $context->routeKey()),
         );
     }
 }
@@ -93,6 +94,7 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 
 class Order extends Model implements Feedable
 {
@@ -108,7 +110,7 @@ class Order extends Model implements Feedable
     protected static function booted(): void
     {
         static::feedMediaUsing(
-            fn ($context) => route('orders.show', $context->routeKey()),
+            fn (FeedContext $context) => route('orders.show', $context->routeKey()),
         );
     }
 }
@@ -177,19 +179,22 @@ model's feed.
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
 
 Storyfeed::feedable(Media::class)
-    ->toFeedUsing(fn (Media $media, $entity) => $entity->label($media->name))
+    ->toFeedUsing(fn (Media $media, FeedEntity $entity) => $entity->label($media->name))
     ->feedMediaUsing(
-        fn ($context, $media) => $media->url(route('media.show', $context->key())),
+        fn (FeedContext $context, FeedMedia $media) => $media->url(route('media.show', $context->key())),
     );
 ```
 
 | Method | Receives | Returns |
 |---|---|---|
 | `Storyfeed::feedable($class)` | a model class | a registration to chain the methods below on |
-| `->toFeedUsing(fn ($model, $entity) => …)` | the model and an empty `FeedEntity` | the entity, or nothing; an unset label is guessed |
-| `->feedMediaUsing(fn ($context, $media) => …)` | the `FeedContext` and an empty `FeedMedia` | a URL string, the `$media`, or `null` |
+| `->toFeedUsing(fn (Model $model, FeedEntity $entity) => …)` | the model and an empty `FeedEntity` | the entity, or nothing; an unset label is guessed |
+| `->feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => …)` | the `FeedContext` and an empty `FeedMedia` | a URL string, the `$media`, or `null` |
 
 Both closures are optional. Storyfeed treats the registered class as Feedable:
 saves refresh snapshots, and deletion and restoration update its activities.

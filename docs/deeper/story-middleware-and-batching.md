@@ -53,14 +53,15 @@ You may also define middleware as a closure:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
+use Closure;
 use Storyfeed\Facades\Story;
+use Storyfeed\PendingActivity;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->middleware(
-    // Leave type hints off closures that storyfeed:cache will serialize.
-    static function ($activity, $next) {
+    static function (PendingActivity $activity, Closure $next) {
         return $next($activity->data([
             ...($activity->activity->data ?? []),
             'reviewed' => true,

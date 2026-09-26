@@ -128,7 +128,7 @@ Storyfeed::feed()->summary(Period::Week)->get();
 You may also pass a string, such as `->summary('week')`. Periods use calendar
 boundaries in `app.timezone`. To retrieve activities from the last hour, apply a
 constraint with the [`query` method](#custom-query-constraints):
-`->query(fn ($q) => $q->where('published_at', '>=', now()->subHour()))`.
+`->query(fn (ActivityBuilder $query) => $query->where('published_at', '>=', now()->subHour()))`.
 
 This period applies only to summary mode. Configure each verb's grouping
 period separately; see [Grouping Periods](/deeper/grouping-periods).
@@ -226,10 +226,12 @@ builder's `limit` method.
 Use the `when` method to apply a filter only when a value is present:
 
 ```php memo="A controller, or wherever the feed is read"
+use App\Models\Shop;
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedBuilder;
 
 Storyfeed::feed()
-    ->when($request->shop, fn ($feed, $shop) => $feed->involving($shop))
+    ->when($request->shop, fn (FeedBuilder $feed, Shop $shop) => $feed->involving($shop))
     ->get();
 ```
 

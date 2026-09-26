@@ -112,6 +112,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\PendingTombstone;
 
 class MenuItem extends Model implements Feedable
 {
@@ -121,7 +122,7 @@ class MenuItem extends Model implements Feedable
     {
         $this->feedEntity()
             ->label("{$this->code} {$this->name}")
-            ->tombstone(fn ($tombstone) => $tombstone->keepLabel());
+            ->tombstone(fn (PendingTombstone $tombstone) => $tombstone->keepLabel());
     }
 }
 ```

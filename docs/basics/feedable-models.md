@@ -202,8 +202,10 @@ Storyfeed resolves links when retrieving the feed. Register a resolver in the
 model's `booted` method:
 
 ```php memo="app/Models/Order.php" at="booted()"
+use Storyfeed\FeedContext;
+
 static::feedMediaUsing(
-    fn ($context) => route('orders.show', $context->routeKey()),
+    fn (FeedContext $context) => route('orders.show', $context->routeKey()),
 );
 ```
 
@@ -234,8 +236,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
 
 class MenuItem extends Model implements Feedable
 {
@@ -243,7 +247,7 @@ class MenuItem extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn ($context, $media) => $media
+        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
             ->url(route('menu.show', $context->routeKey()))
             ->preview(FeedImage::make()
                 ->src(route('menu.photo', $context->routeKey()))
@@ -278,8 +282,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
 
 class MenuItem extends Model implements Feedable
 {
@@ -287,7 +293,7 @@ class MenuItem extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn ($context, $media) => $media
+        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
             ->url(route('menu.show', $context->routeKey()))
             ->preview(FeedImage::make(
                 src: route('menu.photo', $context->routeKey()),
@@ -339,6 +345,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
 
 class Photo extends Model implements Feedable
 {
@@ -346,7 +354,7 @@ class Photo extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn ($context, $media) => $media
+        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
             ->url(route('photos.show', $context->routeKey()))
             ->modal()
         );
@@ -362,6 +370,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
 use Storyfeed\FeedMedia;
 
 class Photo extends Model implements Feedable
@@ -370,7 +379,7 @@ class Photo extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn ($context) => FeedMedia::make(
+        static::feedMediaUsing(fn (FeedContext $context) => FeedMedia::make(
             url: route('photos.show', $context->routeKey()),
             modal: true,
         ));
@@ -472,13 +481,16 @@ it in a service provider:
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
 
 Storyfeed::feedable(Media::class)
-    ->toFeedUsing(fn (Media $photo, $entity) => $entity
+    ->toFeedUsing(fn (Media $photo, FeedEntity $entity) => $entity
         ->label($photo->name)
         ->data(['mediaType' => $photo->mime_type])
     )
-    ->feedMediaUsing(fn ($context, $media) => $media
+    ->feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
         ->url(route('photos.show', $context->routeKey()))
     );
 ```
