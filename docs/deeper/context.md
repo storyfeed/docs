@@ -20,69 +20,23 @@ Roles are never filled in later. If you have the container when you publish,
 record it: a `context` read only finds activities recorded with one.
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/DishQuestionController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\AskQuestionRequest;
-use App\Models\Shop;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class DishQuestionController extends Controller
-{
-    public function store(
-        AskQuestionRequest $request,
-        Shop $shop,
-        MenuItem $dish,
-    ): RedirectResponse {
-        $note = $dish->notes()->create($request->validated());
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('ask', $note)
-            ->on($dish)               // target: what the question is about
-            ->context($shop)       // context: the shop the dish belongs to
-            ->publish();
-
-        return back();
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('ask', $note)
+    ->on($dish)           // target: what the question is about
+    ->context($shop)      // context: the shop the dish belongs to [!code highlight]
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/DishQuestionController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\AskQuestionRequest;
-use App\Models\Shop;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class DishQuestionController extends Controller
-{
-    public function store(
-        AskQuestionRequest $request,
-        Shop $shop,
-        MenuItem $dish,
-    ): RedirectResponse {
-        $note = $dish->notes()->create($request->validated());
-
-        Storyfeed::record(
-            verb: 'ask',
-            object: $note,
-            actor: $request->user(),
-            target: $dish,            // what the question is about
-            context: $shop,        // the shop the dish belongs to
-        );
-
-        return back();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'ask',
+    object: $note,
+    actor: $request->user(),
+    target: $dish,        // what the question is about
+    context: $shop,       // the shop the dish belongs to [!code highlight]
+);
 ```
 :::
 
@@ -103,8 +57,22 @@ Use `context` when the target sits inside a container, like a dish in a
 shop. When the target is the container itself, `target` is enough:
 
 ::: code-group
-<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
-<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)
+    ->to($shop) // [!code highlight]
+    ->publish();
+```
+
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    actor: $request->user(),
+    target: $shop, // [!code highlight]
+);
+```
 :::
 
 <FeedExample :items="[scene.order]" />
