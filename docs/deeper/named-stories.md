@@ -34,7 +34,7 @@ Story::for(Order::class)->verb('place')
 Publish it by name:
 
 ```php
-story('order.place', $order) // [!code highlight]
+story('order.place', $order)
     ->by($request->user())
     ->to($order->shop)
     ->publish();

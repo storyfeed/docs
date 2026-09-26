@@ -282,7 +282,7 @@ defineProps(['title', 'steps', 'current', 'pickup'])
         <p>Pickup at {{ pickup }}</p>
         <ol>
             <li v-for="step in steps" :key="step"
-                :aria-current="step === current ? 'step' : undefined"> <!-- [!code highlight] -->
+                :aria-current="step === current ? 'step' : undefined">
                 {{ step }}
             </li>
         </ol>
@@ -298,7 +298,7 @@ and pass it the body's props:
 import Progress from '../orders/Progress.vue'
 
 defineProps(['body'])
-const components = { 'Orders/Progress': Progress } // [!code highlight]
+const components = { 'Orders/Progress': Progress }
 </script>
 
 <template>

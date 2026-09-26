@@ -31,7 +31,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::activity()
     ->by($staff)
     ->action('reprice', $menuItem)
-    ->data(['old_price' => $oldPrice, 'new_price' => $menuItem->price]) // [!code highlight]
+    ->data(['old_price' => $oldPrice, 'new_price' => $menuItem->price])
     ->publish();
 ```
 

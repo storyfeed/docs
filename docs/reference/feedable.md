@@ -228,7 +228,7 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::guessFeedLabelsUsing(
-    fn (Model $model) => $model->getAttribute('reference'), // [!code highlight]
+    fn (Model $model) => $model->getAttribute('reference'),
 );
 ```
 
@@ -281,7 +281,7 @@ Storyfeed::feedable(Media::class)
     ->toFeedUsing(
         fn (Media $photo, FeedEntity $entity) => $entity
             ->label($photo->name)
-            ->data(['mediaType' => $photo->mime_type]), // [!code highlight]
+            ->data(['mediaType' => $photo->mime_type]),
     )
     ->feedMediaUsing(
         fn (FeedContext $context, FeedMedia $media) => $media
@@ -638,7 +638,7 @@ use Storyfeed\FeedEntity;
 
 return FeedEntity::make(
     label: $this->name,
-    data: [ // [!code highlight]
+    data: [
         'mediaType' => $this->photo_mime,
         'width' => $this->photo_width,
         'height' => $this->photo_height,
@@ -668,7 +668,7 @@ use Storyfeed\FeedMedia;
 static::feedMediaUsing(
     fn (FeedContext $context, FeedMedia $media) => $media
         ->url(route('menu.show', $context->routeKey()))
-        ->preview( // [!code highlight]
+        ->preview(
             FeedImage::make()
                 ->src(route('menu.photo', $context->routeKey()))
                 ->mediaType($context->data('mediaType'))
@@ -687,7 +687,7 @@ use Storyfeed\FeedMedia;
 static::feedMediaUsing(
     fn (FeedContext $context, FeedMedia $media) => $media
         ->url(route('menu.show', $context->routeKey()))
-        ->preview( // [!code highlight]
+        ->preview(
             FeedImage::make(
                 src: route('menu.photo', $context->routeKey()),
                 mediaType: $context->data('mediaType'),

@@ -61,7 +61,7 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-Relation::enforceMorphMap([ // [!code highlight]
+Relation::enforceMorphMap([
     'order' => Order::class,
     'menu_item' => MenuItem::class,
     'shop' => Shop::class,

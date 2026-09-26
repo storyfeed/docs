@@ -98,7 +98,7 @@ use Storyfeed\ActivityContext;
 Story::for(Order::class)
     ->verb('place')
     ->headline(
-        fn (ActivityContext $activity) => $activity->boolean('rush') // [!code highlight]
+        fn (ActivityContext $activity) => $activity->boolean('rush')
             ? ':actor rushed :object to :target'
             : ':actor placed :object with :target',
     );

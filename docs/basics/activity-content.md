@@ -48,7 +48,7 @@ Storyfeed::activity()
     ->by($customer)
     ->action('post', $note)
     ->on($order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code highlight]
+    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
     ->publish();
 ```
 
@@ -61,7 +61,7 @@ Storyfeed::record(
     object: $note,
     actor: $customer,
     target: $order,
-    thread: FeedThread::make( // [!code highlight]
+    thread: FeedThread::make(
         text: $note->body,
         by: $customer->name,
         kind: 'note',
@@ -157,7 +157,7 @@ Use `KeyValue` for labelled values:
 FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->body(
-        KeyValue::make()->title("Order #{$this->reference}")->items([ // [!code highlight]
+        KeyValue::make()->title("Order #{$this->reference}")->items([
             'Pickup' => $this->pickup_at->format('g:i a'),
             'Items' => $this->items->count(),
             'Reference' => KeyValue::verbatim($this->reference),
@@ -169,7 +169,7 @@ FeedEntity::make()
 ```php [Named Arguments]
 FeedEntity::make(
     label: "Order #{$this->reference}",
-    body: KeyValue::make( // [!code highlight]
+    body: KeyValue::make(
         title: "Order #{$this->reference}",
         items: [
             'Pickup' => $this->pickup_at->format('g:i a'),
@@ -197,7 +197,7 @@ source characters and line breaks, and long output scrolls within the body:
 ```php
 use Storyfeed\Body\Prose;
 
-Prose::verbatim($this->output, title: $this->name); // [!code highlight]
+Prose::verbatim($this->output, title: $this->name);
 ```
 
 <FeedExample :items="[content.program, content.terminal, content.radioLog]" />
@@ -208,7 +208,7 @@ the source, and the renderer converts and sanitizes it:
 ```php
 use Storyfeed\Body\Prose;
 
-Prose::markdown($this->notes, title: $this->title); // [!code highlight]
+Prose::markdown($this->notes, title: $this->title);
 ```
 
 <FeedExample :items="[content.caseMemo, content.labReport]" />
@@ -226,7 +226,7 @@ story. The `from` argument names who said them or where they came from:
 FeedEntity::make()
     ->label($this->title)
     ->body(
-        Excerpt::make() // [!code highlight]
+        Excerpt::make()
             ->text($this->pull_quote)
             ->from($this->pull_quote_source),
     );
@@ -235,7 +235,7 @@ FeedEntity::make()
 ```php [Named Arguments]
 FeedEntity::make(
     label: $this->title,
-    body: Excerpt::make( // [!code highlight]
+    body: Excerpt::make(
         text: $this->pull_quote,
         from: $this->pull_quote_source,
     ),
@@ -267,7 +267,7 @@ use Storyfeed\FeedEntity;
 
 return FeedEntity::make()
     ->label($this->name)
-    ->body( // [!code highlight]
+    ->body(
         File::make()
             ->size($this->bytes)
             ->mediaType($this->mime)
@@ -281,7 +281,7 @@ use Storyfeed\FeedEntity;
 
 return FeedEntity::make(
     label: $this->name,
-    body: File::make( // [!code highlight]
+    body: File::make(
         size: $this->bytes,
         mediaType: $this->mime,
         name: $this->name,
@@ -316,7 +316,7 @@ FeedEntity::make()
             ->title("Order #{$this->reference} items")
             ->items(
                 $this->lines->take(2)->map(
-                    fn (OrderLine $line) => FeedLink::make( // [!code highlight]
+                    fn (OrderLine $line) => FeedLink::make(
                         $line->item->name,
                         $line->item->url,
                     ),
@@ -340,7 +340,7 @@ FeedEntity::make(
         title: "Order #{$this->reference} items",
         items: [
             ...$this->lines->take(2)->map(
-                fn (OrderLine $line) => FeedLink::make( // [!code highlight]
+                fn (OrderLine $line) => FeedLink::make(
                     $line->item->name,
                     $line->item->url,
                 ),
@@ -382,7 +382,7 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(FeedLink::make($this->title, $this->url)) // [!code highlight]
+            ->subject(FeedLink::make($this->title, $this->url))
             ->content($this->description),
     );
 ```
@@ -395,7 +395,7 @@ use Storyfeed\FeedLink;
 FeedEntity::make(
     label: $this->title,
     body: MediaObject::make(
-        subject: FeedLink::make($this->title, $this->url), // [!code highlight]
+        subject: FeedLink::make($this->title, $this->url),
         content: $this->description,
     ),
 );
@@ -420,7 +420,7 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(FeedLink::make($this->guide_title, $this->guide_url)) // [!code highlight]
+            ->subject(FeedLink::make($this->guide_title, $this->guide_url))
             ->content($this->description),
     );
 ```
@@ -433,7 +433,7 @@ use Storyfeed\FeedLink;
 FeedEntity::make(
     label: $this->title,
     body: MediaObject::make(
-        subject: FeedLink::make($this->guide_title, $this->guide_url), // [!code highlight]
+        subject: FeedLink::make($this->guide_title, $this->guide_url),
         content: $this->description,
     ),
 );
