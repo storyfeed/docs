@@ -51,6 +51,20 @@ prints the `routes/feed.php` binding for you to add.
 |---|---|
 | `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class with unclassified verbs commented out; its `only([])` throws until you classify each verb with `only()` or `except()` |
 
+### Body Upgrades
+
+`make:body-upgrade` creates a timestamped, anonymous upgrade class in the
+body's folder under `app/Feed/Bodies/Upgrades`:
+
+```bash
+php artisan make:body-upgrade KeyValue rename_missing_to_placeholder
+```
+
+Pass a built-in body name or your custom body's class name, followed by the
+step's name. Write the payload transform in the generated `upgrade()` method.
+Steps run in filename order when bodies are upgraded at read time; they do
+not rewrite stored rows. See [Versions and Upgrades](/deeper/body#versions-and-upgrades).
+
 ## Listing Definitions
 
 | Command | Description |

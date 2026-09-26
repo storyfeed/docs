@@ -319,7 +319,7 @@ Names are stored unchanged. Like `data()`, `props()` merges an array of keys
 or sets one with `->props('current', 'Ready')`.
 
 Use `Component` for props you control. If their structure will change over
-time, define a body type with its own `upgrade()` method.
+time, define a body type with its own upgrade steps.
 
 <a id="writing-a-body-type"></a>
 
@@ -330,11 +330,13 @@ time, define a body type with its own `upgrade()` method.
 
 namespace App\Feed;
 
+use Storyfeed\Concerns\HasBodyUpgrades;
 use Storyfeed\Concerns\HasPayload;
 use Storyfeed\Contracts\FeedBody;
 
 final class Attachment implements FeedBody
 {
+    use HasBodyUpgrades;
     use HasPayload;
 
     private function __construct(
@@ -352,22 +354,6 @@ final class Attachment implements FeedBody
         return 'Acme/Attachment';
     }
 
-    public static function version(): int
-    {
-        return 1;
-    }
-
-    public static function upgrade(array $payload, int $from): array
-    {
-        // Missing or unrecognised values become null.
-        return [
-            'size' => is_int($payload['size'] ?? null) ? $payload['size'] : null,
-            'mediaType' => is_string($payload['mediaType'] ?? null)
-                ? $payload['mediaType']
-                : null,
-        ];
-    }
-
     public function toPayload(): array
     {
         // Values only: no markup, and never another body.
@@ -381,7 +367,9 @@ final class Attachment implements FeedBody
 }
 ```
 
-`HasPayload` builds `toArray()` from `toPayload()`.
+`HasPayload` builds `toArray()` from `toPayload()`. `HasBodyUpgrades` supplies
+`version()` and `upgrade()` from the body's upgrade files. With no upgrade
+files, the body starts at version 1.
 
 <a id="names"></a>
 
@@ -404,16 +392,174 @@ The `$` prefix keeps them apart from your own keys.
 
 <a id="body-versions"></a>
 
-### Versions and Upgrades
+### Versions and Upgrades {#versions-and-upgrades}
 
-Start `version()` at 1. Call the body's `upgrade()` method to convert older
-payloads for your frontend. Storyfeed preserves the stored body and version.
+Upgrade steps keep stored bodies readable when their fields change. Each
+step transforms a payload array when the feed is read; stored rows are never
+rewritten.
+
+#### Changing a Body's Shape
+
+When you rename, remove, or change the meaning of a field, add an upgrade
+step alongside the change to `toPayload()`. For example, KeyValue's
+`missing` field becomes `placeholder`:
+
+```bash
+php artisan make:body-upgrade KeyValue rename_missing_to_placeholder
+```
+
+The command creates a timestamped file in the body's own folder:
+
+```text
+app/Feed/Bodies/Upgrades/KeyValue/2026_09_26_120000_rename_missing_to_placeholder.php
+```
+
+Like Laravel migrations, upgrade files run in filename order. The command
+accepts a built-in body name or your custom body's class name.
+
+#### Writing an Upgrade Step
+
+The generated file returns an anonymous class with one method. Return the
+payload with the changed fields, preserving unrelated values:
+
+```php memo="app/Feed/Bodies/Upgrades/KeyValue/2026_09_26_120000_rename_missing_to_placeholder.php"
+<?php
+
+return new class
+{
+    public function upgrade(array $payload): array
+    {
+        if (! array_key_exists('placeholder', $payload)) {
+            $payload['placeholder'] = $payload['missing'] ?? null;
+        }
+
+        unset($payload['missing']);
+
+        return $payload;
+    }
+};
+```
+
+Keep the method pure: use only the supplied values, without database queries,
+network requests, or writes. Storyfeed selects the remaining steps from the
+stored `$v`, passes each result to the next step, and sets the returned
+body's `$v` to its current version. The step does not set `$body` or `$v`.
+
+#### How Versions Are Counted
+
+A body's version is **1 + the number of its upgrade steps**. You do not
+write a `version()` method or choose a version number. `HasBodyUpgrades`
+provides that method for `toPayload()` and runs the steps through `upgrade()`.
+
+| Upgrade Steps | Current `$v` |
+|---|---|
+| None | 1 |
+| One | 2 |
+| Two | 3 |
+
+KeyValue and MediaObject each ship with one step, so both are version 2.
+KeyValue's step maps `missing` to `placeholder`; MediaObject's maps
+`attachments` to `files`. Package steps count too; an application step
+extends that body's existing history.
+
+Never delete or reorder released steps, because stored version numbers refer
+to their positions in that history. Keep released transforms unchanged and
+add a new step for the next change. A stored body without `$v` is version 1.
+
+#### Catching a Missing Upgrade
+
+`make:body` generates a snapshot test with your custom body:
+
+```bash
+php artisan make:body Attachment
+```
+
+Fill in representative inputs for `toPayload()` and keep old-row fixtures
+with their expected upgraded values. Commit the snapshots and fixtures with
+the body. The test compares the output shape and upgrade history, then checks
+that the old rows still upgrade correctly. A shape change without a step
+fails with a message such as:
+
+```text
+MediaObject: removed `attachments`, added `files`; no upgrade step added.
+```
+
+To fix it, generate the step, write the transform, add an old-row fixture
+that exercises it, and update the committed snapshot to the new output:
+
+```bash
+php artisan make:body-upgrade MediaObject rename_attachments_to_files
+php artisan test --filter=MediaObjectTest
+```
+
+Review the snapshot changes and run the test again. Updating the snapshot
+alone does not replace an upgrade step. Include empty, missing, and populated
+values in your examples; a snapshot cannot detect a branch it never exercises.
+Changes in meaning that keep the same fields also need a fixture.
+
+You may also declare a schema on a custom body. For the Attachment body above,
+add this method and import:
+
+```php memo="app/Feed/Attachment.php" at="Attachment"
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+
+public static function schema(JsonSchema $schema): array
+{
+    return [
+        'size' => $schema->integer()->nullable()->required(),
+        'mediaType' => $schema->string()->nullable()->required(),
+    ];
+}
+```
+
+The schema describes the body's values; Storyfeed handles the reserved
+`$body` and `$v` keys. It uses Laravel's JSON Schema builder, the same builder
+used for [MCP tool input schemas](https://laravel.com/docs/13.x/mcp#tool-input-schemas).
+Every core body declares a schema. CI compares it with the released schema
+and validates `toPayload()` against it. Custom-body schemas are optional;
+the generated snapshot test checks the actual output whether or not you
+provide a schema.
 
 <a id="upgrading-payload-values"></a>
 
-Storyfeed upgrades an activity's `thread` automatically. Bodies arrive as
-stored, including `$v`, so your renderer must call `upgrade()` before
-displaying them. This also applies to a `FeedThread` used as a body.
+#### Upgrading Bodies Before They Reach the Browser
+
+Call `Storyfeed::upgradeBodies()` in your service provider's `boot()` method
+to upgrade every body to its current shape before the payload leaves PHP:
+
+```php memo="app/Providers/AppServiceProvider.php"
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Storyfeed\Facades\Storyfeed;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        Storyfeed::upgradeBodies();
+    }
+}
+```
+
+The switch is off by default. Choose what your renderers receive:
+
+| Mode | PHP Renderers | JavaScript Renderers |
+|---|---|---|
+| Default: bodies as stored | Call the body's `upgrade($payload, $from)` with its stored `$v` before rendering | Keep equivalent upgrade code for each supported body and apply it before rendering |
+| `Storyfeed::upgradeBodies()` | Render the current shape supplied by Storyfeed | Render the current shape; no upgrade code is needed |
+
+In the default mode, use version 1 when `$v` is absent. This also applies to
+`FeedThread` used as a body. An activity's `thread` is upgraded automatically
+in either mode.
+
+The switch changes the emitted payload, including its body versions, without
+changing stored rows. Keep PHP and JavaScript renderers compatible with the
+current body shapes when deploying changes. Custom body types need their PHP
+classes and upgrade steps available to Storyfeed. Renderers should omit
+unknown body types and tolerate unrecognised fields.
 
 
 ::: headless
