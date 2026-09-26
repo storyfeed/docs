@@ -119,6 +119,11 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: cookbook scenes preserve the behaviours being taught`, () => {
     const c = scene.cookbook
+    assert.ok(same(c.computed.object, role.product))
+    assert.equal(c.computed.object.body.length, 1)
+    assert.equal(c.computed.object.body[0].$body, 'Storyfeed/Body/KeyValue')
+    assert.equal(c.computed.object.body[0].title, c.computed.object.label)
+    assert.equal(typeof c.computed.object.body[0].items.find((item) => item.key === 'Orders').value, 'number')
     const rows = [c.actorless.anonymous, c.actorless.paid, c.actorless.expired,
       c.transitions.confirmed, ...c.transitions.timeline, ...c.pricing,
       c.deletion, c.discussion, ...c.grouped.repeat, ...c.grouped.actors]

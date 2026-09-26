@@ -131,15 +131,15 @@ Stored and resolved bodies share the same payload shape.
 
 ### Stored and Resolved Values
 
-Define the body in either method:
+Choose when a value is decided:
 
-| Method | When It Runs | Body |
+| Method | When It Runs | Value |
 |---|---|---|
+| `->data(…)` on the activity | when the activity is published | frozen at publication |
 | `->body(…)` on `FeedEntity` in `toFeed()` | whenever the model is saved | stored and updated with the model |
 | `->body(…)` on `FeedMedia` in `feedMedia()` | whenever the feed is retrieved | built from current values and never stored |
 
-Neither freezes a value. To keep what was true at the time, point the activity
-at a model that never changes, such as a revision or a posted note.
+See [Computed Values in the Feed](/cookbook/computed-values) for publication-time facts and counts computed on retrieval.
 
 <a id="deferring-the-work"></a>
 

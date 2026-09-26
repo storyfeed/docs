@@ -303,6 +303,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       actorless: { anonymous: one(s.cookbook.actorless.anonymous), paid: one(s.cookbook.actorless.paid), expired: one(s.cookbook.actorless.expired) },
       transitions: { confirmed: one(s.cookbook.transitions.confirmed), timeline: many(s.cookbook.transitions.timeline) },
       pricing: many(s.cookbook.pricing),
+      computed: one(s.cookbook.computed),
       deletion: one(s.cookbook.deletion),
       discussion: one(s.cookbook.discussion),
       grouped: { repeat: many(s.cookbook.grouped.repeat), actors: many(s.cookbook.grouped.actors) },

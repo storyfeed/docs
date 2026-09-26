@@ -98,6 +98,7 @@ export type SceneIds = {
     actorless: { anonymous: string; paid: string; expired: string }
     transitions: { confirmed: string; timeline: string[] }
     pricing: string[]
+    computed: string
     deletion: string
     discussion: string
     grouped: { repeat: string[]; actors: string[] }

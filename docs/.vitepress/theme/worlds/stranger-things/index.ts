@@ -87,7 +87,7 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
 // standard example, and its pages teach the bare `toFeed()`. A page that
 // teaches a body on an order builds it on its own example.
-const detail = (key: string, value: string, verbatim = false) => ({ key, value, verbatim, missing: null })
+const detail = (key: string, value: string | number, verbatim = false) => ({ key, value, verbatim, missing: null })
 const card = (title: string, items: ReturnType<typeof detail>[]) =>
   [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title, items }]
 const prose = (title: string, content: string) =>
@@ -157,7 +157,7 @@ things.repo = { ...things.repo, body: card(HOLDINGS.repo, [
 // The shop's menu item is a record, so its card is its details. Every row that
 // names it shows the same card. The price is ours.
 fare.butterscotch = { ...fare.butterscotch, body: card(fare.butterscotch.label, [
-  detail('Price', APP_CONTENT.price), detail('Section', APP_CONTENT.section), detail('Available', APP_CONTENT.available)]) }
+  detail('Price', APP_CONTENT.price), detail('Section', APP_CONTENT.section), detail('Available', APP_CONTENT.available), detail('Orders', 12)]) }
 // The things that have a photograph of their own (see PHOTO_CREDITS below).
 const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel: 'ferris', fireworks: 'fireworks', pretzelBag: 'pretzels' }
 
@@ -625,6 +625,7 @@ export default {
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
       transitions: { confirmed: 'cookbook-confirmed', timeline: ['j84', 'cookbook-confirmed', 'cookbook-replaced'] },
       pricing: ['cookbook-added', 'cookbook-repriced'],
+      computed: 'cookbook-added',
       deletion: 'cookbook-removed',
       discussion: 'cookbook-reply',
       grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
