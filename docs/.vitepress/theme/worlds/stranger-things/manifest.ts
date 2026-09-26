@@ -206,6 +206,7 @@ export const RECORD_TITLES = {
   caseMemo: 'Murray’s gate investigation',
   labReport: 'Hawkins Lab system report',
   alphabet: 'Joyce’s alphabet wall',
+  planck: 'Planck’s constant',
 }
 export const RECORD_TEXT = {
   program: '10 REM DOOR OVERRIDE — ILLUSTRATIVE BASIC\n20 INPUT "SECURITY CODE"; C$\n30 IF C$ = "" THEN GOTO 20\n40 PRINT "MANUAL OVERRIDE REQUESTED"\n50 FOR D = 1 TO 4\n60 PRINT "DOOR"; D; " RELEASE REQUEST SENT"\n70 NEXT D\n80 END',
@@ -216,4 +217,6 @@ export const RECORD_TEXT = {
   alphabetTop: 'A B C D E F G H',
   alphabetMiddle: 'I J K L M N O P Q',
   alphabetBottom: 'R S T U V W X Y Z',
+  planck: 'Planck’s constant is 6.62607004.',
+  planckFrom: 'Suzie, over Cerebro',
 }

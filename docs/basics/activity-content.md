@@ -148,19 +148,6 @@ class Order extends Model implements Feedable
 <FeedExample :items="[withProse]" />
 
 Include a title to identify the order when the body appears without a headline.
-For code or raw output, set `verbatim` to preserve the source characters and
-line breaks. This renderer displays them in a dark, scrollable block:
-
-<FeedExample :items="[content.program, content.terminal, content.radioLog]" />
-
-Set `mediaType` to `text/markdown` or `text/html` for formatted text. This
-renderer parses those formats and sanitizes the resulting HTML. Unknown formats
-remain plain text, and `verbatim` always takes precedence over `mediaType`.
-
-<FeedExample :items="[content.caseMemo, content.labReport]" />
-
-These records contain original illustrative text around the world's events,
-not transcripts. Each body names its subject; long text scrolls within the body.
 
 Use `KeyValue` for labelled values:
 
@@ -202,7 +189,29 @@ Use the `KeyValue::missingAs` method to specify text for an empty value.
 The `KeyValue::verbatim` method marks a value for display without formatting,
 such as a reference number.
 
-<a id="passages-from-a-source"></a>
+### Formatted Text and Raw Output
+
+For code or raw output, create the body with `Prose::verbatim`. It keeps the
+source characters and line breaks, and long output scrolls within the body:
+
+```php
+use Storyfeed\Body\Prose;
+
+Prose::verbatim($this->output, title: $this->name); // [!code highlight]
+```
+
+<FeedExample :items="[content.program, content.terminal, content.radioLog]" />
+
+For formatted text, use `Prose::markdown` or `Prose::html`. Storyfeed stores
+the source, and the renderer converts and sanitizes it:
+
+```php
+use Storyfeed\Body\Prose;
+
+Prose::markdown($this->notes, title: $this->title); // [!code highlight]
+```
+
+<FeedExample :items="[content.caseMemo, content.labReport]" />
 
 <a id="passages-from-a-source"></a>
 
@@ -240,6 +249,11 @@ FeedEntity::make(
 Excerpts are marked as `truncated` by default. Call `truncated(false)` when the
 text is complete. For the entity's own text, such as an article's opening
 paragraph, use `Prose` instead.
+
+A record of an answer taken down word for word quotes the person who gave it,
+and marks the text as complete:
+
+<FeedExample :items="[content.planck]" />
 
 ### File Details
 

@@ -569,7 +569,10 @@ ROWS.push(
 // The plot supplies the subjects. The records and their wording are fresh
 // illustrations, not transcribed dialogue, screen output or executable lab code.
 const records = build(RECORD_TITLES, (id, label, key) => entity('field_record', id, label, null, {
-  body: key === 'alphabet'
+  // Suzie's answer, as Dustin took it down: her words, so an Excerpt from her.
+  body: key === 'planck'
+    ? [{ $body: 'Storyfeed/Body/Excerpt', $v: 1, text: RECORD_TEXT.planck, from: RECORD_TEXT.planckFrom, truncated: false }]
+    : key === 'alphabet'
     ? [{ $body: 'Storyfeed/Body/ItemList', $v: 1, title: label, ordered: false,
         items: [RECORD_TEXT.alphabetTop, RECORD_TEXT.alphabetMiddle, RECORD_TEXT.alphabetBottom] }]
     : [{ $body: 'Storyfeed/Body/Prose', $v: 1, title: label, content: RECORD_TEXT[key],
@@ -585,6 +588,7 @@ ROWS.push(
   row('prose-memo', '1985-07-04 10:00', 'write', investigator, records.caseMemo, v.warehouse, 'recap3', illustrativeRecord),
   row('prose-report', '1984-11-03 18:03', 'publish', null, records.labReport, v.lab, 'recap2',
     { ...illustrativeRecord, headline: ':object was printed at :target' }),
+  row('prose-planck', '1985-07-04 18:55', 'write', radio, records.planck, null, 'S3E8', illustrativeRecord),
   row('prose-alphabet', '1983-11-09 17:00', 'write', clerk, records.alphabet, null, 'S1E3', illustrativeRecord),
 )
 
@@ -682,7 +686,7 @@ export default {
     basics: {
       activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product',
         program: 'prose-program', terminal: 'prose-terminal', radioLog: 'prose-radio',
-        caseMemo: 'prose-memo', labReport: 'prose-report', alphabet: 'prose-alphabet',
+        caseMemo: 'prose-memo', labReport: 'prose-report', alphabet: 'prose-alphabet', planck: 'prose-planck',
         itemList: 'a-item-list', notice: 'a-notice', linkedNotice: 'a-visitor-notice' },
       recording: { paid: 'a-paid', priced: 'a-price', photos: ['j54', 'j55', 'j56'] },
       feedFile: { completed: 'a-complete', created: 'a-created' },
