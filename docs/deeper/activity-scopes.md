@@ -21,61 +21,23 @@ const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
 ### Sharing Context
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PlaceOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::context($order->shop, function () use ($request, $order) {
-            Storyfeed::activity()
-                ->by($request->user())
-                ->action('place', $order)
-                ->publish();
-        });
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::context($order->shop, function () use ($request, $order) { // [!code highlight]
+    Storyfeed::activity()
+        ->by($request->user())
+        ->action('place', $order)
+        ->publish();
+});
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PlaceOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::context($order->shop, function () use ($request, $order) {
-            Storyfeed::record(
-                verb: 'place',
-                object: $order,
-                actor: $request->user(),
-            );
-        });
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Named Arguments]
+Storyfeed::context($order->shop, function () use ($request, $order) { // [!code highlight]
+    Storyfeed::record(
+        verb: 'place',
+        object: $order,
+        actor: $request->user(),
+    );
+});
 ```
 :::
 
@@ -263,24 +225,8 @@ job inherit the same user.
 
 A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 
-```php memo="app/Console/Commands/SyncMenus.php"
-<?php
-
-namespace App\Console\Commands;
-
-use App\Jobs\SyncMenu;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class SyncMenus extends Command
-{
-    protected $signature = 'menus:sync';
-
-    public function handle(): void
-    {
-        Storyfeed::actor('System', fn () => SyncMenu::dispatch());
-    }
-}
+```php
+Storyfeed::actor('System', fn () => SyncMenu::dispatch());
 ```
 
 Activities the job publishes without an explicit actor name the party
