@@ -148,6 +148,20 @@ class Order extends Model implements Feedable
 <FeedExample :items="[withProse]" />
 
 Include a title to identify the order when the body appears without a headline.
+For code or raw output, set `verbatim` to preserve the source characters and
+line breaks. This renderer displays them in a dark, scrollable block:
+
+<FeedExample :items="[content.program, content.terminal, content.radioLog]" />
+
+Set `mediaType` to `text/markdown` or `text/html` for formatted text. This
+renderer parses those formats and sanitizes the resulting HTML. Unknown formats
+remain plain text, and `verbatim` always takes precedence over `mediaType`.
+
+<FeedExample :items="[content.caseMemo, content.labReport]" />
+
+These records contain original illustrative text around the world's events,
+not transcripts. Each body names its subject; long text scrolls within the body.
+
 Use `KeyValue` for labelled values:
 
 ::: code-group
@@ -333,6 +347,10 @@ This order has five items. The body includes two linked items and one
 plain-string item. The `totalItems` method records the full count, and `more`
 provides a link to the order containing the remaining items. Use
 `ItemList::ordered()` when the sequence of the items matters.
+
+A list can also preserve a short arrangement of items:
+
+<FeedExample :items="[content.alphabet]" />
 
 ### Linking a Title
 

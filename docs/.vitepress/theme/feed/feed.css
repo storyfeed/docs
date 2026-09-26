@@ -549,29 +549,44 @@ a.sf-entity:hover {
    exactly — and fixed width is this renderer's conclusion from it, not an
    instruction the payload gave. A renderer that set a serif face for a
    verbatim quotation would not be wrong. */
-.sf-prose-block { margin: 0; }
-.sf-prose__title {
-    margin-bottom: 4px;
-    font-family: var(--vp-font-family-mono, ui-monospace, monospace);
-    font-size: 12px;
-    color: var(--sf-muted);
+.sf-prose-block, .sf-list-block {
+    margin: 0;
+    max-width: 36rem;
+    min-width: 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #fafafa;
 }
+.dark.sf-prose-block, .dark .sf-list-block { background: rgb(255 255 255 / 5%); }
+.sf-prose-block--verbatim, .dark .sf-prose-block--verbatim { padding: 0; background: transparent; }
+.sf-prose__title { margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--sf-text); }
+.sf-prose--scroll, .sf-rich-text, .sf-verbatim { max-height: 24rem; overflow: auto; overflow-wrap: anywhere; }
 .sf-verbatim {
     margin: 0;
-    max-width: 32rem;
-    padding: 8px 12px;
-    border: 1px solid var(--sf-line);
+    padding: 12px 16px;
     border-radius: 8px;
-    overflow-x: auto;
+    background: #18181b;
+    color: #f4f4f5;
+    white-space: pre-wrap;
     font-family: var(--vp-font-family-mono, ui-monospace, monospace);
     font-size: 12.5px;
     line-height: 1.55;
 }
-.sf-verbatim code { font: inherit; }
+.sf-verbatim code { font: inherit; color: inherit; background: transparent; padding: 0; }
+.sf-rich-text { font-size: 13.5px; line-height: 1.6; }
+.sf-rich-text > :first-child { margin-top: 0; }
+.sf-rich-text > :last-child { margin-bottom: 0; }
+.sf-rich-text p, .sf-rich-text ul, .sf-rich-text ol, .sf-rich-text blockquote { margin: 8px 0; }
+.sf-rich-text ul, .sf-rich-text ol { padding-left: 1.4rem; }
+.sf-rich-text h1, .sf-rich-text h2, .sf-rich-text h3,
+.sf-rich-text h4, .sf-rich-text h5, .sf-rich-text h6 { margin: 12px 0 6px; font-size: 14px; font-weight: 600; border: 0; padding: 0; }
+.sf-rich-text a { color: var(--vp-c-brand-1); text-decoration: underline; }
+.sf-rich-text blockquote { padding-left: 12px; border-left: 2px solid var(--sf-line); color: var(--sf-muted); }
+.sf-rich-text pre { overflow: auto; padding: 8px; background: var(--sf-line); border-radius: 4px; }
 
 /* ITEM LIST. The numbering answers `ordered`, which is a fact about whether
    the sequence means anything — not a bullet style the app chose. */
-.sf-list-block { margin: 0; }
+
 .sf-list__title { margin-bottom: 4px; font-size: 13px; color: var(--sf-text); }
 .sf-list {
     margin: 0;
