@@ -138,7 +138,9 @@ keeps the latest row of each verb.
 
 ## Publishing From Domain Events
 
-When the transition already has a domain event, publish from the event:
+When the transition already has a domain event, publish from the event: an
+event that implements `PublishesToFeed` returns its activity from
+`toFeedActivity()`:
 
 ```php memo="app/Events/OrderConfirmed.php" at="toFeedActivity()"
 return Storyfeed::activity()

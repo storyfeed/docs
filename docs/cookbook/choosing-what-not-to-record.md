@@ -23,6 +23,8 @@ nothing.
 
 ## Skipping Publication
 
+An event that implements `PublishesToFeed` decides in `toFeedActivity()`:
+
 ```php memo="app/Events/OrderPlaced.php" at="toFeedActivity()"
 if ($this->order->status === 'draft') {
     return null;                                 // not an activity [!code highlight]
