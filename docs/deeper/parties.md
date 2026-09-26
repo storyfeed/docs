@@ -47,7 +47,7 @@ class CancelUnpaidOrders extends Command
             $order->update(['cancelled_at' => now()]);
 
             Storyfeed::activity()
-                ->by('System') // [!code highlight]
+                ->by('Scoops Register') // [!code highlight]
                 ->action('cancel', $order)
                 ->publish();
         });
@@ -78,7 +78,7 @@ class CancelUnpaidOrders extends Command
             Storyfeed::record(
                 verb: 'cancel',
                 object: $order,
-                actor: 'System', // [!code highlight]
+                actor: 'Scoops Register', // [!code highlight]
             );
         });
     }
@@ -90,8 +90,8 @@ class CancelUnpaidOrders extends Command
 
 The first activity with a name creates its party; later ones reuse it.
 
-Without `by('System')`, the command's activity would have no actor at all: an
-[anonymous activity](#recording-anonymous-activities).
+Without `by('Scoops Register')`, the command's activity would have no actor at
+all: an [anonymous activity](#recording-anonymous-activities).
 
 ### Using Parties in Other Roles
 
@@ -163,7 +163,7 @@ party beside `'Stripe'`. Declare the names an actor may take:
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::parties(['Stripe', 'Paddle', 'System']);
+Storyfeed::parties(['Stripe', 'Scoops Register']);
 ```
 
 Once a list is declared, a name outside it:

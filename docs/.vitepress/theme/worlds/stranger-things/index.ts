@@ -101,8 +101,8 @@ const tasks = build(TASKS, (id, label) => entity('task', id, label, `/tasks/${id
 const tickets = build(TICKETS, (id, label) => entity('ticket', id, `Ticket #${id}: ${label}`, `/tickets/${id}`))
 const worldNotes = build(WORLD_NOTES, (id, label) => note(id, label))
 const stripe = entity('storyfeed.party', '101', SERVICES.billing, null)
-// The name an app's Artisan commands act under.
-const system = entity('storyfeed.party', '102', 'System', null)
+// The shop's till, acting when a scheduled command runs.
+const register = entity('storyfeed.party', '102', 'Scoops Register', null)
 
 const holding: Record<keyof typeof HOLDINGS, [string, string]> = {
   repo: ['repository', '/repositories/cerebro'],
@@ -564,7 +564,7 @@ const deeperRows: Row[] = [
   // Hourly retention crosses 18:00 while all five rows remain in one daily group.
   ...['17:40', '17:45', '17:50', '18:10', '18:15'].map((time, i) =>
     deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),  // At closing time a scheduled command cancels an order nobody paid for.
-  deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', system, order(2071), v.scoops),
+  deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', register, order(2071), v.scoops),
 ]
 ROWS.push(...deeperRows)
 VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
