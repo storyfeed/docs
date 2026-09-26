@@ -16,6 +16,20 @@ A feedable model provides a label for its activities. Storyfeed supplies a
 default label; links and images are optional. Making a model feedable does
 not record activities.
 
+<a id="models-you-don-t-own"></a>
+<a id="registering-external-models"></a>
+<a id="writing-tofeed-by-hand"></a>
+<a id="implementing-the-feedable-contract"></a>
+<a id="the-model-s-own-feed"></a>
+<a id="reading-a-model-s-feed"></a>
+
+For a model from another package, such as Spatie Media Library, see
+[Registering External Models](/reference/feedable#registering-external-models).
+To implement the contract's methods yourself, see
+[Implementing the Feedable Contract](/reference/feedable#implementing-the-feedable-contract).
+To retrieve a model's activities, see
+[Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
+
 <a id="making-a-model-feedable"></a>
 
 ## Making Models Feedable
@@ -53,22 +67,7 @@ The trait supplies the label without a `toFeed` method. Common defaults include:
 | class name and key | `Order #1042` |
 
 Storyfeed caches the model's feed values in a **snapshot**, which it refreshes
-when the model is saved while recording is enabled.
-
-<a id="models-you-don-t-own"></a>
-<a id="registering-external-models"></a>
-
-For models from another package, such as Spatie Media Library, see [Registering External Models](/reference/feedable#registering-external-models).
-
-<a id="writing-tofeed-by-hand"></a>
-<a id="implementing-the-feedable-contract"></a>
-
-You may also [implement the Feedable contract's methods directly](/reference/feedable#implementing-the-feedable-contract).
-
-<a id="the-model-s-own-feed"></a>
-<a id="reading-a-model-s-feed"></a>
-
-To retrieve activities involving a model, see [Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
+whenever the model is saved.
 
 <a id="morph-aliases"></a>
 
