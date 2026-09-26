@@ -4,6 +4,9 @@
 import { scene } from '../.vitepress/theme/world'
 
 const withLink = [scene.order]
+const product = scene.basics.activityContent.product
+const withImage = [{ ...product, object: { ...product.object, body: null,
+  media: scene.basics.activityContent.photo.object.media } }]
 const openInPlace = [{ ...scene.basics.activityContent.photo,
   object: { ...scene.basics.activityContent.photo.object, modal: true } }]
 </script>
@@ -525,6 +528,116 @@ class Photo extends Model implements Feedable
 
 The payload's `modal` field is a boolean.
 
+### Storing Snapshot Data
+
+Use the `data` method in `toFeed` to store values with the snapshot, such as
+an image's media type and dimensions:
+
+<a id="a-complete-model"></a>
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->data([ // [!code highlight]
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ]);
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
+    label: $this->name,
+    data: [ // [!code highlight]
+        'mediaType' => $this->photo_mime,
+        'width' => $this->photo_width,
+        'height' => $this->photo_height,
+    ],
+);
+```
+
+:::
+
+These values are stored when the snapshot is written. A media resolver can
+retrieve them through `$context->data('mediaType')`; a missing key returns `null`.
+
+<a id="images"></a>
+
+### Showing Image Previews
+
+Add a media resolver to the `MenuItem` model's `booted` method. Use `preview`
+for the image and `url` for the link:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="booted()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+static::feedMediaUsing(
+    fn (FeedContext $context, FeedMedia $media) => $media
+        ->url(route('menu.show', $context->routeKey()))
+        ->preview( // [!code highlight]
+            FeedImage::make()
+                ->src(route('menu.photo', $context->routeKey()))
+                ->mediaType($context->data('mediaType'))
+                ->width($context->data('width'))
+                ->height($context->data('height'))
+                ->alt($context->label()),
+        ),
+);
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="booted()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+static::feedMediaUsing(
+    fn (FeedContext $context, FeedMedia $media) => $media
+        ->url(route('menu.show', $context->routeKey()))
+        ->preview( // [!code highlight]
+            FeedImage::make(
+                src: route('menu.photo', $context->routeKey()),
+                mediaType: $context->data('mediaType'),
+                width: $context->data('width'),
+                height: $context->data('height'),
+                alt: $context->label(),
+            ),
+        ),
+);
+```
+
+:::
+
+<FeedExample :items="withImage" />
+
+The resolver receives the snapshot's values in `$context` and an empty
+`FeedMedia` in `$media`. Return the populated media to include the preview.
+See [Feedable API](/reference/feedable#feedmedia) for all media properties.
+
 ### Image Slots
 
 The slots are Activity Streams 2.0 property names:
@@ -665,5 +778,5 @@ Activities with unresolved role aliases remain in the payload without a
 label or link for that role. `storyfeed:trickle` counts them as unresolved
 and soft-deletes them only with `storyfeed.trickle.prune` or `--prune`.
 
-[Feedable Models](/basics/feedable-models#morph-aliases) covers enforcing the
+[Installation](/guide/installation#defining-morph-aliases) covers enforcing the
 map.

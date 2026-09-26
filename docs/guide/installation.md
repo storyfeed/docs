@@ -42,6 +42,37 @@ php artisan migrate
 
 The [Schema](/reference/schema) describes the tables. For manual publication or an installation without migrations, see [Commands](/reference/commands).
 
+<a id="morph-aliases"></a>
+
+## Defining Morph Aliases
+
+Storyfeed stores each model's morph class. Without a morph map, this is the
+full class name. Renaming or moving the model then orphans its existing
+activities, as with any polymorphic relation.
+
+We recommend defining a [morph map](https://laravel.com/docs/eloquent-relationships#custom-polymorphic-types)
+to keep these identifiers independent of your class names. To enforce a map,
+register the aliases in your `AppServiceProvider`'s `boot` method:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\Shop;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+Relation::enforceMorphMap([ // [!code highlight]
+    'order' => Order::class,
+    'menu_item' => MenuItem::class,
+    'shop' => Shop::class,
+    'user' => User::class,
+]);
+```
+
+`Relation::enforceMorphMap()` requires aliases for every polymorphic relation
+in your application. Choose whether to enforce this requirement for your
+application, and keep aliases used by existing activities in the map.
+
 ## Configuration
 
 The installer creates `config/storyfeed.php`. Every setting has a default; see [Configuration](/reference/configuration) for the available options.
