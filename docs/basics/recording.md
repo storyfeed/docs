@@ -95,7 +95,7 @@ the actor using the `by` method:
 ::: code-group
 ```php [Fluent Syntax]
 Storyfeed::activity()
-    ->by($order->customer)
+    ->by($order->customer) // [!code highlight]
     ->action('place', $order)
     ->to($order->shop)
     ->publish();
@@ -105,7 +105,7 @@ Storyfeed::activity()
 Storyfeed::record(
     verb: 'place',
     object: $order,
-    actor: $order->customer,
+    actor: $order->customer, // [!code highlight]
     target: $order->shop,
 );
 ```
