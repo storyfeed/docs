@@ -98,11 +98,15 @@ and indigo for links. To change these styles, publish the views and edit their
 utility classes. You may also customize Tailwind's existing theme variables,
 such as `--color-indigo-700` and `--color-indigo-300`, in your application's
 `@theme` block. These changes apply to every component using those colours.
-The kit defines no additional theme variables. Item lists use the Typography
-plugin's `prose` defaults.
+The kit defines no additional theme variables. ItemList, Prose, and Excerpt use the
+Typography plugin's `prose` styles.
 
 The components include `dark:` variants and follow your application's
 [Tailwind dark mode configuration](https://tailwindcss.com/docs/dark-mode).
+
+Prose bodies render Markdown and HTML with sanitization at render time. Plain
+text, unknown media types, and verbatim content are escaped. Verbatim content
+preserves whitespace inside a code block.
 
 Icon intents are application-defined strings exposed through `data-sf-intent`.
 To assign colours to your intent values, add the corresponding Tailwind
