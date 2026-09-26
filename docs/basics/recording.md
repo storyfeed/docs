@@ -93,7 +93,7 @@ The actor is the user or model that performed the activity. You may specify
 the actor using the `by` method:
 
 ::: code-group
-```php [Fluent Syntax] memo="Wherever the order is placed"
+```php [Fluent Syntax]
 Storyfeed::activity()
     ->by($order->customer)
     ->action('place', $order)
@@ -101,7 +101,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments] memo="Wherever the order is placed"
+```php [Named Arguments]
 Storyfeed::record(
     verb: 'place',
     object: $order,
