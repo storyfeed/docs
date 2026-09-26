@@ -1,17 +1,18 @@
 # Activities Without an Actor
 
-Record the user when a person acted, a named party when a system acted, and
-no actor when nobody did.
+Use the user as actor for a person's action and a named party for a system's
+action. An anonymous activity has no recorded actor: who acted is unknown,
+including when you deliberately use `Storyfeed::anonymous()` or `by(null)`.
 
 <span id="headlines-by-actor-type"></span>
 
 ## Choosing an Actor
 
-| The Act Was Performed by | The Actor Is | The Sentence |
+| Event | Actor | Headline |
 |---|---|---|
-| a user | the user | `:actor placed :object with :target` |
-| a job, a command, an integration | a party, named | `:actor marked :object paid` |
-| nobody | none | `:object expired at :target` |
+| a user places an order | the user | `:actor placed :object with :target` |
+| a job, command, or integration marks an order paid | a named party | `:actor marked :object paid` |
+| an order expires without a recorded actor | none | `:object expired at :target` |
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -23,7 +24,7 @@ const { paid, expired } = scene.cookbook.actorless
 
 ## Recording the Authenticated User
 
-Without `by()`, Storyfeed resolves the logged-in user as the actor by default:
+If you omit `by()`, Storyfeed uses the authenticated user by default:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
@@ -88,10 +89,9 @@ class OrderController extends Controller
 
 ## Preserving an Actor in Background Work
 
-A job dispatched from an authenticated request already carries that user. A
-job started from a console command or the scheduler has no logged-in user, so
-its activity has no actor. Pass the user who acted with the event or job, and
-assign it with `by()`:
+A job dispatched from an authenticated request carries that user. A job
+started by a console command or scheduler has no authenticated user. To
+record the person who acted, pass that user to the event or job and call `by()`:
 
 ```php memo="app/Events/OrderPlaced.php"
 <?php
@@ -141,17 +141,17 @@ Storyfeed::record(
 
 <FeedExample :items="[paid]" />
 
-[Publishing From Events](/deeper/events) shows the whole webhook. To
-name one party for a whole job, see
-[Sharing an Actor](/deeper/activity-scopes#sharing-an-actor).
-A party can also fill [other roles](/deeper/parties#using-parties-in-other-roles).
+See [Publishing From Events](/deeper/events) for the complete webhook or
+[Sharing an Actor](/deeper/activity-scopes#sharing-an-actor) to use one party
+throughout a job. Parties can also fill
+[other roles](/deeper/parties#using-parties-in-other-roles).
 
 <span id="recording-without-an-actor"></span>
 
 ## Recording No Actor
 
-A scheduled command that expires unpaid orders acts for nobody, so each
-expiry is published with `Storyfeed::anonymous()`:
+This scheduled command expires unpaid orders without recording an actor.
+Call `Storyfeed::anonymous()` to make that choice explicit:
 
 ```php
 Storyfeed::anonymous() // no actor, even inside Storyfeed::actor() [!code highlight]
@@ -162,8 +162,7 @@ Storyfeed::anonymous() // no actor, even inside Storyfeed::actor() [!code highli
 
 <FeedExample :items="[expired]" />
 
-The `expire` headline leaves `:actor` out.
+The `expire` headline omits `:actor`. See
 [Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities)
-covers every spelling of an anonymous activity, and
-[Anonymous Headlines](/deeper/parties#anonymous-headlines) covers headlines
-for activities with no actor.
+for the available APIs and [Anonymous Headlines](/deeper/parties#anonymous-headlines)
+for wording when no actor is recorded.
