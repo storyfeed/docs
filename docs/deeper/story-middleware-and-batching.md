@@ -81,24 +81,13 @@ Story::for(Order::class)->verb('place')
 
 Register aliases and named groups in a service provider:
 
-```php memo="app/Providers/AppServiceProvider.php"
-<?php
-
-namespace App\Providers;
-
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\StoryMiddleware\MarkReviewed;
-use Illuminate\Support\ServiceProvider;
 use Storyfeed\Facades\Story;
 
-class AppServiceProvider extends ServiceProvider
-{
-    public function boot(): void
-    {
-        // Register here: cached stories do not load routes/feed.php.
-        Story::aliasMiddleware('reviewed', MarkReviewed::class);
-        Story::middlewareGroup('review', ['reviewed']);
-    }
-}
+// Register here: cached stories do not load routes/feed.php.
+Story::aliasMiddleware('reviewed', MarkReviewed::class);
+Story::middlewareGroup('review', ['reviewed']);
 ```
 
 ### Groups
