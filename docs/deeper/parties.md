@@ -26,19 +26,63 @@ signed-in user, so it names the actor it runs as. A string in any role names a
 party:
 
 ::: code-group
-```php [Fluent Syntax]
-Storyfeed::activity()
-    ->by('System') // [!code highlight]
-    ->action('cancel', $order)
-    ->publish();
+```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php"
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class CancelUnpaidOrders extends Command
+{
+    protected $signature = 'orders:cancel-unpaid';
+
+    protected $description = 'Cancel the orders left unpaid at closing time';
+
+    public function handle(): void
+    {
+        Order::whereNull('paid_at')->whereNull('cancelled_at')->each(function (Order $order) {
+            $order->update(['cancelled_at' => now()]);
+
+            Storyfeed::activity()
+                ->by('System') // [!code highlight]
+                ->action('cancel', $order)
+                ->publish();
+        });
+    }
+}
 ```
 
-```php [Named Arguments]
-Storyfeed::record(
-    verb: 'cancel',
-    object: $order,
-    actor: 'System', // [!code highlight]
-);
+```php [Named Arguments] memo="app/Console/Commands/CancelUnpaidOrders.php"
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
+use Storyfeed\Facades\Storyfeed;
+
+class CancelUnpaidOrders extends Command
+{
+    protected $signature = 'orders:cancel-unpaid';
+
+    protected $description = 'Cancel the orders left unpaid at closing time';
+
+    public function handle(): void
+    {
+        Order::whereNull('paid_at')->whereNull('cancelled_at')->each(function (Order $order) {
+            $order->update(['cancelled_at' => now()]);
+
+            Storyfeed::record(
+                verb: 'cancel',
+                object: $order,
+                actor: 'System', // [!code highlight]
+            );
+        });
+    }
+}
 ```
 :::
 
