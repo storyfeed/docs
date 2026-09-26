@@ -67,8 +67,6 @@ commonly used columns, falling back on the class name and key.
 <a id="morph-aliases"></a>
 <a id="defining-morph-aliases"></a>
 
-For morph maps, see [Defining Morph Aliases](/guide/installation#defining-morph-aliases).
-
 <a id="defining-entity-values"></a>
 
 ## Customizing Model Labels
