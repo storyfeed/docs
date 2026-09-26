@@ -97,9 +97,11 @@ use Storyfeed\ActivityContext;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(fn (ActivityContext $activity) => $activity->boolean('rush') // [!code highlight]
-        ? ':actor rushed :object to :target'
-        : ':actor placed :object with :target');
+    ->headline(
+        fn (ActivityContext $activity) => $activity->boolean('rush') // [!code highlight]
+            ? ':actor rushed :object to :target'
+            : ':actor placed :object with :target',
+    );
 ```
 
 <FeedExample :items="[rushed, scene.order]" />
