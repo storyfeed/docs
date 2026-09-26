@@ -17,12 +17,12 @@ const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 
 ## Introduction
 
-`Storyfeed::feed()` starts a read, and `get()` returns a page of the feed,
-ready to render or to return from a route.
+To retrieve a page of activities, call the `feed` method on the `Storyfeed`
+facade, followed by the `get` method.
 
 ## Reading a Feed
 
-Return the feed from a route:
+You may return the feed from a route:
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -33,40 +33,37 @@ Route::get('/', function () {
 });
 ```
 
-For a feed containing three order placements, the response has this shape:
+For three order placements, the response contains:
 
 <FeedExample payload :items="scoped" />
 
-`get()` returns a `FeedPage`, which reads like an array in PHP:
-`$page['items']` holds the same nodes. Drawn, the page reads:
+The `get` method returns a `FeedPage`. Access its items with `$page['items']`
+using PHP array syntax. The rendered feed displays:
 
 <FeedExample :items="scoped" />
 
 <a id="groups"></a>
 
-The three orders share one row. That row is a **group**: one row standing for
-several activities that belong together, such as one person placing order after
-order. It keeps its members, and it reads as a sentence once the verb has a
-group headline. [Aggregation](/deeper/aggregation) covers which activities
-group and how their headlines are declared.
+The three orders appear in one row. A **group** combines related activities,
+such as repeated orders by one customer, while retaining its members.
+See [Aggregation](/deeper/aggregation) for grouping rules and headlines.
 
 <a id="read-modes"></a>
 
 ## Choosing a Read Mode
 
-| Call | Also Called | Returns |
-|---|---|---|
-| `->live()` | aggregated feed | repeats, and several people at one place, as one row each. **The default** |
-| `->summary()` | digest | one row per person per day, across everything they did |
-| `->log()` | timeline | one node per activity, no groups |
+| Call | Returns |
+|---|---|
+| `->live()` | groups of repeated actions or activities from several actors with the same target; the default |
+| `->summary()` | activities grouped by actor and calendar period, summarized by verb |
+| `->log()` | one item per activity, without groups |
 
-Here is one week of activity across the apps, read three ways. Each feed below
-uses the same recorded facts.
+The following feeds display the same week of activities in each mode:
 
 ### Live
 
-Live folds one person's repeated action, and several people doing the same
-thing at one place. It is the default, so `->live()` can be left out.
+Live mode groups repeated actions and activities from several actors with the
+same target. It is the default, so you may omit the `live` method.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -78,10 +75,10 @@ Storyfeed::feed()->live()->get();
 
 ### Summary
 
-Summary is a digest: one row per person per day, across verbs. A row names
-the person once, then what they did, one phrase per verb: "placed 3 orders,
-asked about a product and paid".
-[Digest Rows](/reference/payload#digest-rows) lists what a row holds.
+Summary mode groups activities by actor and day, with phrases such as
+"placed 3 orders, asked about a product and paid". Actors with the same single
+activity may share a row. See [Summary Rows](/reference/payload#digest-rows)
+for the payload fields.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -93,7 +90,7 @@ Storyfeed::feed()->summary()->get();
 
 ### Log
 
-The log keeps every activity as its own row.
+Log mode displays each activity in a separate row.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -103,14 +100,14 @@ Storyfeed::feed()->log()->get();
 
 <FeedExample :items="log" days height="520" />
 
-The payload uses the same node shapes in every mode.
+All modes use the same payload structures.
 
 <a id="choosing-the-period"></a>
 
 ### Choosing the Summary Period
 
-`summary()` reads one row per person per day. Pass a `Period` for a longer
-digest:
+The `summary` method groups by day by default. Pass a `Period` to select
+another calendar period:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -121,20 +118,20 @@ Storyfeed::feed()->summary(Period::Week)->get();
 
 <FeedExample :items="weekly" />
 
-| Period | One Row per Person per |
+| Period | Calendar Period |
 |---|---|
-| `Period::Hour` | calendar hour |
-| `Period::Day` | calendar day. **The default** |
+| `Period::Hour` | hour |
+| `Period::Day` | day; the default |
 | `Period::Week` | ISO week, starting Monday |
-| `Period::Month` | calendar month |
+| `Period::Month` | month |
 
-A string works too: `->summary('week')`. Periods are calendar periods in
-`app.timezone`, never sliding windows. For "the last hour", filter the read
-with [`query()`](#custom-query-constraints):
+You may also pass a string, such as `->summary('week')`. Periods use calendar
+boundaries in `app.timezone`. To retrieve activities from the last hour, apply a
+constraint with the [`query` method](#custom-query-constraints):
 `->query(fn ($q) => $q->where('published_at', '>=', now()->subHour()))`.
 
-This period applies to `summary()` only. A verb's own grouping period is set
-where the verb is declared; see [Grouping Periods](/deeper/grouping-periods).
+This period applies only to summary mode. Configure each verb's grouping
+period separately; see [Grouping Periods](/deeper/grouping-periods).
 
 ## Filtering Activities
 
@@ -142,8 +139,8 @@ where the verb is declared; see [Grouping Periods](/deeper/grouping-periods).
 
 ### Filtering by Entity or Role
 
-An entity's own page uses `involving()`: every activity that mentions it, in
-any role.
+Use the `involving` method to retrieve activities that reference an entity in
+any role:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -152,30 +149,31 @@ Storyfeed::feed()->involving($order)->get();
 $order->storyfeed()->get();   // the same read, from the model
 ```
 
-Narrower filters:
+You may also filter by a specific role:
 
 | Call | Returns |
 |---|---|
-| `->involving($model)` | every activity where the model is actor, object, target, context, origin, result or instrument |
-| `->context($shop)` | only activities whose `context` role is that model |
-| `->actor($customer)` | only what that customer did |
-| `->object($order)` / `->target($shop)` | only that exact role |
+| `->involving($model)` | activities where the model is actor, object, target, context, origin, result, or instrument |
+| `->context($shop)` | activities with the shop in the `context` role |
+| `->actor($customer)` | activities performed by the customer |
+| `->object($order)` / `->target($shop)` | activities matching the specified role |
 
-Scopes combine. A group counts only the activities inside the scope.
+Activities must match all applied filters. Group counts include only matching
+activities.
 
 > [!NOTE]
 > **The difference between involving and context**
 >
-> `context()` returns only activities whose `context` role is that model. "Product
-> put on the menu" records the product as the **object**, so a product's page
-> scoped with `context()` misses it. `involving()` finds it.
-> [Containers & Context](/deeper/context) covers the `context` role.
+> The `context` method matches only the context role. An activity that adds a
+> product to a menu assigns the product to the object role, so use `involving`
+> to include it in the product's feed. See [Containers & Context](/deeper/context).
 
 <a id="filtering-verbs"></a>
 
 ### Filtering by Verb
 
-`verb()` reads one verb. `only()` and `except()` take a list:
+Use the `verb` method to filter by one verb. The `only` and `except` methods
+accept lists:
 
 ```php memo="A controller, or wherever the feed is read"
 use App\Enums\OrderActivity;
@@ -189,18 +187,17 @@ Storyfeed::feed()->except(['note'])->get();
 
 | Input | Behaviour |
 |---|---|
-| a list | verb strings and enum cases, mixed |
-| `re*` | a trailing `*` is a prefix wildcard |
-| an unrecognised verb | never throws; a verb nobody records matches nothing |
-| `only([])` or `except([])` | throws |
-| repeat calls | intersect: `only(A)` then `only(B)` is `A ∩ B` |
+| a list | accepts verb strings and enum cases together |
+| `re*` | matches verbs starting with `re` |
+| an unrecognised verb | matches no activities unless that verb has been recorded; does not throw |
+| `only([])` or `except([])` | throws an exception |
+| repeated calls | activities must match every filter |
 
-Groups count only the verbs the filter lets through.
+Groups include only activities whose verbs match the filter.
 
 ### Custom Query Constraints
 
-`query()` gives you the activity query, for anything the filters can't
-express:
+Use the `query` method to apply custom constraints to the activity query:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Models\Builders\ActivityBuilder;
@@ -217,16 +214,16 @@ $shop->storyfeed()
     ->get();
 ```
 
-The constraint applies to the whole read, groups included. A callback can
-only narrow the read: `orWhere` can't reach past the scope, ordering is
-ignored, and `limit()` or `offset()` throws. Size the page with `limit()` on
-the builder.
+Constraints apply to activities and groups. The callback can only narrow the
+results: `orWhere` cannot bypass existing filters, ordering is ignored, and
+`limit()` or `offset()` throws an exception. Set the page size with the feed
+builder's `limit` method.
 
 <a id="conditional-building"></a>
 
 ### Conditional Constraints
 
-Use `when()` to apply a filter only when a value is present:
+Use the `when` method to apply a filter only when a value is present:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -240,8 +237,8 @@ Storyfeed::feed()
 
 ## Paginating Results
 
-Feeds are paginated with cursors, 30 rows to a page by default. Pass the
-previous page's `next_cursor` back to get the next one:
+Feeds use cursor pagination with 30 items per page by default. Pass the
+previous page's `next_cursor` to retrieve the next page:
 
 <a id="reading-the-next-page"></a>
 
@@ -260,12 +257,12 @@ Route::get('/', function (Request $request) {
 
 ### Handling a Changed Feed
 
-Each response carries what the next request needs:
+Use these response fields for subsequent requests:
 
-| Key | What to Do With It |
+| Key | Usage |
 |---|---|
-| `next_cursor` | send it back as `?cursor=` for the next page; `null` on the last page |
-| `sync_token` | if it changes between pages, earlier pages were rewritten: start again from the first page |
+| `next_cursor` | pass as `?cursor=` to retrieve the next page; `null` on the last page |
+| `sync_token` | if it changes, discard previously loaded items and request the first page again |
 
-A cursor only works with the query that made it: the same scope, filters, mode
-and `query()` callbacks.
+Use a cursor with the same feed constraints, filters, mode, and `query`
+callbacks that produced it.
