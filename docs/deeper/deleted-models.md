@@ -2,9 +2,9 @@
 
 ## Introduction
 
-When a model is deleted, the activities it took part in stay in the feed.
-Storyfeed puts a tombstone in the model's place: the activity still reads as a
-sentence, and Storyfeed no longer keeps the deleted model's details.
+Activities remain in the feed when a model is deleted. Storyfeed replaces
+the model with a tombstone, which identifies its former type and deletion
+time without keeping its details. The activity still has a headline.
 
 <script setup>
 import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
@@ -42,23 +42,22 @@ and restoration hooks. [Feedable Models](/basics/feedable-models) covers setup.
 $order->delete();
 ```
 
-On a model that uses Laravel's `SoftDeletes` trait, `delete()` soft-deletes
-it, and a restore can undo the tombstone. On a model without the trait,
-`delete()` is permanent, and so is the tombstone.
+With Laravel's `SoftDeletes` trait, `delete()` soft-deletes the model and
+restoring it removes the tombstone. Without the trait, both the deletion and
+tombstone are permanent.
 
-Before the delete:
+Before deletion:
 
 <FeedExample :items="[scene.order]" />
 
-After it:
+After deletion:
 
 <FeedExample expanded :items="[afterDelete]" />
 
-Every activity that named the order now names its tombstone instead. A
-tombstone keeps only the kind of thing the model was and when it went. The
-payload says so:
+Every activity involving the order now refers to its tombstone. By default,
+the tombstone contains only the model's former type and deletion time:
 
-| Key | What it says |
+| Key | Value |
 |---|---|
 | `object.type` | `storyfeed.tombstone`, with `url: null` and `label: null` |
 | `object.tombstone.formerType` | the deleted model's morph alias: `order` |
@@ -67,15 +66,14 @@ payload says so:
 
 The full shape is in [The Payload Contract](/reference/payload#tombstones).
 
-A deleted order's headline, icon and intent are still the ones defined for
-`order.place`.
+The activity keeps the headline, icon, and intent defined for `order.place`.
 
 <a id="restoring-a-model"></a>
 
 ### Restoring Models
 
-On a model using `SoftDeletes`, restoring it points every activity back at
-it, and the tombstone goes:
+Restore a model that uses `SoftDeletes` to remove its tombstone and reconnect
+its activities:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="restore()"
 $order->restore();
@@ -87,8 +85,8 @@ $order->restore();
 
 ### Force Deleting Models
 
-On a model using `SoftDeletes`, a force delete can't be undone, so its
-tombstone is permanent, whether or not the model was soft-deleted first:
+Force-deleting a model makes its tombstone permanent, whether or not the
+model was soft-deleted first:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
 // the activities stay; the tombstone is now their object for good
@@ -103,8 +101,8 @@ $order->forceDelete();
 
 ### Keeping Labels
 
-A tombstone drops the model's label. A model whose label is safe to keep after
-deletion, such as a dish on a public menu, says so in `describeFeed()`:
+By default, tombstones omit the model's label. If the label is safe to keep,
+such as a public menu dish's name, call `keepLabel()` in `describeFeed()`:
 
 ```php memo="app/Models/MenuItem.php"
 <?php
@@ -130,14 +128,14 @@ class MenuItem extends Model implements Feedable
 
 <FeedExample :items="[keptLabel]" expanded />
 
-The label stays, and the link goes.
+The tombstone keeps the label and removes the link.
 
 <a id="groups-with-deleted-models"></a>
 
 ### Grouped Entities
 
-A group whose members name a deleted model counts its tombstones per role in
-`distinct_tombstoned`. Here, one of the three orders is gone:
+Groups count tombstones per role in `distinct_tombstoned`. Here, one of three
+orders has been deleted:
 
 <FeedExample :items="[mixed]" expanded />
 
@@ -150,8 +148,9 @@ The group's tombstone keys are in
 
 ### Redundant Roles
 
-An activity is **redundant** when a role its verb is about holds a tombstone.
-By default, a verb is about its object. `->missing()` names the roles instead:
+An activity is **redundant** when a role selected by its verb contains a
+tombstone. By default, only the object determines redundancy. Call `missing()`
+to choose the roles:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -163,19 +162,20 @@ Story::for(Order::class)
     ->missing('object', 'target');
 ```
 
-Once the shop is deleted, placing an order with it is redundant too, and the
-payload says `redundant: true`:
+With this declaration, deleting the shop also makes the activity redundant,
+so the payload includes `redundant: true`:
 
 <FeedExample :items="[shopGone]" expanded />
 
-`->missing()` replaces the default, and `->missing()` with no roles means the
-verb is about none of them. On `Story::for(Order::class)->missing(...)`, it
-applies to every verb on orders; a verb's own call wins. On a class that extends `Story`, a `missing()` method returns the list.
+`missing()` replaces the default list; calling it without roles disables this
+check. Set `Story::for(Order::class)->missing(...)` to apply the list to all
+order verbs. A verb's own declaration takes precedence. On a Story class,
+return the list from its `missing()` method.
 
 ### Removal Verbs
 
-A verb that records a removal is about nothing by default, because its
-object being gone is expected:
+Removal verbs check no roles for redundancy by default, since their objects are
+expected to be deleted:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -200,7 +200,7 @@ such as `delete`, `discard` or `undo`. `Story::resource()` declares its
 
 ### Missing Headlines
 
-`->missingHeadline()` gives a verb its own sentence for once it is redundant:
+Call `missingHeadline()` to define a headline for redundant activities:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -214,7 +214,7 @@ Story::for(Order::class)
 
 <FeedExample :items="[readsGone]" expanded />
 
-The payload carries it beside the headline, which does not change:
+The payload includes the missing headline alongside the unchanged original:
 
 | Key | Holds |
 |---|---|
@@ -222,14 +222,15 @@ The payload carries it beside the headline, which does not change:
 | `missing_headline_template` | the verb's `missingHeadline()`, while `redundant` is `true`; otherwise `null` |
 | `missing_headline` | the same, pre-rendered, when it came from a closure; otherwise `null` |
 
-A verb with no `missingHeadline()` has `null` in both.
+Without `missingHeadline()`, both missing-headline fields are `null`.
 
 <a id="forgetting-activities"></a>
 
 ### Forgetting Redundant Activities
 
-`->forgetWhenMissing()` deletes a verb's activities once they are redundant and
-the deletion is permanent. A viewed order is no news once the order is gone:
+Call `forgetWhenMissing()` to delete redundant activities after permanent
+model deletion. For example, an order view may no longer be useful after the
+order is deleted:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -241,8 +242,8 @@ Story::for(Order::class)
     ->forgetWhenMissing();
 ```
 
-The order's other activities stay, naming its tombstone. On
-`Story::for(Order::class)->fallback()` it applies to every verb on orders.
+Other activities keep the order's tombstone. Set `forgetWhenMissing()` on
+`Story::for(Order::class)->fallback()` to apply it to all order verbs.
 
 | The Order Is | Its `view` Activities |
 |---|---|
@@ -253,16 +254,16 @@ The order's other activities stay, naming its tombstone. On
 
 ## Handling Bulk Deletions
 
-A query that deletes rows directly, such as `Order::whereKey($ids)->delete()`,
-fires no model events. `storyfeed:trickle`, a maintenance command you
-[schedule](/reference/commands#scheduling-maintenance) every minute, finds
-those models on its next run and tombstones them. It marks each tombstone
-`approximate`, because the deletion time is when it was found:
+Bulk deletion, such as `Order::whereKey($ids)->delete()`, dispatches no model
+events. [Schedule](/reference/commands#scheduling-maintenance) `storyfeed:trickle`
+every minute to find deleted models and create tombstones. These tombstones
+are marked `approximate` because their deletion time is when Storyfeed found
+them missing:
 
 <FeedExample :items="[bulk]" expanded />
 
-It restores them the same way when a bulk `restore()` brings them back. To
-tombstone them straight away:
+The command also reconnects activities after a bulk `restore()`. To create
+tombstones immediately after bulk deletion:
 
 ```php memo="Where the rows are deleted: a controller, an action, a job"
 use App\Models\Order;
@@ -273,23 +274,23 @@ Order::whereKey($ids)->delete();
 Storyfeed::tombstone(Order::class, $ids);
 ```
 
-Neither path has a model to ask, so `keepLabel()` is not applied. A verb's
-`forgetWhenMissing()` is, for rows that are gone for good. For a `Feedable` that isn't an Eloquent model, pass
-its morph alias in place of the class.
+Neither path has a model instance, so neither applies `keepLabel()`.
+`forgetWhenMissing()` still applies to permanently deleted models. For a
+non-Eloquent `Feedable`, pass its morph alias instead of a class.
 
 <a id="removing-activities-entirely"></a>
 
 ## Removing Activities Explicitly
 
-When the activities themselves must go, remove them before the model:
+To remove a model's activities entirely, delete them before the model:
 
 ```php memo="app/Http/Controllers/AccountController.php" at="destroy()"
 $user->forceDeleteFromFeed();   // every activity involving the user, permanently
 $user->forceDelete();
 ```
 
-`deleteFromFeed()` soft-deletes them instead. A model registered with `Storyfeed::feedable()` has neither method; call the
-actions instead:
+Use `deleteFromFeed()` to soft-delete the activities. Models registered with
+`Storyfeed::feedable()` have neither method; call the actions directly:
 
 ```php
 (new \Storyfeed\Actions\DeleteFromFeed)($model);
