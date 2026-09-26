@@ -1,21 +1,21 @@
 # Recording Counts
 
-A count you record in an activity, such as "3 replies", is stored as it was at
-publish and never recomputed. If the count can still change, store nothing and
-look it up when the feed is read.
+Counts recorded in activities, such as "3 replies", are not recomputed after
+publication. If a count can change, leave it empty and query the current
+value when retrieving the feed.
 
 <span id="choosing-counts-to-resolve"></span>
 
 ## Choosing Fixed or Live Counts
 
-Any count about something that keeps changing after the activity: replies,
-unread items, "3 photos waiting", members of an open collection. Ask:
+Replies, unread items, pending photos, and members of open collections can
+change after publication.
 
-> **Can anything on the surface this renders on change it?**
+Use current counts when people can change them from the page displaying the feed.
 
-If yes, resolve it when the feed is read. A feed that only displays
-discussions can record the count, but the day it gains a reply box every
-stored count goes stale.
+A fixed count may suit a page that only displays past discussions. If you
+add a reply box, retrieve current counts so new replies do not leave earlier
+activities displaying stale totals.
 
 <span id="recording-a-count"></span>
 
@@ -62,12 +62,11 @@ Storyfeed::record(
 
 <FeedExample :items="[fixed]" />
 
-A row recorded at three replies says three. A fourth reply publishes a new
-activity with a new count, and the older row beside it still says three.
-No Storyfeed command recomputes it.
+An activity recorded with three replies keeps that count when a fourth reply
+publishes another activity. No Storyfeed command recomputes the earlier count.
 
-That is right for something finished, and wrong on a surface where the reader
-can add a reply.
+A fixed count describes the event at publication, but becomes misleading
+when the page lets people add replies.
 
 ## Resolving a Live Count
 
@@ -85,8 +84,8 @@ FeedThread::make(text: $comment->body, replies: null);
 
 ### Loading Counts for the Page
 
-Read the page, count every discussion on it in one query, and write each count
-into its node. One query per row is an N+1:
+Retrieve the page, count its discussions in one query, and assign each count
+to its item. This avoids an extra query for every item:
 
 ```php memo="app/Http/Controllers/DiscussionFeedController.php"
 <?php
@@ -129,24 +128,23 @@ class DiscussionFeedController extends Controller
 }
 ```
 
-Do this where the page is assembled, not inside a row's renderer, which cannot
-see the other rows.
+Load counts in the controller that assembles the page, where all items are
+available. An individual row renderer cannot combine queries across the page.
 
 <FeedExample :items="[live]" />
 
-After a fourth reply, the page-wide lookup supplies four for the same activity.
+After a fourth reply, the same activity displays four from the current count.
 
 ### Selecting Which Counts to Display
 
-A settled discussion's reply count may not be useful on this surface, so the
-loop sets `null` for the `settle` verb.
+The loop sets `null` for `settle` because a settled discussion's reply count
+may not be useful on this page.
 
-Set `null` explicitly rather than skipping the node. A backfill or a
-hand-repaired row can put a stored count back, and it would show in place of
-the live one.
+Set `null` explicitly. Skipping an item could preserve a stored count added
+by a backfill or manual repair, causing the frontend to display it.
 
 <span id="healing-recorded-counts"></span>
 
 ## Handling Previously Recorded Counts
 
-The same loop overrides counts that older activities stored at publish.
+This loop also replaces counts stored by earlier activities.
