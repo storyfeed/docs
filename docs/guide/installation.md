@@ -79,8 +79,9 @@ It is off by default. Enable it outside production to catch unaliased models
 when publishing; the doctor also reports them, and `storyfeed:cache` (including
 `php artisan optimize`) refuses to cache while required aliases are missing.
 
-```php
-// AppServiceProvider::boot()
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::requireFeedableMorphMap(! $this->app->isProduction());
 ```
 
