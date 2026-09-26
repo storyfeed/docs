@@ -16,7 +16,7 @@ php artisan storyfeed:doctor
 After one order is placed with no definition for it, the report reads:
 
 ```txt
-No grammar entry resolves for `order.place` — headlines will be null.
+No headline resolves for `order.place` — headlines will be null.
 No icon resolves for `order.place`.
 Note: verb `place` has no AS2.0 mapping — will serialize as base `Activity`.
 2 finding(s) — see above.
@@ -59,7 +59,7 @@ php artisan storyfeed:doctor --json
         {
             "code": "grammar.missing",
             "severity": "error",
-            "message": "No grammar entry resolves for `order.place` — headlines will be null.",
+            "message": "No headline resolves for `order.place` — headlines will be null.",
             "subject": {
                 "type": "order",
                 "verb": "place"
