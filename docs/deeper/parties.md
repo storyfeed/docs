@@ -231,35 +231,12 @@ Omitting the actor lets the authenticated user, a scope or a default apply.
 To record an activity with no actor, even in an authenticated request, pass
 `null` to `by()`:
 
-```php memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(
-        PlaceOrderRequest $request,
-        Shop $shop,
-    ): RedirectResponse {
-        $order = $shop->orders()->create($request->validated());
-
-        $knownAuthor = $request->boolean('anonymous') ? null : $request->user();
-
-        Storyfeed::activity()
-            ->by($knownAuthor) // User|null: null means anonymous
-            ->action('place', $order)
-            ->to($shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php
+Storyfeed::activity()
+    ->by(null) // [!code highlight]
+    ->action('place', $order)
+    ->to($shop)
+    ->publish();
 ```
 
 <FeedExample :items="[anonymous]" />
