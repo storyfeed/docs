@@ -42,10 +42,21 @@ components shown below.
 composer require storyfeed/ui
 ```
 
+Storyfeed UI uses Tailwind CSS v4. Add the package's views to the sources in
+your application's `resources/css/app.css` file:
+
+```css
+@source "../../vendor/storyfeed/ui/resources/views";
+```
+
+Compile your application's CSS with `npm run build`. Your layout must load
+the compiled CSS, for example with `@vite('resources/css/app.css')`.
+
+If your application does not use Tailwind, see [Building Your Own Components](#building-your-own).
+
 ### Rendering a Page
 
-Pass the feed page to your view and render it with the `feed` component.
-The `@storyfeedStyles` directive includes the default stylesheet:
+Pass the feed page to your view and render it with the `feed` component:
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -57,8 +68,6 @@ Route::get('/', function () {
 ```
 
 ```blade memo="resources/views/feed.blade.php"
-@storyfeedStyles
-
 <x-storyfeed::feed :page="$page" />
 ```
 
@@ -75,25 +84,21 @@ php artisan vendor:publish --tag=storyfeed-views
 The command publishes views to `resources/views/vendor/storyfeed`. Published
 views override the package's views, so retain only those you customize.
 
-### Styling the Feed
+### Customizing the Styles
 
-The `@storyfeedStyles` directive includes inline CSS without a build step.
-Set its colours on an ancestor element:
+The components use Tailwind's zinc palette for text, borders, and surfaces,
+and indigo for links. To change these styles, publish the views and edit their
+utility classes. You may also customize Tailwind's existing theme variables,
+such as `--color-indigo-700` and `--color-indigo-300`, in your application's
+`@theme` block. These changes apply to every component using those colours.
+The kit defines no additional theme variables.
 
-```css
-.sf-feed {
-    --sf-text-color: #111827;
-    --sf-muted-color: #4b5563;
-    --sf-line-color: #e5e7eb;
-}
-```
+The components include `dark:` variants and follow your application's
+[Tailwind dark mode configuration](https://tailwindcss.com/docs/dark-mode).
 
-To serve or bundle the stylesheet yourself, publish it to
-`public/vendor/storyfeed/storyfeed.css`:
-
-```bash
-php artisan vendor:publish --tag=storyfeed-assets
-```
+Icon intents are application-defined strings exposed through `data-sf-intent`.
+To assign colours to your intent values, add the corresponding Tailwind
+utilities to the published `components/glyph.blade.php` view.
 
 <a id="building-your-own"></a>
 
