@@ -18,8 +18,9 @@ const scoped = liveOf(scene.basics.namedFeeds.shop)
 
 ## Introduction
 
-To include a model in the feed, implement the `Feedable` interface to provide
-its label and optional link.
+To include a model in the feed, implement the `Feedable` interface and give the
+model a label. A link and images are optional; see
+[Resolving Links and Images](#resolving-links-and-images).
 
 <a id="making-a-model-feedable"></a>
 
