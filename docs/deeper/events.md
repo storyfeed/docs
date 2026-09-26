@@ -1,53 +1,8 @@
 # Publishing From Events
 
-## Introduction
-
-If your app already dispatches an event when something happens, you can
-publish the activity from that event: from a listener, or from the event class
-itself.
-
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 </script>
-
-## Generating Events and Listeners
-
-Use Laravel's generators to create the event and its listener:
-
-```shell
-php artisan make:event OrderPlaced
-php artisan make:listener RecordOrderPlaced --event=OrderPlaced
-```
-
-## Publishing From a Listener
-
-```php memo="app/Events/OrderPlaced.php"
-<?php
-
-namespace App\Events;
-
-use App\Models\Order;
-use App\Models\User;
-
-class OrderPlaced
-{
-    public function __construct(public Order $order, public User $customer) {}
-}
-```
-
-::: code-group
-<<< @/snippets/publish-from-listener.php {php memo="app/Listeners/RecordOrderPlaced.php"} [Fluent Syntax]
-<<< @/snippets/publish-from-listener.named-arguments.php {php memo="app/Listeners/RecordOrderPlaced.php"} [Named Arguments]
-:::
-
-<FeedExample :items="[scene.order]" />
-
-### Registering the Listener
-
-Laravel discovers listeners in `app/Listeners` from the event type hinted in
-`handle()`. See [event discovery](https://laravel.com/docs/13.x/events#event-discovery)
-if your listeners live elsewhere. Dispatch `OrderPlaced` after placing the order
-to run the listener.
 
 ## Publishing From an Event
 
@@ -76,9 +31,8 @@ public function toFeedActivity(): ?PendingActivity
 }
 ```
 
-To test either form, use [the Storyfeed fake](/deeper/testing#testing-queued-and-event-publishing)
-and leave the application event unfaked, so its listener or `toFeedActivity()`
-can run.
+To test it, use [the Storyfeed fake](/deeper/testing#testing-queued-and-event-publishing)
+and leave the application event unfaked, so `toFeedActivity()` can run.
 
 <a id="storyfeed-events"></a>
 

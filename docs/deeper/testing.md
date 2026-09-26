@@ -10,13 +10,12 @@ recorded activities and possible groups have headlines.
 
 ## Faking Activities
 
-Fake Storyfeed before calling the code under test. This test exercises the
-listener from [Publishing From Events](/deeper/events#publishing-from-a-listener),
+Fake Storyfeed before calling the code under test. This test dispatches the
+event from [Publishing From Events](/deeper/events#publishing-from-an-event),
 using your application's model factories:
 
 ```php memo="tests/Feature/RecordOrderPlacedTest.php"
 use App\Events\OrderPlaced;
-use App\Listeners\RecordOrderPlaced;
 use App\Models\Shop;
 use App\Models\Order;
 use App\Models\User;
@@ -31,7 +30,7 @@ it('records the placed order', function () {
 
     Storyfeed::fake();
 
-    (new RecordOrderPlaced)->handle(new OrderPlaced($order, $customer));
+    event(new OrderPlaced($order, $customer));
 
     Storyfeed::assertPublished('place', $order);
     Storyfeed::assertPublishedCount(1);
@@ -55,7 +54,7 @@ nothing, rather than after asserting a successful publication.
 ### Inspecting Captured Activities
 
 `published($verb = null)` returns the captured activities for custom assertions.
-Continue the listener test with:
+Continue the test with:
 
 ```php memo="tests/Feature/RecordOrderPlacedTest.php" at="Inside the test"
 $activity = Storyfeed::published('place')->sole();
