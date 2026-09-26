@@ -3,9 +3,8 @@
 ## Introduction
 
 Role constraints limit which model types may fill an activity's roles.
-A headline written for a shop target reads wrongly about any other target, so
-a constraint makes a publish with a different type throw before the activity
-is stored.
+A headline written for a shop target may not describe another type correctly.
+Use a constraint to reject that type before storing the activity.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -33,9 +32,9 @@ Story::for(Order::class)->verb('place')
 
 <FeedExample :items="[placed]" />
 
-Publishing an order placed by a user with a shop target satisfies both constraints. Like Laravel's
-`Route::where()` and `whereIn()`, these methods restrict allowed values;
-Storyfeed checks role types at publish time instead of matching a URL.
+An order placed by a user with a shop target satisfies both constraints.
+Like Laravel's `Route::where()` and `whereIn()`, these methods restrict allowed
+values. Storyfeed checks model types when publishing the activity.
 
 | Method | Role Checked |
 |---|---|
@@ -47,10 +46,11 @@ Storyfeed checks role types at publish time instead of matching a URL.
 
 ### Model Types and Morph Aliases
 
-Each accepts model classes, morph aliases, or `'party'`. Classes resolve through
-`getMorphClass()`. Pass several types as separate arguments or as an array.
-An empty type list, `'*'`, or a class that is not an Eloquent model throws at
-declaration. Repeating a constraint replaces the allowed types for that role.
+Each method accepts model classes, morph aliases, or `'party'`. Model classes
+resolve through `getMorphClass()`. Pass multiple types as separate arguments
+or an array. An empty list, `'*'`, or a class that is not an Eloquent model
+throws an exception when declared. Repeating a constraint replaces its allowed
+types for that role.
 
 <a id="allowing-parties"></a>
 
@@ -71,9 +71,9 @@ Story::for(Order::class)->verb('place')
 
 <FeedExample :items="[placed]" />
 
-This replaces the preceding declaration and also allows a declared party to
-act. `'party'` resolves to the configured party morph alias; the default is
-`storyfeed.party`. `Storyfeed\Models\Party::class` is another way to name it.
+Replace the preceding declaration with this example to also allow a party actor.
+The `'party'` value resolves to the configured morph alias, `storyfeed.party`
+by default. You may also use `Storyfeed\Models\Party::class`.
 
 Actor defaults are resolved before the constraint is checked. If the verb or
 fallback supplies a party, `whereActor(User::class)` rejects it unless `'party'`
@@ -83,9 +83,9 @@ Constraints limit types; they do not make roles required.
 
 ### Constraints on Groups
 
-Constraints can be declared on a verb, a class binding, a resource or a
-[group](/deeper/named-stories#nesting-groups). A Story constructed with data takes
-its constraints on the binding in `routes/feed.php`.
+Declare constraints on a verb, class registration, resource, or
+[group](/deeper/named-stories#nesting-groups). For a Story that accepts constructor
+data, add constraints to its registration in `routes/feed.php`.
 
 An inner group replaces the outer constraint for that role. A verb's own
 constraint takes precedence over its groups.
@@ -106,9 +106,9 @@ a Party, or publish ->anonymously() when nobody is known.
 The exception names the verb, its role, the allowed types and the actual type.
 
 > [!NOTE]
-> A [queued publish](/deeper/queues) is checked on the worker, and
-> `Storyfeed::fake()` checks queued activities too. An object constraint checks
-> every member of a [composite](/deeper/composites).
+> [Queued activities](/deeper/queues) are checked on the worker. The Storyfeed
+> fake also checks queued activities. An object constraint applies to every
+> member of a [composite](/deeper/composites).
 
 ## Inspecting Constraints
 
@@ -127,6 +127,7 @@ always includes the constraints in `where`.
 php artisan storyfeed:doctor --only=role_constraints
 ```
 
-The [doctor](/reference/doctor#role-constraints) reports `role_constraints.violated` as a warning for live stored
-rows whose role types violate a constraint. Null roles and tombstones are
-skipped. The rows remain in the feed; the check does not rewrite them.
+The [doctor](/reference/doctor#role-constraints) reports
+`role_constraints.violated` for stored activities whose role types violate a
+constraint. Empty roles and tombstones are skipped. This warning does not
+modify or remove the activities.
