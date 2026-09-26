@@ -97,6 +97,7 @@ const forms = computed(() => {
     const attributed = (found: any) => ({
         ...found,
         entityLabel: object?.label ?? null,
+        entityUrl: object?.url ?? null,
         entityMedia: object?.media ?? null,
     });
 
@@ -247,6 +248,7 @@ const slots = computed(() =>
                     :is="found.component"
                     :payload="found.payload"
                     :entity-label="(found as any).entityLabel"
+                    :entity-url="(found as any).entityUrl"
                     :entity-media="(found as any).entityMedia"
                 />
             </div>

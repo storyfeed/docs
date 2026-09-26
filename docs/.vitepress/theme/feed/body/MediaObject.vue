@@ -12,12 +12,13 @@ import FeedMedia from '../FeedMedia.vue'
  * A row recorded under an old thumbnail conversion draws the current one, and
  * a slot the resolver left empty draws no picture and no placeholder.
  *
- * The subject is shown only when the sentence above did not already say it: a
- * preview complements a headline, it does not restate it.
+ * A supplied subject is always shown. A link without an href uses the owning
+ * entity's current URL; a plain string remains unlinked.
  */
 const props = defineProps<{
     payload: Record<string, any>
     entityLabel?: string | null
+    entityUrl?: string | null
     entityMedia?: Record<string, any> | null
 }>()
 
@@ -27,7 +28,7 @@ const subject = computed(() => {
     const value = props.payload.subject
     const label = typeof value === 'string' ? value : value?.label
 
-    return label && label !== props.entityLabel ? { label, href: value?.href ?? null } : null
+    return label ? { label, href: typeof value === 'string' ? null : value.href ?? props.entityUrl ?? null } : null
 })
 
 const picture = computed(() =>
@@ -37,7 +38,8 @@ const picture = computed(() =>
 const footnote = computed(() => {
     const value = props.payload.footnote
 
-    return typeof value === 'string' ? { label: value, href: null } : value
+    return typeof value === 'string' ? { label: value, href: null }
+        : value ? { label: value.label, href: value.href ?? props.entityUrl ?? null } : null
 })
 </script>
 

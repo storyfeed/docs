@@ -342,6 +342,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       },
     },
     basics: {
+      // Includes the ItemList and both MediaObject link lessons, resolved from pack rows.
       activityContent: Object.fromEntries(Object.entries(s.basics.activityContent).map(([key, id]) => [key, one(id)])) as Record<keyof typeof s.basics.activityContent, any>,
       recording: {
         paid: one(s.basics.recording.paid),

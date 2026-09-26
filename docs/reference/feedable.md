@@ -297,6 +297,38 @@ is `false`. Handle `null` in your resolver.
 | `withCount: ['comments']` | loads relationship counts for all loaded models |
 | `withTrashed: true` | includes soft-deleted records, on models that soft-delete |
 
+## `FeedLink`
+
+A `FeedLink` contains a label and an optional `href`. Bodies accept it wherever
+a piece of text may link to a page.
+
+```php
+use Storyfeed\FeedLink;
+
+FeedLink::make($label);
+FeedLink::make($label, $url);
+FeedLink::make()->label($label)->href($url);
+```
+
+| Method | Effect |
+|---|---|
+| `make(?string $label = null, ?string $href = null)` | create a link; set its label before using it |
+| `label(string $label)` | set the text to display |
+| `href(?string $href)` | set the destination; `null` uses the owning entity's current URL |
+
+| Body | Fields That Accept `FeedLink` |
+|---|---|
+| `ItemList` | each entry in `items` (also accepts strings), and `more` |
+| `MediaObject` | `subject` and `footnote` (both also accept strings) |
+
+When `href` is `null`, the renderer uses the URL resolved for the entity when
+the feed is retrieved. An explicit `href` is stored as written and may become
+stale. A plain string remains unlinked.
+
+The label names the thing being linked to; it is not an instruction such as
+“Open the conversation”. See [Links in Bodies](/basics/activity-content#links-in-bodies)
+for examples.
+
 ## `FeedMedia`
 
 Every argument `FeedMedia::make()` takes has a method of the same name.

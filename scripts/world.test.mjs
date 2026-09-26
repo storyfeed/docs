@@ -233,6 +233,21 @@ for (const [name, pack] of Object.entries(PACKS)) {
       }
       assert.equal(world.liveOf(list).length, 1)
     }
+    const list = content.itemList.object.body[0]
+    assert.equal(list.$body, 'Storyfeed/Body/ItemList')
+    assert.ok(list.title.includes(content.itemList.object.label))
+    assert.ok(list.items.some(item => typeof item === 'string'))
+    assert.ok(list.items.some(item => typeof item === 'object' && item.href))
+    assert.ok(list.totalItems > list.items.length)
+    assert.equal(list.more.href, null)
+    assert.equal(list.more.label, content.itemList.object.label)
+    const notice = content.notice.object.body[0]
+    const linkedNotice = content.linkedNotice.object.body[0]
+    for (const body of [notice, linkedNotice]) assert.equal(body.$body, 'Storyfeed/Body/MediaObject')
+    assert.equal(notice.subject.label, content.notice.object.label)
+    assert.equal(notice.subject.href, null)
+    assert.ok(content.notice.object.url)
+    assert.ok(linkedNotice.subject.href && linkedNotice.subject.href !== content.linkedNotice.object.url)
     assert.equal(content.note.verb, 'post')
     assert.equal(content.note.object.type, 'note')
     assert.ok(same(content.note.target, scene.order.object))

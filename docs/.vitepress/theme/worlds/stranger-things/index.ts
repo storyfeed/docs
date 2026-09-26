@@ -163,6 +163,26 @@ const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel
 /** Minted, not named: orders, pull requests, invoices and photos are numbered. */
 const order = (n: number) => entity('order', String(n), `Order #${n}`, `/orders/${n}`)
 
+// FeedLink lessons: the fair's food comes from FARE (SOURCES.fair). The order,
+// quantities, notices and their wording are illustrative app content, not canon.
+const fairOrderLabel = 'Order #1042'
+const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $v: 1,
+  title: `${fairOrderLabel} items`, ordered: false,
+  items: [
+    { label: FARE.hotDog, href: fare.hotDog.url },
+    { label: FARE.cornDog, href: fare.cornDog.url },
+    FARE.pretzel,
+  ], totalItems: 5, more: { label: fairOrderLabel, href: null } }] }
+const hoursTitle = `${VENUES.scoops} opening hours`
+const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+  subject: { label: hoursTitle, href: null },
+  content: 'The counter opens at 10 am. Orders are available until 9 pm.',
+  image: null, attachments: [], footnote: null }] })
+const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+  subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.url}/guide` },
+  content: 'The visitor guide includes entrances, parking and shop locations.',
+  image: null, attachments: [], footnote: null }] })
+
 // uncertain: the branches, file counts and titles are invented for the cameo merges.
 const PULLS: Record<number, [string, number]> = {
   1: ['antenna-mount', 3], 2: ['transmitter', 5], 3: ['utah-range', 2], 4: ['tape-input', 4], 5: ['static-filter', 2],
@@ -239,6 +259,7 @@ const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').s
 
 /** This pack's own verbs. The rest (place, ask, pay, merge…) are the engine's. */
 const VERBS: Record<string, VerbWording> = {
+  announce: { glyph: 'megaphone', headline: ':actor published :object', summary: 'published :object|published :count notices' },
   add: { glyph: 'ice-cream-cone', headline: ':actor added a menu item, :object', summary: 'added :object to the menu|added :count menu items' },
   reprice: { glyph: 'tag', headline: ':actor changed the price of :object', summary: 'changed the price of :object|changed :count prices' },
   remove: { glyph: 'circle-x', headline: ':actor removed :object from :target', summary: 'removed :object from :target|removed :count things from :targets' },
@@ -531,6 +552,10 @@ ROWS.push(
   row('a-complete', '1985-07-02 12:08', 'complete', scooper, order(1035), v.scoops, 'splice',
     { ...demo, headline: ':actor completed :object' }),
   row('a-created', '1985-07-02 11:59', 'create', scooper, order(1035), v.scoops, 'splice', demo),
+  // splice: the order and notices have bodies on their own entities.
+  row('a-item-list', '1985-07-04 18:00', 'place', poolside, fairOrder, v.fair, 'splice', demo),
+  row('a-notice', '1985-07-02 09:00', 'announce', scooper, hoursNotice, v.scoops, 'splice', demo),
+  row('a-visitor-notice', '1985-07-02 09:05', 'announce', scooper, visitorNotice, v.scoops, 'splice', demo),
   // splice: the catalogue item is already sourced in the pack; prices and media are illustrative.
   row('a-price', '1985-07-02 11:00', 'reprice', scooper, fare.butterscotch, v.scoops, 'splice', demo),
   row('a-product', '1985-07-02 10:00', 'publish', scooper, fare.butterscotch, v.scoops, 'splice', demo),
@@ -619,7 +644,8 @@ export default {
       usageExamples: { repeatOrders: ['j84', 'a-order-2', 'a-order-3'], photos: ['j54', 'j55', 'j56'] },
     },
     basics: {
-      activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product' },
+      activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product',
+        itemList: 'a-item-list', notice: 'a-notice', linkedNotice: 'a-visitor-notice' },
       recording: { paid: 'a-paid', priced: 'a-price', photos: ['j54', 'j55', 'j56'] },
       feedFile: { completed: 'a-complete', created: 'a-created' },
       namedFeeds: { shop: ['j84', 'a-confirm', 'a-ready', 'a-price', 'a-product'] },

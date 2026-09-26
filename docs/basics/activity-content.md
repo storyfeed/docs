@@ -258,6 +258,165 @@ FeedEntity::make(
 The `File` body stores file details. Configure the URL separately with the
 [link resolver](/basics/feedable-models#the-link).
 
+### Lists of Items
+
+Use `ItemList` for an order's items. Each item may be a plain string or a
+`FeedLink` to another page:
+
+::: code-group
+
+```php [Fluent Syntax]
+use App\Models\OrderLine;
+use Storyfeed\Body\ItemList;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(
+        ItemList::make()
+            ->title("Order #{$this->reference} items")
+            ->items($this->lines->take(2)->map(
+                fn (OrderLine $line) => FeedLink::make( // [!code highlight]
+                    $line->item->name,
+                    $line->item->url,
+                ),
+            ))
+            ->items([$this->lines->get(2)->item->name])
+            ->totalItems($this->lines->count())
+            ->more(FeedLink::make("Order #{$this->reference}")),
+    );
+```
+
+```php [Named Arguments]
+use App\Models\OrderLine;
+use Storyfeed\Body\ItemList;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make(
+    label: "Order #{$this->reference}",
+    body: ItemList::make(
+        title: "Order #{$this->reference} items",
+        items: [
+            ...$this->lines->take(2)->map(
+                fn (OrderLine $line) => FeedLink::make( // [!code highlight]
+                    $line->item->name,
+                    $line->item->url,
+                ),
+            ),
+            $this->lines->get(2)->item->name,
+        ],
+        totalItems: $this->lines->count(),
+        more: FeedLink::make("Order #{$this->reference}"),
+    ),
+);
+```
+
+:::
+
+<FeedExample :items="[content.itemList]" />
+
+This order has five items. The body includes two linked items and one
+plain-string item. The `totalItems` method records the full count, and `more`
+provides a link to the order containing the remaining items. Use
+`ItemList::ordered()` when the sequence of the items matters.
+
+### Linking a Title
+
+Use `MediaObject` for a notice with a title and a short description. Pass a
+`FeedLink` as its `subject` to make the title a link:
+
+::: code-group
+
+```php [Fluent Syntax]
+use Storyfeed\Body\MediaObject;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make()
+    ->label($this->title)
+    ->body(
+        MediaObject::make()
+            ->subject(FeedLink::make($this->title)) // [!code highlight]
+            ->content($this->description),
+    );
+```
+
+```php [Named Arguments]
+use Storyfeed\Body\MediaObject;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make(
+    label: $this->title,
+    body: MediaObject::make(
+        subject: FeedLink::make($this->title), // [!code highlight]
+        content: $this->description,
+    ),
+);
+```
+
+:::
+
+<FeedExample :items="[content.notice]" />
+
+The title links to the notice itself. Storyfeed resolves the notice's current
+URL when the feed is retrieved.
+
+To link to another page, pass its URL as the second argument to `FeedLink::make`:
+
+::: code-group
+
+```php [Fluent Syntax]
+use Storyfeed\Body\MediaObject;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make()
+    ->label($this->title)
+    ->body(
+        MediaObject::make()
+            ->subject(FeedLink::make($this->guide_title, $this->guide_url)) // [!code highlight]
+            ->content($this->description),
+    );
+```
+
+```php [Named Arguments]
+use Storyfeed\Body\MediaObject;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make(
+    label: $this->title,
+    body: MediaObject::make(
+        subject: FeedLink::make($this->guide_title, $this->guide_url), // [!code highlight]
+        content: $this->description,
+    ),
+);
+```
+
+:::
+
+<FeedExample :items="[content.linkedNotice]" />
+
+The body title links to the visitor guide, while the headline links to the
+notice. A plain-string `subject` displays a title without a link.
+
+### Links in Bodies
+
+A `FeedLink` contains a label and an optional `href`. When the `href` is `null`,
+the link uses the current URL of the entity the body belongs to. Configure that
+URL with the model's [link resolver](/basics/feedable-models#the-link).
+
+An explicit `href` is stored as written. It can become stale if a route changes
+or a signed URL expires. Omit it when the link should lead to the entity itself.
+
+The label names the thing, such as a notice or an order. It should not be an
+instruction such as “Open the conversation”. See the
+[`FeedLink` reference](/reference/feedable#feedlink) for its methods and the
+body fields that accept it.
+
 <a id="built-in-body-types"></a>
 
 ### Available Body Types
