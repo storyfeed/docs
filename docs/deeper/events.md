@@ -66,9 +66,9 @@ implements `PublishesToFeed`, and when one is dispatched, it calls
 
 <FeedExample :items="[scene.basics.recording.paid]" />
 
-> [!WARNING]
-> Never call `publish()` on the event's activity yourself. Storyfeed already
-> publishes it, so the activity would be recorded twice.
+> [!NOTE]
+> Don't call `publish()` on the event's activity yourself. Storyfeed already
+> publishes it, so it would be recorded twice.
 
 ### Skipping Publication
 
