@@ -8,11 +8,11 @@ import { scene, everything, logOf, summaryOf } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
-    { key: 'Items', value: '1', verbatim: false, missing: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
+    { key: 'Items', value: '1', verbatim: false, placeholder: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
   ] }] } }
 
 const paidByWebhook = logOf([scene.cookbook.actorless.paid])

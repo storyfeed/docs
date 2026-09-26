@@ -63,3 +63,40 @@ test('activity data does not borrow the object URL for an unattributed body', as
   assert.match(html, /Unattributed/)
   assert.doesNotMatch(html, /<a\b/)
 })
+
+test('FileAttachment and stored File tokens render the same file details', async () => {
+  const body = { $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'archive.zip', size: 512, mediaType: 'application/zip' }
+  const current = await render([body])
+  const stored = await render([{ ...body, $body: 'Storyfeed/Body/File' }])
+  assert.equal(stored, current)
+  assert.match(stored, /archive.zip/)
+  assert.match(stored, /512 B/)
+})
+
+test('KeyValue upgrades stored placeholders and preserves explicit null over the default', async () => {
+  for (const version of [1, 2]) {
+    const key = version === 1 ? 'missing' : 'placeholder'
+    const html = await render([{ $body: 'Storyfeed/Body/KeyValue', $v: version,
+      [version === 1 ? 'missing' : 'defaultPlaceholder']: 'Unknown', items: [
+        { key: 'Seat', value: null, [key]: 'Not seated' },
+        { key: 'Silent', value: null, [key]: null },
+        { key: 'Default', value: null },
+        { key: 'Explicit null', value: null, missing: 'Old', placeholder: null },
+      ] }])
+    assert.match(html, /Not seated/)
+    assert.match(html, /Unknown/)
+    assert.doesNotMatch(html, /Silent|Explicit null|Old/)
+  }
+})
+
+test('MediaObject renders stored attachments and current files with new-key precedence', async () => {
+  for (const version of [1, 2]) {
+    const html = await render([{ $body: 'Storyfeed/Body/MediaObject', $v: version,
+      [version === 1 ? 'attachments' : 'files']: [{ href: '/old.pdf', name: 'Stored file' }] }])
+    assert.match(html, /href="\/old.pdf"/)
+    assert.match(html, /Stored file/)
+  }
+  const html = await render([{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+    attachments: [{ href: '/old.pdf', name: 'Old' }], files: [] }])
+  assert.doesNotMatch(html, /old.pdf/)
+})

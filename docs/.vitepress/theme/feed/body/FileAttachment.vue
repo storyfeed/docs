@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 /**
- * `Storyfeed/Body/File` — what an artefact is and how big, never its URL.
+ * `Storyfeed/Body/FileAttachment` — what an artefact is and how big, never its URL.
  *
  * The name is shown only when the sentence above did not already say it: a
  * preview complements a headline, it does not restate it.
