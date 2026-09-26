@@ -196,3 +196,24 @@ php artisan vendor:publish --tag=storyfeed-translations
 `FeedItem`, `Headline` and `Entity` use Laravel's `Conditionable`, `Tappable`
 and `Dumpable`, so `when()`, `unless()`, `tap()`, `dump()` and `dd()` work on
 each.
+
+### Adding Methods
+
+Each is macroable. Register a method once, in a service provider's `boot`
+method:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Support\FeedItem;
+
+FeedItem::macro('isPlacement', function (): bool {
+    return $this->verb() === 'place';
+});
+```
+
+```blade
+@if ($item->isPlacement())
+    …
+@endif
+```
+
+A method nobody registered throws `BadMethodCallException`.
