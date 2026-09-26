@@ -175,9 +175,9 @@ any group headline.
 
 ```php
 // a repeat group: one customer, many dishes
-:actor changed the price of :object :count times' // ✗ which dish? fails when stories compile
-':actor changed :count prices'                     // ✓
-':actor changed :count prices on :targets'         // ✓ lists fit every member
+':actor changed the price of :object :count times' // ✗ which dish? fails when stories compile
+':actor changed :count prices'                      // ✓
+':actor changed :count prices on :targets'          // ✓ lists fit every member
 ```
 
 <a id="plural-lists-in-headlines"></a>
