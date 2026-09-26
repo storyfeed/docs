@@ -8,67 +8,25 @@ its former type and when it was deleted.
 ## Recording a Deletion
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/MenuDishController.php"
-<?php
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('remove', $product)
+    ->to($menu)
+    ->publish();
 
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuDishController extends Controller
-{
-    public function destroy(
-        Request $request,
-        Menu $menu,
-        MenuItem $product,
-    ): RedirectResponse {
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('remove', $product)
-            ->to($menu)
-            ->publish();
-
-        $product->delete();
-
-        return back();
-    }
-}
+$product->delete(); // [!code highlight]
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/MenuDishController.php"
-<?php
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'remove',
+    object: $product,
+    target: $menu,
+    actor: $request->user(),
+);
 
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class MenuDishController extends Controller
-{
-    public function destroy(
-        Request $request,
-        Menu $menu,
-        MenuItem $product,
-    ): RedirectResponse {
-        Storyfeed::record(
-            verb: 'remove',
-            object: $product,
-            target: $menu,
-            actor: $request->user(),
-        );
-
-        $product->delete();
-
-        return back();
-    }
-}
+$product->delete(); // [!code highlight]
 ```
 :::
 
