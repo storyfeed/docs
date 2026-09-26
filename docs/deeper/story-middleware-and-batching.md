@@ -214,6 +214,13 @@ Story::for(Order::class)->verb('place')
 The activity remains in the feed. It does not affect the actor's open batch.
 `unbatched()` removes batch middleware, including a window inherited from a group.
 
+### Listening for Closed Batches
+
+When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed`. It
+carries the closed batch and its activities in `$event->batch`, as a read-only
+copy, and is dispatched after the outermost transaction commits. Register a
+Laravel listener for this event to act when a batch closes.
+
 <a id="preserving-an-actor-or-context"></a>
 <a id="preserving-actor-and-context-values"></a>
 

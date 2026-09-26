@@ -94,7 +94,9 @@ and leave the application event unfaked, so `toFeedActivity()` can run.
 
 ## Listening for Storyfeed Events
 
-### Publication and Deletion Events
+<a id="publication-and-deletion-events"></a>
+
+Storyfeed dispatches an event when an activity is published or deleted:
 
 | Event | Payload |
 |---|---|
@@ -109,10 +111,8 @@ A listener for these events can implement `ShouldQueue`. `Storyfeed::fake()`
 does not dispatch them, so use `Queue::fake()` alone when asserting that a
 listener was queued.
 
-### Batch Events
+<a id="batch-events"></a>
 
-`Storyfeed\Events\BatchClosed` carries the closed
-[batch](/deeper/story-middleware-and-batching#batching-activities) and its activities in
-`$event->batch`, as a read-only copy. It is also dispatched after the outermost
-transaction commits. Register a Laravel listener for this event to act when a
-batch closes.
+When a batch closes, Storyfeed also dispatches `BatchClosed`.
+[Listening for Closed Batches](/deeper/story-middleware-and-batching#listening-for-closed-batches)
+covers it.
