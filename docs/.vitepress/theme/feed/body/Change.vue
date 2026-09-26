@@ -10,7 +10,7 @@ import { computed } from 'vue'
  */
 const props = defineProps<{ payload: Record<string, any> }>()
 
-const rows = computed(() => Object.entries(props.payload.changes ?? {}))
+const rows = computed(() => Object.entries(props.payload.items ?? {}))
 
 const side = (value: unknown) =>
     value === null ? 'empty' : typeof value === 'boolean' ? String(value) : String(value)
