@@ -103,7 +103,7 @@ export default defineConfig({
        */
       const HEADLESS_TITLE = 'Storyfeed is headless: it has no views'
       const HEADLESS_BODY =
-        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. For Blade, Storyfeed UI renders it with one component. Vue components are in development.'
+        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. For Blade, Storyfeed UI renders it with one component.'
 
       md.use(container, 'headless', {
         render: (tokens: any[], idx: number) => {
