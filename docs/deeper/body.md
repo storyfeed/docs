@@ -37,8 +37,8 @@ Each `body()` call appends a body in the order given:
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
@@ -51,7 +51,7 @@ class MenuItem extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label($this->name)
-            ->body(Excerpt::make()->text($this->description))
+            ->body(Prose::make($this->description))
             ->body(KeyValue::make()->items('Station', $this->station));
     }
 }
@@ -63,8 +63,8 @@ class MenuItem extends Model implements Feedable
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
@@ -78,7 +78,7 @@ class MenuItem extends Model implements Feedable
         return FeedEntity::make(
             label: $this->name,
             body: [
-                Excerpt::make(text: $this->description),
+                Prose::make($this->description),
                 KeyValue::make(items: ['Station' => $this->station]),
             ],
         );
@@ -131,15 +131,15 @@ Stored and resolved bodies share the same payload shape.
 
 ### Stored and Resolved Values
 
-Define the body in either method:
+Choose when a value is decided:
 
-| Method | When It Runs | Body |
+| Method | When It Runs | Value |
 |---|---|---|
+| `->data(…)` on the activity | when the activity is published | frozen at publication |
 | `->body(…)` on `FeedEntity` in `toFeed()` | whenever the model is saved | stored and updated with the model |
 | `->body(…)` on `FeedMedia` in `feedMedia()` | whenever the feed is retrieved | built from current values and never stored |
 
-Neither freezes a value. To keep what was true at the time, point the activity
-at a model that never changes, such as a revision or a posted note.
+See [Computed Values in the Feed](/cookbook/computed-values) for publication-time facts and counts computed on retrieval.
 
 <a id="deferring-the-work"></a>
 
@@ -411,8 +411,8 @@ payloads for your frontend. Storyfeed preserves the stored body and version.
 
 <a id="upgrading-payload-values"></a>
 
-Storyfeed upgrades an activity's `thread` and `change` automatically. Bodies
-arrive as stored, including `$v`, so your renderer must call `upgrade()` before
+Storyfeed upgrades an activity's `thread` automatically. Bodies arrive as
+stored, including `$v`, so your renderer must call `upgrade()` before
 displaying them. This also applies to a `FeedThread` used as a body.
 
 

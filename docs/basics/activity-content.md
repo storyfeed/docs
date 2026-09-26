@@ -148,6 +148,7 @@ class Order extends Model implements Feedable
 <FeedExample :items="[withProse]" />
 
 Include a title to identify the order when the body appears without a headline.
+
 Use `KeyValue` for labelled values:
 
 ::: code-group
@@ -190,11 +191,36 @@ or pass `defaultPlaceholder:` to `KeyValue::make()`.
 The `KeyValue::verbatim` method marks a value for display without formatting,
 such as a reference number.
 
+### Formatted Text and Raw Output
+
+For code or raw output, create the body with `Prose::verbatim`. It keeps the
+source characters and line breaks, and long output scrolls within the body:
+
+```php
+use Storyfeed\Body\Prose;
+
+Prose::verbatim($this->output, title: $this->name); // [!code highlight]
+```
+
+<FeedExample :items="[content.program, content.terminal, content.radioLog]" />
+
+For formatted text, use `Prose::markdown` or `Prose::html`. Storyfeed stores
+the source, and the renderer converts and sanitizes it:
+
+```php
+use Storyfeed\Body\Prose;
+
+Prose::markdown($this->notes, title: $this->title); // [!code highlight]
+```
+
+<FeedExample :items="[content.caseMemo, content.labReport]" />
+
 <a id="passages-from-a-source"></a>
 
-### Passages From a Source
+### Quoting a Source
 
-Use `Excerpt` to quote a passage and its `from` argument to identify the source:
+Use `Excerpt` to quote someone else's words, such as a person interviewed for a
+story. The `from` argument names who said them or where they came from:
 
 ::: code-group
 
@@ -203,8 +229,8 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         Excerpt::make() // [!code highlight]
-            ->text($this->lede)
-            ->from("Draft for {$this->publication->name}"),
+            ->text($this->pull_quote)
+            ->from($this->pull_quote_source),
     );
 ```
 
@@ -212,8 +238,8 @@ FeedEntity::make()
 FeedEntity::make(
     label: $this->title,
     body: Excerpt::make( // [!code highlight]
-        text: $this->lede,
-        from: "Draft for {$this->publication->name}",
+        text: $this->pull_quote,
+        from: $this->pull_quote_source,
     ),
 );
 ```
@@ -223,7 +249,13 @@ FeedEntity::make(
 <FeedExample :items="[withExcerpt]" />
 
 Excerpts are marked as `truncated` by default. Call `truncated(false)` when the
-text is complete.
+text is complete. For the entity's own text, such as an article's opening
+paragraph, use `Prose` instead.
+
+A record of an answer taken down word for word quotes the person who gave it,
+and marks the text as complete:
+
+<FeedExample :items="[content.planck]" />
 
 ### File Attachment
 
@@ -332,6 +364,10 @@ plain-string item. The `totalItems` method records the full count, and `more`
 provides a link to the order containing the remaining items. Use
 `ItemList::ordered()` when the sequence of the items matters.
 
+A list can also preserve a short arrangement of items:
+
+<FeedExample :items="[content.alphabet]" />
+
 ### Linking a Title
 
 Use `MediaObject` for a notice with a title and a short description. Pass a
@@ -433,7 +469,6 @@ body fields that accept it.
 |---|---|---|
 | `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
-| `Change` | before and after values for one or more fields | `items`, a map of field to `[before, after]` |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | named items with optional links | `title`, `defaultPlaceholder`, `items[]`, `ordered`, `totalItems`, `more` |

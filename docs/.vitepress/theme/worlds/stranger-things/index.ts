@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS } from './manifest'
+  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -66,6 +66,8 @@ const SOURCES: Record<string, string> = {
   bradleys: 'https://strangerthings.fandom.com/wiki/Bradley\'s_Big_Buy (1983 Eggos; Jul 4, 1985 break-in)',
   cinema: 'https://nerdist.com/article/stranger-things-3-what-played-movie-theater/ (Day of the Dead sneak preview)',
   s3: 'https://en.wikipedia.org/wiki/Stranger_Things_season_3 (episode summaries)',
+  recap2: 'https://www.netflix.com/tudum/articles/stranger-things-season-2-recap (Bob resets the lab system; S2E8)',
+  recap3: 'https://www.netflix.com/tudum/articles/stranger-things-season-3-recap (Cerebro intercepts the Russian broadcast; Alexei explains the gate; S3E1 and S3E6)',
   splice: 'Present-day software in the 1985 world: the premise, not canon',
 }
 
@@ -87,7 +89,7 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
 // standard example, and its pages teach the bare `toFeed()`. A page that
 // teaches a body on an order builds it on its own example.
-const detail = (key: string, value: string, verbatim = false) => ({ key, value, verbatim, missing: null })
+const detail = (key: string, value: string | number, verbatim = false) => ({ key, value, verbatim, missing: null })
 const card = (title: string, items: ReturnType<typeof detail>[]) =>
   [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title, items }]
 const prose = (title: string, content: string) =>
@@ -145,7 +147,8 @@ const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, i
 for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
   things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
     name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
-// Nancy's story, quoted from her draft (SOURCES.post: Driscoll's rats, S3E2). The wording is ours.
+// Nancy's story quotes the woman she interviewed (SOURCES.post: Driscoll's rats, S3E2).
+// The words are Doris Driscoll's, so `from` names her. The wording is ours, not a canon line.
 things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
   text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom, truncated: true }] }
 // The film is a real one (SOURCES.cinema): its facts, never its poster.
@@ -156,7 +159,7 @@ things.repo = { ...things.repo, body: card(HOLDINGS.repo, [
 // The shop's menu item is a record, so its card is its details. Every row that
 // names it shows the same card. The price is ours.
 fare.butterscotch = { ...fare.butterscotch, body: card(fare.butterscotch.label, [
-  detail('Price', APP_CONTENT.price), detail('Section', APP_CONTENT.section), detail('Available', APP_CONTENT.available)]) }
+  detail('Price', APP_CONTENT.price), detail('Section', APP_CONTENT.section), detail('Available', APP_CONTENT.available), detail('Orders', 12)]) }
 // The things that have a photograph of their own (see PHOTO_CREDITS below).
 const photographed: Record<string, string> = { carousel: 'carousel', ferrisWheel: 'ferris', fireworks: 'fireworks', pretzelBag: 'pretzels' }
 
@@ -563,6 +566,32 @@ ROWS.push(
     { ...demo, headline: ':actor added a photo of :target' }),
 )
 
+// The plot supplies the subjects. The records and their wording are fresh
+// illustrations, not transcribed dialogue, screen output or executable lab code.
+const records = build(RECORD_TITLES, (id, label, key) => entity('field_record', id, label, null, {
+  // Suzie's answer, as Dustin took it down: her words, so an Excerpt from her.
+  body: key === 'planck'
+    ? [{ $body: 'Storyfeed/Body/Excerpt', $v: 1, text: RECORD_TEXT.planck, from: RECORD_TEXT.planckFrom, truncated: false }]
+    : key === 'alphabet'
+    ? [{ $body: 'Storyfeed/Body/ItemList', $v: 1, title: label, ordered: false,
+        items: [RECORD_TEXT.alphabetTop, RECORD_TEXT.alphabetMiddle, RECORD_TEXT.alphabetBottom] }]
+    : [{ $body: 'Storyfeed/Body/Prose', $v: 1, title: label, content: RECORD_TEXT[key],
+        mediaType: key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain',
+        verbatim: ['program', 'terminal', 'radioLog'].includes(key) }],
+}))
+const illustrativeRecord = { uncertain: 'Original illustrative record around a sourced plot event; text, format and clock time are invented, not a screen transcript' }
+ROWS.push(
+  row('prose-program', '1984-11-03 18:00', 'write', cast.mapReader, records.program, v.lab, 'recap2', illustrativeRecord),
+  row('prose-terminal', '1984-11-03 18:02', 'publish', null, records.terminal, v.lab, 'recap2',
+    { ...illustrativeRecord, headline: ':object was printed at :target' }),
+  row('prose-radio', '1985-06-29 18:00', 'write', radio, records.radioLog, v.weathertop, 'recap3', illustrativeRecord),
+  row('prose-memo', '1985-07-04 10:00', 'write', investigator, records.caseMemo, v.warehouse, 'recap3', illustrativeRecord),
+  row('prose-report', '1984-11-03 18:03', 'publish', null, records.labReport, v.lab, 'recap2',
+    { ...illustrativeRecord, headline: ':object was printed at :target' }),
+  row('prose-planck', '1985-07-04 18:55', 'write', radio, records.planck, null, 'S3E8', illustrativeRecord),
+  row('prose-alphabet', '1983-11-09 17:00', 'write', clerk, records.alphabet, null, 'S1E3', illustrativeRecord),
+)
+
 // ── Roles and scenes ─────────────────────────────────────────────────────────
 
 
@@ -600,6 +629,7 @@ const deeperRows: Row[] = [
   deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', register, order(2071), v.scoops),
 ]
 ROWS.push(...deeperRows)
+VERBS.write = { glyph: 'pencil', headline: ':actor wrote :object', summary: 'wrote :object|wrote :count records' }
 VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
 VERBS.save = { glyph: 'save', headline: ':actor saved :object', object: ':actor saved :object :count times', summary: 'saved :object|saved :objects :count times' }
 VERBS.cancel = { glyph: 'circle-x', headline: ':actor cancelled :object', summary: 'cancelled :object|cancelled :count orders' }
@@ -624,6 +654,7 @@ export default {
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
       transitions: { confirmed: 'cookbook-confirmed', timeline: ['j84', 'cookbook-confirmed', 'cookbook-replaced'] },
       pricing: ['cookbook-added', 'cookbook-repriced'],
+      computed: 'cookbook-added',
       deletion: 'cookbook-removed',
       discussion: 'cookbook-reply',
       grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
@@ -654,6 +685,8 @@ export default {
     },
     basics: {
       activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product',
+        program: 'prose-program', terminal: 'prose-terminal', radioLog: 'prose-radio',
+        caseMemo: 'prose-memo', labReport: 'prose-report', alphabet: 'prose-alphabet', planck: 'prose-planck',
         itemList: 'a-item-list', notice: 'a-notice', linkedNotice: 'a-visitor-notice' },
       recording: { paid: 'a-paid', priced: 'a-price', photos: ['j54', 'j55', 'j56'] },
       feedFile: { completed: 'a-complete', created: 'a-created' },

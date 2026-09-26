@@ -205,8 +205,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "data": {},
   // optional FeedThread conversation metadata
   "thread": null,
-  // optional FeedChange before/after facts
-  "change": null,
   // the roles holding a tombstone, in role order
   "tombstoned": [],
   // one of them is a role the verb is about
@@ -231,7 +229,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
 | `data` | map or null | what the recording call passed to `data()` |
 | `thread` | object or null | the utterance the activity is about; see [Threads](#threads) |
-| `change` | object or null | before and after values; see [Changes](#changes) |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
 | `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
@@ -251,14 +248,6 @@ Set `thread` with `FeedThread` to include something someone said:
 | `kind` | string or null | the app's word for the act, such as `"replied"` |
 | `replies` | int or null | the size of the conversation, or `null` when not counted |
 | `truncated` | boolean | `true` when the app shortened `text` |
-
-### Changes
-
-`change` is set with `FeedChange`:
-
-| Key | Type | Holds |
-|---|---|---|
-| `changes` | list | one entry per changed field: `label` (string), `before` and `after` (each a string or `null`) |
 
 <span id="group-node"></span>
 

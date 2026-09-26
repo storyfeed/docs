@@ -73,6 +73,18 @@ Relation::enforceMorphMap([ // [!code highlight]
 in your application. Choose whether to enforce this requirement for your
 application, and keep aliases used by existing activities in the map.
 
+To require aliases only for Feedable models, call
+`Storyfeed::requireFeedableMorphMap()` in your service provider's `boot()` method.
+It is off by default. Enable it outside production to catch unaliased models
+when publishing; the doctor also reports them, and `storyfeed:cache` (including
+`php artisan optimize`) refuses to cache while required aliases are missing.
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::requireFeedableMorphMap(! $this->app->isProduction());
+```
+
 ## Configuration
 
 The installer creates `config/storyfeed.php`. Every setting has a default; see [Configuration](/reference/configuration) for the available options.
@@ -81,3 +93,29 @@ The installer creates `config/storyfeed.php`. Every setting has a default; see [
 <a id="scheduling-maintenance"></a>
 
 The feed works without a scheduler; once it is live, Storyfeed has [maintenance commands](/reference/commands#scheduling-maintenance) worth scheduling.
+
+## Installing Storyfeed UI
+
+To render a feed with Blade components styled using Tailwind CSS v4, install
+[Storyfeed UI](/basics/rendering#using-storyfeed-ui):
+
+```bash
+composer require storyfeed/ui
+```
+
+Install Tailwind's Typography plugin:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Register the plugin and the package's views in `resources/css/app.css`:
+
+```css
+@source "../../vendor/storyfeed/ui/resources/views";
+@plugin "@tailwindcss/typography";
+```
+
+Run `npm run build` to compile your application's CSS. See
+[Rendering](/basics/rendering#using-storyfeed-ui) to display the feed or
+[build your own components](/basics/rendering#building-your-own).

@@ -42,10 +42,28 @@ components shown below.
 composer require storyfeed/ui
 ```
 
+Storyfeed UI uses Tailwind CSS v4 and its Typography plugin. Install the plugin:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Register the plugin and the package's views in your application's
+`resources/css/app.css` file:
+
+```css
+@source "../../vendor/storyfeed/ui/resources/views";
+@plugin "@tailwindcss/typography";
+```
+
+Compile your application's CSS with `npm run build`. Your layout must load
+the compiled CSS, for example with `@vite('resources/css/app.css')`.
+
+If your application does not use Tailwind, see [Building Your Own Components](#building-your-own).
+
 ### Rendering a Page
 
-Pass the feed page to your view and render it with the `feed` component.
-The `@storyfeedStyles` directive includes the default stylesheet:
+Pass the feed page to your view and render it with the `feed` component:
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -57,8 +75,6 @@ Route::get('/', function () {
 ```
 
 ```blade memo="resources/views/feed.blade.php"
-@storyfeedStyles
-
 <x-storyfeed::feed :page="$page" />
 ```
 
@@ -75,25 +91,26 @@ php artisan vendor:publish --tag=storyfeed-views
 The command publishes views to `resources/views/vendor/storyfeed`. Published
 views override the package's views, so retain only those you customize.
 
-### Styling the Feed
+### Customizing the Styles
 
-The `@storyfeedStyles` directive includes inline CSS without a build step.
-Set its colours on an ancestor element:
+The components use Tailwind's zinc palette for text, borders, and surfaces,
+and indigo for links. To change these styles, publish the views and edit their
+utility classes. You may also customize Tailwind's existing theme variables,
+such as `--color-indigo-700` and `--color-indigo-300`, in your application's
+`@theme` block. These changes apply to every component using those colours.
+The kit defines no additional theme variables. ItemList, Prose, and Excerpt use the
+Typography plugin's `prose` styles.
 
-```css
-.sf-feed {
-    --sf-text-color: #111827;
-    --sf-muted-color: #4b5563;
-    --sf-line-color: #e5e7eb;
-}
-```
+The components include `dark:` variants and follow your application's
+[Tailwind dark mode configuration](https://tailwindcss.com/docs/dark-mode).
 
-To serve or bundle the stylesheet yourself, publish it to
-`public/vendor/storyfeed/storyfeed.css`:
+Prose bodies render Markdown and HTML with sanitization at render time. Plain
+text, unknown media types, and verbatim content are escaped. Verbatim content
+preserves whitespace inside a code block.
 
-```bash
-php artisan vendor:publish --tag=storyfeed-assets
-```
+Icon intents are application-defined strings exposed through `data-sf-intent`.
+To assign colours to your intent values, add the corresponding Tailwind
+utilities to the published `components/glyph.blade.php` view.
 
 <a id="building-your-own"></a>
 
@@ -120,7 +137,9 @@ Use its methods to access the [payload](/reference/payload):
 
 Echo `$item->headline()` to render the headline with linked entity labels.
 Items also support array access, such as `$item['verb']`. The `$page->items()`
-method returns the underlying arrays. See [FeedItem API](/reference/feed-item)
+method on a `FeedPage` returns the underlying arrays. On a
+`FeedPaginator`, it returns `FeedItem` instances; use `toArray()['items']`
+for the payload arrays. See [FeedItem API](/reference/feed-item)
 for all methods.
 
 ### Parts of a Row
@@ -140,17 +159,16 @@ Omit elements whose corresponding fields are empty.
 
 ### Displaying the Feed
 
-Pass the feed page to a view. Use the query string's cursor to retrieve
-[subsequent pages](/basics/reading#pagination):
+Pass a paginator to the view. The `cursorPaginate` method retrieves the
+current request's cursor for [subsequent pages](/basics/reading#pagination):
 
 ```php memo="routes/web.php"
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::get('/', function (Request $request) {
+Route::get('/', function () {
     return view('feed', [
-        'page' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
     ]);
 });
 ```
@@ -421,7 +439,13 @@ Add a component for each body type you render:
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
 
-<blockquote {{ $attributes }}>{{ $body['text'] }}</blockquote>
+<figure {{ $attributes }}>
+    <blockquote>{{ $body['text'] }}@if ($body['truncated'])…@endif</blockquote>
+
+    @if ($body['from'])
+        <figcaption>{{ $body['from'] }}</figcaption>
+    @endif
+</figure>
 ```
 
 See [Activity Content](/basics/activity-content#available-body-types) for body
@@ -452,24 +476,15 @@ The feed component renders each item, followed by the pagination link:
     @endforeach
 </div>
 
-<x-feed.pager :cursor="$page->nextCursor()" />
+{{ $page->links() }}
 ```
 
 Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
 feed's root element.
 
-The pagination link uses the same URL with the next cursor. On the last page,
-`nextCursor` returns `null` and the link is omitted:
-
-```blade memo="resources/views/components/feed/pager.blade.php"
-@props(['cursor'])
-
-@if ($cursor)
-    <nav {{ $attributes }}>
-        <a href="{{ request()->fullUrlWithQuery(['cursor' => $cursor]) }}" rel="next">Older activity</a>
-    </nav>
-@endif
-```
+The `links` method renders Laravel's simple pagination view. You may customize
+it through Laravel's pagination views. Feeds support forward pagination only;
+the previous-page link is disabled and no links appear on the last page.
 
 <a id="degraded-entities"></a>
 
