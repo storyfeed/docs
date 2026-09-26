@@ -6,8 +6,8 @@ import { scene } from '../.vitepress/theme/world'
 
 ## Publishing From an Event
 
-A controller that publishes its own activity handles both the payment and the
-feed:
+A controller that publishes its own activity handles the payment and the feed
+itself:
 
 ```php memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
@@ -38,12 +38,8 @@ class StripeWebhookController extends Controller
 }
 ```
 
-An event can build the activity instead, with no listener to register. Return
-it without calling `publish()`; dispatching the event publishes it:
-
-<<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
-
-The controller then handles the payment and dispatches the event:
+In an event-driven app, the controller only reports what happened. It
+dispatches an event:
 
 ```php memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
@@ -62,11 +58,33 @@ class StripeWebhookController extends Controller
         $order = Order::where('payment_intent', $request->input('data.object.id'))
             ->firstOrFail();
 
-        $order->update(['paid_at' => now()]);
-
-        OrderPaid::dispatch($order);
+        OrderPaid::dispatch($order); // [!code highlight]
 
         return response()->noContent();
+    }
+}
+```
+
+The event builds the activity. Return it without calling `publish()`;
+dispatching the event publishes it, with no listener to register:
+
+<<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
+
+The payment itself is a side effect, so it moves to a listener, as any other
+consequence of the event would:
+
+```php memo="app/Listeners/MarkOrderPaid.php"
+<?php
+
+namespace App\Listeners;
+
+use App\Events\OrderPaid;
+
+class MarkOrderPaid
+{
+    public function handle(OrderPaid $event): void
+    {
+        $event->order->update(['paid_at' => now()]);
     }
 }
 ```
