@@ -26,26 +26,45 @@ const withKeyValue = { ...content.confirmed,
 
 ## Introduction
 
-A feed page reads a page of the feed and draws each node as a row. On this
+A feed page reads a page of the feed and draws each item as a row. On this
 page you build that as Blade components: one tag in your view, and a small
-component for each part of a row. The components carry no styling, so they
-fit any design.
+anonymous component for each part of a row. The components carry no styling,
+so they fit any design.
 
 ::: headless
 :::
 
-## Payload Fields in a Row
+## Reading Feed Items
 
-| Part of a Row | Payload Fields | Holds |
+Looping over a page of the feed gives you each item as a
+`Storyfeed\Support\FeedItem`. It reads the item's
+[payload](/reference/payload) through named methods:
+
+```blade memo="resources/views/feed.blade.php"
+@foreach ($page as $item)
+    {{ $item->headline() }}
+    {{ $item->actor()?->label() }}
+    {{ $item->publishedAt()->diffForHumans() }}
+@endforeach
+```
+
+Echoing `$item->headline()` draws the sentence, with each entity's label as
+a link to its `url`. The item also reads as the array it wraps, so
+`$item['verb']` works, and `$page->items()` still returns the arrays.
+[FeedItem API](/reference/feed-item) lists every method.
+
+## Parts of a Row
+
+| Part of a Row | Read With | Payload Fields |
 |---|---|---|
-| icon | `glyph`, `glyph_intent`, `actor` | the verb's icon and the actor's picture |
-| headline | `headline_template` or `headline`, the role keys | the sentence, with entity labels substituted in |
-| time | `published_at` | when the activity happened |
-| quote | `thread` | what someone said, quoted on this activity |
-| media | `object.media.preview`, `object.media.url` | the object's picture |
-| body | an entity's `body` list | structured content, one [body type](/basics/activity-content) at a time |
-| group pictures | a group's `sample`, `distinct` | a few members' pictures, and how many more there are |
-| group members | `children`, `count` | the group's own activities, when a reader opens it |
+| icon | `glyph()`, `intent()`, `actor()` | `glyph`, `glyph_intent`, `actor` |
+| headline | `headline()` | `headline_template` or `headline`, the role keys |
+| time | `publishedAt()` | `published_at` |
+| quote | `thread()` | `thread` |
+| media | `object()->media()` | `object.media` |
+| body | `object()->bodies()` | an entity's `body` list |
+| group pictures | `actors()`, `distinct('actors')` | a group's `sample`, `distinct` |
+| group members | `children()`, `count()` | `children`, `count` |
 
 A field with no value leaves its part out.
 
@@ -76,20 +95,15 @@ The view draws the whole feed with one tag:
 
 ### The Feed Components
 
-`<x-feed>` is built from these components. The Blade files live in
-`resources/views/components/feed`. The two components with PHP logic are
-classes in `app/View/Components/Feed`:
+`<x-feed>` is built from these anonymous components, in
+`resources/views/components/feed`:
 
-| Component | Files | Draws |
+| Component | File | Draws |
 |---|---|---|
 | `<x-feed>` | `feed.blade.php` | the feed, and a link to older activity |
-| `<x-feed.node>` | `node.blade.php` | one node, as an activity or a group |
+| `<x-feed.item>` | `item.blade.php` | one item, as an activity or a group |
 | `<x-feed.activity>` | `activity.blade.php` | an activity row |
 | `<x-feed.group>` | `group.blade.php` | a group row and its members |
-| `<x-feed.digest>` | `digest.blade.php` | a digest row's actor and phrases |
-| `<x-feed.headline>` | `Headline.php`, `headline.blade.php` | the sentence |
-| `<x-feed.entity-link>` | `EntityLink.php` | one entity, linked |
-| `<x-feed.entity-list>` | `entity-list.blade.php` | several entities, and how many more |
 | `<x-feed.glyph>` | `glyph.blade.php` | the icon |
 | `<x-feed.time>` | `time.blade.php` | when it happened |
 | `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | one body, by its type |
@@ -102,192 +116,68 @@ The sections below build the components, smallest first.
 
 ## Rendering Activities
 
-<a id="linking-the-entities"></a>
-
-### Entity Links
-
-Each entity carries its own `label` and `url`, so a link needs no route
-knowledge. Choosing a label for an entity that has none is PHP logic, so the
-link is a class component. Generate it with an inline view:
-
-```bash
-php artisan make:component Feed/EntityLink --inline
-```
-
-```php memo="app/View/Components/Feed/EntityLink.php"
-<?php
-
-namespace App\View\Components\Feed;
-
-use Illuminate\View\Component;
-
-class EntityLink extends Component
-{
-    /**
-     * Create a new component instance.
-     *
-     * @param  array<string, mixed>|null  $entity
-     */
-    public function __construct(
-        public ?array $entity,
-        public string $fallback = 'Something',
-    ) {}
-
-    /**
-     * The entity's label, or what to draw when it has none.
-     */
-    public function label(): string
-    {
-        if ($tombstone = $this->entity['tombstone'] ?? null) {
-            return $this->entity['label'] ?? 'a removed '.$tombstone['formerType'];
-        }
-
-        return $this->entity['label'] ?? $this->fallback;
-    }
-
-    /**
-     * Get the view that represents the component.
-     */
-    public function render(): string
-    {
-        // Inline, so no newline follows the link: a comma after it stays against the name.
-        return <<<'blade'
-            <a {{ $attributes->merge(['href' => $entity['url'] ?? null, ...($entity['attributes'] ?? [])]) }}>{{ $label() }}</a>
-            blade;
-    }
-}
-```
-
-The view calls `$label()`, as it can call any public method on its component.
-`$attributes->merge()` adds the entity's own link attributes, such as
-`target`, and leaves `href` out when the entity has no `url`. An `<a>` without
-an `href` reads as plain text.
-
 <a id="rendering-a-headline"></a>
 
 ### Headlines
 
-`headline_template` is the headline with its tokens, such as `:actor`, still
-in it. `headline` is a finished sentence with nothing to substitute. At most
-one of the two is set.
+`headline()` reads the item's sentence. Echo it:
 
-The headline component splits the template into text and tokens, and draws
-each token as an entity link. Generate it with a view:
-
-```bash
-php artisan make:component Feed/Headline
-```
-
-```php memo="app/View/Components/Feed/Headline.php"
-<?php
-
-namespace App\View\Components\Feed;
-
-use Closure;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Str;
-use Illuminate\View\Component;
-
-class Headline extends Component
-{
-    /**
-     * The roles a token can name.
-     */
-    protected const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument'];
-
-    /**
-     * Create a new component instance.
-     *
-     * @param  array<string, mixed>  $node
-     */
-    public function __construct(public array $node) {}
-
-    /**
-     * Split the headline template into text and the entities its tokens name.
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function parts(): array
-    {
-        $segments = preg_split('/(:[a-z]+)/', $this->node['headline_template'], flags: PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-        return array_map($this->part(...), $segments);
-    }
-
-    /**
-     * Turn one segment of the template into a part.
-     *
-     * @return array<string, mixed>
-     */
-    protected function part(string $segment): array
-    {
-        $role = Str::singular(ltrim($segment, ':'));
-
-        if (! str_starts_with($segment, ':') || ! in_array($role, self::ROLES)) {
-            return ['type' => 'text', 'text' => $segment];
-        }
-
-        return [
-            'type' => 'entity',
-            'entity' => $this->node[$role] ?? null,
-            'fallback' => $role === 'actor' ? 'Someone' : 'Something',
-        ];
-    }
-
-    /**
-     * Get the view that represents the component.
-     */
-    public function render(): View|Closure|string
-    {
-        return view('components.feed.headline');
-    }
-}
-```
-
-The view draws the parts. A node with a finished `headline` draws it as it
-is, and a node with neither draws the component's slot:
-
-```blade memo="resources/views/components/feed/headline.blade.php"
-<div {{ $attributes }}>
-    @if ($node['headline_template'])
-        @foreach ($parts() as $part)
-            @switch ($part['type'])
-                @case ('entity')
-                    <x-feed.entity-link :entity="$part['entity']" :fallback="$part['fallback']" />
-                    @break
-                @default
-                    {{ $part['text'] }}
-            @endswitch
-        @endforeach
-    @elseif ($node['headline'])
-        {{ $node['headline'] }}
-    @else
-        {{ $slot }}
-    @endif
-</div>
+```blade
+{{ $activity->headline() }}
 ```
 
 <FeedExample expanded :items="[bare]" />
 
+The headline replaces each token in `headline_template`, such as `:actor`,
+with that entity's label. An entity with a `url` becomes a link carrying the
+entity's own attributes, such as `target`. An item with a finished `headline`
+reads as that text. Everything else is escaped.
+
+`toString()` reads the same sentence as plain text, for a page title or a
+notification:
+
+```blade
+<title>{{ $activity->headline()->toString() }}</title>
+```
+
+<a id="linking-the-entities"></a>
+
+### Entity Links
+
+Each role reads as a `Storyfeed\Support\Entity`, or `null` when the role is
+empty. Echoing an entity draws its label, linked when it has a `url`:
+
+```blade
+{{ $activity->object() }}
+```
+
+Its parts are methods too, such as `label()`, `url()` and `type()`.
+
+To draw the headline's entities your own way, pass a closure to `toHtml()`.
+It receives each `Entity` and returns HTML, so escape what you print:
+
+```blade
+@use('Storyfeed\Support\Entity')
+
+{!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
+```
+
 ### Timestamps
 
-`published_at` is an ISO 8601 string:
+`publishedAt()` reads `published_at` as a `CarbonImmutable`:
 
 ```blade memo="resources/views/components/feed/time.blade.php"
 @props(['at'])
 
-@use('Illuminate\Support\Carbon')
-
-<time datetime="{{ $at }}" {{ $attributes }}>
-    {{ Carbon::parse($at)->diffForHumans() }}
+<time datetime="{{ $at->toAtomString() }}" {{ $attributes }}>
+    {{ $at->diffForHumans() }}
 </time>
 ```
 
 ### Glyphs and Intents
 
-The node's `glyph` is a token your app registered, such as `shopping-bag`.
-Keep one icon view per token, with a fallback for a token you have no icon
-for:
+`glyph()` is a token your app registered, such as `shopping-bag`. Keep one
+icon view per token, with a fallback for a token you have no icon for:
 
 ```blade memo="resources/views/components/feed/glyph.blade.php"
 @props(['glyph', 'intent' => null])
@@ -297,7 +187,7 @@ for:
 </span>
 ```
 
-`glyph_intent` sits beside the glyph and says what the shape means:
+`intent()` sits beside the glyph and says what the shape means:
 
 <FeedExample expanded :items="[complete, scene.order]" />
 
@@ -307,7 +197,7 @@ and no colours, and validates nothing: `success`, `pending` and `danger` are
 this example's words. Map them onto colours your frontend owns, for example
 with a `[data-intent="success"]` selector.
 
-Most verbs have no intent. Their `glyph_intent` is `null`, so the component
+Most verbs have no intent. Their `intent()` is `null`, so the component
 leaves `data-intent` out and the plain glyph is drawn, as it is for an intent
 you have no colour for.
 
@@ -319,9 +209,9 @@ An activity row puts the three together:
 @props(['activity'])
 
 <article {{ $attributes }}>
-    <x-feed.glyph :glyph="$activity['glyph']" :intent="$activity['glyph_intent']" />
-    <x-feed.headline :node="$activity" />
-    <x-feed.time :at="$activity['published_at']" />
+    <x-feed.glyph :glyph="$activity->glyph()" :intent="$activity->intent()" />
+    <div>{{ $activity->headline() }}</div>
+    <x-feed.time :at="$activity->publishedAt()" />
 </article>
 ```
 
@@ -333,154 +223,73 @@ An activity row puts the three together:
 
 ### Group Rows
 
-A [group](/basics/reading#groups) node has `kind: "group"` and a plural
+A [group](/basics/reading#groups) has `isGroup()` true and a plural
 sentence; [Aggregation](/deeper/aggregation) covers which activities group and
-the tokens a group headline may use. Its `children` are activity nodes, so
-the activity component draws them:
+the tokens a group headline may use. `children()` reads its members as feed
+items, so the activity component draws them:
 
 ```blade memo="resources/views/components/feed/group.blade.php"
 @props(['group'])
 
 <article {{ $attributes }}>
-    <x-feed.glyph :glyph="$group['glyph']" :intent="$group['glyph_intent']" />
-    <x-feed.headline :node="$group">{{ $group['count'] }} activities</x-feed.headline>
-    <x-feed.time :at="$group['published_at']" />
+    <x-feed.glyph :glyph="$group->glyph()" :intent="$group->intent()" />
+    <div>{{ $group->headline() }}</div>
+    <x-feed.time :at="$group->publishedAt()" />
 
     <details>
-        <summary>{{ $group['count'] }} activities</summary>
+        <summary>{{ $group->count() }} activities</summary>
 
-        @foreach ($group['children'] as $child)
+        @foreach ($group->children() as $child)
             <x-feed.activity :activity="$child" />
         @endforeach
     </details>
 </article>
 ```
 
-`count` is the true member total. `children` can hold fewer, and
-`children_truncated` is then `true`.
+`count()` is the true member total. `children()` can hold fewer, and
+`childrenTruncated()` is then `true`.
 
 ### Plural Roles
 
-`:count` is the member count, and a plural token such as `:actors` draws the
-group's `sample` plus how many are not shown. The full `part()` method handles
-both:
-
-```php memo="app/View/Components/Feed/Headline.php" at="part()"
-protected function part(string $segment): array
-{
-    $role = Str::singular(ltrim($segment, ':'));
-
-    if ($segment === ':count') { // [!code highlight:3]
-        return ['type' => 'text', 'text' => $this->node['count']];
-    }
-
-    if (! str_starts_with($segment, ':') || ! in_array($role, self::ROLES)) {
-        return ['type' => 'text', 'text' => $segment];
-    }
-
-    $shown = $this->node['sample'][$role.'s'] ?? []; // [!code highlight:4]
-    $total = $this->node['distinct'][$role.'s'] ?? 1;
-
-    // One entity: an activity's own, or the only one a group holds.
-    if ($segment === ':'.$role && $total <= 1) {
-        return [
-            'type' => 'entity',
-            'entity' => $this->node[$role] ?? $shown[0] ?? null, // [!code highlight]
-            'fallback' => $role === 'actor' ? 'Someone' : 'Something',
-        ];
-    }
-
-    return ['type' => 'list', 'entities' => $shown, 'total' => $total]; // [!code highlight]
-}
-```
-
-A group fills a singular role, such as `actor`, only when every member shares
-that one entity. So a **singular** token takes a name from the sample only
-when `distinct` says there is one, and otherwise draws the plural list. An
-unconditional `$shown[0]` names one person over a group of nine.
-
-The list component joins the names and adds the rest as a number:
-
-```blade memo="resources/views/components/feed/entity-list.blade.php"
-@props(['entities', 'total'])
-
-@foreach ($entities as $entity)
-    <x-feed.entity-link :entity="$entity" />@if (! $loop->last), @endif
-@endforeach
-
-@if ($total > count($entities))
-    and {{ $total - count($entities) }} more
-@endif
-```
-
-Add a case for it to the headline view:
-
-```blade memo="resources/views/components/feed/headline.blade.php" at="@switch"
-@case ('list')
-    <x-feed.entity-list :entities="$part['entities']" :total="$part['total']" />
-    @break
-```
+A plural token such as `:actors` reads as the group's sample of entities,
+joined, with the rest as a number: "Ana, Ben, Cy and 2 more". A singular
+token such as `:actor` names one entity only when every member shares it,
+and otherwise reads as the list. `:count` reads as `count()`.
 
 <FeedExample :items="[grouped]" />
+
+To draw the sample yourself, such as a stack of pictures, read the role's
+entities and its true total:
+
+```blade
+@foreach ($group->actors() as $actor)
+    <img src="{{ $actor->media()?->get('icon.src') }}" alt="{{ $actor->label() }}">
+@endforeach
+
+@if ($group->distinct('actors') > $group->actors()->count())
+    +{{ $group->distinct('actors') - $group->actors()->count() }}
+@endif
+```
 
 ### Groups Without Headlines
 
 A group has no sentence when its verb declares no group headline and its
-members' own headline can't be reused for several activities. **Both**
-`headline_template` and `headline` are then null, and the headline draws its
-slot, the count:
+members' own headline can't be reused for several activities. Its headline
+then reads as its count, "5 activities", and `isFallback()` is `true`:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
-<x-feed.headline :node="$group">{{ $group['count'] }} activities</x-feed.headline>
+<div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
 ```
 
 <FeedExample :items="[unnamed]" />
 
-Don't assemble prose from the node's entities: a branch written for single
-activities names one actor over a many-actor group.
-
 ### Digest Rows
 
-For `axis: "summary"`, name the actor once and list the per-verb phrases.
-Each phrase has its own `headline_template`, `sample` and `distinct`, so the
-headline component draws it:
-
-```blade memo="resources/views/components/feed/digest.blade.php"
-@props(['group'])
-
-@if ($group['actor'])
-    <x-feed.entity-link :entity="$group['actor']" fallback="Someone" />
-@else
-    <x-feed.entity-list :entities="$group['sample']['actors']" :total="$group['distinct']['actors']" />
-@endif
-
-<ul>
-    @foreach ($group['phrases'] as $phrase)
-        <li>
-            <x-feed.headline :node="$phrase">{{ $phrase['verb'] }} ({{ $phrase['count'] }})</x-feed.headline>
-        </li>
-    @endforeach
-
-    @if ($group['phrases_truncated'])
-        <li>and {{ $group['count'] - array_sum(array_column($group['phrases'], 'count')) }} more</li>
-    @endif
-</ul>
-```
-
-The digest goes in the group headline's slot, so an authored row headline
-still wins:
-
-```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
-<x-feed.headline :node="$group">
-    @if ($group['axis'] === 'summary')
-        <x-feed.digest :group="$group" />
-    @else
-        {{ $group['count'] }} activities
-    @endif
-</x-feed.headline>
-```
-
-A group on any other `axis` without a headline falls back to the count.
+A [digest](/basics/reading#summary) row's headline names the person once and
+joins the per-verb phrases after it, each phrase starting at its verb. The
+group component draws it with no change.
+To lay the phrases out yourself, `phrases()` reads each one as a feed item
+with its own `headline()` and `count()`.
 
 <a id="activity-data-and-bodies"></a>
 
@@ -490,27 +299,27 @@ A group on any other `axis` without a headline falls back to the count.
 
 ### Quoted Text
 
-An activity that quotes what someone said carries it in `thread`. Draw it in
-the activity row:
+An activity that quotes what someone said carries it in `thread()`. Draw it
+in the activity row:
 
 ```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
-@if ($activity['thread'])
-    <blockquote>{{ $activity['thread']['text'] }}</blockquote>
+@if ($thread = $activity->thread())
+    <blockquote>{{ $thread->text }}</blockquote>
 @endif
 ```
 
 <FeedExample :items="[withThread]" />
 
-An activity's `data` holds the values supplied when recording it. Your
+`data()` holds the values supplied when recording the activity. Your
 application decides which of them to display.
 
 ### Bodies
 
-An entity's `body` list holds its structured content. Draw the object's
-bodies in the activity row:
+`bodies()` reads an entity's structured content. Draw the object's bodies in
+the activity row:
 
 ```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
-@foreach ($activity['object']['body'] ?? [] as $body)
+@foreach ($activity->object()?->bodies() ?? [] as $body)
     <x-feed.body :body="$body" />
 @endforeach
 ```
@@ -559,27 +368,26 @@ your own.
 
 ## Assembling the Feed
 
-The node component chooses the row by `kind`. A node of any other kind draws
-nothing:
+The item component chooses the row by kind:
 
-```blade memo="resources/views/components/feed/node.blade.php"
-@props(['node'])
+```blade memo="resources/views/components/feed/item.blade.php"
+@props(['item'])
 
-@if ($node['kind'] === 'activity')
-    <x-feed.activity :activity="$node" />
-@elseif ($node['kind'] === 'group')
-    <x-feed.group :group="$node" />
+@if ($item->isActivity())
+    <x-feed.activity :activity="$item" />
+@elseif ($item->isGroup())
+    <x-feed.group :group="$item" />
 @endif
 ```
 
-The feed component draws every node on the page, then the pager:
+The feed component draws every item on the page, then the pager:
 
 ```blade memo="resources/views/components/feed/feed.blade.php"
 @props(['page'])
 
 <div role="feed" {{ $attributes }}>
-    @foreach ($page->items() as $node)
-        <x-feed.node :node="$node" />
+    @foreach ($page as $item)
+        <x-feed.item :item="$item" />
     @endforeach
 </div>
 
@@ -607,15 +415,29 @@ The pager links to the same URL with the next cursor. On the last page
 ## Handling Missing Values
 
 An entity's `label` and `url` can be `null`. A null **actor** means the actor
-is unknown. The activity is still in the feed:
+is unknown. The activity is still in the feed, and its headline reads with a
+placeholder:
 
 <FeedExample :items="[degraded]" />
 
-The [entity link](#entity-links) draws `Someone` for a missing actor and
-`Something` for any other role, and a link with no `url` has no `href`. A
-[deleted model](/deeper/deleted-models) reads as `a removed order`, from its
-tombstone's `formerType`. For an unknown actor, a headline without an actor
-token can describe the activity directly.
+| The Entity | Reads As | Tell It With |
+|---|---|---|
+| a null actor | `Someone` | `actor()` is `null` |
+| no label yet | `Someone` for the actor, `Something` for any other role | `isDegraded()` |
+| a [deleted model](/deeper/deleted-models) | `a removed order`, `a former customer`, from its former type | `isTombstone()`, `formerType()` |
+| a group with no headline | `5 activities` | `headline()->isFallback()` |
+
+An entity with no `url` reads as plain text. For an unknown actor, a headline
+without an actor token can describe the activity directly.
+
+The words are Storyfeed's translation lines, read in the current locale.
+Publish them to change them:
+
+```bash
+php artisan vendor:publish --tag=storyfeed-translations
+```
+
+The lines land in `lang/vendor/storyfeed/en/feed.php`.
 
 <a id="verifying-your-renderer"></a>
 
@@ -651,15 +473,17 @@ defineProps<{ feed: Record<string, any> }>()
 </template>
 ```
 
-The components match the Blade ones. `Feed` keeps the nodes it has drawn, and
-asks for the next page with a partial reload of the `feed` prop:
+The browser receives the payload's arrays, so the Vue components read the
+fields themselves: `FeedHeadline` splits the template into text and entities,
+as `headline()` does in PHP. `Feed` keeps the items it has drawn, and asks for
+the next page with a partial reload of the `feed` prop:
 
 ::: code-group
 ```vue [Feed.vue] memo="resources/js/components/feed/Feed.vue"
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue'
-import FeedNode from './FeedNode.vue'
+import FeedItem from './FeedItem.vue'
 
 type Page = { items: Record<string, any>[]; next_cursor: string | null; sync_token: string | null }
 
@@ -695,7 +519,7 @@ function loadMore() {
 
 <template>
     <div role="feed">
-        <FeedNode v-for="node in items" :key="node.id" :node="node" />
+        <FeedItem v-for="item in items" :key="item.id" :item="item" />
     </div>
 
     <button v-if="nextCursor" :disabled="loading" @click="loadMore">
@@ -704,17 +528,17 @@ function loadMore() {
 </template>
 ```
 
-```vue [FeedNode.vue] memo="resources/js/components/feed/FeedNode.vue"
+```vue [FeedItem.vue] memo="resources/js/components/feed/FeedItem.vue"
 <script setup lang="ts">
 import FeedActivity from './FeedActivity.vue'
 import FeedGroup from './FeedGroup.vue'
 
-defineProps<{ node: Record<string, any> }>()
+defineProps<{ item: Record<string, any> }>()
 </script>
 
 <template>
-    <FeedActivity v-if="node.kind === 'activity'" :activity="node" />
-    <FeedGroup v-else-if="node.kind === 'group'" :group="node" />
+    <FeedActivity v-if="item.kind === 'activity'" :activity="item" />
+    <FeedGroup v-else-if="item.kind === 'group'" :group="item" />
 </template>
 ```
 
@@ -727,7 +551,7 @@ defineProps<{ activity: Record<string, any> }>()
 
 <template>
     <article>
-        <FeedHeadline :node="activity" />
+        <FeedHeadline :item="activity" />
         <time :datetime="activity.published_at">
             {{ new Date(activity.published_at).toLocaleString() }}
         </time>
@@ -745,7 +569,7 @@ defineProps<{ group: Record<string, any> }>()
 
 <template>
     <article>
-        <FeedHeadline :node="group">{{ group.count }} activities</FeedHeadline>
+        <FeedHeadline :item="group">{{ group.count }} activities</FeedHeadline>
         <time :datetime="group.published_at">
             {{ new Date(group.published_at).toLocaleString() }}
         </time>
@@ -770,33 +594,33 @@ type Part =
     | { type: 'entity'; entity: Entity | null; fallback: string }
     | { type: 'list'; entities: Entity[]; total: number }
 
-const props = defineProps<{ node: Record<string, any> }>()
+const props = defineProps<{ item: Record<string, any> }>()
 
 const roles = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
 
 const parts = computed(() =>
-    (props.node.headline_template ?? '')
+    (props.item.headline_template ?? '')
         .split(/(:[a-z]+)/)
         .filter(Boolean)
         .map((segment: string): Part => {
             const role = segment.slice(1).replace(/s$/, '')
 
             if (segment === ':count') {
-                return { type: 'text', text: String(props.node.count) }
+                return { type: 'text', text: String(props.item.count) }
             }
 
             if (!segment.startsWith(':') || !roles.includes(role)) {
                 return { type: 'text', text: segment }
             }
 
-            const shown: Entity[] = props.node.sample?.[`${role}s`] ?? []
-            const total: number = props.node.distinct?.[`${role}s`] ?? 1
+            const shown: Entity[] = props.item.sample?.[`${role}s`] ?? []
+            const total: number = props.item.distinct?.[`${role}s`] ?? 1
 
             // One entity: an activity's own, or the only one a group holds.
             if (segment === `:${role}` && total <= 1) {
                 return {
                     type: 'entity',
-                    entity: props.node[role] ?? shown[0] ?? null,
+                    entity: props.item[role] ?? shown[0] ?? null,
                     fallback: role === 'actor' ? 'Someone' : 'Something',
                 }
             }
@@ -808,14 +632,14 @@ const parts = computed(() =>
 
 <template>
     <div>
-        <template v-if="node.headline_template">
+        <template v-if="item.headline_template">
             <template v-for="(part, index) in parts" :key="index">
                 <EntityLink v-if="part.type === 'entity'" :entity="part.entity" :fallback="part.fallback" />
                 <EntityList v-else-if="part.type === 'list'" :entities="part.entities" :total="part.total" />
                 <template v-else>{{ part.text }}</template>
             </template>
         </template>
-        <template v-else-if="node.headline">{{ node.headline }}</template>
+        <template v-else-if="item.headline">{{ item.headline }}</template>
         <slot v-else />
     </div>
 </template>

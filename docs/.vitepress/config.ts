@@ -251,6 +251,7 @@ export default defineConfig({
           { text: 'Commands', link: '/reference/commands' },
           { text: 'Doctor Checks', link: '/reference/doctor' },
           { text: 'Feedable API', link: '/reference/feedable' },
+          { text: 'FeedItem API', link: '/reference/feed-item' },
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
