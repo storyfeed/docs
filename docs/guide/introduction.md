@@ -35,9 +35,8 @@ An activity records an action and the entities involved. Each entity has a role:
 
 <FeedExample :items="[scene.order]" />
 
-The **actor** performs the action. The **verb** identifies the action. The
-**object** is the entity acted on, and the **target** is the entity the action
-is directed at.
+The **actor** is who did it. The **verb** is what happened. The **object** is
+what it was done to, and the **target** is what it was aimed at.
 
 > **{{ role.customer.label }}** *(actor)* **placed** *(verb)* **{{ scene.order.object.label }}** *(object)*
 > with **{{ role.shop.label }}** *(target)*
