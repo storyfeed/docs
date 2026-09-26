@@ -401,39 +401,40 @@ rewritten.
 #### Changing a Body's Shape
 
 When you rename, remove, or change the meaning of a field, add an upgrade
-step alongside the change to `toPayload()`. For example, KeyValue's
-`missing` field becomes `placeholder`:
+step alongside the change to `toPayload()`. Adding a new optional field needs
+no step. For example, the Attachment body's `size` field becomes `bytes`:
 
 ```bash
-php artisan make:body-upgrade KeyValue rename_missing_to_placeholder
+php artisan make:body-upgrade Attachment rename_size_to_bytes
 ```
 
 The command creates a timestamped file in the body's own folder:
 
 ```text
-app/Feed/Bodies/Upgrades/KeyValue/2026_09_26_120000_rename_missing_to_placeholder.php
+app/Feed/Bodies/Upgrades/Attachment/2026_09_26_120000_rename_size_to_bytes.php
 ```
 
-Like Laravel migrations, upgrade files run in filename order. The command
-accepts a built-in body name or your custom body's class name.
+Like Laravel migrations, upgrade files run in filename order. Write steps only
+for body types your application defines; Storyfeed ships the steps for its
+own bodies.
 
 #### Writing an Upgrade Step
 
 The generated file returns an anonymous class with one method. Return the
 payload with the changed fields, preserving unrelated values:
 
-```php memo="app/Feed/Bodies/Upgrades/KeyValue/2026_09_26_120000_rename_missing_to_placeholder.php"
+```php memo="app/Feed/Bodies/Upgrades/Attachment/2026_09_26_120000_rename_size_to_bytes.php"
 <?php
 
 return new class
 {
     public function upgrade(array $payload): array
     {
-        if (! array_key_exists('placeholder', $payload)) {
-            $payload['placeholder'] = $payload['missing'] ?? null;
+        if (! array_key_exists('bytes', $payload)) {
+            $payload['bytes'] = $payload['size'] ?? null;
         }
 
-        unset($payload['missing']);
+        unset($payload['size']);
 
         return $payload;
     }
@@ -459,8 +460,7 @@ provides that method for `toPayload()` and runs the steps through `upgrade()`.
 
 KeyValue and MediaObject each ship with one step, so both are version 2.
 KeyValue's step maps `missing` to `placeholder`; MediaObject's maps
-`attachments` to `files`. Package steps count too; an application step
-extends that body's existing history.
+`attachments` to `files`.
 
 Never delete or reorder released steps, because stored version numbers refer
 to their positions in that history. Keep released transforms unchanged and
@@ -481,15 +481,15 @@ that the old rows still upgrade correctly. A shape change without a step
 fails with a message such as:
 
 ```text
-MediaObject: removed `attachments`, added `files`; no upgrade step added.
+Attachment: removed `size`, added `bytes`; no upgrade step added.
 ```
 
 To fix it, generate the step, write the transform, add an old-row fixture
 that exercises it, and update the committed snapshot to the new output:
 
 ```bash
-php artisan make:body-upgrade MediaObject rename_attachments_to_files
-php artisan test --filter=MediaObjectTest
+php artisan make:body-upgrade Attachment rename_size_to_bytes
+php artisan test --filter=AttachmentTest
 ```
 
 Review the snapshot changes and run the test again. Updating the snapshot

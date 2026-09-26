@@ -57,11 +57,11 @@ prints the `routes/feed.php` binding for you to add.
 body's folder under `app/Feed/Bodies/Upgrades`:
 
 ```bash
-php artisan make:body-upgrade KeyValue rename_missing_to_placeholder
+php artisan make:body-upgrade Attachment rename_size_to_bytes
 ```
 
-Pass a built-in body name or your custom body's class name, followed by the
-step's name. Write the payload transform in the generated `upgrade()` method.
+Pass your body's class name, followed by the step's name. Storyfeed ships
+the steps for its own bodies. Write the payload transform in the generated `upgrade()` method.
 Steps run in filename order when bodies are upgraded at read time; they do
 not rewrite stored rows. See [Versions and Upgrades](/deeper/body#versions-and-upgrades).
 
