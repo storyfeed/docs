@@ -1,10 +1,9 @@
 # Recording an Authoriser
 
-When one person does something and another approves it, the doer is the actor
-of the activity. Record the approval as its own activity and leave its verb out
-of displayed feeds, so you can still look up who approved. If the approved thing
-already records who released it, in a column or a status field, use that
-instead.
+When one person acts and another approves, keep the person who acted as the
+activity's actor. Record approval separately and exclude it from displayed
+feeds so you can still query who approved. If the model already stores the
+approver in a column or status field, use that record.
 
 <span id="checking-for-an-existing-record"></span>
 <span id="choosing-an-approval-record"></span>
@@ -65,16 +64,17 @@ Storyfeed::feeds([
 ]);
 ```
 
-The `shop` feed lists only `publish` and `reprice`, so the approval stays out.
-A feed without `only()` leaves it out with `->except('approve')`.
+The `shop` feed includes only `publish` and `reprice`, excluding approvals.
+For a feed without `only()`, call `except('approve')`.
 
-This fits moderation queues, four-eyes approval, and a draft someone else
-releases. A separate activity keeps the approver out of the published sentence
-and findable with `involving()`.
+Use this for moderation, approval by a second person, or drafts released by
+someone else. Separate activities preserve each person's role and let you
+find the approval with `involving()`.
 
 ## Finding the Approver
 
-Read the photo's latest `approve` activity. The approver is its `actor`:
+In your controller or view model, retrieve the photo's latest `approve`
+activity in log mode. Its `actor` is the approver:
 
 ```php memo="Where the approver is shown: a controller or a view model"
 use Storyfeed\Facades\Storyfeed;
@@ -91,8 +91,8 @@ $approvedBy = $approval['actor']['label'] ?? null;
 $approvedAt = $approval['published_at'] ?? null;
 ```
 
-`ActivityType::Accept` marks the approval as an Activity Streams `Accept`. The
-contributor stays the actor of their own activity.
+`ActivityType::Accept` maps the approval to Activity Streams `Accept`.
+The contributor remains the actor of the publication activity.
 
 ## Displaying Approvals
 
@@ -101,7 +101,7 @@ contributor stays the actor of their own activity.
 <span id="showing-the-approver-on-a-dense-list"></span>
 <span id="displaying-approvals-in-lists"></span>
 
-Show the approver from the lookup as a name and a time under the published
-activity, not as a row of its own. The lookup is one query per photo, so on a
-long list also copy the approver's name into the published activity's `data`.
-The approval activity stays the record.
+Display the approver's name and approval time under the published activity.
+The lookup requires one query per photo, so for long lists, also copy the
+approver's name into the published activity's `data`. Keep the approval
+activity as the original record.
