@@ -6,12 +6,44 @@ import { scene } from '../.vitepress/theme/world'
 
 ## Publishing From an Event
 
-An event can build the activity itself, with no listener to register. Return
+A controller that publishes its own activity handles both the payment and the
+feed:
+
+```php memo="app/Http/Controllers/StripeWebhookController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Storyfeed\Facades\Storyfeed;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        Storyfeed::activity()
+            ->by('Stripe')
+            ->action('pay', $order)
+            ->publish();
+
+        return response()->noContent();
+    }
+}
+```
+
+An event can build the activity instead, with no listener to register. Return
 it without calling `publish()`; dispatching the event publishes it:
 
 <<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
 
-A payment webhook marks the order paid and dispatches the event:
+The controller then handles the payment and dispatches the event:
 
 ```php memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
@@ -38,6 +70,8 @@ class StripeWebhookController extends Controller
     }
 }
 ```
+
+Both publish the same activity:
 
 <FeedExample :items="[scene.basics.recording.paid]" />
 
