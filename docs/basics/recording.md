@@ -89,32 +89,31 @@ An alias and its setter record the same activity.
 
 ## Assigning the Actor
 
-Omit the actor and the authenticated user is recorded. A queued job or a
-scheduled command has no authenticated user, so name the actor:
+The actor is whoever did it. Pass them to `by()`:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Jobs/PlaceScheduledOrder.php" at="handle()"
+```php [Fluent Syntax] memo="Wherever the order is placed"
 Storyfeed::activity()
-    ->by($this->order->customer)
-    ->action('place', $this->order)
-    ->to($this->order->shop)
+    ->by($order->customer)
+    ->action('place', $order)
+    ->to($order->shop)
     ->publish();
 ```
 
-```php [Named Arguments] memo="app/Jobs/PlaceScheduledOrder.php" at="handle()"
+```php [Named Arguments] memo="Wherever the order is placed"
 Storyfeed::record(
     verb: 'place',
-    object: $this->order,
-    actor: $this->order->customer,
-    target: $this->order->shop,
+    object: $order,
+    actor: $order->customer,
+    target: $order->shop,
 );
 ```
 :::
 
 <FeedExample :items="[scene.order]" />
 
-When nothing names an actor and no user is authenticated, the activity is
-recorded without one.
+Leave out `by()` and Storyfeed records the signed-in user, so code handling
+that user's own request doesn't need it.
 
 ## Adding Activity Data
 
