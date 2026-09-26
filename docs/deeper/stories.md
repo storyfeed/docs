@@ -113,30 +113,10 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 
 ### Publishing the Story
 
-An authenticated controller gives the Story its data:
+Construct the Story with its data and publish it:
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use App\Stories\OrderWasPlaced;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PlaceOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
-
-        return to_route('orders.show', $order);
-    }
-}
+```php
+Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
 ```
 
 <FeedExample :items="[placed]" />
