@@ -33,8 +33,10 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)
     ->verb('place')
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
 <FeedExample :items="[repeat]" />
@@ -52,8 +54,10 @@ group names an **axis**: what its activities have in common.
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
-    ->actors(':actors ordered from :target'));
+Story::verb('place')->grouped(
+    fn (GroupBuilder $group) => $group
+        ->actors(':actors ordered from :target'),
+);
 ```
 
 <FeedExample :items="[actors]" />

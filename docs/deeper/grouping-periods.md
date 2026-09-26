@@ -28,8 +28,10 @@ Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->groupedWeekly()
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
 Weekly grouping can combine a customer's orders from the same shop across

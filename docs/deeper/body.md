@@ -150,8 +150,10 @@ building the body until the payload needs it:
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="feedMedia()"
-->body(fn () => KeyValue::make()
-    ->items('Portions left', $context->model()?->portions_left))
+->body(
+    fn () => KeyValue::make()
+        ->items('Portions left', $context->model()?->portions_left),
+)
 ```
 
 ```php [Named Arguments] memo="app/Models/MenuItem.php" at="feedMedia()"

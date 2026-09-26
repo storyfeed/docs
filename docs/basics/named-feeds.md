@@ -222,12 +222,14 @@ kitchen ticket URL, customer status URL, or no link:
 ```php memo="app/Models/Order.php" at="booted()"
 use Storyfeed\FeedContext;
 
-static::feedMediaUsing(fn (FeedContext $context) => match ($context->feed()) {
-    'kitchen' => route('kitchen.ticket', $context->routeKey()),
-    'customer' => route('orders.status', $context->routeKey()),
-    // an ad-hoc feed reports no name; without this arm the match throws
-    default => null,
-});
+static::feedMediaUsing(
+    fn (FeedContext $context) => match ($context->feed()) {
+        'kitchen' => route('kitchen.ticket', $context->routeKey()),
+        'customer' => route('orders.status', $context->routeKey()),
+        // an ad-hoc feed reports no name; without this arm the match throws
+        default => null,
+    },
+);
 ```
 
 On the `kitchen` feed:

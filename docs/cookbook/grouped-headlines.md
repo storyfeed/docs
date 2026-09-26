@@ -21,8 +21,10 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
 Three orders from one customer at the same shop, a minute apart, in live mode:

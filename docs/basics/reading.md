@@ -209,8 +209,10 @@ $shop->storyfeed()
 
 // tonight's service
 $shop->storyfeed()
-    ->query(fn (ActivityBuilder $q) => $q
-        ->where('published_at', '>=', today()->setHour(17)))
+    ->query(
+        fn (ActivityBuilder $query) => $query
+            ->where('published_at', '>=', today()->setHour(17)),
+    )
     ->get();
 ```
 

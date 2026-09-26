@@ -247,15 +247,16 @@ class MenuItem extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
-            ->url(route('menu.show', $context->routeKey()))
-            ->preview(FeedImage::make()
-                ->src(route('menu.photo', $context->routeKey()))
-                ->mediaType($context->data('mediaType'))
-                ->width($context->data('width'))
-                ->height($context->data('height'))
-                ->alt($context->label())
-            )
+        static::feedMediaUsing(
+            fn (FeedContext $context, FeedMedia $media) => $media
+                ->url(route('menu.show', $context->routeKey()))
+                ->preview(FeedImage::make()
+                    ->src(route('menu.photo', $context->routeKey()))
+                    ->mediaType($context->data('mediaType'))
+                    ->width($context->data('width'))
+                    ->height($context->data('height'))
+                    ->alt($context->label())
+                ),
         );
     }
 
@@ -293,15 +294,16 @@ class MenuItem extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
-            ->url(route('menu.show', $context->routeKey()))
-            ->preview(FeedImage::make(
-                src: route('menu.photo', $context->routeKey()),
-                mediaType: $context->data('mediaType'),
-                width: $context->data('width'),
-                height: $context->data('height'),
-                alt: $context->label(),
-            ))
+        static::feedMediaUsing(
+            fn (FeedContext $context, FeedMedia $media) => $media
+                ->url(route('menu.show', $context->routeKey()))
+                ->preview(FeedImage::make(
+                    src: route('menu.photo', $context->routeKey()),
+                    mediaType: $context->data('mediaType'),
+                    width: $context->data('width'),
+                    height: $context->data('height'),
+                    alt: $context->label(),
+                )),
         );
     }
 
@@ -354,9 +356,10 @@ class Photo extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
-            ->url(route('photos.show', $context->routeKey()))
-            ->modal()
+        static::feedMediaUsing(
+            fn (FeedContext $context, FeedMedia $media) => $media
+                ->url(route('photos.show', $context->routeKey()))
+                ->modal(),
         );
     }
 }
@@ -379,10 +382,12 @@ class Photo extends Model implements Feedable
 
     protected static function booted(): void
     {
-        static::feedMediaUsing(fn (FeedContext $context) => FeedMedia::make(
-            url: route('photos.show', $context->routeKey()),
-            modal: true,
-        ));
+        static::feedMediaUsing(
+            fn (FeedContext $context) => FeedMedia::make(
+                url: route('photos.show', $context->routeKey()),
+                modal: true,
+            ),
+        );
     }
 }
 ```
@@ -486,12 +491,14 @@ use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
 Storyfeed::feedable(Media::class)
-    ->toFeedUsing(fn (Media $photo, FeedEntity $entity) => $entity
-        ->label($photo->name)
-        ->data(['mediaType' => $photo->mime_type])
+    ->toFeedUsing(
+        fn (Media $photo, FeedEntity $entity) => $entity
+            ->label($photo->name)
+            ->data(['mediaType' => $photo->mime_type]),
     )
-    ->feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => $media
-        ->url(route('photos.show', $context->routeKey()))
+    ->feedMediaUsing(
+        fn (FeedContext $context, FeedMedia $media) => $media
+            ->url(route('photos.show', $context->routeKey())),
     );
 ```
 

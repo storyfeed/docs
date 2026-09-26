@@ -98,10 +98,12 @@ single task type:
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('complete')->grouped(fn (GroupBuilder $group) => $group->composite(
-    ':actor completed :count tasks', // the group
-    ':actor completed tasks',        // the activity itself; required
-));
+Story::verb('complete')->grouped(
+    fn (GroupBuilder $group) => $group->composite(
+        ':actor completed :count tasks', // the group
+        ':actor completed tasks',        // the activity itself; required
+    ),
+);
 ```
 
 <FeedExample :items="[authored]" />
