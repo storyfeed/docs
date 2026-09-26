@@ -140,28 +140,10 @@ keeps the latest row of each verb.
 
 When the transition already has a domain event, publish from the event:
 
-```php memo="app/Events/OrderConfirmed.php"
-<?php
-
-namespace App\Events;
-
-use App\Models\Order;
-use App\Models\User;
-use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\PendingActivity;
-
-class OrderConfirmed implements PublishesToFeed
-{
-    public function __construct(public Order $order, public User $staff) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        return Storyfeed::activity()
-            ->by($this->staff)
-            ->action('confirm', $this->order);
-    }
-}
+```php memo="app/Events/OrderConfirmed.php" at="toFeedActivity()"
+return Storyfeed::activity()
+    ->by($this->staff)
+    ->action('confirm', $this->order);
 ```
 
 See [Publishing from Events](/deeper/events).
