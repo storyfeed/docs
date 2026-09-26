@@ -103,10 +103,17 @@ To render a feed with Blade components styled using Tailwind CSS v4, install
 composer require storyfeed/ui
 ```
 
-Add the package's views to `resources/css/app.css`:
+Install Tailwind's Typography plugin:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Register the plugin and the package's views in `resources/css/app.css`:
 
 ```css
 @source "../../vendor/storyfeed/ui/resources/views";
+@plugin "@tailwindcss/typography";
 ```
 
 Run `npm run build` to compile your application's CSS. See
