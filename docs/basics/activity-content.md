@@ -23,7 +23,7 @@ const quoted = everything().findLast(node => node.object?.body?.some(body => bod
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withFile = { ...content.photo, object: { ...content.photo.object,
   body: [{ $body: 'Storyfeed/Body/File', $v: 1,
-    name: content.photo.object.label, size: 512, mediaType: 'image/svg+xml' }] } }
+    name: content.photo.object.label, size: 137767, mediaType: 'image/jpeg' }] } }
 </script>
 
 ## Introduction
@@ -225,12 +225,15 @@ text is complete.
 
 ### File Details
 
-Use `File` to include a photo's file details:
+Use `File` in a `Photo` model's `toFeed` method to include the photo's file details:
 
 ::: code-group
 
-```php [Fluent Syntax]
-FeedEntity::make()
+```php [Fluent Syntax] memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\File;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
     ->label($this->name)
     ->body( // [!code highlight]
         File::make()
@@ -240,8 +243,11 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
-FeedEntity::make(
+```php [Named Arguments] memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\File;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
     label: $this->name,
     body: File::make( // [!code highlight]
         size: $this->bytes,
@@ -286,9 +292,7 @@ FeedEntity::make()
             )
             ->items([$this->lines->get(2)->item->name])
             ->totalItems($this->lines->count())
-            ->more(
-                FeedLink::make("Order #{$this->reference}", $this->url),
-            ),
+            ->more(FeedLink::make("Order #{$this->reference}", $this->url)),
     );
 ```
 
@@ -342,9 +346,7 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(
-                FeedLink::make($this->title, $this->url), // [!code highlight]
-            )
+            ->subject(FeedLink::make($this->title, $this->url)) // [!code highlight]
             ->content($this->description),
     );
 ```
@@ -382,9 +384,7 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(
-                FeedLink::make($this->guide_title, $this->guide_url), // [!code highlight]
-            )
+            ->subject(FeedLink::make($this->guide_title, $this->guide_url)) // [!code highlight]
             ->content($this->description),
     );
 ```

@@ -29,6 +29,13 @@ const linkComponent = inject(FEED_LINK, 'a')
         class="sf-media"
         :style="image.width && image.height ? { aspectRatio: `${image.width} / ${image.height}` } : undefined"
     >
-        <img :src="image.src" :alt="image.alt ?? ''" loading="lazy" />
+        <!-- Load documentation previews before scrolling or printing the page. -->
+        <img
+            :src="image.src"
+            :alt="image.alt ?? ''"
+            :width="image.width"
+            :height="image.height"
+            loading="eager"
+        />
     </component>
 </template>

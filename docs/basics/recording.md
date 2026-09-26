@@ -56,6 +56,8 @@ role as a named argument.
 Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.
 
+These roles come from [W3C Activity Streams 2.0](/deeper/activity-streams).
+
 <a id="reading-as-a-sentence"></a>
 
 ### Role Aliases
@@ -71,7 +73,7 @@ The `verb` method sets the verb. You may also use these aliases:
 | `->resulting()` | `result` | the entity produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | the entity the action was directed at |
 
-Aliases assign the same values as the corresponding role methods.
+These aliases let you compose activities expressively, like a natural-language sentence.
 
 <a id="the-actor"></a>
 
@@ -104,9 +106,13 @@ Storyfeed::record(
 If you do not call the `by` method, Storyfeed will record the currently
 authenticated user as the actor.
 
+If no user is signed in and you do not call `by`, the activity has no actor.
+An activity with no recorded actor is an [anonymous activity](/deeper/parties#recording-anonymous-activities):
+who performed it is not known.
+
 ## Adding Activity Data
 
-Use the `data` method to store additional values on an activity. Storyfeed
+Use the `data` method to store arbitrary values on an activity. Storyfeed
 returns them in the activity's `data` field:
 
 ::: code-group
