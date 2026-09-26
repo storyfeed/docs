@@ -10,6 +10,9 @@ const menu = logOf(rows.filter(node => ['publish', 'reprice'].includes(node.verb
   .map(node => node.verb === 'reprice' ? { ...node, object: { ...node.object, body: null } } : node))
 const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
   ['place', 'confirm', 'ready'].includes(node.verb) && node.object?.id === scene.order.object.id))
+// One order, linked on the kitchen's feed and unlinked on a feed with no name.
+const linked = [scene.order]
+const unlinked = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
 </script>
 
 ## Introduction
@@ -216,20 +219,27 @@ Storyfeed::feeds([
 
 ### Linking Per Feed
 
-A model's link resolver receives the name of the feed being read, so an order
-can open its ticket on the kitchen's board and its status page on the
-customer's:
+A model's [link resolver](/basics/feedable-models#the-link) may call
+`$context->feed()` for the name the feed was registered under, so an order can
+open its ticket on the kitchen's board, its status page on the customer's, and
+nothing elsewhere:
 
 ```php memo="app/Models/Order.php" at="booted()"
 static::feedMediaUsing(fn ($context) => match ($context->feed()) {
     'kitchen' => route('kitchen.ticket', $context->routeKey()),
     'customer' => route('orders.status', $context->routeKey()),
+    // an ad-hoc feed reports no name; without this arm the match throws
     default => null,
 });
 ```
 
-[Links for Named Feeds](/basics/feedable-models#a-link-per-feed) covers this in
-full.
+On the `kitchen` feed:
+
+<FeedExample :items="linked" />
+
+On a feed with no name:
+
+<FeedExample :items="unlinked" />
 
 <a id="checking-that-every-verb-has-an-audience"></a>
 

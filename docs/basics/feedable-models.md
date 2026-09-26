@@ -269,44 +269,8 @@ The URL is built on every read, so a changed route never leaves a stale link.
 
 <a id="a-link-per-feed"></a>
 
-### Links for Named Feeds
-
-`$context->feed()` is the name the feed was
-[registered](/basics/named-feeds) under, so one snapshot can link somewhere
-different on each surface, or nowhere:
-
-```php memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(fn ($context) => match ($context->feed()) {
-            'shop' => route('shop.ticket', $context->routeKey()),
-            'customer' => route('orders.status', $context->routeKey()),
-            // an ad-hoc feed reports no name; without this arm the match throws
-            default => null,
-        });
-    }
-}
-```
-
-On the `shop` feed:
-
-<FeedExample :items="withLink" />
-
-On a feed with no name:
-
-<FeedExample :items="withSnapshot" />
+A resolver may also link somewhere different on each
+[named feed](/basics/named-feeds#linking-each-feed-somewhere-different).
 
 ### Images
 
