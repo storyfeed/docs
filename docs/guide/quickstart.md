@@ -12,9 +12,9 @@ const order = { ...scene.order, glyph: null, glyph_intent: null,
 
 ## Introduction
 
-Recording an activity takes three things: models that say how they read in a
-feed, a headline for the verb, and one call where the fact happens. The example
-is a customer placing an order with a shop.
+To record an activity, prepare the models, define a headline, and publish the
+activity from your application. This example records a customer placing an
+order with a shop.
 
 <a id="making-the-models-feedable"></a>
 
@@ -22,7 +22,8 @@ is a customer placing an order with a shop.
 
 [Install Storyfeed](/guide/installation) before defining your models and headline.
 
-A model that appears in the feed says how it should read:
+To include the `Order` model in an activity, implement the `Feedable` interface
+and use the `InteractsWithFeed` trait. Define its label in the `toFeed` method:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Models/Order.php"
@@ -70,13 +71,16 @@ class Order extends Model implements Feedable
 ```
 :::
 
-`Shop` and `User` implement `Feedable` and use `InteractsWithFeed` too. Without a `toFeed()` method, each gets a [guessed label](/basics/feedable-models#default-labels), such as its `name` attribute.
+For the `Shop` and `User` models, implement `Feedable` and use
+`InteractsWithFeed` as well. If you omit the `toFeed` method, Storyfeed generates
+a [default label](/basics/feedable-models#default-labels) from the model's
+attributes, such as `name`.
 
 <a id="giving-the-verb-a-headline"></a>
 
 ## Defining a Headline
 
-The installer created `routes/feed.php`. Add the headline there:
+Define a headline for the `place` verb in `routes/feed.php`:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -88,18 +92,19 @@ Story::for(Order::class)->verb('place')
 
 ## Publishing an Activity
 
+Publish the activity where your application places the order:
+
 ::: code-group
 <<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
 <<< @/snippets/publish.named-arguments.php {php memo="Where the order is placed: a controller, an action, a listener"} [Named Arguments]
 :::
 
-On the feed:
-
 <FeedExample :items="[order]" />
 
 ## Reading the Feed
 
-Return the feed from a route:
+To retrieve a page of activities, call the `feed` method on the `Storyfeed`
+facade, followed by the `get` method. You may return the result from a route:
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -112,7 +117,7 @@ Route::get('/', function () {
 
 <a id="displaying-the-payload"></a>
 
-The response looks like this:
+The route returns a JSON payload:
 
 <FeedExample payload :items="[order]" />
 
@@ -123,5 +128,4 @@ The response looks like this:
 ::: headless
 :::
 
-[Rendering](/basics/rendering) covers turning the payload into a feed, with a
-Vue example.
+See [Rendering](/basics/rendering) to display the feed with Blade or Vue.
