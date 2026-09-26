@@ -6,38 +6,6 @@ import { scene } from '../.vitepress/theme/world'
 
 ## Publishing From an Event
 
-A controller that publishes its own activity handles the payment and the feed
-itself:
-
-```php memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::activity()
-            ->by('Stripe')
-            ->action('pay', $order)
-            ->publish();
-
-        return response()->noContent();
-    }
-}
-```
-
 In an event-driven app, the controller only reports what happened. It
 dispatches an event:
 
@@ -65,21 +33,14 @@ class StripeWebhookController extends Controller
 }
 ```
 
-The event describes the activity, and returns it without calling `publish()`:
+To publish an activity when an event is dispatched, implement the
+`Storyfeed\Contracts\PublishesToFeed` interface on the event class. The
+interface requires a `toFeedActivity` method, which returns the activity to
+publish:
 
 <<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
 
-Storyfeed publishes it for you. It listens for every event that implements
-`PublishesToFeed`, and when one is dispatched, it calls `toFeedActivity()` and
-publishes the activity it returns. There is no listener to register.
-
-> [!WARNING]
-> Never call `publish()` on the activity yourself, in the event or in a
-> listener. Storyfeed already publishes it when the event is dispatched, so the
-> payment would be recorded twice.
-
-The payment itself is a side effect, so it moves to a listener, as any other
-consequence of the event would:
+The event's listeners handle its side effects, such as marking the order paid:
 
 ```php memo="app/Listeners/MarkOrderPaid.php"
 <?php
@@ -93,13 +54,21 @@ class MarkOrderPaid
     public function handle(OrderPaid $event): void
     {
         $event->order->update(['paid_at' => now()]);
+
+        // No publish() here: Storyfeed publishes the event's activity itself.
     }
 }
 ```
 
-Both publish the same activity:
+Storyfeed publishes the activity automatically. It listens for every event that
+implements `PublishesToFeed`, and when one is dispatched, it calls
+`toFeedActivity` and publishes the activity it returns:
 
 <FeedExample :items="[scene.basics.recording.paid]" />
+
+> [!WARNING]
+> Never call `publish()` on the event's activity yourself. Storyfeed already
+> publishes it, so the activity would be recorded twice.
 
 ### Skipping Publication
 
