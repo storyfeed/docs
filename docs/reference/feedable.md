@@ -430,6 +430,7 @@ applied to the activity's `data`. Keys support dot notation.
 
 | Method | Returns or behaviour |
 |---|---|
+| `get($key, $default = null)` | one value, or the default, as on Laravel's `Fluent` |
 | `all($keys = null)` | all data, or selected keys; missing selected keys have `null` values |
 | `boolean($key = null, $default = false)` | a boolean |
 | `string($key, $default = null)` | an `Illuminate\Support\Stringable` |
