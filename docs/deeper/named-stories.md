@@ -2,11 +2,11 @@
 
 ## Introduction
 
-A named story gives a declaration a handle you can use when publishing.
-The name selects the verb and checks the object's type, so a misspelt name or
-an object of the wrong type throws instead of recording an activity, and
-[static analysis](#checking-names-with-static-analysis) can check the names
-in your code.
+A named story lets you publish using a registered declaration name. The name
+selects the verb and checks the object's type, so a misspelling or wrong object
+type throws an exception before an activity is recorded.
+[Static analysis](#checking-names-with-static-analysis) can also check these
+names in your code.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -42,18 +42,18 @@ story('order.place', $order) // [!code highlight]
 
 <FeedExample :items="[placed]" />
 
-`story()` takes a name, just as Laravel's `route()` does.
-`Storyfeed::route('order.place', $order)` is its facade equivalent, as
-`URL::route()` is for `route()`.
+The `story` helper accepts a name, like Laravel's `route` helper.
+You may also use `Storyfeed::route('order.place', $order)`, as you would use
+Laravel's `URL::route()`.
 
-An unknown name throws `Story [x] not defined.` A supplied object of another
-morph type throws `StoryObjectMismatch`. Neither call treats its first argument
-as an unnamed verb. Publish unnamed verbs with `Storyfeed::activity()` or an
-enum's `Act::Place->of($order)`.
+An unknown name throws `Story [x] not defined.` An object with the wrong morph
+type throws `StoryObjectMismatch`. Both methods require a registered name.
+To publish an unnamed verb, use `Storyfeed::activity()` or an enum's
+`Act::Place->of($order)`.
 
-A declaration bound to a Story constructed with data still requires
-`Storyfeed::publish(new OrderWasPlaced(...))`; giving it a name does not bypass
-`toFeedActivity()`.
+A Story that requires constructor data must still be published with
+`Storyfeed::publish(new OrderWasPlaced(...))`. Naming its declaration does not
+bypass the `toFeedActivity` method.
 
 ## Story Groups
 
@@ -78,8 +78,8 @@ Story::as('billing.')->group(function () {
 This is an alternative to the preceding declaration. The prefix is appended
 exactly as written, including the dot, producing `billing.place`.
 
-`Story::name()` is an alias for `Story::as()`, as `Route::as()` / `Route::name()`
-are in Laravel. An individual declaration keeps `->name()` to set its name.
+The `Story::name` method is an alias for `Story::as`, following Laravel's
+`Route::name` and `Route::as` methods. Use `->name()` on an individual declaration.
 
 <a id="chaining-group-attributes"></a>
 
@@ -100,11 +100,9 @@ Story::middleware('batch:5 minutes')->as('billing.')->for(Order::class)
 
 <FeedExample :items="[placed]" />
 
-This alternative declaration names the story `billing.place` and gives it a
-five-minute batch window. The attributes chain in any order, as
-`Route::middleware()->as()->group()` does in Laravel. `for()`, `middleware()`,
-`withoutMiddleware()`, `as()` / `name()` and the role constraints can each
-follow any of the others.
+This alternative names the story `billing.place` and sets a five-minute batch
+window. As with `Route::middleware()->as()->group()`, you may chain `for`,
+`middleware`, `withoutMiddleware`, `as` / `name`, and role constraints in any order.
 
 For one declaration, omit `group()`:
 
@@ -153,10 +151,10 @@ actor and removes the inherited five-minute batch middleware. The built-in
 
 | Attribute | Nested Behaviour |
 |---|---|
-| name prefix | concatenates outer and inner prefixes exactly as written |
+| name prefix | joins outer and inner prefixes exactly as written |
 | middleware and exclusions | append to the enclosing group's lists |
-| role constraints | the inner constraint replaces the outer one for that role; a verb's own constraint wins over its groups |
-| object type | one `for()` scope; nesting another throws |
+| role constraints | the inner constraint replaces the outer one for that role; a verb's constraint takes precedence over its groups |
+| object type | one `for()` scope; nesting another throws an exception |
 
 [Constraining Roles](/deeper/constraining-roles) covers the allowed role types.
 
@@ -172,9 +170,8 @@ use Storyfeed\Facades\Story;
 Story::resource(Order::class, OrderStory::class);
 ```
 
-With `Order` mapped to the morph alias `order`, every resource verb receives
-`order.{verb}` as its name. Resource names are singular: the morph alias exactly
-as written.
+With `Order` mapped to the morph alias `order`, resource verbs receive names
+such as `order.create`. The prefix uses the morph alias exactly as written.
 
 | Resource Verb | Default Name |
 |---|---|
@@ -182,17 +179,16 @@ as written.
 | `update` | `order.update` |
 | `confirm` declared by `OrderStory::confirm()` | `order.confirm` |
 
-`names()` overrides them; each row below is an alternative suffix on the
-resource declaration.
+Use the `names` method to override these names. Each example below is an
+alternative option on the resource declaration:
 
 | Suffix | Result |
 |---|---|
 | `->names('checkout')` | `checkout.create`, `checkout.update`, and the other verbs under `checkout` |
 | `->names(['confirm' => 'checkout.confirm'])` | only `confirm` is renamed |
 
-A verb declared individually is unnamed until it receives `->name()`. That
-also applies when the declaration binds a single-verb class or a Story
-constructed with data.
+Individually declared verbs have no name until you call `->name()`, including
+verbs registered with a single-verb class or a Story that accepts constructor data.
 
 ## Inspecting Story Names
 
@@ -202,8 +198,8 @@ constructed with data.
 php artisan storyfeed:list --name=order.
 ```
 
-`--name` filters names containing the supplied text. The listing includes the
-name beside its declaration; `--json` includes it too.
+The `--name` option filters names containing the supplied text. Both text and
+JSON output include each definition's name.
 
 <a id="inspecting-names"></a>
 
@@ -222,17 +218,18 @@ $activity->storyIs('checkout.*');  // false
 exists. `storyIs()` accepts several patterns and matches if any one matches.
 These correspond to Laravel's `Route::has()` and `routeIs()`.
 
-Names are not stored with activities. `storyName()` looks up the name from the
-activity's object type and verb in the current definitions. An activity whose
-declaration has no name returns `null`, and `storyIs()` returns `false` for it.
+Story names are resolved from current definitions rather than stored with
+activities. The `storyName` method looks up the activity's object type and verb.
+If its declaration is unnamed, `storyName` returns `null` and `storyIs` returns
+`false`.
 
 <a id="checking-names-during-deployment"></a>
 
 ## Caching Named Stories
 
-Duplicate names fail [`storyfeed:cache`](/basics/the-feed-file#caching-definitions),
-naming both declarations, as duplicate route names fail `route:cache`. At
-runtime, a duplicate name resolves to the last declaration.
+Duplicate names cause [`storyfeed:cache`](/basics/the-feed-file#caching-definitions)
+to fail with both declaration locations, as they do for Laravel's `route:cache`.
+At runtime, the last declaration with that name is used.
 
 <a id="checking-names-with-phpstan"></a>
 
@@ -249,5 +246,6 @@ automatically. The rule checks literal names in `story()`, `Storyfeed::route()`
 and `Story::has()` against the application's loaded definitions. Larastan must
 boot the application so those names are available.
 
-An undefined literal reports `storyfeed.storyName`. A name calculated at
-runtime is not checked; the runtime lookup still throws if it is undefined.
+An undefined literal name reports `storyfeed.storyName`. Names calculated at
+runtime are skipped by static analysis, but still throw an exception if the
+runtime lookup finds no matching declaration.
