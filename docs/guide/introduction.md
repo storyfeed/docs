@@ -1,9 +1,9 @@
 # Introduction
 
-Storyfeed is an implementation of the activity feed pattern in Laravel.
-Activities are recorded explicitly, displayed as a live feed, a summary or
-a log, and serialized following
-[W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/).
+Storyfeed provides activity feeds for Laravel. You explicitly record activities
+and display them as a live feed, a summary, or a log. Storyfeed also serializes
+activities as [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
+documents.
 
 <script setup>
 // Node-shaped examples: the same shape `Storyfeed::feed()->get()` returns, so the
@@ -31,12 +31,13 @@ const worldSummary = summaryOf(scene.glance)
 
 ## Activities
 
-An activity is a recorded fact, shaped like a sentence with named roles:
+An activity records an action and the entities involved. Each entity has a role:
 
 <FeedExample :items="[scene.order]" />
 
-The **actor** is who did it. The **verb** is what happened. The **object** is
-what it was done to, and the **target** is what it was aimed at.
+The **actor** performs the action. The **verb** identifies the action. The
+**object** is the entity acted on, and the **target** is the entity the action
+is directed at.
 
 > **{{ role.customer.label }}** *(actor)* **placed** *(verb)* **{{ scene.order.object.label }}** *(object)*
 > with **{{ role.shop.label }}** *(target)*
@@ -45,8 +46,8 @@ what it was done to, and the **target** is what it was aimed at.
 
 ### Different Headlines for the Same Activity
 
-Your app chooses the headline; the fact stays the same. In each of these, the
-verb is still `place`. Only the headline's wording changes.
+You may change an activity's headline without changing its recorded verb or
+roles. Each example below uses the `place` verb:
 
 <FeedExample :items="[sameFact[0]]">
 
@@ -93,7 +94,9 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(headli
 
 ## Recording Activities
 
-After [installing Storyfeed](/guide/installation), and with the models and headline from the [Quickstart](/guide/quickstart) in place, record an activity where the order is placed:
+After [installing Storyfeed](/guide/installation) and completing the
+[Quickstart](/guide/quickstart), publish an activity where your application
+places the order:
 
 ::: code-group
 <<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
@@ -106,12 +109,13 @@ After [installing Storyfeed](/guide/installation), and with the models and headl
 
 ## Displaying Feeds
 
-The same recorded activities display three ways. [Reading Feeds](/basics/reading) shows how to choose one.
+You may display the same activities in three modes. See
+[Reading Feeds](/basics/reading) to select a mode.
 
 ### Live
 
-The familiar feed, and the default. Repeats fold into one row, and so do
-several people doing the same thing at one place.
+Live mode is the default. It groups repeated actions and activities from
+several actors with the same target into single rows.
 
 <FeedExample :items="worldLive" days height="420" />
 
@@ -120,7 +124,8 @@ several people doing the same thing at one place.
 
 ### Summary
 
-A digest: one row per person per day, saying everything they did.
+Summary mode groups activities by actor and day, with one phrase per verb.
+Actors with the same single activity may share a row.
 
 <FeedExample :items="worldSummary" days height="420" />
 
@@ -129,6 +134,6 @@ A digest: one row per person per day, saying everything they did.
 
 ### Log
 
-The timeline: every activity, one row each.
+Log mode displays each activity in a separate row.
 
 <FeedExample :items="worldLog" days height="420" />
