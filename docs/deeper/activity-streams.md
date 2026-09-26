@@ -4,8 +4,7 @@
 
 Storyfeed can serve each activity as a
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
-document, with all seven [roles](/basics/recording#roles) under their AS2
-names.
+document, using AS2 names for all seven [roles](/basics/recording#roles).
 
 The Activity Streams document is separate from the normal
 [feed payload](/basics/the-payload).
@@ -14,7 +13,7 @@ The Activity Streams document is separate from the normal
 
 ### Enabling the Route
 
-The read-only route is off by default. Enable it in the configuration:
+Enable the read-only route in `config/storyfeed.php`:
 
 ```php memo="config/storyfeed.php"
 'routes' => [
@@ -26,23 +25,23 @@ The read-only route is off by default. Enable it in the configuration:
 
 ### Route Middleware and Identifiers
 
-| Route | Serves |
+| Route | Returns |
 |---|---|
-| `GET /{prefix}/activities/{uid}` | a single `Activity` document, addressed by its ULID |
+| `GET /{prefix}/activities/{uid}` | one `Activity` document, identified by its ULID |
 
-Add auth or throttling through `middleware`.
+Add authentication or throttling to `middleware`.
 
 > [!WARNING]
-> The prefix is part of every activity's id, so changing it changes them all.
-> Choose it before you share any documents.
+> The prefix is part of every activity's ID. Choose it before sharing
+> documents, since changing it changes all their IDs.
 
 <a id="serving-a-collection"></a>
 
 ## Serving Collections
 
-`CollectionSerializer::collection()` turns a cursor-paginated page of
-activities into an `OrderedCollection`, or an `OrderedCollectionPage` with a
-`next` link. Your application chooses which activities, and serves the route:
+Use `CollectionSerializer::collection()` to convert cursor-paginated
+activities into an `OrderedCollection` or an `OrderedCollectionPage` with a
+`next` link. Your application selects the activities and serves the route:
 
 ```php memo="A controller that serves the collection"
 use Storyfeed\Models\Activity;
@@ -59,8 +58,8 @@ $document = app(CollectionSerializer::class)
     ->collection($page, route('projects.activity', $project), $request->query('cursor'));
 ```
 
-The second argument is the absolute URL your application serves the
-collection at; the third is the incoming cursor, or `null` for the first page.
+Pass the collection's absolute URL as the second argument and the incoming
+cursor as the third. Use `null` for the first page.
 
 ## Activity Streams Fields
 
@@ -81,7 +80,7 @@ collection at; the third is the incoming cursor, or `null` for the first page.
 
 ### Verb Mappings
 
-A verb enum can map each verb to an Activity Streams type:
+Map verbs to Activity Streams types in your verb enum:
 
 ```php memo="app/Enums/OrderActivity.php"
 <?php
@@ -111,20 +110,19 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-- The mapping only sets the document's `type`.
-- A verb with neither an app mapping nor a built-in AS2 mapping serializes
-  as `"type": "Activity"`, with the verb in `sf:verb`, which the documents'
-  JSON-LD context, `https://ns.storyfeed.dev`, defines. An intransitive type
-  also falls back to `Activity` when the activity has an object.
+- The mapping sets only the document's `type`.
+- Without an app or built-in AS2 mapping, the type is `Activity` and `sf:verb`
+  holds the verb. The document's JSON-LD context, `https://ns.storyfeed.dev`,
+  defines `sf:verb`. Intransitive types also fall back to `Activity` when an
+  object is present.
 - Composite objects serialize as `OrderedCollection`.
-- An entity's [media](/reference/payload#entity-media) serializes as AS2
-  `Link` objects under `icon`, `image` and `preview`. While serializing,
-  `$context->feed()` in `feedMedia()` is `null`.
+- Entity [media](/reference/payload#entity-media) serialize as AS2 `Link`
+  objects under `icon`, `image`, and `preview`. During serialization,
+  `$context->feed()` in `feedMedia()` returns `null`.
 
 ### Type Overrides
 
-On a Story class, import `Storyfeed\ActivityStreams\ActivityType` and set
-its type property:
+On a Story class, import `Storyfeed\ActivityStreams\ActivityType` and set `$type`:
 
 ```php memo="app/Stories/OrderWasPlaced.php"
 public ActivityType|string|null $type = ActivityType::Create;
@@ -134,6 +132,6 @@ On a model, implement `Storyfeed\Contracts\HasActivityStreamsType`.
 
 ## Reading Activity Documents
 
-`Storyfeed\Serialization\Reader::activity()` reads a Storyfeed document back: the `uid`, verb, `type`,
-roles, and `published_at` to the whole second. It drops `summary` and
-`replies`.
+`Storyfeed\Serialization\Reader::activity()` parses a Storyfeed document,
+preserving its `uid`, verb, `type`, roles, and `published_at` to the whole
+second. It discards `summary` and `replies`.
