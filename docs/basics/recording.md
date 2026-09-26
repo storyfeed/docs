@@ -4,7 +4,9 @@
 import { scene, group } from '../.vitepress/theme/world'
 
 const paid = scene.basics.recording.paid
-const priced = { ...scene.basics.recording.priced, data: { from: 275, to: 295 } }
+// A price change draws no card: the item's details would show today's price, not the change.
+const recorded = scene.basics.recording.priced
+const priced = { ...recorded, object: { ...recorded.object, body: null }, data: { from: 275, to: 295 } }
 // The same change, imported with a date from long ago.
 const backdated = { ...priced, published_at: scene.distant.published_at }
 // The same catalogue photos, recorded together in one request instead of separately.

@@ -5,7 +5,9 @@ import { scene, role, logOf, liveOf } from '../.vitepress/theme/world'
 
 const rows = scene.basics.namedFeeds.shop
 const kitchen = liveOf(rows.filter(node => ['place', 'confirm', 'ready'].includes(node.verb)))
-const menu = logOf(rows.filter(node => ['publish', 'reprice'].includes(node.verb)))
+// A price change draws no card: the item's details would show today's price, not the change.
+const menu = logOf(rows.filter(node => ['publish', 'reprice'].includes(node.verb))
+  .map(node => node.verb === 'reprice' ? { ...node, object: { ...node.object, body: null } } : node))
 const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
   ['place', 'confirm', 'ready'].includes(node.verb) && node.object?.id === scene.order.object.id))
 </script>
