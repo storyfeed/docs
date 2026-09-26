@@ -1,4 +1,9 @@
 import { defineConfig } from 'vitepress'
+
+// R&D pages (docs/rnd/) are proposals written as if shipped, for review before
+// any code exists. They show only on the local dev server: gitignored, left out
+// of every build, and absent from the sidebar the llms script reads.
+const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
@@ -18,7 +23,7 @@ export default defineConfig({
   // briefs sit inside the source root, so without this a committed one becomes
   // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
   // convention somebody can defeat with `git add -f`.
-  srcExclude: ['briefs/**'],
+  srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
 
   markdown: {
     config(md) {
@@ -155,6 +160,9 @@ export default defineConfig({
     // the documentation before deciding to trust it. Every entry resolves —
     // planned-but-unwritten pages live in IA.md, never here.
     sidebar: [
+      ...(rnd ? [{ text: 'R&D (local only)', items: [
+        { text: 'Body Versions', link: '/rnd/body-versions' },
+      ] }] : []),
       {
         // Laravel's order: set up, get it working, then see what it can do.
         text: 'Getting Started',
