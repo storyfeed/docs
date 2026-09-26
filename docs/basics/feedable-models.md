@@ -49,7 +49,7 @@ use Storyfeed\Contracts\Feedable;
 
 class Order extends Model implements Feedable
 {
-    use InteractsWithFeed; // [!code highlight]
+    use InteractsWithFeed;
 }
 ```
 
@@ -147,7 +147,7 @@ define its static `feedMedia` method:
 use Storyfeed\FeedContext;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia // [!code highlight]
+public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()->url(route('orders.show', $context->routeKey()));
 }
@@ -166,7 +166,7 @@ the model's `booted` method:
 use Storyfeed\FeedContext;
 
 static::feedMediaUsing(
-    fn (FeedContext $context) => route('orders.show', $context->routeKey()), // [!code highlight]
+    fn (FeedContext $context) => route('orders.show', $context->routeKey()),
 );
 ```
 

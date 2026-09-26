@@ -139,14 +139,14 @@ namespace App\Stories;
 
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Bus\Queueable; // [!code highlight]
-use Illuminate\Contracts\Queue\ShouldQueue; // [!code highlight]
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Storyfeed\PendingActivity;
 use Storyfeed\Stories\Story;
 
 class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
 {
-    use Queueable; // [!code highlight]
+    use Queueable;
 
     // ...
 }

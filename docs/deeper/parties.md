@@ -236,7 +236,7 @@ to the `by` method:
 
 ```php
 Storyfeed::activity()
-    ->by(null) // [!code highlight]
+    ->by(null)
     ->action('place', $order)
     ->to($shop)
     ->publish();

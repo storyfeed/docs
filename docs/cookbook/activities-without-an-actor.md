@@ -125,7 +125,7 @@ It records the same activity as the controller above.
 ::: code-group
 ```php [Fluent Syntax]
 Storyfeed::activity()
-    ->by('Stripe') // [!code highlight]
+    ->by('Stripe')
     ->action('pay', $order)
     ->publish();
 ```
@@ -134,7 +134,7 @@ Storyfeed::activity()
 Storyfeed::record(
     verb: 'pay',
     object: $order,
-    actor: 'Stripe', // [!code highlight]
+    actor: 'Stripe',
 );
 ```
 :::
@@ -154,7 +154,7 @@ This scheduled command expires unpaid orders without recording an actor.
 Call `Storyfeed::anonymous()` to make that choice explicit:
 
 ```php
-Storyfeed::anonymous() // no actor, even inside Storyfeed::actor() [!code highlight]
+Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
     ->action('expire', $order)
     ->to($order->shop)
     ->publish();

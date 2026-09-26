@@ -85,7 +85,7 @@ trait:
 
 ::: code-group
 ```php [Fluent Syntax]
-OrderActivity::Placed->by($request->user()) // [!code highlight]
+OrderActivity::Placed->by($request->user())
     ->object($order)
     ->to($shop)
     ->publish();
@@ -93,7 +93,7 @@ OrderActivity::Placed->by($request->user()) // [!code highlight]
 
 ```php [Named Arguments]
 Storyfeed::record(
-    verb: OrderActivity::Placed, // [!code highlight]
+    verb: OrderActivity::Placed,
     object: $order,
     actor: $request->user(),
     target: $shop,
@@ -119,14 +119,14 @@ Story::for(Order::class)->verb(Act::Confirm)
 
 ::: code-group
 ```php [Fluent Syntax]
-Act::Confirm->by($request->user()) // [!code highlight]
+Act::Confirm->by($request->user())
     ->object($order)
     ->publish();
 ```
 
 ```php [Named Arguments]
 Storyfeed::record(
-    verb: Act::Confirm, // [!code highlight]
+    verb: Act::Confirm,
     object: $order,
     actor: $request->user(),
 );

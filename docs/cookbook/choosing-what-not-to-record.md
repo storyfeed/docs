@@ -27,7 +27,7 @@ For an event implementing `PublishesToFeed`, check whether to publish in
 
 ```php memo="app/Events/OrderPlaced.php" at="toFeedActivity()"
 if ($this->order->status === 'draft') {
-    return null;                                 // not an activity [!code highlight]
+    return null;                                 // not an activity
 }
 
 return Storyfeed::activity()

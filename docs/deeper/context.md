@@ -24,7 +24,7 @@ Storyfeed::activity()
     ->by($request->user())
     ->action('ask', $note)
     ->on($dish)           // target: what the question is about
-    ->context($shop)      // context: the shop the dish belongs to [!code highlight]
+    ->context($shop)      // context: the shop the dish belongs to
     ->publish();
 ```
 
@@ -34,7 +34,7 @@ Storyfeed::record(
     object: $note,
     actor: $request->user(),
     target: $dish,        // what the question is about
-    context: $shop,       // the shop the dish belongs to [!code highlight]
+    context: $shop,       // the shop the dish belongs to
 );
 ```
 :::
@@ -60,7 +60,7 @@ If the target is the container itself, the `target` role is enough:
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
-    ->to($shop) // [!code highlight]
+    ->to($shop)
     ->publish();
 ```
 
@@ -69,7 +69,7 @@ Storyfeed::record(
     verb: 'place',
     object: $order,
     actor: $request->user(),
-    target: $shop, // [!code highlight]
+    target: $shop,
 );
 ```
 :::

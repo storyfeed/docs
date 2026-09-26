@@ -12,14 +12,14 @@ The verb describes what happened; the object identifies what it happened to:
 ```php [Fluent Syntax]
 Storyfeed::activity()
     ->by($request->user())
-    ->action('place', $order)   // not 'order.place' [!code highlight]
+    ->action('place', $order)   // not 'order.place'
     ->to($shop)
     ->publish();
 ```
 
 ```php [Named Arguments]
 Storyfeed::record(
-    verb: 'place',   // not 'order.place' [!code highlight]
+    verb: 'place',   // not 'order.place'
     object: $order,
     actor: $request->user(),
     target: $shop,
@@ -76,14 +76,14 @@ Use `create` for a new menu item:
 ```php [Fluent Syntax]
 $product = MenuItem::create($request->validated());   // a new menu item
 
-Act::Create->by($request->user())->object($product)->publish(); // [!code highlight]
+Act::Create->by($request->user())->object($product)->publish();
 ```
 
 ```php [Named Arguments]
 $product = MenuItem::create($request->validated());   // a new menu item
 
 Storyfeed::record(
-    verb: Act::Create, // [!code highlight]
+    verb: Act::Create,
     object: $product,
     actor: $request->user(),
 );
@@ -96,14 +96,14 @@ Use `add` when putting an existing menu item on a menu:
 ```php [Fluent Syntax]
 $menu->menuItems()->attach($product);   // the menu item already existed
 
-Act::Add->by($request->user())->object($product)->to($menu)->publish(); // [!code highlight]
+Act::Add->by($request->user())->object($product)->to($menu)->publish();
 ```
 
 ```php [Named Arguments]
 $menu->menuItems()->attach($product);   // the menu item already existed
 
 Storyfeed::record(
-    verb: Act::Add, // [!code highlight]
+    verb: Act::Add,
     object: $product,
     actor: $request->user(),
     target: $menu,

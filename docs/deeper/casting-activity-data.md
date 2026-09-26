@@ -22,10 +22,10 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)
     ->verb('place')
     ->headline(':actor placed :object')
-    ->casts([ // [!code highlight]
-        'channel' => Channel::class, // [!code highlight]
-        'promised_at' => 'immutable_datetime', // [!code highlight]
-    ]); // [!code highlight]
+    ->casts([
+        'channel' => Channel::class,
+        'promised_at' => 'immutable_datetime',
+    ]);
 ```
 
 A headline closure's `get` method now returns the cast value:
@@ -40,7 +40,7 @@ Story::for(Order::class)
     ->verb('place')
     ->casts(['channel' => Channel::class])
     ->headline(
-        fn (ActivityContext $activity) => $activity->get('channel') === Channel::Phone // [!code highlight]
+        fn (ActivityContext $activity) => $activity->get('channel') === Channel::Phone
             ? ':actor took :object by phone'
             : ':actor placed :object',
     );
@@ -154,7 +154,7 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)
     ->verb('place')
-    ->casts(['items' => AsCollection::of(LineItem::class)]) // [!code highlight]
+    ->casts(['items' => AsCollection::of(LineItem::class)])
     ->headline(
         fn (ActivityContext $activity) => ':actor placed :object with '
             .$activity->get('items')->sum(fn (LineItem $item) => $item->quantity).' items',
@@ -220,7 +220,7 @@ use App\ValueObjects\Address;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity('ship', $order)
-    ->data(['address' => Address::fromOrder($order)]) // [!code highlight]
+    ->data(['address' => Address::fromOrder($order)])
     ->publish();
 ```
 
