@@ -93,18 +93,20 @@ To choose a headline for each activity, pass a closure that returns a template:
 ```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
-use Storyfeed\Models\Activity;
+use Storyfeed\ActivityContext;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(fn (Activity $activity) => ($activity->data['rush'] ?? false)
+    ->headline(fn (ActivityContext $activity) => $activity->boolean('rush') // [!code highlight]
         ? ':actor rushed :object to :target'
         : ':actor placed :object with :target');
 ```
 
 <FeedExample :items="[rushed, scene.order]" />
 
-The closure runs when Storyfeed retrieves the feed. Returned role tokens are
+The closure receives an [ActivityContext](/reference/feedable#activitycontext),
+which provides typed helpers for the activity’s data and accessors for its roles.
+It runs when Storyfeed retrieves the feed. Returned role tokens are
 rendered as entity labels and links. Text without role tokens is displayed
 unchanged.
 

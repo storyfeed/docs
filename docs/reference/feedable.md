@@ -396,6 +396,73 @@ is `false`. Handle `null` in your resolver.
 | `withCount: ['comments']` | loads relationship counts for all loaded models |
 | `withTrashed: true` | includes soft-deleted records, on models that soft-delete |
 
+## `ActivityContext`
+
+The closures passed to `headline()`, `anonymousHeadline()` and
+`missingHeadline()` receive a `Storyfeed\ActivityContext`. It provides the
+activity's data, verb, publication time and roles. It does not expose the
+`Activity` model. The context is immutable.
+
+### Activity and Roles
+
+| Method | Returns |
+|---|---|
+| `verb()` | the recorded verb as a string |
+| `publishedAt()` | the publication time as a `Carbon\CarbonImmutable`, or `null` |
+| `actor()` | the actor's `FeedContext`, or `null` |
+| `object()` | the object's `FeedContext`, or `null` |
+| `target()` | the target's `FeedContext`, or `null` |
+| `context()` | the context role's `FeedContext`, or `null` |
+| `origin()` | the origin's `FeedContext`, or `null` |
+| `result()` | the result's `FeedContext`, or `null` |
+| `instrument()` | the instrument's `FeedContext`, or `null` |
+
+For example, `$activity->actor()?->label()` returns the actor's cached label.
+An empty role returns `null`. A role whose snapshot is missing still provides
+its recorded type and key, with a `null` label and empty data. Role contexts
+use the same feed name and model hydration as `feedMedia()` contexts.
+
+### Activity Data
+
+`ActivityContext` uses Laravel's `InteractsWithData` trait. It offers the same
+typed helpers as [Laravel's request](https://laravel.com/docs/13.x/requests#retrieving-input),
+applied to the activity's `data`. Keys support dot notation.
+
+| Method | Returns or behaviour |
+|---|---|
+| `all($keys = null)` | all data, or selected keys; missing selected keys have `null` values |
+| `boolean($key = null, $default = false)` | a boolean |
+| `string($key, $default = null)` | an `Illuminate\Support\Stringable` |
+| `str($key, $default = null)` | an alias for `string()` |
+| `integer($key, $default = 0)` | an integer |
+| `float($key, $default = 0.0)` | a float |
+| `date($key, $format = null, $tz = null)` | a Carbon date, or `null` for an empty value; invalid formats may throw |
+| `enum($key, $enumClass, $default = null)` | a backed enum case, or the default |
+| `enums($key, $enumClass)` | an array of valid backed enum cases |
+| `array($key = null)` | data as an array, or selected keys when given an array of keys |
+| `collect($key = null)` | data as a collection, or selected keys when given an array of keys |
+| `exists($key)` | an alias for `has()` |
+| `has($key)` | whether all given keys exist, including values of `null` |
+| `hasAny($keys)` | whether any given key exists |
+| `filled($key)` | whether all given values are non-empty |
+| `isNotFilled($key)` | whether all given values are empty |
+| `anyFilled($keys)` | whether any given value is non-empty |
+| `missing($key)` | whether any given key is absent |
+| `whenHas($key, $callback, $default = null)` | calls the callback when the key exists |
+| `whenFilled($key, $callback, $default = null)` | calls the callback when the value is non-empty |
+| `whenMissing($key, $callback, $default = null)` | calls the callback when the key is absent |
+| `only($keys)` | selected data, omitting absent keys |
+| `except($keys)` | all data except the given keys |
+
+Additional helpers follow the installed Laravel version. Laravel 13 also
+provides `clamp($key, $min, $max, $default = 0)` for a bounded number,
+`interval($key, $unit = null)` for a Carbon interval, and
+`whenEnum($key, $enumClass, $callback, $default = null)` for a valid enum case.
+
+The conditional helpers return the callback's result or the context, using
+Laravel's behaviour. Unknown methods throw an error; the context does not
+support macros or dynamic property access.
+
 ## `FeedLink`
 
 A `FeedLink` contains a label and an `href`. Bodies accept it wherever
@@ -425,6 +492,7 @@ or a signed URL expires. A plain string remains unlinked.
 The label names the thing being linked to; it is not an instruction such as
 “Open the conversation”. See [Links in Bodies](/basics/activity-content#links-in-bodies)
 for examples.
+
 
 ## `FeedMedia`
 
