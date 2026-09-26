@@ -83,59 +83,20 @@ With the trait, record straight from the case. `Storyfeed::record()` takes the
 case as its `verb`, with or without the trait:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Enums\OrderActivity;
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
-    {
-        $order = $shop->orders()->create($request->validated());
-
-        OrderActivity::Placed->by($request->user())
-            ->object($order)
-            ->to($shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Fluent Syntax]
+OrderActivity::Placed->by($request->user()) // [!code highlight]
+    ->object($order)
+    ->to($shop)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Enums\OrderActivity;
-use App\Http\Requests\PlaceOrderRequest;
-use App\Models\Shop;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderController extends Controller
-{
-    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
-    {
-        $order = $shop->orders()->create($request->validated());
-
-        Storyfeed::record(
-            verb: OrderActivity::Placed,
-            object: $order,
-            actor: $request->user(),
-            target: $shop,
-        );
-
-        return to_route('orders.show', $order);
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: OrderActivity::Placed, // [!code highlight]
+    object: $order,
+    actor: $request->user(),
+    target: $shop,
+);
 ```
 :::
 
@@ -156,57 +117,18 @@ Story::for(Order::class)->verb(Act::Confirm)
 ```
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/ConfirmOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Act;
-
-class ConfirmOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['confirmed_at' => now()]);
-
-        Act::Confirm->by($request->user())
-            ->object($order)
-            ->publish();
-
-        return back();
-    }
-}
+```php [Fluent Syntax]
+Act::Confirm->by($request->user()) // [!code highlight]
+    ->object($order)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/ConfirmOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Act;
-use Storyfeed\Facades\Storyfeed;
-
-class ConfirmOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['confirmed_at' => now()]);
-
-        Storyfeed::record(
-            verb: Act::Confirm,
-            object: $order,
-            actor: $request->user(),
-        );
-
-        return back();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: Act::Confirm, // [!code highlight]
+    object: $order,
+    actor: $request->user(),
+);
 ```
 :::
 
