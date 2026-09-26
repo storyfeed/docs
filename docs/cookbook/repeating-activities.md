@@ -1,7 +1,7 @@
 # Repeating Activities
 
-When the same verb happens to the same object again, you can keep every
-occurrence as its own row, or declare `->keepLatest()` on the verb to keep its latest row.
+When a verb repeats on the same object, keep every activity or call
+`keepLatest()` on the verb to keep only the latest.
 
 <script setup>
 import { scene, logOf } from '../.vitepress/theme/world'
@@ -16,9 +16,10 @@ const latest = timeline.filter((row, index) => timeline.findIndex((other) =>
 
 ## Choosing a Storage Policy
 
-The order is placed, confirmed, amended, and placed again. Choose one storage policy for those verbs:
+Suppose an order is placed, confirmed, amended, and placed again. Choose
+whether to keep every activity or the latest for each verb:
 
-| Request | Full Timeline | Latest Row per Verb |
+| Request | Full Timeline | Latest Activity per Verb |
 |---|---|---|
 | first placement | append `placed` | replace `placed` |
 | confirmation | append `confirmed` | replace `confirmed` |
@@ -27,7 +28,8 @@ The order is placed, confirmed, amended, and placed again. Choose one storage po
 
 ### Keeping Every Occurrence
 
-For the full timeline, each transition request runs this with its verb:
+To keep the full timeline, publish the transition's verb in the controller
+on each request:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/OrderTransitionController.php"
@@ -96,7 +98,7 @@ class OrderTransitionController extends Controller
 ```
 :::
 
-The order's page reads the timeline:
+Retrieve the order's timeline in log mode:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="show()"
 use Storyfeed\Facades\Storyfeed;
@@ -108,8 +110,8 @@ $timeline = Storyfeed::feed()->involving($order)->log()->get();
 
 ### Keeping the Latest Occurrence
 
-To keep only the latest occurrence of each verb, declare that policy. The
-controller publishes the same way:
+Call `keepLatest()` on each verb to replace its earlier activities. The
+controller publishes as before; the query below retrieves the feed in live mode:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -132,12 +134,12 @@ $latest = Storyfeed::feed()->involving($order)->live()->get();
 
 <FeedExample :items="latest" />
 
-The feed keeps one row per verb, not one row per order.
+For this order, the feed keeps the latest activity for each verb.
 
-Replaced rows are gone from every feed, including `log()`. If a page needs the
-full timeline, don't replace.
+Replaced activities disappear from every feed, including `log()`. Keep every
+activity if any page needs the full timeline.
 
 <a id="matching-activities"></a>
 
-[Keeping the Latest Activity](/deeper/keeping-the-latest-activity) covers
-which roles make two activities match, and limiting the match to a time window.
+See [Keeping the Latest Activity](/deeper/keeping-the-latest-activity) for
+matching roles and time limits.
