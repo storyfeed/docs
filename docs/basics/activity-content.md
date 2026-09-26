@@ -41,69 +41,33 @@ When the activity is *about* an utterance, the utterance belongs on the
 activity. `->thread()` carries it:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderNoteController.php"
-<?php
+```php [Fluent Syntax]
+$customer = $request->user();
+$note = $order->notes()->create($request->validated());
 
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreNoteRequest;
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
-
-class OrderNoteController extends Controller
-{
-    public function store(StoreNoteRequest $request, Order $order): RedirectResponse
-    {
-        $customer = $request->user();
-        $note = $order->notes()->create($request->validated());
-
-        Storyfeed::activity()
-            ->by($customer)
-            ->action('post', $note)
-            ->on($order)
-            ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
-            ->publish();
-
-        return back();
-    }
-}
+Storyfeed::activity()
+    ->by($customer)
+    ->action('post', $note)
+    ->on($order)
+    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code highlight]
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderNoteController.php"
-<?php
+```php [Named Arguments]
+$customer = $request->user();
+$note = $order->notes()->create($request->validated());
 
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreNoteRequest;
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
-
-class OrderNoteController extends Controller
-{
-    public function store(StoreNoteRequest $request, Order $order): RedirectResponse
-    {
-        $customer = $request->user();
-        $note = $order->notes()->create($request->validated());
-
-        Storyfeed::record(
-            verb: 'post',
-            object: $note,
-            actor: $customer,
-            target: $order,
-            thread: FeedThread::make(
-                text: $note->body,
-                by: $customer->name,
-                kind: 'note',
-            ),
-        );
-
-        return back();
-    }
-}
+Storyfeed::record(
+    verb: 'post',
+    object: $note,
+    actor: $customer,
+    target: $order,
+    thread: FeedThread::make( // [!code highlight]
+        text: $note->body,
+        by: $customer->name,
+        kind: 'note',
+    ),
+);
 ```
 :::
 
@@ -188,63 +152,27 @@ The title names the order, so the body reads on its own wherever it appears.
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\KeyValue;
-use Storyfeed\FeedEntity;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label("Order #{$this->reference}")
-            ->body(KeyValue::make()->title("Order #{$this->reference}")->items([
-                'Pickup' => $this->pickup_at->format('g:i a'),
-                'Items' => $this->items->count(),
-                'Reference' => KeyValue::verbatim($this->reference),
-                'Table' => KeyValue::missingAs($this->table, 'not seated'),
-            ]));
-    }
-}
+```php [Fluent Syntax]
+FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(KeyValue::make()->title("Order #{$this->reference}")->items([ // [!code highlight]
+        'Pickup' => $this->pickup_at->format('g:i a'),
+        'Items' => $this->items->count(),
+        'Reference' => KeyValue::verbatim($this->reference),
+        'Table' => KeyValue::missingAs($this->table, 'not seated'),
+    ]));
 ```
 
-```php [Named Arguments] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\KeyValue;
-use Storyfeed\FeedEntity;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-            body: KeyValue::make(title: "Order #{$this->reference}", items: [
-                'Pickup' => $this->pickup_at->format('g:i a'),
-                'Items' => $this->items->count(),
-                'Reference' => KeyValue::verbatim($this->reference),
-                'Table' => KeyValue::missingAs($this->table, 'not seated'),
-            ]),
-        );
-    }
-}
+```php [Named Arguments]
+FeedEntity::make(
+    label: "Order #{$this->reference}",
+    body: KeyValue::make(title: "Order #{$this->reference}", items: [ // [!code highlight]
+        'Pickup' => $this->pickup_at->format('g:i a'),
+        'Items' => $this->items->count(),
+        'Reference' => KeyValue::verbatim($this->reference),
+        'Table' => KeyValue::missingAs($this->table, 'not seated'),
+    ]),
+);
 ```
 
 :::
@@ -258,62 +186,26 @@ marks a value to reproduce exactly as written, such as a reference number.
 
 ### Passages From a Source
 
-`Excerpt` quotes a passage, and `from` says where it came from:
+An article's `Excerpt` quotes a passage, and `from` says where it came from:
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Article.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class Article extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label($this->title)
-            ->body(Excerpt::make()
-                ->text($this->lede)
-                ->from("Draft for {$this->publication->name}"));
-    }
-}
+```php [Fluent Syntax]
+FeedEntity::make()
+    ->label($this->title)
+    ->body(Excerpt::make() // [!code highlight]
+        ->text($this->lede)
+        ->from("Draft for {$this->publication->name}"));
 ```
 
-```php [Named Arguments] memo="app/Models/Article.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Excerpt;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class Article extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: $this->title,
-            body: Excerpt::make(
-                text: $this->lede,
-                from: "Draft for {$this->publication->name}",
-            ),
-        );
-    }
-}
+```php [Named Arguments]
+FeedEntity::make(
+    label: $this->title,
+    body: Excerpt::make( // [!code highlight]
+        text: $this->lede,
+        from: "Draft for {$this->publication->name}",
+    ),
+);
 ```
 
 :::
@@ -325,64 +217,30 @@ Pass `truncated(false)` when the text is complete.
 
 ### File Details
 
+A photo describes itself with `File`:
+
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\File;
-use Storyfeed\FeedEntity;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label($this->name)
-            ->body(
-                File::make()
-                    ->size($this->bytes)
-                    ->mediaType($this->mime)
-                    ->name($this->name)
-            );
-    }
-}
+```php [Fluent Syntax]
+FeedEntity::make()
+    ->label($this->name)
+    ->body( // [!code highlight]
+        File::make()
+            ->size($this->bytes)
+            ->mediaType($this->mime)
+            ->name($this->name)
+    );
 ```
 
-```php [Named Arguments] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\Body\File;
-use Storyfeed\FeedEntity;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: $this->name,
-            body: File::make(
-                size: $this->bytes,
-                mediaType: $this->mime,
-                name: $this->name,
-            ),
-        );
-    }
-}
+```php [Named Arguments]
+FeedEntity::make(
+    label: $this->name,
+    body: File::make( // [!code highlight]
+        size: $this->bytes,
+        mediaType: $this->mime,
+        name: $this->name,
+    ),
+);
 ```
 
 :::
