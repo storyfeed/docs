@@ -63,3 +63,28 @@ test('activity data does not borrow the object URL for an unattributed body', as
   assert.match(html, /Unattributed/)
   assert.doesNotMatch(html, /<a\b/)
 })
+
+const prose = (content, mediaType, verbatim = false) => ({
+  $body: 'Storyfeed/Body/Prose', $v: 1, title: 'System notes', content, mediaType, verbatim,
+})
+
+test('Prose renders Markdown and HTML while removing executable markup and unsafe links', async () => {
+  const markdown = await render([prose('## Check\n\n**Ready**\n\n- First\n- Second', 'text/markdown')])
+  assert.match(markdown, /<h2>Check<\/h2>/)
+  assert.match(markdown, /<strong>Ready<\/strong>/)
+  assert.match(markdown, /<li>First<\/li>/)
+  const html = await render([prose('<p onclick="alert(1)"><strong>Ready</strong></p><script>alert(2)</script><img src=x onerror="alert(3)"><a href="javascript:alert(4)">Bad</a><a href="https://example.com">Good</a>', 'text/html')])
+  assert.match(html, /<strong>Ready<\/strong>/)
+  assert.match(html, /href="https:\/\/example.com"/)
+  assert.doesNotMatch(html, /onclick|onerror|<script|<img|javascript:|alert\(/)
+})
+
+test('Prose preserves escaped source for verbatim, plain and unknown formats', async () => {
+  for (const [format, verbatim] of [['text/html', true], ['text/markdown', true], ['text/plain', false], ['application/x-custom', false]]) {
+    const html = await render([prose('<strong>literal</strong>\n  **source**', format, verbatim)])
+    assert.match(html, /&lt;strong&gt;literal&lt;\/strong&gt;\n  \*\*source\*\*/)
+    assert.doesNotMatch(html, /<strong>literal/)
+    if (verbatim) assert.match(html, /<pre[^>]*tabindex="0"/)
+    assert.match(html, /System notes/)
+  }
+})

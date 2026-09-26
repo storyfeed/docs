@@ -51,6 +51,29 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.deepEqual(JSON.parse(JSON.stringify(body.props)), body.props)
   })
 
+  test(`${name}: authored record scenes carry titled, sourced bodies in each format`, () => {
+    const content = scene.basics.activityContent
+    for (const key of ['program', 'terminal', 'radioLog', 'caseMemo', 'labReport', 'alphabet']) {
+      const node = content[key]
+      assert.ok(node?.published_at, key)
+      assert.ok(Date.parse(node.published_at) <= now, key)
+      const body = node.object.body[0]
+      assert.equal(body.title, node.object.label, key)
+      const row = pack.rows.find(row => row.id === pack.scenes.basics.activityContent[key])
+      assert.ok(row.src in pack.sources, key)
+      assert.ok(row.uncertain, `${key}: invented records must be identified`)
+      if (key === 'alphabet') {
+        assert.equal(body.$body, 'Storyfeed/Body/ItemList')
+        assert.ok(body.items.length > 1)
+      } else {
+        assert.equal(body.$body, 'Storyfeed/Body/Prose')
+        assert.ok(body.content.length > 0)
+        assert.equal(body.mediaType, key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain')
+        assert.equal(body.verbatim, ['program', 'terminal', 'radioLog'].includes(key))
+      }
+    }
+  })
+
   test(`${name}: every row has wording, a known source and a unique id`, () => {
     assert.equal(new Set(pack.rows.map((r) => r.id)).size, pack.rows.length)
     for (const r of pack.rows) {
