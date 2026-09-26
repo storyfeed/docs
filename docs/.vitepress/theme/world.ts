@@ -308,6 +308,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       grouped: { repeat: many(s.cookbook.grouped.repeat), actors: many(s.cookbook.grouped.actors) },
     },
     deeper: {
+      body: { progress: one(deeper.body.progress) },
       aggregation: { orders: many(deeper.aggregation.orders), customers: many(deeper.aggregation.customers) },
       latestPerObject: { timeline: many(deeper.latestPerObject.timeline), board: many(deeper.latestPerObject.board),
         confirmations: many(deeper.latestPerObject.confirmations) },

@@ -1,8 +1,7 @@
 # Custom Body Types
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
-const withComponent = scene.question
+import { scene, role } from '../.vitepress/theme/world'
 </script>
 
 ## Introduction
@@ -186,11 +185,14 @@ the model to avoid repeated queries.
 
 ## Using Custom Components
 
-A `Component` body names a frontend component and its props:
+A `Component` body names a frontend component and passes it props. For
+example, an order at {{ role.shop.label }} may show its pickup progress as
+a stepper. The built-in bodies can display text and fields; a custom component
+can connect the steps and highlight the current one.
 
 ::: code-group
 
-```php [Fluent Syntax] memo="app/Models/Note.php"
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -201,24 +203,29 @@ use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Note extends Model implements Feedable
+class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make()
-            ->label($this->body)
+            ->label("Order #{$this->id}")
             ->body(
                 Component::make()
-                    ->name('Note')
-                    ->props(['excerpt' => $this->body]),
+                    ->name('Orders/Progress') // [!code highlight]
+                    ->props([
+                        'title' => "Order #{$this->id}",
+                        'steps' => ['Placed', 'Confirmed', 'Ready'],
+                        'current' => $this->status_label,
+                        'pickup' => $this->pickup_at->format('g:i A'),
+                    ]),
             );
     }
 }
 ```
 
-```php [Named Arguments] memo="app/Models/Note.php"
+```php [Named Arguments] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -229,17 +236,22 @@ use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-class Note extends Model implements Feedable
+class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make(
-            label: $this->body,
+            label: "Order #{$this->id}",
             body: Component::make(
-                name: 'Note',
-                props: ['excerpt' => $this->body],
+                name: 'Orders/Progress', // [!code highlight]
+                props: [
+                    'title' => "Order #{$this->id}",
+                    'steps' => ['Placed', 'Confirmed', 'Ready'],
+                    'current' => $this->status_label,
+                    'pickup' => $this->pickup_at->format('g:i A'),
+                ],
             ),
         );
     }
@@ -248,15 +260,63 @@ class Note extends Model implements Feedable
 
 :::
 
-<FeedExample :items="[withComponent]">
+The props are plain values: a title, a list of steps, the current step's label,
+and a formatted pickup time. They are stored with the body and reflect the
+values when the body was built. To display current progress whenever the
+feed is retrieved, build the body in
+[`feedMedia()`](#resolving-bodies-at-read-time), as shown above.
+
+### Rendering the Component
+
+Your frontend maps each name to a component. In Vue, the component receives
+the stored props and marks the current step with `aria-current`:
+
+```vue memo="resources/js/components/orders/Progress.vue"
+<script setup>
+defineProps(['title', 'steps', 'current', 'pickup'])
+</script>
+
+<template>
+    <section class="order-progress" :aria-label="`${title} pickup progress`">
+        <strong>{{ title }}</strong>
+        <p>Pickup at {{ pickup }}</p>
+        <ol>
+            <li v-for="step in steps" :key="step"
+                :aria-current="step === current ? 'step' : undefined"> <!-- [!code highlight] -->
+                {{ step }}
+            </li>
+        </ol>
+    </section>
+</template>
+```
+
+In your body renderer, register the component under the same name used in PHP
+and pass it the body's props:
+
+```vue memo="resources/js/components/feed/ComponentBody.vue"
+<script setup>
+import Progress from '../orders/Progress.vue'
+
+defineProps(['body'])
+const components = { 'Orders/Progress': Progress } // [!code highlight]
+</script>
+
+<template>
+    <component v-if="components[body.name]"
+        :is="components[body.name]" v-bind="body.props" />
+</template>
+```
+
+Use this renderer for bodies whose `$body` is `Storyfeed/Body/Component`.
+Style the list as a stepper, with `[aria-current="step"]` highlighting the
+current step. The following item uses that mapping and a styled component:
+
+<FeedExample :items="[scene.deeper.body.progress]">
   <template #body="{ node }"><FeedBody :node="node" /></template>
 </FeedExample>
 
-It is stored as `Storyfeed/Body/Component`, with `name` and `props` as given.
-
-Names are stored unchanged and may be paths such as `Orders/Ticket`. Your
-frontend maps each name to a component. Like `data()`, `props()` merges an
-array of keys or sets one with `->props('pinned', true)`.
+Names are stored unchanged. Like `data()`, `props()` merges an array of keys
+or sets one with `->props('current', 'Ready')`.
 
 Use `Component` for props you control. If their structure will change over
 time, define a body type with its own `upgrade()` method.

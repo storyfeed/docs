@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT } from './manifest'
+  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -571,8 +571,16 @@ ROWS.push(
 const deeperRow = (id: string, at: string, verb: string, actor: any, object: any, target: any = null) =>
   row(`deeper-${id}`, at, verb, actor, object, target, 'splice',
     { uncertain: 'Illustrative software action; not an on-screen event' })
+const pickupOrder = order(2081)
+pickupOrder.body = [{ $body: 'Storyfeed/Body/Component', $v: 1, name: 'Orders/Progress', props: {
+  title: pickupOrder.label,
+  steps: ['Placed', 'Confirmed', 'Ready'],
+  current: 'Confirmed',
+  pickup: PICKUP_PROGRESS.time,
+} }]
 const deeperOrders = [order(2031), order(2032), order(2033)]
 const deeperRows: Row[] = [
+  deeperRow('pickup-progress', '1985-07-02 12:05', 'confirm', scooper, pickupOrder, v.scoops),
   ...deeperOrders.map((object, i) => deeperRow(`order-${i}`, `1985-07-02 12:${10 + i * 5}`, 'place', scout, object, v.scoops)),
   ...[scout, radio, partyLeader, slinger, skater].map((actor, i) =>
     deeperRow(`customer-${i}`, `1985-07-02 13:0${i}`, 'place', actor, order(2041 + i), v.scoops)),
@@ -621,6 +629,7 @@ export default {
       grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
     },
     deeper: {
+      body: { progress: 'deeper-pickup-progress' },
       aggregation: { orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
         customers: Array.from({ length: 5 }, (_, i) => `deeper-customer-${i}`) },
       latestPerObject: { timeline: ['deeper-order-0', 'deeper-confirm-0', 'deeper-ready', 'deeper-paid'],

@@ -37,6 +37,20 @@ for (const [name, pack] of Object.entries(PACKS)) {
   const now = Date.parse(pack.canonicalNow)
   const verbs = { ...BASE_VERBS, ...pack.verbs }
 
+  test(`${name}: pickup progress belongs to an order and carries plain component props`, () => {
+    const progress = scene.deeper.body.progress
+    assert.equal(progress.object.type, 'order')
+    assert.ok(same(progress.target, role.shop))
+    assert.equal(progress.object.body.length, 1)
+    const body = progress.object.body[0]
+    assert.equal(body.$body, 'Storyfeed/Body/Component')
+    assert.equal(body.name, 'Orders/Progress')
+    assert.equal(body.props.title, progress.object.label)
+    assert.ok(body.props.steps.includes(body.props.current))
+    assert.equal(typeof body.props.pickup, 'string')
+    assert.deepEqual(JSON.parse(JSON.stringify(body.props)), body.props)
+  })
+
   test(`${name}: every row has wording, a known source and a unique id`, () => {
     assert.equal(new Set(pack.rows.map((r) => r.id)).size, pack.rows.length)
     for (const r of pack.rows) {

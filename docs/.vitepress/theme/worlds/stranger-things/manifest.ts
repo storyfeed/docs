@@ -192,3 +192,8 @@ export const ENTITY_CONTENT = {
   showing:      'Sneak preview',
   repoAbout:    'The radio built at camp, to reach Utah from Weathertop',
 }
+
+/** Pickup time for the illustrative custom-component order. */
+export const PICKUP_PROGRESS = {
+  time: '12:15 PM',
+}

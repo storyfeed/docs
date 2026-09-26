@@ -83,6 +83,7 @@ export type Roles = {
  * payload nodes on the present anchor.
  */
 export type DeeperSceneIds = {
+  body: { progress: string }
   aggregation: { orders: string[]; customers: string[] }
   latestPerObject: { timeline: string[]; board: string[]; confirmations: string[] }
   keepingLatest: { saves: string[] }
