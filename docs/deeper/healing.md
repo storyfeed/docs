@@ -2,26 +2,27 @@
 
 ## Introduction
 
-A **healer** soft-deletes activities whose source is gone for good, such as an
-activity about a file that was hard-deleted. Your healer picks the activities,
-and `storyfeed:heal` retires them.
+A **healer** selects activities whose source has been permanently deleted,
+such as a file that no longer exists. The `storyfeed:heal` command soft-deletes
+the selected activities.
 
 <a id="permanently-missing-sources"></a>
 
-Use a healer only for sources that are **permanently** gone, such as a
-hard-deleted asset. A source that can be restored doesn't qualify, and neither
-does one whose row still exists.
+Use a healer only when the source is permanently gone. Sources that can be
+restored or still exist in the database do not qualify.
 
-A healer retires only the activities it names. A deleted Feedable model needs no healer: its activities
-stay, and name a [tombstone](/deeper/deleted-models) instead.
+A healer soft-deletes only the activities it selects. Deleted Feedable
+models need no healer: their activities remain with a
+[tombstone](/deeper/deleted-models).
 
 > [!WARNING]
 > **Healing makes clients refetch their pages**
 >
-> Every retirement changes the feed's `sync_token`, so clients holding pages
-> must refetch them, as under
+> Each soft-deletion changes the feed's `sync_token`, so clients must refetch
+> their pages, as with
 > [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
-> Preview first and run it at a quiet time. Healers are never scheduled for you.
+> Preview changes and run healing during low traffic. Healers are not scheduled
+> automatically.
 
 <a id="defining-a-healer"></a>
 
@@ -33,8 +34,9 @@ stay, and name a [tombstone](/deeper/deleted-models) instead.
 
 ### Selecting Candidates
 
-A healer yields one `ActivityRetirement` per activity that might need retiring.
-Here the object is an `asset_reference`, whose `assets` table hard-deletes:
+Yield one `ActivityRetirement` for each activity to check. Here, an
+`asset_reference` object refers to an asset that is permanently deleted from
+its table:
 
 ```php memo="app/Storyfeed/AssetHealer.php"
 <?php
@@ -75,20 +77,19 @@ class AssetHealer implements FeedHealer
 }
 ```
 
-`candidates()` and `whenAbsent` **must write nothing**, because they also run
-during a preview. Query the source table directly, so a row hidden by a scope
-or permissions doesn't look deleted.
+`candidates()` and `whenAbsent` must not write data, since previews also run
+them. Query the source table directly so scopes or permissions cannot hide
+an existing record.
 
 ### Rechecking Missing Sources
 
-The activity or its source can change between `candidates()` and the
-retirement. So `whenAbsent` receives a freshly loaded copy of the activity,
-locked while it is retired. Check it and the source again there, and return
-`false` if the source exists now.
+The activity or source may change after `candidates()` runs. Before deletion,
+`whenAbsent` receives a fresh, locked activity. Check the activity and source
+again, returning `false` if the source exists.
 
 ## Registering Healers
 
-Register the healer beside your feeds:
+Register the healer in your service provider:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Storyfeed\AssetHealer;
@@ -97,20 +98,21 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::healers([AssetHealer::class]);
 ```
 
-A class or an instance works. `key()` names the healer for `--only`.
+Pass a class or instance. The value returned by `key()` identifies the healer
+for `--only`.
 
 <a id="running-a-healer"></a>
 
 ## Running Healers
 
-### Previewing Retirements
+### Previewing Soft-Deletions {#previewing-retirements}
 
 ```shell
 php artisan storyfeed:heal --pretend
 ```
 
-`--pretend` prints each request's label, outcome and `meta`, and writes
-nothing:
+Use `--pretend` to print each request's label, outcome, and `meta` without
+writing changes:
 
 ```
 Preview only. Applying retirements rewrites history and bumps sync_token; accumulating clients must resync.
@@ -124,23 +126,22 @@ Would retire: 1; unchanged: 1.
 | `retire` | the activity is live and `whenAbsent` returns true | soft-deletes the activity and changes `sync_token` |
 | `unchanged` | the activity is deleted or gone, or `whenAbsent` returns false | nothing |
 
-### Applying Retirements
+### Applying Soft-Deletions {#applying-retirements}
 
 ```shell
 php artisan storyfeed:heal --only=assets
 php artisan storyfeed:heal
 ```
 
-Without `--only`, every healer runs. Each retirement commits on its own, so if
-one fails, the earlier ones stand.
+Without `--only`, all healers run. Each soft-deletion commits separately, so
+a failure does not undo earlier changes.
 
 <a id="testing-a-healer"></a>
 
 ## Testing Healers
 
-Test through the command. With `AssetHealer` registered, and two activities,
-`$existingAssetActivity` about an asset that exists and
-`$deletedAssetActivity` about one that was deleted:
+Test the command with `AssetHealer` registered. Create `$existingAssetActivity`
+for an existing asset and `$deletedAssetActivity` for a permanently deleted one:
 
 ```php memo="tests/Feature/FeedTest.php"
 $this->artisan('storyfeed:heal', ['--pretend' => true, '--only' => ['assets']])
