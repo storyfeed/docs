@@ -34,83 +34,29 @@ const live = activity({ ...fixed, thread: { ...fixed.thread, replies: 4 } })
 ## Recording a Fixed Count
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/CommentController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreCommentRequest;
-use App\Models\Discussion;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
-
-class CommentController extends Controller
-{
-    public function store(
-        StoreCommentRequest $request,
-        Discussion $discussion,
-    ): RedirectResponse {
-        $comment = $discussion->comments()->create([
-            'user_id' => $request->user()->id,
-            'body' => $request->validated('body'),
-        ]);
-
-        $excerpt = $comment->body;
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('reply', $discussion)
-            ->thread(FeedThread::make(
-                text: $excerpt,
-                // evaluated now, stored forever
-                replies: $discussion->comments()->count(),
-            ))
-            ->publish();
-
-        return back();
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('reply', $discussion)
+    ->thread(FeedThread::make(
+        text: $comment->body,
+        // evaluated now, stored forever
+        replies: $discussion->comments()->count(), // [!code highlight]
+    ))
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/CommentController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreCommentRequest;
-use App\Models\Discussion;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedThread;
-
-class CommentController extends Controller
-{
-    public function store(
-        StoreCommentRequest $request,
-        Discussion $discussion,
-    ): RedirectResponse {
-        $comment = $discussion->comments()->create([
-            'user_id' => $request->user()->id,
-            'body' => $request->validated('body'),
-        ]);
-
-        $excerpt = $comment->body;
-
-        Storyfeed::record(
-            verb: 'reply',
-            object: $discussion,
-            actor: $request->user(),
-            thread: FeedThread::make(
-                text: $excerpt,
-                // evaluated now, stored forever
-                replies: $discussion->comments()->count(),
-            ),
-        );
-
-        return back();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'reply',
+    object: $discussion,
+    actor: $request->user(),
+    thread: FeedThread::make(
+        text: $comment->body,
+        // evaluated now, stored forever
+        replies: $discussion->comments()->count(), // [!code highlight]
+    ),
+);
 ```
 :::
 
@@ -130,7 +76,7 @@ can add a reply.
 ```php memo="app/Http/Controllers/CommentController.php" at="store()"
 use Storyfeed\FeedThread;
 
-FeedThread::make(text: $excerpt, replies: null);
+FeedThread::make(text: $comment->body, replies: null);
 ```
 
 <FeedExample :items="[withoutCount]" />
