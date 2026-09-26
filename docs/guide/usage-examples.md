@@ -63,12 +63,14 @@ Storyfeed::activity()
 
 More in [Parties & Anonymous Actors](/deeper/parties).
 
-## One Order's Story
+## Filtering a Feed by Entity
 
 An order's page lists everything that happened to it:
 
 ```php memo="A controller, or wherever the feed is read"
-$order->storyfeed()->log()->get();
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->involving($order)->log()->get();
 ```
 
 <FeedExample :items="orderStory" />
