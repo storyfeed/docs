@@ -1,7 +1,6 @@
 import type { Component } from 'vue'
 import KeyValue from './KeyValue.vue'
 import Excerpt from './Excerpt.vue'
-import Change from './Change.vue'
 import File from './File.vue'
 import Prose from './Prose.vue'
 import ItemList from './ItemList.vue'
@@ -19,7 +18,6 @@ import MediaObject from './MediaObject.vue'
 const FORMS: Record<string, Component> = {
     'Storyfeed/Body/KeyValue': KeyValue,
     'Storyfeed/Body/Excerpt': Excerpt,
-    'Storyfeed/Body/Change': Change,
     'Storyfeed/Body/File': File,
     'Storyfeed/Body/Prose': Prose,
     'Storyfeed/Body/ItemList': ItemList,

@@ -411,8 +411,8 @@ payloads for your frontend. Storyfeed preserves the stored body and version.
 
 <a id="upgrading-payload-values"></a>
 
-Storyfeed upgrades an activity's `thread` and `change` automatically. Bodies
-arrive as stored, including `$v`, so your renderer must call `upgrade()` before
+Storyfeed upgrades an activity's `thread` automatically. Bodies arrive as
+stored, including `$v`, so your renderer must call `upgrade()` before
 displaying them. This also applies to a `FeedThread` used as a body.
 
 

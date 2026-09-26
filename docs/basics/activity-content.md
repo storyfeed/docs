@@ -467,7 +467,6 @@ body fields that accept it.
 |---|---|---|
 | `KeyValue` | labelled values | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
-| `Change` | before and after values for one or more fields | `items`, a map of field to `[before, after]` |
 | `File` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
