@@ -95,7 +95,7 @@ the finding is about, and `definition` is the line `--stubs` prints.
 | `aggregates.missing` | activities group, and the group has no headline | add a [group headline](/deeper/aggregation), or print it with `--stubs` |
 | `verbs.undeclared` | a recorded verb is not in your vocabulary, usually a typo | fix the call site, or [register the verb](/basics/verbs) |
 | `feeds.unclassified` | no restricted [named feed](/basics/named-feeds) decides who sees a verb | add the verb to a feed's `only()` or `except()` |
-| `surface.unaliased` | a `Feedable` model has no morph alias, so publishing about it throws | give it an alias, or return its parent's from `getMorphClass()` ([Surface](/reference/doctor#surface)) |
+| `surface.unaliased` | a `Feedable` model has no morph alias, so publishing about it throws | give it an alias, or return its parent's from `getMorphClass()` ([Surface](/reference/doctor#feedable-models)) |
 | `entities.unfeedable` | activities name a model that does not implement `Feedable` | implement [`Feedable`](/basics/feedable-models), then run `storyfeed:trickle` |
 | `backlog.uncached` | entities are waiting for their labels and links | [schedule `storyfeed:trickle`](/reference/commands#scheduling-maintenance) |
 | `tables.missing` | a package table does not exist | run the migrations |

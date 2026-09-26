@@ -105,7 +105,7 @@ The rest of this page builds the same kind of components from scratch, for an
 app that wants full control of its rows. The components carry no styling, so
 they fit any design.
 
-## Reading Feed Items
+### Reading Feed Items
 
 Looping over a page of the feed gives you each item as a
 `Storyfeed\Support\FeedItem`. It reads the item's
@@ -124,7 +124,7 @@ a link to its `url`. The item also reads as the array it wraps, so
 `$item['verb']` works, and `$page->items()` still returns the arrays.
 [FeedItem API](/reference/feed-item) lists every method.
 
-## Parts of a Row
+### Parts of a Row
 
 | Part of a Row | Read With | Payload Fields |
 |---|---|---|
@@ -139,7 +139,7 @@ a link to its `url`. The item also reads as the array it wraps, so
 
 A field with no value leaves its part out.
 
-## Displaying the Feed
+### Displaying the Feed
 
 Pass a page of the feed to a view. The cursor in the query string selects
 [later pages](/basics/reading#pagination):
@@ -164,7 +164,7 @@ The view draws the whole feed with one tag:
 
 <FeedExample :items="[grouped, complete, one]" />
 
-### The Feed Components
+#### The Feed Components
 
 `<x-feed>` is built from these anonymous components, in
 `resources/views/components/feed`:
@@ -185,11 +185,11 @@ its directory as that directory's
 [root component](https://laravel.com/docs/13.x/blade#anonymous-index-components).
 The sections below build the components, smallest first.
 
-## Rendering Activities
+### Rendering Activities
 
 <a id="rendering-a-headline"></a>
 
-### Headlines
+#### Headlines
 
 `headline()` reads the item's sentence. Echo it:
 
@@ -213,7 +213,7 @@ notification:
 
 <a id="linking-the-entities"></a>
 
-### Entity Links
+#### Entity Links
 
 Each role reads as a `Storyfeed\Support\Entity`, or `null` when the role is
 empty. Echoing an entity draws its label, linked when it has a `url`:
@@ -233,7 +233,7 @@ It receives each `Entity` and returns HTML, so escape what you print:
 {!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
 ```
 
-### Timestamps
+#### Timestamps
 
 `publishedAt()` reads `published_at` as a `CarbonImmutable`:
 
@@ -245,7 +245,7 @@ It receives each `Entity` and returns HTML, so escape what you print:
 </time>
 ```
 
-### Glyphs and Intents
+#### Glyphs and Intents
 
 `glyph()` is a token your app registered, such as `shopping-bag`. Keep one
 icon view per token, with a fallback for a token you have no icon for:
@@ -272,7 +272,7 @@ Most verbs have no intent. Their `intent()` is `null`, so the component
 leaves `data-intent` out and the plain glyph is drawn, as it is for an intent
 you have no colour for.
 
-### Activity Rows
+#### Activity Rows
 
 An activity row puts the three together:
 
@@ -290,9 +290,9 @@ An activity row puts the three together:
 
 <a id="groups"></a>
 
-## Rendering Groups
+### Rendering Groups
 
-### Group Rows
+#### Group Rows
 
 A [group](/basics/reading#groups) has `isGroup()` true and a plural
 sentence; [Aggregation](/deeper/aggregation) covers which activities group and
@@ -320,7 +320,7 @@ items, so the activity component draws them:
 `count()` is the true member total. `children()` can hold fewer, and
 `childrenTruncated()` is then `true`.
 
-### Plural Roles
+#### Plural Roles
 
 A plural token such as `:actors` reads as the group's sample of entities,
 joined, with the rest as a number: "Ana, Ben, Cy and 2 more". A singular
@@ -342,7 +342,7 @@ entities and its true total:
 @endif
 ```
 
-### Groups Without Headlines
+#### Groups Without Headlines
 
 A group has no sentence when its verb declares no group headline and its
 members' own headline can't be reused for several activities. Its headline
@@ -354,7 +354,7 @@ then reads as its count, "5 activities", and `isFallback()` is `true`:
 
 <FeedExample :items="[unnamed]" />
 
-### Digest Rows
+#### Digest Rows
 
 A [digest](/basics/reading#summary) row's headline names the person once and
 joins the per-verb phrases after it, each phrase starting at its verb. The
@@ -364,11 +364,11 @@ with its own `headline()` and `count()`.
 
 <a id="activity-data-and-bodies"></a>
 
-## Rendering Content
+### Rendering Content
 
 <a id="activity-data"></a>
 
-### Quoted Text
+#### Quoted Text
 
 An activity that quotes what someone said carries it in `thread()`. Draw it
 in the activity row:
@@ -384,7 +384,7 @@ in the activity row:
 `data()` holds the values supplied when recording the activity. Your
 application decides which of them to display.
 
-### Bodies
+#### Bodies
 
 `bodies()` reads an entity's structured content. Draw the object's bodies in
 the activity row:
@@ -437,7 +437,7 @@ Then add one component per body type you draw:
 body type and its keys, and [Custom Body Types](/deeper/body) covers writing
 your own.
 
-## Assembling the Feed
+### Assembling the Feed
 
 The item component chooses the row by kind:
 
@@ -483,7 +483,7 @@ The pager links to the same URL with the next cursor. On the last page
 
 <a id="degraded-entities"></a>
 
-## Handling Missing Values
+### Handling Missing Values
 
 An entity's `label` and `url` can be `null`. A null **actor** means the actor
 is unknown. The activity is still in the feed, and its headline reads with a

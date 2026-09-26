@@ -1,4 +1,4 @@
-# Counts That Keep Changing
+# Recording Counts
 
 A count you record in an activity, such as "3 replies", is stored as it was at
 publish and never recomputed. If the count can still change, store nothing and

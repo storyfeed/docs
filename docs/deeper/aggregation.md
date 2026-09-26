@@ -41,7 +41,9 @@ Story::for(Order::class)
 
 <a id="grouping-along-another-axis"></a>
 
-### Activities Along Other Axes
+<a id="activities-along-other-axes"></a>
+
+### Activities Sharing a Role
 
 Five customers ordering from the same shop need a different sentence. Each
 group names an **axis**: what its activities have in common.

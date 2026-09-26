@@ -90,7 +90,9 @@ class DishQuestionController extends Controller
 
 <a id="the-difference-between-target-and-context"></a>
 
-## Target and Context
+<a id="target-and-context"></a>
+
+## Choosing Between Target and Context
 
 | Role | Holds | In the Sentence |
 |---|---|---|

@@ -30,7 +30,9 @@ listener.
 
 ## Publishing Activities
 
-### Fluent Recording
+<a id="fluent-recording"></a>
+
+### Publishing From a Controller
 
 Record an activity where the fact happens. The builder reads in the order of
 the headline it produces:

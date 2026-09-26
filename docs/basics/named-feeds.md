@@ -208,9 +208,13 @@ Storyfeed::feeds([
 
 <a id="using-the-name"></a>
 
-## What a Feed's Name Does
+<a id="what-a-feed-s-name-does"></a>
 
-### Linking Each Feed Somewhere Different
+## Using a Feed's Name
+
+<a id="linking-each-feed-somewhere-different"></a>
+
+### Linking Per Feed
 
 A model's link resolver receives the name of the feed being read, so an order
 can open its ticket on the kitchen's board and its status page on the
@@ -227,7 +231,9 @@ static::feedMediaUsing(fn ($context) => match ($context->feed()) {
 [Links for Named Feeds](/basics/feedable-models#a-link-per-feed) covers this in
 full.
 
-### Checking That Every Verb Has an Audience
+<a id="checking-that-every-verb-has-an-audience"></a>
+
+### Checking Verb Coverage
 
 Once feeds are registered, the [doctor](/deeper/diagnosing) warns about any
 verb that no feed's `only()` or `except()` mentions (`feeds.unclassified`). A

@@ -110,7 +110,9 @@ Story::for(Invitation::class)->verb('accept')
 
 <span id="coherence-and-completeness"></span>
 
-## Checking Completeness
+<a id="checking-completeness"></a>
+
+## Checking for Missing Roles
 
 ```text
 user · moved · document · folder B
@@ -132,7 +134,9 @@ Three autosaves recorded as three revisions each look coherent alone.
 call belongs, and [Repeating Activities](/cookbook/repeating-activities) covers
 keeping only the latest.
 
-## Unfilled Headline Tokens
+<a id="unfilled-headline-tokens"></a>
+
+## Finding Unfilled Tokens
 
 ```text
 user · archived · document · —   coherent — nothing was aimed at

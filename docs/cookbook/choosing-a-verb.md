@@ -111,7 +111,9 @@ Choose the word that describes the event in your application.
 | `accept` / `like` | the activity answers a prior `offer` or `invite`; an approval is `accept`, whatever the button says | nothing prompted it |
 | `view` / `read` | a page was opened or a preview loaded; if the choice is not clear, it is `view` | the object was deliberately taken away, such as a downloaded file |
 
-### Create and Add
+<a id="create-and-add"></a>
+
+### Choosing Create or Add
 
 A new menu item is `create`:
 

@@ -25,7 +25,9 @@ const weekly = summaryOf(everything(), 'week')
 
 <a id="adding-activity-content"></a>
 
-## Activities With Content Previews
+<a id="activities-with-content-previews"></a>
+
+## Showing Content Previews
 
 An order shows its pickup details under the headline:
 
@@ -46,7 +48,9 @@ return FeedEntity::make()
 
 More in [Activity Content](/basics/activity-content).
 
-## Actors Beyond Your Users
+<a id="actors-beyond-your-users"></a>
+
+## Recording Services as Actors
 
 A payment webhook tells your app an order was paid:
 
@@ -79,7 +83,9 @@ More in [Reading Feeds](/basics/reading#filtering-by-entity-or-role).
 
 <a id="grouping-activities"></a>
 
-## A Week at a Glance
+<a id="a-week-at-a-glance"></a>
+
+## Summarizing a Week
 
 A weekly recap shows each person's week in one row:
 

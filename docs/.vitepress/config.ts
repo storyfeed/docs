@@ -240,7 +240,7 @@ export default defineConfig({
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Counts That Keep Changing', link: '/cookbook/counts-that-keep-moving' },
+          { text: 'Recording Counts', link: '/cookbook/counts-that-keep-moving' },
         ],
       },
       {

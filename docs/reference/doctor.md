@@ -137,7 +137,9 @@ a filter.
 A model's label is also what its tombstone keeps under `keepLabel()`.
 [Deleted Models](/deeper/deleted-models) covers both.
 
-### Surface
+<a id="surface"></a>
+
+### Feedable Models
 
 | Finding | Severity | Means |
 |---|---|---|

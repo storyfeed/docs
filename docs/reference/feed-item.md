@@ -112,7 +112,9 @@ It is read-only: setting or unsetting a key throws a `LogicException`.
 | `:others` | the actors not in the sample: `2 others` |
 | any other token | itself |
 
-### Items Without a Sentence
+<a id="items-without-a-sentence"></a>
+
+### Items Without a Headline
 
 | Item | Reads As |
 |---|---|

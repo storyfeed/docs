@@ -69,7 +69,9 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(headli
 <a id="examples-of-activities"></a>
 <a id="other-examples"></a>
 
-### Activities in Other Apps
+<a id="activities-in-other-apps"></a>
+
+### Examples From Other Apps
 
 <FeedExample :items="[scene.otherApps.task]">
 

@@ -192,7 +192,7 @@ StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 
 It also fails for a `Feedable` model the enforced morph map has no alias for,
 when the check cannot run, and when no activities are recorded. It works under
-the fake. See [Surface](/reference/doctor#surface).
+the fake. See [Surface](/reference/doctor#feedable-models).
 
 <a id="diagnostics-in-ci"></a>
 
