@@ -12,9 +12,8 @@ const backdated = { ...priced, published_at: scene.distant.published_at }
 
 ## Introduction
 
-An activity is a verb plus the models it involves. You record one with an
-explicit call, wherever the fact happens: an action, an observer, an event
-listener.
+An activity records a verb and its participants. Publish it from the code that
+handles the action, such as a controller, observer, or event listener.
 
 <a id="the-builder"></a>
 
@@ -22,7 +21,7 @@ listener.
 
 <a id="fluent-recording"></a>
 
-The builder reads in the order of the headline it produces:
+Assign the activity's roles and call the `publish` method:
 
 ::: code-group
 <<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
@@ -31,50 +30,48 @@ The builder reads in the order of the headline it produces:
 
 <FeedExample :items="[scene.order]" />
 
-The first argument to `action()` is the **verb**: a plain string naming what
-happened. `place` is this app's own word, not one the package knows. The stored
-verb is the string you pass, and [The Feed File](/basics/the-feed-file) gives it
-the headline the feed prints.
+The first argument to the `action` method is the **verb**, a string describing
+the action. This example records `place`. Define its headline in
+[The Feed File](/basics/the-feed-file).
 
 <a id="named-arguments"></a>
 
-`Storyfeed::record()` records the same activity in one call, with each role as
-a named argument.
+You may also call the `record` method on the `Storyfeed` facade, passing each
+role as a named argument.
 
 <a id="roles"></a>
 
 ## Assigning Roles
 
-| Role | Question It Answers | Example |
+| Role | Meaning | Example |
 |---|---|---|
-| `actor` | who did it | the customer |
-| `object` | what it was done to | the order |
-| `target` | what the act was directed at | the shop |
-| `context` | where it happened | the surrounding container |
-| `origin` | where it came from | the source of an accepted invitation |
-| `result` | what it produced | a receipt, a generated artifact |
-| `instrument` | what it happened via | the device an order was taken on |
+| `actor` | who performed the action | the customer |
+| `object` | the entity acted on | the order |
+| `target` | the entity the action was directed at | the shop |
+| `context` | the containing entity | the shop where the action occurred |
+| `origin` | the source | the source of an accepted invitation |
+| `result` | the entity produced | a receipt or generated file |
+| `instrument` | the tool or service used | the device used to take an order |
 
-Direction decides the role. The same tablet is a `target` for an order sent
-**to** it and an `instrument` for an order taken **on** it.
+Choose the role based on the entity's involvement. A tablet is a `target` when
+an order is sent to it, or an `instrument` when used to take the order.
 
 <a id="reading-as-a-sentence"></a>
 
 ### Role Aliases
 
-Each role has a setter named for it: `actor()`, `object()`, `target()`,
-`context()`, `origin()`, `result()` and `instrument()`; `verb()` sets the verb.
-Aliases let the call site read as the sentence:
+Each role has a method with the same name, such as `actor` or `object`.
+The `verb` method sets the verb. You may also use these aliases:
 
-| Alias | Sets | Reads As |
+| Alias | Sets | Meaning |
 |---|---|---|
-| `->by()` | `actor` | who acted |
-| `->action()` | `verb` and `object` | what they did, to what |
-| `->using()` | `instrument` | what they acted via |
-| `->resulting()` | `result` | what they produced |
-| `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | what it was aimed at |
+| `->by()` | `actor` | who performed the action |
+| `->action()` | `verb` and `object` | the action and affected entity |
+| `->using()` | `instrument` | the tool or service used |
+| `->resulting()` | `result` | the entity produced |
+| `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | the entity the action was directed at |
 
-An alias and its setter record the same activity.
+Aliases assign the same values as the corresponding role methods.
 
 <a id="the-actor"></a>
 
@@ -109,8 +106,8 @@ authenticated user as the actor.
 
 ## Adding Activity Data
 
-`->data()` adds values to the activity itself. They are stored with the
-activity and returned in its `data` when the feed is read:
+Use the `data` method to store additional values on an activity. Storyfeed
+returns them in the activity's `data` field:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -143,7 +140,8 @@ Storyfeed::record(
 
 ## Setting the Publication Time
 
-`->publishedAt()` backdates an activity, for imports and backfills:
+To set an earlier publication time, such as when importing records, call the
+`publishedAt` method:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -176,8 +174,8 @@ foreach ($rows as $row) {
 
 ## Recording Multiple Objects
 
-`->objects()` records one activity about a set of objects. It stores a parent
-activity, plus one activity per object:
+To record an activity involving multiple objects, call the `objects` method.
+Storyfeed stores a parent activity and one activity per object:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -197,5 +195,5 @@ Storyfeed::record(
 ```
 :::
 
-[Composites](/deeper/composites) covers how the set and its activities read in
-the feed, and the headlines they need.
+See [Composites](/deeper/composites) for how these activities appear in the feed
+and how to define their headlines.
