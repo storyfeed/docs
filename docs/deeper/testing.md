@@ -14,25 +14,22 @@ Fake Storyfeed before calling the code under test. This test dispatches the
 event from [Publishing From Events](/deeper/events#publishing-from-an-event),
 using your application's model factories:
 
-```php memo="tests/Feature/RecordOrderPlacedTest.php"
-use App\Events\OrderPlaced;
-use App\Models\Shop;
+```php memo="tests/Feature/RecordOrderPaidTest.php"
+use App\Events\OrderPaid;
 use App\Models\Order;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Storyfeed\Facades\Storyfeed;
 
 uses(RefreshDatabase::class);
 
-it('records the placed order', function () {
-    $customer = User::factory()->create();
-    $order = Order::factory()->for(Shop::factory())->create();
+it('records the paid order', function () {
+    $order = Order::factory()->create();
 
     Storyfeed::fake();
 
-    event(new OrderPlaced($order, $customer));
+    OrderPaid::dispatch($order);
 
-    Storyfeed::assertPublished('place', $order);
+    Storyfeed::assertPublished('pay', $order);
     Storyfeed::assertPublishedCount(1);
     Storyfeed::assertNotPublished('delete');
 });
@@ -56,10 +53,10 @@ nothing, rather than after asserting a successful publication.
 `published($verb = null)` returns the captured activities for custom assertions.
 Continue the test with:
 
-```php memo="tests/Feature/RecordOrderPlacedTest.php" at="Inside the test"
-$activity = Storyfeed::published('place')->sole();
+```php memo="tests/Feature/RecordOrderPaidTest.php" at="Inside the test"
+$activity = Storyfeed::published('pay')->sole();
 
-expect((string) $activity->actor_id)->toBe((string) $customer->getKey());
+expect((string) $activity->object_id)->toBe((string) $order->getKey());
 ```
 
 > [!NOTE]

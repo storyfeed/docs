@@ -9,15 +9,43 @@ import { scene } from '../.vitepress/theme/world'
 An event can build the activity itself, with no listener to register. Return
 it without calling `publish()`; dispatching the event publishes it:
 
-<<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPlaced.php"}
+<<< @/snippets/publish-from-event.php {php memo="app/Events/OrderPaid.php"}
 
-<FeedExample :items="[scene.order]" />
+A payment webhook marks the order paid and dispatches the event:
+
+```php memo="app/Http/Controllers/StripeWebhookController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Events\OrderPaid;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class StripeWebhookController extends Controller
+{
+    public function __invoke(Request $request): Response
+    {
+        $order = Order::where('payment_intent', $request->input('data.object.id'))
+            ->firstOrFail();
+
+        $order->update(['paid_at' => now()]);
+
+        OrderPaid::dispatch($order);
+
+        return response()->noContent();
+    }
+}
+```
+
+<FeedExample :items="[scene.basics.recording.paid]" />
 
 ### Skipping Publication
 
 Return `null` to publish nothing for this instance:
 
-```php memo="app/Events/OrderPlaced.php"
+```php memo="app/Events/OrderPaid.php"
 public function toFeedActivity(): ?PendingActivity
 {
     if ($this->order->isTest()) {
@@ -25,9 +53,8 @@ public function toFeedActivity(): ?PendingActivity
     }
 
     return Storyfeed::activity()
-        ->by($this->customer)
-        ->action('place', $this->order)
-        ->to($this->order->shop);
+        ->by('Stripe')
+        ->action('pay', $this->order);
 }
 ```
 

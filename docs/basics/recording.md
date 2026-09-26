@@ -94,63 +94,19 @@ Omit the actor and the authenticated user is recorded. When a webhook or a
 job records the fact, there is no authenticated user, so name the actor:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::activity()
-            ->by('Stripe')
-            ->action('pay', $order)
-            ->publish();
-
-        return response()->noContent();
-    }
-}
+```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
+Storyfeed::activity()
+    ->by('Stripe')
+    ->action('pay', $order)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::record(
-            verb: 'pay',
-            object: $order,
-            actor: 'Stripe',
-        );
-
-        return response()->noContent();
-    }
-}
+```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
+Storyfeed::record(
+    verb: 'pay',
+    object: $order,
+    actor: 'Stripe',
+);
 ```
 :::
 
