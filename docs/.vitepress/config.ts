@@ -192,8 +192,8 @@ export default defineConfig({
         // build on them: no page leans on one further down.
         text: 'Recording in Depth',
         items: [
-          { text: 'Publishing From Events', link: '/deeper/events' },
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
+          { text: 'Publishing From Events', link: '/deeper/events' },
           { text: 'Containers & Context', link: '/deeper/context' },
           { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
           { text: 'Story Classes', link: '/deeper/stories' },
