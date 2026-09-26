@@ -1,7 +1,7 @@
 # Composing a Coherent Activity
 
-Before you record a new kind of activity, write its fields out in a line and
-check that they describe what happened.
+Before recording a new kind of activity, list its fields and check that they
+describe what happened.
 
 ## Composing an Activity
 
@@ -9,9 +9,8 @@ check that they describe what happened.
 :actor · :verb · :object · :target
 ```
 
-Fill in the values you plan to record, with `—` for an empty field. A reader
-should be able to tell what happened from those values alone. Do this before
-writing the headline.
+Fill in the values you plan to record, using `—` for empty fields. Check that
+they explain the event before writing its headline.
 
 ## Recording an Accepted Invitation
 
@@ -21,19 +20,19 @@ invitee · joined   · invitee    · —        incoherent
 invitee · accepted · invitation · project  coherent
 ```
 
-| Composition | What the Fields Say |
+| Composition | Meaning |
 |---|---|
-| Inviter · joined · invitee · — | The inviter is the actor, but sent the invitation earlier and did not act here. |
-| Invitee · joined · invitee · — | The invitee is repeated as the object, and nothing says what they joined. |
-| Invitee · accepted · invitation · project | Who accepted, what they accepted, and which project it was for. |
+| Inviter · joined · invitee · — | The inviter sent the invitation earlier but did not act in this event. |
+| Invitee · joined · invitee · — | The invitee appears as both actor and object, without identifying what they joined. |
+| Invitee · accepted · invitation · project | Identifies who accepted, what they accepted, and which project it was for. |
 
 <span id="checking-role-values"></span>
 
-Each field should name something that took part in this event, once. A
-repetition can be right: someone editing their own profile is both actor and
-object.
+Each field should identify someone or something involved in the event.
+The same entity may fill more than one role: someone editing their own
+profile is both actor and object.
 
-Record the coherent composition where the invitation is accepted:
+Record the activity where your application accepts the invitation:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -72,21 +71,22 @@ Story::for(Invitation::class)->verb('accept')
 user · moved · document · folder B
 ```
 
-This describes the move, but not where the document came from. That is a
-missing detail, not a wrong record; decide separately whether the event needs
-it.
+This records the move but omits the document's original folder. Decide
+whether the event needs that detail; its omission does not make the other
+fields incorrect.
 
-Read the stored values, not the headline. The headline can change later; the
-record stays.
+Check the stored values independently of the headline, since headline
+definitions can change later.
 
 <span id="duplicate-occurrences"></span>
 
 ## Checking Multiple Activities
 
-Three autosaves recorded as three revisions each look coherent alone.
-[Choosing When to Publish](/cookbook/choosing-when-to-publish) covers where the
-call belongs, and [Repeating Activities](/cookbook/repeating-activities) covers
-keeping only the latest.
+Three autosaves recorded as separate revisions may each describe a valid
+event but produce repetitive activities. See
+[Choosing When to Publish](/cookbook/choosing-when-to-publish) for where to
+publish and [Repeating Activities](/cookbook/repeating-activities) for keeping
+only the latest.
 
 <a id="unfilled-headline-tokens"></a>
 
@@ -104,8 +104,8 @@ Story::for(Document::class)->verb('archive')
     ->headline(':actor archived :object from :target'); // Nothing fills :target.
 ```
 
-The fields are fine, but the template names a role no publisher fills, so the
-headline shows a fallback where a name should be.
+The fields describe the event, but the headline includes an empty target.
+It displays a fallback where the target's name would be.
 
 <span id="repeated-rows"></span>
 <span id="inspecting-repeated-roles"></span>
