@@ -55,7 +55,7 @@ class MarkOrderPaid
     {
         $event->order->update(['paid_at' => now()]);
 
-        // No publish() here: Storyfeed publishes the event's activity itself.
+        // The activity is published automatically.
     }
 }
 ```
