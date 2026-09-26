@@ -31,31 +31,13 @@ Story::for(Order::class)->verb('place')
 
 ## Publishing Named Stories
 
-Publish it from an authenticated controller by name:
+Publish it by name:
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-
-class PlaceOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        $activity = story('order.place', $order)
-            ->by($request->user())
-            ->to($order->shop)
-            ->publish();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php
+story('order.place', $order) // [!code highlight]
+    ->by($request->user())
+    ->to($order->shop)
+    ->publish();
 ```
 
 <FeedExample :items="[placed]" />
