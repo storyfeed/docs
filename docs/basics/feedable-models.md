@@ -1,33 +1,33 @@
 # Feedable Models
 
 <script setup>
-import { scene, role, liveOf } from '../.vitepress/theme/world'
+import { scene, role } from '../.vitepress/theme/world'
 
-// The same recorded fact, with and without a URL supplied by the model.
 const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
 const withLink = [scene.order]
-// The MenuItem supplies a preview image: the item, with its photo.
 const product = scene.basics.activityContent.product
 const withImage = [{ ...product, object: { ...product.object, body: null,
   media: scene.basics.activityContent.photo.object.media } }]
-// A photo whose link opens in place.
-const openInPlace = [{ ...scene.basics.activityContent.photo,
-  object: { ...scene.basics.activityContent.photo.object, modal: true } }]
-const scoped = liveOf(scene.basics.namedFeeds.shop)
 </script>
 
 ## Introduction
 
-To include a model in the feed, implement the `Feedable` interface and give the
-model a label. A link and images are optional; see
-[Resolving Links and Images](#resolving-links-and-images).
+A feedable model provides a label for its activities. Storyfeed supplies a
+default label; links and images are optional. Making a model feedable does
+not record activities.
 
 <a id="making-a-model-feedable"></a>
 
 ## Making Models Feedable
 
-::: code-group
-```php [Fluent Syntax] memo="app/Models/Order.php"
+<a id="the-default-label"></a>
+<a id="default-labels"></a>
+
+### Using Default Labels
+
+Implement the `Feedable` interface and use the `InteractsWithFeed` trait:
+
+```php memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -35,50 +35,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
 
 class Order extends Model implements Feedable
 {
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()->label("Order #{$this->reference}");
-    }
+    use InteractsWithFeed; // [!code highlight]
 }
 ```
-
-```php [Named Arguments] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-        );
-    }
-}
-```
-:::
 
 <FeedExample :items="withSnapshot" />
 
-The `toFeed` method returns a `FeedEntity` containing the model's label.
-The `InteractsWithFeed` trait implements the remaining `Feedable` methods.
+The trait supplies the label without a `toFeed` method. Common defaults include:
+
+| Source | Example |
+|---|---|
+| `name` attribute | {{ role.product.label }} |
+| `title` attribute | `Spring Menu` |
+| class name and key | `Order #1042` |
 
 Storyfeed caches the model's feed values in a **snapshot**, which it refreshes
-whenever the model is saved.
+when the model is saved while recording is enabled.
+
+<a id="models-you-don-t-own"></a>
+<a id="registering-external-models"></a>
+
+For models from another package, such as Spatie Media Library, see [Registering External Models](/reference/feedable#registering-external-models).
+
+<a id="writing-tofeed-by-hand"></a>
+<a id="implementing-the-feedable-contract"></a>
+
+You may also [implement the Feedable contract's methods directly](/reference/feedable#implementing-the-feedable-contract).
+
+<a id="the-model-s-own-feed"></a>
+<a id="reading-a-model-s-feed"></a>
+
+To retrieve activities involving a model, see [Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
 
 <a id="morph-aliases"></a>
 
@@ -106,15 +96,14 @@ Relation::enforceMorphMap([
 Keep aliases used by existing activities in the map. If an alias cannot be
 resolved, the feed displays a placeholder for that model.
 
-## Defining Entity Values
+<a id="defining-entity-values"></a>
 
-<a id="the-default-label"></a>
+## Customizing Model Labels
 
-### Default Labels
+To set a model's label, define its `toFeed` method:
 
-You may omit the `toFeed` method to use the trait's default implementation:
-
-```php memo="app/Models/Order.php"
+::: code-group
+```php [Fluent Syntax] memo="app/Models/Order.php"
 <?php
 
 namespace App\Models;
@@ -122,82 +111,64 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-}
-```
-
-<FeedExample :items="withSnapshot" />
-
-Common default labels include:
-
-| Source | Example |
-|---|---|
-| `name` attribute | {{ role.product.label }} |
-| `title` attribute | `Spring Menu` |
-| class name and key | `Order #1042` |
-
-If you implement the `toFeed` method, set the label on the returned entity.
-
-### Custom Labels
-
-To customize default labels across your application, register a callback in a
-service provider. Return `null` to use Storyfeed's default rules:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::guessFeedLabelsUsing(
-    fn (Model $model) => $model->getAttribute('reference'),
-);
-```
-
-To customize one model's default label, implement its `guessFeedLabel` method.
-See [Feedable API](/reference/feedable#default-labels) for the complete label
-precedence and how to call the trait's implementation.
-
-<a id="describing-the-snapshot"></a>
-
-### Describing the Snapshot with `describeFeed()`
-
-You may define snapshot values in the `describeFeed` method by modifying the
-entity returned by `$this->feedEntity()`:
-
-```php memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
 
 class Order extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    public function describeFeed(): void
+    public function toFeed(): FeedEntity
     {
-        $this->feedEntity()->label("Order #{$this->reference}");
+        return FeedEntity::make()->label("Order #{$this->reference}"); // [!code highlight]
     }
 }
 ```
 
+```php [Named Arguments] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}", // [!code highlight]
+        );
+    }
+}
+```
+:::
+
 <FeedExample :items="withSnapshot" />
 
-Use this method to add data or bodies while retaining the default label, or to
-combine values from a parent model and its subclasses. Unset fields remain
-empty except for the label. If you implement `toFeed`, the trait does not call
-`describeFeed`.
+The `toFeed` method returns a `FeedEntity` containing the model's label.
+Set the label on the returned entity when you implement this method.
+
+<a id="custom-labels"></a>
+
+You may also [customize default labels across your application](/reference/feedable#custom-labels).
+
+<a id="describing-the-snapshot"></a>
+<a id="describing-the-snapshot-with-describefeed"></a>
+
+To add snapshot values while retaining a default label, use [`describeFeed()`](/reference/feedable#describing-the-snapshot-with-describefeed).
 
 ## Resolving Links and Images
 
 <a id="the-link"></a>
 
-### Links
+<a id="links"></a>
+
+### Adding Links
 
 Storyfeed resolves links when retrieving the feed. Register a resolver in the
 model's `booted` method:
@@ -206,7 +177,7 @@ model's `booted` method:
 use Storyfeed\FeedContext;
 
 static::feedMediaUsing(
-    fn (FeedContext $context) => route('orders.show', $context->routeKey()),
+    fn (FeedContext $context) => route('orders.show', $context->routeKey()), // [!code highlight]
 );
 ```
 
@@ -221,14 +192,15 @@ Return a URL string or `null` for no link.
 A resolver may return a different URL for each
 [named feed](/basics/named-feeds#linking-each-feed-somewhere-different).
 
-### Images
+### Storing Snapshot Data
 
-The media resolver may also provide an image preview. Use the `data` method to
-store the values it needs, such as the photo's media type and dimensions:
+Use the `data` method in `toFeed` to store values with the snapshot, such as
+an image's media type and dimensions:
 
 <a id="a-complete-model"></a>
 
 ::: code-group
+
 ```php [Fluent Syntax] memo="app/Models/MenuItem.php"
 <?php
 
@@ -237,38 +209,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
 use Storyfeed\FeedEntity;
-use Storyfeed\FeedImage;
-use Storyfeed\FeedMedia;
 
 class MenuItem extends Model implements Feedable
 {
     use InteractsWithFeed;
 
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context, FeedMedia $media) => $media
-                ->url(route('menu.show', $context->routeKey()))
-                ->preview(
-                    FeedImage::make()
-                        ->src(route('menu.photo', $context->routeKey()))
-                        ->mediaType($context->data('mediaType'))
-                        ->width($context->data('width'))
-                        ->height($context->data('height'))
-                        ->alt($context->label()),
-                ),
-        );
-    }
-
     public function toFeed(): FeedEntity
     {
         return FeedEntity::make()
             ->label($this->name)
-            ->data([
-                // the intrinsic facts a thumbnail needs,
-                // stored once, read on every render
+            ->data([ // [!code highlight]
                 'mediaType' => $this->photo_mime,
                 'width' => $this->photo_width,
                 'height' => $this->photo_height,
@@ -277,257 +228,83 @@ class MenuItem extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments] memo="app/Models/MenuItem.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
 use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
+    label: $this->name,
+    data: [ // [!code highlight]
+        'mediaType' => $this->photo_mime,
+        'width' => $this->photo_width,
+        'height' => $this->photo_height,
+    ],
+);
+```
+
+:::
+
+These values are stored when the snapshot is written. A media resolver can
+retrieve them through `$context->data('mediaType')`; a missing key returns `null`.
+
+<a id="images"></a>
+
+### Showing Image Previews
+
+Add a media resolver to the `MenuItem` model's `booted` method. Use `preview`
+for the image and `url` for the link:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="booted()"
+use Storyfeed\FeedContext;
 use Storyfeed\FeedImage;
 use Storyfeed\FeedMedia;
 
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context, FeedMedia $media) => $media
-                ->url(route('menu.show', $context->routeKey()))
-                ->preview(
-                    FeedImage::make(
-                        src: route('menu.photo', $context->routeKey()),
-                        mediaType: $context->data('mediaType'),
-                        width: $context->data('width'),
-                        height: $context->data('height'),
-                        alt: $context->label(),
-                    ),
-                ),
-        );
-    }
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: $this->name,
-            data: [
-                // the intrinsic facts a thumbnail needs,
-                // stored once, read on every render
-                'mediaType' => $this->photo_mime,
-                'width' => $this->photo_width,
-                'height' => $this->photo_height,
-            ],
-        );
-    }
-}
+static::feedMediaUsing(
+    fn (FeedContext $context, FeedMedia $media) => $media
+        ->url(route('menu.show', $context->routeKey()))
+        ->preview( // [!code highlight]
+            FeedImage::make()
+                ->src(route('menu.photo', $context->routeKey()))
+                ->mediaType($context->data('mediaType'))
+                ->width($context->data('width'))
+                ->height($context->data('height'))
+                ->alt($context->label()),
+        ),
+);
 ```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="booted()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+static::feedMediaUsing(
+    fn (FeedContext $context, FeedMedia $media) => $media
+        ->url(route('menu.show', $context->routeKey()))
+        ->preview( // [!code highlight]
+            FeedImage::make(
+                src: route('menu.photo', $context->routeKey()),
+                mediaType: $context->data('mediaType'),
+                width: $context->data('width'),
+                height: $context->data('height'),
+                alt: $context->label(),
+            ),
+        ),
+);
+```
+
 :::
 
 <FeedExample :items="withImage" />
 
-The context's `data` method returns a snapshot value, or `null` if the key is
-missing. Use the `preview` method for the image and the `url` method for the
-link. See [Feedable API](/reference/feedable) for all media properties.
+The resolver receives the snapshot's values in `$context` and an empty
+`FeedMedia` in `$media`. Return the populated media to include the preview.
+See [Feedable API](/reference/feedable#feedmedia) for all media properties.
 
 <a id="modal-links"></a>
 
-### Modal Links
-
-To mark a photo or document link for display in a modal, call the `modal`
-method on its media. This sets `modal: true` on the entity:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context, FeedMedia $media) => $media
-                ->url(route('photos.show', $context->routeKey()))
-                ->modal(),
-        );
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Photo.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-class Photo extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context) => FeedMedia::make(
-                url: route('photos.show', $context->routeKey()),
-                modal: true,
-            ),
-        );
-    }
-}
-```
-
-:::
-
-<FeedExample :items="openInPlace" />
-
-The payload's `modal` field is a boolean.
-
-<a id="writing-tofeed-by-hand"></a>
-
-## Implementing the Feedable Contract
-
-The `Feedable` interface defines the `toFeed` and `feedMedia` methods.
-The `InteractsWithFeed` trait implements `feedMedia` using your registered
-closure. You may implement the static method directly:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label("Order #{$this->reference}");
-    }
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        return FeedMedia::make()
-            ->url(route('orders.show', $context->routeKey()));
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: "Order #{$this->reference}",
-        );
-    }
-
-    public static function feedMedia(FeedContext $context): ?FeedMedia
-    {
-        return FeedMedia::make(
-            url: route('orders.show', $context->routeKey()),
-        );
-    }
-}
-```
-
-:::
-
-<FeedExample :items="withLink" />
-
-A method defined on the model takes precedence over the trait's implementation.
-
-<a id="models-you-don-t-own"></a>
-
-## Registering External Models
-
-To include a model from another package without modifying its class, register
-it in a service provider:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia;
-
-Storyfeed::feedable(Media::class)
-    ->toFeedUsing(
-        fn (Media $photo, FeedEntity $entity) => $entity
-            ->label($photo->name)
-            ->data(['mediaType' => $photo->mime_type]),
-    )
-    ->feedMediaUsing(
-        fn (FeedContext $context, FeedMedia $media) => $media
-            ->url(route('photos.show', $context->routeKey())),
-    );
-```
-
-Storyfeed then accepts the model wherever a `Feedable` model is supported.
-Both closures are optional. Without them, Storyfeed generates a default label.
-
-Register the exact class instantiated by the package. You cannot register a
-class that already implements `Feedable`.
-
-<a id="the-model-s-own-feed"></a>
-
-## Reading a Model's Feed
-
-To retrieve activities involving the model, call the `storyfeed` method
-provided by the `InteractsWithFeed` trait:
-
-```php memo="A controller, or wherever the feed is read"
-$shop->storyfeed()->get();
-```
-
-<FeedExample :items="scoped">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedExample>
-
-This is equivalent to `Storyfeed::feed()->involving($shop)->get()`.
+To mark a link for display in a modal, see [Modal Links](/reference/feedable#modal-links).
 
 ::: headless
 :::

@@ -1,5 +1,13 @@
 # Feedable API
 
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+
+const withLink = [scene.order]
+const openInPlace = [{ ...scene.basics.activityContent.photo,
+  object: { ...scene.basics.activityContent.photo.object, modal: true } }]
+</script>
+
 ## Introduction
 
 The `Feedable` API defines model snapshots and resolves current links and
@@ -34,6 +42,84 @@ interface Feedable
 `InteractsWithFeed` implements both methods. You may use its defaults or
 override either method on the model.
 
+<a id="writing-tofeed-by-hand"></a>
+
+### Implementing the Feedable Contract
+
+The `Feedable` interface defines the `toFeed` and `feedMedia` methods.
+The `InteractsWithFeed` trait implements `feedMedia` using your registered
+closure. You may implement the static method directly:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label("Order #{$this->reference}");
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code highlight]
+    {
+        return FeedMedia::make()
+            ->url(route('orders.show', $context->routeKey()));
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedMedia;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: "Order #{$this->reference}",
+        );
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia // [!code highlight]
+    {
+        return FeedMedia::make(
+            url: route('orders.show', $context->routeKey()),
+        );
+    }
+}
+```
+
+:::
+
+<FeedExample :items="withLink" />
+
+A method defined on the model takes precedence over the trait's implementation.
+
 ## InteractsWithFeed
 
 | Method | Where | Runs | Use |
@@ -52,6 +138,12 @@ A `feedMediaUsing()` closure receives a `FeedContext` and an empty `FeedMedia`.
 Return a URL string, the populated `$media`, or `null` for no link. Registering
 another closure replaces the first. Without a resolver, the model has no link.
 
+<a id="describing-the-snapshot"></a>
+
+### Describing the Snapshot with `describeFeed()`
+
+Define snapshot values by modifying the entity returned by `$this->feedEntity()`:
+
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/Order.php"
@@ -63,7 +155,6 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
 
 class Order extends Model implements Feedable
 {
@@ -72,15 +163,9 @@ class Order extends Model implements Feedable
     public function describeFeed(): void
     {
         $this->feedEntity()
-            ->label("Order #{$this->reference}")
-            ->body(Prose::make($this->instructions));
-    }
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context) => route('orders.show', $context->routeKey()),
-        );
+            ->body( // [!code highlight]
+                Prose::make($this->instructions),
+            );
     }
 }
 ```
@@ -94,7 +179,6 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Prose;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedContext;
 
 class Order extends Model implements Feedable
 {
@@ -103,20 +187,19 @@ class Order extends Model implements Feedable
     public function describeFeed(): void
     {
         $this->feedEntity()
-            ->label("Order #{$this->reference}")
-            ->body(Prose::make(content: $this->instructions));
-    }
-
-    protected static function booted(): void
-    {
-        static::feedMediaUsing(
-            fn (FeedContext $context) => route('orders.show', $context->routeKey()),
-        );
+            ->body( // [!code highlight]
+                Prose::make(content: $this->instructions),
+            );
     }
 }
 ```
 
 :::
+
+This example adds a body while retaining the default label. You may also set
+labels and data, or combine values from a parent model and its subclasses.
+Unset fields remain empty except for the label. If you implement `toFeed`,
+the trait does not call `describeFeed`.
 
 <span id="the-default-label"></span>
 
@@ -132,16 +215,21 @@ Unset labels use the first available value:
 | the registered noun and the key | `Dish #42` |
 | the class name as words and the key | `Menu Item #42` |
 
+### Custom Labels
+
+To customize default labels across your application, register a callback in a
+service provider. Return `null` to use the default rules:
+
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
-// null falls through
 Storyfeed::guessFeedLabelsUsing(
-    fn (Model $model) => $model->getAttribute('reference'),
+    fn (Model $model) => $model->getAttribute('reference'), // [!code highlight]
 );
 ```
 
+To customize one model's default label, override its `guessFeedLabel` method.
 Overriding `guessFeedLabel()` bypasses the application-wide guesser. To call
 the trait's implementation from your override, alias it:
 `use InteractsWithFeed { guessFeedLabel as guessedFeedLabel; }`.
@@ -176,6 +264,9 @@ model's feed.
 
 ## Registering External Models
 
+To include a model from another package without modifying its class, register
+it in a service provider:
+
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storyfeed\Facades\Storyfeed;
@@ -184,9 +275,14 @@ use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
 Storyfeed::feedable(Media::class)
-    ->toFeedUsing(fn (Media $media, FeedEntity $entity) => $entity->label($media->name))
+    ->toFeedUsing(
+        fn (Media $photo, FeedEntity $entity) => $entity
+            ->label($photo->name)
+            ->data(['mediaType' => $photo->mime_type]), // [!code highlight]
+    )
     ->feedMediaUsing(
-        fn (FeedContext $context, FeedMedia $media) => $media->url(route('media.show', $context->key())),
+        fn (FeedContext $context, FeedMedia $media) => $media
+            ->url(route('photos.show', $context->routeKey())),
     );
 ```
 
@@ -335,7 +431,7 @@ Every argument `FeedMedia::make()` takes has a method of the same name.
 
 ```php [Fluent Syntax]
 FeedMedia::make()->url($url)->attributes(['target' => '_blank']);
-// replaces the snapshot label on the node
+// replaces the snapshot label on the item
 FeedMedia::make()->url($url)->label($label);
 // hint the renderer to open as a modal
 FeedMedia::make()->url($url)->modal();
@@ -344,7 +440,7 @@ FeedMedia::make()->url($url)->preview($thumb)->icon($avatar);
 
 ```php [Named Arguments]
 FeedMedia::make(url: $url, attributes: ['target' => '_blank']);
-// replaces the snapshot label on the node
+// replaces the snapshot label on the item
 FeedMedia::make(url: $url, label: $label);
 // hint the renderer to open as a modal
 FeedMedia::make(url: $url, modal: true);
@@ -362,6 +458,72 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 | `icon()`, `preview()`, `image()` | `FeedImage`, or a bare src string | `entity.media` |
 | `attachments()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.attachments` |
 | `body()` | a body, a list, or a closure called when the body is resolved; each call appends | `entity.body`, after the stored bodies |
+
+### Modal Links
+
+To mark a photo or document link for display in a modal, call the `modal`
+method on its media. This sets `modal: true` on the entity:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Photo.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class Photo extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn (FeedContext $context, FeedMedia $media) => $media
+                ->url(route('photos.show', $context->routeKey()))
+                ->modal(),
+        );
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/Photo.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class Photo extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn (FeedContext $context) => FeedMedia::make(
+                url: route('photos.show', $context->routeKey()),
+                modal: true,
+            ),
+        );
+    }
+}
+```
+
+:::
+
+<FeedExample :items="openInPlace" />
+
+The payload's `modal` field is a boolean.
 
 ### Image Slots
 
