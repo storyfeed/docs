@@ -3,7 +3,6 @@
 <script setup>
 import { scene, group } from '../.vitepress/theme/world'
 
-const paid = scene.basics.recording.paid
 // A price change draws no card: the item's details would show today's price, not the change.
 const recorded = scene.basics.recording.priced
 const priced = { ...recorded, object: { ...recorded.object, body: null }, data: { from: 275, to: 295 } }
@@ -90,33 +89,32 @@ An alias and its setter record the same activity.
 
 ## Assigning the Actor
 
-Omit the actor and the authenticated user is recorded. When a webhook or a
-job records the fact, there is no authenticated user, so name the actor:
+Omit the actor and the authenticated user is recorded. A queued job or a
+scheduled command has no authenticated user, so name the actor:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
+```php [Fluent Syntax] memo="app/Jobs/PlaceScheduledOrder.php" at="handle()"
 Storyfeed::activity()
-    ->by('Stripe')
-    ->action('pay', $order)
+    ->by($this->order->customer)
+    ->action('place', $this->order)
+    ->to($this->order->shop)
     ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
+```php [Named Arguments] memo="app/Jobs/PlaceScheduledOrder.php" at="handle()"
 Storyfeed::record(
-    verb: 'pay',
-    object: $order,
-    actor: 'Stripe',
+    verb: 'place',
+    object: $this->order,
+    actor: $this->order->customer,
+    target: $this->order->shop,
 );
 ```
 :::
 
-<FeedExample :items="[paid]" />
+<FeedExample :items="[scene.order]" />
 
-A string actor is a [party](/deeper/parties): a named participant with no
-model. When nothing names an actor, the activity has none, and the actor is
-unknown.
-
-<a id="extra-data-and-backdating"></a>
+When nothing names an actor and no user is authenticated, the activity is
+recorded without one.
 
 ## Adding Activity Data
 
