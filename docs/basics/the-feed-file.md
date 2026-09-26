@@ -190,12 +190,12 @@ Story::resource(Order::class);
 
 <FeedExample :items="[created]" />
 
-| Verb | Headline | Without an actor | Icon |
-|---|---|---|---|
-| `create` | `:actor created :object` | `:object was created` | `plus` |
-| `update` | `:actor updated :object` | `:object was updated` | `pencil` |
-| `delete` | `:actor deleted :object` | `:object was deleted` | `trash` |
-| `restore` | `:actor restored :object` | `:object was restored` | `rotate-ccw` |
+| Verb | Headline | Icon |
+|---|---|---|
+| `create` | `:actor created :object` | `plus` |
+| `update` | `:actor updated :object` | `pencil` |
+| `delete` | `:actor deleted :object` | `trash` |
+| `restore` | `:actor restored :object` | `rotate-ccw` |
 
 Narrow it with `only()` or `except()`, and define a verb yourself to say
 something else:
