@@ -32,10 +32,7 @@ listener.
 
 <a id="fluent-recording"></a>
 
-### Publishing From a Controller
-
-Record an activity where the fact happens. The builder reads in the order of
-the headline it produces:
+The builder reads in the order of the headline it produces:
 
 ::: code-group
 <<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
