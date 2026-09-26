@@ -2,8 +2,8 @@
 
 ## Introduction
 
-An activity's actor doesn't have to be a user. It can be a **party**, such as
-a payment provider, or **anonymous**.
+An activity's actor can be a user or a **party**, such as a payment provider.
+An **anonymous** activity has no recorded actor.
 
 <script setup>
 import { scene, role } from '../.vitepress/theme/world'
@@ -13,17 +13,17 @@ const { anonymous } = scene.cookbook.actorless
 
 |  | Means | In the Payload |
 |---|---|---|
-| **anonymous** | the actor is genuinely unknown | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
-| **party** | a named participant with no model in your app | an ordinary entity, `type: "storyfeed.party"`, real `label`, `url: null` |
+| **anonymous** | no recorded actor | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
+| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and `url: null` |
 
 <a id="parties"></a>
 
 ## Recording a Party
 
 When {{ role.mall.label }} closes for the night, a scheduled Artisan command
-cancels any {{ role.shop.label }} order left unpaid. The command runs from the
-console, where no user is signed in, so Storyfeed has nobody to record as the
-actor. Name one with a string. A string in any role names a party:
+cancels any {{ role.shop.label }} order left unpaid. No user is signed in, so
+the command needs a named actor to identify who cancelled the orders. Pass a
+string to the `by` method to use a party. Strings can name parties in any role:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php"
@@ -88,10 +88,11 @@ class CancelUnpaidOrders extends Command
 
 <FeedExample :items="[cancelled]" />
 
-The first activity with a name creates its party; later ones reuse it.
+Storyfeed creates the party when its name is first used and reuses it for
+later activities.
 
-Without `by('Scoops Register')`, the command's activity would have no actor at
-all: an [anonymous activity](#recording-anonymous-activities).
+Without `by('Scoops Register')` or another actor default, this command records
+an [anonymous activity](#recording-anonymous-activities).
 
 ### Using Parties in Other Roles
 
@@ -150,15 +151,15 @@ class DispatchOrderController extends Controller
 ```
 :::
 
-`Storyfeed::party('Front desk')` returns the party's model, finding or creating
-it by name, for code that needs the model rather than its name.
+To retrieve a party model by name, call `Storyfeed::party('Front desk')`.
+Storyfeed creates it if it does not exist.
 
 <a id="declaring-parties"></a>
 
 ## Declaring Party Names
 
-Each distinct name is its own party, so a misspelt `'Strpie'` records a second
-party beside `'Stripe'`. Declare the names an actor may take:
+A misspelling such as `'Strpie'` creates a separate party from `'Stripe'`.
+Declare allowed actor names to detect these mistakes:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -166,20 +167,21 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::parties(['Stripe', 'Scoops Register']);
 ```
 
-Once a list is declared, a name outside it:
+Undeclared names are handled according to the environment:
 
 | Environment | An Undeclared Name |
 |---|---|
-| `local`, `testing` | throws `UndeclaredParty`, naming the call and the list |
-| everywhere else | is ignored: the activity keeps the actor it would have had without the name, and `storyfeed:doctor` reports it |
+| `local`, `testing` | throws `UndeclaredParty` with the call and allowed names |
+| everywhere else | is ignored; the activity retains its default actor and `storyfeed:doctor` reports the name |
 
-The list applies to names given to
-[`Storyfeed::actor()`](/deeper/activity-scopes#sharing-an-actor) and to a
-[verb's own `->actor()`](/deeper/stories#request-based-actors); `->by()` does
-not check it. With no list, any name becomes a party. Names match by their
-slug, so `'Stripe'` and `'stripe'` are one party. `parties.strict` in
-`config/storyfeed.php` sets whether an undeclared name throws; `null` throws in
-`local` and `testing` only.
+The list applies to [`Storyfeed::actor()`](/deeper/activity-scopes#sharing-an-actor)
+and a [verb's `actor` method](/deeper/stories#request-based-actors). The `by`
+method does not check it. Without a list, any name is allowed. Names match by
+slug, so `'Stripe'` and `'stripe'` identify the same party.
+
+Set `parties.strict` in `config/storyfeed.php` to control whether undeclared
+names throw an exception. The default, `null`, throws only in `local` and
+`testing`.
 
 <a id="app-wide-fallbacks"></a>
 
@@ -192,15 +194,15 @@ slug, so `'Stripe'` and `'stripe'` are one party. `parties.strict` in
 ],
 ```
 
-With no fallback, an activity with no user is anonymous.
+Without a fallback or another resolved actor, the activity is anonymous.
 
 <a id="resolving-the-default-actor"></a>
 
 ### Resolving the Default Actor
 
-By default, an activity published without an actor records the authenticated
-user. When your app authenticates with another guard, set `actor_resolver` to
-an invokable class that returns the actor:
+By default, Storyfeed records the authenticated user when you omit the actor.
+To use another authentication guard, set `actor_resolver` to an invokable class
+that returns the actor:
 
 ```php memo="app/Support/ResolveFeedActor.php"
 <?php
@@ -227,9 +229,9 @@ When the resolver returns `null`, the fallback party applies.
 
 ## Recording Anonymous Activities
 
-Omitting the actor lets the authenticated user, a scope or a default apply.
-To record an activity with no actor, even in an authenticated request, pass
-`null` to `by()`:
+If you omit the actor, Storyfeed uses the authenticated user or a configured
+default. To record no actor, even during an authenticated request, pass `null`
+to the `by` method:
 
 ```php
 Storyfeed::activity()
@@ -241,16 +243,16 @@ Storyfeed::activity()
 
 <FeedExample :items="[anonymous]" />
 
-| Spelling | Actor |
+| Method | Actor |
 |---|---|
-| omit `by()` | resolved from the request |
+| omit `by()` | resolved from the request or configured defaults |
 | `->by(null)` or `->actor(null)` | anonymous |
 | `->anonymously()` | anonymous, on an existing builder |
-| `Storyfeed::anonymous()` | anonymous, from the start |
-| `Storyfeed::record(..., anonymous: true)` | anonymous; supplying a non-null `actor:` too throws |
+| `Storyfeed::anonymous()` | anonymous, on a new builder |
+| `Storyfeed::record(..., anonymous: true)` | anonymous; also supplying a non-null `actor:` throws an exception |
 
-`Storyfeed::record(..., actor: null)` still records the logged-in user. Use
-`anonymous: true` for explicit anonymity with named arguments.
+Passing `actor: null` to `Storyfeed::record()` still allows the default actor
+to apply. Use `anonymous: true` to record no actor with named arguments.
 
 <a id="actorless-voice"></a>
 
@@ -265,13 +267,12 @@ Story::for(Order::class)->verb('confirm')
     ->anonymousHeadline(':object was confirmed');
 ```
 
-An activity recorded with no actor uses the anonymous headline. A party uses
-the ordinary headline. The anonymous template cannot contain `:actor`.
-A closure works as in
+An anonymous activity uses the anonymous headline. A party uses the ordinary
+headline. Anonymous templates cannot contain `:actor`. You may also use a
+closure, as described in
 [The Feed File](/basics/the-feed-file#choosing-a-headline-per-activity).
 
-A verb that never has an actor, such as one recorded by a scheduled command,
-can leave `:actor` out of its headline:
+If a verb never records an actor, you may omit `:actor` from its headline:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -281,5 +282,4 @@ Story::for(Order::class)->verb('expire')
     ->headline(':object expired at :target');
 ```
 
-Leaving `:actor` out of a headline only changes the sentence. A stored actor
-stays stored.
+Omitting `:actor` from a headline does not remove the recorded actor.
