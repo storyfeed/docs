@@ -46,16 +46,6 @@ The `for` method specifies the object type, and the `verb` method specifies
 the [recorded verb](/basics/recording). This headline applies to `place`
 activities involving an order.
 
-Use role tokens in the template:
-
-```php
-// ✗ not tokens: these render as text
-->headline(':customer placed :order with :shop')
-
-// ✓
-->headline(':actor placed :object with :target')
-```
-
 ## Headline Templates
 
 <a id="tokens"></a>
