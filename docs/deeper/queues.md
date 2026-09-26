@@ -19,31 +19,12 @@ to process queued activities. The `sync` connection runs them immediately.
 
 ## Queueing Activities
 
-```php memo="app/Http/Controllers/PlaceOrderController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PlaceOrderController extends Controller
-{
-    public function __invoke(Request $request, Order $order): RedirectResponse
-    {
-        $order->update(['status' => 'placed']);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('place', $order)
-            ->to($order->shop)
-            ->queue();
-
-        return to_route('orders.show', $order);
-    }
-}
+```php
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)
+    ->to($order->shop)
+    ->queue(); // [!code highlight]
 ```
 
 After the worker publishes it:
