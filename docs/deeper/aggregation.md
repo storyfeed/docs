@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Aggregation shows several related activities as one row: three orders from
-one customer read as one line, not three.
+Aggregation combines related activities into one feed item, so three orders
+from one customer appear as one row.
 
 <script setup>
 import { scene, logOf, liveOf, everything } from '../.vitepress/theme/world'
@@ -20,11 +20,11 @@ const live = liveOf(everything())
 
 ### Repeated Activities
 
-Three orders from one customer, minutes apart, as a log:
+Here are three orders from one customer, minutes apart, in log mode:
 
 <FeedExample :items="log" />
 
-The same three, grouped by the verb's `grouped()`:
+Define a headline with `grouped()` to describe them together:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -33,8 +33,10 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)
     ->verb('place')
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
 <FeedExample :items="[repeat]" />
@@ -52,41 +54,43 @@ group names an **axis**: what its activities have in common.
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('place')->grouped(fn (GroupBuilder $group) => $group
-    ->actors(':actors ordered from :target'));
+Story::verb('place')->grouped(
+    fn (GroupBuilder $group) => $group
+        ->actors(':actors ordered from :target'),
+);
 ```
 
 <FeedExample :items="[actors]" />
 
-A `repeat` group holds one type, so its headline goes under
-`Story::for(Order::class)` and can say "orders". An `actors` group can hold
-several types, since other customers may be placing reservations, so its
-headline goes on the verb alone and names no type.
+A `repeat` group contains one type, so its headline belongs under
+`Story::for(Order::class)` and can say "orders". An `actors` group may also
+contain reservations, so its headline belongs on the verb alone and must not
+name a type.
 
-Grouping is decided when the activity is published. In each read mode, an
-activity is in only one group. A group carries no quote or image of its own;
-those stay on its activities, and `log()` shows each one.
+Storyfeed groups activities when published. Each activity belongs to only one
+group per read mode. Quotes and images belong to the activities, so use `log()`
+to show each one.
 
 <a id="axes-by-read-mode"></a>
 
 ## Choosing a Read Mode
 
-A longer feed makes the difference visible: repeated actions and busy places
-fold into rows that expand to show their members.
+In a longer feed, repeated actions and activities at busy places appear as
+rows you can expand:
 
 <FeedExample :items="live" days height="520" />
 
-The read mode chooses which groupings a read shows:
+The read mode determines which groups the query returns:
 
-| Mode | Reads |
+| Mode | Returns |
 |---|---|
-| `log()` | no axis at all — one node per activity, and a composite's members appear as ordinary rows |
-| `live()` | one grouping per activity, chosen from the axes that fit it, falling back to `repeat`. The default |
-| `summary()` | `summary`: one row per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
+| `log()` | one item per activity, including each member of a composite |
+| `live()` | one group per activity, chosen from the groups it qualifies for, with `repeat` as the fallback. The default |
+| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
 
-With `grouping.curate` set to `false`, `live()` shows repeats only.
-`storyfeed:curate` regroups recent activity, and runs hourly when Laravel's
-scheduler runs.
+Set `grouping.curate` to `false` to limit `live()` to repeats.
+`storyfeed:curate` chooses groups for recent activities and runs hourly through
+Laravel's scheduler.
 
 ## Grouping Axes
 
@@ -100,8 +104,8 @@ scheduler runs.
 | `object` | many actions on one object | `:actor` `:object` | yes | ":actor changed the price of :object :count times" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | — | see [Composites](/deeper/composites#headlines-for-a-composite) |
 
-A headline for a **One Type** axis can go in a Story class or inside
-`Story::for()`. The others go on the verb alone.
+Headlines for groups marked **One Type** may go in a Story class or inside
+`Story::for()`. Define the others on the verb alone.
 
 <a id="thresholds"></a>
 
@@ -125,9 +129,9 @@ A headline for a **One Type** axis can go in a Story class or inside
 | `min_target_members` | `targets`: this many activities | 3 |
 | `min_object_members` | `object`: this many activities on the one object | 2 |
 
-Below a threshold, that axis cannot win; activities fall back to `repeat`
-when no other axis wins. Activities already published keep their groups until
-you [rehash them](/reference/commands#rehashing-existing-rows).
+Activities below a threshold cannot form that group. They fall back to
+`repeat` when no other group qualifies. Published activities keep their groups
+until you [rehash them](/reference/commands#rehashing-existing-rows).
 
 See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
 boundary shared by grouped activities.
@@ -136,9 +140,9 @@ boundary shared by grouped activities.
 
 ## Defining Group Headlines
 
-`grouped()` takes one headline per axis, as in the
-[repeat](#grouping-repeats) and [actors](#grouping-along-another-axis) examples
-above. Where it's declared decides which groups use it.
+Pass one headline per axis to `grouped()`, as in the
+[repeat](#grouping-repeats) and [actors](#grouping-along-another-axis) examples.
+Where you declare it determines which groups use it.
 
 ### Definition Scope
 
@@ -147,7 +151,7 @@ above. Where it's declared decides which groups use it.
 | `Story::for(Order::class)->verb('place')`, or a Story class's `place()` | `repeat.order.place` | groups of orders |
 | `Story::verb('place')` | `repeat.place` | groups of any type |
 
-A group tries the key with its type first, then the key without.
+Storyfeed tries the key with the group's type first, then the key without it.
 
 <a id="plural-tokens"></a>
 
@@ -163,26 +167,26 @@ A group tries the key with its type first, then the key without.
 | `:result` | `:results` | the produced entity |
 | `:instrument` | `:instruments` | the tool or service used |
 
-A plural token becomes a few of the group's names and a count of the rest.
-[Rendering](/basics/rendering#groups) covers how. `:count` is the number of
+A plural token displays a few names and a count of the rest. See
+[Rendering](/basics/rendering#groups) for details. `:count` is the number of
 activities in the group.
 
 <a id="group-headline-tokens"></a>
 
-A group headline may only use tokens that are true of **every** activity in
-it. A singular token is allowed only where every member shares it (the
-**Singular Tokens Allowed** column above); a plural token is allowed everywhere.
+A singular token is allowed only when **every** activity shares that role,
+as shown in **Singular Tokens Allowed** above. Plural tokens are allowed in
+any group headline.
 
 ```php
 // a repeat group: one customer, many dishes
-:actor changed the price of :object :count times' // ✗ which dish? fails when stories compile
-':actor changed :count prices'                     // ✓
-':actor changed :count prices on :targets'         // ✓ lists fit every member
+':actor changed the price of :object :count times' // ✗ which dish? fails when stories compile
+':actor changed :count prices'                      // ✓
+':actor changed :count prices on :targets'          // ✓ lists fit every member
 ```
 
 <a id="plural-lists-in-headlines"></a>
 
-Both of these are token-safe; only one is readable:
+Both headlines use allowed tokens, but three lists make the first hard to read:
 
 ```php
 // an actors group: every member shares :target
@@ -190,15 +194,15 @@ Both of these are token-safe; only one is readable:
 ':actors ordered from :target'          // ✓ one list, one shared role
 ```
 
-Keep one list per template and collapse the others to `:count`.
+Use one list per headline and replace the others with `:count`.
 
 <a id="groups-with-missing-roles"></a>
 
 ### Missing Roles
 
-A plural token lists only the activities that filled the role. `targets`
-groups by actor, verb and calendar period (a day by default), so an activity with no target can join the
-group: it counts towards `:count` but adds no name.
+A plural token lists only filled roles. The `targets` axis groups by actor,
+verb, and calendar period (a day by default). An activity with an empty target
+can therefore join the group: it contributes to `:count` but adds no name.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
@@ -206,8 +210,8 @@ group: it counts towards `:count` but adds no name.
 ':actor asked about :targets'       // ✓ names the two there are
 ```
 
-The first line is wrong because of the noun beside `:count`, and nothing
-checks that.
+The first headline says there are five dishes when only two are recorded.
+Storyfeed does not check nouns beside `:count`.
 
 ### Fallback Nouns
 
@@ -225,21 +229,20 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)->fallback()->noun('dish|dishes');
 ```
 
-Supply both forms; Storyfeed never inflects. Locales with more plural forms
-can add pipe segments, and [Localization](/deeper/localization#translating-a-noun)
-covers translated nouns. Without a noun, the fallback is `item|items`.
+Supply both forms; Storyfeed does not derive plurals. For more plural forms,
+add pipe segments. See [Localization](/deeper/localization#translating-a-noun)
+for translated nouns. The default is `item|items`.
 
-The number of entities picks the form: `FeedNoun::form('dish|dishes', 7)`
-returns `dishes`. So `:actor put :object on the menu` can arrive as
-`:actor put dishes on the menu`. The noun is plain text; `:actor` is still a
-link.
+The entity count selects the form: `FeedNoun::form('dish|dishes', 7)` returns
+`dishes`. The headline `:actor put :object on the menu` becomes
+`:actor put dishes on the menu`. The noun is plain text; `:actor` remains a link.
 
 <a id="custom-axes"></a>
 
 ## Defining Custom Axes
 
-An axis names what its activities share and how many it needs before it
-groups them:
+Define a custom axis with the fields activities must share and the threshold
+they must meet:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -252,17 +255,16 @@ Storyfeed::axes([
 ]);
 ```
 
-`scene` groups activities in the same [context](/deeper/context), such as
-three customers asking about dishes in one shop. Inside `grouped()`,
-`$group->axis('scene', …)` gives a custom axis its headline, and
-`$group->any(…)` matches whichever axis groups the activity.
+Here, `scene` groups activities in the same [context](/deeper/context), such
+as three customers asking about dishes in one shop. Use `$group->axis('scene', …)`
+inside `grouped()` to define its headline, or `$group->any(…)` to match any axis.
 
 <a id="keys"></a>
 
 ### Axis Keys
 
-The key lists, separated by `:`, the fields two activities must share. `!`
-after a field means an activity without it never joins the axis.
+Separate shared fields with `:`. Add `!` after a field to exclude activities
+where it is empty.
 
 | Role | Type Field | Id Field |
 |---|---|---|
@@ -274,16 +276,16 @@ after a field means an activity without it never joins the axis.
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
 
-`v` adds the verb, and `d` the calendar period, a day by default. A singular
-token such as `:context` is allowed in the axis's headlines when both of its
-role's fields are in the key. Without `v`, a group may mix verbs, so its
-headline goes on a verb-agnostic key (`scene.*` or `*.*`).
+Add `v` to group by verb and `d` to group by calendar period (a day by default).
+A singular token such as `:context` requires both of that role's fields in the
+key. Without `v`, the group may contain several verbs, so define its headline
+on a key without a verb (`scene.*` or `*.*`).
 
 <a id="priority"></a>
 
 ### Prioritizing Axes
 
-A new axis has the lowest priority. To outrank a built-in, say so:
+New axes have the lowest priority. To place one before a built-in axis:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;

@@ -2,8 +2,8 @@
 
 ## Introduction
 
-`keepLatest()` leaves the latest activity for a verb in the feed.
-Earlier matching activities are removed from the feed, including `log()`.
+`keepLatest()` keeps the latest matching activity in the feed and removes
+earlier ones, including from `log()`.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -23,7 +23,7 @@ Story::for(Order::class)->verb('save')
     ->keepLatest(); // Earlier saves of this order are removed from log() too.
 ```
 
-Publish normally. The verb's declaration applies at every call site:
+Publish as usual. The declaration applies wherever you publish this verb:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -39,11 +39,11 @@ Storyfeed::record(
 ```
 :::
 
-After successive saves of the same order, the feed contains the latest save:
+After several saves of the same order, the feed contains only the latest:
 
 <FeedExample :items="[saved]" />
 
-Other objects and other verbs keep their activities.
+Activities for other objects and verbs remain.
 
 <a id="keeping-the-latest-per-actor"></a>
 
@@ -62,10 +62,10 @@ Story::for(Order::class)->verb('save')
 
 <FeedExample :items="[otherActor, saved]" />
 
-The feed keeps each actor's latest save of each order. `per` takes one role name
-or an array of role names. The verb is always part of the match. An activity
-with an empty role in the match, such as an anonymous save under
-`per: ['object', 'actor']`, replaces nothing.
+The feed keeps each actor's latest save of each order. Pass one role name or
+an array to `per`; the verb is always part of the match. An activity replaces
+nothing if a matching role is empty. For example, an anonymous save has no
+recorded actor, so it replaces nothing under `per: ['object', 'actor']`.
 
 ## Limiting the Time Window
 
@@ -83,7 +83,7 @@ Story::for(Order::class)->verb('save')
 <FeedExample :items="[saved, earlier]" />
 
 Only matching activities within ten minutes of the new activity's
-`published_at` compete. Older saves outside that window remain in the feed.
+`published_at` are considered. Older saves outside the window remain.
 `within` accepts a positive interval string or a `DateInterval`.
 
 | Declaration | Matching Activities |
@@ -95,9 +95,9 @@ Only matching activities within ten minutes of the new activity's
 
 ## Deleting Superseded Activities
 
-Superseded activities are soft-deleted by default. They leave the feed but
-stay in the activities table until [pruning](/deeper/retention#pruning-activities)
-removes them with the rest. To delete them as they are superseded:
+By default, superseded activities are soft-deleted. They leave the feed but
+remain in the activities table until [pruning](/deeper/retention#pruning-activities).
+To delete them permanently as they are superseded:
 
 ```php memo="config/storyfeed.php"
 'keep_latest' => [
@@ -110,13 +110,13 @@ removes them with the rest. To delete them as they are superseded:
 | `'soft'` | soft-deleted; the default |
 | `'force'` | deleted |
 
-The latest `published_at` wins, regardless of arrival order. A backdated
-activity older than a matching one is stored already soft-deleted, or not
-stored at all under `'force'`.
+Storyfeed keeps the latest `published_at`, regardless of arrival order.
+A backdated activity older than a matching one is stored as soft-deleted, or
+discarded under `'force'`.
 
 <a id="queue-uniqueness-and-read-filtering"></a>
 
 ## Comparing With Unique Stories
 
-[`ShouldBeUnique`](/deeper/stories#queueing-stories) keeps the first pending publish.
-`keepLatest()` supersedes matching stored activities after publication.
+[`ShouldBeUnique`](/deeper/stories#queueing-stories) keeps the first pending
+publication. `keepLatest()` replaces matching stored activities after publication.

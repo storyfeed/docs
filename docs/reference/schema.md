@@ -2,47 +2,47 @@
 
 ## Introduction
 
-The published migrations create nine tables. `storyfeed:install` publishes
-them, or publish them yourself:
+Storyfeed's migrations create nine tables. Publish them with `storyfeed:install`
+or the following command:
 
 ```bash
 php artisan vendor:publish --tag=storyfeed-migrations
 ```
 
-Table names can be changed in [Configuration](/reference/configuration#tables-and-models).
-The migrations create the indexes Storyfeed's reads use.
+Set table names in [Configuration](/reference/configuration#tables-and-models).
+The migrations include indexes for feed queries.
 
 ## Activity Storage
 
 ### `feed_activities`
 
-One row per activity, soft-deleted by `deleteFromFeed()`. The `uid` column is
-the ULID a payload's `id` carries. Role columns store morph aliases, so an
-alias that changes or disappears from the morph map leaves the activity
-unresolved.
+Stores one record per activity. `deleteFromFeed()` soft-deletes these records.
+The `uid` ULID becomes the payload's `id`. Role columns store morph aliases;
+removing or changing an alias leaves affected roles unresolved.
 
 ### `feed_snapshots`
 
-One row per model: the label, data and bodies `toFeed()` produced. A feed
-read takes each entity's label and link from here, not from the live model. [`storyfeed:trickle`](/reference/commands#scheduled)
-fills and refreshes it, and [`storyfeed:rebuild`](/reference/commands#rebuilding-snapshots)
-rebuilds it. Its model key column is an unsigned big integer, and does not hold UUID keys.
+Stores each model's label, data, and bodies from `toFeed()`. Feed retrieval
+uses these snapshots to resolve entity labels and links.
+[`storyfeed:trickle`](/reference/commands#scheduled) creates and refreshes
+snapshots; [`storyfeed:rebuild`](/reference/commands#rebuilding-snapshots)
+rebuilds them. Model keys are unsigned big integers; UUID keys are not supported.
 
 ## Grouping and Batching
 
 ### `feed_groupings`
 
-The grouping candidates for each activity and the axis chosen for it.
-[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows) rebuilds it.
+Stores candidate groups and the selected axis for each activity.
+Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
 
 ### `feed_batches`
 
-Bursts of activity by one actor, open until the quiet window closes them.
+Stores an actor's activities as batches, open until the configured window
+has elapsed.
 
 ### `feed_batch_locks`
 
-One row per batched actor, so two publishes at once by one actor join the same
-batch.
+Stores one lock per batched actor so concurrent publications join the same batch.
 
 ## Participants
 
@@ -52,17 +52,18 @@ Named participants with no model in your app.
 
 ### `feed_participants`
 
-One row per activity and filled role: the index `involving()` and
-`$model->storyfeed()` read. [`storyfeed:participants`](/reference/commands#other-maintenance-commands)
-rebuilds it.
+Indexes each activity's filled roles for `involving()` and
+`$model->storyfeed()` queries. Rebuild it with
+[`storyfeed:participants`](/reference/commands#other-maintenance-commands).
 
 ## Deletion and Metadata
 
 ### `feed_tombstones`
 
-One row per deleted model, which its activities point at instead. Its alias is
-`storyfeed.tombstone`, whatever your morph map says. See [Deleted Models](/deeper/deleted-models).
+Stores a tombstone for each deleted model, referenced by its activities.
+The alias is always `storyfeed.tombstone`, regardless of the morph map.
+See [Deleted Models](/deeper/deleted-models).
 
 ### `feed_meta`
 
-Storyfeed's own bookkeeping, including the sync token.
+Stores Storyfeed metadata, including the sync token.

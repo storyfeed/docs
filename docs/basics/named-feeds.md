@@ -17,37 +17,34 @@ const unlinked = [{ ...scene.order, object: { ...scene.order.object, url: null }
 
 ## Introduction
 
-Most apps show their activity to more than one audience. At {{ role.shop.label }}, the
-kitchen needs every order as it moves, the menu has its own change log, and a
-customer should see their order and nothing about price changes or staff notes.
-Written as separate reads in separate controllers, those decisions drift apart,
-and the day someone records a new verb, nothing stops it appearing on the
-customer's page.
+Most apps show their activity to more than one audience. At
+{{ role.shop.label }}, the kitchen needs every order as it moves, the menu has
+its own change log, and a customer should see only their own order. When each
+screen filters activities in its own controller, those filters drift apart,
+and a newly recorded verb can appear on the customer's page without anyone
+deciding that it should.
 
-A named feed declares an audience once, by name:
+A named feed defines an audience once, by name:
 
-- **Every screen reads the same decision.** A controller, a Filament widget and
-  an API endpoint that read `'customer'` all show the same verbs.
-- **New verbs can't slip through.** The [doctor](/deeper/diagnosing) checks that
-  every verb you record is shown or left out by some feed, so in CI a new verb
-  fails the build until someone decides who may see it.
-- **Each feed can link somewhere different.** An order opens its ticket on the
-  kitchen's board and its status page on the customer's.
-- **A feed class can't lose its subject.** The customer's feed always reads
-  about their order, so no read can leave it out.
+- **Every screen shows the same verbs.** A controller, a Filament widget and an
+  API endpoint that retrieve the `'customer'` feed all apply the same filter.
+- **New verbs are caught in CI.** The [doctor](/deeper/diagnosing) warns about
+  any recorded verb that no feed shows or excludes, so a new verb is flagged
+  until someone decides who may see it.
+- **Each feed can link somewhere different.** An order can open its ticket on
+  the kitchen's board and its status page on the customer's.
+- **A feed class requires its subject.** The customer's feed is always scoped to
+  their order.
 
 <a id="declaring-a-feed"></a>
 
 <a id="registering-a-closure"></a>
 ## Defining Named Feeds
 
-{{ role.shop.label }} has two screens that aren't about any one order: the
-kitchen's order board, and the menu's change log. Each is a feed with its own
-audience, so each gets a name.
+Define separate feeds for the kitchen's order board and the menu's change log:
 
-Register each feed as a closure in the `boot` method of a service provider. The
-closure receives the builder and declares which activities the feed shows, and
-how it reads them:
+Register each feed as a closure in a service provider's `boot` method. The
+closure receives the feed builder and configures its filters and mode:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -72,7 +69,7 @@ Storyfeed::feeds([
 
 ### Reading a Named Feed
 
-Read a feed by name from the facade. The kitchen's order board:
+Pass the feed name to the `feed` method on the `Storyfeed` facade:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -82,7 +79,7 @@ Storyfeed::feed('kitchen')->get();
 
 <FeedExample :items="kitchen" />
 
-And the menu's change log, across every item:
+To retrieve the menu's change log:
 
 ```php memo="A controller, or wherever the feed is read"
 Storyfeed::feed('menu')->get();
@@ -90,10 +87,10 @@ Storyfeed::feed('menu')->get();
 
 <FeedExample :items="menu" />
 
-A model reads a named feed about itself the same way:
-`$order->storyfeed('kitchen')` is the kitchen's view of one order.
+To retrieve a named feed for one model, pass the name to its `storyfeed` method.
+For example, `$order->storyfeed('kitchen')` applies the kitchen feed to that order.
 
-An unknown name throws `UnknownFeed`.
+An unknown feed name throws an `UnknownFeed` exception.
 
 <a id="feed-classes"></a>
 
@@ -101,15 +98,14 @@ An unknown name throws `UnknownFeed`.
 <a id="writing-feed-classes"></a>
 ## Defining Feed Classes
 
-A customer's order page is a feed about one order: theirs. When a feed always
-reads about one subject, use a feed class instead of a closure. To generate one,
-use the `make:feed` Artisan command:
+Use a feed class when a feed requires a subject, such as an order. Generate it
+with the `make:feed` Artisan command:
 
 ```bash
 php artisan make:feed Customer --subject='App\Models\Order' --role=involving
 ```
 
-This creates `app/Feeds/CustomerFeed.php`, with the order in its constructor:
+The command creates `app/Feeds/CustomerFeed.php` with an order constructor parameter:
 
 ```php memo="app/Feeds/CustomerFeed.php"
 <?php
@@ -139,7 +135,7 @@ class CustomerFeed extends Feed
 }
 ```
 
-Read it with `make()`, passing the order:
+Pass the order to the feed class's `make` method:
 
 ```php memo="A controller, or wherever the feed is read"
 use App\Feeds\CustomerFeed;
@@ -149,18 +145,19 @@ CustomerFeed::make($order)->get();
 
 <FeedExample :items="customer" />
 
-[Commands](/reference/commands) lists every `make:feed` option.
+See [Commands](/reference/commands) for all `make:feed` options.
 
 <a id="scoping-by-subject"></a>
 
 <a id="defining-verbs-and-read-modes"></a>
 ### Defining and Scoping Hooks
 
-`define()` describes the feed without an order. Storyfeed calls it on its own,
-for example when the doctor checks which verbs each feed shows, so it can't use
-the constructor's values. `scope()` runs on every read, with the order.
+The `define` method configures the feed without constructor values, including
+when the doctor checks verb coverage. The `scope` method applies the subject
+constraint whenever you retrieve the feed.
 
-A read can narrow a feed class, but can't change what `scope()` set:
+Additional query filters may narrow the results but cannot replace the
+constraints set by `scope`:
 
 ```php memo="A controller, or wherever the feed is read"
 // throws FeedMisconfigured
@@ -170,8 +167,7 @@ CustomerFeed::make($order)->involving($other);
 CustomerFeed::make($order)->only(['place'])->live();
 ```
 
-A feed with no subject declares no constructor and no `scope()`. The kitchen's
-closure feed, as a class:
+For a feed without a subject, omit the constructor and `scope` method:
 
 ```php memo="app/Feeds/KitchenFeed.php"
 <?php
@@ -193,8 +189,8 @@ class KitchenFeed extends Feed
 <a id="registering-classes"></a>
 ### Registering Feed Classes
 
-A feed class works without registering. Registering gives it a name, which the
-next section puts to use. Register classes and closures in one list:
+Register a feed class to access it by name. You may register classes and
+closures together:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Feeds\CustomerFeed;
@@ -219,18 +215,21 @@ Storyfeed::feeds([
 
 ### Linking Per Feed
 
-A model's [link resolver](/basics/feedable-models#the-link) may call
-`$context->feed()` for the name the feed was registered under, so an order can
-open its ticket on the kitchen's board, its status page on the customer's, and
-nothing elsewhere:
+A model's [link resolver](/basics/feedable-models#the-link) can call the
+context's `feed` method to get the registered feed name. Use it to return a
+kitchen ticket URL, customer status URL, or no link:
 
 ```php memo="app/Models/Order.php" at="booted()"
-static::feedMediaUsing(fn ($context) => match ($context->feed()) {
-    'kitchen' => route('kitchen.ticket', $context->routeKey()),
-    'customer' => route('orders.status', $context->routeKey()),
-    // an ad-hoc feed reports no name; without this arm the match throws
-    default => null,
-});
+use Storyfeed\FeedContext;
+
+static::feedMediaUsing(
+    fn (FeedContext $context) => match ($context->feed()) {
+        'kitchen' => route('kitchen.ticket', $context->routeKey()),
+        'customer' => route('orders.status', $context->routeKey()),
+        // an ad-hoc feed reports no name; without this arm the match throws
+        default => null,
+    },
+);
 ```
 
 On the `kitchen` feed:
@@ -245,18 +244,17 @@ On a feed with no name:
 
 ### Checking Verb Coverage
 
-Once feeds are registered, the [doctor](/deeper/diagnosing) warns about any
-verb that no feed's `only()` or `except()` mentions (`feeds.unclassified`). A
-verb someone records next month then fails CI until somebody decides who may
-see it, instead of appearing on a customer's screen. A feed meant to show
-everything says so with `->unrestricted()`.
+The [doctor](/deeper/diagnosing) reports `feeds.unclassified` when no restricted
+feed includes or excludes a registered or recorded verb. Run it with
+`--fail-on=warning` in CI to fail on these findings. Use `->unrestricted()` to
+declare that a feed includes every verb.
 
 <a id="filtering-verbs"></a>
 
 ## Narrowing a Named Feed
 
-A read may change a named feed's mode, but not add verbs. `only()` on a named
-feed can only narrow the declared list:
+You may change a named feed's mode or narrow its verb filters. The `only`
+method cannot add verbs excluded by its definition:
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -265,19 +263,20 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed('kitchen')->only(['place', 'note'])->get();
 ```
 
-[Filtering by Verb](/basics/reading#filtering-by-verb) covers `only()` and
-`except()` on any read.
+See [Filtering by Verb](/basics/reading#filtering-by-verb) for the `only` and
+`except` methods.
 
 <a id="feeds-and-access-control"></a>
 
 ## Authorizing Feed Access
 
-A feed only filters rows.
+A named feed filters activities. Your application must authorize access:
 
-- It doesn't know **who is asking**. Whether this customer may see this order
-  is a policy check in your controller.
-- It filters **verbs, not fields**. Everything in a shown activity's `data` is
-  in the payload.
+- Check a policy in your controller to determine whether the customer may
+  access the order.
+- Each included activity returns its complete `data` payload. Store only values
+  that the feed's audience may access.
 
-For a customer-facing feed, use `only()`. `except()` and wildcards let in every
-new verb as soon as it's recorded.
+For customer-facing feeds, use the `only` method with explicit verb names.
+The `except` method allows new verbs unless excluded, and wildcards allow new
+verbs that match.

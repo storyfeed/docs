@@ -1,14 +1,12 @@
 # Choosing a Verb
 
-How to name a verb, and a test for each pair of verbs that are easy to
-choose between.
+Choose a verb that describes the event, then use roles to identify what was involved.
 
 <span id="naming-a-verb"></span>
 
 ## Naming Verbs
 
-A verb says what happened. It does not say what it happened to — the object
-already does that.
+The verb describes what happened; the object identifies what it happened to:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -29,19 +27,18 @@ Storyfeed::record(
 ```
 :::
 
-A headline is already defined for an object type and a verb, so a verb that
-names its object says it twice. A plain `place` also works for anything else
-the app places.
+Headlines are defined by object type and verb, so including the type in the
+verb repeats information. A verb such as `place` also works for other types.
 
-Where a verb seems to need an extra word, the word is usually a role:
+Use roles for details that would otherwise become part of the verb:
 
-| Reaching for | Record |
+| Instead of | Record |
 | --- | --- |
-| `doctrine.clause_add` | `add`, object the clause, target the doctrine |
-| `menu.item_publish` | `publish`, object the menu item, target the menu |
+| `doctrine.clause_add` | `add`, with the clause as object and the doctrine as target |
+| `menu.item_publish` | `publish`, with the menu item as object and the menu as target |
 
-Write verbs in the present tense: `place`, not `placed`. The headline puts it
-in the past: `:actor placed :object`.
+Use present-tense verbs such as `place`. Use past tense in headlines:
+`:actor placed :object`.
 
 ## Choosing Between Related Verbs
 
@@ -62,18 +59,18 @@ Choose the word that describes the event in your application.
 
 | Pair | Use the first when | Use the second when |
 | --- | --- | --- |
-| `create` / `add` | the object did not exist before this activity | the object already existed and is now part of something, its target |
-| `delete` / `remove` | nothing can be pointed at afterwards | the object still exists and has only left a collection, as when it is archived |
-| `remove` / `undo` | "It left the collection." | "That should not have happened." `restore` also records a reversal, for a restored model |
-| `offer` / `invite` | something is sent to someone who is expected to answer, such as a document | the recipient is asked to take part, such as signing the document |
-| `accept` / `like` | the activity answers a prior `offer` or `invite`; an approval is `accept`, whatever the button says | nothing prompted it |
-| `view` / `read` | a page was opened or a preview loaded; if the choice is not clear, it is `view` | the object was deliberately taken away, such as a downloaded file |
+| `create` / `add` | the object did not exist before the activity | an existing object joins a collection, identified by the target |
+| `delete` / `remove` | the object no longer exists | the object still exists but has left a collection, such as through archiving |
+| `remove` / `undo` | the object leaves a collection | an earlier action is reversed; use `restore` for restoring a model |
+| `offer` / `invite` | something is sent for a response, such as a document | someone is asked to participate, such as signing the document |
+| `accept` / `like` | the action responds to an `offer` or `invite`, including approval | the action is an unprompted reaction |
+| `view` / `read` | a page opens or a preview loads; use `view` when unsure | the object is deliberately obtained, such as by downloading a file |
 
 <a id="create-and-add"></a>
 
 ### Choosing Create or Add
 
-A new menu item is `create`:
+Use `create` for a new menu item:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -93,7 +90,7 @@ Storyfeed::record(
 ```
 :::
 
-Putting an existing menu item on a menu is `add`:
+Use `add` when putting an existing menu item on a menu:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -114,11 +111,12 @@ Storyfeed::record(
 ```
 :::
 
-`add` takes a target. With no target, the verb is probably `create`.
+`add` uses a target to identify the collection. Without a target, `create`
+may better describe the event.
 
 <span id="recording-outcomes"></span>
 <span id="distinguishing-activities"></span>
 <span id="distinguishing-activities-with-roles-and-data"></span>
 
-When several occurrences share a verb, [Recording Activities](/basics/recording)
-covers the roles and `publishedAt()` that tell them apart.
+See [Recording Activities](/basics/recording) for roles and `publishedAt()`,
+which distinguish events that share a verb.

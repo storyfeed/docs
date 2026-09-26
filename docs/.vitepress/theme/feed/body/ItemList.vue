@@ -14,11 +14,18 @@ import { FEED_LINK } from '../keys'
  * depends on the viewport, which a server cannot know. `totalItems` says how
  * many exist when more were not sent, and `more` is where those live.
  */
-const props = defineProps<{ payload: Record<string, any> }>()
+const props = defineProps<{
+    payload: Record<string, any>
+    entityUrl?: string | null
+}>()
 
 const linkComponent = inject(FEED_LINK, 'a')
 
-const items = computed(() => (props.payload.items ?? []).filter(Boolean))
+const link = (value: any) => typeof value === 'string'
+    ? { label: value, href: null }
+    : { label: value.label, href: value.href ?? props.entityUrl ?? null }
+const items = computed(() => (props.payload.items ?? []).filter(Boolean).map(link))
+const more = computed(() => props.payload.more ? link(props.payload.more) : null)
 const remaining = computed(() => {
     const total = props.payload.totalItems
     return typeof total === 'number' ? Math.max(total - items.value.length, 0) : 0
@@ -33,22 +40,23 @@ const remaining = computed(() => {
             <li v-for="(item, index) in items" :key="index" class="sf-list__item">
                 <component
                     :is="linkComponent"
-                    v-if="typeof item !== 'string' && item.href"
+                    v-if="item.href"
                     :href="item.href"
                     class="sf-entity"
                 >{{ item.label }}</component>
-                <template v-else>{{ typeof item === 'string' ? item : item.label }}</template>
+                <template v-else>{{ item.label }}</template>
             </li>
         </component>
 
-        <figcaption v-if="remaining || payload.more" class="sf-list__more">
+        <figcaption v-if="remaining || more" class="sf-list__more">
             <span v-if="remaining">{{ remaining }} more</span>
             <component
                 :is="linkComponent"
-                v-if="payload.more"
-                :href="payload.more.href"
+                v-if="more?.href"
+                :href="more.href"
                 class="sf-entity"
-            >{{ payload.more.label }}</component>
+            >{{ more.label }}</component>
+            <span v-else-if="more">{{ more.label }}</span>
         </figcaption>
     </figure>
 </template>

@@ -8,27 +8,26 @@ const repeated = liveOf(scene.guide.usageExamples.repeatOrders)[0]
 
 ## Introduction
 
-Reading a feed returns one JSON document: the activities, newest first, with
-everything a renderer needs to draw them. The response contains activity nodes
-and group nodes. [The Payload Contract](/reference/payload) lists every key.
+The feed payload is a JSON document containing activity and group items,
+ordered newest first. See [The Payload Contract](/reference/payload) for all fields.
 
 <a id="the-envelope"></a>
 
 ## The Response Envelope
 
-A page of the feed holding one activity is the following JSON:
+A page containing one activity has this payload:
 
 <FeedExample payload :items="[scene.order]" />
 
-Your app sends `next_cursor` back to read the next page. See
-[Reading Feeds](/basics/reading#pagination), and the
-[Response Envelope](/reference/payload#response-envelope) for every key.
+Pass `next_cursor` to retrieve the next page. See
+[Reading Feeds](/basics/reading#pagination) for pagination and
+[Response Envelope](/reference/payload#response-envelope) for all response fields.
 
 <a id="one-activity"></a>
 
-## Activity Nodes
+## Activity Items {#activity-nodes}
 
-A customer places an order. Every key is always present:
+The following item represents a customer placing an order:
 
 <FeedExample expanded :items="[scene.order]" />
 
@@ -36,16 +35,17 @@ A customer places an order. Every key is always present:
 <a id="activities-by-a-payment-provider"></a>
 <a id="parties-and-missing-actors"></a>
 
-Each role holds an entity: its `type`, `id`, `label`, `url` and the rest of
-the fields [Entities](/reference/payload#entities) lists. A role nobody filled
-is `null`; when nobody acted, `actor` is `null`.
+Each role contains an entity with fields such as `type`, `id`, `label`, and
+`url`. See [Entities](/reference/payload#entities) for the complete structure.
+An empty role is `null`. An anonymous activity has no recorded actor, so its
+`actor` is `null`.
 
 <a id="group-nodes"></a>
 
-## Group Nodes
+## Group Items {#group-nodes}
 
-A [group](/basics/reading#groups) represents several activities in one node.
-One customer, three orders, one group node:
+A [group](/basics/reading#groups) represents several activities in one item.
+This example groups three orders placed by one customer:
 
 <FeedExample expanded :items="[repeated]" />
 
@@ -54,10 +54,10 @@ One customer, three orders, one group node:
 <a id="activities-by-several-actors"></a>
 <a id="digest-rows"></a>
 
-`count` says how many activities the group holds. For how many entities fill a
-role, read `distinct`; `sample` holds only a few. A `summary()` row is a group
-with `axis: "summary"` and one phrase per verb.
-[Group Nodes](/reference/payload#group-nodes) lists every key.
+The `count` field contains the activity count. The `distinct` field counts
+entities in each role, while `sample` contains a limited selection. Summary
+items use `axis: "summary"` and include per-verb phrases. See
+[Group Items](/reference/payload#group-nodes) for the fields.
 
 <a id="activity-content"></a>
 <a id="quoted-text"></a>
@@ -67,6 +67,6 @@ with `axis: "summary"` and one phrase per verb.
 <a id="data-and-presentation"></a>
 <a id="presentation-values"></a>
 
-Quoted text, bodies and pictures arrive in the same nodes;
-[Activity Content](/basics/activity-content) shows each one with its payload.
-[Rendering](/basics/rendering) draws them.
+These items also contain quoted text, bodies, and images. See
+[Activity Content](/basics/activity-content) for their payloads and
+[Rendering](/basics/rendering) to display them.

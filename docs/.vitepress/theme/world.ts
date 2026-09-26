@@ -303,11 +303,13 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       actorless: { anonymous: one(s.cookbook.actorless.anonymous), paid: one(s.cookbook.actorless.paid), expired: one(s.cookbook.actorless.expired) },
       transitions: { confirmed: one(s.cookbook.transitions.confirmed), timeline: many(s.cookbook.transitions.timeline) },
       pricing: many(s.cookbook.pricing),
+      computed: one(s.cookbook.computed),
       deletion: one(s.cookbook.deletion),
       discussion: one(s.cookbook.discussion),
       grouped: { repeat: many(s.cookbook.grouped.repeat), actors: many(s.cookbook.grouped.actors) },
     },
     deeper: {
+      body: { progress: one(deeper.body.progress) },
       aggregation: { orders: many(deeper.aggregation.orders), customers: many(deeper.aggregation.customers) },
       latestPerObject: { timeline: many(deeper.latestPerObject.timeline), board: many(deeper.latestPerObject.board),
         confirmations: many(deeper.latestPerObject.confirmations) },
@@ -342,6 +344,8 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       },
     },
     basics: {
+      // Includes the ItemList and both MediaObject link lessons, resolved from pack rows.
+      // Includes authored records in plain, verbatim, Markdown and HTML form.
       activityContent: Object.fromEntries(Object.entries(s.basics.activityContent).map(([key, id]) => [key, one(id)])) as Record<keyof typeof s.basics.activityContent, any>,
       recording: {
         paid: one(s.basics.recording.paid),

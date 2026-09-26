@@ -1,9 +1,8 @@
 # Headlines for Grouped Activities
 
-When a feed groups several activities into one row, the row needs its own
-headline: one sentence that is true of every activity in it.
-[Aggregation](/deeper/aggregation#defining-group-headlines) covers the syntax
-and which tokens each group may use.
+Grouped activities need a headline that describes every member. See
+[Aggregation](/deeper/aggregation#defining-group-headlines) for the syntax and
+allowed tokens.
 
 <script setup>
 import { scene, liveOf } from '../.vitepress/theme/world'
@@ -12,7 +11,7 @@ const [burst] = liveOf(scene.cookbook.grouped.repeat)
 
 ## Writing a Group Headline
 
-A customer's orders with one shop group into one row. Declare its sentence
+A customer's orders with one shop can form a group. Define its headline
 beside the single-activity headline:
 
 ```php memo="routes/feed.php"
@@ -22,11 +21,13 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
-*Three orders from one customer to the same shop, a minute apart, read with `live()`:*
+Three orders from one customer at the same shop, a minute apart, in live mode:
 
 <FeedExample :items="[burst]" />
 
@@ -35,11 +36,11 @@ Story::for(Order::class)->verb('place')
 
 ## Choosing Where to Declare a Group Headline
 
-Each kind of group has a name, its axis. The table shows what the activities in
-each group share, and where its headline is declared. A day is the default
-[grouping period](/deeper/grouping-periods).
+An axis defines what a group has in common. The table lists these shared
+values and where to declare each headline. The default
+[grouping period](/deeper/grouping-periods) is one day.
 
-| Groups Activities That Share | Axis | Sentence | Declared On |
+| Shared Values | Axis | Headline | Declared On |
 |---|---|---|---|
 | one actor, verb, target and object type, on one day | `repeat` | `:actor placed :count orders with :target` | the type |
 | one verb and target on one day, from several actors | `actors` | `:actors ordered from :target` | the verb |
@@ -48,18 +49,17 @@ each group share, and where its headline is declared. A day is the default
 
 ### Single-Type Groups
 
-A group on the type can say "orders", because every member is an order.
+A headline declared on the type can say "orders" because every member is an order.
 
 ### Mixed-Type Groups
 
-A group on the verb can gather other types into the same row, so its sentence
-should describe the activity without assuming an object type.
+A headline declared on the verb may describe several object types, so avoid
+naming a particular type.
 
-`:count` counts activities, not different objects. If the same order can be
-placed twice, write "placements", not "orders".
+`:count` counts activities, not distinct objects. If an order can be placed
+twice, use "placements" to avoid overstating the number of orders.
 
 ## Keeping Individual Content Visible
 
-A group shows no quote or image of its own; those stay on the activities
-inside it. Where every comment must stay visible, read with `log()`, which
-doesn't group.
+Quotes and images belong to the activities within a group. To display every
+comment, retrieve the feed with `log()`, which returns activities separately.

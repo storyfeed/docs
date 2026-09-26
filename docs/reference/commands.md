@@ -8,7 +8,7 @@ Artisan commands install, inspect and maintain the feed.
 
 ## Installing Storyfeed
 
-| Command | Does |
+| Command | Description |
 |---|---|
 | `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, and offers to run the migrations. `--without-migrations` publishes none |
 
@@ -19,9 +19,9 @@ php artisan storyfeed:install
 php artisan vendor:publish --tag=storyfeed-definitions
 ```
 
-A `routes/feed.php` that isn't a Storyfeed file is left alone, and the command
-says how to point [`definitions`](/reference/configuration#definitions) at
-another file. With `definitions` set to `false`, no file is created.
+The installer preserves an existing `routes/feed.php` that is not a Storyfeed
+file and explains how to set another [`definitions`](/reference/configuration#definitions)
+path. Setting `definitions` to `false` disables file creation.
 
 ## Generating Classes
 
@@ -29,10 +29,10 @@ another file. With `definitions` set to `false`, no file is created.
 
 ### Stories
 
-`make:story` creates a [Story class](/deeper/stories). With no arguments, it
-asks for the class name and shape. A name alone writes one activity,
-constructed with its data and published. The command prints the binding for
-`routes/feed.php` without editing it.
+`make:story` creates a [Story class](/deeper/stories). Without arguments, it
+prompts for the name and class structure. Passing only a name creates a class
+for one activity, constructed with its data and then published. The command
+prints the `routes/feed.php` binding for you to add.
 
 | Option | Effect |
 |---|---|
@@ -47,42 +47,42 @@ constructed with its data and published. The command prints the binding for
 
 ### Feeds
 
-| Command | Does |
+| Command | Description |
 |---|---|
-| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class holding every undecided verb, commented out, with an `only([])` that throws until you move each verb into `only()` or `except()` |
+| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class with unclassified verbs commented out; its `only([])` throws until you classify each verb with `only()` or `except()` |
 
 ## Listing Definitions
 
-| Command | Does |
+| Command | Description |
 |---|---|
 | `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
 | `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
-| `storyfeed:stories` | inventories what publishes to the feed, and what could but doesn't. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a story counts as quiet (default 30) |
+| `storyfeed:stories` | lists publishers and models that could publish but have no recorded activities. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
 
 <span id="manifest"></span>
 
 ## Caching Definitions
 
-| Command | Does |
+| Command | Description |
 |---|---|
 | `storyfeed:cache` | compiles registered stories and `routes/feed.php` into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
 | `storyfeed:clear` | removes the cached manifest |
 
-`storyfeed:cache` caches `routes/feed.php` as `route:cache` caches route files:
-once cached, the file isn't loaded at boot. Closure headlines are serialised.
-A closure that can't be serialised fails the command, naming its `file:line`.
-The file holds story definitions only. Register the verb vocabulary in a
-service provider.
+Like `route:cache`, `storyfeed:cache` prevents the definitions file from
+loading at boot. It serialises closure headlines and fails with a `file:line`
+reference if a closure cannot be serialised. Keep only Story definitions in
+the feed file; register verb vocabulary in a service provider.
 
 <span id="diagnostics"></span>
 
 ## Running Diagnostics
 
-| Command | Does |
+| Command | Description |
 |---|---|
-| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. `--json`; `--stubs` prints the `routes/feed.php` definitions the findings imply, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero |
+| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. `--json`; `--stubs` prints the `routes/feed.php` suggested definitions, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero at the selected severity |
 
-See [Diagnosing Your Feed](/deeper/diagnosing) for running it, and [Doctor Checks](/reference/doctor) for every check.
+See [Diagnosing Your Feed](/deeper/diagnosing) for usage and
+[Doctor Checks](/reference/doctor) for the checks.
 
 ### `php artisan about`
 
@@ -92,7 +92,7 @@ Laravel's `about` command has a Storyfeed section:
 php artisan about --only=storyfeed
 ```
 
-| Line | Says |
+| Line | Reports |
 |---|---|
 | Definitions | whether `routes/feed.php` is loaded, or cached and skipped at boot |
 | Cache | whether `storyfeed:cache` has run, and when |
@@ -102,22 +102,24 @@ php artisan about --only=storyfeed
 | Curate, Trickle and Close-batches schedules | whether `storyfeed:curate`, `storyfeed:trickle` and `storyfeed:close-batches` are scheduled |
 | Doctor | what the `tables`, `recording` and `manifest` checks report; `storyfeed:doctor` runs them all |
 
-It works without a database. `--json` works as for every other section.
+The section works without a database and supports `--json`.
 
 
 <span id="scheduled"></span>
 
 ## Scheduling Maintenance
 
-The feed works without a scheduler. When [Laravel's scheduler](https://laravel.com/docs/13.x/scheduling#running-the-scheduler)
-runs, Storyfeed schedules `storyfeed:curate` hourly on its own; set
-[`curate.schedule`](/reference/configuration#maintenance) to `false` to turn that off. Schedule the others yourself:
+The feed works without a scheduler. When
+[Laravel's scheduler](https://laravel.com/docs/13.x/scheduling#running-the-scheduler)
+runs, Storyfeed schedules `storyfeed:curate` hourly unless
+[`curate.schedule`](/reference/configuration#maintenance) is `false`.
+Schedule other maintenance commands in your application:
 
-| Command | Does | Suggested |
+| Command | Description | Suggested |
 |---|---|---|
 | `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` deletes activities with a role that no longer resolves | every minute |
-| `storyfeed:close-batches` | closes batches whose quiet window elapsed, fires `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
-| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (a verb's own window still wins); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
+| `storyfeed:close-batches` | closes batches whose window has elapsed, dispatches `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
+| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
 
 ```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
@@ -133,7 +135,7 @@ Schedule::command('storyfeed:prune')->daily();
 
 ### Rebuilding Snapshots
 
-| Command | Does |
+| Command | Description |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and link from `toFeed()`; `--recent=N` limits the pass to entities named by the newest N activities |
 | `storyfeed:cache-snapshots` | bounded snapshot refresh run by `php artisan optimize`; skips when the database is unavailable |
@@ -142,55 +144,54 @@ Schedule::command('storyfeed:prune')->daily();
 
 ### Rehashing Groups
 
-Storyfeed groups an activity when it is published. Activities already
-published keep their groups after you:
+Storyfeed groups activities at publication. Existing groups remain unchanged
+when you:
 
-- register a new axis
-- edit an axis recipe key
-- tune `grouping.policy` thresholds
-- change the verb or a role on activities already published
+- register an axis
+- change an axis's grouping key
+- adjust `grouping.policy` thresholds
+- change a published activity's verb or roles
 
-Neither `storyfeed:rebuild` nor a plain `storyfeed:curate` regroups them. Run
-`--rehash` to regroup existing activities with the new settings:
+Neither `storyfeed:rebuild` nor `storyfeed:curate` without `--rehash` applies
+these changes to existing groups. To regroup stored activities:
 
 ```bash
 php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
 
-The scheduled `curate` never rehashes, so run it yourself.
+Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 
-`--rehash` can move a group past a live cursor, leaving the next page empty.
-It changes the `sync_token`, and clients must then discard every accumulated
-node and refetch from the head, including after an empty response. See the
+Rehashing can move groups past an active cursor, leaving the next page empty.
+It changes `sync_token`, so clients must discard accumulated nodes and fetch
+from the start, even after an empty response. See the
 [Sync token rule](/reference/payload#sync-token).
 
 ### Releasing Orphaned Composites
 
-When a composite's parent has been force-deleted but its members still render
-as that composite, the doctor reports `claims.parent_gone`. `--release` returns
-the members to ordinary grouping:
+If a composite parent is force-deleted while its members still appear in the
+composite, the doctor reports `claims.parent_gone`. Use `--release` to return
+them to ordinary grouping:
 
 ```bash
 php artisan storyfeed:curate --release   # a second run changes nothing
 ```
 
-The `sync_token` changes when anything was released. A soft-deleted parent
-keeps its members.
+Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
 ### Other Maintenance Commands
 
-| Command | Does |
+| Command | Description |
 |---|---|
-| `storyfeed:curate` | picks the group each activity shows in with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
-| `storyfeed:heal` | [retires activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
-| `storyfeed:bundle` | bundles `Bundleable` runs in closed batches into composites (backfill). `--window=` |
-| `storyfeed:participants` | rebuilds the index `involving()` reads. `--missing`, `--chunk=`. Idempotent |
+| `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
+| `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
+| `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
+| `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. Safe to run repeatedly |
 
-`bundle` and `curate` rewrite settled history and change the `sync_token`, so
-every client that accumulates nodes resyncs.
+`bundle` and `curate` can change existing groups and their `sync_token`.
+Clients that accumulate nodes must then fetch the feed again.
 
 ## Seeding Demo Data
 
-| Command | Does |
+| Command | Description |
 |---|---|
 | `storyfeed:demo` | seeds a fictional demo tenant. `--days=7`, `--seed=1` select the history and deterministic seed; `--fresh` removes prior demo data first, `--clear` removes it without seeding, and `--force` allows production use |

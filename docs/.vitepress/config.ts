@@ -103,7 +103,7 @@ export default defineConfig({
        */
       const HEADLESS_TITLE = 'Storyfeed is headless: it has no views'
       const HEADLESS_BODY =
-        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. For Blade, Storyfeed UI renders it with one component. Vue components are in development.'
+        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. For Blade, Storyfeed UI renders it with one component.'
 
       md.use(container, 'headless', {
         render: (tokens: any[], idx: number) => {
@@ -195,6 +195,7 @@ export default defineConfig({
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
           { text: 'Publishing From Events', link: '/deeper/events' },
           { text: 'Containers & Context', link: '/deeper/context' },
+          { text: 'Casting Activity Data', link: '/deeper/casting-activity-data' },
           { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
           { text: 'Story Classes', link: '/deeper/stories' },
           { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
@@ -240,7 +241,7 @@ export default defineConfig({
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Recording Counts', link: '/cookbook/counts-that-keep-moving' },
+          { text: 'Computed Values in the Feed', link: '/cookbook/computed-values' },
         ],
       },
       {

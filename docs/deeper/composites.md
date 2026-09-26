@@ -12,8 +12,8 @@ const authored = group({ id: 'composite-tasks', verb: 'complete', axis: 'composi
   objects: children.map(row => row.object), distinct: { actors: 1, objects: children.length } })
 </script>
 
-A composite is one activity whose object is a **collection**: several tasks
-completed as a single activity.
+A composite is one activity whose object is a **collection**, such as several
+tasks completed together.
 
 <a id="recording-a-composite"></a>
 
@@ -81,28 +81,29 @@ class CompleteTasksController extends Controller
 
 <FeedExample :items="[authored]" />
 
-This writes a parent activity and one activity per task. In `log()` the tasks
-appear as ordinary rows. In `live()`, the parent is one node with
-`axis: 'composite'`; in `summary()`, it contributes a phrase to its actor's
-digest row. A composite is never replaced by
-[`keepLatest()`](/deeper/keeping-the-latest-activity).
+This writes a parent activity and one activity per task. `log()` returns each
+task separately. `live()` returns the parent as one item with `axis: 'composite'`.
+In `summary()`, it contributes a phrase to its actor's summary row.
+[`keepLatest()`](/deeper/keeping-the-latest-activity) never replaces a composite.
 
 <a id="headlines-for-a-composite"></a>
 
 ## Defining Composite Headlines
 
-A composite takes two headlines: one for the group of tasks, and one for the
-composite activity itself. Neither is about a single task, so both go on the
-verb:
+Define two headlines on the verb: one for the group of tasks and one for the
+composite activity. Both describe the collection, so neither belongs on a
+single task type:
 
 ```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('complete')->grouped(fn (GroupBuilder $group) => $group->composite(
-    ':actor completed :count tasks', // the group
-    ':actor completed tasks',        // the activity itself; required
-));
+Story::verb('complete')->grouped(
+    fn (GroupBuilder $group) => $group->composite(
+        ':actor completed :count tasks', // the group
+        ':actor completed tasks',        // the activity itself; required
+    ),
+);
 ```
 
 <FeedExample :items="[authored]" />
@@ -113,8 +114,7 @@ Story::verb('complete')->grouped(fn (GroupBuilder $group) => $group->composite(
 
 ### Marking Models Bundleable
 
-Mark a model `Bundleable`, and a burst of activities on it becomes one
-composite:
+Implement `Bundleable` to combine batched activities on a model into a composite:
 
 ```php memo="app/Models/Task.php"
 <?php
@@ -132,7 +132,7 @@ class Task extends Model implements Feedable, Bundleable
 }
 ```
 
-For a model you don't own, register its morph alias instead:
+For a model you cannot edit, register its morph alias:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
@@ -140,33 +140,34 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::bundleables(['task']);
 ```
 
-Auto-bundling is on by default. These `config/storyfeed.php` keys control it:
+Automatic bundling is enabled by default. Configure it in `config/storyfeed.php`:
 
 | Key | Default | Meaning |
 |---|---|---|
-| `grouping.composite.auto` | `true` | bundle bursts of `Bundleable` activities |
-| `grouping.composite.min_objects` | `2` | fewest different objects that make a composite |
+| `grouping.composite.auto` | `true` | combine batched `Bundleable` activities into composites |
+| `grouping.composite.min_objects` | `2` | minimum distinct objects per composite |
 
 <a id="batches"></a>
 
 ### Closing Batches
 
-Bundling happens when the actor's [batch](/deeper/story-middleware-and-batching#batch-windows)
-closes, so batching must stay enabled. A batch closes at the actor's next
-publish after its window, or on time when
-[`storyfeed:close-batches` is scheduled](/reference/commands#scheduling-maintenance).
+Bundling runs when the actor's [batch](/deeper/story-middleware-and-batching#batch-windows)
+closes, so leave batching enabled. The batch closes on the actor's next
+publication after the window expires. Schedule
+[`storyfeed:close-batches`](/reference/commands#scheduling-maintenance) to
+close it on time without another publication.
 
 <a id="backfilling"></a>
 
 ## Bundling Existing Activities
 
-`Bundleable` applies only to new activity. To bundle past activity:
+`Bundleable` applies only to new activities. To bundle existing activities:
 
 ```bash
 php artisan storyfeed:bundle
 php artisan storyfeed:bundle --window=30   # only batches closed in the last 30 days
 ```
 
-It is safe to run twice. When it creates a composite, it changes the
-`sync_token`, and clients must discard their accumulated nodes and refetch
-from the head. See the [sync token rule](/reference/payload#sync-token).
+You may run this command more than once. Creating a composite changes the
+`sync_token`, so clients must discard accumulated items and fetch the feed
+from the start. See the [sync token rule](/reference/payload#sync-token).

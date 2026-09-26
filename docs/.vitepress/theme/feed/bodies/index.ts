@@ -1,5 +1,6 @@
 import type { Component } from 'vue';
 import Note from './Note.vue';
+import OrderProgress from './OrderProgress.vue';
 
 /**
  * The app's own components, by the name a `Storyfeed/Body/Component` body
@@ -8,6 +9,7 @@ import Note from './Note.vue';
  */
 const BODIES: Record<string, Component> = {
     Note,
+    'Orders/Progress': OrderProgress,
 };
 
 export function resolveBody(name: string | null | undefined): Component | null {

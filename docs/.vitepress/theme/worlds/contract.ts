@@ -83,6 +83,7 @@ export type Roles = {
  * payload nodes on the present anchor.
  */
 export type DeeperSceneIds = {
+  body: { progress: string }
   aggregation: { orders: string[]; customers: string[] }
   latestPerObject: { timeline: string[]; board: string[]; confirmations: string[] }
   keepingLatest: { saves: string[] }
@@ -97,6 +98,7 @@ export type SceneIds = {
     actorless: { anonymous: string; paid: string; expired: string }
     transitions: { confirmed: string; timeline: string[] }
     pricing: string[]
+    computed: string
     deletion: string
     discussion: string
     grouped: { repeat: string[]; actors: string[] }
@@ -127,7 +129,9 @@ export type SceneIds = {
   }
   /** Basics demonstrations. Rows describe illustrative app transactions, not new canon. */
   basics: {
-    activityContent: { note: string; ready: string; confirmed: string; photo: string; product: string }
+    activityContent: { note: string; ready: string; confirmed: string; photo: string; product: string;
+      program: string; terminal: string; radioLog: string; caseMemo: string; labReport: string; alphabet: string; planck: string;
+      itemList: string; notice: string; linkedNotice: string }
     recording: { paid: string; priced: string; photos: string[] }
     feedFile: { completed: string; created: string }
     namedFeeds: { shop: string[] }

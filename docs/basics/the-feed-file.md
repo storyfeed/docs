@@ -1,8 +1,7 @@
 # The Feed File
 
-`routes/feed.php` declares what each verb's activities say: the headline, the
-icon, and how a group of them reads, the way `routes/web.php` declares your
-routes. The [installer](/guide/installation#running-the-installer) creates it.
+Define activity headlines, icons, and group headlines in `routes/feed.php`.
+The [installer](/guide/installation#running-the-installer) creates this file.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -28,7 +27,7 @@ const fellBack = { ...ready, headline_template: ':actor updated :object', glyph:
 
 ### Defining a Headline
 
-A headline is the sentence the feed prints for an activity:
+A headline describes an activity using a template:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -43,19 +42,9 @@ Story::for(Order::class)
 
 <a id="publishing-a-verb"></a>
 
-`for()` names the object's type, and `verb()` names the verb you
-[record](/basics/recording). This headline is for the verb `place`, recorded
-about an order.
-
-The template names roles, never models:
-
-```php
-// ✗ not tokens: these render as text
-->headline(':customer placed :order with :shop')
-
-// ✓
-->headline(':actor placed :object with :target')
-```
+The `for` method specifies the object type, and the `verb` method specifies
+the [recorded verb](/basics/recording). This headline applies to `place`
+activities involving an order.
 
 ## Headline Templates
 
@@ -63,23 +52,22 @@ The template names roles, never models:
 
 ### Role Tokens
 
-| Token | Substitutes |
+| Token | Entity |
 |---|---|
-| `:actor` | who acted |
-| `:object` | what the activity acted on |
-| `:target` | what the activity was directed at |
-| `:context` | the surrounding container |
+| `:actor` | who performed the action |
+| `:object` | the entity acted on |
+| `:target` | the entity the action was directed at |
+| `:context` | the containing entity |
 | `:origin` | the source |
-| `:result` | the produced entity |
+| `:result` | the entity produced |
 | `:instrument` | the tool or service used |
 
-Each token becomes the label of the entity in that role, linked where it has a
-link.
+Each token is replaced with the entity's label and linked when it has a URL.
 
 ### Optional Segments
 
-Square brackets mark words that print only when the roles inside them are
-filled:
+Enclose an optional phrase in square brackets to include it only when its
+referenced roles are filled:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -92,33 +80,37 @@ Story::for(Order::class)
 
 <FeedExample :items="[placedAtCounter, scene.order]" />
 
-Storyfeed resolves the brackets before the template reaches the payload. An
-order placed with a shop keeps ` with :target`; one placed without a target
-drops it. Without brackets, an unfilled role leaves its token in the template. Use optional segments for roles the activity may omit.
+Storyfeed resolves optional segments before returning the payload. In this
+example, it includes ` with :target` only when the activity has a target.
+Without brackets, an empty role leaves its token in the template.
 
 <a id="choosing-a-headline-per-activity"></a>
 
 ### Dynamic Headlines
 
-A closure receives the activity and returns a template:
+To choose a headline for each activity, pass a closure that returns a template:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
-use Storyfeed\Models\Activity;
+use Storyfeed\ActivityContext;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(fn (Activity $activity) => ($activity->data['rush'] ?? false)
-        ? ':actor rushed :object to :target'
-        : ':actor placed :object with :target');
+    ->headline(
+        fn (ActivityContext $activity) => $activity->boolean('rush') // [!code highlight]
+            ? ':actor rushed :object to :target'
+            : ':actor placed :object with :target',
+    );
 ```
 
 <FeedExample :items="[rushed, scene.order]" />
 
-The closure runs when the feed is read. When it returns role tokens, they
-become links, like any other template. Text with no role tokens prints as
-written.
+The closure receives an [ActivityContext](/reference/feedable#activitycontext),
+which provides typed helpers for the activity’s data and accessors for its roles.
+It runs when Storyfeed retrieves the feed. Returned role tokens are
+rendered as entity labels and links. Text without role tokens is displayed
+unchanged.
 
 <a id="adding-an-icon"></a>
 
@@ -141,9 +133,8 @@ Story::for(Order::class)
 
 <FeedExample :items="[complete, scene.order]" />
 
-`intent()` names what the icon means, in your app's own word, such as
-`success` or `danger`. It arrives in the payload as `glyph_intent`, beside the
-icon:
+Use the `intent` method to assign an application-defined value, such as
+`success` or `danger`. Storyfeed returns it in the `glyph_intent` field:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -154,7 +145,8 @@ Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
 
 <FeedExample :items="[completeWithIntent]" expanded />
 
-[Rendering](/basics/rendering#glyphs-and-intents) covers drawing it.
+See [Rendering](/basics/rendering#glyphs-and-intents) to display the icon and
+apply its intent.
 
 <a id="several-verbs-on-one-model"></a>
 
@@ -172,14 +164,14 @@ Story::for(Order::class)->group(function () {
 
 <FeedExample :items="[completeWithoutIcon, withoutIcon]" />
 
-Every `Story::verb()` inside the closure is for orders.
+All verb definitions inside the closure apply to orders.
 
 <a id="conventional-model-verbs"></a>
 
 ## Resource Definitions
 
-`Story::resource()` defines `create`, `update`, `delete` and `restore` for a
-model in one line:
+The `resource` method on the `Story` facade defines `create`, `update`, `delete`,
+and `restore` for a model:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -197,8 +189,8 @@ Story::resource(Order::class);
 | `delete` | `:actor deleted :object` | `trash` |
 | `restore` | `:actor restored :object` | `rotate-ccw` |
 
-Narrow it with `only()` or `except()`, and define a verb yourself to say
-something else:
+Use the `only` or `except` methods to select resource verbs. Exclude a verb
+before defining it separately:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -209,11 +201,11 @@ Story::resource(Order::class)->except('update');
 Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
-A verb defined in both places is an error naming both lines.
+Defining the same verb in both places causes an error with both source locations.
 
 ## Definition Precedence
 
-The most specific definition wins:
+Storyfeed applies definitions in this order, from most to least specific:
 
 | Declaration | Matches |
 |---|---|
@@ -222,8 +214,8 @@ The most specific definition wins:
 | `Story::verb('place')` | that verb on any object type |
 | `Story::fallback()` | everything with no more specific entry |
 
-The same order applies to headlines and to intents. A fallback gives every
-order verb without its own definition one headline:
+This precedence applies to both headlines and intents. Use a fallback to
+define a headline for order verbs without their own definition:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -240,10 +232,8 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 <a id="roles-that-determine-redundancy"></a>
 <a id="headlines-for-deleted-models"></a>
 
-A verb's definition can also say how a group of its activities reads, and what
-its activities say once a model they name is deleted.
-[Aggregation](/deeper/aggregation#defining-group-headlines) and
-[Deleted Models](/deeper/deleted-models) cover both.
+You may also define [group headlines](/deeper/aggregation#defining-group-headlines)
+and [headlines for deleted models](/deeper/deleted-models).
 
 ## Listing Definitions
 
@@ -253,9 +243,9 @@ List the definitions loaded by your application:
 php artisan storyfeed:list
 ```
 
-Use `--type=order` or `--verb=place` to filter the list, and `--json` for
-machine-readable rows. The output includes the headline, icon and declaration
-location. [Commands](/reference/commands) lists the inspection options.
+Use `--type=order` or `--verb=place` to filter definitions, and `--json` for JSON
+output. Each entry includes the headline, icon, and declaration location.
+See [Commands](/reference/commands) for all options.
 
 ## Caching Definitions
 
@@ -265,12 +255,14 @@ Cache definitions during deployment:
 php artisan storyfeed:cache
 ```
 
-Storyfeed loads the cached manifest instead of evaluating `routes/feed.php` at
-boot. `php artisan optimize` runs it too. Rebuild the cache after changing
-definitions. To remove it:
+Storyfeed loads cached definitions without evaluating `routes/feed.php`.
+The `optimize` Artisan command also caches these definitions. Rebuild the cache
+after changing them. To clear it:
 
 ```bash
 php artisan storyfeed:clear
 ```
 
-Closure headlines are serialised into the cache. A closure that cannot be serialised fails the command and identifies its source location. See [Commands](/reference/commands#manifest).
+Storyfeed serializes closure headlines into the cache. If a closure cannot be
+serialized, the command fails and reports its source location. See
+[Commands](/reference/commands#manifest).

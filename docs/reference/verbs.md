@@ -2,21 +2,18 @@
 
 ## Introduction
 
-`Storyfeed\Act` is a backed enum of common verbs you can record with instead
-of writing your own. Each case stores a plain English word as the verb, such as
-`approve`, and serializes as an Activity Streams 2.0 activity type, such as
-`Accept`, so you need no mapping of your own.
+`Storyfeed\Act` provides common verbs as backed enum cases. Each stores an
+English verb, such as `approve`, and maps it to an Activity Streams 2.0 type,
+such as `Accept`.
 
-Verbs are free-form strings. An application can use its own
-words, these cases, or both.
+Verbs are free-form strings, so you may use your own names, enum cases, or both.
 
 <span id="the-vocabulary"></span>
 
 ## Available Verbs
 
-Seventy-two verbs, grouped by the activity type each one maps to. Each case is
-its verb with a capital first letter: `Act::TentativelyAccept` stores
-`tentativelyAccept`.
+The 72 verbs below are grouped by Activity Streams type. Case names start
+with a capital letter: `Act::TentativelyAccept` stores `tentativelyAccept`.
 
 | Activity type | Verbs |
 | --- | --- |
@@ -49,8 +46,8 @@ its verb with a capital first letter: `Act::TentativelyAccept` stores
 | `Travel` | `travel` |
 | `Move` | `move` |
 
-Every case is present tense: `send`, not `sent`. All twenty-eight Activity
-Streams activity types are reachable.
+All verbs use present tense, such as `send`. The enum covers all 28 Activity
+Streams activity types.
 
 <span id="recording-with-a-verb"></span>
 
@@ -62,28 +59,28 @@ For example, `Act::Approve` stores `approve` and serializes as
 
 ## Registering Verbs
 
-`Storyfeed::verbs()` takes a map of verb to activity type. `Act::only()`
-builds that map for the cases an application actually records.
+Pass a verb-to-type map to `Storyfeed::verbs()`. Use `Act::only()` to build
+the map from the cases your application records:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::verbs(Act::only(
-    Act::Create, Act::Update, Act::Approve, Act::Archive,
-));
+Storyfeed::verbs(
+    Act::only(
+        Act::Create, Act::Update, Act::Approve, Act::Archive,
+    ),
+);
 ```
 
-Register the cases you record, not the whole enum. The doctor reports each
-registered verb that is never recorded (`verbs.dead`), so registering all
-seventy-two produces a finding for each verb the application never uses.
+Register only the verbs your application records. Registering all 72 cases
+produces a `verbs.dead` finding for each unused verb.
 
 <span id="using-your-own-words"></span>
 
 ## Using Application Verbs
 
-A word the enum does not ship is registered as a string, or through your own
-enum implementing `FeedVerb`.
+Register custom verbs as strings or in an enum implementing `FeedVerb`:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
@@ -98,7 +95,7 @@ Storyfeed::verbs([
 
 ## Combining Verb Enums
 
-`Storyfeed::verbs()` merges by default, so both vocabularies register together.
+`Storyfeed::verbs()` merges registrations by default, so both vocabularies remain available.
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\Enums\ShopActivity;

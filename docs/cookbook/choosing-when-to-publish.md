@@ -1,6 +1,6 @@
 # Choosing When to Publish
 
-Publish when a record's status changes, not on every save.
+Publish meaningful status changes so routine saves do not create duplicate activities.
 
 ## Publishing a Status Transition
 
@@ -10,7 +10,7 @@ Create an observer for the model whose status changes:
 php artisan make:observer OrderObserver --model=Order
 ```
 
-In its `updated` method, publish only the transitions the feed should show:
+In the observer's `updated` method, publish only the transitions the feed should show:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Observers/OrderObserver.php"
@@ -94,7 +94,7 @@ use App\Observers\OrderObserver;
 Order::observe(OrderObserver::class);
 ```
 
-Give each verb a headline:
+Define a headline for each verb:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -115,7 +115,7 @@ import { scene } from '../.vitepress/theme/world'
 const confirmed = scene.cookbook.transitions.confirmed
 </script>
 
-*The staff member moves an order from placed to confirmed.*
+When a staff member confirms a placed order:
 
 <FeedExample :items="[confirmed]" />
 
@@ -129,18 +129,17 @@ const confirmed = scene.cookbook.transitions.confirmed
 | confirmed → ready | yes | `ready` |
 | ready → completed | yes | `complete` |
 
-Use one verb per transition, not one `status` verb with the new state in
-`data`. Each verb gets its own headline, and
+Use a separate verb for each transition so each has its own headline and
 [`keepLatest()`](/cookbook/repeating-activities#keeping-the-latest-occurrence)
-keeps the latest row of each verb.
+can keep its latest activity. A single `status` verb with the state in `data`
+does not distinguish transitions this way.
 
 <span id="publishing-status-transitions-from-events"></span>
 
 ## Publishing From Domain Events
 
-When the transition already has a domain event, publish from the event: an
-event that implements `PublishesToFeed` returns its activity from
-`toFeedActivity()`:
+If the transition already dispatches a domain event, implement
+`PublishesToFeed` on that event and return its activity from `toFeedActivity()`:
 
 ```php memo="app/Events/OrderConfirmed.php" at="toFeedActivity()"
 return Storyfeed::activity()
@@ -152,8 +151,8 @@ See [Publishing from Events](/deeper/events).
 
 ## Choosing a Publish Site
 
-| Site | Good For |
+| Call Site | Use For |
 |---|---|
-| an action or service class | the common case: the fact and the record in one place |
-| a domain event via `PublishesToFeed` | when several things already react to the event |
-| a model observer | status transitions and lifecycle facts (created, deleted) with no domain event |
+| action or service class | recording an event where it happens |
+| domain event via `PublishesToFeed` | events with several existing listeners |
+| model observer | status changes and creation or deletion without a domain event |

@@ -1,9 +1,8 @@
 # Recording Deletions
 
-To record a deletion, record it about the model you delete, with a verb that
-says it was removed. The activity stays after the delete. In place of the
-model it names a tombstone: the reference a deleted model leaves behind, with
-its former type and when it was deleted.
+Publish a removal activity before deleting its model. The activity remains,
+with a tombstone in place of the model. The tombstone records the model's
+former type and deletion time.
 
 ## Recording a Deletion
 
@@ -55,12 +54,11 @@ const removed = activity({ ...source,
 
 ## Choosing What Stays
 
-Every other activity that named the menu item stays too, with the tombstone in
-its place. [Deleted Models](/deeper/deleted-models) covers what each of them
-says.
+Other activities involving the menu item also remain with its tombstone.
+See [Deleted Models](/deeper/deleted-models) for their headlines and payloads.
 
 | To | Use |
 |---|---|
-| keep naming the deleted model in old activities | [`keepLabel()`](/deeper/deleted-models#keeping-labels) on its tombstone |
-| remove only the activities the deletion made redundant | [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-redundant-activities) on those verbs |
-| remove every activity involving the model, such as for a customer asking to be forgotten | [`deleteFromFeed()` or `forceDeleteFromFeed()`](/deeper/deleted-models#removing-activities-explicitly), before the delete |
+| keep the deleted model's label in earlier activities | [`keepLabel()`](/deeper/deleted-models#keeping-labels) on its tombstone |
+| remove activities made redundant by permanent deletion | [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-redundant-activities) on those verbs |
+| remove all activities involving a model, such as when a customer asks to be forgotten | [`deleteFromFeed()` or `forceDeleteFromFeed()`](/deeper/deleted-models#removing-activities-explicitly) before deleting the model |

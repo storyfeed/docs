@@ -37,11 +37,13 @@ use Storyfeed\FeedEntity;
 
 return FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(KeyValue::make()->title("Order #{$this->reference}")->items([
-        'Pickup' => $this->pickup_at->format('g:i a'),
-        'Items' => $this->items->count(),
-        'Reference' => KeyValue::verbatim($this->reference),
-    ]));
+    ->body(
+        KeyValue::make()->title("Order #{$this->reference}")->items([
+            'Pickup' => $this->pickup_at->format('g:i a'),
+            'Items' => $this->items->count(),
+            'Reference' => KeyValue::verbatim($this->reference),
+        ]),
+    );
 ```
 
 <FeedExample :items="[withKeyValue]" />

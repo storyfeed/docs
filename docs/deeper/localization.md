@@ -2,11 +2,11 @@
 
 ## Introduction
 
-A headline or noun can use a translation key from your app's `lang` files.
-Storyfeed translates it when the feed is read, in the application's current
-locale, so set the locale for each request as Laravel's
-[locale configuration](https://laravel.com/docs/13.x/localization#configuring-the-locale)
-describes. Storyfeed does not choose a locale for the reader.
+Headlines and nouns may use translation keys from your app's `lang` files.
+Storyfeed translates them when retrieving the feed, using the application's
+current locale. Set it for each request as described in Laravel's
+[locale configuration](https://laravel.com/docs/13.x/localization#configuring-the-locale);
+Storyfeed does not choose the reader's locale.
 
 <script setup>
 import { activity, scene } from '../.vitepress/theme/world'
@@ -18,8 +18,7 @@ const french = activity({ ...scene.order,
 
 ## Translating Headlines
 
-Define the template in a language file for each locale your app serves,
-starting with its default locale:
+Define the template for each supported locale, starting with the default:
 
 ::: code-group
 
@@ -50,14 +49,13 @@ Story::for(Order::class)
     ->headline(FeedHeadline::trans('feed.order_placed'));
 ```
 
-A French reader sees:
+With the locale set to French:
 
 <FeedExample :items="[french]" />
 
-The translated line is a template like any other: its tokens stay links, and
-its [optional segments](/basics/the-feed-file#optional-segments) still apply.
-Tokens can appear in any order in a translation. A key that no language file
-defines renders as the key.
+Translated templates keep linked tokens and
+[optional segments](/basics/the-feed-file#optional-segments). You may reorder
+tokens in each translation. Undefined keys are displayed as written.
 
 `anonymousHeadline()` and `missingHeadline()` take a `FeedHeadline` too.
 
@@ -65,7 +63,7 @@ defines renders as the key.
 
 ## Translating Nouns
 
-A group's noun takes a translation key the same way:
+Pass a translation key to `FeedNoun::trans()` for a group's noun:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -75,7 +73,7 @@ use Storyfeed\FeedNoun;
 Story::for(Order::class)->fallback()->noun(FeedNoun::trans('nouns.order'));
 ```
 
-The value holds the singular and plural forms, separated by a pipe:
+Separate singular and plural forms with a pipe:
 
 ::: code-group
 
@@ -93,5 +91,4 @@ return [
 
 :::
 
-[Aggregation](/deeper/aggregation#group-headline-tokens) covers where
-a noun appears.
+See [Aggregation](/deeper/aggregation#group-headline-tokens) for where nouns appear.

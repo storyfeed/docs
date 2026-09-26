@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Story middleware runs around publishing an activity. Use it to add shared
-data, supply roles, or decide whether to publish. Built-in batch middleware
-collects an actor's activities into a sitting.
+Use story middleware to add shared data, supply roles, or decide whether to
+publish an activity. The built-in batch middleware collects one actor's
+activities into a batch.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -38,29 +38,30 @@ class MarkReviewed
 }
 ```
 
-Middleware receives the `PendingActivity`
-and passes it to `$next`. Code after `$next($activity)` can inspect the returned
-activity; check its `exists` property before work that requires a stored row.
+Middleware receives a `PendingActivity` and passes it to `$next`. Code after
+`$next($activity)` can inspect the returned activity. Check its `exists` property
+before performing work that requires a stored activity.
 
-Return `null` without calling `$next` to publish nothing. The builder's
-`publish()` then returns an unsaved activity (`exists === false`). Return the
-result of `$next` on the normal path. Middleware cannot change the activity's
-verb or object type.
+Return `null` without calling `$next` to skip publishing. The builder's
+`publish` method then returns an unsaved activity (`exists === false`). To
+continue publishing, return the result of `$next($activity)`. Middleware cannot
+change the verb or object type.
 
 ### Closure Middleware
 
-A closure works as middleware too:
+You may also define middleware as a closure:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
+use Closure;
 use Storyfeed\Facades\Story;
+use Storyfeed\PendingActivity;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->middleware(
-    // Leave type hints off closures that storyfeed:cache will serialize.
-    static function ($activity, $next) {
+    static function (PendingActivity $activity, Closure $next) {
         return $next($activity->data([
             ...($activity->activity->data ?? []),
             'reviewed' => true,
@@ -92,8 +93,8 @@ Story::middlewareGroup('review', ['reviewed']);
 
 ### Groups
 
-`middlewareGroup()` gives a list of middleware a shared name. The `review`
-group above contains the `reviewed` alias; either name may be assigned to a story.
+The `middlewareGroup` method registers a list of middleware under one name.
+The `review` group contains the `reviewed` alias; either may be assigned to a story.
 
 ## Assigning Middleware to Stories
 
@@ -134,8 +135,8 @@ Story::middleware('review')->group(function () {
 
 The `place` activity receives the review data; `complete` skips that middleware.
 The built-in `default` group runs first, followed by enclosing groups and the
-verb's own middleware. Identical resolved strings run once. The `default` group
-holds the `batch` middleware; redefine it to run your own middleware for every
+verb's middleware. Identical resolved middleware strings run once. The
+`default` group contains `batch`; redefine it to configure middleware for every
 verb:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
@@ -153,10 +154,10 @@ Exclusions match resolved strings exactly: `withoutMiddleware('batch')` leaves
 
 ### Parameters
 
-A string may name a class, an alias, or a group. Append arguments after a colon,
-as in `batch:5 minutes`; a custom class receives them after `$next` in `handle()`.
-A constructed Story may declare its middleware in `middleware(): array`; that
-method is read without constructor data.
+A middleware string may name a class, alias, or group. Append arguments after a
+colon, as in `batch:5 minutes`. A custom class receives them after `$next` in
+its `handle` method. A Story may declare middleware in `middleware(): array`,
+but that method cannot use constructor data.
 
 ## Batching Activities
 
@@ -176,20 +177,22 @@ Story::for(Order::class)->verb('place')
 
 <FeedExample :items="[placed]" />
 
-The activity joins the actor's open batch. Its headline stays the same. A batch
-collects what one actor did in one sitting; a feed batch is not a `Bus::batch()`
-job batch.
+A batch collects activities by one actor until its window closes. The activity
+joins the actor's open batch without changing its headline. Storyfeed batches
+are separate from Laravel job batches created with `Bus::batch()`.
 
-Each batched activity extends the closing time to its `published_at` plus its
-verb's window, if that is later. An activity before that closing time joins the
-open sitting. One at or after it starts another. Anonymous activities have no actor's sitting to join.
+The window determines how long Storyfeed waits for more activities before
+closing the batch. Each batched activity extends the closing time to its
+`published_at` plus its verb's window, if that is later. An activity before the
+closing time joins the batch; one at or after it starts a new batch.
+Anonymous activities cannot join a batch because they have no recorded actor.
 
 | Declaration | Batch Behaviour |
 |---|---|
 | nothing | the built-in `batch` middleware uses `grouping.batch.quiet_minutes` |
 | `batched()` | uses the configured window |
 | `batched(within: '5 minutes')` | uses a five-minute window |
-| `unbatched()` | does not join, extend or close a sitting |
+| `unbatched()` | does not join, extend, or close a batch |
 
 `within` accepts a positive interval string or a `DateInterval`.
 `storyfeed.grouping.batch.enabled = false` disables batching.
@@ -211,15 +214,15 @@ Story::for(Order::class)->verb('place')
 
 <FeedExample :items="[placed]" />
 
-The activity remains in the feed. It does not affect the actor's open batch.
-`unbatched()` removes batch middleware, including a window inherited from a group.
+The activity remains in the feed without affecting the actor's open batch.
+The `unbatched` method removes batch middleware, including inherited windows.
 
 ### Listening for Closed Batches
 
-When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed`. It
-carries the closed batch and its activities in `$event->batch`, as a read-only
-copy, and is dispatched after the outermost transaction commits. Register a
-Laravel listener for this event to act when a batch closes.
+When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed` after
+the outermost transaction commits. The event's `$event->batch` contains an
+immutable copy of the closed batch and its activities. Register a listener to
+handle the completed batch.
 
 <a id="preserving-an-actor-or-context"></a>
 <a id="preserving-actor-and-context-values"></a>
@@ -247,18 +250,18 @@ class UseServiceActor
 }
 ```
 
-Use `hasActor()` before supplying an actor. It also returns `true` for an
-explicitly anonymous activity. Use `has('context')` before supplying context.
-These checks preserve the [actor and context precedence](/deeper/activity-scopes#actor-and-context-precedence).
-Declare the party name in the [party list](/deeper/parties#declaring-parties);
-`->by()` does not check that list.
+Call `hasActor()` before supplying an actor; it also returns `true` for explicit
+anonymity. Call `has('context')` before supplying context. These checks preserve
+[actor and context precedence](/deeper/activity-scopes#actor-and-context-precedence).
+Declare party names in the [party list](/deeper/parties#declaring-parties),
+because the `by` method does not check that list.
 
 <a id="caching-closure-middleware"></a>
 <a id="inspecting-middleware"></a>
 
 ## Caching and Inspecting Middleware
 
-[`storyfeed:cache`](/basics/the-feed-file#caching-definitions) keeps middleware
-declarations, closures included. Keep aliases and named groups in a service
-provider so they also exist when the feed file is cached. `storyfeed:list -v`
-shows each verb's resolved middleware classes and arguments.
+The [`storyfeed:cache` command](/basics/the-feed-file#caching-definitions) caches
+middleware declarations, including closures. Register aliases and named groups
+in a service provider so they remain available when the feed file is cached.
+Use `storyfeed:list -v` to inspect each verb's resolved middleware and arguments.

@@ -37,6 +37,43 @@ for (const [name, pack] of Object.entries(PACKS)) {
   const now = Date.parse(pack.canonicalNow)
   const verbs = { ...BASE_VERBS, ...pack.verbs }
 
+  test(`${name}: pickup progress belongs to an order and carries plain component props`, () => {
+    const progress = scene.deeper.body.progress
+    assert.equal(progress.object.type, 'order')
+    assert.ok(same(progress.target, role.shop))
+    assert.equal(progress.object.body.length, 1)
+    const body = progress.object.body[0]
+    assert.equal(body.$body, 'Storyfeed/Body/Component')
+    assert.equal(body.name, 'Orders/Progress')
+    assert.equal(body.props.title, progress.object.label)
+    assert.ok(body.props.steps.includes(body.props.current))
+    assert.equal(typeof body.props.pickup, 'string')
+    assert.deepEqual(JSON.parse(JSON.stringify(body.props)), body.props)
+  })
+
+  test(`${name}: authored record scenes carry titled, sourced bodies in each format`, () => {
+    const content = scene.basics.activityContent
+    for (const key of ['program', 'terminal', 'radioLog', 'caseMemo', 'labReport', 'alphabet']) {
+      const node = content[key]
+      assert.ok(node?.published_at, key)
+      assert.ok(Date.parse(node.published_at) <= now, key)
+      const body = node.object.body[0]
+      assert.equal(body.title, node.object.label, key)
+      const row = pack.rows.find(row => row.id === pack.scenes.basics.activityContent[key])
+      assert.ok(row.src in pack.sources, key)
+      assert.ok(row.uncertain, `${key}: invented records must be identified`)
+      if (key === 'alphabet') {
+        assert.equal(body.$body, 'Storyfeed/Body/ItemList')
+        assert.ok(body.items.length > 1)
+      } else {
+        assert.equal(body.$body, 'Storyfeed/Body/Prose')
+        assert.ok(body.content.length > 0)
+        assert.equal(body.mediaType, key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain')
+        assert.equal(body.verbatim, ['program', 'terminal', 'radioLog'].includes(key))
+      }
+    }
+  })
+
   test(`${name}: every row has wording, a known source and a unique id`, () => {
     assert.equal(new Set(pack.rows.map((r) => r.id)).size, pack.rows.length)
     for (const r of pack.rows) {
@@ -105,6 +142,11 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: cookbook scenes preserve the behaviours being taught`, () => {
     const c = scene.cookbook
+    assert.ok(same(c.computed.object, role.product))
+    assert.equal(c.computed.object.body.length, 1)
+    assert.equal(c.computed.object.body[0].$body, 'Storyfeed/Body/KeyValue')
+    assert.equal(c.computed.object.body[0].title, c.computed.object.label)
+    assert.equal(typeof c.computed.object.body[0].items.find((item) => item.key === 'Orders').value, 'number')
     const rows = [c.actorless.anonymous, c.actorless.paid, c.actorless.expired,
       c.transitions.confirmed, ...c.transitions.timeline, ...c.pricing,
       c.deletion, c.discussion, ...c.grouped.repeat, ...c.grouped.actors]
@@ -233,6 +275,22 @@ for (const [name, pack] of Object.entries(PACKS)) {
       }
       assert.equal(world.liveOf(list).length, 1)
     }
+    const list = content.itemList.object.body[0]
+    assert.equal(list.$body, 'Storyfeed/Body/ItemList')
+    assert.ok(list.title.includes(content.itemList.object.label))
+    assert.ok(list.items.some(item => typeof item === 'string'))
+    assert.ok(list.items.some(item => typeof item === 'object' && item.href))
+    assert.ok(list.totalItems > list.items.length)
+    assert.equal(list.more.href, content.itemList.object.url)
+    assert.ok(list.more.href)
+    assert.equal(list.more.label, content.itemList.object.label)
+    const notice = content.notice.object.body[0]
+    const linkedNotice = content.linkedNotice.object.body[0]
+    for (const body of [notice, linkedNotice]) assert.equal(body.$body, 'Storyfeed/Body/MediaObject')
+    assert.equal(notice.subject.label, content.notice.object.label)
+    assert.equal(notice.subject.href, content.notice.object.url)
+    assert.ok(content.notice.object.url)
+    assert.ok(linkedNotice.subject.href && linkedNotice.subject.href !== content.linkedNotice.object.url)
     assert.equal(content.note.verb, 'post')
     assert.equal(content.note.object.type, 'note')
     assert.ok(same(content.note.target, scene.order.object))

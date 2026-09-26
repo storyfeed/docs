@@ -9,13 +9,13 @@ const confirmed = scene.basics.activityContent.confirmed
 
 ## Introduction
 
-A verb is the word your app records for what happened: a plain string, or a
-case of an enum.
+A verb identifies the action recorded by an activity. You may use a string or
+an enum case.
 
 <a id="using-strings"></a>
 
-`->action('place', $order)` records the string `place`, and `routes/feed.php`
-gives it a headline. An enum defines those strings once, for the whole app.
+For example, `->action('place', $order)` records `place`. Define its headline in
+`routes/feed.php`. Use an enum to share verb values across your application.
 
 <a id="using-your-own-enums"></a>
 
@@ -23,7 +23,7 @@ gives it a headline. An enum defines those strings once, for the whole app.
 
 ### Defining a Backed Enum
 
-A backed enum gives your application a shared vocabulary:
+Define the verb values in a backed enum:
 
 ```php memo="app/Enums/OrderActivity.php"
 <?php
@@ -40,7 +40,7 @@ enum OrderActivity: string
 
 ### Defining Headlines for Enum Verbs
 
-A case names its verb in `routes/feed.php` too:
+Pass the enum case to the `verb` method in `routes/feed.php`:
 
 ```php memo="routes/feed.php"
 use App\Enums\OrderActivity;
@@ -54,12 +54,12 @@ Story::for(Order::class)
 
 <FeedExample :items="[placed]" />
 
-The headline is for the case's value, `place`, the same as
-`->verb('place')`.
+This defines a headline for the case's value, `place`, as `->verb('place')` does.
 
 ### Adding Fluent Recording
 
-Add Storyfeed's `AsFeedVerb` trait and `FeedVerb` interface to record directly from an enum case:
+To publish directly from an enum case, implement the `FeedVerb` interface and
+use the `AsFeedVerb` trait:
 
 ```php memo="app/Enums/OrderActivity.php"
 <?php
@@ -79,8 +79,9 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-With the trait, record straight from the case. `Storyfeed::record()` takes the
-case as its `verb`, with or without the trait:
+You may now publish from the enum case. The `record` method on the `Storyfeed`
+facade also accepts an enum case as its `verb` argument, without requiring the
+trait:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -104,8 +105,8 @@ Storyfeed::record(
 
 ## Using Storyfeed's Verbs
 
-Storyfeed also ships common verbs, as the `Storyfeed\Act` enum. Give the verb
-its headline before publishing:
+Storyfeed provides common verbs through the `Storyfeed\Act` enum. Define a
+headline for the verb before publishing:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -134,5 +135,5 @@ Storyfeed::record(
 
 <FeedExample :items="[confirmed]" />
 
-The recorded verb is the case's value, `confirm`, so the activity is the same
-as one recorded with a string. [Verb Vocabulary](/reference/verbs) lists all of them.
+Storyfeed records the case's value, `confirm`. See
+[Verb Vocabulary](/reference/verbs) for the available verbs.

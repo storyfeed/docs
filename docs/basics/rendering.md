@@ -26,10 +26,8 @@ const withKeyValue = { ...content.confirmed,
 
 ## Introduction
 
-Storyfeed draws nothing itself: a page of the feed is data, and your frontend
-renders it. For Blade, Storyfeed UI renders a page with one component, and its
-views are yours to publish and change. To draw rows your own way, the rest of
-this page builds the same components from scratch.
+Use Storyfeed UI to render a feed in Blade, or build the custom Blade and Vue
+components shown below.
 
 ::: headless
 :::
@@ -44,10 +42,28 @@ this page builds the same components from scratch.
 composer require storyfeed/ui
 ```
 
+Storyfeed UI uses Tailwind CSS v4 and its Typography plugin. Install the plugin:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Register the plugin and the package's views in your application's
+`resources/css/app.css` file:
+
+```css
+@source "../../vendor/storyfeed/ui/resources/views";
+@plugin "@tailwindcss/typography";
+```
+
+Compile your application's CSS with `npm run build`. Your layout must load
+the compiled CSS, for example with `@vite('resources/css/app.css')`.
+
+If your application does not use Tailwind, see [Building Your Own Components](#building-your-own).
+
 ### Rendering a Page
 
-Pass a page of the feed to your view, then render it with the `feed`
-component. `@storyfeedStyles` adds the default look:
+Pass the feed page to your view and render it with the `feed` component:
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -59,8 +75,6 @@ Route::get('/', function () {
 ```
 
 ```blade memo="resources/views/feed.blade.php"
-@storyfeedStyles
-
 <x-storyfeed::feed :page="$page" />
 ```
 
@@ -74,42 +88,44 @@ To change the markup, publish the views:
 php artisan vendor:publish --tag=storyfeed-views
 ```
 
-They land in `resources/views/vendor/storyfeed`. A view there replaces the
-package's, so you only keep the files you change.
+The command publishes views to `resources/views/vendor/storyfeed`. Published
+views override the package's views, so retain only those you customize.
 
-### Styling the Feed
+### Customizing the Styles
 
-`@storyfeedStyles` inlines the stylesheet, so there's no build step. Set its
-colors on an ancestor of the feed:
+The components use Tailwind's zinc palette for text, borders, and surfaces,
+and indigo for links. To change these styles, publish the views and edit their
+utility classes. You may also customize Tailwind's existing theme variables,
+such as `--color-indigo-700` and `--color-indigo-300`, in your application's
+`@theme` block. These changes apply to every component using those colours.
+The kit defines no additional theme variables. ItemList, Prose, and Excerpt use the
+Typography plugin's `prose` styles.
 
-```css
-.sf-feed {
-    --sf-text-color: #111827;
-    --sf-muted-color: #4b5563;
-    --sf-line-color: #e5e7eb;
-}
-```
+The components include `dark:` variants and follow your application's
+[Tailwind dark mode configuration](https://tailwindcss.com/docs/dark-mode).
 
-To serve or bundle the stylesheet yourself, publish it to
-`public/vendor/storyfeed/storyfeed.css`:
+Prose bodies render Markdown and HTML with sanitization at render time. Plain
+text, unknown media types, and verbatim content are escaped. Verbatim content
+preserves whitespace inside a code block.
 
-```bash
-php artisan vendor:publish --tag=storyfeed-assets
-```
+Icon intents are application-defined strings exposed through `data-sf-intent`.
+To assign colours to your intent values, add the corresponding Tailwind
+utilities to the published `components/glyph.blade.php` view.
 
 <a id="building-your-own"></a>
 
 ## Building Your Own Components
 
-The rest of this page builds the same kind of components from scratch, for an
-app that wants full control of its rows. The components carry no styling, so
-they fit any design.
+The following examples build custom Blade components without styling. They
+are your application's own anonymous components in
+`resources/views/components/feed`, so Blade names them `<x-feed>`,
+`<x-feed.item>`, and so on, separately from Storyfeed UI's
+`<x-storyfeed::feed>`.
 
 ### Reading Feed Items
 
-Looping over a page of the feed gives you each item as a
-`Storyfeed\Support\FeedItem`. It reads the item's
-[payload](/reference/payload) through named methods:
+Iterating over a feed page returns each item as a `Storyfeed\Support\FeedItem`.
+Use its methods to access the [payload](/reference/payload):
 
 ```blade memo="resources/views/feed.blade.php"
 @foreach ($page as $item)
@@ -119,14 +135,16 @@ Looping over a page of the feed gives you each item as a
 @endforeach
 ```
 
-Echoing `$item->headline()` draws the sentence, with each entity's label as
-a link to its `url`. The item also reads as the array it wraps, so
-`$item['verb']` works, and `$page->items()` still returns the arrays.
-[FeedItem API](/reference/feed-item) lists every method.
+Echo `$item->headline()` to render the headline with linked entity labels.
+Items also support array access, such as `$item['verb']`. The `$page->items()`
+method on a `FeedPage` returns the underlying arrays. On a
+`FeedPaginator`, it returns `FeedItem` instances; use `toArray()['items']`
+for the payload arrays. See [FeedItem API](/reference/feed-item)
+for all methods.
 
 ### Parts of a Row
 
-| Part of a Row | Read With | Payload Fields |
+| Part of a Row | Methods | Payload Fields |
 |---|---|---|
 | icon | `glyph()`, `intent()`, `actor()` | `glyph`, `glyph_intent`, `actor` |
 | headline | `headline()` | `headline_template` or `headline`, the role keys |
@@ -134,29 +152,28 @@ a link to its `url`. The item also reads as the array it wraps, so
 | quote | `thread()` | `thread` |
 | media | `object()->media()` | `object.media` |
 | body | `object()->bodies()` | an entity's `body` list |
-| group pictures | `actors()`, `distinct('actors')` | a group's `sample`, `distinct` |
+| group images | `actors()`, `distinct('actors')` | a group's `sample`, `distinct` |
 | group members | `children()`, `count()` | `children`, `count` |
 
-A field with no value leaves its part out.
+Omit elements whose corresponding fields are empty.
 
 ### Displaying the Feed
 
-Pass a page of the feed to a view. The cursor in the query string selects
-[later pages](/basics/reading#pagination):
+Pass a paginator to the view. The `cursorPaginate` method retrieves the
+current request's cursor for [subsequent pages](/basics/reading#pagination):
 
 ```php memo="routes/web.php"
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::get('/', function (Request $request) {
+Route::get('/', function () {
     return view('feed', [
-        'page' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
     ]);
 });
 ```
 
-The view draws the whole feed with one tag:
+Render the feed with the `x-feed` component:
 
 ```blade memo="resources/views/feed.blade.php"
 <x-feed :page="$page" />
@@ -166,24 +183,22 @@ The view draws the whole feed with one tag:
 
 #### The Feed Components
 
-`<x-feed>` is built from these anonymous components, in
-`resources/views/components/feed`:
+Create these anonymous Blade components in `resources/views/components/feed`:
 
-| Component | File | Draws |
+| Component | File | Renders |
 |---|---|---|
-| `<x-feed>` | `feed.blade.php` | the feed, and a link to older activity |
-| `<x-feed.item>` | `item.blade.php` | one item, as an activity or a group |
+| `<x-feed>` | `feed.blade.php` | the feed and pagination link |
+| `<x-feed.item>` | `item.blade.php` | an activity or group |
 | `<x-feed.activity>` | `activity.blade.php` | an activity row |
 | `<x-feed.group>` | `group.blade.php` | a group row and its members |
 | `<x-feed.glyph>` | `glyph.blade.php` | the icon |
-| `<x-feed.time>` | `time.blade.php` | when it happened |
-| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | one body, by its type |
-| `<x-feed.pager>` | `pager.blade.php` | the link to the next page |
+| `<x-feed.time>` | `time.blade.php` | the publication time |
+| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | a body using its type |
+| `<x-feed.pager>` | `pager.blade.php` | the next-page link |
 
-`feed/feed.blade.php` renders as `<x-feed>`: Blade treats a file named after
-its directory as that directory's
-[root component](https://laravel.com/docs/13.x/blade#anonymous-index-components).
-The sections below build the components, smallest first.
+Blade renders `feed/feed.blade.php` as `<x-feed>` because the file name matches
+its directory. See Laravel's
+[anonymous index components](https://laravel.com/docs/13.x/blade#anonymous-index-components).
 
 ### Rendering Activities
 
@@ -191,7 +206,7 @@ The sections below build the components, smallest first.
 
 #### Headlines
 
-`headline()` reads the item's sentence. Echo it:
+To render a headline in Blade, echo the value returned by the `headline` method:
 
 ```blade
 {{ $activity->headline() }}
@@ -199,13 +214,12 @@ The sections below build the components, smallest first.
 
 <FeedExample expanded :items="[bare]" />
 
-The headline replaces each token in `headline_template`, such as `:actor`,
-with that entity's label. An entity with a `url` becomes a link carrying the
-entity's own attributes, such as `target`. An item with a finished `headline`
-reads as that text. Everything else is escaped.
+The headline replaces role tokens in `headline_template` with entity labels.
+Entities with a `url` render as links with their attributes, such as `target`.
+If the item contains a completed `headline`, that text is displayed. Other text
+is escaped.
 
-`toString()` reads the same sentence as plain text, for a page title or a
-notification:
+Use the `toString` method to return plain text for a page title or notification:
 
 ```blade
 <title>{{ $activity->headline()->toString() }}</title>
@@ -215,17 +229,17 @@ notification:
 
 #### Entity Links
 
-Each role reads as a `Storyfeed\Support\Entity`, or `null` when the role is
-empty. Echoing an entity draws its label, linked when it has a `url`:
+Each role method returns a `Storyfeed\Support\Entity`, or `null` for an empty
+role. Echo the entity to display its label, linked when it has a URL:
 
 ```blade
 {{ $activity->object() }}
 ```
 
-Its parts are methods too, such as `label()`, `url()` and `type()`.
+Use the `label`, `url`, and `type` methods to access individual values.
 
-To draw the headline's entities your own way, pass a closure to `toHtml()`.
-It receives each `Entity` and returns HTML, so escape what you print:
+To customize entity markup, pass a closure to the `toHtml` method. It receives
+each `Entity` and returns HTML. Escape values included in that HTML:
 
 ```blade
 @use('Storyfeed\Support\Entity')
@@ -235,7 +249,7 @@ It receives each `Entity` and returns HTML, so escape what you print:
 
 #### Timestamps
 
-`publishedAt()` reads `published_at` as a `CarbonImmutable`:
+The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance:
 
 ```blade memo="resources/views/components/feed/time.blade.php"
 @props(['at'])
@@ -245,10 +259,10 @@ It receives each `Entity` and returns HTML, so escape what you print:
 </time>
 ```
 
-#### Glyphs and Intents
+#### Icons and Intents {#glyphs-and-intents}
 
-`glyph()` is a token your app registered, such as `shopping-bag`. Keep one
-icon view per token, with a fallback for a token you have no icon for:
+The `glyph` method returns the registered icon identifier, such as
+`shopping-bag`. Provide a view for each icon and a fallback for unknown values:
 
 ```blade memo="resources/views/components/feed/glyph.blade.php"
 @props(['glyph', 'intent' => null])
@@ -258,23 +272,22 @@ icon view per token, with a fallback for a token you have no icon for:
 </span>
 ```
 
-`intent()` sits beside the glyph and says what the shape means:
+The `intent` method returns the application-defined value used to style the icon:
 
 <FeedExample expanded :items="[complete, scene.order]" />
 
-The value is **your** string, from the verb's
-[`intent()`](/basics/the-feed-file#adding-an-icon). Storyfeed ships no intents
-and no colours, and validates nothing: `success`, `pending` and `danger` are
-this example's words. Map them onto colours your frontend owns, for example
-with a `[data-intent="success"]` selector.
+Define intent values with the verb's
+[`intent` method](/basics/the-feed-file#adding-an-icon). Storyfeed provides no
+default values or colours and does not validate these strings. Map values such
+as `success`, `pending`, and `danger` to your CSS, for example with a
+`[data-intent="success"]` selector.
 
-Most verbs have no intent. Their `intent()` is `null`, so the component
-leaves `data-intent` out and the plain glyph is drawn, as it is for an intent
-you have no colour for.
+If no intent is defined, the method returns `null` and the component omits
+`data-intent`. Undefined colours leave the icon's default styling unchanged.
 
 #### Activity Rows
 
-An activity row puts the three together:
+Combine the icon, headline, and timestamp in the activity component:
 
 ```blade memo="resources/views/components/feed/activity.blade.php"
 @props(['activity'])
@@ -294,10 +307,10 @@ An activity row puts the three together:
 
 #### Group Rows
 
-A [group](/basics/reading#groups) has `isGroup()` true and a plural
-sentence; [Aggregation](/deeper/aggregation) covers which activities group and
-the tokens a group headline may use. `children()` reads its members as feed
-items, so the activity component draws them:
+Use the `isGroup` method to identify a [group](/basics/reading#groups).
+The `children` method returns its members as feed items for the activity
+component to render. See [Aggregation](/deeper/aggregation) for grouping rules
+and headline tokens.
 
 ```blade memo="resources/views/components/feed/group.blade.php"
 @props(['group'])
@@ -317,20 +330,19 @@ items, so the activity component draws them:
 </article>
 ```
 
-`count()` is the true member total. `children()` can hold fewer, and
-`childrenTruncated()` is then `true`.
+The `count` method returns the total member count. If `children` contains fewer
+members, `childrenTruncated` returns `true`.
 
 #### Plural Roles
 
-A plural token such as `:actors` reads as the group's sample of entities,
-joined, with the rest as a number: "Ana, Ben, Cy and 2 more". A singular
-token such as `:actor` names one entity only when every member shares it,
-and otherwise reads as the list. `:count` reads as `count()`.
+Plural tokens such as `:actors` display the sampled entities and a count of the
+remainder: "Ana, Ben, Cy and 2 more". A singular token such as `:actor` displays
+one entity when all members share it, or the list otherwise. The `:count` token
+displays the group's activity count.
 
 <FeedExample :items="[grouped]" />
 
-To draw the sample yourself, such as a stack of pictures, read the role's
-entities and its true total:
+To render the sample as images, get the role's entities and total count:
 
 ```blade
 @foreach ($group->actors() as $actor)
@@ -344,9 +356,9 @@ entities and its true total:
 
 #### Groups Without Headlines
 
-A group has no sentence when its verb declares no group headline and its
-members' own headline can't be reused for several activities. Its headline
-then reads as its count, "5 activities", and `isFallback()` is `true`:
+If neither a group headline nor the single-activity headline applies,
+Storyfeed displays the count, such as "5 activities". The headline's
+`isFallback` method returns `true`:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
@@ -354,13 +366,12 @@ then reads as its count, "5 activities", and `isFallback()` is `true`:
 
 <FeedExample :items="[unnamed]" />
 
-#### Digest Rows
+#### Summary Rows {#digest-rows}
 
-A [digest](/basics/reading#summary) row's headline names the person once and
-joins the per-verb phrases after it, each phrase starting at its verb. The
-group component draws it with no change.
-To lay the phrases out yourself, `phrases()` reads each one as a feed item
-with its own `headline()` and `count()`.
+A [summary row](/basics/reading#summary) displays the actors followed by per-verb
+phrases. The group component renders it without changes. To render each phrase
+separately, use the `phrases` method. It returns feed items with their own
+`headline` and `count` methods.
 
 <a id="activity-data-and-bodies"></a>
 
@@ -370,8 +381,7 @@ with its own `headline()` and `count()`.
 
 #### Quoted Text
 
-An activity that quotes what someone said carries it in `thread()`. Draw it
-in the activity row:
+Use the `thread` method to display recorded quoted text in the activity row:
 
 ```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
 @if ($thread = $activity->thread())
@@ -381,13 +391,13 @@ in the activity row:
 
 <FeedExample :items="[withThread]" />
 
-`data()` holds the values supplied when recording the activity. Your
-application decides which of them to display.
+The `data` method returns values stored with the activity. Choose which values
+to display.
 
 #### Bodies
 
-`bodies()` reads an entity's structured content. Draw the object's bodies in
-the activity row:
+The `bodies` method returns an entity's structured content. Render the object's
+bodies in the activity row:
 
 ```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
 @foreach ($activity->object()?->bodies() ?? [] as $body)
@@ -395,10 +405,9 @@ the activity row:
 @endforeach
 ```
 
-Each body names its type in `$body`, such as `Storyfeed/Body/KeyValue`. The
-body component turns that into a component name, `feed.body.key-value`, and
-draws it with `<x-dynamic-component>`. A type with no component of its own is
-skipped:
+Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
+The body component maps it to `feed.body.key-value` and renders it with
+`<x-dynamic-component>`. Types without a matching component are skipped:
 
 ```blade memo="resources/views/components/feed/body.blade.php"
 @props(['body'])
@@ -412,7 +421,7 @@ skipped:
 @endif
 ```
 
-Then add one component per body type you draw:
+Add a component for each body type you render:
 
 ```blade memo="resources/views/components/feed/body/key-value.blade.php"
 @props(['body'])
@@ -430,16 +439,21 @@ Then add one component per body type you draw:
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
 
-<blockquote {{ $attributes }}>{{ $body['text'] }}</blockquote>
+<figure {{ $attributes }}>
+    <blockquote>{{ $body['text'] }}@if ($body['truncated'])…@endif</blockquote>
+
+    @if ($body['from'])
+        <figcaption>{{ $body['from'] }}</figcaption>
+    @endif
+</figure>
 ```
 
-[Activity Content](/basics/activity-content#available-body-types) lists every
-body type and its keys, and [Custom Body Types](/deeper/body) covers writing
-your own.
+See [Activity Content](/basics/activity-content#available-body-types) for body
+types and fields, or [Custom Body Types](/deeper/body) to define your own.
 
 ### Assembling the Feed
 
-The item component chooses the row by kind:
+The item component selects the component matching the item's kind:
 
 ```blade memo="resources/views/components/feed/item.blade.php"
 @props(['item'])
@@ -451,7 +465,7 @@ The item component chooses the row by kind:
 @endif
 ```
 
-The feed component draws every item on the page, then the pager:
+The feed component renders each item, followed by the pagination link:
 
 ```blade memo="resources/views/components/feed/feed.blade.php"
 @props(['page'])
@@ -462,60 +476,50 @@ The feed component draws every item on the page, then the pager:
     @endforeach
 </div>
 
-<x-feed.pager :cursor="$page->nextCursor()" />
+{{ $page->links() }}
 ```
 
-Attributes on the tag, such as `<x-feed :page="$page" class="…" />`, land on
-the feed's root element.
+Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
+feed's root element.
 
-The pager links to the same URL with the next cursor. On the last page
-`nextCursor()` is `null`, and there is no link:
-
-```blade memo="resources/views/components/feed/pager.blade.php"
-@props(['cursor'])
-
-@if ($cursor)
-    <nav {{ $attributes }}>
-        <a href="{{ request()->fullUrlWithQuery(['cursor' => $cursor]) }}" rel="next">Older activity</a>
-    </nav>
-@endif
-```
+The `links` method renders Laravel's simple pagination view. You may customize
+it through Laravel's pagination views. Feeds support forward pagination only;
+the previous-page link is disabled and no links appear on the last page.
 
 <a id="degraded-entities"></a>
 
 ### Handling Missing Values
 
-An entity's `label` and `url` can be `null`. A null **actor** means the actor
-is unknown. The activity is still in the feed, and its headline reads with a
-placeholder:
+An entity's `label` and `url` may be `null`. An anonymous activity has no
+recorded actor and uses a placeholder in its headline:
 
 <FeedExample :items="[degraded]" />
 
-| The Entity | Reads As | Tell It With |
+| Condition | Display | Check |
 |---|---|---|
-| a null actor | `Someone` | `actor()` is `null` |
-| no label yet | `Someone` for the actor, `Something` for any other role | `isDegraded()` |
-| a [deleted model](/deeper/deleted-models) | `a removed order`, `a former customer`, from its former type | `isTombstone()`, `formerType()` |
-| a group with no headline | `5 activities` | `headline()->isFallback()` |
+| an anonymous actor | `Someone` | `actor()` is `null` |
+| a missing label | `Someone` for the actor, `Something` for another role | `isDegraded()` |
+| a [deleted model](/deeper/deleted-models) | `a removed order`, `a former customer`, based on its former type | `isTombstone()`, `formerType()` |
+| a group without a headline | `5 activities` | `headline()->isFallback()` |
 
-An entity with no `url` reads as plain text. For an unknown actor, a headline
-without an actor token can describe the activity directly.
+An entity without a URL is displayed as plain text. For anonymous activities,
+you may use a headline without an actor token.
 
-The words are Storyfeed's translation lines, read in the current locale.
-Publish them to change them:
+Placeholders use Storyfeed's translation strings for the current locale.
+Publish the language file to customize them:
 
 ```bash
 php artisan vendor:publish --tag=storyfeed-translations
 ```
 
-The lines land in `lang/vendor/storyfeed/en/feed.php`.
+The command publishes `lang/vendor/storyfeed/en/feed.php`.
 
 <a id="verifying-your-renderer"></a>
 
 ## Rendering With Vue
 
-With Inertia, pass the feed to the page as a prop. The route reads the cursor
-from the query string, so the same route serves every page:
+With Inertia, pass the feed to the page as a prop. Use the query string's cursor
+to retrieve subsequent pages through the same route:
 
 ```php memo="routes/web.php"
 use Illuminate\Http\Request;
@@ -530,7 +534,7 @@ Route::get('/', function (Request $request) {
 });
 ```
 
-The page draws the feed with one component:
+Render the feed with the `Feed` component:
 
 ```vue memo="resources/js/pages/Home.vue"
 <script setup lang="ts">
@@ -544,10 +548,9 @@ defineProps<{ feed: Record<string, any> }>()
 </template>
 ```
 
-The browser receives the payload's arrays, so the Vue components read the
-fields themselves: `FeedHeadline` splits the template into text and entities,
-as `headline()` does in PHP. `Feed` keeps the items it has drawn, and asks for
-the next page with a partial reload of the `feed` prop:
+Vue receives the payload as arrays. The `FeedHeadline` component separates the
+template into text and entities. The `Feed` component retains loaded items and
+retrieves the next page with a partial reload of the `feed` prop:
 
 ::: code-group
 ```vue [Feed.vue] memo="resources/js/components/feed/Feed.vue"
@@ -754,7 +757,7 @@ const label = computed(() => {
 ```
 :::
 
-A `null` `next_cursor` hides the button. When `sync_token` changes, earlier
-pages were rewritten, so `Feed` starts again from the first page. Glyphs,
-digest rows, quoted text and bodies follow the Blade components above, one
-component each.
+When `next_cursor` is `null`, the button is hidden. If `sync_token` changes,
+`Feed` discards loaded items and retrieves the first page again. Render icons,
+summary rows, quoted text, and bodies using components equivalent to the Blade
+examples.

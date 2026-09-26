@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Every key in `config/storyfeed.php`. All have working defaults.
+All keys in `config/storyfeed.php` have defaults.
 
 ## Publishing Configuration
 
@@ -14,28 +14,27 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 ## Definitions
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | the file that holds your [feed file](/basics/the-feed-file). Another path to use another file; `false` turns loading off |
+| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable loading |
 
-Once `storyfeed:cache` has run, changes to the file take effect only after you
-run it again.
+After editing cached definitions, run `storyfeed:cache` again.
 
 <span id="tables-models"></span>
 
 ## Tables and Models
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
 | `tables.activities` | `'feed_activities'` | the activities |
 | `tables.snapshots` | `'feed_snapshots'` | entity snapshots |
 | `tables.groupings` | `'feed_groupings'` | each activity's groupings |
-| `tables.participants` | `'feed_participants'` | the index `involving()` reads |
+| `tables.participants` | `'feed_participants'` | index queried by `involving()` |
 | `tables.parties` | `'feed_parties'` | named participants |
-| `tables.batches` | `'feed_batches'` | bursts by one actor |
-| `tables.meta` | `'feed_meta'` | Storyfeed's bookkeeping |
+| `tables.batches` | `'feed_batches'` | an actor's collected activities |
+| `tables.meta` | `'feed_meta'` | sync tokens and maintenance metadata |
 | `tables.tombstones` | `'feed_tombstones'` | deleted models |
-| `tables.batch_locks` | `'feed_batch_locks'` | one row per batched actor |
+| `tables.batch_locks` | `'feed_batch_locks'` | one lock per batched actor |
 | `models.activity` | `Activity::class` | |
 | `models.snapshot` | `Snapshot::class` | |
 | `models.grouping` | `Grouping::class` | |
@@ -44,57 +43,57 @@ run it again.
 | `models.meta` | `Meta::class` | |
 | `models.tombstone` | `FeedTombstone::class` | |
 
-Rename a table on a collision, or point it at a pre-existing feed table. The
-default models are in `Storyfeed\Models`; a model you swap in should extend the
-one it replaces. [Schema](/reference/schema) describes each table.
+Change table names to avoid collisions or use existing feed tables.
+Replacement models must extend the defaults in `Storyfeed\Models`.
+See [Schema](/reference/schema) for each table.
 
 ## Identity
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
 | `morph_alias` | `'storyfeed.party'` | the morph alias for parties |
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
-| `parties.fallback` | `null` | party name for otherwise-anonymous publishes (jobs, commands) |
-| `parties.strict` | `null` | once [`Storyfeed::parties()`](/deeper/parties#declaring-parties) declares a list, throw on an undeclared name; otherwise it is ignored. `null` = strict in local/testing only |
+| `parties.fallback` | `null` | fallback party when no actor is resolved, such as in jobs or commands |
+| `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/deeper/parties#declaring-parties); ignored without a list. `null` enables this only in local/testing |
 
-For named system attribution or a sentence without an actor slot, see
-[Parties & Anonymous Actors](/deeper/parties).
+See [Parties & Anonymous Actors](/deeper/parties) for named system actors and
+activities without a recorded actor.
 
 ## Recording
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | off, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `keep_latest.delete` | `'soft'` | what [`->keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) does to the rows it supersedes. `'soft'` soft-deletes them until `storyfeed:prune` removes them; `'force'` deletes them immediately. Any other value throws when publishing |
+| `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | when disabled, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
+| `keep_latest.delete` | `'soft'` | how [`keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) deletes superseded activities. `'soft'` soft-deletes them until `storyfeed:prune` removes them; `'force'` deletes them immediately. Any other value throws when publishing |
 
 ### Verbs
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
 | `verbs.strict` | `null` | throw on a verb with no registry entry. `null` = strict in local/testing only |
 
-The registry is the verbs declared with `Storyfeed::verbs()` or by a story
-class. [Verb Vocabulary](/reference/verbs#registering-verbs) covers registering them.
+Register verbs with `Storyfeed::verbs()` or a Story class. See
+[Verb Vocabulary](/reference/verbs#registering-verbs).
 
 ## Grouping
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `grouping.strategy` | `MultiAxisStrategy::class` | use `NullStrategy` to disable grouping entirely |
-| `grouping.default` | `'live'` | app-wide read mode: `'log'` for individual activities, `'live'` for winning groups, `'summary'` for a per-person digest |
-| `grouping.curate` | `true` | choose each activity's group across every axis when it is published; `false` makes `live()` group repeats only |
-| `grouping.summary.phrases` | `3` | maximum per-verb phrases in a digest row; `phrases_truncated` reports omitted phrases |
-| `grouping.children_limit` | `25` | member nodes nested per group; `count` stays the true total |
-| `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node. Each sampled entity is resolved on every page read; an invalid or missing limit falls back to `3` |
-| `grouping.policy.min_actors` | `3` | distinct actors before the `actors` axis applies |
-| `grouping.policy.min_targets` | `2` | distinct targets before `targets` applies |
-| `grouping.policy.min_target_members` | `3` | members required on `targets` |
-| `grouping.policy.min_object_members` | `2` | members required on `object` |
+| `grouping.strategy` | `MultiAxisStrategy::class` | grouping strategy; use `NullStrategy` to disable grouping |
+| `grouping.default` | `'live'` | default read mode: `'log'` for individual activities, `'live'` for selected groups, `'summary'` for per-actor summaries |
+| `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats |
+| `grouping.summary.phrases` | `3` | maximum phrases per summary row; `phrases_truncated` reports omitted phrases |
+| `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
+| `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
+| `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` axis |
+| `grouping.policy.min_targets` | `2` | distinct targets required for `targets` |
+| `grouping.policy.min_target_members` | `3` | activities required for `targets` |
+| `grouping.policy.min_object_members` | `2` | activities required for `object` |
 
-`sample_limits` is keyed by singular role — `actor`, `object`, `target`,
-`context`, `origin`, `result`, `instrument` — and every default is `3`. Raise
-one where a surface shows more:
+`sample_limits` uses singular role names: `actor`, `object`, `target`,
+`context`, `origin`, `result`, and `instrument`. Each defaults to `3`.
+Increase a limit when your frontend displays more names:
 
 ```php memo="config/storyfeed.php"
 'sample_limits' => [
@@ -109,44 +108,44 @@ one where a surface shows more:
 
 ### Batches and Composites
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `grouping.batch.enabled` | `true` | infer bursts by one actor |
-| `grouping.batch.quiet_minutes` | `10` | idle time before a burst is considered finished |
-| `grouping.composite.auto` | `true` | bundle `Bundleable` runs at batch close |
-| `grouping.composite.min_objects` | `2` | smallest distinct object count that creates a composite |
+| `grouping.batch.enabled` | `true` | collect an actor's activities into batches |
+| `grouping.batch.quiet_minutes` | `10` | minutes to wait for more activities before closing a batch |
+| `grouping.composite.auto` | `true` | combine `Bundleable` activities into composites when a batch closes |
+| `grouping.composite.min_objects` | `2` | minimum distinct objects per composite |
 
 ## Hydration
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the live model, with one query per class per page. Off, it returns `null` and your resolver's `null` branch runs |
+| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the current model, with one query per class per page. When disabled, it returns `null` for your resolver to handle |
 
 <span id="as2-0-routes"></span>
 
 ## Activity Streams Routes
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `routes.enabled` | `false` | opt-in, read-only single-activity endpoint |
-| `routes.prefix` | `'storyfeed'` | **also builds activity IRIs** — changing it changes document ids |
-| `routes.middleware` | `[]` | add auth/throttling here |
+| `routes.enabled` | `false` | enable the read-only single-activity endpoint |
+| `routes.prefix` | `'storyfeed'` | route prefix used in activity IRIs; changing it changes document IDs |
+| `routes.middleware` | `[]` | authentication or throttling middleware |
 
 ## Maintenance
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `curate.schedule` | `true` | schedules [`storyfeed:curate`](/reference/commands#other-maintenance-commands) hourly, to repeat [curation](/reference/glossary#grouping) for recent activities; requires Laravel’s scheduler |
-| `curate.window` | `2` | default days included in scheduled curation; weekly and monthly declarations extend the window for those verbs; `null` or `0` makes the scheduled pass unbounded |
-| `prune.after_days` | `null` | the [retention window](/deeper/retention) for every verb that declares none; `null` keeps them. A verb's `keepFor()` or `keepForever()` wins |
+| `curate.schedule` | `true` | run [`storyfeed:curate`](/reference/commands#other-maintenance-commands) hourly to choose groups for recent activities; requires Laravel's scheduler |
+| `curate.window` | `2` | days included in scheduled grouping; weekly and monthly declarations extend this for their verbs. `null` or `0` includes all activities |
+| `prune.after_days` | `null` | default [retention period](/deeper/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
 | `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |
-| `trickle.prune` | `false` | delete activities with an unresolvable role; off, the trickle counts them |
+| `trickle.prune` | `false` | delete activities with an unresolvable role; otherwise count them |
 
 ## Diagnostics
 
-| Key | Default |  |
+| Key | Default | Description |
 |---|---|---|
-| `doctor.stale_after` | `30` | days without new activity before doctor flags a forgotten feed; `null` disables |
+| `doctor.stale_after` | `30` | days without new activity before the doctor reports a stale feed; `null` disables |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |
-| `demo.enabled` | `false` | register the vocabulary `storyfeed:demo` seeds with, so a seeded demo renders. On in the environment showing the demo, not in production |
+| `demo.enabled` | `false` | register the vocabulary used by `storyfeed:demo` so seeded activities render; enable only in the demo environment |

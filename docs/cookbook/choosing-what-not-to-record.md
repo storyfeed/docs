@@ -1,29 +1,29 @@
 # Choosing What Not to Record
 
-Publish an activity only when a reader of the feed would want to see it.
-Most events in an app, such as drafts, saves and background work, record
-nothing.
+Publish activities that help people follow what happened. Routine saves,
+drafts, and background work usually do not belong in the feed.
 
 <span id="events-to-omit"></span>
 
 ## Choosing Events to Record
 
-| What Happened | Activity | Because |
+| Event | Record It? | Reason |
 |---|---|---|
-| a model created as a draft | no | nothing has happened yet that a reader would act on |
-| a save with no status change | no | nothing a reader would notice has changed |
-| the text of a note edited | no | the note is the story; its edit is not. Its [body](/basics/activity-content#adding-entity-bodies) shows the current text |
-| a background index, a cache rebuild, a dirty flag set | no | no reader did anything |
-| someone typing, or coming online | no | it stops being true within seconds |
-| a field-level audit row | no | an audit log is its own surface |
-| a status transition | yes | one verb per transition, as in [Choosing When to Publish](/cookbook/choosing-when-to-publish) |
-| a question asked about a menu item | yes | the sentence names what was asked about; the activity can [quote the question](/basics/activity-content#adding-quoted-text) |
-| an order placed | yes | |
-| an order viewed | yes, for a while | its verb declares a [retention window](/deeper/retention) |
+| model created as a draft | no | it is not ready for others to act on |
+| save with no status change | no | no visible change occurred |
+| note text edited | no | the note's [body](/basics/activity-content#adding-entity-bodies) already displays its current text |
+| background indexing, cache rebuilding, or setting a dirty flag | no | internal maintenance is not useful feed content |
+| someone typing or coming online | no | the state may change within seconds |
+| field-level audit record | no | keep detailed change history in an audit log |
+| status transition | yes | each transition describes an event; see [Choosing When to Publish](/cookbook/choosing-when-to-publish) |
+| question asked about a menu item | yes | the activity identifies the subject and can [quote the question](/basics/activity-content#adding-quoted-text) |
+| order placed | yes | others can follow the order's progress |
+| order viewed | temporarily | use the verb's [retention period](/deeper/retention) to limit how long it remains |
 
 ## Skipping Publication
 
-An event that implements `PublishesToFeed` decides in `toFeedActivity()`:
+For an event implementing `PublishesToFeed`, check whether to publish in
+`toFeedActivity()`:
 
 ```php memo="app/Events/OrderPlaced.php" at="toFeedActivity()"
 if ($this->order->status === 'draft') {

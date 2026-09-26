@@ -34,7 +34,8 @@ const label = computed(() => {
         return props.entity.label ?? `${article(noun)} ${noun}`;
     }
 
-    return props.entity.label ?? `a ${words(props.entity.type)}`;
+    // Core's degraded fallback: a missing label reads as "Something" (storyfeed::feed.something).
+    return props.entity.label ?? 'Something';
 });
 </script>
 

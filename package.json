@@ -5,7 +5,7 @@
   "description": "Documentation site for storyfeed/storyfeed \u2014 docs.storyfeed.dev",
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
-    "build": "node --test scripts/cast.test.mjs scripts/code-memo.test.mjs scripts/world.test.mjs && node scripts/drift-guard.mjs && node scripts/llms.mjs && vitepress build docs",
+    "build": "node --test scripts/cast.test.mjs scripts/code-memo.test.mjs scripts/world.test.mjs scripts/body-links.test.mjs && node scripts/drift-guard.mjs && node scripts/llms.mjs && vitepress build docs",
     "preview": "vitepress preview docs --port 5175",
     "drift": "node scripts/drift-detector/index.mjs",
     "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
@@ -21,6 +21,8 @@
     "vitepress": "^2.0.0-alpha.19"
   },
   "dependencies": {
-    "lucide-vue-next": "^1.0.0"
+    "lucide-vue-next": "^1.0.0",
+    "markdown-it": "^15.0.2",
+    "sanitize-html": "^2.17.7"
   }
 }

@@ -2,8 +2,7 @@
 
 ## Introduction
 
-The JSON a feed returns, payload **v1**. Every item arrives fully described, so
-a renderer needs no knowledge of your domain.
+Payload v1 describes each feed node for rendering without domain-specific knowledge.
 
 <span id="envelope"></span>
 
@@ -52,13 +51,13 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 }
 ```
 
-`url`, `attributes`, `modal` and `media` come from the model's static
-resolver, `Feedable::feedMedia(FeedContext): ?FeedMedia`, called at read time
-with the snapshot. `type`, `id`, `data` and `label` come from the snapshot;
-the resolver can override `label`. `body` lists the stored bodies, then the
-resolver's; each is a map naming its body type in `$body`
-([Activity Content](/basics/activity-content#built-in-body-types)).
-[Feedable API](/reference/feedable#feedcontext) covers the resolver.
+The static `Feedable::feedMedia(FeedContext): ?FeedMedia` resolver supplies
+`url`, `attributes`, `modal`, and `media` when the feed is retrieved. It receives
+the snapshot, which supplies `type`, `id`, `data`, and `label`; the resolver
+may override `label`. The `body` list contains stored bodies followed by
+resolved bodies, each identifying its type with `$body`.
+See [Activity Content](/basics/activity-content#built-in-body-types) and
+[Feedable API](/reference/feedable#feedcontext).
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
@@ -68,8 +67,8 @@ non-null; an empty `content` string is preserved.
 
 ### Tombstones
 
-A deleted model's activities stay, and each reference to it points at a
-tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
+Deleted models are replaced by tombstones in existing activities.
+See [Deleted Models](/deeper/deleted-models) for the lifecycle.
 
 ```jsonc
 "object": {
@@ -99,18 +98,17 @@ tombstone. [Deleted Models](/deeper/deleted-models) covers when that happens.
 }
 ```
 
-An entity is in one of three states:
+A role has one of these states:
 
 | State | Shape |
 |---|---|
-| Anonymous | the role is `null` |
+| Empty | `null`; for the actor, this means anonymous: no actor was recorded |
 | Degraded | the model's own `type`, `label: null`, `url: null`, `tombstone: null` |
 | Tombstoned | `type: "storyfeed.tombstone"`, `url: null`, `tombstone: {…}` |
 
-When `approximate` is true, `deleted` is when the trickle found the deletion,
-not when it happened. The headline, glyph and intent of an activity whose
-object is a tombstone resolve with `formerType`, so `order.place` still
-applies.
+When `approximate` is true, `deleted` records when `storyfeed:trickle` found
+the model missing. It is not the exact deletion time. Headlines, icons, and
+intents use `formerType`, so `order.place` still applies to a deleted order.
 
 <span id="entity-media"></span>
 
@@ -149,14 +147,14 @@ applies.
 |---|---|
 | `media: null` | the entity has no media; the common case |
 | `media: {…}` | all four image keys present, each an image object or `null`, plus `attachments` (an empty list when none) |
-| `media.url !== null` | the thing behind `entity.url` is an image |
-| `width`, `height` | advisory, for reserving the box before the bytes arrive; `null` when unknown, never `0` |
+| `media.url !== null` | `entity.url` identifies an image |
+| `width`, `height` | dimensions for reserving display space before loading; `null` when unknown, never `0` |
 
-`entity.url` stays a string. When the resolver typed it as an image, `media.url`
-carries the same location again with its `mediaType`, `width` and `height`.
-The four keys are Activity Streams 2.0 property names with AS2's definitions:
-a photo is `url` (the full image) plus `preview` (the derivative a list paints).
-A group's `sample` entities are ordinary entity objects and carry `media` the same way.
+`entity.url` remains a string. If it represents an image, `media.url` contains
+the same location with `mediaType`, `width`, and `height`. The four media keys
+use Activity Streams 2.0 definitions: for a photo, `url` identifies the full
+image and `preview` its thumbnail. Group `sample` entities use the same media
+structure.
 
 `attachments` is a list of resources carrying `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
@@ -165,21 +163,20 @@ and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 ### Feed-Specific Resolution
 
-The resolver's context names the feed being read, so one snapshot can resolve
-to a different URL on each feed. The name comes from the feed registry, never
-from the request. A shop feed can carry a signed operational link that the
-customer feed never shows.
+The resolver context includes the registered feed name, allowing one snapshot
+to produce different URLs per feed. This name comes from the registry, not
+the request. For example, a shop feed may include a signed operational link
+that is absent from the customer feed.
 
-A node does not say which feed produced it, so key any cache of a payload by
-feed name.
+Nodes do not identify their source feed, so include the feed name in payload cache keys.
 
 ### Degraded Entities
 
-An entity with no snapshot is not omitted, and neither is its activity. It
-arrives with `label: null`, `url: null` and `media: null`, because the resolver
-is not called without a snapshot. [`storyfeed:trickle`](/reference/commands#scheduled)
-writes missing snapshots. A throwing `feedMedia()` gives `url: null`
-and `media: null`, and the exception is reported server-side.
+Entities without snapshots remain in the payload with `label: null`,
+`url: null`, and `media: null`; their resolver is not called.
+[`storyfeed:trickle`](/reference/commands#scheduled) creates missing snapshots.
+If `feedMedia()` throws, Storyfeed reports the exception and returns
+`url: null` and `media: null`.
 
 <span id="activity-node"></span>
 
@@ -227,23 +224,22 @@ and `media: null`, and the exception is reported server-side.
 | `published_at` | string | ISO 8601 with microseconds |
 | `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
-| `glyph` | string or null | the icon token; see [Glyphs](#glyphs) |
-| `glyph_intent` | string or null | what the glyph means; see [Glyphs](#glyphs) |
+| `glyph` | string or null | the icon token; see [Icons](#glyphs) |
+| `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
 | `data` | map or null | what the recording call passed to `data()` |
 | `thread` | object or null | the utterance the activity is about; see [Threads](#threads) |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
-| `redundant` | boolean | `true` when one of those roles is a role the verb is about: the object by default, none for a removal verb, or what the verb's `->missing()` names |
+| `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
 | `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
 | `missing_headline` | string or null | the finished text when `->missingHeadline()` is a closure that returns text without role tokens, as `headline` is for `headline_template`; otherwise `null` |
 
-`redundant` means the activity's news is gone while the activity is still true
-as history. A renderer may show either reading.
+A redundant activity still records what happened, but a relevant model has
+been deleted. Your renderer may display the original or missing headline.
 
 ### Threads
 
-`thread` is set with `FeedThread` when the activity is about something someone
-said:
+Set `thread` with `FeedThread` to include something someone said:
 
 | Key | Type | Holds |
 |---|---|---|
@@ -312,9 +308,9 @@ said:
 |---|---|---|
 | `kind` | string | always `"group"` |
 | `id` | string | `grp_` and a hash; stable within its window |
-| `axis` | string | the axis that grouped the members, or `"summary"` on a [digest row](#digest-rows). Render an unknown value as a generic group |
+| `axis` | string | the axis that grouped the members, or `"summary"` on a [summary row](#digest-rows). Render an unknown value as a generic group |
 | `count` | int | the true number of members |
-| `verb` | string or null | the members' verb; `null` on a digest row spanning several verbs |
+| `verb` | string or null | the members' verb; `null` on a summary row spanning several verbs |
 | `published_at` | string | the newest member's; the sort key |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
 | `glyph`, `glyph_intent` | string or null | as on an activity node; `null` when `verb` is |
@@ -327,16 +323,15 @@ said:
 | `redundant` | boolean | `true` only when every member is redundant |
 | `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones |
 
-Each singular role key is an entity only when the axis groups on that role, so
-every member shares it, its sample list has exactly one entry, and its
-distinct count is exactly one. Otherwise it is `null`. Each plural role has a limited sample list
-and a distinct count; an absent role has `[]` and `0`.
+A singular role contains an entity only when the grouping rule uses that
+role, every member shares it, its sample has one entry, and its distinct
+count is one. Otherwise it is `null`. Each plural role has a limited sample
+and a distinct count; empty roles use `[]` and `0`.
 
-A renderer can rely on the group node's shape, but not on which groups appear:
-the axes, thresholds and windows that decide them are server-side and can
-change.
+Renderers may rely on the group node's structure. Which groups appear depends
+on server-side rules, thresholds, and periods that may change.
 
-### Digest Rows
+### Summary Rows {#digest-rows}
 
 A `summary()` group uses the group shape above with `axis: "summary"` and
 these additional fields:
@@ -356,55 +351,53 @@ Each entry in `phrases` carries its own fields:
 | `glyph`, `glyph_intent` | presentation for this phrase's verb; both nullable |
 | `sample`, `distinct` | sampled entities and true distinct counts per plural role, as on the group |
 
-The row's `headline_template` / `headline` come from `summary.*` and may both
-be null. A row spanning several verbs has `verb: null`, `glyph: null` and
-`glyph_intent: null`; its phrases retain their own values. To draw it, name
-the actor and join the phrases. People whose entire period is the same single
-activity can share a digest row; use `sample.actors` and `distinct.actors`
-when `actor` is null.
+The summary node's `headline_template` and `headline` come from `summary.*`
+and may both be null. Nodes spanning several verbs have `verb: null`,
+`glyph: null`, and `glyph_intent: null`; their phrases retain those values.
+To render a summary row, display the actor followed by the joined phrases.
+Actors whose entire period contains the same single activity may share a
+summary node; use `sample.actors` and `distinct.actors` when `actor` is null.
 
-When `phrases_truncated` is true, the number of remaining **activities** is
-`count - sum(phrases[*].count)`. This is the “N” in “and N more”, not a count
-of omitted verbs. `children` is independently capped by
-`grouping.children_limit`; `children_truncated` reports that cap.
+When `phrases_truncated` is true, calculate remaining activities with
+`count - sum(phrases[*].count)`. Use this total for “and N more”; it counts
+activities, not omitted verbs. `grouping.children_limit` separately limits
+`children`, with `children_truncated` indicating omitted members.
 
 ## Presentation Fields
 
-### Glyphs
+### Icons {#glyphs}
 
-`glyph` is a token naming an icon, in the app's own words, declared with
-[`->icon()`](/basics/the-feed-file#adding-an-icon). The package ships no icon
-set, and a type and verb with no icon is `null`.
+`glyph` contains the icon token declared with
+[`icon()`](/basics/the-feed-file#adding-an-icon). Storyfeed includes no icon
+set and returns `null` when no icon is defined for the type and verb.
 
-`glyph_intent` is a second token beside it, declared with `->intent()`, saying
-what that glyph means: `"success"`, `"danger"`, whatever word the app chose.
-Like the verb it is free-form: no vocabulary is shipped or validated, and any
-string passes through. It is `null` for every pair with no registered intent.
-See [what a glyph means](/basics/rendering#glyphs-and-intents).
+`glyph_intent` contains the token declared with `intent()`, such as `"success"`
+or `"danger"`. It describes the icon's meaning. Any string is accepted; Storyfeed
+provides no fixed vocabulary or validation. Without a declaration, it is `null`.
+See [icon meanings](/basics/rendering#glyphs-and-intents).
 
-Each is declared per model type and verb, with `*` fallbacks, and the two are
-looked up independently in this order: `type.verb`, `type.*`, `*.verb`, `*.*`.
+Icons and intents are resolved independently in this order: `type.verb`,
+`type.*`, `*.verb`, then `*.*`.
 
-The Activity Streams 2.0 document carries neither; its `icon` is the entity
-image.
+Activity Streams 2.0 documents include neither token; their `icon` contains
+the entity's icon image.
 
 ### Headlines
 
-Render from `headline_template`: tokenize it and substitute. `headline` is
-finished text from a closure headline, and is null whenever the template is
-non-null. On an activity node, a closure that returns role tokens fills
-`headline_template`, and one that returns text with no role tokens fills
-`headline`. On a group node, a closure always fills `headline`. A test should
-not assert a non-null `headline` for a closure that returns tokens.
+Render `headline_template` by replacing its tokens. `headline` contains
+finished text and is null when `headline_template` is set. For activity nodes,
+a closure returning role tokens sets `headline_template`; a closure without
+them sets `headline`. For group nodes, closures always set `headline`.
+Tests for activity closures returning tokens should check `headline_template`.
 
-Both are null on a group node when no sentence is true of the whole group.
-Renderers **must** handle it; see
+Both fields are null when no headline describes every group member.
+Renderers must handle this case; see
 [Rendering](/basics/rendering#groups-without-headlines).
 
-Token availability per axis is in
-[Aggregation](/deeper/aggregation). A group headline can use the singular
-tokens of the roles its axis groups on; the [singular fallback](/deeper/aggregation#group-headline-tokens) can also
-keep a role token when the group contains exactly one distinct entity.
+See [Aggregation](/deeper/aggregation) for allowed group tokens. Singular
+tokens require a shared grouping role. The
+[singular fallback](/deeper/aggregation#group-headline-tokens) may also retain
+a role token when the group has exactly one distinct entity for that role.
 
 Noun substitution can change the emitted template even for the same headline
 definition, so cache rendered headlines per node, not per definition.
@@ -415,19 +408,19 @@ definition, so cache rendered headlines per node, not per definition.
 
 ### Cursors
 
-- Opaque. Store and return them; they are not parseable.
-- Ordered by `published_at`, newest first.
-- `next_cursor: null` means the end.
+- Store cursors and return them unchanged; do not parse them.
+- Results are ordered by `published_at`, newest first.
+- `next_cursor: null` marks the end.
 
 <span id="sync-token"></span>
 
 ### Sync Tokens
 
-Cursor-grained and opaque. Store it; when a later page's token differs, settled
-history was rewritten server-side — drop **all** accumulated nodes and refetch
-from the head. Compare for equality only; `null → non-null` is a change.
+Store the opaque sync token with the cursor and compare tokens for equality.
+If a later page's token differs, discard all accumulated nodes and fetch from
+the start. A change from `null` to a non-null value also requires this.
 
-[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows)
-can change it mid-scroll. A page can arrive with an empty `items` and a
-non-null `next_cursor`, so check the token then too. A client that ignores a
-changed token does not conform to the payload contract.
+[`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows) can
+change the token during pagination. Check it even when `items` is empty and
+`next_cursor` is non-null. Clients must handle changed tokens to comply with
+the payload contract.

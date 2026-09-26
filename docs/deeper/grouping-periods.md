@@ -28,18 +28,20 @@ Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->icon('shopping-bag')
     ->groupedWeekly()
-    ->grouped(fn (GroupBuilder $group) => $group
-        ->repeat(':actor placed :count orders with :target'));
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(':actor placed :count orders with :target'),
+    );
 ```
 
-A customer places orders with the same shop on three days in the same
-week. The grouped feed can show them together:
+Weekly grouping can combine a customer's orders from the same shop across
+three days:
 
 <FeedExample :items="[weekly]" />
 
-The period sets the calendar boundary for grouping. The
-[axis](/deeper/aggregation#built-in-axes) still decides which activities
-belong together.
+The period sets the calendar boundary. The
+[grouping rules](/deeper/aggregation#built-in-axes) determine which activities
+belong together within it.
 
 <a id="choosing-a-calendar-period"></a>
 
@@ -69,28 +71,27 @@ use Storyfeed\Facades\Story;
 Story::fallback()->groupedWeekly();
 ```
 
-The fallback applies where a more specific declaration gives no period.
+The fallback applies unless a more specific declaration sets a period.
 `Story::verb('place')->groupedWeekly()` applies to that verb across object
-types. A type-and-verb declaration takes precedence over both.
+types. A declaration for both type and verb overrides either default.
 
-Activities that need to group together need the same period. A grouping axis
-that combines verbs still separates activities with different periods.
+Activities must use the same period to group together, even when the group
+allows different verbs.
 
 > [!NOTE]
-> **The difference between a grouping period and a batch window**
+> **Grouping periods and batch windows**
 >
-> A grouping period is a fixed stretch of the calendar, so a weekly group can
-> span separate sittings. A [batch window](/deeper/story-middleware-and-batching#batch-windows)
-> tracks one sitting by inactivity: each batched activity can extend its
-> closing time.
+> A grouping period follows fixed calendar boundaries, so a weekly group can
+> include activities from separate batches. A
+> [batch window](/deeper/story-middleware-and-batching#batch-windows) sets how
+> long to wait before closing a batch; each activity can extend that wait.
 
 <a id="applying-a-changed-period-to-stored-activities"></a>
 
 ## Applying Period Changes
 
-A changed period applies to newly published activities. Activities already
-published keep their groups until you
-[rehash them](/reference/commands#rehashing-existing-rows):
+Period changes apply to new activities. Published activities keep their
+groups until you [rehash them](/reference/commands#rehashing-existing-rows):
 
 ```bash
 php artisan storyfeed:curate --rehash
