@@ -21,9 +21,10 @@ const { anonymous } = scene.cookbook.actorless
 ## Recording a Party
 
 When {{ role.mall.label }} closes for the night, a scheduled Artisan command
-cancels any {{ role.shop.label }} order left unpaid. No user is signed in, so
-the command needs a named actor to identify who cancelled the orders. Pass a
-string to the `by` method to use a party. Strings can name parties in any role:
+cancels any {{ role.shop.label }} order left unpaid. The command runs from the
+console, where no user is signed in, so it needs a named actor to identify who
+cancelled the orders. Pass a string to the `by` method to use a party. Strings
+can name parties in any role:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php"

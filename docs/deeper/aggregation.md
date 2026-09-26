@@ -20,7 +20,7 @@ const live = liveOf(everything())
 
 ### Repeated Activities
 
-Here are three orders from one customer, minutes apart:
+Here are three orders from one customer, minutes apart, in log mode:
 
 <FeedExample :items="log" />
 
