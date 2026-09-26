@@ -99,7 +99,11 @@ php artisan vendor:publish --tag=storyfeed-assets
 
 ## Building Your Own Components
 
-The following examples build custom Blade components without styling.
+The following examples build custom Blade components without styling. They
+are your application's own anonymous components in
+`resources/views/components/feed`, so Blade names them `<x-feed>`,
+`<x-feed.item>`, and so on, separately from Storyfeed UI's
+`<x-storyfeed::feed>`.
 
 ### Reading Feed Items
 
