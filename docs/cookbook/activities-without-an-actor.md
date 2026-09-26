@@ -123,69 +123,26 @@ It records the same activity as the controller above.
 ## Recording a System Actor
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::activity()
-            ->by('Stripe')
-            ->action('pay', $order)
-            ->publish();
-
-        return response()->noContent();
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by('Stripe') // [!code highlight]
+    ->action('pay', $order)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/StripeWebhookController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Storyfeed\Facades\Storyfeed;
-
-class StripeWebhookController extends Controller
-{
-    public function __invoke(Request $request): Response
-    {
-        $order = Order::where('payment_intent', $request->input('data.object.id'))
-            ->firstOrFail();
-
-        $order->update(['paid_at' => now()]);
-
-        Storyfeed::record(
-            verb: 'pay',
-            object: $order,
-            actor: 'Stripe',
-        );
-
-        return response()->noContent();
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'pay',
+    object: $order,
+    actor: 'Stripe', // [!code highlight]
+);
 ```
 :::
 
 <FeedExample :items="[paid]" />
 
-To name one party for a whole job, see
+[Publishing From Events](/deeper/events) shows the whole webhook. To
+name one party for a whole job, see
 [Sharing an Actor](/deeper/activity-scopes#sharing-an-actor).
 A party can also fill [other roles](/deeper/parties#using-parties-in-other-roles).
 
@@ -193,38 +150,14 @@ A party can also fill [other roles](/deeper/parties#using-parties-in-other-roles
 
 ## Recording No Actor
 
-A scheduled command that expires unpaid orders acts for nobody:
+A scheduled command that expires unpaid orders acts for nobody, so each
+expiry is published with `Storyfeed::anonymous()`:
 
-```php memo="app/Console/Commands/ExpireOrders.php"
-<?php
-
-namespace App\Console\Commands;
-
-use App\Models\Order;
-use Illuminate\Console\Command;
-use Storyfeed\Facades\Storyfeed;
-
-class ExpireOrders extends Command
-{
-    protected $signature = 'orders:expire';
-
-    public function handle(): void
-    {
-        $unpaid = Order::whereNull('paid_at')
-            ->whereNull('expired_at')
-            ->where('created_at', '<', now()->subWeek())
-            ->get();
-
-        foreach ($unpaid as $order) {
-            $order->update(['expired_at' => now()]);
-
-            Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
-                ->action('expire', $order)
-                ->to($order->shop)
-                ->publish();
-        }
-    }
-}
+```php
+Storyfeed::anonymous() // no actor, even inside Storyfeed::actor() [!code highlight]
+    ->action('expire', $order)
+    ->to($order->shop)
+    ->publish();
 ```
 
 <FeedExample :items="[expired]" />
