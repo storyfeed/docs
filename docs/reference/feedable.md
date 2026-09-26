@@ -459,7 +459,7 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 | `attributes()` | array, merged; or a key and a value | `entity.attributes` |
 | `modal()` | bool, default `true` | `entity.modal` |
 | `icon()`, `preview()`, `image()` | `FeedImage`, or a bare src string | `entity.media` |
-| `attachments()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.attachments` |
+| `files()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.files` |
 | `body()` | a body, a list, or a closure called when the body is resolved; each call appends | `entity.body`, after the stored bodies |
 
 ### Modal Links
@@ -639,6 +639,11 @@ The resolver receives the snapshot's values in `$context` and an empty
 See [Feedable API](/reference/feedable#feedmedia) for all media properties.
 
 ### Image Slots
+
+Non-image resources use the separate `files` list. Set it with
+`FeedMedia::make()->files($resource)` or `FeedMedia::make(files: [$resource])`,
+where `$resource` is a `Storyfeed\FeedResource`. The feed resolves each file
+when retrieved and exposes the list as `entity.media.files`.
 
 The slots are Activity Streams 2.0 property names:
 

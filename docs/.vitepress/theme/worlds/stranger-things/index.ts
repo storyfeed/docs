@@ -242,7 +242,7 @@ const ALT: Record<string, string> = {
 }
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
-const mediaOf = (file: string) => ({ icon: null, image: null, attachments: [],
+const mediaOf = (file: string) => ({ icon: null, image: null, files: [],
   preview: picture(file), url: picture(file) })
 
 const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,
