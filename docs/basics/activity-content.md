@@ -284,7 +284,9 @@ FeedEntity::make()
             ))
             ->items([$this->lines->get(2)->item->name])
             ->totalItems($this->lines->count())
-            ->more(FeedLink::make("Order #{$this->reference}")),
+            ->more(
+                FeedLink::make("Order #{$this->reference}", $this->url),
+            ),
     );
 ```
 
@@ -308,7 +310,7 @@ FeedEntity::make(
             $this->lines->get(2)->item->name,
         ],
         totalItems: $this->lines->count(),
-        more: FeedLink::make("Order #{$this->reference}"),
+        more: FeedLink::make("Order #{$this->reference}", $this->url),
     ),
 );
 ```
@@ -338,7 +340,9 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(FeedLink::make($this->title)) // [!code highlight]
+            ->subject(
+                FeedLink::make($this->title, $this->url), // [!code highlight]
+            )
             ->content($this->description),
     );
 ```
@@ -351,7 +355,7 @@ use Storyfeed\FeedLink;
 FeedEntity::make(
     label: $this->title,
     body: MediaObject::make(
-        subject: FeedLink::make($this->title), // [!code highlight]
+        subject: FeedLink::make($this->title, $this->url), // [!code highlight]
         content: $this->description,
     ),
 );
@@ -361,10 +365,9 @@ FeedEntity::make(
 
 <FeedExample :items="[content.notice]" />
 
-The title links to the notice itself. Storyfeed resolves the notice's current
-URL when the feed is retrieved.
+The title links to the notice at the URL supplied when its body is stored.
 
-To link to another page, pass its URL as the second argument to `FeedLink::make`:
+To link to another page, pass that page's title and URL:
 
 ::: code-group
 
@@ -377,7 +380,9 @@ FeedEntity::make()
     ->label($this->title)
     ->body(
         MediaObject::make()
-            ->subject(FeedLink::make($this->guide_title, $this->guide_url)) // [!code highlight]
+            ->subject(
+                FeedLink::make($this->guide_title, $this->guide_url), // [!code highlight]
+            )
             ->content($this->description),
     );
 ```
@@ -405,12 +410,11 @@ notice. A plain-string `subject` displays a title without a link.
 
 ### Links in Bodies
 
-A `FeedLink` contains a label and an optional `href`. When the `href` is `null`,
-the link uses the current URL of the entity the body belongs to. Configure that
-URL with the model's [link resolver](/basics/feedable-models#the-link).
+A `FeedLink` contains a label and an `href`. Pass the destination URL as the
+second argument to `FeedLink::make`, or set it with the `href` method.
 
-An explicit `href` is stored as written. It can become stale if a route changes
-or a signed URL expires. Omit it when the link should lead to the entity itself.
+The `href` is stored as written. It can become stale if a route changes or a
+signed URL expires.
 
 The label names the thing, such as a notice or an order. It should not be an
 instruction such as “Open the conversation”. See the

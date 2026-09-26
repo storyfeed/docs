@@ -172,10 +172,10 @@ const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $
     { label: FARE.hotDog, href: fare.hotDog.url },
     { label: FARE.cornDog, href: fare.cornDog.url },
     FARE.pretzel,
-  ], totalItems: 5, more: { label: fairOrderLabel, href: null } }] }
+  ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042' } }] }
 const hoursTitle = `${VENUES.scoops} opening hours`
 const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
-  subject: { label: hoursTitle, href: null },
+  subject: { label: hoursTitle, href: '/notices/101' },
   content: 'The counter opens at 10 am. Orders are available until 9 pm.',
   image: null, attachments: [], footnote: null }] })
 const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,

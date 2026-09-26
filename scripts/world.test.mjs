@@ -239,13 +239,14 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.ok(list.items.some(item => typeof item === 'string'))
     assert.ok(list.items.some(item => typeof item === 'object' && item.href))
     assert.ok(list.totalItems > list.items.length)
-    assert.equal(list.more.href, null)
+    assert.equal(list.more.href, content.itemList.object.url)
+    assert.ok(list.more.href)
     assert.equal(list.more.label, content.itemList.object.label)
     const notice = content.notice.object.body[0]
     const linkedNotice = content.linkedNotice.object.body[0]
     for (const body of [notice, linkedNotice]) assert.equal(body.$body, 'Storyfeed/Body/MediaObject')
     assert.equal(notice.subject.label, content.notice.object.label)
-    assert.equal(notice.subject.href, null)
+    assert.equal(notice.subject.href, content.notice.object.url)
     assert.ok(content.notice.object.url)
     assert.ok(linkedNotice.subject.href && linkedNotice.subject.href !== content.linkedNotice.object.url)
     assert.equal(content.note.verb, 'post')
