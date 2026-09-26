@@ -25,70 +25,32 @@ Story::for(Photo::class)->verb('publish')
 ```
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PhotoApprovalController.php"
-<?php
+```php [Fluent Syntax]
+Storyfeed::activity() // the contributor's activity
+    ->by($photo->user) // [!code highlight]
+    ->action('publish', $photo)
+    ->to($photo->menuItem)
+    ->publish();
 
-namespace App\Http\Controllers;
-
-use App\Models\Photo;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PhotoApprovalController extends Controller
-{
-    public function store(Request $request, Photo $photo): RedirectResponse
-    {
-        $photo->update(['approved_at' => now()]);
-
-        Storyfeed::activity() // the contributor's activity
-            ->by($photo->user)
-            ->action('publish', $photo)
-            ->to($photo->menuItem)
-            ->publish();
-
-        Storyfeed::activity() // the approval; exclude its verb from displayed feeds
-            ->by($request->user())
-            ->action('approve', $photo)
-            ->publish();
-
-        return back();
-    }
-}
+Storyfeed::activity() // the approval; exclude its verb from displayed feeds
+    ->by($request->user()) // [!code highlight]
+    ->action('approve', $photo)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/PhotoApprovalController.php"
-<?php
+```php [Named Arguments]
+Storyfeed::record( // the contributor's activity
+    verb: 'publish',
+    object: $photo,
+    actor: $photo->user, // [!code highlight]
+    target: $photo->menuItem,
+);
 
-namespace App\Http\Controllers;
-
-use App\Models\Photo;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class PhotoApprovalController extends Controller
-{
-    public function store(Request $request, Photo $photo): RedirectResponse
-    {
-        $photo->update(['approved_at' => now()]);
-
-        Storyfeed::record( // the contributor's activity
-            verb: 'publish',
-            object: $photo,
-            actor: $photo->user,
-            target: $photo->menuItem,
-        );
-
-        Storyfeed::record( // the approval; exclude its verb from displayed feeds
-            verb: 'approve',
-            object: $photo,
-            actor: $request->user(),
-        );
-
-        return back();
-    }
-}
+Storyfeed::record( // the approval; exclude its verb from displayed feeds
+    verb: 'approve',
+    object: $photo,
+    actor: $request->user(), // [!code highlight]
+);
 ```
 :::
 
