@@ -36,67 +36,21 @@ object.
 Record the coherent composition where the invitation is accepted:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/InvitationController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Invitation;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class InvitationController extends Controller
-{
-    public function accept(
-        Request $request,
-        Invitation $invitation,
-    ): RedirectResponse {
-        $invitation->update(['accepted_at' => now()]);
-
-        $invitation->project->members()->attach($request->user());
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('accept', $invitation)
-            ->to($invitation->project)
-            ->publish();
-
-        return to_route('projects.show', $invitation->project);
-    }
-}
+```php [Fluent Syntax]
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('accept', $invitation)
+    ->to($invitation->project)
+    ->publish();
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/InvitationController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Invitation;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class InvitationController extends Controller
-{
-    public function accept(
-        Request $request,
-        Invitation $invitation,
-    ): RedirectResponse {
-        $invitation->update(['accepted_at' => now()]);
-
-        $invitation->project->members()->attach($request->user());
-
-        Storyfeed::record(
-            verb: 'accept',
-            object: $invitation,
-            actor: $request->user(),
-            target: $invitation->project,
-        );
-
-        return to_route('projects.show', $invitation->project);
-    }
-}
+```php [Named Arguments]
+Storyfeed::record(
+    verb: 'accept',
+    object: $invitation,
+    actor: $request->user(),
+    target: $invitation->project,
+);
 ```
 :::
 
