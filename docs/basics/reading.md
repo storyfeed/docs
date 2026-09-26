@@ -4,7 +4,10 @@
 import { scene, everything, WORLD_ANCHOR, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
 
 // One week, ending at the shared clock. The same rows drive all three modes.
-const rows = everything().filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
+// Parties and anonymous activities come later in the docs, so only people act here.
+const rows = everything()
+  .filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
+  .filter(node => node.actor && node.actor.type !== 'storyfeed.party')
 const log = logOf(rows)
 const live = liveOf(rows)
 const summary = summaryOf(rows)
