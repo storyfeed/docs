@@ -105,8 +105,10 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
         ->url(route('menu.show', $context->routeKey()))
-        ->body(KeyValue::make()
-            ->items('Portions left', $context->model()?->portions_left));
+        ->body(
+            KeyValue::make()
+                ->items('Portions left', $context->model()?->portions_left),
+        );
 }
 ```
 
@@ -207,9 +209,11 @@ class Note extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label($this->body)
-            ->body(Component::make()
-                ->name('Note')
-                ->props(['excerpt' => $this->body]));
+            ->body(
+                Component::make()
+                    ->name('Note')
+                    ->props(['excerpt' => $this->body]),
+            );
     }
 }
 ```

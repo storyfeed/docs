@@ -66,9 +66,11 @@ the map from the cases your application records:
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::verbs(Act::only(
-    Act::Create, Act::Update, Act::Approve, Act::Archive,
-));
+Storyfeed::verbs(
+    Act::only(
+        Act::Create, Act::Update, Act::Approve, Act::Archive,
+    ),
+);
 ```
 
 Register only the verbs your application records. Registering all 72 cases

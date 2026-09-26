@@ -250,12 +250,13 @@ class MenuItem extends Model implements Feedable
         static::feedMediaUsing(
             fn (FeedContext $context, FeedMedia $media) => $media
                 ->url(route('menu.show', $context->routeKey()))
-                ->preview(FeedImage::make()
-                    ->src(route('menu.photo', $context->routeKey()))
-                    ->mediaType($context->data('mediaType'))
-                    ->width($context->data('width'))
-                    ->height($context->data('height'))
-                    ->alt($context->label())
+                ->preview(
+                    FeedImage::make()
+                        ->src(route('menu.photo', $context->routeKey()))
+                        ->mediaType($context->data('mediaType'))
+                        ->width($context->data('width'))
+                        ->height($context->data('height'))
+                        ->alt($context->label()),
                 ),
         );
     }
@@ -297,13 +298,15 @@ class MenuItem extends Model implements Feedable
         static::feedMediaUsing(
             fn (FeedContext $context, FeedMedia $media) => $media
                 ->url(route('menu.show', $context->routeKey()))
-                ->preview(FeedImage::make(
-                    src: route('menu.photo', $context->routeKey()),
-                    mediaType: $context->data('mediaType'),
-                    width: $context->data('width'),
-                    height: $context->data('height'),
-                    alt: $context->label(),
-                )),
+                ->preview(
+                    FeedImage::make(
+                        src: route('menu.photo', $context->routeKey()),
+                        mediaType: $context->data('mediaType'),
+                        width: $context->data('width'),
+                        height: $context->data('height'),
+                        alt: $context->label(),
+                    ),
+                ),
         );
     }
 

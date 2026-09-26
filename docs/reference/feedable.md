@@ -366,14 +366,16 @@ class Document extends Model implements Feedable
     {
         return FeedMedia::make()
             ->url(route('documents.show', $context->routeKey()))
-            ->preview(FeedImage::make()
-                // resolved here, at read time
-                ->src(route('documents.thumbnail', $context->routeKey()))
-                // the intrinsic facts come from the snapshot
-                ->mediaType($context->data('mediaType'))
-                ->width($context->data('width'))
-                ->height($context->data('height'))
-                ->alt($context->label()));
+            ->preview(
+                FeedImage::make()
+                    // resolved here, at read time
+                    ->src(route('documents.thumbnail', $context->routeKey()))
+                    // the intrinsic facts come from the snapshot
+                    ->mediaType($context->data('mediaType'))
+                    ->width($context->data('width'))
+                    ->height($context->data('height'))
+                    ->alt($context->label()),
+            );
     }
 }
 ```

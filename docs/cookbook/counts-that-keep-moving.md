@@ -38,11 +38,13 @@ const live = activity({ ...fixed, thread: { ...fixed.thread, replies: 4 } })
 Storyfeed::activity()
     ->by($request->user())
     ->action('reply', $discussion)
-    ->thread(FeedThread::make(
-        text: $comment->body,
-        // evaluated now, stored forever
-        replies: $discussion->comments()->count(), // [!code highlight]
-    ))
+    ->thread(
+        FeedThread::make(
+            text: $comment->body,
+            // evaluated now, stored forever
+            replies: $discussion->comments()->count(), // [!code highlight]
+        ),
+    )
     ->publish();
 ```
 

@@ -106,9 +106,11 @@ class Order extends Model implements Feedable
     {
         return FeedEntity::make()
             ->label("Order #{$this->reference}")
-            ->body(Prose::make()
-                ->content($this->instructions)
-                ->title("Order #{$this->reference} instructions"));
+            ->body(
+                Prose::make()
+                    ->content($this->instructions)
+                    ->title("Order #{$this->reference} instructions"),
+            );
     }
 }
 ```
@@ -153,23 +155,28 @@ Use `KeyValue` for labelled values:
 ```php [Fluent Syntax]
 FeedEntity::make()
     ->label("Order #{$this->reference}")
-    ->body(KeyValue::make()->title("Order #{$this->reference}")->items([ // [!code highlight]
-        'Pickup' => $this->pickup_at->format('g:i a'),
-        'Items' => $this->items->count(),
-        'Reference' => KeyValue::verbatim($this->reference),
-        'Table' => KeyValue::missingAs($this->table, 'not seated'),
-    ]));
+    ->body(
+        KeyValue::make()->title("Order #{$this->reference}")->items([ // [!code highlight]
+            'Pickup' => $this->pickup_at->format('g:i a'),
+            'Items' => $this->items->count(),
+            'Reference' => KeyValue::verbatim($this->reference),
+            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+        ]),
+    );
 ```
 
 ```php [Named Arguments]
 FeedEntity::make(
     label: "Order #{$this->reference}",
-    body: KeyValue::make(title: "Order #{$this->reference}", items: [ // [!code highlight]
-        'Pickup' => $this->pickup_at->format('g:i a'),
-        'Items' => $this->items->count(),
-        'Reference' => KeyValue::verbatim($this->reference),
-        'Table' => KeyValue::missingAs($this->table, 'not seated'),
-    ]),
+    body: KeyValue::make( // [!code highlight]
+        title: "Order #{$this->reference}",
+        items: [
+            'Pickup' => $this->pickup_at->format('g:i a'),
+            'Items' => $this->items->count(),
+            'Reference' => KeyValue::verbatim($this->reference),
+            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+        ],
+    ),
 );
 ```
 
@@ -192,9 +199,11 @@ Use `Excerpt` to quote a passage and its `from` argument to identify the source:
 ```php [Fluent Syntax]
 FeedEntity::make()
     ->label($this->title)
-    ->body(Excerpt::make() // [!code highlight]
-        ->text($this->lede)
-        ->from("Draft for {$this->publication->name}"));
+    ->body(
+        Excerpt::make() // [!code highlight]
+            ->text($this->lede)
+            ->from("Draft for {$this->publication->name}"),
+    );
 ```
 
 ```php [Named Arguments]
