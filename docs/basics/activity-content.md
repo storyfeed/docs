@@ -276,12 +276,14 @@ FeedEntity::make()
     ->body(
         ItemList::make()
             ->title("Order #{$this->reference} items")
-            ->items($this->lines->take(2)->map(
-                fn (OrderLine $line) => FeedLink::make( // [!code highlight]
-                    $line->item->name,
-                    $line->item->url,
+            ->items(
+                $this->lines->take(2)->map(
+                    fn (OrderLine $line) => FeedLink::make( // [!code highlight]
+                        $line->item->name,
+                        $line->item->url,
+                    ),
                 ),
-            ))
+            )
             ->items([$this->lines->get(2)->item->name])
             ->totalItems($this->lines->count())
             ->more(
