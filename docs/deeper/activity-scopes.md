@@ -83,15 +83,14 @@ Storyfeed::actor($request->user(), function () use ($order) {
 
 <FeedExample :items="[scoped]" expanded />
 
-`actor()` supplies the actor as `context()` supplies the context. Both accept
-an Eloquent model or a declared party name and return the callback's result.
-Without a callback, `Storyfeed::actor($user)` returns an activity builder with
-that actor set.
+The `actor` method accepts an Eloquent model or declared party name and returns
+the callback's result. Without a callback, `Storyfeed::actor($user)` returns an
+activity builder with that actor set.
 
 ### Nested Scopes
 
-Nested callbacks use the innermost actor or context. Leaving a callback
-restores the previous scope, even when it throws.
+Nested callbacks use the innermost actor or context. The previous scope is
+restored when the callback ends, including when it throws an exception.
 
 ## Sharing Roles Within an HTTP Request
 
@@ -107,9 +106,9 @@ Route::post('/shops/{shop}/orders/{order}/place', PlaceOrderController::class)
     ->middleware(['auth', 'storyfeed.context:shop']);
 ```
 
-`storyfeed.context:shop` takes the bound `shop` route parameter.
-The parameter must be an Eloquent model; a missing or unbound value throws.
-Implicit binding needs the controller to receive that parameter:
+The `storyfeed.context:shop` middleware uses the bound `shop` route parameter.
+It must be an Eloquent model; missing or unbound values throw an exception.
+For implicit binding, type-hint the parameter in the controller:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
@@ -181,16 +180,17 @@ Route::post('/shops/{shop}/orders/{order}/place', PlaceOrderController::class)
     ->middleware(['auth', 'storyfeed.context:shop', 'storyfeed.actor:System']);
 ```
 
-`storyfeed.actor:System` wraps the request in `Storyfeed::actor('System', ...)`.
-Declare that [party](/deeper/parties#declaring-parties) in your service provider.
-The explicit `->by($request->user())` in the controller still wins; activities
-without an explicit actor inherit `System`.
+The `storyfeed.actor:System` middleware wraps the request in
+`Storyfeed::actor('System', ...)`. Declare the
+[party](/deeper/parties#declaring-parties) in your service provider.
+An explicit `->by($request->user())` takes precedence; activities without an
+explicit actor use `System`.
 
 <a id="actor-and-context-precedence"></a>
 
 ## Role Precedence
 
-An activity takes its actor and context from the first row that supplies one:
+Storyfeed resolves each role from the first applicable source:
 
 | Priority | Actor | Context |
 |---|---|---|
@@ -201,11 +201,11 @@ An activity takes its actor and context from the first row that supplies one:
 | Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
 | Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
 
-A custom resolver replaces the user row: when it returns `null`, the fallback
-party applies. Explicit anonymity keeps the actor empty. With no row supplying
-an actor, the activity is anonymous and joins no
-[batch](/deeper/story-middleware-and-batching#batch-windows). Without any
-context supplied, the context stays empty.
+A custom resolver replaces the authenticated user as a source. If it returns
+`null`, the fallback party applies. Explicit anonymity records no actor.
+Without a resolved actor, the activity is anonymous and cannot join a
+[batch](/deeper/story-middleware-and-batching#batch-windows). If no context is
+supplied, that role remains empty.
 
 <a id="passing-scopes-to-queued-jobs"></a>
 
@@ -229,10 +229,10 @@ A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 Storyfeed::actor('System', fn () => SyncMenu::dispatch());
 ```
 
-Activities the job publishes without an explicit actor name the party
-*System*. Jobs it dispatches inherit that scope. The scope ends with the job,
-even when the job throws. A job dispatched with `->afterResponse()` runs after
-the scope has closed, so it does not carry the actor.
+Activities published by the job use the `System` party unless they specify an
+actor. Jobs it dispatches inherit the scope, which ends when the job completes
+or throws an exception. A job dispatched with `->afterResponse()` runs after
+the scope closes, so it does not carry the actor.
 
 <a id="scoped-context"></a>
 
@@ -246,5 +246,5 @@ when the job throws.
 
 ### Request-Based Actors
 
-Jobs dispatched during a request carry the actor that a
-[request-based verb actor](/deeper/stories#request-based-actors) chose for it.
+Jobs dispatched during a request carry the actor selected by the
+[request-based verb actor](/deeper/stories#request-based-actors).
