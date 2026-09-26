@@ -17,16 +17,24 @@ const unlinked = [{ ...scene.order, object: { ...scene.order.object, url: null }
 
 ## Introduction
 
-Named feeds let you reuse activity filters for different audiences. For
-example, {{ role.shop.label }} may display orders in the kitchen, menu changes
-to staff, and individual orders to customers.
+Most apps show their activity to more than one audience. At
+{{ role.shop.label }}, the kitchen needs every order as it moves, the menu has
+its own change log, and a customer should see only their own order. When each
+screen filters activities in its own controller, those filters drift apart,
+and a newly recorded verb can appear on the customer's page without anyone
+deciding that it should.
 
-A named feed lets you:
+A named feed defines an audience once, by name:
 
-- Reuse verb filters in controllers, widgets, and API endpoints.
-- Check verb coverage with the [doctor](/deeper/diagnosing).
-- Resolve different links for each feed.
-- Require a subject, such as an order, through a feed class.
+- **Every screen shows the same verbs.** A controller, a Filament widget and an
+  API endpoint that retrieve the `'customer'` feed all apply the same filter.
+- **New verbs are caught in CI.** The [doctor](/deeper/diagnosing) warns about
+  any recorded verb that no feed shows or excludes, so a new verb is flagged
+  until someone decides who may see it.
+- **Each feed can link somewhere different.** An order can open its ticket on
+  the kitchen's board and its status page on the customer's.
+- **A feed class requires its subject.** The customer's feed is always scoped to
+  their order.
 
 <a id="declaring-a-feed"></a>
 
