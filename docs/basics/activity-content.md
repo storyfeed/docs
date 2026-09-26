@@ -28,8 +28,8 @@ const withFile = { ...content.photo, object: { ...content.photo.object,
 
 ## Introduction
 
-The headline is one sentence, and often the whole row. Under it an activity
-can show the words someone wrote, the facts behind a change, or what a file is.
+You may display quoted text, structured values, or file details below an
+activity's headline.
 
 <a id="headlines"></a>
 
@@ -37,8 +37,7 @@ can show the words someone wrote, the facts behind a change, or what a file is.
 
 ## Adding Quoted Text
 
-When the activity is *about* an utterance, the utterance belongs on the
-activity. `->thread()` carries it:
+To record quoted text with an activity, call the `thread` method:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -73,17 +72,16 @@ Storyfeed::record(
 
 <FeedExample :items="[withThread]" />
 
-The text is stored on the activity, so editing the note afterwards does not
-change what the row quotes.
+Storyfeed stores the text on the activity. Editing the note later does not
+change the recorded text.
 
 <a id="entity-bodies"></a>
 
 ## Adding Entity Bodies
 
-An entity's **body** carries structured content. The model supplies it in
-`toFeed()`, and your frontend chooses how to draw each body type. A body belongs
-to the model, so it shows wherever the entity appears, not only under one
-activity.
+A **body** contains an entity's structured content. Define it in the model's
+`toFeed` method and render it in your frontend. The body is available wherever
+the entity appears.
 
 ### Text and Labelled Values
 
@@ -147,8 +145,8 @@ class Order extends Model implements Feedable
 
 <FeedExample :items="[withProse]" />
 
-The title names the order, so the body reads on its own wherever it appears.
-`KeyValue` holds labelled values:
+Include a title to identify the order when the body appears without a headline.
+Use `KeyValue` for labelled values:
 
 ::: code-group
 
@@ -179,14 +177,15 @@ FeedEntity::make(
 
 <FeedExample :items="[withKeyValue]" />
 
-`KeyValue::missingAs()` gives an empty value its own word. `KeyValue::verbatim()`
-marks a value to reproduce exactly as written, such as a reference number.
+Use the `KeyValue::missingAs` method to specify text for an empty value.
+The `KeyValue::verbatim` method marks a value for display without formatting,
+such as a reference number.
 
 <a id="passages-from-a-source"></a>
 
 ### Passages From a Source
 
-An article's `Excerpt` quotes a passage, and `from` says where it came from:
+Use `Excerpt` to quote a passage and its `from` argument to identify the source:
 
 ::: code-group
 
@@ -212,12 +211,12 @@ FeedEntity::make(
 
 <FeedExample :items="[withExcerpt]" />
 
-An excerpt is `truncated` by default: the passage is part of something longer.
-Pass `truncated(false)` when the text is complete.
+Excerpts are marked as `truncated` by default. Call `truncated(false)` when the
+text is complete.
 
 ### File Details
 
-A photo describes itself with `File`:
+Use `File` to include a photo's file details:
 
 ::: code-group
 
@@ -247,27 +246,28 @@ FeedEntity::make(
 
 <FeedExample :items="[withFile]" />
 
-`File` says what a file is, never where it lives: the URL comes from
-the [link resolver](/basics/feedable-models#the-link) at read time.
+The `File` body stores file details. Configure the URL separately with the
+[link resolver](/basics/feedable-models#the-link).
 
 <a id="built-in-body-types"></a>
 
 ### Available Body Types
 
-| Body Type | Shows | Payload Keys |
+| Body Type | Content | Payload Keys |
 |---|---|---|
-| `KeyValue` | labelled pairs | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
-| `Excerpt` | a passage, and where it came from | `text`, `from`, `truncated` |
-| `Change` | before and after, for one field or several | `items`, a map of field to `[before, after]` |
-| `File` | what an artefact is and how big | `name`, `size`, `mediaType` |
-| `Prose` | authored text, and how to read it | `content`, `mediaType`, `verbatim`, `title` |
-| `ItemList` | several things, each a name and maybe a link | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `MediaObject` | a title, some prose, one picture, the files | `subject`, `content`, `image`, `attachments`, `footnote` |
-| `Component` | a component of your own, by name, with its props | `name`, `props` |
+| `KeyValue` | labelled values | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
+| `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
+| `Change` | before and after values for one or more fields | `items`, a map of field to `[before, after]` |
+| `File` | file name, size, and media type | `name`, `size`, `mediaType` |
+| `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
+| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
+| `MediaObject` | a title, text, image, and attachments | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `Component` | a custom component name and props | `name`, `props` |
 
-They live in `Storyfeed\Body`. In the payload, each body names its type in
-`$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`, so a
-renderer can choose how to draw it. A string passed as a body becomes a `Prose`
-body.
+These classes use the `Storyfeed\Body` namespace. Each body's payload includes
+its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
+Your renderer uses these fields to display the body. Passing a string as a body
+creates a `Prose` body.
 
-See [Custom Body Types](/deeper/body) for bodies resolved at read time, custom components and writing your own body types.
+See [Custom Body Types](/deeper/body) to resolve bodies when retrieving the feed,
+render custom components, or define your own body types.
