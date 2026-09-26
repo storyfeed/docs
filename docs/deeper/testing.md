@@ -10,9 +10,9 @@ recorded activities and possible groups have headlines.
 
 ## Faking Activities
 
-Fake Storyfeed before calling the code under test. This test dispatches the
-event from [Publishing From Events](/deeper/events#publishing-from-an-event),
-using your application's model factories:
+Call `Storyfeed::fake()` before running the code under test. This test uses
+your application's model factories and dispatches the event from
+[Publishing From Events](/deeper/events#publishing-from-an-event):
 
 ```php memo="tests/Feature/RecordOrderPaidTest.php"
 use App\Events\OrderPaid;
@@ -44,9 +44,9 @@ it('records the paid order', function () {
 | `assertPublishedCount($n, $verb = null)` | exactly `$n` activities were published |
 | `assertNothingPublished()` | nothing was published |
 
-Methods with a `$verb` argument also accept a closure for matching activity
-attributes. Use `assertNothingPublished()` in a test whose action should record
-nothing, rather than after asserting a successful publication.
+Methods with a `$verb` argument also accept a closure to match activity
+attributes. Use `assertNothingPublished()` when the tested action should
+record no activities.
 
 ### Inspecting Captured Activities
 
@@ -60,16 +60,16 @@ expect((string) $activity->object_id)->toBe((string) $order->getKey());
 ```
 
 > [!NOTE]
-> The fake uses your real registries and story middleware, but saves nothing,
-> so grouped reads and model snapshots don't reflect the captured activities.
-> It dispatches no `ActivityPublished` event. Use a database-backed test
-> without this fake to check persistence or grouped reads.
+> The fake uses your registries and story middleware but saves no activities
+> and dispatches no `ActivityPublished` event. Grouped queries and model
+> snapshots therefore exclude captured activities. Test persistence and
+> grouping against the database without this fake.
 
 ## Testing Queued and Event Publishing
 
-Queued activities are captured separately from synchronous publications. For
-the [queued controller](/deeper/queues#queueing-activities), which ends its
-builder with `queue()`, assert the queued activity:
+The fake captures queued activities separately. For the
+[queued controller](/deeper/queues#queueing-activities), which calls `queue()`,
+assert that the activity was queued:
 
 ```php memo="tests/Feature/QueuedOrderTest.php"
 use App\Http\Controllers\PlaceOrderController;
@@ -134,7 +134,7 @@ HeadlineCoverage::assertCoversPublished(); // Pairs published in this test.
 
 ### Possible Groups
 
-Check both groups that formed and groups the configured axes could form:
+Check existing groups and groups the configured rules could form:
 
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use Storyfeed\Testing\HeadlineCoverage;
@@ -143,10 +143,10 @@ HeadlineCoverage::assertCoversGroups();
 HeadlineCoverage::assertCoversPossibleGroups();
 ```
 
-`assertCoversPossibleGroups()` checks possible groups before real traffic
-forms them. A type-specific headline such as `repeat.order.place` covers that
-type only. For axes that hold one type, the assertion checks each type recorded
-with the verb.
+Use `assertCoversPossibleGroups()` to check headline coverage before traffic
+forms the groups. A headline such as `repeat.order.place` covers only orders.
+For groups limited to one type, the assertion checks each type recorded with
+the verb.
 
 ### Explicit Coverage Matrices
 
@@ -175,8 +175,8 @@ Storyfeed group headline coverage is incomplete:
 
 ## Testing Feedable Coverage
 
-Check that every `Feedable` model appears in the feed: some activity names it,
-or a headline is defined for its type.
+Check that each `Feedable` model is referenced by an activity or has a
+headline defined for its type:
 
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use App\Models\Shop;
@@ -187,9 +187,9 @@ StorySurface::assertNoUnwiredSurface();
 StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 ```
 
-It also fails for a `Feedable` model the enforced morph map has no alias for,
-when the check cannot run, and when no activities are recorded. It works under
-the fake. See [Surface](/reference/doctor#feedable-models).
+The assertion also fails if a `Feedable` model lacks an enforced morph alias,
+the check cannot run, or no activities are recorded. It works with the fake.
+See [Surface](/reference/doctor#feedable-models).
 
 <a id="diagnostics-in-ci"></a>
 
@@ -210,9 +210,9 @@ through the constructor, so this is an unscoped feed: it would throw
 ArgumentCountError on the first call.
 ```
 
-It installs through `phpstan/extension-installer` with no configuration. It
-checks the argument count only, and stays quiet where it cannot be certain:
-spread arguments, named arguments, `static::make()`, abstract classes.
+The rule installs through `phpstan/extension-installer` without configuration.
+It checks argument counts, skipping spread arguments, named arguments,
+`static::make()`, and abstract classes where it cannot determine the count.
 
 The same extension checks story names. See
 [Checking Names With Static Analysis](/deeper/named-stories#checking-names-with-phpstan).
