@@ -2,9 +2,8 @@
 
 ## Introduction
 
-`context` records the container an activity happened **inside**,
-such as the shop a dish belongs to. Record it, and you can read everything
-that happened in that shop.
+The `context` role records where an activity happened, such as the shop a dish
+belongs to. Use it to retrieve activities within that shop.
 
 <script setup>
 import { activity, scene, role } from '../.vitepress/theme/world'
@@ -16,8 +15,8 @@ const inside = activity({ ...scene.question, context: role.shop,
 
 ## Recording Context
 
-Roles are never filled in later. If you have the container when you publish,
-record it: a `context` read only finds activities recorded with one.
+Record the context when publishing. Storyfeed does not fill roles later, so a
+context filter can only find activities recorded with that context.
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -50,11 +49,11 @@ Storyfeed::record(
 
 | Role | Holds | In the Sentence |
 |---|---|---|
-| `target` | what the preposition points at | asked **about** the dish |
-| `context` | the container the act happened inside | …**in** the shop |
+| `target` | what the action was directed at | asked about the dish |
+| `context` | where it happened | in the shop |
 
-Use `context` when the target sits inside a container, like a dish in a
-shop. When the target is the container itself, `target` is enough:
+Use `context` when the target belongs to a container, such as a dish in a shop.
+If the target is the container itself, the `target` role is enough:
 
 ::: code-group
 ```php [Fluent Syntax]
@@ -77,38 +76,38 @@ Storyfeed::record(
 
 <FeedExample :items="[scene.order]" />
 
-Fill every role that is true, even one the headline doesn't name: roles are
-also used for scoping and grouping.
+Record every role that describes what happened, even if the headline omits it.
+Storyfeed also uses roles for filtering and grouping.
 
 <a id="uses-of-context"></a>
 
-Set `context` when something reads it:
+Set the context when you need to filter by it or include it in a headline:
 
-| You Want | Why It Needs `context` |
+| Usage | Why It Needs `context` |
 |---|---|
-| `Storyfeed::feed()->context($shop)` | the read finds only activities recorded with a context |
-| `:context` in a headline | a headline can only name a role the activity carries |
+| `Storyfeed::feed()->context($shop)` | finds only activities recorded with that context |
+| `:context` in a headline | displays the entity recorded in the context role |
 
 <a id="the-container-query"></a>
 
 ## Reading Activities in a Container
 
-`Storyfeed::feed()->context($shop)` returns what happened inside the shop.
-[`involving()`](/basics/reading#scoping) also returns activities about the
-shop itself, such as its creation.
+The `context` method filters activities recorded within the shop.
+The [`involving` method](/basics/reading#scoping) also includes activities about
+the shop itself, such as its creation.
 
 <a id="non-model-containers"></a>
 
 ## Using Non-Model Containers
 
-When the container is a plain value, such as a service name, pass the string:
-`->context('Saturday service')`. It becomes a [party](/deeper/parties), so
-`:context` names it in the headline, and
-`Storyfeed::feed()->context('Saturday service')` reads what happened in it.
+To use a name as the context, pass a string such as
+`->context('Saturday service')`. Storyfeed creates a [party](/deeper/parties)
+for the name. The `:context` token displays it, and
+`Storyfeed::feed()->context('Saturday service')` retrieves its activities.
 
-Each distinct string is its own party. For a value that should not become a
-role, use `->data(['service' => $name])`: it arrives in the activity's `data`,
-and headlines cannot name it.
+Each distinct name creates a separate party. To store a value without assigning
+a role, use `->data(['service' => $name])`. It is returned in the activity's
+`data` and cannot be used as a headline role token.
 
-[Activity Scopes](/deeper/activity-scopes) supplies context across a callback
-or an HTTP request.
+Use [Activity Scopes](/deeper/activity-scopes) to supply context across a
+callback or HTTP request.
