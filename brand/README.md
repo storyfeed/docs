@@ -7,9 +7,13 @@ Each entry is four parts, and they are the package's own vocabulary:
 | part | colour | what it is |
 |---|---|---|
 | actor node | `#FBBF24` dark / `#D9A008` light | who did it |
-| headline | `#EE876B` | the sentence the feed prints |
+| headline | `#B65326` | the sentence the feed prints; Tey Labs orange |
 | body | `#438D98` | what the activity shows |
 | rail | `#858585` | the thread the entries hang from |
+
+**The headline is Tey Labs orange** (`#B65326`, from teylabs `BRAND.md`).
+Every Tey Labs product carries it somewhere in its mark, as TalkingFeed does in
+its top bar. It replaced coral `#EE876B` on 2026-09-28.
 
 ## The files
 
@@ -17,7 +21,7 @@ Each entry is four parts, and they are the package's own vocabulary:
 |---|---|
 | `full-light.svg` | the mark on a light surface — **source of truth** |
 | `full-dark.svg` | the mark on a dark surface |
-| `restrained-{light,dark}.svg` | three colours, coral dropped |
+| `restrained-{light,dark}.svg` | three colours, orange dropped |
 | `yellow-{light,dark}.svg` | single colour |
 | `mono-{light,dark}.svg` | one ink, for stamps, print and embroidery |
 | `avatar.svg`, `avatar-512.png` | contained on `#202735`, for the GitHub org avatar |
