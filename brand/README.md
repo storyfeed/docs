@@ -31,7 +31,10 @@ its top bar. It replaced coral `#EE876B` on 2026-09-28.
 | `storyfeed-social.{svg,png}` | 1280×640 social card |
 
 `docs/public/` carries the deployed copies: `logo-light.svg`, `logo-dark.svg`,
-`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`.
+`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`. The favicon
+is the light mark on a transparent field (the navy-tiled version read poorly in
+a tab); the apple-touch icon puts it on `#FAFAF7`. Their URLs carry `?v=N`,
+because Cloudflare caches them for four hours: bump it when they change.
 
 **The banner wordmark is drawn as outlines, not text.** Instrument Sans is the
 site's face, it ships as woff2, and neither GitHub nor a rasteriser will resolve
