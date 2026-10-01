@@ -136,7 +136,7 @@ in [Aggregation](/deeper/aggregation#thresholds).
 |---|---|
 | `live()` | the `winner` grouping row of each activity, or `repeat` when none is stamped |
 | `summary()` | the `summary.{period}` row: one group per actor per period |
-| `log()` | `feed_activities` alone, one query plus snapshot loads, no groupings |
+| `log()` | atomic activities without aggregation; one main SELECT checks composite claims in `feed_groupings` with `NOT EXISTS` to suppress parent stories, plus snapshot loads |
 
 ### Pagination
 
