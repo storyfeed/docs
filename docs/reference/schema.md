@@ -307,7 +307,8 @@ has elapsed.
 The `meta` column holds application metadata. Storyfeed has no dedicated
 batch-metadata setter; an application that needs it can load the configured
 batch Eloquent model and update its `meta` array directly. The model casts the
-column to an array.
+column to an array. When the batch closes, `BatchClosed` listeners receive a
+frozen copy of this metadata in the batch snapshot's `meta` field.
 
 <!-- schema:feed_batches -->
 | Column | Type | Attributes | Purpose |
