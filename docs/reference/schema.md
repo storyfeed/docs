@@ -316,7 +316,7 @@ has elapsed.
 | `activities_count` | unsigned int | default `0` | How many activities joined the batch. |
 | `last_activity_at` | timestamp | nullable | The latest `published_at` among its activities. |
 | `closes_at` | timestamp | nullable | When the batch ends. Each activity moves it to its own `published_at` plus its verb's window, never earlier. |
-| `meta` | json | nullable | Not written by Storyfeed. |
+| `meta` | json | nullable | Metadata about the batch, kept without adding a column. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
 
@@ -404,7 +404,7 @@ See [Deleted Models](/deeper/deleted-models).
 | `approximate` | boolean | default `false` | True when `storyfeed:trickle` found the deletion, so `deleted_at` is when it was found. |
 | `deleted_at` | timestamp | nullable | When the model was deleted. |
 | `label` | string(255) | nullable | The label kept for the deleted model, when it keeps one. |
-| `meta` | json | nullable | Not written by Storyfeed. |
+| `meta` | json | nullable | Metadata about the deletion, kept without adding a column. |
 | `created_at` | timestamp | nullable | When the tombstone was created. |
 | `updated_at` | timestamp | nullable | When the tombstone last changed. |
 

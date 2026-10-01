@@ -85,7 +85,7 @@
     "activities_count": "How many activities joined the batch.",
     "last_activity_at": "The latest `published_at` among its activities.",
     "closes_at": "When the batch ends. Each activity moves it to its own `published_at` plus its verb's window, never earlier.",
-    "meta": "Not written by Storyfeed.",
+    "meta": "Metadata about the batch, kept without adding a column.",
     "created_at": "When the row was written.",
     "updated_at": "When the row last changed."
   },
@@ -104,7 +104,7 @@
     "approximate": "True when `storyfeed:trickle` found the deletion, so `deleted_at` is when it was found.",
     "deleted_at": "When the model was deleted.",
     "label": "The label kept for the deleted model, when it keeps one.",
-    "meta": "Not written by Storyfeed.",
+    "meta": "Metadata about the deletion, kept without adding a column.",
     "created_at": "When the tombstone was created.",
     "updated_at": "When the tombstone last changed."
   },
