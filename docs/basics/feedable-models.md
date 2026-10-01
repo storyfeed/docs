@@ -123,6 +123,9 @@ class Order extends Model implements Feedable
 
 The `toFeed` method returns a `FeedEntity` containing the model's label.
 Set the label on the returned entity when you implement this method.
+`InteractsWithFeed` refreshes the shared snapshot on model saves while
+recording is enabled. Changes to its label, body, or data can therefore appear
+on older activities too. Activity `data` preserves the values recorded for that event.
 
 <a id="custom-labels"></a>
 

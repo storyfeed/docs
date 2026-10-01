@@ -69,7 +69,8 @@ name a type.
 
 Storyfeed groups activities when published. Each activity belongs to only one
 group per read mode. Quotes and images belong to the activities, so use `log()`
-to show each one.
+to show each one. [Storage Architecture](/reference/storage#reading-a-page)
+shows where groups are stored and how a feed retrieves them.
 
 <a id="axes-by-read-mode"></a>
 
@@ -86,7 +87,7 @@ The read mode determines which groups the query returns:
 |---|---|
 | `log()` | one item per activity, including each member of a composite |
 | `live()` | one group per activity, chosen from the groups it qualifies for, with `repeat` as the fallback. The default |
-| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
+| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Retrieving Feeds](/basics/reading#summary) |
 
 Set `grouping.curate` to `false` to limit `live()` to repeats.
 `storyfeed:curate` chooses groups for recent activities and runs hourly through
@@ -130,8 +131,10 @@ Headlines for groups marked **One Type** may go in a Story class or inside
 | `min_object_members` | `object`: this many activities on the one object | 2 |
 
 Activities below a threshold cannot form that group. They fall back to
-`repeat` when no other group qualifies. Published activities keep their groups
-until you [rehash them](/reference/commands#rehashing-existing-rows).
+`repeat` when no other group qualifies. After changing thresholds, run
+`php artisan storyfeed:curate` to re-evaluate existing groups. Changes to an
+axis's grouping key or newly registered axes require
+[rehashing](/reference/commands#rehashing-existing-rows).
 
 See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
 boundary shared by grouped activities.

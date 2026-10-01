@@ -461,7 +461,17 @@ example; the mechanics stay on the concept page it links.
 What you type, then the shapes, then the policy pages.
 
 - ✅ Configuration · Commands · Doctor Checks (`reference/doctor`: every check and finding) · Feedable API · Verb Vocabulary · The Payload
-  Contract · Schema · Compatibility · Glossary
+  Contract · Schema · Storage Architecture · Compatibility · Glossary
+- Schema (`reference/schema`) is the one home for tables, columns and indexes:
+  the ER diagram and the column and index tables are GENERATED from core's
+  migrations by `npm run schema` (`scripts/schema.mjs`; purposes in
+  `scripts/schema-notes.json`), and the drift guard fails the build when they
+  disagree. Edit the prose around the `<!-- schema:… -->` blocks, never inside.
+- Storage Architecture (`reference/storage`) explains what one publish writes,
+  how a page is read, what is kept current, and the costs (owner ruling
+  2026-10-01: split from Schema, title passes the spine test). Concept pages
+  link to it where they touch storage: Aggregation, Reading Feeds (pagination),
+  Story Middleware & Batching, Deleted Models, Retention.
 
 ## Pending coverage
 

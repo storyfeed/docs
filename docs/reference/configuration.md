@@ -96,9 +96,12 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 Increase a limit when your frontend displays more names:
 
 ```php memo="config/storyfeed.php"
-'sample_limits' => [
-    'object' => 6,  // this feed shows the objects' pictures
-    // everything else stays at 3
+'grouping' => [
+    // Keep the other grouping settings here.
+    'sample_limits' => [
+        'object' => 6,  // this feed shows the objects' pictures
+        // everything else stays at 3
+    ],
 ],
 ```
 

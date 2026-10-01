@@ -1,4 +1,9 @@
 import { defineConfig } from 'vitepress'
+
+// R&D pages (docs/rnd/) are proposals written as if shipped, for review before
+// any code exists. They show only on the local dev server: gitignored, left out
+// of every build, and absent from the sidebar the llms script reads.
+const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
@@ -18,7 +23,7 @@ export default defineConfig({
   // briefs sit inside the source root, so without this a committed one becomes
   // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
   // convention somebody can defeat with `git add -f`.
-  srcExclude: ['briefs/**'],
+  srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
 
   markdown: {
     config(md) {
@@ -126,9 +131,9 @@ export default defineConfig({
   },
 
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
-    ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
+    ['link', { rel: 'icon', href: '/favicon.ico?v=2', sizes: 'any' }],
+    ['link', { rel: 'icon', href: '/favicon.svg?v=2', type: 'image/svg+xml' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=2' }],
     ['meta', { name: 'theme-color', content: '#0f172a' }],
   ],
 
@@ -155,6 +160,9 @@ export default defineConfig({
     // the documentation before deciding to trust it. Every entry resolves —
     // planned-but-unwritten pages live in IA.md, never here.
     sidebar: [
+      ...(rnd ? [{ text: 'R&D (local only)', items: [
+        { text: 'Body Versions', link: '/rnd/body-versions' },
+      ] }] : []),
       {
         // Laravel's order: set up, get it working, then see what it can do.
         text: 'Getting Started',
@@ -180,9 +188,9 @@ export default defineConfig({
       },
       {
         // Choose the feed, then inspect it, then draw it.
-        text: 'Reading and Rendering',
+        text: 'Retrieving and Rendering',
         items: [
-          { text: 'Reading Feeds', link: '/basics/reading' },
+          { text: 'Retrieving Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'The Payload', link: '/basics/the-payload' },
           { text: 'Rendering', link: '/basics/rendering' },
@@ -257,7 +265,7 @@ export default defineConfig({
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
-          { text: 'Compatibility', link: '/reference/compatibility' },
+          { text: 'Storage Architecture', link: '/reference/storage' },
           { text: 'Glossary', link: '/reference/glossary' },
         ],
       },

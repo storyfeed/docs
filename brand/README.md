@@ -7,9 +7,13 @@ Each entry is four parts, and they are the package's own vocabulary:
 | part | colour | what it is |
 |---|---|---|
 | actor node | `#FBBF24` dark / `#D9A008` light | who did it |
-| headline | `#EE876B` | the sentence the feed prints |
+| headline | `#B65326` | the sentence the feed prints; Tey Labs orange |
 | body | `#438D98` | what the activity shows |
 | rail | `#858585` | the thread the entries hang from |
+
+**The headline is Tey Labs orange** (`#B65326`, from teylabs `BRAND.md`).
+Every Tey Labs product carries it somewhere in its mark, as TalkingFeed does in
+its top bar. It replaced coral `#EE876B` on 2026-09-28.
 
 ## The files
 
@@ -17,7 +21,7 @@ Each entry is four parts, and they are the package's own vocabulary:
 |---|---|
 | `full-light.svg` | the mark on a light surface — **source of truth** |
 | `full-dark.svg` | the mark on a dark surface |
-| `restrained-{light,dark}.svg` | three colours, coral dropped |
+| `restrained-{light,dark}.svg` | three colours, orange dropped |
 | `yellow-{light,dark}.svg` | single colour |
 | `mono-{light,dark}.svg` | one ink, for stamps, print and embroidery |
 | `avatar.svg`, `avatar-512.png` | contained on `#202735`, for the GitHub org avatar |
@@ -27,7 +31,10 @@ Each entry is four parts, and they are the package's own vocabulary:
 | `storyfeed-social.{svg,png}` | 1280×640 social card |
 
 `docs/public/` carries the deployed copies: `logo-light.svg`, `logo-dark.svg`,
-`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`.
+`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`. The favicon
+is the light mark on a transparent field (the navy-tiled version read poorly in
+a tab); the apple-touch icon puts it on `#FAFAF7`. Their URLs carry `?v=N`,
+because Cloudflare caches them for four hours: bump it when they change.
 
 **The banner wordmark is drawn as outlines, not text.** Instrument Sans is the
 site's face, it ships as woff2, and neither GitHub nor a rasteriser will resolve

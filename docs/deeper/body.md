@@ -100,6 +100,10 @@ Return a body from `feedMedia()` to use the model's current values:
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
@@ -112,6 +116,10 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 ```
 
 ```php [Named Arguments] memo="app/Models/MenuItem.php"
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make(

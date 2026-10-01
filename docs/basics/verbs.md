@@ -85,6 +85,8 @@ trait:
 
 ::: code-group
 ```php [Fluent Syntax]
+use App\Enums\OrderActivity;
+
 OrderActivity::Placed->by($request->user()) // [!code highlight]
     ->object($order)
     ->to($shop)
@@ -92,6 +94,9 @@ OrderActivity::Placed->by($request->user()) // [!code highlight]
 ```
 
 ```php [Named Arguments]
+use App\Enums\OrderActivity;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: OrderActivity::Placed, // [!code highlight]
     object: $order,
@@ -119,12 +124,17 @@ Story::for(Order::class)->verb(Act::Confirm)
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Act;
+
 Act::Confirm->by($request->user()) // [!code highlight]
     ->object($order)
     ->publish();
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Act;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: Act::Confirm, // [!code highlight]
     object: $order,

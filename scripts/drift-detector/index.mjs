@@ -8,7 +8,8 @@ export const defaultCore = '/Users/jasper/Dev/projects/storyfeed';
 const git = (root, ...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 // `briefs/` is gitignored lane material — working notes that QUOTE wrong docs
 // on purpose, so scanning them reports the defect they were written to describe.
-const excluded = /(^|\/)(node_modules|cache|dist|briefs|\.git)(\/|$)/;
+// `rnd/` holds local R&D proposals written as if shipped: their APIs don't exist yet.
+const excluded = /(^|\/)(node_modules|cache|dist|briefs|rnd|\.git)(\/|$)/;
 function walk(root, dir = root) {
   return readdirSync(dir, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name, 'en')).flatMap(e => {
     const p = resolve(dir, e.name);

@@ -41,7 +41,6 @@ by `items()`.
 | `glyph()` | `?string` | `glyph` |
 | `intent()` | `?string` | `glyph_intent` |
 | `data()` | `Fluent` | `data` |
-| `changes()` | `Collection` of `label`, `before`, `after` entries | `change.changes` |
 | `thread()` | `?Fluent` with `text`, `by`, `kind`, `replies`, `truncated` | `thread` |
 | `tombstoned()` | `array` of role names | `tombstoned` |
 | `isRedundant()` | `bool` | `redundant` |
