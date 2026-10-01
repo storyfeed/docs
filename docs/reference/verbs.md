@@ -3,7 +3,7 @@
 ## Introduction
 
 `Storyfeed\Act` provides common verbs as backed enum cases. Each stores an
-English verb, such as `approve`, and maps it to an Activity Streams 2.0 type,
+English verb, such as `accept`, and maps it to an Activity Streams 2.0 type,
 such as `Accept`.
 
 Verbs are free-form strings, so you may use your own names, enum cases, or both.
@@ -12,13 +12,13 @@ Verbs are free-form strings, so you may use your own names, enum cases, or both.
 
 ## Available Verbs
 
-The 72 verbs below are grouped by Activity Streams type. Case names start
+The 67 verbs below are grouped by Activity Streams type. Case names start
 with a capital letter: `Act::TentativelyAccept` stores `tentativelyAccept`.
 
 | Activity type | Verbs |
 | --- | --- |
-| `Create` | `create`, `upload`, `draft`, `reply`, `deliver` |
-| `Update` | `update`, `rename`, `amend`, `correct`, `supersede`, `complete`, `confirm`, `cancel`, `begin`, `end`, `pause`, `resume`, `extend`, `shorten`, `enable`, `disable`, `settle` |
+| `Create` | `create`, `upload`, `draft` |
+| `Update` | `update`, `rename`, `amend`, `correct`, `supersede`, `complete`, `confirm`, `cancel`, `begin`, `end`, `pause`, `resume`, `extend`, `shorten`, `enable`, `disable` |
 | `Delete` | `delete`, `discard` |
 | `Undo` | `undo`, `restore`, `reinstate`, `revert`, `void`, `withdraw` |
 | `Add` | `add`, `attach`, `apply`, `record` |
@@ -27,7 +27,7 @@ with a capital letter: `Act::TentativelyAccept` stores `tentativelyAccept`.
 | `Leave` | `leave` |
 | `Offer` | `offer`, `send`, `propose`, `request` |
 | `Invite` | `invite` |
-| `Accept` | `accept`, `approve`, `agree`, `sign` |
+| `Accept` | `accept`, `agree` |
 | `Reject` | `reject`, `decline` |
 | `TentativeAccept` | `tentativelyAccept` |
 | `TentativeReject` | `tentativelyReject` |
@@ -51,8 +51,8 @@ Streams activity types.
 
 <span id="recording-with-a-verb"></span>
 
-For example, `Act::Approve` stores `approve` and serializes as
-`"type": "Accept"` with `"sf:verb": "approve"`.
+For example, `Act::Accept` stores `accept` and serializes as
+`"type": "Accept"` with `"sf:verb": "accept"`.
 [Activity Verbs](/basics/verbs) shows how to record with an enum case.
 
 <span id="registering-the-verbs-you-use"></span>
@@ -68,19 +68,24 @@ use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs(
     Act::only(
-        Act::Create, Act::Update, Act::Approve, Act::Archive,
+        Act::Create, Act::Update, Act::Accept, Act::Archive,
     ),
 );
 ```
 
-Register only the verbs your application records. Registering all 72 cases
+Register only the verbs your application records. Registering all 67 cases
 produces a `verbs.dead` finding for each unused verb.
 
 <span id="using-your-own-words"></span>
 
 ## Using Application Verbs
 
-Register custom verbs as strings or in an enum implementing `FeedVerb`:
+Register custom verbs as strings or in an enum implementing `FeedVerb`.
+
+Domain actions such as `reply`, `settle`, `deliver`, `approve`, and `sign` are
+application-owned verbs. Register their Activity Streams types explicitly;
+stored verb strings are unchanged when upgrading from the removed enum cases.
+
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
@@ -88,6 +93,11 @@ use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::verbs([
     'plate' => ActivityType::Create,
+    'reply' => ActivityType::Create,
+    'deliver' => ActivityType::Create,
+    'settle' => ActivityType::Update,
+    'approve' => ActivityType::Accept,
+    'sign' => ActivityType::Accept,
 ]);
 ```
 
