@@ -183,8 +183,10 @@ are separate from Laravel job batches created with `Bus::batch()`.
 
 The window determines how long Storyfeed waits for more activities before
 closing the batch. Each batched activity extends the closing time to its
-`published_at` plus its verb's window, if that is later. An activity before the
-closing time joins the batch; one at or after it starts a new batch.
+`published_at` plus its verb's window, if that is later. An activity joins an
+available open batch only when `opened_at <= published_at < closes_at`.
+An out-of-order arrival before an available window, or an activity at or after
+its closing time, starts a separate batch. Closed batches are not reopened.
 Anonymous activities cannot join a batch because they have no recorded actor.
 Batches are stored in [`feed_batches`](/reference/schema#feed-batches).
 

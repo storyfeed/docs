@@ -406,22 +406,43 @@ bodies in the activity row:
 ```
 
 Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
-The body component maps it to `feed.body.key-value` and renders it with
-`<x-dynamic-component>`. Types without a matching component are skipped:
+Match that full identifier to an explicit body class and component. Upgrade
+the stored version before rendering; core preserves the stored shape. Skip
+unknown types and versions newer than this renderer supports. Extend this map
+when adding another body component:
 
 ```blade memo="resources/views/components/feed/body.blade.php"
 @props(['body'])
 
 @php
-    $component = 'feed.body.'.Str::kebab(class_basename($body['$body']));
+    use Storyfeed\Body\Excerpt;
+    use Storyfeed\Body\KeyValue;
+
+    $renderers = [
+        KeyValue::bodyType() => [KeyValue::class, 'feed.body.key-value'],
+        Excerpt::bodyType() => [Excerpt::class, 'feed.body.excerpt'],
+    ];
+    $renderer = $renderers[$body['$body'] ?? ''] ?? null;
+    $version = $body['$v'] ?? 1;
+    $component = null;
+
+    if ($renderer !== null && is_int($version) && $version >= 1) {
+        [$class, $view] = $renderer;
+
+        if ($version <= $class::version()) {
+            $body = $class::upgrade($body, $version);
+            $component = $view;
+        }
+    }
 @endphp
 
-@if (view()->exists("components.{$component}"))
+@if ($component !== null)
     <x-dynamic-component :component="$component" :body="$body" />
 @endif
 ```
 
-Add a component for each body type you render:
+Add a component for each body type you render. This KeyValue component displays
+the placeholder when a value is null, or an empty string when both are null:
 
 ```blade memo="resources/views/components/feed/body/key-value.blade.php"
 @props(['body'])
@@ -429,7 +450,7 @@ Add a component for each body type you render:
 <dl {{ $attributes }}>
     @foreach ($body['items'] as $item)
         <dt>{{ $item['key'] }}</dt>
-        <dd>{{ $item['value'] ?? $item['missing'] }}</dd>
+        <dd>{{ $item['value'] ?? $item['placeholder'] ?? '' }}</dd>
     @endforeach
 </dl>
 ```
@@ -625,7 +646,9 @@ defineProps<{ activity: Record<string, any> }>()
 
 <template>
     <article>
-        <FeedHeadline :item="activity" />
+        <FeedHeadline :item="activity">
+            {{ activity.actor?.label ?? 'Someone' }} {{ activity.verb }}<template v-if="activity.object"> {{ activity.object.label ?? 'Something' }}</template>
+        </FeedHeadline>
         <time :datetime="activity.published_at">
             {{ new Date(activity.published_at).toLocaleString() }}
         </time>
@@ -681,6 +704,13 @@ const parts = computed(() =>
 
             if (segment === ':count') {
                 return { type: 'text', text: String(props.item.count) }
+            }
+
+            if (segment === ':others' && props.item.sample) {
+                const others = Math.max(0,
+                    (props.item.distinct?.actors ?? 0) - (props.item.sample.actors?.length ?? 0),
+                )
+                return { type: 'text', text: `${others} ${others === 1 ? 'other' : 'others'}` }
             }
 
             if (!segment.startsWith(':') || !roles.includes(role)) {
@@ -756,6 +786,10 @@ const label = computed(() => {
 </template>
 ```
 :::
+
+The headline example handles `:others` as the distinct actor count minus the
+sampled actors. An activity without a headline falls back to actor, verb, and
+object labels. This is an English-only fallback; localize it for your app.
 
 When `next_cursor` is `null`, the button is hidden. If `sync_token` changes,
 `Feed` discards loaded items and retrieves the first page again. Render icons,

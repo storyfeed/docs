@@ -54,6 +54,8 @@ fixing findings.
 | `columns` | missing columns in the package tables. Writes that touch them throw | error |
 | `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
 | `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
+| `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
+| `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
 | `participants` | activities `involving()` cannot find. `storyfeed:participants` backfills them | warning |
 | `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
@@ -64,6 +66,22 @@ fixing findings.
 <a id="interpreting-findings"></a>
 
 ## Findings
+
+### Grouping Hashes
+
+`hashes.truncated` warns when a grouping hash reaches or exceeds 255 characters.
+Shorten the strategy's output, for example by hashing long key parts, then
+[rehash stored activities](/reference/commands#rehashing-existing-rows).
+Truncated hashes can group unrelated activities together.
+
+### Snapshot Shapes
+
+`shapes.mixed` warns when snapshots lack fingerprints or carry mixed
+fingerprints before a converged maintenance pass. Run `storyfeed:trickle` to
+compare snapshots with their models and refresh stale ones. Mixed fingerprints
+remaining after a pass that rewrites nothing are informational: optional keys
+can legitimately produce different shapes. No repair is needed for that
+converged variation.
 
 ### Group Reachability
 
@@ -143,12 +161,13 @@ A model's label is also what its tombstone keeps under `keepLabel()`.
 | Finding | Severity | Meaning |
 |---|---|---|
 | `surface.unwired` | warning | a `Feedable` model has never appeared on an activity, and no headline names its type. Something should publish about it, or the `Feedable` is left over |
-| `surface.unaliased` | warning | a `Feedable` model has no alias in the enforced morph map, so publishing anything that names it throws `ClassMorphViolationException` |
+| `surface.unaliased` | warning | a `Feedable` model lacks a required alias. Laravel-wide enforcement throws `ClassMorphViolationException`; Storyfeed-only enforcement throws `FeedableMorphMapViolation` |
 | `surface.unassessable` | info | no activities are recorded, so `surface.unwired` cannot be judged |
 | `surface.publisher` | info | a class that publishes to the feed |
 
-`surface.unaliased` often identifies a subclass of an aliased model and
-includes the parent's alias:
+`surface.unaliased` includes a parent's alias when it finds one. With
+Laravel-wide morph-map enforcement, the diagnostic explains
+`ClassMorphViolationException`:
 
 ```txt
 [App\Models\PriorityOrder] implements Feedable, but the morph map is enforced
@@ -174,8 +193,21 @@ class PriorityOrder extends Order
 }
 ```
 
-To give the subclass its own type, add an alias to `Relation::enforceMorphMap()`.
-This is required when no parent has an alias.
+To give the subclass its own type, register its alias. With Laravel-wide
+enforcement, add it to `Relation::enforceMorphMap()`.
+
+With `Storyfeed::requireFeedableMorphMap()`, the exception is
+`FeedableMorphMapViolation`. Add the alias through `Relation::morphMap()`;
+you do not need to enable Laravel-wide enforcement:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\Models\PriorityOrder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+Relation::morphMap(['priority-order' => PriorityOrder::class]);
+```
+
+A model without an aliased parent needs its own alias in either mode.
 
 ### Entities
 
@@ -188,8 +220,12 @@ activity IDs.
 | `entities.unresolvable` | error | the alias resolves to no class: no morph map entry, and no class by that name |
 | `entities.not_model` | error | the alias resolves to a class that is not an Eloquent model |
 | `entities.unfeedable` | error | the alias resolves to a model without `Feedable`. Implement `Feedable`, then run `storyfeed:trickle` |
-| `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Checked on the 50 most recent affected activities per role and alias. `storyfeed:trickle --prune` removes the activities |
+| `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Checked on the 50 most recent affected activities per role and alias. `storyfeed:trickle` first attempts to tombstone missing entities and repoint their activities. `--prune` removes activities only when roles remain unresolved afterward |
 | `entities.opaque` | info | the model's table could not be queried |
+
+Tombstone discovery checks without global scopes, so a live row hidden by a
+scope is not treated as deleted. Explicit `forgetWhenMissing` rules are a
+separate deletion policy; see [Deleted Models](/deeper/deleted-models).
 
 Affected entities display without labels or links. Existing entities whose
 labels are not cached yet are reported by `backlog`.

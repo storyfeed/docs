@@ -81,7 +81,9 @@ change the recorded text.
 
 A **body** contains an entity's structured content. Define it in the model's
 `toFeed` method and render it in your frontend. The body is available wherever
-the entity appears.
+the entity appears. With `InteractsWithFeed`, saving the model refreshes its
+shared snapshot while recording is enabled. That can change the body shown on
+older activities too. Use activity `data` to capture values as they were at the event.
 
 ### Text and Labelled Values
 
@@ -154,6 +156,9 @@ Use `KeyValue` for labelled values:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->body(
@@ -167,6 +172,9 @@ FeedEntity::make()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: "Order #{$this->reference}",
     body: KeyValue::make( // [!code highlight]
@@ -225,6 +233,9 @@ story. The `from` argument names who said them or where they came from:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label($this->title)
     ->body(
@@ -235,6 +246,9 @@ FeedEntity::make()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: $this->title,
     body: Excerpt::make( // [!code highlight]
@@ -471,7 +485,7 @@ body fields that accept it.
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
-| `ItemList` | named items with optional links | `title`, `defaultPlaceholder`, `items[]`, `ordered`, `totalItems`, `more` |
+| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
 | `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
 | `Component` | a custom component name and props | `name`, `props` |
 

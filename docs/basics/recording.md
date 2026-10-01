@@ -103,14 +103,32 @@ Storyfeed::record(
 
 <FeedExample :items="[scene.order]" />
 
-If you do not call the `by` method, Storyfeed will record the currently
-authenticated user as the actor.
+With the default configuration and no scoped or verb-specific actor, omitting
+`by` records the authenticated user, or no actor when nobody is signed in.
+Scopes, carried job identity, verb actors, custom resolvers, and a configured
+fallback party can change that selection. See
+[Role Precedence](/deeper/activity-scopes#role-precedence).
 
-If no user is signed in and you do not call `by`, the activity has no actor.
-An activity with no recorded actor is an [anonymous activity](/deeper/parties#recording-anonymous-activities):
-who performed it is not known.
+Use `by(null)` to bypass default actor selection explicitly. An
+[anonymous activity](/deeper/parties#recording-anonymous-activities) has no
+recorded actor.
 
 ## Adding Activity Data
+
+Define each new verb and its headline before publishing. By default, local
+and testing environments throw `UnknownVerb` for an unregistered verb and
+`UnauthoredActivity` for an object-type/verb pair without a headline. A concrete
+Story definition satisfies both checks:
+
+```php memo="routes/feed.php"
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object');
+```
+
+Here `$product` is a `MenuItem`.
 
 Use the `data` method to store arbitrary values on an activity. Storyfeed
 returns them in the activity's `data` field:
@@ -151,6 +169,10 @@ To set an earlier publication time, such as when importing records, call the
 
 ::: code-group
 ```php [Fluent Syntax]
+use App\Models\MenuItem;
+use App\Models\User;
+use Storyfeed\Facades\Storyfeed;
+
 foreach ($rows as $row) {
     Storyfeed::activity()
         ->by(User::findOrFail($row['user_id']))
@@ -162,6 +184,10 @@ foreach ($rows as $row) {
 ```
 
 ```php [Named Arguments]
+use App\Models\MenuItem;
+use App\Models\User;
+use Storyfeed\Facades\Storyfeed;
+
 foreach ($rows as $row) {
     Storyfeed::record(
         verb: 'reprice',
@@ -181,7 +207,17 @@ foreach ($rows as $row) {
 ## Recording Multiple Objects
 
 To record an activity involving multiple objects, call the `objects` method.
-Storyfeed stores a parent activity and one activity per object:
+Storyfeed stores a parent activity and one activity per object. Define the
+upload verb before recording the photos. This verb-wide definition also covers
+the parent activity:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+
+Story::verb('upload')->headline(':actor uploaded :object');
+```
+
+Then publish the photos:
 
 ::: code-group
 ```php [Fluent Syntax]

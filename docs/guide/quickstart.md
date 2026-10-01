@@ -101,7 +101,9 @@ Publish the activity where your application places the order:
 
 <FeedExample :items="[order]" />
 
-## Reading the Feed
+<a id="reading-the-feed"></a>
+
+## Retrieving the Feed
 
 To retrieve a page of activities, call the `feed` method on the `Storyfeed`
 facade, followed by the `get` method. You may return the result from a route:
