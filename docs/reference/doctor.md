@@ -143,12 +143,13 @@ A model's label is also what its tombstone keeps under `keepLabel()`.
 | Finding | Severity | Meaning |
 |---|---|---|
 | `surface.unwired` | warning | a `Feedable` model has never appeared on an activity, and no headline names its type. Something should publish about it, or the `Feedable` is left over |
-| `surface.unaliased` | warning | a `Feedable` model has no alias in the enforced morph map, so publishing anything that names it throws `ClassMorphViolationException` |
+| `surface.unaliased` | warning | a `Feedable` model lacks a required alias. Laravel-wide enforcement throws `ClassMorphViolationException`; Storyfeed-only enforcement throws `FeedableMorphMapViolation` |
 | `surface.unassessable` | info | no activities are recorded, so `surface.unwired` cannot be judged |
 | `surface.publisher` | info | a class that publishes to the feed |
 
-`surface.unaliased` often identifies a subclass of an aliased model and
-includes the parent's alias:
+`surface.unaliased` includes a parent's alias when it finds one. With
+Laravel-wide morph-map enforcement, the diagnostic explains
+`ClassMorphViolationException`:
 
 ```txt
 [App\Models\PriorityOrder] implements Feedable, but the morph map is enforced
@@ -174,8 +175,21 @@ class PriorityOrder extends Order
 }
 ```
 
-To give the subclass its own type, add an alias to `Relation::enforceMorphMap()`.
-This is required when no parent has an alias.
+To give the subclass its own type, register its alias. With Laravel-wide
+enforcement, add it to `Relation::enforceMorphMap()`.
+
+With `Storyfeed::requireFeedableMorphMap()`, the exception is
+`FeedableMorphMapViolation`. Add the alias through `Relation::morphMap()`;
+you do not need to enable Laravel-wide enforcement:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\Models\PriorityOrder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+Relation::morphMap(['priority-order' => PriorityOrder::class]);
+```
+
+A model without an aliased parent needs its own alias in either mode.
 
 ### Entities
 
