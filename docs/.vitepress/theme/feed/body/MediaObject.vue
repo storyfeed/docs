@@ -38,7 +38,7 @@ const files = computed(() => {
 })
 
 const picture = computed(() =>
-    props.payload.image ? (props.entityMedia?.[props.payload.image] ?? null) : null,
+    ['icon', 'preview', 'image'].includes(props.payload.image) ? (props.entityMedia?.[props.payload.image] ?? null) : null,
 )
 
 const footnote = computed(() => {
