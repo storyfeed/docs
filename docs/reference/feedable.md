@@ -255,6 +255,7 @@ Activities stay unless their verb declares `forgetWhenMissing()`.
 <span id="the-model-s-own-feed"></span>
 
 <a id="reading-the-models-feed"></a>
+<a id="reading-the-model-s-feed"></a>
 
 ### Retrieving the Model's Feed
 
