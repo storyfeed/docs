@@ -28,9 +28,10 @@ A named feed defines an audience once, by name:
 
 - **Every screen shows the same verbs.** A controller, a Filament widget and an
   API endpoint that retrieve the `'customer'` feed all apply the same filter.
-- **New verbs are caught in CI.** The [doctor](/deeper/diagnosing) warns about
-  any recorded verb that no feed shows or excludes, so a new verb is flagged
-  until someone decides who may see it.
+- **Verb coverage can be checked in CI.** With restricted feeds and no
+  unrestricted feed, the [doctor](/deeper/diagnosing) warns about app-declared
+  or recorded verbs that no feed includes or excludes. See
+  [Checking Verb Coverage](#checking-verb-coverage) for the exceptions.
 - **Each feed can link somewhere different.** An order can open its ticket on
   the kitchen's board and its status page on the customer's.
 - **A feed class requires its subject.** The customer's feed is always scoped to
@@ -245,10 +246,17 @@ On a feed with no name:
 
 ### Checking Verb Coverage
 
-The [doctor](/deeper/diagnosing) reports `feeds.unclassified` when no restricted
-feed includes or excludes a registered or recorded verb. Run it with
-`--fail-on=warning` in CI to fail on these findings. Use `->unrestricted()` to
-declare that a feed includes every verb.
+The [doctor](/deeper/diagnosing) checks app-declared and recorded verbs;
+unused package-default verbs are excluded. When at least one restricted feed
+exists and no unrestricted feed is declared, a verb that no restricted feed
+includes or excludes produces a `feeds.unclassified` warning. Run with
+`--fail-on=warning` in CI to fail on these warnings.
+
+Use `->unrestricted()` to declare that a feed includes every verb. Alongside a
+restricted feed, this changes undecided-verb findings to informational
+`feeds.unrestricted`, which does not fail at the warning threshold. With no
+restricted feeds, the check reports informational `feeds.none_restricted` and
+returns. With no registered feeds, it returns without a finding.
 
 <a id="filtering-verbs"></a>
 
