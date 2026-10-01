@@ -132,6 +132,10 @@ export default defineConfig({
 
   head: [
     ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { name: 'author', content: 'Jasper Tey' }],
+    ['meta', { property: 'article:author', content: 'Jasper Tey' }],
+    ['meta', { property: 'article:publisher', content: 'Tey Labs' }],
+    ['meta', { property: 'article:published_time', content: '2026-09-30T19:00:00-04:00' }],
     ['meta', { property: 'og:site_name', content: 'Storyfeed' }],
     ['meta', { property: 'og:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=3' }],
     ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
