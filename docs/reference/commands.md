@@ -149,7 +149,6 @@ when you:
 
 - register an axis
 - change an axis's grouping key
-- adjust `grouping.policy` thresholds
 - change a published activity's verb or roles
 
 Neither `storyfeed:rebuild` nor `storyfeed:curate` without `--rehash` applies
@@ -158,6 +157,10 @@ these changes to existing groups. To regroup stored activities:
 ```bash
 php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
+
+Changes to `grouping.policy` thresholds only affect eligibility. Plain
+`php artisan storyfeed:curate` re-evaluates existing candidate hashes against
+those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 

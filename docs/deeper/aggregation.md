@@ -130,8 +130,10 @@ Headlines for groups marked **One Type** may go in a Story class or inside
 | `min_object_members` | `object`: this many activities on the one object | 2 |
 
 Activities below a threshold cannot form that group. They fall back to
-`repeat` when no other group qualifies. Published activities keep their groups
-until you [rehash them](/reference/commands#rehashing-existing-rows).
+`repeat` when no other group qualifies. After changing thresholds, run
+`php artisan storyfeed:curate` to re-evaluate existing groups. Changes to an
+axis's grouping key or newly registered axes require
+[rehashing](/reference/commands#rehashing-existing-rows).
 
 See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
 boundary shared by grouped activities.
