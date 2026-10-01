@@ -421,7 +421,8 @@ The body component maps it to `feed.body.key-value` and renders it with
 @endif
 ```
 
-Add a component for each body type you render:
+Add a component for each body type you render. This KeyValue component displays
+the placeholder when a value is null, or an empty string when both are null:
 
 ```blade memo="resources/views/components/feed/body/key-value.blade.php"
 @props(['body'])
@@ -429,7 +430,7 @@ Add a component for each body type you render:
 <dl {{ $attributes }}>
     @foreach ($body['items'] as $item)
         <dt>{{ $item['key'] }}</dt>
-        <dd>{{ $item['value'] ?? $item['missing'] }}</dd>
+        <dd>{{ $item['value'] ?? $item['placeholder'] ?? '' }}</dd>
     @endforeach
 </dl>
 ```
