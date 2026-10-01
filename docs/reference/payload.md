@@ -237,13 +237,6 @@ been deleted. Your renderer may display the original or missing headline.
 <a id="threads"></a>
 
 Quoted words belong in an entity's [`Excerpt` body](/basics/activity-content#adding-quoted-text).
-Application-specific discussion content can use a
-[custom body type](/deeper/body#writing-a-body-type).
-
-Legacy `data.thread` and `data.$thread` values remain in `data` exactly as
-stored. Core does not upgrade them, promote them to a top-level payload field,
-or serialize them as Activity Streams `replies`.
-
 <span id="group-node"></span>
 
 ## Group Nodes
