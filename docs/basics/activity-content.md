@@ -4,6 +4,11 @@
 import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
+const attributedNote = { ...content.note,
+  object: { ...content.note.object, label: 'Order note', body: [{
+    $body: 'Storyfeed/Body/Excerpt', $v: 1, text: content.note.object.label,
+    from: content.note.actor.label, truncated: false,
+  }] } }
 const withProse = { ...content.ready,
   object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
     content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
@@ -49,7 +54,12 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make()
         ->label('Order note')
-        ->body(Excerpt::make()->text($this->body)->truncated(false));
+        ->body(
+            Excerpt::make()
+                ->text($this->body)
+                ->from($this->author->name)
+                ->truncated(false),
+        );
 }
 ```
 
@@ -61,17 +71,21 @@ public function toFeed(): FeedEntity
 {
     return FeedEntity::make(
         label: 'Order note',
-        body: Excerpt::make(text: $this->body, truncated: false),
+        body: Excerpt::make(
+            text: $this->body,
+            from: $this->author->name,
+            truncated: false,
+        ),
     );
 }
 ```
 :::
 
-Set `truncated(false)` when the body contains the complete text. Use `from()`
-for attribution when the headline does not already name the source.
-Here is an excerpt rendered below its activity's headline:
+Here `author` is the note's author relationship. `from()` names whose words
+are being quoted. Set `truncated(false)` when the body contains the complete
+text. The attribution appears below the quotation:
 
-<FeedExample :items="[withExcerpt]" />
+<FeedExample :items="[attributedNote]" />
 
 Record the note as the activity's object and the order as its target:
 
