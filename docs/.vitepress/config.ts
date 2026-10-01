@@ -187,9 +187,9 @@ export default defineConfig({
       },
       {
         // Choose the feed, then inspect it, then draw it.
-        text: 'Reading and Rendering',
+        text: 'Retrieving and Rendering',
         items: [
-          { text: 'Reading Feeds', link: '/basics/reading' },
+          { text: 'Retrieving Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'The Payload', link: '/basics/the-payload' },
           { text: 'Rendering', link: '/basics/rendering' },

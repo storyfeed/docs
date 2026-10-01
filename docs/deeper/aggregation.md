@@ -86,7 +86,7 @@ The read mode determines which groups the query returns:
 |---|---|
 | `log()` | one item per activity, including each member of a composite |
 | `live()` | one group per activity, chosen from the groups it qualifies for, with `repeat` as the fallback. The default |
-| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Reading Feeds](/basics/reading#summary) |
+| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Retrieving Feeds](/basics/reading#summary) |
 
 Set `grouping.curate` to `false` to limit `live()` to repeats.
 `storyfeed:curate` chooses groups for recent activities and runs hourly through

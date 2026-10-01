@@ -1,4 +1,6 @@
-# Reading Feeds
+<a id="reading-feeds"></a>
+
+# Retrieving Feeds
 
 <script setup>
 import { scene, everything, WORLD_ANCHOR, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
@@ -20,7 +22,9 @@ const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 To retrieve a page of activities, call the `feed` method on the `Storyfeed`
 facade, followed by the `get` method.
 
-## Reading a Feed
+<a id="reading-a-feed"></a>
+
+## Retrieving a Feed
 
 You may return the feed from a route:
 

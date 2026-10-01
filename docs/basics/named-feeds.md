@@ -68,7 +68,9 @@ Storyfeed::feeds([
 <a id="verbs-and-scope"></a>
 <a id="scoping-closure-feeds"></a>
 
-### Reading a Named Feed
+<a id="reading-a-named-feed"></a>
+
+### Retrieving a Named Feed
 
 Pass the feed name to the `feed` method on the `Storyfeed` facade:
 

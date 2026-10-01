@@ -95,7 +95,7 @@ Storyfeed::feed()->involving($order)->log()->get();
 
 <FeedExample :items="orderStory" />
 
-More in [Reading Feeds](/basics/reading#filtering-by-entity-or-role).
+More in [Retrieving Feeds](/basics/reading#filtering-by-entity-or-role).
 
 <a id="grouping-activities"></a>
 

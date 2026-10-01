@@ -254,7 +254,9 @@ Activities stay unless their verb declares `forgetWhenMissing()`.
 
 <span id="the-model-s-own-feed"></span>
 
-### Reading the Model's Feed
+<a id="reading-the-models-feed"></a>
+
+### Retrieving the Model's Feed
 
 `$model->storyfeed()` is shorthand for `Storyfeed::feed()->involving($model)`.
 Pass a feed name to use a named feed: `$model->storyfeed('customer')`.
