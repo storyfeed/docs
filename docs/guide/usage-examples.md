@@ -113,4 +113,4 @@ Storyfeed::feed()->summary('week')->get();
 
 <FeedExample :items="weekly" days height="420" />
 
-More in [Grouping Periods](/deeper/grouping-periods).
+More in [Choosing the Summary Period](/basics/reading#choosing-the-summary-period).
