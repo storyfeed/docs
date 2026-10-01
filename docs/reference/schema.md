@@ -23,8 +23,8 @@ feed is read from them.
 <title id="er-title">The 9 tables Storyfeed creates, and how they reference each other</title>
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
 <path class="e" d="M380 117 H340 V51 H313" marker-end="url(#arr)"/>
-<path class="e d" d="M380 139 H358 V503 H313" marker-end="url(#arr)"/>
-<path class="e d" d="M358 363 H313" marker-end="url(#arr)"/>
+<path class="e d" d="M380 139 H358 V481 H313" marker-end="url(#arr)"/>
+<path class="e d" d="M358 341 H313" marker-end="url(#arr)"/>
 <path class="e" d="M680 408 H698 V51 H683" marker-end="url(#arr)"/>
 <path class="e" d="M680 638 H698 V408"/>
 <path class="e d" d="M680 452 H714 V868 H683" marker-end="url(#arr)"/>

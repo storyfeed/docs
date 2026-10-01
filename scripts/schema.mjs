@@ -355,8 +355,8 @@ export function renderDiagram(tables) {
   const A = 'marker-end="url(#arr)"';
   const edges = [
     `<path class="e" d="M${RIGHT} ${ry('feed_activities', 3)} H${LE + 30} V${ry('feed_snapshots', 0)} H${LE + 3}" ${A}/>`,
-    `<path class="e d" d="M${RIGHT} ${ry('feed_activities', 4)} H${LE + 48} V${ry('feed_tombstones', 1)} H${LE + 3}" ${A}/>`,
-    `<path class="e d" d="M${LE + 48} ${ry('feed_parties', 1)} H${LE + 3}" ${A}/>`,
+    `<path class="e d" d="M${RIGHT} ${ry('feed_activities', 4)} H${LE + 48} V${ry('feed_tombstones', 0)} H${LE + 3}" ${A}/>`,
+    `<path class="e d" d="M${LE + 48} ${ry('feed_parties', 0)} H${LE + 3}" ${A}/>`,
     `<path class="e" d="M${RE} ${ry('feed_groupings', 1)} H${RE + 18} V${ry('feed_activities', 0)} H${RE + 3}" ${A}/>`,
     `<path class="e" d="M${RE} ${ry('feed_participants', 1)} H${RE + 18} V${ry('feed_groupings', 1)}"/>`,
     `<path class="e d" d="M${RE} ${ry('feed_groupings', 3)} H${RE + 34} V${ry('feed_batches', 1)} H${RE + 3}" ${A}/>`,
