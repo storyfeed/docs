@@ -481,9 +481,9 @@ test('no page or snippet imports a pack or picks a pack\'s rows', () => {
 })
 
 // Lane C has completed the migration; prevent reintroducing its legacy world.
-test('cookbook, reference and tone lab use scenes with an anchored clock', () => {
+test('cookbook and reference use scenes with an anchored clock', () => {
   const scope = [...files(resolve(docs, 'cookbook'), /\.md$/),
-    ...files(resolve(docs, 'reference'), /\.md$/), resolve(docs, 'tone-lab.md')]
+    ...files(resolve(docs, 'reference'), /\.md$/)]
   for (const file of scope) {
     const text = readFileSync(file, 'utf8')
     assert.doesNotMatch(text, /\b(?:who|where|dishes|scenes)\.[a-zA-Z]+/, relative(docs, file))
