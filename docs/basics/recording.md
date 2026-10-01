@@ -169,6 +169,10 @@ To set an earlier publication time, such as when importing records, call the
 
 ::: code-group
 ```php [Fluent Syntax]
+use App\Models\MenuItem;
+use App\Models\User;
+use Storyfeed\Facades\Storyfeed;
+
 foreach ($rows as $row) {
     Storyfeed::activity()
         ->by(User::findOrFail($row['user_id']))
@@ -180,6 +184,10 @@ foreach ($rows as $row) {
 ```
 
 ```php [Named Arguments]
+use App\Models\MenuItem;
+use App\Models\User;
+use Storyfeed\Facades\Storyfeed;
+
 foreach ($rows as $row) {
     Storyfeed::record(
         verb: 'reprice',

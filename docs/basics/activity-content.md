@@ -156,6 +156,9 @@ Use `KeyValue` for labelled values:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->body(
@@ -169,6 +172,9 @@ FeedEntity::make()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: "Order #{$this->reference}",
     body: KeyValue::make( // [!code highlight]
@@ -227,6 +233,9 @@ story. The `from` argument names who said them or where they came from:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label($this->title)
     ->body(
@@ -237,6 +246,9 @@ FeedEntity::make()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: $this->title,
     body: Excerpt::make( // [!code highlight]
