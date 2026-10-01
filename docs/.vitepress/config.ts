@@ -264,6 +264,7 @@ export default defineConfig({
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
+          { text: 'Storage Architecture', link: '/reference/storage' },
           { text: 'Glossary', link: '/reference/glossary' },
         ],
       },

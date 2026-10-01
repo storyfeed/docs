@@ -188,6 +188,7 @@ available open batch only when `opened_at <= published_at < closes_at`.
 An out-of-order arrival before an available window, or an activity at or after
 its closing time, starts a separate batch. Closed batches are not reopened.
 Anonymous activities cannot join a batch because they have no recorded actor.
+Batches are stored in [`feed_batches`](/reference/schema#feed-batches).
 
 | Declaration | Batch Behaviour |
 |---|---|

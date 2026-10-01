@@ -282,7 +282,8 @@ The paginator uses Laravel's simple pagination views, including any views you
 have customized in your application. Feeds paginate forward only, so the
 previous-page link is disabled. The `nextPageUrl` method returns the next
 page's URL, or `null` on the last page. The `previousPageUrl` method returns
-`null`.
+`null`. See [Storage Architecture](/reference/storage#pagination) for what a
+cursor holds.
 
 ### Customizing Pagination URLs
 
