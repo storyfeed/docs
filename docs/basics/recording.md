@@ -115,6 +115,21 @@ recorded actor.
 
 ## Adding Activity Data
 
+Define each new verb and its headline before publishing. By default, local
+and testing environments throw `UnknownVerb` for an unregistered verb and
+`UnauthoredActivity` for an object-type/verb pair without a headline. A concrete
+Story definition satisfies both checks:
+
+```php memo="routes/feed.php"
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object');
+```
+
+Here `$product` is a `MenuItem`.
+
 Use the `data` method to store arbitrary values on an activity. Storyfeed
 returns them in the activity's `data` field:
 
@@ -184,7 +199,17 @@ foreach ($rows as $row) {
 ## Recording Multiple Objects
 
 To record an activity involving multiple objects, call the `objects` method.
-Storyfeed stores a parent activity and one activity per object:
+Storyfeed stores a parent activity and one activity per object. Define the
+upload verb before recording the photos. This verb-wide definition also covers
+the parent activity:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+
+Story::verb('upload')->headline(':actor uploaded :object');
+```
+
+Then publish the photos:
 
 ::: code-group
 ```php [Fluent Syntax]

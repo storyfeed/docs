@@ -54,7 +54,21 @@ More in [Activity Content](/basics/activity-content).
 
 ## Recording Services as Actors
 
-A payment webhook tells your app an order was paid:
+Define the payment verb and headline before recording it:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('pay')->headline(':actor paid for :object');
+```
+
+By default, local and testing environments reject unregistered verbs with
+`UnknownVerb` and unauthored object-type/verb pairs with `UnauthoredActivity`.
+A concrete Story definition registers its verb and supplies the headline.
+The earlier Quickstart defines only `place`.
+
+A payment webhook can then record that an order was paid:
 
 ```php memo="app/Http/Controllers/StripeWebhookController.php" at="__invoke()"
 use Storyfeed\Facades\Storyfeed;
