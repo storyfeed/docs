@@ -432,8 +432,8 @@ Stores Storyfeed metadata, including the sync token.
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. |
-| `key` | string(255) | unique | `sync_token`, or one of the trickle's cursors. |
-| `value` | string(255) |  | The value. |
+| `key` | string(255) | unique | `sync_token`, trickle cursors, or `maintenance:curate:<ULID>` / `maintenance:trickle:<ULID>` entries in bounded maintenance-run history. |
+| `value` | string(255) |  | The value; maintenance-run entries contain JSON counters for that completed run. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
 <!-- /schema -->
