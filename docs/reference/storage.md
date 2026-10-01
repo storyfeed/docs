@@ -59,7 +59,8 @@ the activity to the actor's current batch in a transaction of its own.
 
 ### The Rows One Publish Writes
 
-For the order above, with a customer, an order and a shop, all Feedable:
+For the order above, with a customer, an order and a shop, all Feedable,
+and the default axes and middleware:
 
 | Table | Rows | Notes |
 |---|---|---|
@@ -188,10 +189,11 @@ data. See [Caching Definitions](/reference/commands#caching-definitions).
 
 ## Costs at Scale
 
-Per activity with an actor, a verb, an object and a target, expect 1 activity
-row, 9 grouping rows, and 3 participant rows. `feed_groupings` is the
-largest table, at up to nine times `feed_activities`. `feed_snapshots`
-grows with your entities, not your activities.
+The default example above writes 1 activity row, 9 grouping rows, and 3
+participant rows. Nine is not a ceiling: custom axes can add or replace keys,
+and each emitted hash produces a grouping row. Table sizes depend on your
+roles, axes, entities, and retention policy. `feed_snapshots` grows with
+Feedable entities, including those saved without publishing an activity.
 
 The indexes each read uses (every index is listed in [Schema](/reference/schema)):
 
