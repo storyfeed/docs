@@ -13,7 +13,7 @@ Set table names in [Configuration](/reference/configuration#tables-and-models).
 The migrations include indexes for feed queries. They declare no foreign key
 constraints: the keys below are the ones Storyfeed joins on.
 [Storage Architecture](/reference/storage) shows which rows a publish writes and how a
-feed is read from them.
+feed is retrieved from them.
 
 ## Tables at a Glance
 
