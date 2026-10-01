@@ -70,7 +70,7 @@ For the order above, with a customer, an order and a shop, all Feedable:
 An activity with fewer roles writes fewer rows. An activity with no actor has
 no `summary.*` rows and joins no batch.
 
-### Why the Rows Are Copied
+### Denormalized Columns
 
 Each copy lets a read use one index instead of computing something per row.
 
@@ -202,7 +202,7 @@ The indexes each read uses (every index is listed in [Schema](/reference/schema)
 [Retention](/deeper/retention) removes old activities with their grouping
 and participant rows.
 
-## Why Not a Single Activity Log Table?
+## Comparison With a Single Log Table
 
 A single table with one row per event can render `log()`. The questions a
 feed asks next are the ones a single table cannot answer from an index:
