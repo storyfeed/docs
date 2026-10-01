@@ -406,17 +406,37 @@ bodies in the activity row:
 ```
 
 Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
-The body component maps it to `feed.body.key-value` and renders it with
-`<x-dynamic-component>`. Types without a matching component are skipped:
+Match that full identifier to an explicit body class and component. Upgrade
+the stored version before rendering; core preserves the stored shape. Skip
+unknown types and versions newer than this renderer supports. Extend this map
+when adding another body component:
 
 ```blade memo="resources/views/components/feed/body.blade.php"
 @props(['body'])
 
 @php
-    $component = 'feed.body.'.Str::kebab(class_basename($body['$body']));
+    use Storyfeed\Body\Excerpt;
+    use Storyfeed\Body\KeyValue;
+
+    $renderers = [
+        KeyValue::bodyType() => [KeyValue::class, 'feed.body.key-value'],
+        Excerpt::bodyType() => [Excerpt::class, 'feed.body.excerpt'],
+    ];
+    $renderer = $renderers[$body['$body'] ?? ''] ?? null;
+    $version = $body['$v'] ?? 1;
+    $component = null;
+
+    if ($renderer !== null && is_int($version) && $version >= 1) {
+        [$class, $view] = $renderer;
+
+        if ($version <= $class::version()) {
+            $body = $class::upgrade($body, $version);
+            $component = $view;
+        }
+    }
 @endphp
 
-@if (view()->exists("components.{$component}"))
+@if ($component !== null)
     <x-dynamic-component :component="$component" :body="$body" />
 @endif
 ```
