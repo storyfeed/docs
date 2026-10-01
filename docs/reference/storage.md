@@ -194,10 +194,15 @@ The indexes each read uses (every index is listed in [Schema](/reference/schema)
 | `log()`, and the solo stream | `feed_activities (published_at, id)` |
 | `->actor()`, `->object()`, `->target()`, `->context()` | `feed_activities ({role}_type, {role}_id, published_at, id)` |
 | `->involving()` | `feed_participants (entity_type, entity_id, published_at, activity_id)` |
+| each activity's winning row in `live()` | `feed_groupings (activity_id)` |
+| each activity's period row in `summary()` | `feed_groupings unique (activity_id, bucket)` |
 | a group's members | `feed_groupings (bucket, hash)` |
-| winning rows | `feed_groupings (winner, bucket, hash)` |
-| the solo stream's checks, per activity | `feed_groupings unique (activity_id, bucket)` |
-| an actor's open batch | `feed_batches (actor_type, actor_id, closed_at)` |
+| the solo stream's `repeat` and `composite` checks, per activity | `feed_groupings unique (activity_id, bucket)` |
+
+Two indexes serve work other than reads. Publishing finds an actor's open
+batches through the `feed_batch_locks` primary key, `(actor_type, actor_id)`.
+The `aggregates` check in `storyfeed:doctor` reads
+`feed_groupings (winner, bucket, hash)`.
 
 [Retention](/deeper/retention) removes old activities with their grouping
 and participant rows.
