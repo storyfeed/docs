@@ -140,6 +140,11 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::bundleables(['task']);
 ```
 
+Within a batch, automatic bundling considers unclaimed activities with a
+bundleable object. Activities must share the verb, object type, target,
+context, and publication date. The minimum counts distinct objects within
+each such set; a burst spanning those boundaries can remain separate.
+
 Automatic bundling is enabled by default. Configure it in `config/storyfeed.php`:
 
 | Key | Default | Meaning |
