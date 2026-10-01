@@ -81,7 +81,9 @@ change the recorded text.
 
 A **body** contains an entity's structured content. Define it in the model's
 `toFeed` method and render it in your frontend. The body is available wherever
-the entity appears.
+the entity appears. With `InteractsWithFeed`, saving the model refreshes its
+shared snapshot while recording is enabled. That can change the body shown on
+older activities too. Use activity `data` to capture values as they were at the event.
 
 ### Text and Labelled Values
 
