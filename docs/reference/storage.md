@@ -162,10 +162,14 @@ rules:
 |---|---|
 | a snapshot | the model is saved, the model appears in a publish, `storyfeed:trickle` finds it stale, or `storyfeed:rebuild` runs |
 | a stale snapshot | `toFeed()` changes shape: each snapshot stores a `shape` fingerprint, and the trickle refreshes rows whose fingerprint differs |
-| `winner` | an activity is published into the group, or deleted from it; `storyfeed:curate` repairs the last two days hourly |
+| `winner` | an activity is published into the group, or deleted from it; scheduled `storyfeed:curate` runs hourly, with a configurable lookback |
 | `hash` | `storyfeed:curate --rehash` |
 | role columns, snapshots, participants, groupings | a model is deleted: its activities are repointed to a tombstone, in chunks of 500 |
 | a batch's `closed_at` | the actor's next publish arrives after `closes_at`, or `storyfeed:close-batches` runs |
+
+Scheduled curation defaults to the last two days (`storyfeed.curate.window`).
+Weekly and monthly verb grouping widens that window for the affected
+activities. A null or nonpositive configured window removes the time bound.
 
 When both the stored and incoming source timestamps are known, a snapshot
 update rejects an older model timestamp. Without a usable incoming timestamp,
