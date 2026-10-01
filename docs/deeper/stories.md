@@ -101,6 +101,60 @@ uses the same `toFeedActivity` method and publishes when dispatched. A Story
 can be published independently, like a notification, so use it when the
 activity has no corresponding application event.
 
+### Declaring Casts on a Story Class
+
+A Story class declares its casts in a `casts` method, as a model does. This
+alternative order-placement class records a channel and promised time:
+
+```php memo="app/Stories/OrderPlaced.php"
+<?php
+
+namespace App\Stories;
+
+use App\Enums\Channel;
+use App\Models\Order;
+use Storyfeed\PendingActivity;
+use Storyfeed\Stories\Story;
+
+class OrderPlaced extends Story
+{
+    public string|array|null $objectType = Order::class;
+
+    public function __construct(public Order $order) {}
+
+    public function toFeedActivity(): ?PendingActivity
+    {
+        return $this->activity($this->order)->data([
+            'channel' => $this->order->channel,
+            'promised_at' => $this->order->promised_at,
+        ]);
+    }
+
+    public function headline(): string
+    {
+        return ':actor placed :object';
+    }
+
+    public function casts(): array // [!code highlight]
+    {
+        return [
+            'channel' => Channel::class,
+            'promised_at' => 'immutable_datetime',
+        ];
+    }
+}
+```
+
+To use this class instead of `OrderWasPlaced`, bind it to the order's verb:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderPlaced;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', OrderPlaced::class);
+```
+
 ### Registering the Story
 
 Register the class for its object type and verb in the feed file:

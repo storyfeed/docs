@@ -420,7 +420,7 @@ Who acted and where, then the classes and pipeline built on them.
 - ✅ Parties & Anonymous Actors — named non-model participants, declared parties, anonymous activities and headlines
 - ✅ Containers & Context — the fourth role, target vs context, the container query
 - ✅ Activity Scopes — `Storyfeed::actor()` / `Storyfeed::context()` over a callback or request, role precedence
-- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors
+- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, class-level casts, resource methods, request-based actors
 - ✅ Named Stories — names, prefixes, group attributes, `story()`, `Story::has()` / `storyIs()`
 - ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches and inspection
 - ✅ Story Middleware & Batching — middleware classes and closures, aliases and groups, batch windows, default roles

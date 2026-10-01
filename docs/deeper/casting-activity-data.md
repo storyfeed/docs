@@ -62,59 +62,10 @@ Storyfeed::activity('place', $order)
 An enum is recorded as its value and a date as an ISO 8601 string. The casts
 read them back as a `Channel` and a `CarbonImmutable`.
 
-### Declaring Casts on a Story Class
+<a id="declaring-casts-on-a-story-class"></a>
 
-A Story class declares its casts in a `casts` method, as a model does:
-
-```php memo="app/Stories/OrderPlaced.php"
-<?php
-
-namespace App\Stories;
-
-use App\Enums\Channel;
-use App\Models\Order;
-use Storyfeed\PendingActivity;
-use Storyfeed\Stories\Story;
-
-class OrderPlaced extends Story
-{
-    public string|array|null $objectType = Order::class;
-
-    public function __construct(public Order $order) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        return $this->activity($this->order)->data([
-            'channel' => $this->order->channel,
-            'promised_at' => $this->order->promised_at,
-        ]);
-    }
-
-    public function headline(): string
-    {
-        return ':actor placed :object';
-    }
-
-    public function casts(): array // [!code highlight]
-    {
-        return [
-            'channel' => Channel::class,
-            'promised_at' => 'immutable_datetime',
-        ];
-    }
-}
-```
-
-Bind the class to the order's verb before publishing it:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderPlaced;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place', OrderPlaced::class);
-```
-
+For casts declared on a Story class, see
+[Declaring Casts on a Story Class](/deeper/stories#declaring-casts-on-a-story-class).
 
 Like a verb's headline, casts are read when stories compile, and
 `storyfeed:cache` caches them. A cast is a string or a class name, never a
