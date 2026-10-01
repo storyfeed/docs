@@ -105,7 +105,8 @@ with the `make:feed` Artisan command:
 php artisan make:feed Customer --subject='App\Models\Order' --role=involving
 ```
 
-The command creates `app/Feeds/CustomerFeed.php` with an order constructor parameter:
+The command creates `app/Feeds/CustomerFeed.php` with an order constructor
+parameter. Edit the generated class to define its allowed verbs and mode:
 
 ```php memo="app/Feeds/CustomerFeed.php"
 <?php
