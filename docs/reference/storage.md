@@ -37,8 +37,11 @@ innermost step stores the activity in one database transaction:
 
 1. **Snapshots.** Each Feedable entity's `toFeed()` output is upserted into
    `feed_snapshots`, one row per entity, and the activity's
-   `cached_{role}_id` columns are set to those rows. The feed reads labels
-   from here, so it never loads your models.
+   `cached_{role}_id` columns are set to those rows. By default, the feed
+   gets labels from these snapshots without loading your models. Presentation
+   resolvers can explicitly call [`FeedContext::model()`](/reference/feedable#loading-the-model)
+   to hydrate live models, relations, or counts, adding those queries to the
+   retrieval cost.
 2. **The activity.** One row in `feed_activities`, with a new ULID `uid`. The
    `uid` becomes the payload's `id`.
 3. **Groupings.** One `feed_groupings` row per axis the activity has a key
