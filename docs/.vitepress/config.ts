@@ -131,6 +131,14 @@ export default defineConfig({
   },
 
   head: [
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'Storyfeed' }],
+    ['meta', { property: 'og:image', content: 'https://docs.storyfeed.dev/og-image.png?v=1' }],
+    ['meta', { property: 'og:image:width', content: '2560' }],
+    ['meta', { property: 'og:image:height', content: '1280' }],
+    ['meta', { property: 'og:image:alt', content: 'The Storyfeed mark beside the words Storyfeed, Activity streams for Laravel' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:image', content: 'https://docs.storyfeed.dev/og-image.png?v=1' }],
     ['link', { rel: 'icon', href: '/favicon.ico?v=2', sizes: 'any' }],
     ['link', { rel: 'icon', href: '/favicon.svg?v=2', type: 'image/svg+xml' }],
     ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=2' }],
