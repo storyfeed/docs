@@ -1,4 +1,4 @@
-# How Storyfeed Stores Your Feed
+# Storage Architecture
 
 ## Introduction
 
@@ -9,197 +9,14 @@ who and what it involves. Reading a feed is then a query over those rows.
 Storyfeed does not use Laravel's cache for feed data.
 
 This page follows one publish into the database and one page of the feed
-back out. [Schema](/reference/schema) describes each table on its own.
+back out. [Schema](/reference/schema) has the diagram of the tables and every
+column.
 
 <script setup>
 import { scene, logOf, liveOf } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
 const repeat = liveOf(log)[0]
 </script>
-
-## The Tables
-
-The migrations create nine tables:
-
-<div class="er-wrap">
-
-<svg class="er" viewBox="0 0 724 1075" role="img" aria-labelledby="er-title" xmlns="http://www.w3.org/2000/svg">
-<title id="er-title">The nine tables Storyfeed creates, and how they reference each other</title>
-<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
-<path class="e" d="M380 117 H340 V51 H313" marker-end="url(#arr)"/>
-<path class="e d" d="M380 139 H358 V503 H313" marker-end="url(#arr)"/>
-<path class="e d" d="M358 363 H313" marker-end="url(#arr)"/>
-<path class="e" d="M680 408 H698 V51 H683" marker-end="url(#arr)"/>
-<path class="e" d="M680 638 H698 V408"/>
-<path class="e d" d="M680 452 H714 V868 H683" marker-end="url(#arr)"/>
-<path class="e d" d="M310 853 H350 V846 H377" marker-end="url(#arr)"/>
-<text class="el" x="10" y="1045">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>
-<text class="el" x="10" y="1063">held in another column · no foreign key constraints are declared</text>
-<text class="el" x="676" y="337" text-anchor="end">batch rows: hash = feed_batches.uid</text>
-<g transform="translate(380,10)">
-<rect class="box" width="300" height="310" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_activities</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">uid</text>
-<text class="n" x="288" y="68" text-anchor="end">ULID · unique</text>
-<text class="c" x="12" y="90">verb</text>
-<text class="n" x="288" y="90" text-anchor="end">index</text>
-<text class="c" x="12" y="112">cached_{role}_id</text>
-<text class="n" x="288" y="112" text-anchor="end">snapshot × 7</text>
-<text class="c" x="12" y="134">{role}_type, {role}_id</text>
-<text class="n" x="288" y="134" text-anchor="end">morph × 7</text>
-<text class="c" x="12" y="156">data</text>
-<text class="n" x="288" y="156" text-anchor="end">json</text>
-<text class="c" x="12" y="178">published_at</text>
-<text class="n" x="288" y="178" text-anchor="end">timestamp(6)</text>
-<text class="c" x="12" y="200">created_at, updated_at</text>
-<text class="c" x="12" y="222">deleted_at</text>
-<text class="n" x="288" y="222" text-anchor="end">soft delete</text>
-<line class="sep" x1="8" x2="292" y1="232" y2="232"/>
-<text class="i" x="12" y="248" xml:space="preserve">(published_at, id)</text>
-<text class="i" x="12" y="266" xml:space="preserve">({role}_type, {role}_id,</text>
-<text class="i" x="12" y="284" xml:space="preserve">   published_at, id)</text>
-<text class="i" x="12" y="302" xml:space="preserve">   actor, object, target, context</text>
-</g>
-<g transform="translate(10,10)">
-<rect class="box" width="300" height="234" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_snapshots</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">model_type, model_id</text>
-<text class="n" x="288" y="68" text-anchor="end">unique</text>
-<text class="c" x="12" y="90">label</text>
-<text class="c" x="12" y="112">data, body</text>
-<text class="n" x="288" y="112" text-anchor="end">json</text>
-<text class="c" x="12" y="134">content, media_type</text>
-<text class="c" x="12" y="156">attributed_to</text>
-<text class="c" x="12" y="178">shape</text>
-<text class="n" x="288" y="178" text-anchor="end">index</text>
-<text class="c" x="12" y="200">source_updated_at</text>
-<text class="c" x="12" y="222">meta</text>
-<text class="n" x="288" y="222" text-anchor="end">json</text>
-</g>
-<g transform="translate(10,300)">
-<rect class="box" width="300" height="124" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_parties</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">key</text>
-<text class="n" x="288" y="68" text-anchor="end">unique</text>
-<text class="c" x="12" y="90">name, type</text>
-<text class="c" x="12" y="112">data</text>
-<text class="n" x="288" y="112" text-anchor="end">json</text>
-</g>
-<g transform="translate(10,440)">
-<rect class="box" width="300" height="146" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_tombstones</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">model_type, model_id</text>
-<text class="n" x="288" y="68" text-anchor="end">unique</text>
-<text class="c" x="12" y="90">restorable, approximate</text>
-<text class="n" x="288" y="90" text-anchor="end">bool</text>
-<text class="c" x="12" y="112">deleted_at, label</text>
-<text class="c" x="12" y="134">meta</text>
-<text class="n" x="288" y="134" text-anchor="end">json</text>
-</g>
-<g transform="translate(380,345)">
-<rect class="box" width="300" height="204" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_groupings</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">activity_id</text>
-<text class="n" x="288" y="68" text-anchor="end">→ activity</text>
-<text class="c" x="12" y="90">bucket</text>
-<text class="n" x="288" y="90" text-anchor="end">axis name</text>
-<text class="c" x="12" y="112">hash</text>
-<text class="n" x="288" y="112" text-anchor="end">group key</text>
-<text class="c" x="12" y="134">winner</text>
-<text class="n" x="288" y="134" text-anchor="end">bool or null</text>
-<line class="sep" x1="8" x2="292" y1="144" y2="144"/>
-<text class="i" x="12" y="160" xml:space="preserve">unique (activity_id, bucket)</text>
-<text class="i" x="12" y="178" xml:space="preserve">(bucket, hash)</text>
-<text class="i" x="12" y="196" xml:space="preserve">(winner, bucket, hash)</text>
-</g>
-<g transform="translate(380,575)">
-<rect class="box" width="300" height="204" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_participants</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">activity_id</text>
-<text class="n" x="288" y="68" text-anchor="end">→ activity</text>
-<text class="c" x="12" y="90">role</text>
-<text class="c" x="12" y="112">entity_type, entity_id</text>
-<text class="c" x="12" y="134">published_at</text>
-<text class="n" x="288" y="134" text-anchor="end">copied</text>
-<line class="sep" x1="8" x2="292" y1="144" y2="144"/>
-<text class="i" x="12" y="160" xml:space="preserve">unique (activity_id, role)</text>
-<text class="i" x="12" y="178" xml:space="preserve">(entity_type, entity_id,</text>
-<text class="i" x="12" y="196" xml:space="preserve">   published_at, activity_id)</text>
-</g>
-<g transform="translate(380,805)">
-<rect class="box" width="300" height="208" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_batches</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">uid</text>
-<text class="n" x="288" y="68" text-anchor="end">ULID · unique</text>
-<text class="c" x="12" y="90">actor_type, actor_id</text>
-<text class="c" x="12" y="112">opened_at, closes_at</text>
-<text class="c" x="12" y="134">closed_at</text>
-<text class="n" x="288" y="134" text-anchor="end">null = open</text>
-<text class="c" x="12" y="156">activities_count</text>
-<line class="sep" x1="8" x2="292" y1="166" y2="166"/>
-<text class="i" x="12" y="182" xml:space="preserve">(actor_type, actor_id, closed_at)</text>
-<text class="i" x="12" y="200" xml:space="preserve">(closed_at, closes_at)</text>
-</g>
-<g transform="translate(10,790)">
-<rect class="box" width="300" height="102" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_batch_locks</text>
-<text class="c" x="12" y="46">actor_type, actor_id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">open_batches</text>
-<text class="n" x="288" y="68" text-anchor="end">json</text>
-<text class="c" x="12" y="90">locked_at</text>
-</g>
-<g transform="translate(10,640)">
-<rect class="box" width="300" height="80" rx="8"/>
-<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_meta</text>
-<text class="c" x="12" y="46">key</text>
-<text class="n" x="288" y="46" text-anchor="end">unique</text>
-<text class="c" x="12" y="68">value</text>
-<text class="n" x="288" y="68" text-anchor="end">sync_token</text>
-</g>
-</svg>
-
-</div>
-
-| Table | Rows | Holds |
-|---|---|---|
-| `feed_activities` | one per activity | the verb, up to seven roles, `data`, and `published_at` |
-| `feed_snapshots` | one per entity | the entity's label, data and body, as `toFeed()` returned them |
-| `feed_groupings` | several per activity | one row per group the activity can join |
-| `feed_participants` | one per filled role | the index `involving()` and `$model->storyfeed()` read |
-| `feed_batches` | one per sitting | an actor's activities published close together |
-| `feed_batch_locks` | one per batched actor | a row to lock, so concurrent publishes join one batch |
-| `feed_parties` | one per party | [named participants](/deeper/parties) with no model |
-| `feed_tombstones` | one per deleted entity | what a [deleted model](/deeper/deleted-models)'s activities point to |
-| `feed_meta` | a few | the feed's `sync_token` |
-
-Each role is stored as a morph pair, `{role}_type` and `{role}_id`, holding
-the model's morph alias and key. Next to it, `cached_{role}_id` points at the
-entity's snapshot. The migrations declare no foreign key constraints; the
-arrows above are the keys Storyfeed joins on.
 
 ## Writing an Activity
 
@@ -347,11 +164,18 @@ A snapshot update writes only when the model's `updated_at` is not older
 than the one already stored, so a late write does not overwrite a newer
 label.
 
-When stored history changes in a way a client cannot reconcile
-(`storyfeed:bundle`, `storyfeed:curate --rehash`, `storyfeed:heal`, a
-deletion that repoints activities), Storyfeed writes a new `sync_token` to
-`feed_meta`. Every page carries it. See
-[Handling a Changed Feed](/basics/reading#handling-a-changed-feed).
+When stored history changes in a way a client cannot reconcile, Storyfeed
+writes a new `sync_token` to `feed_meta`. Every page carries it. These write
+one:
+
+| Change | When |
+|---|---|
+| `storyfeed:bundle`, `storyfeed:curate --rehash`, `storyfeed:heal` | each run that rewrites history |
+| deleting or restoring a model | when any activity is repointed |
+| releasing a composite | when a composite is released |
+| pruning or purging | when a group loses members |
+
+See [Handling a Changed Feed](/basics/reading#handling-a-changed-feed).
 
 `storyfeed:cache` caches your definitions from `routes/feed.php`, not feed
 data. See [Caching Definitions](/reference/commands#caching-definitions).
@@ -363,7 +187,7 @@ row, 9 grouping rows, and 3 participant rows. `feed_groupings` is the
 largest table, at up to nine times `feed_activities`. `feed_snapshots`
 grows with your entities, not your activities.
 
-The indexes each read uses:
+The indexes each read uses (every index is listed in [Schema](/reference/schema)):
 
 | Read | Index |
 |---|---|
@@ -393,19 +217,3 @@ feed asks next are the ones a single table cannot answer from an index:
 
 The extra rows are written once, when the activity is published. Every read
 after that uses them.
-
-<style scoped>
-.er-wrap { margin: 24px 0; overflow-x: auto; }
-.er { display: block; width: 100%; max-width: 724px; margin: 0 auto; height: auto; font-family: var(--vp-font-family-mono); }
-.er .box { fill: var(--vp-c-bg-soft); stroke: var(--vp-c-divider); stroke-width: 1.5; }
-.er .head { fill: var(--vp-c-brand-soft); }
-.er .tn { fill: var(--vp-c-brand-1); font-size: 15px; font-weight: 700; }
-.er .c { fill: var(--vp-c-text-1); font-size: 13px; }
-.er .n { fill: var(--vp-c-text-2); font-size: 12px; }
-.er .i { fill: var(--vp-c-text-2); font-size: 11.5px; }
-.er .sep { stroke: var(--vp-c-divider); }
-.er .e { fill: none; stroke: var(--vp-c-text-2); stroke-width: 1.5; }
-.er .e.d { stroke-dasharray: 5 4; }
-.er .ah { fill: var(--vp-c-text-2); }
-.er .el { fill: var(--vp-c-text-2); font-size: 12px; font-style: italic; }
-</style>

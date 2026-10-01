@@ -69,7 +69,8 @@ name a type.
 
 Storyfeed groups activities when published. Each activity belongs to only one
 group per read mode. Quotes and images belong to the activities, so use `log()`
-to show each one.
+to show each one. [Storage Architecture](/reference/storage#reading-a-page)
+shows where groups are stored and how a feed reads them.
 
 <a id="axes-by-read-mode"></a>
 

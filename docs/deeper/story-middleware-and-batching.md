@@ -186,6 +186,7 @@ closing the batch. Each batched activity extends the closing time to its
 `published_at` plus its verb's window, if that is later. An activity before the
 closing time joins the batch; one at or after it starts a new batch.
 Anonymous activities cannot join a batch because they have no recorded actor.
+Batches are stored in [`feed_batches`](/reference/schema#feed-batches).
 
 | Declaration | Batch Behaviour |
 |---|---|
