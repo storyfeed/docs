@@ -54,6 +54,8 @@ fixing findings.
 | `columns` | missing columns in the package tables. Writes that touch them throw | error |
 | `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
 | `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
+| `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
+| `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
 | `participants` | activities `involving()` cannot find. `storyfeed:participants` backfills them | warning |
 | `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
@@ -64,6 +66,22 @@ fixing findings.
 <a id="interpreting-findings"></a>
 
 ## Findings
+
+### Grouping Hashes
+
+`hashes.truncated` warns when a grouping hash reaches or exceeds 255 characters.
+Shorten the strategy's output, for example by hashing long key parts, then
+[rehash stored activities](/reference/commands#rehashing-existing-rows).
+Truncated hashes can group unrelated activities together.
+
+### Snapshot Shapes
+
+`shapes.mixed` warns when snapshots lack fingerprints or carry mixed
+fingerprints before a converged maintenance pass. Run `storyfeed:trickle` to
+compare snapshots with their models and refresh stale ones. Mixed fingerprints
+remaining after a pass that rewrites nothing are informational: optional keys
+can legitimately produce different shapes. No repair is needed for that
+converged variation.
 
 ### Group Reachability
 
