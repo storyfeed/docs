@@ -167,9 +167,10 @@ rules:
 | role columns, snapshots, participants, groupings | a model is deleted: its activities are repointed to a tombstone, in chunks of 500 |
 | a batch's `closed_at` | the actor's next publish arrives after `closes_at`, or `storyfeed:close-batches` runs |
 
-A snapshot update writes only when the model's `updated_at` is not older
-than the one already stored, so a late write does not overwrite a newer
-label.
+When both the stored and incoming source timestamps are known, a snapshot
+update rejects an older model timestamp. Without a usable incoming timestamp,
+the update is accepted and clears the watermark. A missing stored timestamp
+also prevents an ordering comparison.
 
 When stored history changes in a way a client cannot reconcile, Storyfeed
 writes a new `sync_token` to `feed_meta`. Every page carries it. These write

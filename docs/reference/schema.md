@@ -265,7 +265,7 @@ rebuilds them. Model keys are unsigned big integers; UUID keys are not supported
 | `media_type` | text | nullable | The encoding of `content`. |
 | `attributed_to` | text | nullable | The entity's author IRI, from `toFeed()`. |
 | `body` | json | nullable | The entity's bodies, from `toFeed()`. |
-| `source_updated_at` | datetime(6) | nullable | The model's `updated_at` when the snapshot was taken, in UTC. An older model never overwrites a newer snapshot. |
+| `source_updated_at` | datetime(6) | nullable | The model's `updated_at` when the snapshot was taken, in UTC. Older writes are rejected only when both source timestamps are known; an incoming unknown timestamp is accepted and clears this watermark. |
 | `meta` | json | nullable | The model's route key, when it differs from the primary key. |
 
 | Index | Columns |
