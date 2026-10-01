@@ -646,7 +646,9 @@ defineProps<{ activity: Record<string, any> }>()
 
 <template>
     <article>
-        <FeedHeadline :item="activity" />
+        <FeedHeadline :item="activity">
+            {{ activity.actor?.label ?? 'Someone' }} {{ activity.verb }}<template v-if="activity.object"> {{ activity.object.label ?? 'Something' }}</template>
+        </FeedHeadline>
         <time :datetime="activity.published_at">
             {{ new Date(activity.published_at).toLocaleString() }}
         </time>
@@ -702,6 +704,13 @@ const parts = computed(() =>
 
             if (segment === ':count') {
                 return { type: 'text', text: String(props.item.count) }
+            }
+
+            if (segment === ':others' && props.item.sample) {
+                const others = Math.max(0,
+                    (props.item.distinct?.actors ?? 0) - (props.item.sample.actors?.length ?? 0),
+                )
+                return { type: 'text', text: `${others} ${others === 1 ? 'other' : 'others'}` }
             }
 
             if (!segment.startsWith(':') || !roles.includes(role)) {
@@ -777,6 +786,10 @@ const label = computed(() => {
 </template>
 ```
 :::
+
+The headline example handles `:others` as the distinct actor count minus the
+sampled actors. An activity without a headline falls back to actor, verb, and
+object labels. This is an English-only fallback; localize it for your app.
 
 When `next_cursor` is `null`, the button is hidden. If `sync_token` changes,
 `Feed` discards loaded items and retrieves the first page again. Render icons,
