@@ -138,4 +138,4 @@ On a model, implement `Storyfeed\Contracts\HasActivityStreamsType`.
 
 `Storyfeed\Serialization\Reader::activity()` parses a Storyfeed document,
 preserving its `uid`, verb, `type`, roles, and `published_at` to the whole
-second. It discards `summary` and `replies`.
+second. Other document properties are not returned.

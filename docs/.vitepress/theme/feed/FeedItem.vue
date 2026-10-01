@@ -4,7 +4,6 @@ import { computed, toRef } from 'vue';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
 import FeedIcon from './FeedIcon.vue';
-import FeedThread from './FeedThread.vue';
 import { formsIn, resolve } from './body';
 import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
@@ -194,12 +193,7 @@ const slots = computed(() =>
                 text, a document thumbnail. Left empty by default because what
                 belongs here is entirely app-specific.
             -->
-            <FeedThread
-                v-if="item.thread"
-                :thread="item.thread"
-                :actor-label="item.actor?.label"
-            />
-            <slot v-else name="body" :node="item" />
+            <slot name="body" :node="item" />
 
 
             <FeedMediaStrip

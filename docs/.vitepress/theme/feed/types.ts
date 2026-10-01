@@ -63,22 +63,6 @@ export interface FeedImage {
     alt: string | null;
 }
 
-/**
- * The utterance a row is about, and the conversation around it (storyfeed >=
- * c7fbb35, additive). Null on nearly every activity. Every key is present
- * when the object is, so a missing fact reads as null, never as undefined.
- *
- * `kind` is the recording app's own word ('commented', 'replied', 'decided') —
- * a renderer prints it and never switches on it.
- */
-export interface FeedThread {
-    text: string;
-    by: string | null;
-    kind: string | null;
-    replies: number | null;
-    truncated: boolean;
-}
-
 interface BaseNode {
     id: string;
     published_at: string;
@@ -112,7 +96,6 @@ export interface ActivityNode extends BaseNode {
     missing_headline?: string | null;
     data?: Record<string, unknown>;
     /** Activity-scoped passage; group children carry it normally. */
-    thread?: FeedThread | null;
     actor: FeedEntity | null;
     object: FeedEntity | null;
     target: FeedEntity | null;

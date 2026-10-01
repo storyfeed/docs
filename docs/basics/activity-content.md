@@ -4,8 +4,6 @@
 import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
-const withThread = { ...content.note,
-  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
 const withProse = { ...content.ready,
   object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
     content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
@@ -39,43 +37,60 @@ activity's headline.
 
 ## Adding Quoted Text
 
-To record quoted text with an activity, call the `thread` method:
+Use an `Excerpt` body for someone's words or a passage from a document.
+Define the body on the quoted model in `toFeed()`:
 
 ::: code-group
-```php [Fluent Syntax]
-$customer = $request->user();
-$note = $order->notes()->create($request->validated());
+```php [Fluent Syntax] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
 
-Storyfeed::activity()
-    ->by($customer)
-    ->action('post', $note)
-    ->on($order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note')) // [!code highlight]
-    ->publish();
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label('Order note')
+        ->body(Excerpt::make()->text($this->body)->truncated(false));
+}
 ```
 
-```php [Named Arguments]
-$customer = $request->user();
-$note = $order->notes()->create($request->validated());
+```php [Named Arguments] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
 
-Storyfeed::record(
-    verb: 'post',
-    object: $note,
-    actor: $customer,
-    target: $order,
-    thread: FeedThread::make( // [!code highlight]
-        text: $note->body,
-        by: $customer->name,
-        kind: 'note',
-    ),
-);
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: 'Order note',
+        body: Excerpt::make(text: $this->body, truncated: false),
+    );
+}
 ```
 :::
 
-<FeedExample :items="[withThread]" />
+Set `truncated(false)` when the body contains the complete text. Use `from()`
+for attribution when the headline does not already name the source.
+Here is an excerpt rendered below its activity's headline:
 
-Storyfeed stores the text on the activity. Editing the note later does not
-change the recorded text.
+<FeedExample :items="[withExcerpt]" />
+
+Record the note as the activity's object and the order as its target:
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+$note = $order->notes()->create($request->validated());
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('post', $note)
+    ->to($order)
+    ->publish();
+```
+
+The body belongs to the note's shared entity snapshot. Saving the note can
+change the text shown on older activities. To preserve text exactly as it was
+when the event happened, also record it in activity
+[`data`](/basics/recording#adding-activity-data).
 
 <a id="entity-bodies"></a>
 

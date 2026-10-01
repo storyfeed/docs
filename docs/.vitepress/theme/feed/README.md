@@ -11,7 +11,6 @@ seams. Nothing here imports a framework beyond Vue.
 | `FeedStream.vue` | Day headings, list scaffold, load-more |
 | `FeedNode.vue` | **Dispatches on `kind` and nothing else** |
 | `FeedItem.vue` | One activity: avatar/icon gutter, headline, time, body slot |
-| `FeedThread.vue` | Activity-scoped quote and conversation metadata (W44) |
 | `FeedGroup.vue` | One group: avatar stack, aggregate headline, disclosure |
 | `FeedHeadline.vue` | Token substitution — the correctness core |
 | `FeedIcon.vue` | Token → icon component map |
@@ -56,11 +55,8 @@ page is not rebuilt. Pinning also stops the timer from ever starting.
 
 **Bodies.** `<slot name="body" :node>` renders under the headline — a comment's
 text, a document preview. Empty by default because what belongs there is
-entirely app-specific. When an activity carries `thread`, `FeedThread` renders
-instead of the body slot so the same excerpt is not quoted twice. Reply counts
-print from two upward; `kind` is printed without dispatch. The presenter suppresses
-`by` when it matches the row actor: only the presenter knows whether the headline
-above already named them. Group children follow the same rule.
+entirely app-specific. Quoted words use an Excerpt body, rendered through the
+body slot with the other entity body types.
 
 Both slots exist on group nodes too. Fill a group's `body` only when
 `distinct.objects === 1`: with more than one distinct object a preview privileges

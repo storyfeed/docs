@@ -140,7 +140,6 @@ export function activity(over: Record<string, any>) {
     result: over.result ?? null,
     instrument: over.instrument ?? null,
     data: over.data ?? {},
-    thread: over.thread ?? null,
     ...tombstoneFacts(over),
   }
 }

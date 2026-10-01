@@ -12,8 +12,6 @@ const complete = scene.basics.feedFile.completed
 const degraded = { ...scene.order, actor: null,
   object: { ...scene.order.object, label: null, url: null } }
 const content = scene.basics.activityContent
-const withThread = { ...content.note,
-  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
 const withKeyValue = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
     title: content.confirmed.object.label, items: [
@@ -149,7 +147,6 @@ for all methods.
 | icon | `glyph()`, `intent()`, `actor()` | `glyph`, `glyph_intent`, `actor` |
 | headline | `headline()` | `headline_template` or `headline`, the role keys |
 | time | `publishedAt()` | `published_at` |
-| quote | `thread()` | `thread` |
 | media | `object()->media()` | `object.media` |
 | body | `object()->bodies()` | an entity's `body` list |
 | group images | `actors()`, `distinct('actors')` | a group's `sample`, `distinct` |
@@ -381,15 +378,8 @@ separately, use the `phrases` method. It returns feed items with their own
 
 #### Quoted Text
 
-Use the `thread` method to display recorded quoted text in the activity row:
-
-```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
-@if ($thread = $activity->thread())
-    <blockquote>{{ $thread->text }}</blockquote>
-@endif
-```
-
-<FeedExample :items="[withThread]" />
+Render quoted words as an [`Excerpt` body](/basics/activity-content#adding-quoted-text).
+The body dispatcher and Excerpt component below handle its text and attribution.
 
 The `data` method returns values stored with the activity. Choose which values
 to display.

@@ -203,8 +203,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
   "data": {},
-  // optional FeedThread conversation metadata
-  "thread": null,
   // the roles holding a tombstone, in role order
   "tombstoned": [],
   // one of them is a role the verb is about
@@ -228,7 +226,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
 | `data` | map or null | what the recording call passed to `data()` |
-| `thread` | object or null | the utterance the activity is about; see [Threads](#threads) |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
 | `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
@@ -237,17 +234,15 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 A redundant activity still records what happened, but a relevant model has
 been deleted. Your renderer may display the original or missing headline.
 
-### Threads
+<a id="threads"></a>
 
-Set `thread` with `FeedThread` to include something someone said:
+Quoted words belong in an entity's [`Excerpt` body](/basics/activity-content#adding-quoted-text).
+Application-specific discussion content can use a
+[custom body type](/deeper/body#writing-a-body-type).
 
-| Key | Type | Holds |
-|---|---|---|
-| `text` | string | the utterance to show, as recorded; Storyfeed does not shorten it |
-| `by` | string or null | its author, when the headline does not already name them |
-| `kind` | string or null | the app's word for the act, such as `"replied"` |
-| `replies` | int or null | the size of the conversation, or `null` when not counted |
-| `truncated` | boolean | `true` when the app shortened `text` |
+Legacy `data.thread` and `data.$thread` values remain in `data` exactly as
+stored. Core does not upgrade them, promote them to a top-level payload field,
+or serialize them as Activity Streams `replies`.
 
 <span id="group-node"></span>
 

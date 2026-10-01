@@ -41,7 +41,6 @@ by `items()`.
 | `glyph()` | `?string` | `glyph` |
 | `intent()` | `?string` | `glyph_intent` |
 | `data()` | `Fluent` | `data` |
-| `thread()` | `?Fluent` with `text`, `by`, `kind`, `replies`, `truncated` | `thread` |
 | `tombstoned()` | `array` of role names | `tombstoned` |
 | `isRedundant()` | `bool` | `redundant` |
 | `get($key, $default = null)` | any key, with dot notation: `get('object.label')` | any |
