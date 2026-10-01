@@ -48,8 +48,8 @@ Laravel's `URL::route()`.
 
 An unknown name throws `Story [x] not defined.` An object with the wrong morph
 type throws `StoryObjectMismatch`. Both methods require a registered name.
-To publish an unnamed verb, use `Storyfeed::activity()` or an enum's
-`Act::Place->of($order)`.
+To publish an unnamed order-placement verb, use
+`Storyfeed::activity('place', $order)`.
 
 A Story that requires constructor data must still be published with
 `Storyfeed::publish(new OrderWasPlaced(...))`. Naming its declaration does not
