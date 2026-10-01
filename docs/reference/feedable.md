@@ -336,6 +336,60 @@ See [Activity Content](/basics/activity-content#built-in-body-types) for body ty
 
 Payload shape: [entity object](/reference/payload#entity-object).
 
+### Storing Snapshot Data
+
+Use the `data` method in `toFeed` to store values with the snapshot, such as
+an image's media type and dimensions:
+
+<a id="a-complete-model"></a>
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->data([ // [!code highlight]
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ]);
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
+    label: $this->name,
+    data: [ // [!code highlight]
+        'mediaType' => $this->photo_mime,
+        'width' => $this->photo_width,
+        'height' => $this->photo_height,
+    ],
+);
+```
+
+:::
+
+These values are stored when the snapshot is written. A media resolver can
+retrieve them through `$context->data('mediaType')`; a missing key returns `null`.
+
 ### `PendingTombstone`
 
 ```php memo="app/Models/Order.php" at="describeFeed()"
@@ -530,62 +584,8 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 
 ### Modal Links
 
-See [Linking to the Model](/basics/feed-media#linking-to-the-model) for URL,
+See [Linking to the Model](/basics/feed-media#opening-links-in-a-modal) for URL,
 modal, and attribute examples.
-
-### Storing Snapshot Data
-
-Use the `data` method in `toFeed` to store values with the snapshot, such as
-an image's media type and dimensions:
-
-<a id="a-complete-model"></a>
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label($this->name)
-            ->data([ // [!code highlight]
-                'mediaType' => $this->photo_mime,
-                'width' => $this->photo_width,
-                'height' => $this->photo_height,
-            ]);
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
-use Storyfeed\FeedEntity;
-
-return FeedEntity::make(
-    label: $this->name,
-    data: [ // [!code highlight]
-        'mediaType' => $this->photo_mime,
-        'width' => $this->photo_width,
-        'height' => $this->photo_height,
-    ],
-);
-```
-
-:::
-
-These values are stored when the snapshot is written. A media resolver can
-retrieve them through `$context->data('mediaType')`; a missing key returns `null`.
 
 <a id="images"></a>
 

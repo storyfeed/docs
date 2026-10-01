@@ -58,9 +58,15 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 <FeedExample :items="[linked]" />
 
 The photo's name is linked, but no picture appears. The URL may lead to a show
-page or a modal; it is never assumed to be an image source. Modal behaviour and
-supported attributes depend on the renderer. A resolver can also choose a
-[different link for each feed](/basics/named-feeds#linking-each-feed-somewhere-different).
+page or a modal; it is never assumed to be an image source. A resolver can also
+choose a [different link for each feed](/basics/named-feeds#linking-each-feed-somewhere-different).
+
+### Opening Links in a Modal
+
+The `modal()` call above marks the link for modal navigation. Your renderer
+must handle that hint and the supplied attributes; a URL alone does not open
+a modal. Keep the URL usable as a normal destination when modal navigation
+is unavailable.
 
 ## Linking Files
 
@@ -100,6 +106,9 @@ not create a body or display files automatically. Each call appends resources.
 Activity Streams output carries them in its `attachment` property.
 
 ## Showing Pictures
+
+To retain image dimensions or a media type with the entity,
+[store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
 
 A picture appears only when a body names it. Declare an `Image` body in
 `toFeed()`, then supply the named slot from `feedMedia()`:
