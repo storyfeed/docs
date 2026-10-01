@@ -204,9 +204,11 @@ and each emitted hash produces a grouping row. Table sizes depend on your
 roles, axes, entities, and retention policy. `feed_snapshots` grows with
 Feedable entities, including those saved without publishing an activity.
 
-Indexes available to these query shapes are listed below; the database planner
-chooses which to use. This mapping is based on the queries, not a guarantee of
-a particular execution plan. [Schema](/reference/schema) lists every index.
+The table lists indexes available to these query shapes. Plans were checked
+with 50,000 activities on MariaDB 10.11, PostgreSQL 18, and SQLite 3.45;
+MySQL 8.x was not tested. The planner can choose a different index or a scan
+as data distribution and query constraints change.
+[Schema](/reference/schema) lists every index.
 
 | Query | Available Index |
 |---|---|
@@ -218,10 +220,17 @@ a particular execution plan. [Schema](/reference/schema) lists every index.
 | a group's members | `feed_groupings (bucket, hash)` |
 | the solo stream's `repeat` and `composite` checks, per activity | `feed_groupings unique (activity_id, bucket)` |
 
-Two indexes serve work other than reads. Publishing finds an actor's open
+Two indexes serve work other than feed retrieval. Publishing finds an actor's open
 batches through the `feed_batch_locks` primary key, `(actor_type, actor_id)`.
-The `aggregates` check in `storyfeed:doctor` reads
+The `aggregates` check in `storyfeed:doctor` uses
 `feed_groupings (winner, bucket, hash)`.
+
+The solo stream's winner check can scan much of the stored history even when
+it returns no items. In the measured fixture, it dominated `live()` retrieval
+cost on MariaDB and PostgreSQL. Composite checks also varied: some plans used
+`(bucket, hash)` instead of the unique `(activity_id, bucket)` index. Treat the
+table as available access paths, not a promise that every listed index is
+chosen for every request.
 
 [Retention](/deeper/retention) removes old activities with their grouping
 and participant rows.
