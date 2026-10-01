@@ -376,7 +376,7 @@ Indexes each activity's filled roles for `involving()` and
 | `role` | string(20) |  | Which role the entity fills: `actor`, `object`, `target`, `context`, `origin`, `result` or `instrument`. |
 | `entity_type` | string(255) |  | The entity's morph alias. |
 | `entity_id` | string(255) |  | The entity's key, as a string. |
-| `published_at` | timestamp(6) | nullable | Copied from the activity, so `involving()` sorts from this table's index. |
+| `published_at` | timestamp(6) | nullable | Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
 

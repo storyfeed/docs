@@ -80,7 +80,7 @@ Each copy lets a read use one index instead of computing something per row.
 | `feed_groupings.hash` | computing group keys over history; a group is every row sharing `(bucket, hash)` |
 | `feed_groupings.winner` | deciding each activity's group on every read |
 | `feed_participants` | an `OR` across seven morph pairs, which no index can serve |
-| `feed_participants.published_at` | joining `feed_activities` to sort an `involving()` read |
+| `feed_participants.published_at` | carries activity time in the entity index; `involving()` selects matching activity IDs here, while the outer activity query orders the results |
 
 ## Reading a Page
 
