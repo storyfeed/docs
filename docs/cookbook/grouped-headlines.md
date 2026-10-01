@@ -1,18 +1,43 @@
 # Headlines for Grouped Activities
 
-Grouped activities need a headline that describes every member. See
-[Aggregation](/deeper/aggregation#defining-group-headlines) for the syntax and
-allowed tokens.
+An order can be placed more than once. A headline that calls every placement
+an order overstates how many orders there are. Keep the events, and choose
+wording that counts what actually happened.
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
-const [burst] = liveOf(scene.cookbook.grouped.repeat)
+import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
+const placements = logOf(scene.cookbook.transitions.timeline.filter(row => row.verb === 'place'))
+const grouped = liveOf(placements, {
+  ...VERBS,
+  place: { ...VERBS.place, object: ':actor placed :object :count times',
+    repeat: ':actor made :count order placements with :target' },
+})
 </script>
 
-## Writing a Group Headline
+<a id="writing-a-group-headline"></a>
 
-A customer's orders with one shop can form a group. Define its headline
-beside the single-activity headline:
+## Counting Placements of the Same Order
+
+Suppose a customer places an order, then places it again after an amendment.
+[Keep both occurrences](/cookbook/repeating-activities#keeping-every-occurrence)
+so the feed can explain what happened. These are two `place` activities about
+one order:
+
+<FeedExample :items="placements" />
+
+| What Is Counted | Value |
+|---|---|
+| placement activities (`count`) | 2 |
+| distinct orders (`distinct.objects`) | 1 |
+
+`:count` counts activities. It cannot turn the two placements into a distinct
+order count. In this case, “placed 2 orders” would be wrong.
+
+## Wording the Group Headline
+
+Both placements share an actor, verb, object and day, so the default `object`
+axis groups them. Name the shared order and count how many times it was placed.
+For a `repeat` group across orders, call the events “order placements”:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
@@ -22,44 +47,41 @@ use Storyfeed\Grouping\GroupBuilder;
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
     ->grouped(
-        fn (GroupBuilder $group) => $group
-            ->repeat(':actor placed :count orders with :target'),
+        fn (GroupBuilder $group): GroupBuilder => $group
+            ->object(':actor placed :object :count times')
+            ->repeat(':actor made :count order placements with :target'),
     );
 ```
 
-Three orders from one customer at the same shop, a minute apart, in live mode:
+The same two activities now have a headline that describes their group:
 
-<FeedExample :items="[burst]" />
+<FeedExample :items="grouped" />
 
 <span id="choosing-group-headline-keys"></span>
 <span id="choosing-headline-keys"></span>
+<a id="choosing-where-to-declare-a-group-headline"></a>
+<a id="single-type-groups"></a>
+<a id="mixed-type-groups"></a>
 
-## Choosing Where to Declare a Group Headline
-
-An axis defines what a group has in common. The table lists these shared
-values and where to declare each headline. The default
-[grouping period](/deeper/grouping-periods) is one day.
-
-| Shared Values | Axis | Headline | Declared On |
-|---|---|---|---|
-| one actor, verb, target and object type, on one day | `repeat` | `:actor placed :count orders with :target` | the type |
-| one verb and target on one day, from several actors | `actors` | `:actors ordered from :target` | the verb |
-| one actor, verb and object, on one day | `object` | `:actor changed the price of :object :count times` | the type |
-| one actor and verb on one day, across several targets | `targets` | `:actor asked :count questions about :targets` | the verb |
-
-### Single-Type Groups
-
-A headline declared on the type can say "orders" because every member is an order.
-
-### Mixed-Type Groups
-
-A headline declared on the verb may describe several object types, so avoid
-naming a particular type.
-
-`:count` counts activities, not distinct objects. If an order can be placed
-twice, use "placements" to avoid overstating the number of orders.
+For the declaration table, type and verb scope, and allowed tokens, see
+[Defining Group Headlines](/deeper/aggregation#defining-group-headlines).
 
 ## Keeping Individual Content Visible
 
-Quotes and images belong to the activities within a group. To display every
-comment, retrieve the feed with `log()`, which returns activities separately.
+A group headline describes the events together; it does not replace their
+individual content. Quotes, images and other bodies remain on the member
+activities. To show every placement as its own row, retrieve the order's
+placements in log mode:
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+$placements = Storyfeed::feed()
+    ->involving($order)
+    ->only(['place'])
+    ->log()
+    ->get();
+```
+
+That returns the separate rows shown above. Keep their bodies beside their
+individual headlines instead of folding them into the group sentence.

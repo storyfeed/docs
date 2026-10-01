@@ -156,6 +156,22 @@ Where you declare it determines which groups use it.
 
 Storyfeed tries the key with the group's type first, then the key without it.
 
+Choose the declaration location from the axis's shared values. The default
+[grouping period](/deeper/grouping-periods) is one day.
+
+| Shared Values | Axis | Headline | Declared On |
+|---|---|---|---|
+| one actor, verb, target and object type, on one day | `repeat` | `:actor made :count order placements with :target` | the type |
+| one verb and target on one day, from several actors | `actors` | `:actors ordered from :target` | the verb |
+| one actor, verb and object, on one day | `object` | `:actor changed the price of :object :count times` | the type |
+| one actor and verb on one day, across several targets | `targets` | `:actor asked :count questions about :targets` | the verb |
+
+A type-level headline may name that type because every member shares it.
+A verb-level headline may describe several object types, so avoid naming a
+particular type. `:count` counts activities, not distinct objects; see
+[the repeated-order example](/cookbook/grouped-headlines#counting-placements-of-the-same-order)
+for wording that keeps this distinction visible.
+
 <a id="plural-tokens"></a>
 
 ### Singular and Plural Tokens
