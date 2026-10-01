@@ -198,7 +198,7 @@ removing or changing an alias leaves affected roles unresolved.
 | `id` | bigint, increments | PK | Primary key. |
 | `uid` | ulid | unique | The activity's public identifier, the payload's `id`. |
 | `verb` | string(255) | index | The verb, as a plain string. |
-| `actor_type` | string(255) | nullable | The actor's morph alias. Null when the actor is unknown. |
+| `actor_type` | string(255) | nullable | The actor's morph alias. Null when no actor is recorded. |
 | `actor_id` | unsigned bigint | nullable | The actor's key. |
 | `object_type` | string(255) | nullable | The object's morph alias. |
 | `object_id` | unsigned bigint | nullable | The object's key. |

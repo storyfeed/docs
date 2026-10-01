@@ -3,9 +3,9 @@
 ## Introduction
 
 Storyfeed stores each activity once, in `feed_activities`, and writes
-everything a feed needs to read it fast at the moment it is published:
+the supporting rows used to retrieve it efficiently at publication:
 the entities' labels, the groups the activity can join, and an index of
-who and what it involves. Reading a feed is then a query over those rows.
+who and what it involves. Retrieving a feed queries those rows.
 Storyfeed does not use Laravel's cache for feed data.
 
 This page follows one publish into the database and one page of the feed
@@ -51,7 +51,7 @@ innermost step stores the activity in one database transaction:
 4. **Participants.** One `feed_participants` row per filled role, with
    `published_at` copied from the activity.
 5. **Curation.** For each group the activity joined, Storyfeed decides which
-   one it reads under in `live()` and sets `winner` on that row.
+   one it appears under in `live()` and sets `winner` on that row.
 
 Storyfeed then dispatches `ActivityPublished`, after the outermost transaction
 commits. On the way back out of the middleware, the `batch` middleware adds
@@ -76,25 +76,27 @@ no `summary.*` rows and joins no batch.
 
 ### Denormalized Columns
 
-Each copy lets a read use one index instead of computing something per row.
+These copies avoid repeated lookups and computations during retrieval.
 
-| Copy | What it saves the read |
+| Copy | Purpose during retrieval |
 |---|---|
 | `cached_{role}_id` | resolving labels from your models; one `whereIn` per role on `feed_snapshots` |
 | `feed_groupings.hash` | computing group keys over history; a group is every row sharing `(bucket, hash)` |
-| `feed_groupings.winner` | deciding each activity's group on every read |
+| `feed_groupings.winner` | deciding each activity's group on every retrieval |
 | `feed_participants` | one entity lookup instead of an `OR` across role pairs; individual role indexes can serve OR branches, but the plan and ordering cost depend on the database planner |
 | `feed_participants.published_at` | carries activity time in the entity index; `involving()` selects matching activity IDs here, while the outer activity query orders the results |
 
-## Reading a Page
+<a id="reading-a-page"></a>
 
-```php memo="A controller, or wherever the feed is read"
+## Retrieving a Page
+
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->get();
 ```
 
-Grouping is decided when activities are written. The read selects groups
+Grouping is decided when activities are written. Retrieval selects groups
 that already exist. A page of a `live()` feed takes two phases.
 
 **Phase one selects the page.** Two logical streams return feed items,
@@ -137,9 +139,11 @@ Curation checks the axes in order: `actors` (3 different actors by default),
 `targets`, `object`, then `repeat` when none qualifies. The thresholds are
 in [Aggregation](/deeper/aggregation#thresholds).
 
-### Read Modes
+<a id="read-modes"></a>
 
-| Mode | Reads |
+### Feed Modes
+
+| Mode | Retrieves |
 |---|---|
 | `live()` | the `winner` grouping row of each activity, or `repeat` when none is stamped |
 | `summary()` | the `summary.{period}` row: one group per actor per period |
@@ -200,9 +204,11 @@ and each emitted hash produces a grouping row. Table sizes depend on your
 roles, axes, entities, and retention policy. `feed_snapshots` grows with
 Feedable entities, including those saved without publishing an activity.
 
-The indexes each read uses (every index is listed in [Schema](/reference/schema)):
+Indexes available to these query shapes are listed below; the database planner
+chooses which to use. This mapping is based on the queries, not a guarantee of
+a particular execution plan. [Schema](/reference/schema) lists every index.
 
-| Read | Index |
+| Query | Available Index |
 |---|---|
 | `log()`, and the solo stream | `feed_activities (published_at, id)` |
 | `->actor()`, `->object()`, `->target()`, `->context()` | `feed_activities ({role}_type, {role}_id, published_at, id)` |
@@ -228,10 +234,9 @@ feed asks next are the ones a single table cannot answer from an index:
 | Question | One table | Storyfeed |
 |---|---|---|
 | "What should this row say?" | load each model, per row | the snapshot, eager-loaded |
-| "Placed 4 orders" | group by expressions over history, on every read | rows already share a `hash` |
-| "Which group does this activity belong to?" | decided on every read | decided once, at publish |
+| "Placed 4 orders" | group by expressions over history, on every retrieval | rows already share a `hash` |
+| "Which group does this activity belong to?" | decided on every retrieval | decided once, at publish |
 | "Everything involving this order" | `OR` across every role column | one indexed lookup |
 | "The order was deleted" | the label is gone | a tombstone keeps the story readable |
 
-The extra rows are written once, when the activity is published. Every read
-after that uses them.
+The extra rows are written once, when the activity is published. Subsequent retrieval uses them.

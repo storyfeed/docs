@@ -3,7 +3,7 @@
     "id": "Primary key.",
     "uid": "The activity's public identifier, the payload's `id`.",
     "verb": "The verb, as a plain string.",
-    "actor_type": "The actor's morph alias. Null when the actor is unknown.",
+    "actor_type": "The actor's morph alias. Null when no actor is recorded.",
     "actor_id": "The actor's key.",
     "object_type": "The object's morph alias.",
     "object_id": "The object's key.",
