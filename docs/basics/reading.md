@@ -158,8 +158,10 @@ You may also filter by a specific role:
 | `->actor($customer)` | activities performed by the customer |
 | `->object($order)` / `->target($shop)` | activities matching the specified role |
 
-Activities must match all applied filters. Group counts include only matching
-activities.
+Constraints on different roles combine, and group counts include only matching
+activities. Calling the same role setter again replaces its previous value on
+a plain builder. A role locked by a feed class cannot be rebound; additional
+filters preserve that outer scope.
 
 > [!NOTE]
 > **The difference between involving and context**
@@ -191,7 +193,8 @@ Storyfeed::feed()->except(['note'])->get();
 | `re*` | matches verbs starting with `re` |
 | an unrecognised verb | matches no activities unless that verb has been recorded; does not throw |
 | `only([])` or `except([])` | throws an exception |
-| repeated calls | activities must match every filter |
+| repeated `only()` / `except()` calls | activities must match every accumulated filter |
+| repeated `verb()` calls | the last value replaces the previous verb |
 
 Groups include only activities whose verbs match the filter.
 
