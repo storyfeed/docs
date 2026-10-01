@@ -264,6 +264,7 @@ export default defineConfig({
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
+          { text: 'How Storyfeed Stores Your Feed', link: '/reference/storage' },
           { text: 'Compatibility', link: '/reference/compatibility' },
           { text: 'Glossary', link: '/reference/glossary' },
         ],
