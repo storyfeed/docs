@@ -304,6 +304,11 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 Stores an actor's activities as batches, open until the configured window
 has elapsed.
 
+The `meta` column holds application metadata. Storyfeed has no dedicated
+batch-metadata setter; an application that needs it can load the configured
+batch Eloquent model and update its `meta` array directly. The model casts the
+column to an array.
+
 <!-- schema:feed_batches -->
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
@@ -393,6 +398,12 @@ Indexes each activity's filled roles for `involving()` and
 Stores a tombstone for each deleted model, referenced by its activities.
 The alias is always `storyfeed.tombstone`, regardless of the morph map.
 See [Deleted Models](/deeper/deleted-models).
+
+The `meta` column holds application metadata. Neither the public tombstone
+entry point nor `PendingTombstone` provides a metadata setter. Applications
+can update `meta` directly on the configured tombstone Eloquent model, which
+casts the column to an array. This is an application-owned model write, not
+an option on the deletion declaration.
 
 <!-- schema:feed_tombstones -->
 | Column | Type | Attributes | Purpose |
