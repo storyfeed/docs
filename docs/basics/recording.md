@@ -103,12 +103,15 @@ Storyfeed::record(
 
 <FeedExample :items="[scene.order]" />
 
-If you do not call the `by` method, Storyfeed will record the currently
-authenticated user as the actor.
+With the default configuration and no scoped or verb-specific actor, omitting
+`by` records the authenticated user, or no actor when nobody is signed in.
+Scopes, carried job identity, verb actors, custom resolvers, and a configured
+fallback party can change that selection. See
+[Role Precedence](/deeper/activity-scopes#role-precedence).
 
-If no user is signed in and you do not call `by`, the activity has no actor.
-An activity with no recorded actor is an [anonymous activity](/deeper/parties#recording-anonymous-activities):
-who performed it is not known.
+Use `by(null)` to bypass default actor selection explicitly. An
+[anonymous activity](/deeper/parties#recording-anonymous-activities) has no
+recorded actor.
 
 ## Adding Activity Data
 
