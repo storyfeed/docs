@@ -471,7 +471,7 @@ body fields that accept it.
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
-| `ItemList` | named items with optional links | `title`, `defaultPlaceholder`, `items[]`, `ordered`, `totalItems`, `more` |
+| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
 | `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
 | `Component` | a custom component name and props | `name`, `props` |
 
