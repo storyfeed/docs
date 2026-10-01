@@ -84,7 +84,7 @@ class OrderPlaced extends Story
 
     public function toFeedActivity(): ?PendingActivity
     {
-        return $this->activity()->data([
+        return $this->activity($this->order)->data([
             'channel' => $this->order->channel,
             'promised_at' => $this->order->promised_at,
         ]);
@@ -104,6 +104,17 @@ class OrderPlaced extends Story
     }
 }
 ```
+
+Bind the class to the order's verb before publishing it:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderPlaced;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', OrderPlaced::class);
+```
+
 
 Like a verb's headline, casts are read when stories compile, and
 `storyfeed:cache` caches them. A cast is a string or a class name, never a
