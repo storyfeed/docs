@@ -450,6 +450,7 @@ resource registrations. To share middleware or role constraints, wrap it in a
 
 ```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
 use Illuminate\Http\Request;
+use Storyfeed\Stories\Verb;
 
 public function confirmPayment(Verb $verb, Request $request): Verb
 {
@@ -485,9 +486,14 @@ The verb's actor applies when no actor is assigned explicitly or through a
 `Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
 headlines, icons, intents, grouping, and other settings must remain consistent.
 A request-dependent headline throws an exception when `grammar.strict` is
-enabled, as it is by default in local and testing environments. Dispatched
-jobs retain the selected actor; see
-[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#request-based-actors).
+enabled, as it is by default in local and testing environments.
+
+#### Carrying Request-Based Actors Into Jobs
+
+Jobs dispatched during a request carry the actor selected by the request-based
+verb actor. The worker retains that selection without needing the original
+HTTP request. For callback and request scopes, see
+[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
 
 <a id="generating-from-doctor-findings"></a>
 

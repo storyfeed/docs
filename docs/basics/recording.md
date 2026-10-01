@@ -107,7 +107,7 @@ With the default configuration and no scoped or verb-specific actor, omitting
 `by` records the authenticated user, or no actor when nobody is signed in.
 Scopes, carried job identity, verb actors, custom resolvers, and a configured
 fallback party can change that selection. See
-[Role Precedence](/deeper/activity-scopes#role-precedence).
+[Role Precedence](/deeper/story-middleware-and-batching#resolving-role-precedence).
 
 Use `by(null)` to bypass default actor selection explicitly. An
 [anonymous activity](/deeper/parties#recording-anonymous-activities) has no
