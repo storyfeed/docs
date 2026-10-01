@@ -188,8 +188,12 @@ activity IDs.
 | `entities.unresolvable` | error | the alias resolves to no class: no morph map entry, and no class by that name |
 | `entities.not_model` | error | the alias resolves to a class that is not an Eloquent model |
 | `entities.unfeedable` | error | the alias resolves to a model without `Feedable`. Implement `Feedable`, then run `storyfeed:trickle` |
-| `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Checked on the 50 most recent affected activities per role and alias. `storyfeed:trickle --prune` removes the activities |
+| `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Checked on the 50 most recent affected activities per role and alias. `storyfeed:trickle` first attempts to tombstone missing entities and repoint their activities. `--prune` removes activities only when roles remain unresolved afterward |
 | `entities.opaque` | info | the model's table could not be queried |
+
+Tombstone discovery checks without global scopes, so a live row hidden by a
+scope is not treated as deleted. Explicit `forgetWhenMissing` rules are a
+separate deletion policy; see [Deleted Models](/deeper/deleted-models).
 
 Affected entities display without labels or links. Existing entities whose
 labels are not cached yet are reported by `backlog`.
