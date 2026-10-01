@@ -93,14 +93,17 @@ Storyfeed::feed()->get();
 Grouping is decided when activities are written. The read selects groups
 that already exist. A page of a `live()` feed takes two phases.
 
-**Phase one selects the page.** Two queries return feed items, newest
-first:
+**Phase one selects the page.** Two logical streams return feed items,
+newest first; they can require more than two SQL queries:
 
 - The **group stream** joins each published activity to its winning
   `feed_groupings` row and groups by `(bucket, hash)`. Each group's latest
   `published_at` places it in the feed. Storyfeed runs this aggregate over
-  the newest `16 × limit` activities first, then `256 × limit`, and over the
-  whole history only when a window yields less than a page.
+  the newest `16 × limit` activities first, then `256 × limit`, and finally
+  the whole eligible history. Each bounded attempt probes a window floor and
+  runs the aggregate. It stops widening when it finds more than `limit`
+  candidates (the `limit + 1` lookahead), or reaches an unbounded attempt.
+  A windowed result also recounts its selected groups across eligible history.
 - The **solo stream** returns activities that have no winning grouping row.
 
 Storyfeed merges the two, takes `limit` items (30 by default), and encodes
