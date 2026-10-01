@@ -28,7 +28,7 @@ its top bar. It replaced coral `#EE876B` on 2026-09-28.
 | `avatar-transparent.svg`, `avatar-transparent-{512,1000}.png` | transparent light-surface avatar, no dark tile; PNGs for GitHub |
 | `storyfeed-motion-{light,dark}.svg` | the advancing carousel, 4s cadence |
 | `storyfeed-readme.{svg,png}` | 1200×320 repository banner |
-| `storyfeed-social.{html,png}` | 1200×627 share card (PNG at 2×), deployed as `og-image.png` on both sites: the mark and name over a faded feed of real Storyfeed milestones (GPUG unveiling, releases, the first commit). Re-render the HTML at 1200×627, device scale 2, and bump the `?v=` on both sites |
+| `storyfeed-social.{html,png}` | 1200×627 share card (PNG at 2×), deployed on both sites as `og-image.jpg`, rendered at exactly 1200×627, JPEG quality 90 (~60 KB): LinkedIn kept only a 160px copy of the 422 KB 2× PNG and showed it blurred: the mark and name over a faded feed of real Storyfeed milestones (GPUG unveiling, releases, the first commit). Re-render the HTML at 1200×627, device scale 2, and bump the `?v=` on both sites |
 
 `docs/public/` carries the deployed copies: `logo-light.svg`, `logo-dark.svg`,
 `favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`. The favicon
