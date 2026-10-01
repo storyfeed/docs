@@ -166,3 +166,7 @@ static::feedMediaUsing(
 The actor badge may show the icon without an Image body. This is the exception
 to body-driven pictures: avatars identify participants in the headline.
 See the [Feedable API](/reference/feedable#feedmedia) for the complete method list.
+
+For bodies built from current model values, see
+[Resolving Bodies When Retrieved](/deeper/resolving-bodies). Link and image
+resolvers can share the same `FeedMedia` with those bodies.

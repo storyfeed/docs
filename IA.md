@@ -434,7 +434,8 @@ How stored activities become the rows a feed shows, grouping first.
 - ✅ Grouping Periods — the calendar boundary a verb groups within
 - ✅ Keeping the Latest Activity — `keepLatest()`: a new activity replaces earlier matching ones when stored
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
-- ✅ Custom Body Types (`deeper/body`) — what Activity Content doesn't cover: resolving bodies at read time, custom components, writing body types, versions
+- ✅ Resolving Bodies When Retrieved (`deeper/resolving-bodies`) — current values, deferred construction, snapshot data and batched hydration; Feed Media owns links and picture slots
+- ✅ Custom Body Types (`deeper/body`) — custom components, writing body types, versions; Activity Content owns ordinary attachment
 - ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 

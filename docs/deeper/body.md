@@ -6,188 +6,8 @@ import { scene, role } from '../.vitepress/theme/world'
 
 ## Introduction
 
-You may build a body when the feed is retrieved, use a frontend component,
-or define your own body type.
-
-<a id="defining-a-body"></a>
-<a id="defining-bodies"></a>
-<a id="text-and-excerpts"></a>
-<a id="labelled-values"></a>
-<a id="values-that-are-missing"></a>
-<a id="missing-values"></a>
-<a id="existing-body-types"></a>
-<a id="available-body-types"></a>
-
-See [Activity Content](/basics/activity-content#built-in-body-types) for
-built-in body types and adding bodies in `toFeed()`.
-
-## Attaching Bodies to Entities
-
-<a id="bodies-by-role"></a>
-<a id="multiple-bodies"></a>
-
-Entities in any role can have bodies. Your frontend chooses which to display.
-Each `body()` call appends a body in the order given:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\KeyValue;
-use Storyfeed\Body\Prose;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label($this->name)
-            ->body(Prose::make($this->description))
-            ->body(KeyValue::make()->items('Station', $this->station));
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\KeyValue;
-use Storyfeed\Body\Prose;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-use Storyfeed\FeedEntity;
-
-class MenuItem extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: $this->name,
-            body: [
-                Prose::make($this->description),
-                KeyValue::make(items: ['Station' => $this->station]),
-            ],
-        );
-    }
-}
-```
-
-:::
-
-When `toFeed()` and `feedMedia()` both return bodies, the item includes both,
-with stored bodies first. Your renderer controls the layout.
-
-<a id="resolving-a-body-when-the-feed-is-read"></a>
-
-## Resolving Bodies When Retrieved {#resolving-bodies-at-read-time}
-
-Return a body from `feedMedia()` to use the model's current values:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php"
-use Storyfeed\Body\KeyValue;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-public static function feedMedia(FeedContext $context): ?FeedMedia
-{
-    return FeedMedia::make()
-        ->url(route('menu.show', $context->routeKey()))
-        ->body(
-            KeyValue::make()
-                ->items('Portions left', $context->model()?->portions_left),
-        );
-}
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php"
-use Storyfeed\Body\KeyValue;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedMedia;
-
-public static function feedMedia(FeedContext $context): ?FeedMedia
-{
-    return FeedMedia::make(
-        url: route('menu.show', $context->routeKey()),
-        body: KeyValue::make(
-            items: ['Portions left' => $context->model()?->portions_left],
-        ),
-    );
-}
-```
-
-:::
-
-Stored and resolved bodies share the same payload shape.
-
-<a id="stored-and-resolved-bodies"></a>
-
-### Stored and Resolved Values
-
-Choose when a value is decided:
-
-| Method | When It Runs | Value |
-|---|---|---|
-| `->data(…)` on the activity | when the activity is published | frozen at publication |
-| `->body(…)` on `FeedEntity` in `toFeed()` | whenever the model is saved | stored and updated with the model |
-| `->body(…)` on `FeedMedia` in `feedMedia()` | whenever the feed is retrieved | built from current values and never stored |
-
-See [Computed Values in the Feed](/cookbook/computed-values) for publication-time facts and counts computed on retrieval.
-
-<a id="deferring-the-work"></a>
-
-### Deferred Resolution
-
-The resolver runs whenever the feed is retrieved. Pass a closure to defer
-building the body until the payload needs it:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/MenuItem.php" at="feedMedia()"
-->body(
-    fn () => KeyValue::make()
-        ->items('Portions left', $context->model()?->portions_left),
-)
-```
-
-```php [Named Arguments] memo="app/Models/MenuItem.php" at="feedMedia()"
-body: fn () => KeyValue::make(
-    items: ['Portions left' => $context->model()?->portions_left],
-),
-```
-
-:::
-
-Loading models takes one query per model class on the page. If the resolver
-throws, Storyfeed reports the error once per class and omits that body. The
-activity keeps its label, link, and other bodies. Use a closure when the body
-needs current model data; bodies built from the snapshot can be passed directly.
-
-<a id="data-available-to-resolvers"></a>
-
-### Resolver Data
-
-The resolver runs for every entity on the page. Use `$context->data()` for
-the snapshot or `$context->model()` for the current model. The latter loads
-all models of that class on the page together. Pass relations to
-`$context->model(with: […])` to load them together too. A query such as
-`$dish->orders()->count()` runs once per entity, so use a counter column on
-the model to avoid repeated queries.
+Use a custom component to render application-specific props, or define a
+versioned body type when you need to upgrade its stored payload over time.
 
 <a id="drawing-your-own-component"></a>
 
@@ -272,7 +92,7 @@ The props are plain values: a title, a list of steps, the current step's label,
 and a formatted pickup time. They are stored with the body and reflect the
 values when the body was built. To display current progress whenever the
 feed is retrieved, build the body in
-[`feedMedia()`](#resolving-bodies-at-read-time), as shown above.
+[`feedMedia()`](/deeper/resolving-bodies#using-current-values).
 
 ### Rendering the Component
 
@@ -426,3 +246,46 @@ displaying them. This also applies to a `FeedThread` used as a body.
 
 ::: headless
 :::
+
+<a id="defining-a-body"></a>
+<a id="defining-bodies"></a>
+<a id="text-and-excerpts"></a>
+<a id="labelled-values"></a>
+<a id="values-that-are-missing"></a>
+<a id="missing-values"></a>
+<a id="existing-body-types"></a>
+<a id="available-body-types"></a>
+
+For built-in bodies and ordinary attachment, see
+[Activity Content](/basics/activity-content#adding-entity-bodies).
+
+<a id="attaching-bodies-to-entities"></a>
+<a id="bodies-by-role"></a>
+<a id="multiple-bodies"></a>
+
+See [Adding Multiple Bodies](/basics/activity-content#adding-multiple-bodies)
+for appending bodies to an entity in any role.
+
+<a id="resolving-a-body-when-the-feed-is-read"></a>
+<a id="resolving-bodies-at-read-time"></a>
+
+See [Using Current Values](/deeper/resolving-bodies#using-current-values) to
+build a body when the feed is retrieved.
+
+<a id="stored-and-resolved-bodies"></a>
+<a id="stored-and-resolved-values"></a>
+
+See [Choosing Stored or Current Values](/deeper/resolving-bodies#choosing-stored-or-current-values)
+for publication-time data, snapshots, and resolved bodies.
+
+<a id="deferring-the-work"></a>
+<a id="deferred-resolution"></a>
+
+See [Deferring Body Construction](/deeper/resolving-bodies#deferring-body-construction)
+to build a body only when the payload needs it.
+
+<a id="data-available-to-resolvers"></a>
+<a id="resolver-data"></a>
+
+See [Accessing Resolver Data](/deeper/resolving-bodies#accessing-resolver-data)
+for snapshots and batched model loading.

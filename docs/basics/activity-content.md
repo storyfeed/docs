@@ -411,6 +411,73 @@ A list can also preserve a short arrangement of items:
 
 <FeedExample :items="[content.alphabet]" />
 
+### Adding Multiple Bodies
+
+<a id="bodies-by-role"></a>
+<a id="multiple-bodies"></a>
+
+Entities in any role can have bodies. Your frontend chooses which to display.
+Each `body()` call appends a body in the order given:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->body(Prose::make($this->description))
+            ->body(KeyValue::make()->items('Station', $this->station));
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            body: [
+                Prose::make($this->description),
+                KeyValue::make(items: ['Station' => $this->station]),
+            ],
+        );
+    }
+}
+```
+
+:::
+
 ### Linking a Title
 
 Use `MediaObject` for a notice with a title and a short description. Pass a
@@ -524,5 +591,6 @@ its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
 Your renderer uses these fields to display the body. Passing a string as a body
 creates a `Prose` body.
 
-See [Custom Body Types](/deeper/body) to resolve bodies when retrieving the feed,
-render custom components, or define your own body types.
+See [Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current
+and deferred values, or [Custom Body Types](/deeper/body) to render custom
+components and define your own body types.

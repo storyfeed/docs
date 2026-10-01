@@ -221,6 +221,7 @@ export default defineConfig({
           { text: 'Grouping Periods', link: '/deeper/grouping-periods' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
+          { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies' },
           { text: 'Custom Body Types', link: '/deeper/body' },
           { text: 'Localization', link: '/deeper/localization' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
