@@ -183,6 +183,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Upgrade Guide', link: '/guide/upgrading' },
+          { text: 'Moving to the Feed File', link: '/guide/moving-to-the-feed-file' },
           { text: 'Quickstart', link: '/guide/quickstart' },
           { text: 'What You Can Build', link: '/guide/usage-examples' },
         ],

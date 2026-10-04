@@ -1,5 +1,8 @@
 # Upgrade Guide
 
+For apps declaring headlines in provider registries, see
+[Moving to the Feed File](/guide/moving-to-the-feed-file).
+
 ## Upgrading to 0.12.0
 
 ### Stored Discussion Data
