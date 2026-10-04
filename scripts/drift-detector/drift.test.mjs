@@ -96,10 +96,15 @@ test('filesystem scan excludes generated trees and symlinks', () => {
   } finally { rmSync(tmp,{recursive:true,force:true}); }
 });
 test('missing is informational, prioritizes Unreleased, and excludes removed classes', () => {
-  const r = scan('');
+  // Pin the changelog evidence: a release can remove today's Unreleased
+  // section without changing the detector's prioritization contract.
+  const r = scan('', { ...api, changelog: '- Added `FeedContext`.\n' });
   assert.equal(r.stale.length, 0); assert.equal(r.missing[0].source, 'Unreleased');
-  assert.ok(r.missing.some(s => s.identifier === 'Storyfeed\\FeedContext'));
+  assert.equal(r.missing.find(s => s.identifier === 'Storyfeed\\FeedContext').source, 'Unreleased');
   assert.ok(!r.missing.some(s => s.identifier === 'Storyfeed\\Support\\Noun'));
+  const released = scan('', { ...api, changelog: '' });
+  assert.ok(released.missing.every(s => s.source === 'public class backstop'));
+  assert.ok(released.missing.some(s => s.identifier === 'Storyfeed\\FeedContext'));
 });
 test('CLI exits 1 on stale, 0 on only missing/unresolved, 2 on operational errors', () => {
   const tmp = mkdtempSync(resolve(tmpdir(), 'drift-cli-'));
