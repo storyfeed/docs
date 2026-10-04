@@ -206,7 +206,7 @@ class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
 }
 ```
 
-The `Storyfeed::publish` method now queues the Story. Use the `Queueable`
+The `Storyfeed::publish` method queues a Story that implements `ShouldQueue`. Use the `Queueable`
 trait's methods to select the connection and queue:
 
 ```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"

@@ -28,7 +28,7 @@ Story::for(Order::class)
     ]); // [!code highlight]
 ```
 
-A headline closure's `get` method now returns the cast value:
+A headline closure's `get` method returns the cast value:
 
 ```php memo="routes/feed.php"
 use App\Enums\Channel;

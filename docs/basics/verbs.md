@@ -85,7 +85,7 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-You may now publish from the enum case. The `record` method on the `Storyfeed`
+You may publish from the enum case. The `record` method on the `Storyfeed`
 facade also accepts an enum case as its `verb` argument, without requiring the
 trait:
 

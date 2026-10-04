@@ -83,9 +83,7 @@ produces a `verbs.dead` finding for each unused verb.
 Register custom verbs as strings or in an enum implementing `FeedVerb`.
 
 Domain actions such as `reply`, `settle`, `deliver`, `approve`, and `sign` are
-application-owned verbs. Register their Activity Streams types explicitly;
-stored verb strings are unchanged when upgrading from the removed enum cases.
-
+application-owned verbs. Register their Activity Streams types explicitly.
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;
