@@ -215,7 +215,7 @@ final class Attachment implements FeedBody
 
 ### Type Names
 
-Return a PascalCase `Vocabulary/Type` name from `bodyType()`, such as
+Return a PascalCase body type name from `bodyType()`, such as
 `Storyfeed/Body/MediaObject` or `Acme/Attachment`. Renderers match it exactly.
 Stored bodies keep this name even if you move the PHP class.
 
