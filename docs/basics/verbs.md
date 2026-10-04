@@ -9,8 +9,12 @@ const confirmed = scene.basics.activityContent.confirmed
 
 ## Introduction
 
-A verb identifies the action recorded by an activity. You may use a string or
-an enum case.
+A verb is the action alone, in base form, such as `place` or `email`. The
+activity stores its object type separately, so a verb never repeats it; use a
+[story name](/deeper/named-stories) when you want a dotted lookup like
+`order.place`.
+
+You may use a string or an enum case.
 
 <a id="using-strings"></a>
 
