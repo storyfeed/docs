@@ -215,8 +215,6 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     what the install page installs, and that is the only version in play.
     Today's pre-1.0 status is chrome (`StabilityBanner`), never page content.
     (Sharpens rule 11.)
-    Exception ruled 2026-10-01: keep the legacy discussion-data migration note
-    in Upgrade Guide → Upgrading to 0.12.0, outside the current payload reference.
 26. **No forward references.** A page never names a tool or a term a later
     page introduces — the doctor, aggregation, axes — and never closes with a
     pointer to the next concept. No "Where to Go Next" section either: the
