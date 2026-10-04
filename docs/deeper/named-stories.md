@@ -8,6 +8,11 @@ type throws an exception before an activity is recorded.
 [Static analysis](#checking-names-with-static-analysis) can also check these
 names in your code.
 
+A name is how your code refers to a declaration. The verb is what's stored on
+the activity, and what its headline is declared for. Naming a declaration never
+changes its verb, so renaming one is free, while changing a verb needs a data
+migration.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
@@ -186,6 +191,9 @@ alternative option on the resource declaration:
 |---|---|
 | `->names('checkout')` | `checkout.create`, `checkout.update`, and the other verbs under `checkout` |
 | `->names(['confirm' => 'checkout.confirm'])` | only `confirm` is renamed |
+
+These change only the names. The stored verb is still `confirm`, the snake_cased
+name of the `OrderStory::confirm()` method.
 
 Individually declared verbs have no name until you call `->name()`, including
 verbs registered with a single-verb class or a Story that accepts constructor data.
