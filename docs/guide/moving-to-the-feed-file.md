@@ -46,24 +46,25 @@ For a model with morph alias `document`, the mapping is:
 
 | Registry entry | Feed-file declaration |
 |---|---|
-| `grammar['document.sent']` | `Story::for(Document::class)->verb('sent')->headline(...)` |
+| `grammar['document.send']` | `Story::for(Document::class)->verb('send')->headline(...)` |
 | `grammar['document.*']` | `Story::for(Document::class)->fallback()->headline(...)` |
-| `grammar['*.document.sent']` | `Story::verb('document.sent')->headline(...)` — the verb itself contains the dot |
+| `grammar['*.send']` | `Story::verb('send')->headline(...)` for every object type |
 | `grammar['*.*']` | `Story::fallback()->headline(...)` |
-| `actorlessGrammar['document.sent']` | `Story::for(Document::class)->verb('sent')->anonymousHeadline(...)` |
-| `icons['document.sent']` | `->icon(...)` on that type and verb |
+| `actorlessGrammar['document.send']` | `Story::for(Document::class)->verb('send')->anonymousHeadline(...)` |
+| `icons['document.send']` | `->icon(...)` on that type and verb |
 | `nouns['document']` | `Story::for(Document::class)->noun('document\|documents')` |
-| `nouns['document.sent']` | `->noun('document\|documents')` on that type and verb |
+| `nouns['document.send']` | `->noun('document\|documents')` on that type and verb |
 | `nouns['*']` | `Story::fallback()->noun(...)` |
-| `aggregateGrammar['repeat.document.sent']` | `Story::for(Document::class)->verb('sent')->grouped(fn (GroupBuilder $group) => $group->repeat(...))` for the type-qualified key |
-| `aggregateGrammar['repeat.document.sent']`, when `document.sent` is the verb | `Story::verb('document.sent')->grouped(fn (GroupBuilder $group) => $group->repeat(...))` for the unqualified key |
-| `aggregateGrammar['*.sent']` | `Story::verb('sent')->grouped(fn (GroupBuilder $group) => $group->any(...))` |
-| `verbs(['sent' => ActivityType::Update])` | `Story::verb('sent')->type(ActivityType::Update)` |
-| `verbs(DocumentActivity::class)` | Keep the enum registration in the provider, or bind each enum case with `Story::verb(DocumentActivity::Sent)` |
+| `aggregateGrammar['repeat.document.send']` | `Story::for(Document::class)->verb('send')->grouped(fn (GroupBuilder $group): GroupBuilder => $group->repeat(...))` for the type-qualified key |
+| `aggregateGrammar['repeat.send']` | `Story::verb('send')->grouped(fn (GroupBuilder $group): GroupBuilder => $group->repeat(...))` for every object type |
+| `aggregateGrammar['*.send']` | `Story::verb('send')->grouped(fn (GroupBuilder $group): GroupBuilder => $group->any(...))` |
+| `verbs(['send' => ActivityType::Update])` | `Story::verb('send')->type(ActivityType::Update)` |
+| `verbs(DocumentActivity::class)` | Keep the enum registration in the provider, or bind each enum case with `Story::verb(DocumentActivity::Send)` |
 
-Do not split a dotted verb into a model alias and a shorter verb. Inspect the
-verb values in your inventory. Group keys can look identical while meaning
-an axis plus a dotted verb, or an axis plus a type and a verb.
+A registry key combines a separately stored object type and a plain verb:
+`document.send` means type `document`, verb `send`. A group key adds the axis:
+`repeat.document.send` is type-qualified, while `repeat.send` applies across
+object types. Dotted story names remain lookup keys; they are not stored verbs.
 
 Single-activity headlines, anonymous headlines, and icons resolve in this
 order: `type.verb`, `type.*`, `*.verb`, `*.*`. Preserve each rung rather than
@@ -73,28 +74,29 @@ axis-and-verb entry applies. See [Aggregation](/deeper/aggregation).
 
 ## Move One Verb
 
-For a verb named `document.sent`, these provider registrations:
+For the verb `send` recorded against a document, these provider registrations:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::grammar(['*.document.sent' => ':actor sent :object to :target']);
-Storyfeed::actorlessGrammar(['*.document.sent' => ':object was sent to :target']);
-Storyfeed::icons(['*.document.sent' => 'send']);
-Storyfeed::aggregateGrammar(['repeat.document.sent' => ':actor sent :count documents']);
+Storyfeed::grammar(['document.send' => ':actor sent :object to :target']);
+Storyfeed::actorlessGrammar(['document.send' => ':object was sent to :target']);
+Storyfeed::icons(['document.send' => 'send']);
+Storyfeed::aggregateGrammar(['repeat.document.send' => ':actor sent :count documents']);
 ```
 
 become:
 
 ```php memo="routes/feed.php"
+use App\Models\Document;
 use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
-Story::verb('document.sent')
+Story::for(Document::class)->verb('send')
     ->headline(':actor sent :object to :target')
     ->anonymousHeadline(':object was sent to :target')
     ->icon('send')
-    ->grouped(fn (GroupBuilder $group) => $group
+    ->grouped(fn (GroupBuilder $group): GroupBuilder => $group
         ->repeat(':actor sent :count documents'));
 ```
 

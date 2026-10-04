@@ -11,7 +11,7 @@ const publishedAt = new Date(WORLD_ANCHOR - 15 * 60 * 1000).toISOString()
 const target = { type: 'document', id: '1', label: 'Order agreement', url: null, modal: false, media: null }
 const preview = (clauses, count = clauses.length) => {
   const children = clauses.map((clause, index) => ({
-    kind: 'activity', id: `rewrite-${index}`, verb: 'clause.rewritten',
+    kind: 'activity', id: `rewrite-${index}`, verb: 'rewrite',
     published_at: publishedAt, headline_template: null,
     headline: `Rewrote ${clause} on Order agreement`, glyph: 'file-pen',
     actor: null, object: null, target, context: null,
@@ -21,7 +21,7 @@ const preview = (clauses, count = clauses.length) => {
   const more = count - shown.length
   return [{
     kind: 'group', id: `rewrites-${count}-${clauses.join('-')}`, axis: 'repeat',
-    verb: 'clause.rewritten', published_at: publishedAt,
+    verb: 'rewrite', published_at: publishedAt,
     headline_template: null,
     headline: `Recorded ${count} clause rewrites on Order agreement: ${shown.join(', ')}${more > 0 ? ` +${more} more rewrites` : ''}`,
     glyph: 'file-pen', actor: null, object: null, target, context: null,
@@ -34,7 +34,7 @@ const preview = (clauses, count = clauses.length) => {
 
 ## Record the Name with Each Rewrite
 
-For this example, each `clause.rewritten` activity has the agreement as target,
+For this example, each `rewrite` activity has the agreement as target,
 no object, and two strings in `data`: `clause` and `agreement`. The built-in
 repeat axis keeps a shared target together. The callback uses the newest
 member's recorded agreement name; this is event data, not a live model lookup.
@@ -62,7 +62,7 @@ use Storyfeed\Models\Activity;
 use Storyfeed\Payload\GroupSlice;
 
 Storyfeed::aggregateGrammar([
-    'repeat.clause.rewritten' => function (GroupSlice $slice): string {
+    'repeat.rewrite' => function (GroupSlice $slice): string {
         $agreement = $slice->members->first()?->data['agreement'] ?? null;
         $agreement = is_string($agreement) && trim($agreement) !== ''
             ? trim($agreement)
@@ -86,8 +86,9 @@ Storyfeed::aggregateGrammar([
 ```
 
 For the three recorded rows above, the callback returns the headline shown
-in the preview. The registry key is `repeat` plus the dotted verb
-`clause.rewritten`; it is not a type-qualified `rewritten` definition.
+in the preview. The registry key is `repeat` plus the plain verb `rewrite`.
+The clause name stays in activity data, and the agreement stays in the target
+role; neither becomes part of the verb.
 
 The callback returns finished text. Role tokens such as `:target` in its
 return value are not expanded; the payload has a null `headline_template`
