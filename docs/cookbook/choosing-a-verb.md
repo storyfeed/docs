@@ -104,6 +104,81 @@ With a PHP backed enum, share one case such as `Act::Accept` across the types.
 Do not add `AcceptAgreement` and `AcceptProposal` with type-suffixed values;
 backed enum cases cannot share the same value.
 
+## Recording Facts and Parts of a Document
+
+If recording a decision creates a durable model, record `create` on that model.
+For example, a new `Acceptance` record is the object, and its document is the
+target:
+
+```php memo="routes/feed.php"
+use App\Models\Acceptance;
+use Storyfeed\Facades\Story;
+
+Story::for(Acceptance::class)->verb('create')
+    ->headline(':actor recorded :object for :target');
+```
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+// $acceptance is the durable record just created by the application.
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('create', $acceptance)
+    ->to($document)
+    ->publish();
+```
+
+With the object's feedable label set to “Acceptance” and the document labelled
+“Service terms”, this reads “Alex recorded Acceptance for Service terms”.
+The record's label or [body](/basics/activity-content) can explain its kind;
+you do not need a verb such as `record_acceptance` or a kind field in data.
+
+If there is no durable record model, use the action on the document: `accept`,
+`decline` or `pay`. Its feedable label or body identifies which document it is.
+For an operator recording someone else's decision, keep who acted separate
+from who authorised it; see [Recording an Authoriser](/cookbook/an-authoriser-who-is-not-an-actor).
+
+### Changing a Part Without Its Own Model
+
+A clause stored inside a document has no model to use as a separate object.
+Record the change on the document and keep the clause key in activity data:
+
+```php memo="routes/feed.php"
+use App\Models\Document;
+use Storyfeed\ActivityContext;
+use Storyfeed\Facades\Story;
+
+Story::for(Document::class)->verb('remove')
+    ->headline(fn (ActivityContext $activity): string =>
+        $activity->has('clause')
+            ? ':actor removed a clause from :object'
+            : ':actor removed an attachment from :object');
+```
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+// This application removes either a clause or an attachment from a document.
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('remove', $document)
+    ->data(['clause' => 'delivery-window'])
+    ->publish();
+```
+
+This reads “Alex removed a clause from Service terms”. Removing an attachment
+uses the same verb and an `attachment` key instead, so the headline reads
+“Alex removed an attachment from Service terms”. The document is the object
+in both cases; its type selects this declaration. A target alone would not
+select a `Document`-scoped headline.
+
+This keeps the part's event-time key without introducing a model. The part
+has no independent feedable label, link or body; add those through a model
+when it needs its own identity. See [Activity Data](/basics/recording#adding-activity-data)
+and [Casting](/deeper/casting-activity-data) for retrieving typed details, and
+[Activity Content](/basics/activity-content) for displaying them.
+
 ## Choosing Between Related Verbs
 
 Choose the word that describes the event in your application.
