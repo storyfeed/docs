@@ -265,7 +265,7 @@ export default defineConfig({
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Naming Group Members from Activity Data', link: '/cookbook/naming-group-members' },
+          { text: 'Naming Group Members From Activity Data', link: '/cookbook/naming-group-members' },
           { text: 'Computed Values in the Feed', link: '/cookbook/computed-values' },
         ],
       },

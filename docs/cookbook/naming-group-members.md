@@ -67,7 +67,7 @@ label as it was when the rewrite occurred:
 ## Write a Group Headline Callback
 
 Register the callback in a service provider's `boot()` method. The current
-`GroupBuilder::repeat()` and `Group::headline()` methods accept strings only;
+`GroupBuilder::object()` and `Group::headline()` methods accept strings only;
 a `GroupSlice` callback goes through the aggregate registry. Keep registry
 calls out of `routes/feed.php` so the feed file remains cacheable.
 

@@ -574,6 +574,8 @@ VERBS.rewrite = { glyph: 'file-pen', headline: ':actor rewrote :object' }
 // transactions, not additional on-screen events or quoted dialogue. The existing
 // j84 order is itself an illustrative transaction (troop/S3E4).
 const demo = { uncertain: 'Illustrative shop-app transaction, not an on-screen event' }
+ROWS.push(row('filter-note', '1985-07-04 16:45', 'note', scooper, worldNotes.forLife, v.scoops, 'splice', demo))
+VERBS.note = { glyph: 'sticky-note', headline: ':actor noted :object at :target' }
 ROWS.push(
   // splice: one customer's three separate order requests, near the existing j84.
   row('a-order-2', '1985-07-02 12:01', 'place', scout, order(1040), v.scoops, 'splice', demo),
@@ -727,6 +729,7 @@ export default {
       usageExamples: { repeatOrders: ['j84', 'a-order-2', 'a-order-3'], photos: ['j54', 'j55', 'j56'] },
     },
     basics: {
+      reading: { note: 'filter-note' },
       activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product',
         program: 'prose-program', terminal: 'prose-terminal', radioLog: 'prose-radio',
         caseMemo: 'prose-memo', labReport: 'prose-report', alphabet: 'prose-alphabet', planck: 'prose-planck',

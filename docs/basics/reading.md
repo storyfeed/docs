@@ -18,7 +18,7 @@ const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 const filterRows = logOf([
   ...scene.cookbook.transitions.timeline,
   scene.basics.activityContent.ready,
-  scene.cookbook.pricing[1], scene.question,
+  scene.cookbook.pricing[1], scene.question, scene.basics.reading.note,
   ...scene.deeper.aggregation.contexts,
 ])
 const same = (a, b) => a && b && a.type === b.type && a.id === b.id
@@ -175,7 +175,7 @@ Route::get('/orders/{order}/feed', function (Order $order) {
 });
 ```
 
-For the order in the sample, the filter keeps its placements and confirmation:
+For the order in the sample, the filter keeps its placements, confirmation and readiness activity:
 
 <FeedExample :items="liveOf(involving(scene.order.object))" />
 
@@ -249,7 +249,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed()->except(['note'])->get();
 ```
 
-The sample has no `note` activities, so this filter retains all of them:
+The note is omitted; the other activities remain:
 
 <FeedExample :items="liveOf(filterRows.filter(row => row.verb !== 'note'))" />
 

@@ -133,6 +133,7 @@ export type SceneIds = {
   }
   /** Basics demonstrations. Rows describe illustrative app transactions, not new canon. */
   basics: {
+    reading: { note: string }
     activityContent: { note: string; ready: string; confirmed: string; photo: string; product: string;
       program: string; terminal: string; radioLog: string; caseMemo: string; labReport: string; alphabet: string; planck: string;
       itemList: string; notice: string; linkedNotice: string }

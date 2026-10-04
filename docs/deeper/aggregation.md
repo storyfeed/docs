@@ -19,7 +19,7 @@ const singularFallback = { ...repeat, headline_template: ':actor placed an order
 const unnamedGroup = { ...repeat, headline_template: null, headline: null }
 const menuRows = scene.deeper.aggregation.menu
 const menuGroup = { ...liveOf(menuRows)[0], headline_template: ':actor put dishes on the menu' }
-const contextRows = scene.deeper.aggregation.contexts
+const contextRows = logOf(scene.deeper.aggregation.contexts)
 const contextGroup = (members) => group({
   id: `scene-${members.length}`, axis: 'scene', verb: 'ask', count: members.length,
   published_at: members[0].published_at, headline_template: ':actors asked questions in :context',
