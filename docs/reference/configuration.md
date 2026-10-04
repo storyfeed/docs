@@ -151,4 +151,3 @@ Increase a limit when your frontend displays more names:
 | `doctor.stale_after` | `30` | days without new activity before the doctor reports a stale feed; `null` disables |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |
-| `demo.enabled` | `false` | register the vocabulary used by `storyfeed:demo` so seeded activities render; enable only in the demo environment |

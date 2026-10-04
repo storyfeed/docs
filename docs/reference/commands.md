@@ -181,6 +181,8 @@ php artisan storyfeed:curate --release   # a second run changes nothing
 
 Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
+<a id="seeding-demo-data"></a>
+
 ### Other Maintenance Commands
 
 | Command | Description |
@@ -192,9 +194,3 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
 `bundle` and `curate` can change existing groups and their `sync_token`.
 Clients that accumulate nodes must then fetch the feed again.
-
-## Seeding Demo Data
-
-| Command | Description |
-|---|---|
-| `storyfeed:demo` | seeds a fictional demo tenant. `--days=7`, `--seed=1` select the history and deterministic seed; `--fresh` removes prior demo data first, `--clear` removes it without seeding, and `--force` allows production use |
