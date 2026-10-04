@@ -86,10 +86,12 @@ The read mode determines which groups the query returns:
 | Mode | Returns |
 |---|---|
 | `log()` | one item per activity, including each member of a composite |
-| `live()` | one group per activity, chosen from the groups it qualifies for, with `repeat` as the fallback. The default |
+| `live()`, `grouping.curate = true` (default) | curated winning groups across axes, with `repeat` as the fallback for an activity that has no winner |
+| `live()`, `grouping.curate = false` | repeat groups only, ignoring previously selected winners |
 | `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Retrieving Feeds](/basics/reading#summary) |
 
-Set `grouping.curate` to `false` to limit `live()` to repeats.
+See [Keeping a Repeats-Only Feed](/guide/upgrading#keeping-a-repeats-only-feed)
+when upgrading an app that chose the old `live()` behavior.
 `storyfeed:curate` chooses groups for recent activities and runs hourly through
 Laravel's scheduler.
 
