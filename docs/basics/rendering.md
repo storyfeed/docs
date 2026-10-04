@@ -5,6 +5,7 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 const bare = { ...scene.order, glyph: null }
 const one = scene.order
+const vueHeadlines = { [one.id]: `${one.actor.label} placed ${one.object.label} with ${one.target.label}` }
 const grouped = liveOf(scene.busyPlace)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
@@ -548,8 +549,9 @@ The command publishes `lang/vendor/storyfeed/en/feed.php`.
 
 ## Rendering With Vue
 
-With Inertia, pass the feed to the page as a prop. Use the query string's cursor
-to retrieve subsequent pages through the same route:
+With Inertia, pass the feed payload to the page as a prop. This example uses
+log mode for individual activities. The PHP headline reader also supplies a
+plain-text headline for each item, so the Vue row needs no token parser:
 
 ```php memo="routes/web.php"
 use Illuminate\Http\Request;
@@ -558,249 +560,56 @@ use Inertia\Inertia;
 use Storyfeed\Facades\Storyfeed;
 
 Route::get('/', function (Request $request) {
+    $page = Storyfeed::feed()->log()->cursor($request->query('cursor'))->get();
+    $headlines = [];
+
+    foreach ($page as $item) {
+        $headlines[$item->id()] = $item->headline()->toString();
+    }
+
     return Inertia::render('Home', [
-        'feed' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+        'feed' => $page,
+        'headlines' => $headlines,
     ]);
 });
 ```
 
-Render the feed with the `Feed` component:
+Vue receives a feed object containing an `items` array. `headlines` is an
+application-defined prop keyed by item ID. Render each headline as escaped
+text and the publication time as an ISO timestamp:
 
 ```vue memo="resources/js/pages/Home.vue"
 <script setup lang="ts">
-import Feed from '../components/feed/Feed.vue'
-
-defineProps<{ feed: Record<string, any> }>()
+defineProps<{
+    feed: { items: Array<{ id: string; published_at: string }> }
+    headlines: Record<string, string>
+}>()
 </script>
 
 <template>
-    <Feed :page="feed" />
+    <ul>
+        <li v-for="item in feed.items" :key="item.id">
+            <p>{{ headlines[item.id] }}</p>
+            <time :datetime="item.published_at">{{ item.published_at }}</time>
+        </li>
+    </ul>
 </template>
 ```
 
-Vue receives a feed object containing an array of items. The `FeedHeadline` component separates the
-template into text and entities. The `Feed` component retains loaded items and
-retrieves the next page with a partial reload of the `feed` prop:
+For the shared order example, this produces:
 
-::: code-group
-```vue [Feed.vue] memo="resources/js/components/feed/Feed.vue"
-<script setup lang="ts">
-import { router } from '@inertiajs/vue3'
-import { ref } from 'vue'
-import FeedItem from './FeedItem.vue'
+<FeedExample :items="[one]">
+  <template #preview="{ items }">
+    <ul>
+      <li v-for="item in items" :key="item.id">
+        <p>{{ vueHeadlines[item.id] }}</p>
+        <time :datetime="item.published_at">{{ item.published_at }}</time>
+      </li>
+    </ul>
+  </template>
+</FeedExample>
 
-type Page = { items: Record<string, any>[]; next_cursor: string | null; sync_token: string | null }
-
-const props = defineProps<{ page: Page }>()
-
-const items = ref([...props.page.items])
-const nextCursor = ref(props.page.next_cursor)
-const syncToken = props.page.sync_token
-const loading = ref(false)
-
-function loadMore() {
-    router.reload({
-        only: ['feed'],   // the page's prop
-        data: { cursor: nextCursor.value },
-        preserveUrl: true,
-        onStart: () => (loading.value = true),
-        onFinish: () => (loading.value = false),
-        onSuccess: (response) => {
-            const page = response.props.feed as Page
-
-            if (page.sync_token !== syncToken) {
-                router.visit(window.location.pathname)   // earlier pages changed: start again
-
-                return
-            }
-
-            items.value.push(...page.items)
-            nextCursor.value = page.next_cursor
-        },
-    })
-}
-</script>
-
-<template>
-    <div role="feed">
-        <FeedItem v-for="item in items" :key="item.id" :item="item" />
-    </div>
-
-    <button v-if="nextCursor" :disabled="loading" @click="loadMore">
-        Older activity
-    </button>
-</template>
-```
-
-```vue [FeedItem.vue] memo="resources/js/components/feed/FeedItem.vue"
-<script setup lang="ts">
-import FeedActivity from './FeedActivity.vue'
-import FeedGroup from './FeedGroup.vue'
-
-defineProps<{ item: Record<string, any> }>()
-</script>
-
-<template>
-    <FeedActivity v-if="item.kind === 'activity'" :activity="item" />
-    <FeedGroup v-else-if="item.kind === 'group'" :group="item" />
-</template>
-```
-
-```vue [FeedActivity.vue] memo="resources/js/components/feed/FeedActivity.vue"
-<script setup lang="ts">
-import FeedHeadline from './FeedHeadline.vue'
-
-defineProps<{ activity: Record<string, any> }>()
-</script>
-
-<template>
-    <article>
-        <FeedHeadline :item="activity">
-            {{ activity.actor?.label ?? 'Someone' }} {{ activity.verb }}<template v-if="activity.object"> {{ activity.object.label ?? 'Something' }}</template>
-        </FeedHeadline>
-        <time :datetime="activity.published_at">
-            {{ new Date(activity.published_at).toLocaleString() }}
-        </time>
-    </article>
-</template>
-```
-
-```vue [FeedGroup.vue] memo="resources/js/components/feed/FeedGroup.vue"
-<script setup lang="ts">
-import FeedActivity from './FeedActivity.vue'
-import FeedHeadline from './FeedHeadline.vue'
-
-defineProps<{ group: Record<string, any> }>()
-</script>
-
-<template>
-    <article>
-        <FeedHeadline :item="group">{{ group.count }} activities</FeedHeadline>
-        <time :datetime="group.published_at">
-            {{ new Date(group.published_at).toLocaleString() }}
-        </time>
-
-        <details>
-            <summary>{{ group.count }} activities</summary>
-            <FeedActivity v-for="child in group.children" :key="child.id" :activity="child" />
-        </details>
-    </article>
-</template>
-```
-
-```vue [FeedHeadline.vue] memo="resources/js/components/feed/FeedHeadline.vue"
-<script setup lang="ts">
-import { computed } from 'vue'
-import EntityLink from './EntityLink.vue'
-import EntityList from './EntityList.vue'
-
-type Entity = Record<string, any>
-type Part =
-    | { type: 'text'; text: string }
-    | { type: 'entity'; entity: Entity | null; fallback: string }
-    | { type: 'list'; entities: Entity[]; total: number }
-
-const props = defineProps<{ item: Record<string, any> }>()
-
-const roles = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
-
-const parts = computed(() =>
-    (props.item.headline_template ?? '')
-        .split(/(:[a-z]+)/)
-        .filter(Boolean)
-        .map((segment: string): Part => {
-            const role = segment.slice(1).replace(/s$/, '')
-
-            if (segment === ':count') {
-                return { type: 'text', text: String(props.item.count) }
-            }
-
-            if (segment === ':others' && props.item.sample) {
-                const others = Math.max(0,
-                    (props.item.distinct?.actors ?? 0) - (props.item.sample.actors?.length ?? 0),
-                )
-                return { type: 'text', text: `${others} ${others === 1 ? 'other' : 'others'}` }
-            }
-
-            if (!segment.startsWith(':') || !roles.includes(role)) {
-                return { type: 'text', text: segment }
-            }
-
-            const shown: Entity[] = props.item.sample?.[`${role}s`] ?? []
-            const total: number = props.item.distinct?.[`${role}s`] ?? 1
-
-            // One entity: an activity's own, or the only one a group holds.
-            if (segment === `:${role}` && total <= 1) {
-                return {
-                    type: 'entity',
-                    entity: props.item[role] ?? shown[0] ?? null,
-                    fallback: role === 'actor' ? 'Someone' : 'Something',
-                }
-            }
-
-            return { type: 'list', entities: shown, total }
-        }),
-)
-</script>
-
-<template>
-    <div>
-        <template v-if="item.headline_template">
-            <template v-for="(part, index) in parts" :key="index">
-                <EntityLink v-if="part.type === 'entity'" :entity="part.entity" :fallback="part.fallback" />
-                <EntityList v-else-if="part.type === 'list'" :entities="part.entities" :total="part.total" />
-                <template v-else>{{ part.text }}</template>
-            </template>
-        </template>
-        <template v-else-if="item.headline">{{ item.headline }}</template>
-        <slot v-else />
-    </div>
-</template>
-```
-
-```vue [EntityList.vue] memo="resources/js/components/feed/EntityList.vue"
-<script setup lang="ts">
-import EntityLink from './EntityLink.vue'
-
-defineProps<{ entities: Record<string, any>[]; total: number }>()
-</script>
-
-<template>
-    <template v-for="(entity, index) in entities" :key="entity.id">
-        <template v-if="index > 0">, </template>
-        <EntityLink :entity="entity" />
-    </template>
-    <template v-if="total > entities.length"> and {{ total - entities.length }} more</template>
-</template>
-```
-
-```vue [EntityLink.vue] memo="resources/js/components/feed/EntityLink.vue"
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(
-    defineProps<{ entity: Record<string, any> | null; fallback?: string }>(),
-    { fallback: 'Something' },
-)
-
-const label = computed(() => {
-    const tombstone = props.entity?.tombstone
-
-    return props.entity?.label ?? (tombstone ? `a removed ${tombstone.formerType}` : props.fallback)
-})
-</script>
-
-<template>
-    <a v-bind="entity?.attributes" :href="entity?.url ?? undefined">{{ label }}</a>
-</template>
-```
-:::
-
-The headline example handles `:others` as the distinct actor count minus the
-sampled actors. An activity without a headline falls back to actor, verb, and
-object labels. This is an English-only fallback; localize it for your app.
-
-When `next_cursor` is `null`, the button is hidden. If `sync_token` changes,
-`Feed` discards loaded items and retrieves the first page again. Render icons,
-summary rows, quoted text, and bodies using components equivalent to the Blade
-examples.
+This small component renders plain text without entity links. Use the
+[Payload Contract](/reference/payload) for the role, group and body fields
+when extending your application's renderer. See
+[Paginating Results](/basics/reading#paginating-results) for cursor handling.
