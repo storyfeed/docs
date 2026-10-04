@@ -1,53 +1,68 @@
-# Naming Group Members from Activity Data
+# Naming Group Members From Activity Data
 
-A clause rewrite can name the clause in activity data while the agreement is
-the target. `:objects` lists role entities only; it cannot list `data.clause`,
-and an activity with no object contributes no object name. Use a group headline
-callback to name the rewrites from their recorded data.
+Record a clause rewrite on its agreement and store the clause name in activity
+data. The `:objects` token names agreements, so use a group headline callback
+to list clause names.
 
 <script setup>
-import { WORLD_ANCHOR } from '../.vitepress/theme/world'
-const publishedAt = new Date(WORLD_ANCHOR - 15 * 60 * 1000).toISOString()
-const target = { type: 'document', id: '1', label: 'Order agreement', url: null, modal: false, media: null }
-const preview = (clauses, count = clauses.length) => {
-  const children = clauses.map((clause, index) => ({
-    kind: 'activity', id: `rewrite-${index}`, verb: 'rewrite',
-    published_at: publishedAt, headline_template: null,
-    headline: `Rewrote ${clause} on Order agreement`, glyph: 'file-pen',
-    actor: null, object: null, target, context: null,
-    data: { clause, agreement: 'Order agreement' },
-  }))
-  const shown = clauses.slice(0, 3)
-  const more = count - shown.length
+import { scene } from '../.vitepress/theme/world'
+import { group } from '../.vitepress/theme/samples'
+const rewrites = scene.cookbook.rewrites
+const preview = (members, count = members.length) => {
+  const names = members.slice(0, 3).map(member => member.data.clause)
+  const more = count - names.length
   return [{
-    kind: 'group', id: `rewrites-${count}-${clauses.join('-')}`, axis: 'repeat',
-    verb: 'rewrite', published_at: publishedAt,
-    headline_template: null,
-    headline: `Recorded ${count} clause rewrites on Order agreement: ${shown.join(', ')}${more > 0 ? ` +${more} more rewrites` : ''}`,
-    glyph: 'file-pen', actor: null, object: null, target, context: null,
-    count, children, children_truncated: clauses.length < count,
-    sample: { actors: [], objects: [], targets: [target], contexts: [] },
-    distinct: { actors: 0, objects: 0, targets: 1, contexts: 0 }, distinct_tombstoned: {},
+    ...group({ id: `clause-rewrites-${count}-${members.map(m => m.id).join('-')}`,
+      axis: 'object', verb: 'rewrite', count, published_at: members[0].published_at,
+      headline_template: null, glyph: members[0].glyph,
+      actors: [members[0].actor], objects: [members[0].object], children: members }),
+    headline: `Recorded ${count} clause rewrites on ${members[0].data.agreement}: ${names.join(', ')}${more > 0 ? ` +${more} more rewrites` : ''}`,
   }]
 }
+const duplicate = [rewrites[0], { ...rewrites[1], data: rewrites[0].data }, rewrites[2]]
 </script>
 
-## Record the Name with Each Rewrite
+<a id="record-the-name-with-each-rewrite"></a>
 
-For this example, each `rewrite` activity has the agreement as target,
-no object, and two strings in `data`: `clause` and `agreement`. The built-in
-repeat axis keeps a shared target together. The callback uses the newest
-member's recorded agreement name; this is event data, not a live model lookup.
+## Recording Clause Names
 
-| Activity | `data.clause` | `data.agreement` |
-|---|---|---|
-| newest | Scope | Order agreement |
-| next | Termination | Order agreement |
-| oldest | Payment terms | Order agreement |
+Define the individual headline for an agreement represented by the application's
+`Document` model:
 
-These three activities should produce:
+```php memo="routes/feed.php"
+use App\Models\Document;
+use Storyfeed\Facades\Story;
 
-<FeedExample :items="preview(['Scope', 'Termination', 'Payment terms'])" />
+Story::for(Document::class)->verb('rewrite')
+    ->headline(':actor rewrote :object')
+    ->icon('file-pen');
+```
+
+Record the agreement as object and the clause name in data:
+
+```php memo="routes/web.php"
+use App\Models\Document;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::post('/agreements/{agreement}/rewrites', function (Request $request, Document $agreement) {
+    $data = $request->validate(['clause' => ['required', 'string']]);
+
+    Storyfeed::activity()
+        ->by($request->user())
+        ->action('rewrite', $agreement)
+        ->data(['clause' => $data['clause'], 'agreement' => $agreement->label])
+        ->publish();
+
+    return back();
+});
+```
+
+Here `label` is the application's agreement label. The activity keeps that
+label as it was when the rewrite occurred:
+
+<FeedExample :items="[rewrites[0]]" />
 
 ## Write a Group Headline Callback
 
@@ -62,7 +77,7 @@ use Storyfeed\Models\Activity;
 use Storyfeed\Payload\GroupSlice;
 
 Storyfeed::aggregateGrammar([
-    'repeat.rewrite' => function (GroupSlice $slice): string {
+    'object.document.rewrite' => function (GroupSlice $slice): string {
         $agreement = $slice->members->first()?->data['agreement'] ?? null;
         $agreement = is_string($agreement) && trim($agreement) !== ''
             ? trim($agreement)
@@ -85,10 +100,13 @@ Storyfeed::aggregateGrammar([
 ]);
 ```
 
-For the three recorded rows above, the callback returns the headline shown
-in the preview. The registry key is `repeat` plus the plain verb `rewrite`.
-The clause name stays in activity data, and the agreement stays in the target
-role; neither becomes part of the verb.
+For three recorded activities, the callback produces:
+
+<FeedExample :items="preview(rewrites)" />
+
+The `object` axis requires the same actor and agreement. The registry key
+combines that axis, the document's morph alias and the plain verb `rewrite`.
+The clause name stays in activity data; it is not part of the verb.
 
 The callback returns finished text. Role tokens such as `:target` in its
 return value are not expanded; the payload has a null `headline_template`
@@ -97,34 +115,32 @@ escaping. It does not create entity links for the clause names.
 
 ## Count Rewrites, Not Distinct Clauses
 
-`GroupSlice::count` is the true number of activities in the group.
-`GroupSlice::members` is newest first and capped by `grouping.children_limit`.
-Taking three names limits the headline further. Subtract the number of names
-actually shown from the true activity count, not from the capped member count.
+`GroupSlice::count` is the total number of activities in the group.
+`GroupSlice::members` contains the newest members, up to `grouping.children_limit`.
+The callback displays at most three names. Subtract the displayed name count
+from the total activity count.
 
 With ten rewrites and only the three members above available, the same
 callback produces:
 
-<FeedExample :items="preview(['Scope', 'Termination', 'Payment terms'], 10)" />
+<FeedExample :items="preview(rewrites, 10)" />
 
 “+7 more rewrites” counts events whose names are not shown. It does not claim
 seven additional distinct clauses. The `distinct` counts on `GroupSlice`
 count role entities across all members; they do not count unique data values.
 
-If Scope is rewritten twice, keep both names. The callback produces:
+If the same clause is rewritten twice, keep both names. The callback produces:
 
-<FeedExample :items="preview(['Scope', 'Scope', 'Payment terms'])" />
+<FeedExample :items="preview(duplicate)" />
 
-Calling this “3 clauses” would overstate the number of distinct clauses.
-Deduplicating the sample would not establish the total either: older members
-may contain the same names. To promise a distinct clause total, compute it
-across the complete group in an application-owned query or summary. The capped
-member list cannot supply that proof.
+Calling this “3 clauses” would overstate the distinct clause count. Counting
+unique names in the sample is insufficient because older members may repeat
+them. To count distinct clauses, query all activities in the group in your
+application.
 
 ## Keep Other Headlines Covered
 
-This declaration covers only repeat groups for this verb. Keep its singular
+This declaration covers only object groups for this verb. Keep its singular
 headline and icon definitions, and add headlines for any other axes your feeds
-can return. With curation enabled, `live()` can choose an axis other than
-repeat. See [Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode)
+can return. When `grouping.curate` is enabled, Storyfeed can select groups on other axes. See [Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode)
 and [Doctor Checks](/reference/doctor#group-reachability).

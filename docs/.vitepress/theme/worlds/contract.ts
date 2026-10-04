@@ -35,6 +35,8 @@ export type Row = {
   actor: any
   object?: any
   target?: any
+  data?: Record<string, any>
+  context?: any
   /** The row's own headline, when the verb's default does not fit. */
   headline?: string
   /** A key of the pack's `sources`. */
@@ -95,6 +97,8 @@ export type DeeperSceneIds = {
 export type SceneIds = {
   /** Cookbook software examples; illustrative interactions, not new plot claims. */
   cookbook: {
+    verbChoices: Record<string, string>
+    rewrites: string[]
     actorless: { anonymous: string; paid: string; expired: string }
     transitions: { confirmed: string; timeline: string[] }
     pricing: string[]

@@ -34,7 +34,7 @@ one order:
 order count. In this case, “placed 2 orders” would be wrong.
 
 For names recorded in `data` rather than roles, see
-[Naming Group Members from Activity Data](/cookbook/naming-group-members).
+[Naming Group Members From Activity Data](/cookbook/naming-group-members).
 
 ## Wording the Group Headline
 
@@ -76,15 +76,21 @@ individual content. Quotes, images and other bodies remain on the member
 activities. To show every placement as its own row, retrieve the order's
 placements in log mode:
 
-```php
+```php memo="routes/web.php"
+use App\Models\Order;
+use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-$placements = Storyfeed::feed()
-    ->involving($order)
-    ->only(['place'])
-    ->log()
-    ->get();
+Route::get('/orders/{order}/placements', function (Order $order) {
+    return Storyfeed::feed()
+        ->involving($order)
+        ->only(['place'])
+        ->log()
+        ->get();
+});
 ```
 
-That returns the separate rows shown above. Keep their bodies beside their
-individual headlines instead of folding them into the group sentence.
+<FeedExample :items="placements" />
+
+This query returns one item per placement. Each placement remains a separate
+row. Render each item's body beside its headline.

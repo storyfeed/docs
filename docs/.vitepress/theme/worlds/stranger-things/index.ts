@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
+  DOCUMENT_WORKFLOW, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -541,6 +541,35 @@ ROWS.push(
   cookbookRow('crowd3', '1985-07-01 12:02', 'place', linguist, order(1104), v.scoops),
 )
 
+// Document workflows are illustrative app transactions using the shared cast.
+const agreement = entity('agreement', '301', DOCUMENT_WORKFLOW.agreement, '/agreements/301')
+const proposal = entity('proposal', '302', DOCUMENT_WORKFLOW.proposal, '/proposals/302')
+const document = entity('document', '303', DOCUMENT_WORKFLOW.agreement, '/documents/303')
+const acceptance = entity('acceptance', '304', DOCUMENT_WORKFLOW.acceptance, '/acceptances/304')
+const menu = entity('menu', '305', DOCUMENT_WORKFLOW.menu, '/menus/305')
+const choice = (id: string, verb: string, object: any, target: any, headline: string, data = {}) =>
+  row(`choice-${id}`, '1985-07-04 18:00', verb, scout, object, target, 'splice',
+    { headline, data, uncertain: 'Illustrative software transaction, not an on-screen event.' })
+ROWS.push(
+  choice('agreement', 'accept', agreement, null, ':actor accepted the agreement :object'),
+  choice('proposal', 'accept', proposal, null, ':actor accepted the proposal :object'),
+  choice('send', 'send', agreement, scooper, ':actor sent :object to :target'),
+  choice('invite', 'invite', agreement, scooper, ':actor invited :target to sign :object'),
+  choice('decision', 'create', acceptance, document, ':actor recorded :object for :target'),
+  choice('clause', 'remove', document, null, ':actor removed a clause from :object', { clause: 'delivery-window' }),
+  choice('attachment', 'remove', document, null, ':actor removed an attachment from :object', { attachment: 'schedule' }),
+  choice('create', 'create', fare.butterscotch, null, ':actor created :object'),
+  choice('add', 'add', fare.butterscotch, menu, ':actor added :object to :target'),
+  ...DOCUMENT_WORKFLOW.clauses.map((clause, i) => ({
+    ...choice(`rewrite-${i}`, 'rewrite', document, null, ':actor rewrote :object',
+      { clause, agreement: document.label }), at: `1985-07-04 18:0${3 - i}`,
+  })),
+)
+VERBS.send = { glyph: 'send', headline: ':actor sent :object to :target' }
+VERBS.accept = { glyph: 'check', headline: ':actor accepted :object' }
+VERBS.invite = { glyph: 'mail', headline: ':actor invited :target to :object' }
+VERBS.rewrite = { glyph: 'file-pen', headline: ':actor rewrote :object' }
+
 // Basics/guide examples use the modern app premise. These are software
 // transactions, not additional on-screen events or quoted dialogue. The existing
 // j84 order is itself an illustrative transaction (troop/S3E4).
@@ -653,6 +682,8 @@ export default {
   },
   scenes: {
     cookbook: {
+      verbChoices: Object.fromEntries(['agreement', 'proposal', 'send', 'invite', 'decision', 'clause', 'attachment', 'create', 'add'].map(key => [key, `choice-${key}`])),
+      rewrites: ['choice-rewrite-0', 'choice-rewrite-1', 'choice-rewrite-2'],
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
       transitions: { confirmed: 'cookbook-confirmed', timeline: ['j84', 'cookbook-confirmed', 'cookbook-replaced'] },
       pricing: ['cookbook-added', 'cookbook-repriced'],

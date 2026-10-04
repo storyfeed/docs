@@ -1,7 +1,7 @@
 # Choosing What to Group
 
-Group activities when their shared meaning answers the reader's question.
-Keep separate rows when the words, time or evidence of each event matter.
+Group activities when the reader needs an overview of who acted and where.
+Keep separate rows when each event's words, time or recorded details matter.
 
 <script setup>
 import { scene, liveOf, logOf } from '../.vitepress/theme/world'
@@ -34,8 +34,9 @@ for each person:
 
 The sentence names the place as well as the people. Prefer that to an isolated
 “5 check-ins”. A reaction group should likewise name the thing people reacted
-to. Choose an [axis](/deeper/aggregation#built-in-axes) that pins the role you
-want to name; the built-in `actors` axis pins the target, not the object.
+to. Choose a [grouping axis](/deeper/aggregation#built-in-axes) whose activities
+share the role you want to name. The built-in `actors` axis requires the same
+target; its objects may differ.
 
 Show a small sample of names and the number remaining. The payload's
 [`sample` and `distinct`](/reference/payload#group-node) fields support that
@@ -86,11 +87,11 @@ For work deliberately submitted together, consider a
 objects. Activities that merely happen near each other can use ordinary
 aggregation. Neither approach replaces the member content with the headline.
 
-For textual members, name one or two useful items before the remaining count.
-[Naming Group Members from Activity Data](/cookbook/naming-group-members)
-shows a bounded list when those names live in activity data. The count must
-include members omitted from the response; “Show all” can display only the
-children already supplied unless your application adds retrieval.
+When members have names stored in activity data, show one or two names followed
+by the remaining count. [Naming Group Members From Activity Data](/cookbook/naming-group-members)
+shows how to limit the displayed names. Count all members, including those
+omitted from the response. A “Show all” control can display only the supplied
+members unless your application fetches the rest.
 
 ## Show System Outcomes, Not Every Step
 
