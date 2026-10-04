@@ -659,6 +659,16 @@ const deeperRows: Row[] = [
     deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),  // At closing time a scheduled command cancels an order nobody paid for.
   deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', register, order(2071), v.scoops),
 ]
+deeperRows.push(
+  ...Object.values(fare).slice(0, 2).map((dish, i) => ({
+    ...deeperRow(`menu-${i}`, `1985-07-04 16:0${i}`, 'add', scooper, dish, menu),
+    headline: ':actor put :object on the menu',
+  })),
+  ...[scout, radio, linguist].map((actor, i) => ({
+    ...deeperRow(`context-${i}`, `1985-07-04 18:1${i}`, 'ask', actor, null, fare.butterscotch),
+    context: v.scoops,
+  })),
+)
 ROWS.push(...deeperRows)
 VERBS.write = { glyph: 'pencil', headline: ':actor wrote :object', summary: 'wrote :object|wrote :count records' }
 VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
@@ -694,7 +704,7 @@ export default {
     },
     deeper: {
       body: { progress: 'deeper-pickup-progress' },
-      aggregation: { orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
+      aggregation: { menu: ['deeper-menu-0', 'deeper-menu-1'], contexts: ['deeper-context-0', 'deeper-context-1', 'deeper-context-2'], orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
         customers: Array.from({ length: 5 }, (_, i) => `deeper-customer-${i}`) },
       latestPerObject: { timeline: ['deeper-order-0', 'deeper-confirm-0', 'deeper-ready', 'deeper-paid'],
         board: ['deeper-paid', 'deeper-confirm-1', 'deeper-order-2'],

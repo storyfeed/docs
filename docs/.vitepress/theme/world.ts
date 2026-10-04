@@ -314,7 +314,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     },
     deeper: {
       body: { progress: one(deeper.body.progress) },
-      aggregation: { orders: many(deeper.aggregation.orders), customers: many(deeper.aggregation.customers) },
+      aggregation: { orders: many(deeper.aggregation.orders), customers: many(deeper.aggregation.customers), menu: many(deeper.aggregation.menu), contexts: many(deeper.aggregation.contexts) },
       latestPerObject: { timeline: many(deeper.latestPerObject.timeline), board: many(deeper.latestPerObject.board),
         confirmations: many(deeper.latestPerObject.confirmations) },
       parties: { system: one(deeper.parties.system) },

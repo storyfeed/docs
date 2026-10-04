@@ -86,7 +86,7 @@ export type Roles = {
  */
 export type DeeperSceneIds = {
   body: { progress: string }
-  aggregation: { orders: string[]; customers: string[] }
+  aggregation: { orders: string[]; customers: string[]; menu: string[]; contexts: string[] }
   latestPerObject: { timeline: string[]; board: string[]; confirmations: string[] }
   keepingLatest: { saves: string[] }
   groupingPeriods: { orders: string[] }

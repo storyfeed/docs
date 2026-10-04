@@ -8,15 +8,25 @@ from one customer appear as one row. See
 helps the reader.
 
 <script setup>
-import { scene, logOf, liveOf, everything } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf, everything, VERBS, group } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
-const repeat = liveOf(log)[0]
+const repeat = liveOf(log, { ...VERBS, place: { ...VERBS.place, repeat: ':actor made :count order placements with :target' } })[0]
 const customers = logOf(scene.deeper.aggregation.customers)
 const actors = liveOf(customers)[0]
 const live = liveOf(everything())
 const nounFallback = { ...repeat, headline_template: ':actor placed orders with :target', headline: null }
 const singularFallback = { ...repeat, headline_template: ':actor placed an order with :target', headline: null }
 const unnamedGroup = { ...repeat, headline_template: null, headline: null }
+const menuRows = scene.deeper.aggregation.menu
+const menuGroup = { ...liveOf(menuRows)[0], headline_template: ':actor put dishes on the menu' }
+const contextRows = scene.deeper.aggregation.contexts
+const contextGroup = (members) => group({
+  id: `scene-${members.length}`, axis: 'scene', verb: 'ask', count: members.length,
+  published_at: members[0].published_at, headline_template: ':actors asked questions in :context',
+  glyph: members[0].glyph, actors: members.map(m => m.actor),
+  targets: [members[0].target], contexts: [members[0].context], children: members,
+})
+const contextActors = liveOf(contextRows, { ...VERBS, ask: { ...VERBS.ask, actors: ':actors asked about :target' } })
 </script>
 
 ## Grouping Activities
@@ -40,7 +50,7 @@ Story::for(Order::class)
     ->verb('place')
     ->grouped(
         fn (GroupBuilder $group) => $group
-            ->repeat(':actor placed :count orders with :target'),
+            ->repeat(':actor made :count order placements with :target'),
     );
 ```
 
@@ -91,8 +101,8 @@ The read mode determines which groups the query returns:
 | Mode | Returns |
 |---|---|
 | `log()` | one item per activity, including each member of a composite |
-| `live()`, `grouping.curate = true` (default) | curated winning groups across axes, with `repeat` as the fallback for an activity that has no winner |
-| `live()`, `grouping.curate = false` | repeat groups only, ignoring stored winner selections |
+| `live()`, `grouping.curate = true` (default) | groups selected across the available axes, with a `repeat` group when no other group is selected |
+| `live()`, `grouping.curate = false` | repeat groups only, regardless of groups selected earlier |
 | `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Retrieving Feeds](/basics/reading#summary) |
 
 Set `grouping.curate` to `false` for repeat-only `live()` reads.
@@ -104,10 +114,10 @@ Laravel's scheduler.
 ### Built-In Axes
 
 Activities can share a group only when the fields in its key agree. These
-are the default recipes; `d` uses the configured calendar period, one day by
+are the default grouping keys; `d` uses the configured calendar period, one day by
 default. An identity includes both the role's type and its ID.
 
-| Axis | Pinned values | What may vary | Default key recipe |
+| Axis | Shared Values | What May Differ | Default Grouping Key |
 |---|---|---|---|
 | `repeat` | actor identity, verb, object type, target identity, period | object identity | `aa:aid:v:oa:ta:tid:d` |
 | `actors` | verb, target identity, period | actor and object identities, including object type | `v:ta!:tid:d` |
@@ -117,29 +127,30 @@ default. An identity includes both the role's type and its ID.
 A `repeat` group cannot span two targets. Three edits by one person to clauses
 on one document can name that document as `:target`; edits directed at a
 second document get another repeat key. If the document is the **object**,
-repeat pins only its type. Use the `object` axis to pin that document's identity.
+a `repeat` group requires only the same object type. Use the `object` axis to
+require the same document.
 
 Unlisted fields, including context, origin, result, instrument and activity
 data, may differ on all four axes. `!` requires a nonempty field; without it,
 matching empty roles can share a key. A shared key does not by itself select
-a group: the [thresholds](#configuring-grouping-thresholds) and curation still
-apply. [Axis Keys](#axis-keys) explains the field abbreviations.
+a group: activities must also meet the [thresholds](#configuring-grouping-thresholds),
+and Storyfeed must select the group. [Axis Keys](#axis-keys) explains the field abbreviations.
 
-`composite` uses an authored collection row rather than a field recipe. It
-shares actor, target and context; see [Composites](/deeper/composites).
-The `batch` axis is an infrastructure row, not a feed grouping choice.
+A composite is one published activity with a collection of objects. Its
+members share actor, target and context; see [Composites](/deeper/composites).
+The `batch` axis tracks batches internally; it is not a feed grouping choice.
 Summary axes use `aa!:aid!:d` to share an actor and period across verbs;
 [Summary](/basics/reading#summary) describes that separate read mode.
 
-The singular tokens follow from the pinned identities:
+The allowed singular tokens depend on the identities shared by all members:
 
 | Axis | Collapses | Singular Tokens Allowed | One Type | Example Headline |
 |---|---|---|---|---|
-| `repeat` | one actor repeating a verb, for one object type and target | `:actor` `:target` | yes | ":actor placed :count orders with :target" |
+| `repeat` | one actor repeating a verb, for one object type and target | `:actor` `:target` | yes | ":actor made :count order placements with :target" |
 | `actors` | many actors, same verb and target | `:target` | no | ":actors ordered from :target" |
 | `targets` | one actor across targets | `:actor` | no | ":actor asked about :targets" |
 | `object` | one actor repeating one verb on one object | `:actor` `:object` | yes | ":actor changed the price of :object :count times" |
-| `composite` | an authored collection story | `:actor` `:target` `:context` | — | see [Composites](/deeper/composites#headlines-for-a-composite) |
+| `composite` | one published activity with a collection of objects | `:actor` `:target` `:context` | — | see [Composites](/deeper/composites#headlines-for-a-composite) |
 
 Headlines for groups marked **One Type** may go in a Story class or inside
 `Story::for()`. Define the others on the verb alone.
@@ -165,6 +176,15 @@ Headlines for groups marked **One Type** may go in a Story class or inside
 | `min_targets` | `targets`: this many different targets | 2 |
 | `min_target_members` | `targets`: this many activities | 3 |
 | `min_object_members` | `object`: this many activities on the one object | 2 |
+
+Two customers at the same shop do not meet `min_actors: 3`. With no other
+qualifying group, each remains an individual item:
+
+<FeedExample :items="liveOf(customers.slice(0, 2))" />
+
+Three customers meet the threshold and form an `actors` group:
+
+<FeedExample :items="liveOf(customers.slice(0, 3))" />
 
 Activities below a threshold cannot form that group. They fall back to
 `repeat` when no other group qualifies. After changing thresholds, run
@@ -234,9 +254,9 @@ any group headline.
 
 ```php
 // a repeat group: one customer, many dishes
-':actor changed the price of :object :count times' // ✗ which dish? fails when stories compile
-':actor changed :count prices'                      // ✓
-':actor changed :count prices on :targets'          // ✓ lists fit every member
+':actor changed the price of :object :count times' // Invalid: objects differ within this repeat group.
+':actor changed :count prices'                      // Counts activities.
+':actor changed :count prices on :targets'          // Lists the targets.
 ```
 
 <a id="plural-lists-in-headlines"></a>
@@ -245,8 +265,8 @@ Both headlines use allowed tokens, but three lists make the first hard to read:
 
 ```php
 // an actors group: every member shares :target
-':actors placed :objects with :targets' // ✗ three lists of names
-':actors ordered from :target'          // ✓ one list, one shared role
+':actors placed :objects with :targets' // Three lists of names.
+':actors ordered from :target'          // One list and the shared target.
 ```
 
 Use one list per headline and replace the others with `:count`.
@@ -261,8 +281,8 @@ can therefore join the group: it contributes to `:count` but adds no name.
 
 ```php
 // a targets group of 5 members, 2 of them carrying a target
-':actor asked about :count dishes'  // ✗ five members, two dishes
-':actor asked about :targets'       // ✓ names the two there are
+':actor asked about :count dishes'  // Counts five activities as five dishes.
+':actor asked about :targets'       // Lists the two recorded targets.
 ```
 
 The first headline says there are five dishes when only two are recorded.
@@ -270,12 +290,13 @@ Storyfeed does not check nouns beside `:count`.
 
 ### Fallback Nouns
 
-With no group headline, a group tries the single-activity headline. A role
+When no group headline is defined, Storyfeed uses the single-activity headline
+if its roles can be represented for the group. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
 its entities are one type. Otherwise both `headline_template` and `headline`
 are `null`. That is a supported payload state; it does not require a blank row.
-Single-activity headline closures cannot supply this fallback, because they
-read one member's data rather than the whole group.
+Single-activity headline closures cannot supply this fallback because they
+access one member's data rather than the whole group.
 
 Give a type its noun:
 
@@ -284,7 +305,10 @@ use App\Models\MenuItem;
 use Storyfeed\Facades\Story;
 
 Story::for(MenuItem::class)->fallback()->noun('dish|dishes');
+Story::for(MenuItem::class)->verb('add')->headline(':actor put :object on the menu');
 ```
+
+<FeedExample :items="[menuGroup]" />
 
 Supply both forms; Storyfeed does not derive plurals. For more plural forms,
 add pipe segments. See [Localization](/deeper/localization#translating-a-noun)
@@ -310,14 +334,14 @@ A noun fallback can say “placed orders” without saying how many:
 
 <FeedExample :items="[nounFallback]" />
 
-A template whose tokens are all pinned is safe to reuse, but its prose can
+A template whose tokens all refer to shared roles is safe to reuse, but its prose can
 still undercount. “Placed an order” below describes three activities as one:
 
 <FeedExample :items="[singularFallback]" />
 
 The same problem occurs with “removed a clause from :target” for two removals.
-Token safety checks shared roles; it does not check the words “a clause”. Write
-an explicit group headline such as “:actor removed :count clauses from :target”
+Token validation checks that roles are shared; it does not check the words “a clause”. Write
+an explicit group headline such as “:actor recorded :count clause removals from :target”
 when each activity represents one removal. If individual details matter, use
 [`log()`](/basics/reading#log) instead.
 
@@ -349,16 +373,30 @@ they must meet:
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Grouping\Axis;
 
-Storyfeed::axes([
-    Axis::make('scene')
-        ->key('v:ca!:cid!:d')                      // same verb, same context, same day
-        ->eligibleWhenDistinct('actor', min: 2),
-]);
+$scene = Axis::make('scene')
+    ->key('v:ca!:cid!:d')
+    ->eligibleWhenDistinct('actor', min: 2);
+
+Storyfeed::axes([$scene]);
 ```
 
 Here, `scene` groups activities in the same [context](/deeper/context), such
 as three customers asking about dishes in one shop. Use `$group->axis('scene', …)`
 inside `grouped()` to define its headline, or `$group->any(…)` to match any axis.
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::verb('ask')->grouped(fn (GroupBuilder $group): GroupBuilder => $group
+    ->axis('scene', ':actors asked questions in :context')
+    ->actors(':actors asked about :target'));
+```
+
+Two customers sharing a context meet this axis's threshold but not the built-in
+`actors` threshold, so the query returns a `scene` group:
+
+<FeedExample :items="[contextGroup(contextRows.slice(0, 2))]" />
 
 <a id="keys"></a>
 
@@ -386,10 +424,21 @@ on a key without a verb (`scene.*` or `*.*`).
 
 ### Prioritizing Axes
 
-New axes have the lowest priority. To place one before a built-in axis:
+With three customers, both `actors` and `scene` qualify. The built-in `actors`
+axis has priority and selects the group:
+
+<FeedExample :items="contextActors" />
+
+New axes have the lowest priority among selectable axes. To put `scene` before
+`actors`, reuse the `$scene` defined above:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::axes([$scene], before: 'repeat');
+Storyfeed::axes([$scene], before: 'actors');
 ```
+
+After group selection runs with this priority, the same activities form a
+`scene` group that names their shared context:
+
+<FeedExample :items="[contextGroup(contextRows)]" />
