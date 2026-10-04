@@ -38,7 +38,7 @@ all findings of that severity. Neither option marks one finding as accepted.
 | `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) none of their activities carry, so the placeholder shows as text. `:actor` over activities that are all anonymous is info | error · info |
 | `actorless` | anonymous activities whose verb has no anonymous headline | info |
 | `reflexive` | activities naming the same entity as actor and object | info |
-| `verbs` | recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
+| `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
 | `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
 | `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
 | `removals` | verbs named like removals (`cancel`, `trash`) whose activities are treated as being about the object. See [Deleted Models](#deleted-models) | info |
@@ -147,6 +147,7 @@ for recording and revisiting a deliberate gap.
 
 | Finding | Severity | Meaning |
 |---|---|---|
+| `verbs.dotted` | warning | a stored verb contains a dot. Reports the verb and activity count; the rows remain readable. Use the action alone as the verb, keep the type as the object, and use [story names](/deeper/named-stories) for dotted lookups |
 | `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verbs#registering-verbs) |
 | `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
 | `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |

@@ -12,8 +12,7 @@ const confirmed = scene.basics.activityContent.confirmed
 A verb names the action in base form, such as `place` or `email`. The object
 type is stored separately, so use `place` rather than `order.place` or
 `place_order`. See [Choosing a Verb](/cookbook/choosing-a-verb) for examples.
-To publish by a name such as `order.place`, use a
-[named story](/deeper/named-stories).
+Declaring or publishing a dotted verb throws `Storyfeed\Exceptions\DottedVerb`; use a [story name](/deeper/named-stories) for dotted lookups such as `order.place`.
 
 You may use a string or an enum case.
 
