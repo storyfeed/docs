@@ -104,6 +104,26 @@ identifies what it checked. `definition` contains the line printed by `--stubs`.
 
 See [Doctor Checks](/reference/doctor#interpreting-findings) for all findings.
 
+<a id="handling-deliberate-gaps"></a>
+
+## Handling Deliberate Findings
+
+If a reported headline is deliberately unused, first check the
+[doctor's coverage limits](/reference/doctor#group-reachability). A clean report
+alone does not establish that every group returned by your feed has a headline.
+
+For a deliberate gap, record the finding code, key, intended read mode,
+`grouping.curate` setting, and reason in your application's maintenance notes. Verify
+that the relevant payload never needs that headline. Revisit the decision
+when read modes or definitions change. The next doctor run will still report
+the finding and apply the same severity.
+
+Use `--only` to run selected checks, or `--fail-on` to set the severity that
+fails CI. Neither option marks an individual finding as accepted. `--only`
+omits entire checks, and changing the threshold affects all findings of that
+severity.
+Keep the complete report available alongside any focused run.
+
 ## Generating Missing Definitions
 
 Use `--stubs` to print suggested definitions for `routes/feed.php`:

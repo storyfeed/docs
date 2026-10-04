@@ -22,6 +22,9 @@ fixing findings.
 | `--stubs` | prints only the suggested definitions, with their `use` lines. See [Generating Missing Definitions](#generating-definitions) |
 | `--fail-on=` | `warning` exits non-zero on a warning or an error; `error` on an error alone. Without it, findings never change the exit status |
 
+`--only` omits entire checks; `--fail-on` changes the failure threshold for
+all findings of that severity. Neither option marks one finding as accepted.
+
 <span id="checks"></span>
 
 ## Available Checks
@@ -130,24 +133,15 @@ repeat group has a headline. Check a representative repeats-only payload and
 its headline definitions directly. These are coverage limits, not reasons to
 run `storyfeed:curate` or change the feed mode solely to clear a report.
 
-### Handling Deliberate Gaps
+<a id="handling-deliberate-gaps"></a>
 
 The doctor has no built-in way to mark one finding as accepted or hide it with
 a recorded reason. It reports `aggregates.latent` based on registered feed
 modes, not a decision recorded by an operator. A repeats-only `live()` feed does
 not receive that inference for its unused axes.
 
-For a deliberate gap, record the finding code, key, intended read mode,
-`grouping.curate` setting, and reason in your application's maintenance notes. Verify
-that the relevant payload never needs that headline. Revisit the decision
-when read modes or definitions change. The next doctor run will still report
-the finding and apply the same severity.
-
-Use `--only` to run selected checks, or `--fail-on` to set the severity that
-fails CI. Neither option marks an individual finding as accepted. `--only`
-omits entire checks, and changing the threshold affects all findings of that
-severity.
-Keep the complete report available alongside any focused run.
+See [Handling Deliberate Findings](/deeper/diagnosing#handling-deliberate-findings)
+for recording and revisiting a deliberate gap.
 
 ### Definitions
 
