@@ -263,6 +263,10 @@ body. See [Activity Data](/basics/recording#adding-activity-data)
 and [Casting](/deeper/casting-activity-data) for retrieving typed details, and
 [Activity Content](/basics/activity-content) for displaying them.
 
+To group a person's changes per document, use the
+[`object` axis](/deeper/aggregation#built-in-axes), which requires the same
+document. The `repeat` axis requires only the same object type.
+
 ## Choosing Between Related Verbs
 
 Choose the word that describes the event in your application.
