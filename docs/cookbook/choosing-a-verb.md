@@ -118,6 +118,14 @@ Both activities store `accept`; the object type selects which headline to use.
 | Different actions on the same object type | Choose different action verbs, such as `send` and `invite`. |
 | The same action on the same type, with different details | Keep one verb; put participants in roles and event details in data. |
 
+To decide whether two events are the same action, write the headline for one
+and read it against the other. If the same headline is true for both, it is
+the same action: keep one verb and put the difference in data.
+*{{ choices.agreement.actor.label }} declined the agreement* is true whether
+{{ choices.agreement.actor.label }} declined directly or declined to sign, so
+both are `decline`. *{{ choices.send.actor.label }} sent the agreement* is not
+true of an invitation to sign, so `send` and `invite` stay separate.
+
 ### Distinguishing Actions on One Object Type
 
 Sending an agreement and inviting someone to sign it are different actions:
