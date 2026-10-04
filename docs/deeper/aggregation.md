@@ -12,6 +12,9 @@ const repeat = liveOf(log)[0]
 const customers = logOf(scene.deeper.aggregation.customers)
 const actors = liveOf(customers)[0]
 const live = liveOf(everything())
+const nounFallback = { ...repeat, headline_template: ':actor placed orders with :target', headline: null }
+const singularFallback = { ...repeat, headline_template: ':actor placed an order with :target', headline: null }
+const unnamedGroup = { ...repeat, headline_template: null, headline: null }
 </script>
 
 ## Grouping Activities
@@ -268,8 +271,10 @@ Storyfeed does not check nouns beside `:count`.
 
 With no group headline, a group tries the single-activity headline. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
-its entities are one type. Otherwise the group has no headline, and
-[your renderer handles it](/basics/rendering#groups-without-headlines).
+its entities are one type. Otherwise both `headline_template` and `headline`
+are `null`. That is a supported payload state; it does not require a blank row.
+Single-activity headline closures cannot supply this fallback, because they
+read one member's data rather than the whole group.
 
 Give a type its noun:
 
@@ -287,6 +292,50 @@ for translated nouns. The default is `item|items`.
 The entity count selects the form: `FeedNoun::form('dish|dishes', 7)` returns
 `dishes`. The headline `:actor put :object on the menu` becomes
 `:actor put dishes on the menu`. The noun is plain text; `:actor` remains a link.
+
+### Seeing the Fallback
+
+| Available headline | What is displayed |
+|---|---|
+| An authored group headline | The group sentence, including its count when the template uses `:count`. |
+| A safe single-activity template | That sentence, with unshared roles replaced by nouns where possible; no count is added automatically. |
+| Neither a group headline nor a safe single-activity template | Storyfeed UI displays “3 activities” for a three-member group and opens its supplied members. |
+
+The authored headline counts the placements:
+
+<FeedExample :items="[repeat]" />
+
+A noun fallback can say “placed orders” without saying how many:
+
+<FeedExample :items="[nounFallback]" />
+
+A template whose tokens are all pinned is safe to reuse, but its prose can
+still undercount. “Placed an order” below describes three activities as one:
+
+<FeedExample :items="[singularFallback]" />
+
+The same problem occurs with “removed a clause from :target” for two removals.
+Token safety checks shared roles; it does not check the words “a clause”. Write
+an explicit group headline such as “:actor removed :count clauses from :target”
+when each activity represents one removal. If individual details matter, use
+[`log()`](/basics/reading#log) instead.
+
+With both headline fields absent, the count and member rows remain visible:
+
+<FeedExample :items="[unnamedGroup]" />
+
+These previews use the docs' Vue renderer. The [Storyfeed UI](/basics/rendering)
+Blade group component also uses the count fallback and opens its disclosure
+when supplied children exist. Its open control says “Show less”; collapsed,
+it says “Show all 3”. If the response caps the children, it reports the number
+not shown. Expanding displays the supplied children; it does not fetch more.
+
+The PHP reader's `$group->headline()` returns a `Headline` value.
+`$group->headline()->isFallback()` is `true` when both payload fields are
+`null`, and `toString()` returns the translated count, such as “3 activities”.
+An explicitly returned empty string is not that null-field fallback. Custom
+renderers choose their own treatment; see
+[Groups Without Headlines](/basics/rendering#groups-without-headlines).
 
 <a id="custom-axes"></a>
 

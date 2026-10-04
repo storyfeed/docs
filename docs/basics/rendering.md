@@ -354,8 +354,11 @@ To render the sample as images, get the role's entities and total count:
 #### Groups Without Headlines
 
 If neither a group headline nor the single-activity headline applies,
-Storyfeed displays the count, such as "5 activities". The headline's
-`isFallback` method returns `true`:
+both payload headline fields are `null`. The PHP reader displays the count,
+such as "5 activities", and the headline's `isFallback` method returns `true`.
+Storyfeed UI opens supplied member rows in this case. See
+[Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the rendered
+outcomes and the limits of a safe singular headline:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
