@@ -113,47 +113,36 @@ Laravel's scheduler.
 
 ### Built-In Axes
 
-Activities can share a group only when the fields in its key agree. These
-are the default grouping keys; `d` uses the configured calendar period, one day by
-default. An identity includes both the role's type and its ID.
+Activities can share a group only when its shared values match. An identity
+includes both the role's type and its ID. The period is one calendar day by
+default.
 
-| Axis | Shared Values | What May Differ | Default Grouping Key |
+| Axis | Shared Values | What May Differ | Singular Tokens Allowed |
 |---|---|---|---|
-| `repeat` | actor identity, verb, object type, target identity, period | object identity | `aa:aid:v:oa:ta:tid:d` |
-| `actors` | verb, target identity, period | actor and object identities, including object type | `v:ta!:tid:d` |
-| `targets` | actor identity, verb, period | target and object identities, including object type | `aa!:aid:v:d` |
-| `object` | actor identity, verb, object identity, period | target identity | `aa:aid:v:oa!:oid!:d` |
+| `repeat` | actor identity, verb, object type, target identity, period | object identity | `:actor`, `:target` |
+| `actors` | verb, target identity, period | actor and object identities, including object type | `:target` |
+| `targets` | actor identity, verb, period | target and object identities, including object type | `:actor` |
+| `object` | actor identity, verb, object identity, period | target identity | `:actor`, `:object` |
+| `composite` | actor, target and context of one published activity | members of its object collection | `:actor`, `:target`, `:context` |
 
-A `repeat` group cannot span two targets. Three edits by one person to clauses
-on one document can name that document as `:target`; edits directed at a
-second document get another repeat key. If the document is the **object**,
-a `repeat` group requires only the same object type. Use the `object` axis to
-require the same document.
+Context, origin, result, instrument and activity data may differ on the four
+ordinary grouping axes. A composite is one published activity with a
+collection of objects; see [Composites](/deeper/composites).
 
-Unlisted fields, including context, origin, result, instrument and activity
-data, may differ on all four axes. `!` requires a nonempty field; without it,
-matching empty roles can share a key. A shared key does not by itself select
-a group: activities must also meet the [thresholds](#configuring-grouping-thresholds),
-and Storyfeed must select the group. [Axis Keys](#axis-keys) explains the field abbreviations.
+A `repeat` group cannot span two targets. When the document is the object,
+`repeat` requires only the same object type. Use the `object` axis to require
+the same document.
 
-A composite is one published activity with a collection of objects. Its
-members share actor, target and context; see [Composites](/deeper/composites).
+Shared values alone do not select a group: activities must also meet the
+[thresholds](#configuring-grouping-thresholds), and Storyfeed must select the
+group. [Axis Keys](#axis-keys) lists the default keys and their field syntax.
+
 The `batch` axis tracks batches internally; it is not a feed grouping choice.
-Summary axes use `aa!:aid!:d` to share an actor and period across verbs;
-[Summary](/basics/reading#summary) describes that separate read mode.
+[Summary](/basics/reading#summary) groups by actor and period across verbs.
 
-The allowed singular tokens depend on the identities shared by all members:
-
-| Axis | Collapses | Singular Tokens Allowed | One Type | Example Headline |
-|---|---|---|---|---|
-| `repeat` | one actor repeating a verb, for one object type and target | `:actor` `:target` | yes | ":actor made :count order placements with :target" |
-| `actors` | many actors, same verb and target | `:target` | no | ":actors ordered from :target" |
-| `targets` | one actor across targets | `:actor` | no | ":actor asked about :targets" |
-| `object` | one actor repeating one verb on one object | `:actor` `:object` | yes | ":actor changed the price of :object :count times" |
-| `composite` | one published activity with a collection of objects | `:actor` `:target` `:context` | — | see [Composites](/deeper/composites#headlines-for-a-composite) |
-
-Headlines for groups marked **One Type** may go in a Story class or inside
-`Story::for()`. Define the others on the verb alone.
+Headlines for `repeat` and `object` groups may go in a Story class or inside
+`Story::for()` because each group contains one object type. Define headlines
+for `actors` and `targets` on the verb alone.
 
 <a id="thresholds"></a>
 
@@ -212,15 +201,8 @@ Where you declare it determines which groups use it.
 
 Storyfeed tries the key with the group's type first, then the key without it.
 
-Choose the declaration location from the axis's shared values. The default
-[grouping period](/deeper/grouping-periods) is one day.
-
-| Shared Values | Axis | Headline | Declared On |
-|---|---|---|---|
-| one actor, verb, target and object type, on one day | `repeat` | `:actor made :count order placements with :target` | the type |
-| one verb and target on one day, from several actors | `actors` | `:actors ordered from :target` | the verb |
-| one actor, verb and object, on one day | `object` | `:actor changed the price of :object :count times` | the type |
-| one actor and verb on one day, across several targets | `targets` | `:actor asked :count questions about :targets` | the verb |
+Choose the declaration location from the [built-in axis table](#built-in-axes):
+`repeat` and `object` share an object type; `actors` and `targets` may span types.
 
 A type-level headline may name that type because every member shares it.
 A verb-level headline may describe several object types, so avoid naming a
@@ -249,7 +231,7 @@ activities in the group.
 <a id="group-headline-tokens"></a>
 
 A singular token is allowed only when **every** activity shares that role,
-as shown in **Singular Tokens Allowed** above. Plural tokens are allowed in
+as shown in [Singular Tokens Allowed](#built-in-axes). Plural tokens are allowed in
 any group headline.
 
 ```php
@@ -414,6 +396,16 @@ where it is empty.
 | `origin` | `ora` | `orid` |
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
+
+The built-in axes use these default keys:
+
+| Axis | Default Grouping Key |
+|---|---|
+| `repeat` | `aa:aid:v:oa:ta:tid:d` |
+| `actors` | `v:ta!:tid:d` |
+| `targets` | `aa!:aid:v:d` |
+| `object` | `aa:aid:v:oa!:oid!:d` |
+| summary | `aa!:aid!:d` |
 
 Add `v` to group by verb and `d` to group by calendar period (a day by default).
 A singular token such as `:context` requires both of that role's fields in the
