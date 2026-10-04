@@ -34,6 +34,11 @@ Story::for(Order::class)->verb('place')
 
 <a id="publishing-an-activity"></a>
 
+Only concrete declarations can be named. Fallbacks (`fallback()`, verb `*`)
+cannot: they supply defaults rather than a story you publish. Calling
+`->name()` on a fallback throws. Leave fallback rows unnamed in
+`storyfeed:list` and skip them in naming-completeness checks.
+
 ## Publishing Named Stories
 
 Publish it by name:
@@ -240,6 +245,76 @@ to fail with both declaration locations, as they do for Laravel's `route:cache`.
 At runtime, the last declaration with that name is used.
 
 <a id="checking-names-with-phpstan"></a>
+
+## Testing Story Names
+
+If your application requires every concrete declaration to have a name, test
+the definitions returned by the public listing command. Run these tests with
+an uncached application so they check the current declarations:
+
+```php memo="tests/Feature/StoryNamesTest.php"
+use Illuminate\Support\Facades\Artisan;
+
+it('names every concrete declaration', function () {
+    expect(Artisan::call('storyfeed:list', ['--json' => true]))->toBe(0);
+
+    $rows = json_decode(Artisan::output(), true, flags: JSON_THROW_ON_ERROR);
+    $concrete = array_values(array_filter(
+        $rows,
+        fn (array $row): bool => $row['verb'] !== '*',
+    ));
+
+    expect($concrete)->not->toBeEmpty();
+
+    foreach ($concrete as $row) {
+        expect($row['name'], $row['type'].'.'.$row['verb'])
+            ->toBeString()->not->toBe('');
+    }
+});
+```
+
+This checks each declaration's own name. A named wildcard declaration does
+not make an unnamed type-specific declaration pass. Hand-written registry
+entries are not declarations and do not appear in this listing.
+
+Test cache compilation separately. Give the manifest a unique temporary path,
+because `storyfeed:cache` deletes the previous manifest before compiling:
+
+```php memo="tests/Feature/StoryNamesTest.php"
+use Illuminate\Support\Facades\Artisan;
+use Storyfeed\Stories\StoryManifest;
+
+it('compiles story names without conflicts', function () {
+    $directory = sys_get_temp_dir().'/storyfeed-'.bin2hex(random_bytes(8));
+    mkdir($directory);
+    $path = $directory.'/manifest.php';
+
+    $manifest = Mockery::mock(StoryManifest::class, [$this->app])->makePartial();
+    $manifest->shouldReceive('path')->andReturn($path);
+    $this->app->instance(StoryManifest::class, $manifest);
+
+    try {
+        $status = Artisan::call('storyfeed:cache');
+
+        expect($status, Artisan::output())->toBe(0);
+        expect(is_file($path))->toBeTrue();
+    } finally {
+        $manifest->delete();
+        rmdir($directory);
+    }
+});
+```
+
+The cache test catches duplicate names, two names for one definition key,
+conflicting definitions and uncacheable closures. The manifest-exists assertion
+also prevents an empty registry from passing. Each test owns its file, including
+when tests run in parallel. Keep your application's normal Laravel test setup;
+these examples use Pest and Mockery.
+
+For a specific lookup, `Storyfeed::storyNames()` returns `name => type.verb`,
+`Storyfeed::namedStory($name)` returns that key or `null`, and
+`Storyfeed::storyNameFor($type, $verb)` resolves the name, including a wildcard
+type fallback. These methods are available through `Storyfeed\Facades\Storyfeed`.
 
 ## Checking Names With Static Analysis
 
