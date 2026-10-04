@@ -38,7 +38,7 @@ fixing findings.
 | `verbs` | recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
 | `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
 | `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
-| `removals` | recorded verbs named like removals (`cancel`, `trash`) but are treated as being about their object. See [Deleted Models](#deleted-models) | info |
+| `removals` | verbs named like removals (`cancel`, `trash`) whose activities are treated as being about the object. See [Deleted Models](#deleted-models) | info |
 | `labels` | `Feedable` models whose label is guessed. See [Deleted Models](#deleted-models) | info |
 | `inherited` | `Feedable` subclasses deleted through a parent that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
 | `surface` | `Feedable` models without recorded activities, and ones the enforced morph map cannot name. See [Surface](#surface) | warning · info |
@@ -46,12 +46,12 @@ fixing findings.
 | `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
 | `body` | the [body types](/deeper/body) stored, a body with no `$body` key, and a body type versioned on some records but not others | warning · info |
 | `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
-| `keep_latest` | several live activities on a [`keepLatest()`](/deeper/keeping-the-latest-activity) key, or superseded activities on a verb that declares none | warning · info |
+| `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key, or superseded activities for a verb without a `keepLatest()` declaration | warning · info |
 | `retention` | activities past their verb's retention window, and frequent verbs without a retention limit. See [Retention](#retention) | warning · info |
-| `actions` | Story class methods that take the request and threw when a job was dispatched, and methods that call `request()` instead of taking `Request`. See [Actions](#actions) | warning |
-| `recording` | recording switched off (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so every `publish()` saves nothing. An error outside `testing`, info under it | error · info |
+| `actions` | Story class methods that accept a request and threw during job dispatch, or call `request()` instead of accepting a `Request` parameter. See [Actions](#actions) | warning |
+| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities; error outside the `testing` environment, info within it | error · info |
 | `tables` | missing package tables. Until `feed_tombstones` exists, deleted models leave no tombstone | error |
-| `columns` | missing columns in the package tables. Writes that touch them throw | error |
+| `columns` | missing package columns; writes requiring them throw an exception | error |
 | `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
 | `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
 | `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
@@ -63,27 +63,27 @@ fixing findings.
 | `freshness` | nothing published for `doctor.stale_after` days | warning · info |
 | `maintenance` | the last completed `storyfeed:curate` and `storyfeed:trickle` runs, and what they did | info |
 
-<a id="interpreting-findings"></a>
-
 ## Sampling and Scope
 
 A doctor report is a set of checks, not a complete count of affected records.
-Most checks query applicable records or inspect registered definitions without
-a fixed newest-row sample. The bounded probes are:
+Most checks query all applicable records or inspect registered definitions.
+These checks inspect a limited set:
 
 | Check | Scope | How to Read the Count |
 |---|---|---|
-| `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; walks nested data maps to depth 4 | body occurrences and malformed maps in those rows, not an installation-wide affected-activity total. One row can contain several maps. When either table supplies 200 rows, finding messages say the result is sampled |
+| `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; examines nested data maps up to four levels deep | counts body occurrences and malformed maps in sampled records, not all affected activities. One record may contain several maps. The finding states that it is sampled when either query returns 200 records |
 | `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
 | `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
-| `grouping` → `grouping.ungrouped` | counts all activities without grouping rows, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
-| `aggregates` | selected winner rows clustered by axis and hash, with at least two members | headline gaps among those winner clusters, not all groups a read query can return. See [Group Reachability](#group-reachability) |
+| `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
+| `aggregates` | groups selected for display, identified by axis and hash, with at least two members | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
 
 Other checks may bound their time window or quote a few examples without
 sampling the count. For example, `retention.unbounded` considers 30 days;
 `freshness` uses `doctor.stale_after`; maintenance findings describe recorded
 maintenance runs. Read each finding's scope before treating its count as a
 backlog. No findings means no problem was detected within those scopes.
+
+<a id="interpreting-findings"></a>
 
 ## Findings
 
@@ -96,18 +96,16 @@ Truncated hashes can group unrelated activities together.
 
 ### Snapshot Shapes
 
-`shapes.mixed` warns when snapshots lack fingerprints or carry mixed
-fingerprints before a converged maintenance pass. Run `storyfeed:trickle` to
-compare snapshots with their models and refresh stale ones. Mixed fingerprints
-remaining after a pass that rewrites nothing are informational: optional keys
-can legitimately produce different shapes. No repair is needed for that
-converged variation.
+`shapes.mixed` warns about missing or mixed snapshot fingerprints. Run
+`storyfeed:trickle` to compare snapshots with their models and refresh stale
+ones. If a later run changes nothing, remaining differences are informational:
+optional keys can produce different shapes. Those differences need no repair.
 
 ### Group Reachability
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `aggregates.missing` | error | a winner cluster has no headline and a registered feed may read it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
+| `aggregates.missing` | error | a group selected for display has no headline and a registered feed may return it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
 | `aggregates.latent` | info | a group has no headline but is unused by registered feeds; `--stubs` generates nothing and `--fail-on=warning` ignores it |
 | `aggregates.reachability_unknown` | info | no feeds are registered, or a feed threw during inspection; all headline gaps are reported as `aggregates.missing` |
 
@@ -121,41 +119,41 @@ feed's mode, and a custom query can narrow it beyond what the doctor sees.
 | `summary()` | summary phrases only |
 | `live()` | every registered axis, even when `grouping.curate` is false |
 
-The last row is a current diagnostic limitation. With curation off, the actual
-`live()` query reads repeats only and ignores older winner stamps. The doctor
-can still report missing object or target headlines from those stamps because
-its reachability calculation does not inspect the curation setting.
+When `grouping.curate` is false, `live()` returns only repeat groups. The doctor
+does not inspect this setting, so it may report missing headlines for object
+or target groups selected earlier.
 
-The aggregate check also selects `winner = true` clusters. It can miss repeat
+The aggregate check also queries groups selected for display (`winner = true`). It can miss repeat
 groups returned by a repeats-only feed, or by the fallback for an activity
-without a winner. A clean aggregate report does not prove that every visible
+without another group selected. A clean aggregate report does not prove that every visible
 repeat group has a headline. Check a representative repeats-only payload and
 its headline definitions directly. These are coverage limits, not reasons to
-run curation or change the feed mode solely to clear a report.
+run `storyfeed:curate` or change the feed mode solely to clear a report.
 
 ### Handling Deliberate Gaps
 
-There is no built-in baseline file, per-finding acknowledgment, or reason field
-that suppresses a finding. `aggregates.latent` is inferred from registered feed
-modes; it is not an operator acknowledgment. A repeats-only `live()` feed does
-not currently receive that inference for its unused axes.
+The doctor has no built-in way to mark one finding as accepted or hide it with
+a recorded reason. It reports `aggregates.latent` based on registered feed
+modes, not a decision recorded by an operator. A repeats-only `live()` feed does
+not receive that inference for its unused axes.
 
 For a deliberate gap, record the finding code, key, intended read mode,
-curation setting, and reason in your application's maintenance notes. Verify
+`grouping.curate` setting, and reason in your application's maintenance notes. Verify
 that the relevant payload never needs that headline. Revisit the decision
 when read modes or definitions change. The next doctor run will still report
 the finding and apply the same severity.
 
-Use `--only` to focus triage on particular checks, or `--fail-on` to choose the
-CI severity threshold. Neither acknowledges one finding: `--only` omits entire
-checks, and changing the threshold affects all findings of that severity.
+Use `--only` to run selected checks, or `--fail-on` to set the severity that
+fails CI. Neither option marks an individual finding as accepted. `--only`
+omits entire checks, and changing the threshold affects all findings of that
+severity.
 Keep the complete report available alongside any focused run.
 
 ### Definitions
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/basics/verbs) |
+| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verbs#registering-verbs) |
 | `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
 | `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
 
@@ -323,12 +321,12 @@ queries required per page.
 | Finding | Severity | Meaning |
 |---|---|---|
 | `grouping.ungrouped` | warning | activities have no grouping records and can only appear individually; run `storyfeed:curate --rehash` |
-| `grouping.uncurated` | warning | activities have eligible candidate grouping rows but no selected winner; the read path falls back to repeat. Skipped when `grouping.curate` is false |
+| `grouping.uncurated` | warning | activities have eligible groups, but no group has been selected for display, so the query returns repeat groups. Skipped when `grouping.curate` is false |
 
-`grouping.uncurated` counts the eligible backlog without a newest-row sample.
-It excludes non-curated buckets such as composites and summary partitions.
-Its message distinguishes rows the scheduled curation window can reach from
-older rows needing an unbounded `storyfeed:curate` run.
+This check is skipped when `grouping.curate` is false. It counts all eligible
+activities awaiting group selection, excluding composites and summary groups.
+The finding separates activities within the scheduled command's time window
+from older activities that require `storyfeed:curate` without a time limit.
 
 <span id="generating-definitions"></span>
 

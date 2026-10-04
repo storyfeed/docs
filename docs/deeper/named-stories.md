@@ -8,10 +8,10 @@ type throws an exception before an activity is recorded.
 [Static analysis](#checking-names-with-static-analysis) can also check these
 names in your code.
 
-A name is how your code refers to a declaration. The verb is what's stored on
-the activity, and what its headline is declared for. Naming a declaration never
-changes its verb, so renaming one is free, while changing a verb needs a data
-migration.
+A declaration's name is used by application code; its verb is stored with
+activities. Renaming a declaration does not require changing stored activities,
+but you must update code that uses the name. Changing the stored verb requires
+a data migration.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -34,20 +34,36 @@ Story::for(Order::class)->verb('place')
 
 <a id="publishing-an-activity"></a>
 
-Only concrete declarations can be named. Fallbacks (`fallback()`, verb `*`)
-cannot: they supply defaults rather than a story you publish. Calling
-`->name()` on a fallback throws. Leave fallback rows unnamed in
-`storyfeed:list` and skip them in naming-completeness checks.
+You can name declarations for a specific verb. Fallback declarations
+(`fallback()` or verb `*`) supply defaults and cannot be named; calling `name`
+on them throws an exception. Exclude fallbacks when testing that every
+declaration has a name.
 
 ## Publishing Named Stories
 
 Publish it by name:
 
-```php
-story('order.place', $order) // [!code highlight]
-    ->by($request->user())
-    ->to($order->shop)
-    ->publish();
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class PlaceOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $activity = story('order.place', $order)
+            ->by($request->user())
+            ->to($order->shop)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
 <FeedExample :items="[placed]" />
@@ -85,7 +101,7 @@ Story::as('billing.')->group(function () {
 
 <FeedExample :items="[placed]" />
 
-This is an alternative to the preceding declaration. The prefix is appended
+This is an alternative to the preceding declaration. The prefix is prepended
 exactly as written, including the dot, producing `billing.place`.
 
 The `Story::name` method is an alias for `Story::as`, following Laravel's
@@ -218,6 +234,8 @@ JSON output include each definition's name.
 
 ### Matching Names
 
+Use `$activity` returned by `publish()` in the controller above:
+
 ```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Story;
 
@@ -236,15 +254,29 @@ activities. The `storyName` method looks up the activity's object type and verb.
 If its declaration is unnamed, `storyName` returns `null` and `storyIs` returns
 `false`.
 
+The `Storyfeed\Facades\Storyfeed` facade also provides these lookups:
+
+| Method | Returns |
+|---|---|
+| `Storyfeed::storyNames()` | all names as `name => type.verb` |
+| `Storyfeed::namedStory($name)` | the definition key, or `null` |
+| `Storyfeed::storyNameFor($type, $verb)` | the name, including a wildcard type fallback |
+
 <a id="checking-names-during-deployment"></a>
 
 ## Caching Named Stories
 
+```bash
+php artisan storyfeed:cache
+```
+
+Require this command to succeed in an isolated CI or deployment run. It checks
+for duplicate names, conflicting definitions and uncacheable closures. See
+[Caching Definitions](/reference/commands#caching-definitions).
+
 Duplicate names cause [`storyfeed:cache`](/basics/the-feed-file#caching-definitions)
 to fail with both declaration locations, as they do for Laravel's `route:cache`.
 At runtime, the last declaration with that name is used.
-
-<a id="checking-names-with-phpstan"></a>
 
 ## Testing Story Names
 
@@ -277,44 +309,7 @@ This checks each declaration's own name. A named wildcard declaration does
 not make an unnamed type-specific declaration pass. Hand-written registry
 entries are not declarations and do not appear in this listing.
 
-Test cache compilation separately. Give the manifest a unique temporary path,
-because `storyfeed:cache` deletes the previous manifest before compiling:
-
-```php memo="tests/Feature/StoryNamesTest.php"
-use Illuminate\Support\Facades\Artisan;
-use Storyfeed\Stories\StoryManifest;
-
-it('compiles story names without conflicts', function () {
-    $directory = sys_get_temp_dir().'/storyfeed-'.bin2hex(random_bytes(8));
-    mkdir($directory);
-    $path = $directory.'/manifest.php';
-
-    $manifest = Mockery::mock(StoryManifest::class, [$this->app])->makePartial();
-    $manifest->shouldReceive('path')->andReturn($path);
-    $this->app->instance(StoryManifest::class, $manifest);
-
-    try {
-        $status = Artisan::call('storyfeed:cache');
-
-        expect($status, Artisan::output())->toBe(0);
-        expect(is_file($path))->toBeTrue();
-    } finally {
-        $manifest->delete();
-        rmdir($directory);
-    }
-});
-```
-
-The cache test catches duplicate names, two names for one definition key,
-conflicting definitions and uncacheable closures. The manifest-exists assertion
-also prevents an empty registry from passing. Each test owns its file, including
-when tests run in parallel. Keep your application's normal Laravel test setup;
-these examples use Pest and Mockery.
-
-For a specific lookup, `Storyfeed::storyNames()` returns `name => type.verb`,
-`Storyfeed::namedStory($name)` returns that key or `null`, and
-`Storyfeed::storyNameFor($type, $verb)` resolves the name, including a wildcard
-type fallback. These methods are available through `Storyfeed\Facades\Storyfeed`.
+<a id="checking-names-with-phpstan"></a>
 
 ## Checking Names With Static Analysis
 
