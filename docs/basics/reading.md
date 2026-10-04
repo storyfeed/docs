@@ -77,6 +77,9 @@ Storyfeed::feed()->live()->get();
 
 <FeedExample :items="live" days height="520" />
 
+See [Choosing What to Group](/cookbook/choosing-what-to-group) when deciding
+which events belong in an overview and which need individual rows.
+
 ### Summary
 
 Summary mode groups activities by actor and day, with phrases such as

@@ -3,7 +3,9 @@
 ## Introduction
 
 Aggregation combines related activities into one feed item, so three orders
-from one customer appear as one row.
+from one customer appear as one row. See
+[Choosing What to Group](/cookbook/choosing-what-to-group) to decide when that
+helps the reader.
 
 <script setup>
 import { scene, logOf, liveOf, everything } from '../.vitepress/theme/world'
