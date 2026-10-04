@@ -65,6 +65,26 @@ fixing findings.
 
 <a id="interpreting-findings"></a>
 
+## Sampling and Scope
+
+A doctor report is a set of checks, not a complete count of affected records.
+Most checks query applicable records or inspect registered definitions without
+a fixed newest-row sample. The bounded probes are:
+
+| Check | Scope | How to Read the Count |
+|---|---|---|
+| `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; walks nested data maps to depth 4 | body occurrences and malformed maps in those rows, not an installation-wide affected-activity total. One row can contain several maps. When either table supplies 200 rows, finding messages say the result is sampled |
+| `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
+| `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
+| `grouping` → `grouping.ungrouped` | counts all activities without grouping rows, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
+| `aggregates` | selected winner rows clustered by axis and hash, with at least two members | headline gaps among those winner clusters, not all groups a read query can return. See [Group Reachability](#group-reachability) |
+
+Other checks may bound their time window or quote a few examples without
+sampling the count. For example, `retention.unbounded` considers 30 days;
+`freshness` uses `doctor.stale_after`; maintenance findings describe recorded
+maintenance runs. Read each finding's scope before treating its count as a
+backlog. No findings means no problem was detected within those scopes.
+
 ## Findings
 
 ### Grouping Hashes
@@ -87,12 +107,49 @@ converged variation.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `aggregates.missing` | error | a type-and-verb group has no headline and is used by a registered feed; Storyfeed falls back to the single-activity headline when valid, or returns no headline |
+| `aggregates.missing` | error | a winner cluster has no headline and a registered feed may read it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
 | `aggregates.latent` | info | a group has no headline but is unused by registered feeds; `--stubs` generates nothing and `--fail-on=warning` ignores it |
 | `aggregates.reachability_unknown` | info | no feeds are registered, or a feed threw during inspection; all headline gaps are reported as `aggregates.missing` |
 
-Register feeds so the check can distinguish missing headlines they use from
-those they do not.
+Register feeds so the check can inspect their declared read modes and verb
+filters. It does not execute every call-site query. A call site can override a
+feed's mode, and a custom query can narrow it beyond what the doctor sees.
+
+| Declared Read Mode | Doctor Reachability |
+|---|---|
+| `log()` | no group axes |
+| `summary()` | summary phrases only |
+| `live()` | every registered axis, even when `grouping.curate` is false |
+
+The last row is a current diagnostic limitation. With curation off, the actual
+`live()` query reads repeats only and ignores older winner stamps. The doctor
+can still report missing object or target headlines from those stamps because
+its reachability calculation does not inspect the curation setting.
+
+The aggregate check also selects `winner = true` clusters. It can miss repeat
+groups returned by a repeats-only feed, or by the fallback for an activity
+without a winner. A clean aggregate report does not prove that every visible
+repeat group has a headline. Check a representative repeats-only payload and
+its headline definitions directly. These are coverage limits, not reasons to
+run curation or change the feed mode solely to clear a report.
+
+### Handling Deliberate Gaps
+
+There is no built-in baseline file, per-finding acknowledgment, or reason field
+that suppresses a finding. `aggregates.latent` is inferred from registered feed
+modes; it is not an operator acknowledgment. A repeats-only `live()` feed does
+not currently receive that inference for its unused axes.
+
+For a deliberate gap, record the finding code, key, intended read mode,
+curation setting, and reason in your application's maintenance notes. Verify
+that the relevant payload never needs that headline. Revisit the decision
+when read modes or definitions change. The next doctor run will still report
+the finding and apply the same severity.
+
+Use `--only` to focus triage on particular checks, or `--fail-on` to choose the
+CI severity threshold. Neither acknowledges one finding: `--only` omits entire
+checks, and changing the threshold affects all findings of that severity.
+Keep the complete report available alongside any focused run.
 
 ### Definitions
 
@@ -266,7 +323,12 @@ queries required per page.
 | Finding | Severity | Meaning |
 |---|---|---|
 | `grouping.ungrouped` | warning | activities have no grouping records and can only appear individually; run `storyfeed:curate --rehash` |
-| `grouping.uncurated` | warning | activities have grouping records, but no group has been selected for display; run `storyfeed:curate` |
+| `grouping.uncurated` | warning | activities have eligible candidate grouping rows but no selected winner; the read path falls back to repeat. Skipped when `grouping.curate` is false |
+
+`grouping.uncurated` counts the eligible backlog without a newest-row sample.
+It excludes non-curated buckets such as composites and summary partitions.
+Its message distinguishes rows the scheduled curation window can reach from
+older rows needing an unbounded `storyfeed:curate` run.
 
 <span id="generating-definitions"></span>
 
