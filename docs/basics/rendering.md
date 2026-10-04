@@ -96,7 +96,7 @@ and indigo for links. To change these styles, publish the views and edit their
 utility classes. You may also customize Tailwind's existing theme variables,
 such as `--color-indigo-700` and `--color-indigo-300`, in your application's
 `@theme` block. These changes apply to every component using those colours.
-The kit defines no additional theme variables. ItemList, Prose, and Excerpt use the
+Storyfeed UI defines no additional theme variables. ItemList, Prose, and Excerpt use the
 Typography plugin's `prose` styles.
 
 The components include `dark:` variants and follow your application's
@@ -120,7 +120,9 @@ are your application's own anonymous components in
 `<x-feed.item>`, and so on, separately from Storyfeed UI's
 `<x-storyfeed::feed>`.
 
-### Reading Feed Items
+<a id="reading-feed-items"></a>
+
+### Accessing Feed Items
 
 Iterating over a feed page returns each item as a `Storyfeed\Support\FeedItem`.
 Use its methods to access the [payload](/reference/payload):
@@ -317,7 +319,7 @@ and headline tokens.
     <div>{{ $group->headline() }}</div>
     <x-feed.time :at="$group->publishedAt()" />
 
-    <details>
+    <details @if ($group->headline()->isFallback()) open @endif>
         <summary>{{ $group->count() }} activities</summary>
 
         @foreach ($group->children() as $child)
@@ -354,15 +356,19 @@ To render the sample as images, get the role's entities and total count:
 #### Groups Without Headlines
 
 If neither a group headline nor the single-activity headline applies,
-both payload headline fields are `null`. The PHP reader displays the count,
-such as "5 activities", and the headline's `isFallback` method returns `true`.
-Storyfeed UI opens supplied member rows in this case. See
+both payload headline fields are `null`. The PHP reader returns a fallback
+headline such as “5 activities”, and the headline's `isFallback` method returns
+`true`. The custom component above opens its supplied members through the
+conditional `open` attribute. Storyfeed UI also opens supplied member rows. See
 [Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the rendered
 outcomes and the limits of a safe singular headline:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
 ```
+
+The preview shows the expanded members and fallback headline produced by this
+component, using the docs’ styling:
 
 <FeedExample :items="[unnamed]" />
 
@@ -382,7 +388,7 @@ separately, use the `phrases` method. It returns feed items with their own
 #### Quoted Text
 
 Render quoted words as an [`Excerpt` body](/basics/activity-content#adding-quoted-text).
-The body dispatcher and Excerpt component below handle its text and attribution.
+The body component and Excerpt component below handle its text and attribution.
 
 The `data` method returns values stored with the activity. Choose which values
 to display.
@@ -400,7 +406,7 @@ bodies in the activity row:
 
 Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
 Match that full identifier to an explicit body class and component. Upgrade
-the stored version before rendering; core preserves the stored shape. Skip
+the stored version before rendering; Storyfeed preserves the stored shape. Skip
 unknown types and versions newer than this renderer supports. Extend this map
 when adding another body component:
 
@@ -562,7 +568,7 @@ defineProps<{ feed: Record<string, any> }>()
 </template>
 ```
 
-Vue receives the payload as arrays. The `FeedHeadline` component separates the
+Vue receives a feed object containing an array of items. The `FeedHeadline` component separates the
 template into text and entities. The `Feed` component retains loaded items and
 retrieves the next page with a partial reload of the `feed` prop:
 
