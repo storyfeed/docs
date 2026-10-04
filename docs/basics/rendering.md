@@ -246,7 +246,7 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 
 <FeedExample :items="[one]">
   <template #preview>
-    <strong><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></strong>
+    <span><strong><EntityLink :entity="one.actor" /></strong> placed <strong><EntityLink :entity="one.object" /></strong> with <strong><EntityLink :entity="one.target" /></strong></span>
   </template>
 </FeedExample>
 
