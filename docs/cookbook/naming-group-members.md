@@ -66,18 +66,19 @@ label as it was when the rewrite occurred:
 
 ## Write a Group Headline Callback
 
-Register the callback in a service provider's `boot()` method. The current
-`GroupBuilder::object()` and `Group::headline()` methods accept strings only;
-a `GroupSlice` callback goes through the aggregate registry. Keep registry
-calls out of `routes/feed.php` so the feed file remains cacheable.
+Add the group headline to the same definition in `routes/feed.php`:
 
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\Facades\Storyfeed;
+```php memo="routes/feed.php"
+use App\Models\Document;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\Group;
 use Storyfeed\Models\Activity;
 use Storyfeed\Payload\GroupSlice;
 
-Storyfeed::aggregateGrammar([
-    'object.document.rewrite' => function (GroupSlice $slice): string {
+Story::for(Document::class)->verb('rewrite')
+    ->headline(':actor rewrote :object')
+    ->icon('file-pen')
+    ->grouped(Group::byObject()->headline(function (GroupSlice $slice): string {
         $agreement = $slice->members->first()?->data['agreement'] ?? null;
         $agreement = is_string($agreement) && trim($agreement) !== ''
             ? trim($agreement)
@@ -96,17 +97,15 @@ Storyfeed::aggregateGrammar([
         $details = $names->isEmpty() ? '' : ': '.$names->implode(', ').$suffix;
 
         return "Recorded {$slice->count} clause rewrites on {$agreement}{$details}";
-    },
-]);
+    }));
 ```
 
 For three recorded activities, the callback produces:
 
 <FeedExample :items="preview(rewrites)" />
 
-The `object` axis requires the same actor and agreement. The registry key
-combines that axis, the document's morph alias and the plain verb `rewrite`.
-The clause name stays in activity data; it is not part of the verb.
+`Group::byObject()` uses the `object` axis, which requires the same actor and
+agreement. The clause name stays in activity data; it is not part of the verb.
 
 The callback returns finished text. Role tokens such as `:target` in its
 return value are not expanded; the payload has a null `headline_template`
