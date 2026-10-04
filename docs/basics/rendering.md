@@ -356,12 +356,18 @@ To render the sample as images, get the role's entities and total count:
 #### Groups Without Headlines
 
 If neither a group headline nor the single-activity headline applies,
-both payload headline fields are `null`. The PHP reader returns a fallback
-headline such as “5 activities”, and the headline's `isFallback` method returns
-`true`. The custom component above opens its supplied members through the
-conditional `open` attribute. Storyfeed UI also opens supplied member rows. See
-[Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the rendered
-outcomes and the limits of a safe singular headline:
+both payload headline fields are `null`. The PHP reader's `$group->headline()`
+returns a `Headline` value: `isFallback()` is `true`, and `toString()` returns
+the translated count, such as “3 activities”. An explicitly returned empty
+string does not use this null-field fallback.
+
+Storyfeed UI's Blade group component opens its disclosure when supplied
+children exist. Its open control says “Show less”; collapsed, it says
+“Show all 3”. If the response limits the children, it reports the number not
+shown. Expanding displays the supplied children; it does not fetch more.
+
+The custom component above opens its supplied members through the conditional
+`open` attribute. You can style its fallback headline separately:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
@@ -371,6 +377,10 @@ The preview shows the expanded members and fallback headline produced by this
 component, using the docs’ styling:
 
 <FeedExample :items="[unnamed]" />
+
+See [Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the
+authored, noun and null payload outcomes, including a safe template whose
+wording undercounts the activities.
 
 #### Summary Rows {#digest-rows}
 

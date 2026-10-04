@@ -302,11 +302,11 @@ The entity count selects the form: `FeedNoun::form('dish|dishes', 7)` returns
 
 ### Seeing the Fallback
 
-| Available headline | What is displayed |
+| Available Headline | Payload |
 |---|---|
-| An authored group headline | The group sentence, including its count when the template uses `:count`. |
-| A safe single-activity template | That sentence, with unshared roles replaced by nouns where possible; no count is added automatically. |
-| Neither a group headline nor a safe single-activity template | Storyfeed UI displays “3 activities” for a three-member group and opens its supplied members. |
+| An authored group headline | The authored template or finished text; `:count` supplies the activity count. |
+| A safe single-activity template | The single-activity template with unshared roles replaced by nouns where possible; no count is added automatically. |
+| Neither a group headline nor a safe single-activity template | Both `headline_template` and `headline` are `null`; member counts and children remain available. |
 
 The authored headline counts the placements:
 
@@ -331,18 +331,8 @@ With both headline fields absent, the count and member rows remain visible:
 
 <FeedExample :items="[unnamedGroup]" />
 
-These previews use the docs' Vue renderer. The [Storyfeed UI](/basics/rendering)
-Blade group component also uses the count fallback and opens its disclosure
-when supplied children exist. Its open control says “Show less”; collapsed,
-it says “Show all 3”. If the response caps the children, it reports the number
-not shown. Expanding displays the supplied children; it does not fetch more.
-
-The PHP reader's `$group->headline()` returns a `Headline` value.
-`$group->headline()->isFallback()` is `true` when both payload fields are
-`null`, and `toString()` returns the translated count, such as “3 activities”.
-An explicitly returned empty string is not that null-field fallback. Custom
-renderers choose their own treatment; see
-[Groups Without Headlines](/basics/rendering#groups-without-headlines).
+See [Groups Without Headlines](/basics/rendering#groups-without-headlines) to
+render this payload.
 
 <a id="custom-axes"></a>
 
