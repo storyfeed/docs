@@ -99,12 +99,42 @@ Laravel's scheduler.
 
 ### Built-In Axes
 
+Activities can share a group only when the fields in its key agree. These
+are the default recipes; `d` uses the configured calendar period, one day by
+default. An identity includes both the role's type and its ID.
+
+| Axis | Pinned values | What may vary | Default key recipe |
+|---|---|---|---|
+| `repeat` | actor identity, verb, object type, target identity, period | object identity | `aa:aid:v:oa:ta:tid:d` |
+| `actors` | verb, target identity, period | actor and object identities, including object type | `v:ta!:tid:d` |
+| `targets` | actor identity, verb, period | target and object identities, including object type | `aa!:aid:v:d` |
+| `object` | actor identity, verb, object identity, period | target identity | `aa:aid:v:oa!:oid!:d` |
+
+A `repeat` group cannot span two targets. Three edits by one person to clauses
+on one document can name that document as `:target`; edits directed at a
+second document get another repeat key. If the document is the **object**,
+repeat pins only its type. Use the `object` axis to pin that document's identity.
+
+Unlisted fields, including context, origin, result, instrument and activity
+data, may differ on all four axes. `!` requires a nonempty field; without it,
+matching empty roles can share a key. A shared key does not by itself select
+a group: the [thresholds](#configuring-grouping-thresholds) and curation still
+apply. [Axis Keys](#axis-keys) explains the field abbreviations.
+
+`composite` uses an authored collection row rather than a field recipe. It
+shares actor, target and context; see [Composites](/deeper/composites).
+The `batch` axis is an infrastructure row, not a feed grouping choice.
+Summary axes use `aa!:aid!:d` to share an actor and period across verbs;
+[Summary](/basics/reading#summary) describes that separate read mode.
+
+The singular tokens follow from the pinned identities:
+
 | Axis | Collapses | Singular Tokens Allowed | One Type | Example Headline |
 |---|---|---|---|---|
-| `repeat` | one actor repeating a verb | `:actor` `:target` | yes | ":actor placed :count orders with :target" |
+| `repeat` | one actor repeating a verb, for one object type and target | `:actor` `:target` | yes | ":actor placed :count orders with :target" |
 | `actors` | many actors, same verb and target | `:target` | no | ":actors ordered from :target" |
 | `targets` | one actor across targets | `:actor` | no | ":actor asked about :targets" |
-| `object` | many actions on one object | `:actor` `:object` | yes | ":actor changed the price of :object :count times" |
+| `object` | one actor repeating one verb on one object | `:actor` `:object` | yes | ":actor changed the price of :object :count times" |
 | `composite` | an authored collection story | `:actor` `:target` `:context` | — | see [Composites](/deeper/composites#headlines-for-a-composite) |
 
 Headlines for groups marked **One Type** may go in a Story class or inside
