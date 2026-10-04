@@ -1,10 +1,16 @@
 # Rendering
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { computed } from 'vue'
+import FeedHeadline from '../.vitepress/theme/feed/FeedHeadline.vue'
+import EntityLink from '../.vitepress/theme/feed/EntityLink.vue'
+import FeedIcon from '../.vitepress/theme/feed/FeedIcon.vue'
+import { useRelativeTime } from '../.vitepress/theme/feed/useRelativeTime'
+import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const bare = { ...scene.order, glyph: null }
 const one = scene.order
+const time = useRelativeTime(computed(() => one.published_at))
+const summary = summaryOf(scene.cookbook.transitions.timeline)
 const vueHeadlines = { [one.id]: `${one.actor.label} placed ${one.object.label} with ${one.target.label}` }
 const grouped = liveOf(scene.busyPlace)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
@@ -121,6 +127,24 @@ are your application's own anonymous components in
 `<x-feed.item>`, and so on, separately from Storyfeed UI's
 `<x-storyfeed::feed>`.
 
+### The Feed Components
+
+Create these anonymous Blade components in `resources/views/components/feed`:
+
+| Component | File | Renders |
+|---|---|---|
+| `<x-feed>` | `feed.blade.php` | the feed and pagination link |
+| `<x-feed.item>` | `item.blade.php` | an activity or group |
+| `<x-feed.activity>` | `activity.blade.php` | an activity row |
+| `<x-feed.group>` | `group.blade.php` | a group row and its members |
+| `<x-feed.glyph>` | `glyph.blade.php` | the icon |
+| `<x-feed.time>` | `time.blade.php` | the publication time |
+| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | a body using its type |
+
+Blade renders `feed/feed.blade.php` as `<x-feed>` because the file name matches
+its directory. See Laravel's
+[anonymous index components](https://laravel.com/docs/13.x/blade#anonymous-index-components).
+
 <a id="reading-feed-items"></a>
 
 ### Accessing Feed Items
@@ -135,6 +159,12 @@ Use its methods to access the [payload](/reference/payload):
     {{ $item->publishedAt()->diffForHumans() }}
 @endforeach
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /><br />{{ one.actor.label }}<br /><time :datetime="one.published_at">{{ time.label.value }}</time>
+  </template>
+</FeedExample>
 
 Echo `$item->headline()` to render the headline with linked entity labels.
 Items also support array access, such as `$item['verb']`. The `$page->items()`
@@ -157,49 +187,6 @@ for all methods.
 
 Omit elements whose corresponding fields are empty.
 
-### Displaying the Feed
-
-Pass a paginator to the view. The `cursorPaginate` method retrieves the
-current request's cursor for [subsequent pages](/basics/reading#pagination):
-
-```php memo="routes/web.php"
-use Illuminate\Support\Facades\Route;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function () {
-    return view('feed', [
-        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
-    ]);
-});
-```
-
-Render the feed with the `x-feed` component:
-
-```blade memo="resources/views/feed.blade.php"
-<x-feed :page="$page" />
-```
-
-<FeedExample :items="[grouped, complete, one]" />
-
-#### The Feed Components
-
-Create these anonymous Blade components in `resources/views/components/feed`:
-
-| Component | File | Renders |
-|---|---|---|
-| `<x-feed>` | `feed.blade.php` | the feed and pagination link |
-| `<x-feed.item>` | `item.blade.php` | an activity or group |
-| `<x-feed.activity>` | `activity.blade.php` | an activity row |
-| `<x-feed.group>` | `group.blade.php` | a group row and its members |
-| `<x-feed.glyph>` | `glyph.blade.php` | the icon |
-| `<x-feed.time>` | `time.blade.php` | the publication time |
-| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | a body using its type |
-| `<x-feed.pager>` | `pager.blade.php` | the next-page link |
-
-Blade renders `feed/feed.blade.php` as `<x-feed>` because the file name matches
-its directory. See Laravel's
-[anonymous index components](https://laravel.com/docs/13.x/blade#anonymous-index-components).
-
 ### Rendering Activities
 
 <a id="rendering-a-headline"></a>
@@ -212,7 +199,11 @@ To render a headline in Blade, echo the value returned by the `headline` method:
 {{ $activity->headline() }}
 ```
 
-<FeedExample expanded :items="[bare]" />
+<FeedExample :items="[one]">
+  <template #preview>
+    <FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" />
+  </template>
+</FeedExample>
 
 The headline replaces role tokens in `headline_template` with entity labels.
 Entities with a `url` render as links with their attributes, such as `target`.
@@ -236,6 +227,12 @@ role. Echo the entity to display its label, linked when it has a URL:
 {{ $activity->object() }}
 ```
 
+<FeedExample :items="[one]">
+  <template #preview>
+    <EntityLink :entity="one.object" />
+  </template>
+</FeedExample>
+
 Use the `label`, `url`, and `type` methods to access individual values.
 
 To customize entity markup, pass a closure to the `toHtml` method. It receives
@@ -246,6 +243,12 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 
 {!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <strong><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></strong>
+  </template>
+</FeedExample>
 
 #### Timestamps
 
@@ -258,6 +261,12 @@ The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance:
     {{ $at->diffForHumans() }}
 </time>
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <time :datetime="one.published_at">{{ time.label.value }}</time>
+  </template>
+</FeedExample>
 
 #### Icons and Intents {#glyphs-and-intents}
 
@@ -274,7 +283,12 @@ The `glyph` method returns the registered icon identifier, such as
 
 The `intent` method returns the application-defined value used to style the icon:
 
-<FeedExample expanded :items="[complete, scene.order]" />
+<FeedExample :items="[complete, one]">
+  <template #preview>
+    <FeedIcon :icon="complete.glyph" :intent="complete.glyph_intent" />
+    <FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+  </template>
+</FeedExample>
 
 Define intent values with the verb's
 [`intent` method](/basics/the-feed-file#adding-an-icon). Storyfeed provides no
@@ -299,7 +313,14 @@ Combine the icon, headline, and timestamp in the activity component:
 </article>
 ```
 
-<FeedExample :items="[one]" />
+<FeedExample :items="[one]">
+  <template #preview>
+    <article><FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+      <div><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></div>
+      <time :datetime="one.published_at">{{ time.label.value }}</time>
+    </article>
+  </template>
+</FeedExample>
 
 <a id="groups"></a>
 
@@ -330,7 +351,10 @@ and headline tokens.
 </article>
 ```
 
-The `count` method returns the total member count. If `children` contains fewer
+<FeedExample :items="[grouped]" />
+
+The preview shows the group headline, time and supplied members using the
+docs' styling. The `count` method returns the total member count. If `children` contains fewer
 members, `childrenTruncated` returns `true`.
 
 #### Plural Roles
@@ -389,6 +413,8 @@ A [summary row](/basics/reading#summary) displays the actors followed by per-ver
 phrases. The group component renders it without changes. To render each phrase
 separately, use the `phrases` method. It returns feed items with their own
 `headline` and `count` methods.
+
+<FeedExample :items="summary" />
 
 <a id="activity-data-and-bodies"></a>
 
@@ -465,7 +491,15 @@ the placeholder when a value is null, or an empty string when both are null:
 </dl>
 ```
 
-<FeedExample :items="[withKeyValue]" />
+<FeedExample :items="[withKeyValue]">
+  <template #preview>
+    <dl>
+      <template v-for="item in withKeyValue.object.body[0].items" :key="item.key">
+        <dt>{{ item.key }}</dt><dd>{{ item.value ?? item.placeholder ?? '' }}</dd>
+      </template>
+    </dl>
+  </template>
+</FeedExample>
 
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
@@ -479,43 +513,17 @@ the placeholder when a value is null, or an empty string when both are null:
 </figure>
 ```
 
+<FeedExample :items="[content.planck]">
+  <template #preview>
+    <figure>
+      <blockquote>{{ content.planck.object.body[0].text }}<template v-if="content.planck.object.body[0].truncated">…</template></blockquote>
+      <figcaption v-if="content.planck.object.body[0].from">{{ content.planck.object.body[0].from }}</figcaption>
+    </figure>
+  </template>
+</FeedExample>
+
 See [Activity Content](/basics/activity-content#available-body-types) for body
 types and fields, or [Custom Body Types](/deeper/body) to define your own.
-
-### Assembling the Feed
-
-The item component selects the component matching the item's kind:
-
-```blade memo="resources/views/components/feed/item.blade.php"
-@props(['item'])
-
-@if ($item->isActivity())
-    <x-feed.activity :activity="$item" />
-@elseif ($item->isGroup())
-    <x-feed.group :group="$item" />
-@endif
-```
-
-The feed component renders each item, followed by the pagination link:
-
-```blade memo="resources/views/components/feed/feed.blade.php"
-@props(['page'])
-
-<div role="feed" {{ $attributes }}>
-    @foreach ($page as $item)
-        <x-feed.item :item="$item" />
-    @endforeach
-</div>
-
-{{ $page->links() }}
-```
-
-Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
-feed's root element.
-
-The `links` method renders Laravel's simple pagination view. You may customize
-it through Laravel's pagination views. Feeds support forward pagination only;
-the previous-page link is disabled and no links appear on the last page.
 
 <a id="degraded-entities"></a>
 
@@ -544,6 +552,67 @@ php artisan vendor:publish --tag=storyfeed-translations
 ```
 
 The command publishes `lang/vendor/storyfeed/en/feed.php`.
+
+### Assembling the Feed
+
+The item component selects the component matching the item's kind:
+
+```blade memo="resources/views/components/feed/item.blade.php"
+@props(['item'])
+
+@if ($item->isActivity())
+    <x-feed.activity :activity="$item" />
+@elseif ($item->isGroup())
+    <x-feed.group :group="$item" />
+@endif
+```
+
+<FeedExample :items="[grouped, one]" />
+
+The feed component renders each item, followed by the pagination link:
+
+```blade memo="resources/views/components/feed/feed.blade.php"
+@props(['page'])
+
+<div role="feed" {{ $attributes }}>
+    @foreach ($page as $item)
+        <x-feed.item :item="$item" />
+    @endforeach
+</div>
+
+{{ $page->links() }}
+```
+
+Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
+feed's root element.
+
+The `links` method renders Laravel's simple pagination view. You may customize
+it through Laravel's pagination views. Feeds support forward pagination only;
+the previous-page link is disabled and no links appear on the last page.
+
+### Displaying the Feed
+
+Pass a paginator to the view. The `cursorPaginate` method retrieves the
+current request's cursor for [subsequent pages](/basics/reading#pagination):
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', [
+        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
+    ]);
+});
+```
+
+Render the feed with the `x-feed` component:
+
+```blade memo="resources/views/feed.blade.php"
+<x-feed :page="$page" />
+```
+
+<FeedExample :items="[grouped, complete, one]" />
 
 <a id="verifying-your-renderer"></a>
 
