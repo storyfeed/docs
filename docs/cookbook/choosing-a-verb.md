@@ -51,6 +51,59 @@ actions. Use roles for the things involved and data for event details:
 Use base-form verbs such as `place`. Use past tense in headlines:
 `:actor placed :object`.
 
+## When Events Share a Verb
+
+Use one verb across object types, with a headline for each type:
+
+```php memo="routes/feed.php"
+use App\Models\Agreement;
+use App\Models\Proposal;
+use Storyfeed\Facades\Story;
+
+Story::for(Agreement::class)->verb('accept')
+    ->headline(':actor accepted the agreement :object');
+
+Story::for(Proposal::class)->verb('accept')
+    ->headline(':actor accepted the proposal :object');
+```
+
+For an agreement labelled “Service terms” and a proposal labelled “New shop”,
+these read “Alex accepted the agreement Service terms” and “Alex accepted the
+proposal New shop”. Both activities store `accept`; the object type selects
+which headline to use.
+
+| Events | Verb choice |
+| --- | --- |
+| The same action on different object types | Share one verb; define a headline per type. |
+| Different actions on the same object type | Choose different action verbs, such as `send` and `invite`. |
+| The same action on the same type, with different details | Keep one verb; put participants in roles and event details in data. |
+
+Sending an agreement and inviting someone to sign it are different actions:
+
+```php memo="routes/feed.php"
+use App\Models\Agreement;
+use Storyfeed\Facades\Story;
+
+Story::for(Agreement::class)->verb('send')
+    ->headline(':actor sent :object to :target');
+
+Story::for(Agreement::class)->verb('invite')
+    ->headline(':actor invited :target to sign :object');
+```
+
+These read “Alex sent Service terms to Sam” and “Alex invited Sam to sign
+Service terms”. Recording both as `send` would make both use the sending
+headline. A second declaration for the same type and verb does not create
+another kind of event; conflicting definitions fail compilation.
+
+If two downloads differ only in format, keep `download` and store the format
+in data. A [headline closure](/basics/the-feed-file#dynamic-headlines) can read that
+detail when it belongs in the sentence.
+
+With a PHP backed enum, share one case such as `Act::Accept` across the types.
+Do not add `AcceptAgreement` and `AcceptProposal` with type-suffixed values;
+backed enum cases cannot share the same value.
+
 ## Choosing Between Related Verbs
 
 Choose the word that describes the event in your application.
