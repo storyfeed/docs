@@ -33,6 +33,9 @@ one order:
 `:count` counts activities. It cannot turn the two placements into a distinct
 order count. In this case, “placed 2 orders” would be wrong.
 
+For names recorded in `data` rather than roles, see
+[Naming Group Members from Activity Data](/cookbook/naming-group-members).
+
 ## Wording the Group Headline
 
 Both placements share an actor, verb, object and day, so the default `object`

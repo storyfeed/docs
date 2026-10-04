@@ -266,6 +266,7 @@ export default defineConfig({
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
+          { text: 'Naming Group Members from Activity Data', link: '/cookbook/naming-group-members' },
           { text: 'Computed Values in the Feed', link: '/cookbook/computed-values' },
         ],
       },
