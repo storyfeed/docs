@@ -10,7 +10,9 @@ const confirmed = scene.basics.activityContent.confirmed
 ## Introduction
 
 A verb is the action alone, in base form, such as `place` or `email`. The
-activity stores its object type separately, so a verb never repeats it; use a
+activity stores its object type separately: a verb never repeats or names its
+object type, with any separator. See [Choosing a Verb](/cookbook/choosing-a-verb)
+for examples, and use a
 [story name](/deeper/named-stories) when you want a dotted lookup like
 `order.place`.
 

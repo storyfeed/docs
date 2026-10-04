@@ -6,10 +6,14 @@ Choose a verb that describes the event, then use roles to identify what was invo
 
 ## Naming Verbs
 
-The verb describes what happened; the object identifies what it happened to:
+A verb is an action alone. It never names its object, before or after, with
+any separator: `accept`, not `offer.accept`, `accept_offer` or `acceptOffer`.
+The object identifies what the action happened to:
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)   // not 'order.place' [!code highlight]
@@ -18,6 +22,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'place',   // not 'order.place' [!code highlight]
     object: $order,
@@ -30,14 +36,19 @@ Storyfeed::record(
 Headlines are defined by object type and verb, so including the type in the
 verb repeats information. A verb such as `place` also works for other types.
 
-Use roles for details that would otherwise become part of the verb:
+Before inventing a verb, check the shipped [Verb Vocabulary](/reference/verbs).
+`remind`, `invite`, `download`, `archive` and `view` already describe common
+actions. Use roles for the things involved and data for event details:
 
 | Instead of | Record |
 | --- | --- |
 | `doctrine.clause_add` | `add`, with the clause as object and the doctrine as target |
 | `menu.item_publish` | `publish`, with the menu item as object and the menu as target |
+| `accept_offer` or `acceptOffer` | `accept`, with the offer as object |
+| `download_pdf` | `download`, with the document as object and the format in activity data |
+| `archive_document` | `archive`, with the document as object |
 
-Use present-tense verbs such as `place`. Use past tense in headlines:
+Use base-form verbs such as `place`. Use past tense in headlines:
 `:actor placed :object`.
 
 ## Choosing Between Related Verbs
