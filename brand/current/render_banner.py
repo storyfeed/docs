@@ -16,15 +16,17 @@ def banner(theme):
  tagline=next(c for c in r if c.get('transform')=='translate(330 220) scale(0.036 -0.036)')
  r.remove(tagline)
  wordmark=next(c for c in r if c.get('transform')=='translate(325 157) scale(0.112 -0.112)')
- wordmark.set('transform','translate(325 190) scale(0.112 -0.112)')
+ wordmark.set('transform','translate(485 190) scale(0.112 -0.112)')
+ mark=next(c for c in r if c.get('transform')=='translate(24 24) scale(.34)')
+ mark.set('transform','translate(184 24) scale(.34)')
  return r
 controls='<div hidden><select id="theme"><option>light</option><option>dark</option></select><button id="pause"></button><button id="replay"></button><button id="previous"></button><button id="next"></button><span id="status"></span></div>'
 for theme in ['light','dark']:
  r=banner(theme)
  # Remove only the frozen mark placement; replace with the actual queue renderer at the same bounds.
- g=next(c for c in r if c.get('transform')=='translate(24 24) scale(.34)');r.remove(g)
+ g=next(c for c in r if c.get('transform')=='translate(184 24) scale(.34)');r.remove(g)
  background=ET.tostring(r,encoding='unicode')
- html='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Storyfeed README banner capture</title><link rel="stylesheet" href="motion/queue.css"><style>html,body{margin:0;background:BACKGROUND} .banner{position:relative;width:800px;height:214px;overflow:hidden}.backdrop{position:absolute;inset:0}.backdrop>svg{width:800px;height:213.333333px}.banner .art{position:absolute;left:16px;top:16px;width:181.333333px;height:181.333333px;max-width:none}</style><div class="banner"><div class="backdrop">'+background+'</div><div class="art"><img id="fallback" alt="Storyfeed" src="marks/mark-light.svg"><svg id="queue" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg"></svg></div></div>'+controls+'<script src="motion/queue.js"></script></html>'
+ html='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Storyfeed README banner capture</title><link rel="stylesheet" href="motion/queue.css"><style>html,body{margin:0;background:BACKGROUND} .banner{position:relative;width:800px;height:214px;overflow:hidden}.backdrop{position:absolute;inset:0}.backdrop>svg{width:800px;height:213.333333px}.banner .art{position:absolute;left:122.666666667px;top:16px;width:181.333333px;height:181.333333px;max-width:none}</style><div class="banner"><div class="backdrop">'+background+'</div><div class="art"><img id="fallback" alt="Storyfeed" src="marks/mark-light.svg"><svg id="queue" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg"></svg></div></div>'+controls+'<script src="motion/queue.js"></script></html>'
  (P/f'banners/capture-{theme}.html').write_text(html.replace('href="motion/','href="../motion/').replace('src="motion/','src="../motion/').replace('src="marks/','src="../marks/').replace('<head>','<head>'))
  # queue.js resolves fallback relative to this document, so expose capture at kit root instead.
  (P/f'capture-{theme}.html').write_text(html.replace('BACKGROUND',BACKGROUNDS[theme]))
@@ -66,7 +68,7 @@ with sync_playwright() as pw:
   r=banner(theme);r.set('width','800');r.set('height','214');(P/f'banners/storyfeed-static-{theme}.svg').write_text(ET.tostring(r,encoding='unicode')+'\n')
   im=Image.open(dest);total=0
   for n in range(im.n_frames):im.seek(n);total+=im.info['duration']
-  results[theme]={'dimensions':list(im.size),'frames':im.n_frames,'duration_ms':total,'loop':im.info.get('loop'),'bytes':dest.stat().st_size,'composition':'logo and centered wordmark, no tagline','renderer':'byte-identical iteration09 queue.js','capture_fps_during_transition':20,'hold_ms':3000,'advance_ms':750}
+  results[theme]={'dimensions':list(im.size),'frames':im.n_frames,'duration_ms':total,'loop':im.info.get('loop'),'bytes':dest.stat().st_size,'composition':'horizontally centered logo and wordmark, no tagline','renderer':'byte-identical iteration09 queue.js','capture_fps_during_transition':20,'hold_ms':3000,'advance_ms':750}
   assert im.size==(1600,428)
   assert Image.open(P/f'banners/storyfeed-static-{theme}.png').size==(1600,428)
   assert total==33750
