@@ -149,5 +149,6 @@ Increase a limit when your frontend displays more names:
 | Key | Default | Description |
 |---|---|---|
 | `doctor.stale_after` | `30` | days without new activity before the doctor reports a stale feed; `null` disables |
+| `doctor.acknowledgments` | `[]` | list of exact `code`, complete typed `subject`, and nonempty `reason` entries accepting deliberate grammar gaps. Findings stay visible with reasons but leave active counts, CI failures, and stubs; see [Acknowledgment Policy](/reference/doctor#acknowledgment-policy) |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |

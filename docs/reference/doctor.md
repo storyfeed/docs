@@ -16,14 +16,16 @@ fixing findings.
 
 | Option | Effect |
 |---|---|
-| `--list` | prints the check names `--only` accepts |
+| `--list` | prints the check names `--only` accepts, without running checks or evaluating acknowledgments |
 | `--only=` | runs the named checks; repeat it for several |
-| `--json` | prints the report as JSON: `healthy`, `count`, `severity`, and each finding's `code`, `severity`, `message`, `subject` and `fix` |
+| `--json` | prints the report as JSON: `healthy`, `count`, `severity`, `acknowledged_count`, and each finding's `code`, `severity`, `message`, `subject`, `fix` and `acknowledgment` |
 | `--stubs` | prints only the suggested definitions, with their `use` lines. See [Generating Missing Definitions](#generating-definitions) |
 | `--fail-on=` | `warning` exits non-zero on a warning or an error; `error` on an error alone. Without it, findings never change the exit status |
 
 `--only` omits entire checks; `--fail-on` changes the failure threshold for
 all findings of that severity. Neither option marks one finding as accepted.
+Acknowledged findings remain visible with their reasons but are excluded
+from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#acknowledgment-policy).
 
 <span id="checks"></span>
 
@@ -46,6 +48,7 @@ all findings of that severity. Neither option marks one finding as accepted.
 | `inherited` | `Feedable` subclasses deleted through a parent that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
 | `surface` | `Feedable` models without recorded activities, and ones the enforced morph map cannot name. See [Surface](#surface) | warning · info |
 | `entities` | models in a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the model record is gone. See [Entities](#entities) | error · warning · info |
+| `links` | observed entities without URLs in sampled named feeds, or feeds that cannot be inspected. See [Link Sampling](#link-sampling) | info |
 | `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
 | `body` | the [body types](/deeper/body) stored, a body with no `$body` key, and a body type versioned on some records but not others | warning · info |
 | `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
@@ -77,6 +80,7 @@ These checks inspect a limited set:
 | `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; examines nested data maps up to four levels deep | counts body occurrences and malformed maps in sampled records, not all affected activities. One record may contain several maps. The finding states that it is sampled when either query returns 200 records |
 | `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
 | `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
+| `links` | up to 30 top-level items from each constructable named feed in its declared mode | returned entities only, including bounded group samples, children, and digest phrases; not group totals or unsampled history |
 | `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
 | `aggregates` | groups identified by axis and hash, with at least two members: selected display groups when `grouping.curate` is true, repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
 
@@ -136,12 +140,77 @@ a report.
 
 <a id="handling-deliberate-gaps"></a>
 
-The doctor has no built-in way to mark one finding as accepted or hide it with
-a recorded reason. It reports `aggregates.latent` based on registered feed
-modes and verb filters, not a decision recorded by an operator.
+The doctor reports `aggregates.latent` based on registered feed modes and verb
+filters. To accept a deliberate `aggregates.missing` finding with a written
+reason, use the exact subject in [Acknowledgment Policy](#acknowledgment-policy).
 
 See [Handling Deliberate Findings](/deeper/diagnosing#handling-deliberate-findings)
 for recording and revisiting a deliberate gap.
+
+### Acknowledgment Policy
+
+`storyfeed.doctor.acknowledgments` defaults to `[]`. Each list entry must
+contain exactly `code`, `subject`, and a nonempty string `reason`. Copy the
+complete subject from doctor JSON; key order does not matter, but values and
+their types must match exactly.
+
+| Supported Code | Complete Subject |
+|---|---|
+| `grammar.missing` | `type` (string or `null`), `verb` (string) |
+| `grammar.icon_missing` | `type` (string or `null`), `verb` (string) |
+| `aggregates.missing` | `axis`, `verb`, `key` (strings), `read_by` (string or `null`) |
+| `axes.verbless_no_grammar` | `axis` (string) |
+
+There are no wildcard patterns, partial subjects, or code-only entries.
+Runner failures and schema findings cannot be accepted. The policy changes
+diagnostic accounting only; it does not change publishing or rendered payloads.
+
+Accepted findings retain their severity, message, subject, and raw fix.
+`Report::all()` and `withCode()` still include them; `acknowledged()` selects
+them. `problems()`, `count()`, `isHealthy()`, `severity()`, and `fixes()` exclude
+them, so they neither fail CI nor generate stubs. A fix shared with an active
+finding remains available. Text and JSON show the written reason; JSON also
+includes `acknowledged_count`.
+
+| Policy Finding | Severity | Meaning |
+|---|---|---|
+| `doctor.acknowledgment_invalid` | error | malformed policy, unsupported code, missing or extra fields, wrong subject types, blank reason, or duplicate identity. Invalid entries accept nothing; neither duplicate applies. Valid unrelated entries can still apply |
+| `doctor.acknowledgment_stale` | warning | an acknowledgment for `axes.verbless_no_grammar` no longer matches after the selected registry check completed successfully; review or remove it |
+| `doctor.acknowledgment_unobserved` | info | a grammar or aggregate acknowledgment was not observed after its selected check completed successfully; the gap may be resolved or absent from this run's traffic or clusters |
+
+Excluded, unregistered, or failed checks do not apply acknowledgments or
+declare entries stale or unobserved. Policy validation still runs for
+`--only`; `--list` only lists names. A stale warning fails `--fail-on=warning`,
+while an invalid policy fails either failure threshold. Neither changes the
+default exit status of `0`.
+
+### Link Sampling
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `links.missing` | info | all inspected entities of a type and role had null URLs in one named feed's sampled page; unlinked entities are legitimate |
+| `links.uninspectable` | info | a registered feed could not be read, or recorded traffic exists but no registered named feed could be inspected |
+
+The doctor builds each actual named feed in its declared mode and reads up to
+30 top-level items. A subject-required feed or a read failure produces
+`links.uninspectable`; no unscoped substitute is read. With no recorded
+activities, the check returns no findings.
+
+Only observed, resolvable `Feedable` model entities are counted; tombstones
+are excluded. Within each top-level item, repeated appearances of the same
+role/type/entity ID count once, retaining any non-null URL. Group samples,
+children, and digest phrases are bounded returned entities, not group totals.
+One observed URL prevents `links.missing` for that role/type in that feed.
+
+The `links.missing` subject contains `feed`, `role`, `type`, `sampled`, `items`,
+and `sample_limit` (`30`). `sampled` counts inspected entities, while `items`
+counts returned top-level items. A per-feed `links.uninspectable` subject
+contains `feed`, `source`, and `exception`; if none is inspectable, the
+summary has `feed: null`, `inspectable_feeds: 0`, and `sample_limit: 30`.
+
+These findings cannot prove that a type never resolves a URL or describe
+unsampled history. Links may differ under another named feed. They generate
+no fix and do not count as CI problems.
 
 ### Definitions
 

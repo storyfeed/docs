@@ -95,6 +95,31 @@ test('filesystem scan excludes generated trees and symlinks', () => {
     assert.deepEqual(documents(tmp).map(d => d.file), ['docs/page.md']);
   } finally { rmSync(tmp,{recursive:true,force:true}); }
 });
+for (const [kind, declaration, methods, properties] of [
+  ['backed', "enum Period: string { case Week = 'week'; case Month = 'month'; }", ['cases', 'from', 'tryFrom'], ['name', 'value', 'Week', 'Month']],
+  ['pure', 'enum Cadence { case Daily; case Weekly; }', ['cases'], ['name', 'Daily', 'Weekly']],
+]) {
+  test(`enum tokenizer preserves ${kind} cases and built-in members through drift analysis`, () => {
+    const name = kind === 'backed' ? 'Period' : 'Cadence';
+    const files = { [`src/${name}.php`]: `<?php namespace Storyfeed; ${declaration}` };
+    const s = JSON.parse(execFileSync(process.env.PHP_BINARY || 'php', [resolve(here, 'surface.php')], { input: JSON.stringify(files), encoding: 'utf8' }));
+    assert.deepEqual(Object.keys(s.classes), [`Storyfeed\\${name}`]);
+    assert.deepEqual(s.classes[`Storyfeed\\${name}`], { methods, properties, open: false });
+    const enumApi = { ...api, classes: s.classes, removed: [] };
+    const cases = properties.filter(member => !['name', 'value'].includes(member));
+    const code = `use Storyfeed\\${name};\n`
+      + methods.map(member => `${name}::${member}(${member === 'cases' ? '' : "'week'"});`).join('\n')
+      + '\n' + cases.map(member => `${name}::${member};`).join('\n')
+      + `\n${name}::${cases[0]}->name;`
+      + (kind === 'backed' ? `\n${name}::${cases[0]}->value;` : '');
+    const r = scan(php(code), enumApi);
+    assert.deepEqual(r.stale, []);
+    assert.deepEqual(r.unresolved, []);
+    // A closed enum must still reject an absent case; recognizing cases must
+    // not turn arbitrary PascalCase members into accepted API.
+    assert.deepEqual(scan(php(`${name}::Fortnight;`), enumApi).stale.map(s => s.identifier), [`${name}::Fortnight`]);
+  });
+}
 test('missing is informational, prioritizes Unreleased, and excludes removed classes', () => {
   // Pin the changelog evidence: a release can remove today's Unreleased
   // section without changing the detector's prioritization contract.

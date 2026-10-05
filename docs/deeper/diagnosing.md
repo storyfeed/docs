@@ -25,12 +25,13 @@ Note: verb `place` has no AS2.0 mapping — will serialize as base `Activity`.
 Run with --stubs to print the registrations these imply.
 ```
 
-The count excludes notes. If no errors or warnings are found, the command
-prints `Storyfeed looks healthy.`
+The count excludes notes and acknowledged findings. With no active errors or
+warnings and no acknowledgments, the command prints `Storyfeed looks healthy.`
 
 Most checks query recorded activities, so use a database with traffic, such
-as staging or a production copy. With no activities, only configuration and
-schema checks can report findings.
+as staging or a production copy. With no activities, configuration, schema,
+and registry checks can still report findings; traffic-dependent checks have
+nothing to inspect.
 
 ### Running Selected Checks
 
@@ -57,6 +58,7 @@ php artisan storyfeed:doctor --json
     "healthy": false,
     "count": 2,
     "severity": "error",
+    "acknowledged_count": 0,
     "findings": [
         {
             "code": "grammar.missing",
@@ -66,6 +68,7 @@ php artisan storyfeed:doctor --json
                 "type": "order",
                 "verb": "place"
             },
+            "acknowledgment": null,
             "fix": {
                 "registry": "grammar",
                 "key": "order.place",
@@ -79,7 +82,8 @@ php artisan storyfeed:doctor --json
 ```
 
 The other findings use the same structure. Findings without a generated fix
-have `"fix": null`. The code's first segment identifies the check; `subject`
+have `"fix": null`. `acknowledgment` is the written reason for an accepted
+finding, or `null`. The code's first segment identifies the check; `subject`
 identifies what it checked. `definition` contains the line printed by `--stubs`.
 
 | Severity | Meaning |
@@ -104,6 +108,20 @@ identifies what it checked. `definition` contains the line printed by `--stubs`.
 
 See [Doctor Checks](/reference/doctor#interpreting-findings) for all findings.
 
+### Reading Link Findings
+
+`links.missing` is informational: every inspected entity of one type and role
+had a null URL in that named feed's sampled page. Unlinked entities are
+legitimate. The doctor reads up to 30 top-level items in each constructable
+named feed's declared mode, including the entities returned in bounded group
+samples and children. It cannot establish that a type is always unlinked or
+count unsampled history. Another named feed may return different links.
+
+`links.uninspectable` means a feed could not be read, for example because it
+requires a subject. The doctor does not substitute an unscoped feed. Both
+findings are notes, leave CI counts unchanged, and generate no fix. See
+[Link Sampling](/reference/doctor#link-sampling) for the subject fields.
+
 <a id="handling-deliberate-gaps"></a>
 
 ## Handling Deliberate Findings
@@ -112,14 +130,44 @@ If a reported headline is deliberately unused, first check the
 [doctor's coverage limits](/reference/doctor#group-reachability). A clean report
 alone does not establish that every group returned by your feed has a headline.
 
-For a deliberate gap, record the finding code, key, intended read mode,
-`grouping.curate` setting, and reason in your application's maintenance notes. Verify
-that the relevant payload never needs that headline. Revisit the decision
-when read modes or definitions change. The next doctor run will still report
-the finding and apply the same severity.
+For a deliberate gap, verify that the relevant payload never needs that
+headline. Record the intended read mode and `grouping.curate` setting in your
+application's maintenance notes. Revisit the decision when read modes or
+definitions change.
+
+To accept one supported finding, copy its exact code and complete typed
+`subject` from `storyfeed:doctor --json` into `doctor.acknowledgments` in your
+application's `config/storyfeed.php`. Supply a written reason:
+
+```php memo="config/storyfeed.php"
+'doctor' => [
+    'stale_after' => 30,
+    'acknowledgments' => [
+        [
+            'code' => 'grammar.icon_missing',
+            'subject' => ['type' => 'order', 'verb' => 'place'],
+            'reason' => 'The order feed deliberately displays headlines without icons.',
+        ],
+    ],
+],
+```
+
+Use the subject from your own report; `null` and a string are different
+identities. Accepted findings remain visible with their original severity,
+message, and reason. Text prints `Acknowledged [warning]: … Reason: …`;
+JSON retains the finding and adds its `acknowledgment` reason and the report's
+`acknowledged_count`. They no longer count toward active problems, health,
+`--fail-on`, or generated stubs. With no active problems, text prints
+`No unacknowledged problems.`
+
+This policy does not author a headline or icon, change publishing strictness,
+or alter rendering. It accepts only the four codes listed in
+[Acknowledgment Policy](/reference/doctor#acknowledgment-policy), with no
+patterns or code-only entries. That reference also explains invalid, stale,
+and unobserved entries.
 
 Use `--only` to run selected checks, or `--fail-on` to set the severity that
-fails CI. Neither option marks an individual finding as accepted. `--only`
+fails CI. Neither option records an acknowledgment. `--only`
 omits entire checks, and changing the threshold affects all findings of that
 severity.
 Keep the complete report available alongside any focused run.
