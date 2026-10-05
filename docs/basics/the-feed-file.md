@@ -18,6 +18,7 @@ const created = scene.basics.feedFile.created
 const ready = scene.basics.activityContent.ready
 const fellBack = { ...ready, headline_template: ':actor updated :object', glyph: null,
   object: { ...ready.object, body: null } }
+const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object with :target' }
 </script>
 
 ## Basic Definitions
@@ -45,6 +46,45 @@ Story::for(Order::class)
 The `for` method specifies the object type, and the `verb` method specifies
 the [recorded verb](/basics/recording). This headline applies to `place`
 activities involving an order.
+
+## Registering Stories in a Service Provider
+
+A service provider can register stories without a feed file:
+
+```php memo="A package service provider"
+<?php
+
+namespace Vendor\Orders;
+
+use Illuminate\Support\ServiceProvider;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+class OrderFeedServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        Story::for('order')
+            ->verb('place')
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag')
+            ->grouped(
+                fn (GroupBuilder $group) => $group
+                    ->repeat(':actor placed :count orders with :target'),
+            );
+    }
+}
+```
+
+<FeedExample :items="[scene.order]" />
+
+The string `order` is the model's morph alias. Using the alias lets a package
+register its stories before the application registers its morph map.
+
+Provider registrations remain available when the configured definitions file
+is missing or `definitions` is `false`. They are included when
+[caching definitions](#caching-definitions). The repeat headline applies to
+[grouped orders](/deeper/aggregation#repeated-activities).
 
 ## Headline Templates
 
@@ -235,6 +275,44 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 You may also define [group headlines](/deeper/aggregation#defining-group-headlines)
 and [headlines for deleted models](/deeper/deleted-models).
 
+## Overriding Package Stories
+
+To change the package's order-placement headline, declare an explicit override:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+
+Story::for('order')
+    ->verb('place')
+    ->override()
+    ->headline(':actor submitted :object with :target');
+```
+
+<FeedExample :items="[overriddenOrder]" />
+
+Only the headline changes. The package's shopping-bag icon and repeat-group
+headline remain. Its action or message binding also remains when the
+application supplies only presentation fields.
+
+For presentation fields, `override()` applies to the same object type and
+verb. It takes precedence over the original declaration regardless of
+registration order. [Wildcard precedence](#definition-precedence) still
+applies between different keys.
+
+| Supplied Option | What Changes |
+|---|---|
+| Headline, anonymous headline, icon, or intent | that value |
+| Group headlines | each supplied axis headline; other axes remain |
+| Casts | each supplied data key; other keys remain |
+| Role constraints | each supplied role; other roles remain |
+| Queue options | each supplied option; other options remain |
+| Middleware, missing-role policy, or keep-latest policy | the whole supplied property |
+
+Ordinary declarations from different source locations that claim the same
+headline or icon key cause an error, even if their values are identical. Explicit
+overrides from different source locations that claim the same field and key
+also cause an error. Caching still requires unique story names.
+
 ## Listing Definitions
 
 List the definitions loaded by your application:
@@ -244,8 +322,10 @@ php artisan storyfeed:list
 ```
 
 Use `--type=order` or `--verb=place` to filter definitions, and `--json` for JSON
-output. Each entry includes the headline, icon, and declaration location.
-See [Commands](/reference/commands) for all options.
+output. Entries include declarations from service providers and the feed file,
+with their headline, icon, and source location. Explicit overrides are marked
+in the listing. See [Commands](/reference/commands#listing-definitions) for all
+options.
 
 ## Caching Definitions
 
@@ -255,7 +335,10 @@ Cache definitions during deployment:
 php artisan storyfeed:cache
 ```
 
-Storyfeed loads cached definitions without evaluating `routes/feed.php`.
+The cache includes stories registered by service providers and the feed file.
+Storyfeed uses the compiled cache when retrieving feeds. Providers still boot,
+but `routes/feed.php` is not evaluated. The listing shows authored declarations;
+it does not show the merged definitions used by a cached feed.
 The `optimize` Artisan command also caches these definitions. Rebuild the cache
 after changing them. To clear it:
 
