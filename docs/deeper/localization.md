@@ -9,9 +9,16 @@ current locale. Set it for each request as described in Laravel's
 Storyfeed does not choose the reader's locale.
 
 <script setup>
-import { activity, scene } from '../.vitepress/theme/world'
+import { activity, scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
 const french = activity({ ...scene.order,
   headline_template: ':actor a passé :object auprès de :target' })
+const frenchGroup = liveOf(logOf(scene.deeper.aggregation.orders), {
+  ...VERBS,
+  place: {
+    ...VERBS.place,
+    repeat: ':actor a passé commande :count fois auprès de :target',
+  },
+})[0]
 </script>
 
 <a id="translating-a-headline"></a>
@@ -58,6 +65,74 @@ Translated templates keep linked tokens and
 tokens in each translation. Undefined keys are displayed as written.
 
 `anonymousHeadline()` and `missingHeadline()` take a `FeedHeadline` too.
+
+### Translating Group Headlines
+
+Add a template for the repeat group to each locale's `feed.php` file:
+
+::: code-group
+
+```php [English] memo="lang/en/feed.php"
+return [
+    'order_placements' => ':actor made :count order placements with :target',
+];
+```
+
+```php [French] memo="lang/fr/feed.php"
+return [
+    'order_placements' => ':actor a passé commande :count fois auprès de :target',
+];
+```
+
+:::
+
+Pass the key to the group's headline:
+
+::: code-group
+
+```php [GroupBuilder] memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\FeedHeadline;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->grouped(
+        fn (GroupBuilder $group) => $group
+            ->repeat(FeedHeadline::trans('feed.order_placements')),
+    );
+```
+
+```php [Group] memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\FeedHeadline;
+use Storyfeed\Grouping\Group;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->grouped(
+        Group::repeat()->headline(FeedHeadline::trans('feed.order_placements')),
+    );
+```
+
+:::
+
+With the locale set to French:
+
+<FeedExample :items="[frenchGroup]" />
+
+The translation is resolved when the feed is read, including when definitions
+are cached. Role tokens remain linked, and `:count` counts activities.
+
+Translated group tokens are not checked at boot. Each locale must use only
+[tokens supported by the group's axis](/deeper/aggregation#singular-and-plural-tokens).
+
+| Group Headline | How It Is Rendered |
+|---|---|
+| A string or `FeedHeadline::trans()` | a template whose role tokens and count are replaced |
+| A closure | finished text; its result is not processed as a token template |
 
 <a id="translating-a-noun"></a>
 

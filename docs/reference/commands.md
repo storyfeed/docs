@@ -55,7 +55,7 @@ prints the `routes/feed.php` binding for you to add.
 
 | Command | Description |
 |---|---|
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
+| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. Includes provider declarations and their source locations. The Override column shows `yes` for explicit overrides; JSON includes an `override` boolean. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
 | `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | lists publishers and models that could publish but have no recorded activities. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
 
@@ -65,13 +65,17 @@ prints the `routes/feed.php` binding for you to add.
 
 | Command | Description |
 |---|---|
-| `storyfeed:cache` | compiles registered stories and `routes/feed.php` into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
+| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
 | `storyfeed:clear` | removes the cached manifest |
 
 Like `route:cache`, `storyfeed:cache` prevents the definitions file from
 loading at boot. It serialises closure headlines and fails with a `file:line`
 reference if a closure cannot be serialised. Keep only Story definitions in
 the feed file; register verb vocabulary in a service provider.
+
+Providers still boot when definitions are cached. Feeds use the compiled
+manifest, while `storyfeed:list` shows authored declarations rather than
+the merged definitions used by a cached feed.
 
 <span id="diagnostics"></span>
 

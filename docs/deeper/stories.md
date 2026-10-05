@@ -298,6 +298,8 @@ declaration may return a `Verb` or headline string, as a resource method does.
 Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
 object types, so its headline must describe each supported type.
 
+Package authors can [register Story classes in a service provider](/deeper/package-integration#registering-stories-in-a-service-provider).
+
 <a id="every-activity-for-one-model"></a>
 
 ## Resource Stories

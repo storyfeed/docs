@@ -252,6 +252,12 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Package Authors',
+        items: [
+          { text: 'Package Integration', link: '/deeper/package-integration' },
+        ],
+      },
+      {
         // Application recipes, in the order a reader meets the problem.
         text: 'Cookbook',
         items: [

@@ -78,7 +78,7 @@ These checks inspect a limited set:
 | `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
 | `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
 | `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
-| `aggregates` | groups selected for display, identified by axis and hash, with at least two members | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
+| `aggregates` | groups identified by axis and hash, with at least two members: selected display groups when `grouping.curate` is true, repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
 
 Other checks may bound their time window or quote a few examples without
 sampling the count. For example, `retention.unbounded` considers 30 days;
@@ -108,7 +108,7 @@ optional keys can produce different shapes. Those differences need no repair.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `aggregates.missing` | error | a group selected for display has no headline and a registered feed may return it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
+| `aggregates.missing` | error | a group in the aggregate sample has no headline and a registered feed may return it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
 | `aggregates.latent` | info | a group has no headline but is unused by registered feeds; `--stubs` generates nothing and `--fail-on=warning` ignores it |
 | `aggregates.reachability_unknown` | info | no feeds are registered, or a feed threw during inspection; all headline gaps are reported as `aggregates.missing` |
 
@@ -120,25 +120,25 @@ feed's mode, and a custom query can narrow it beyond what the doctor sees.
 |---|---|
 | `log()` | no group axes |
 | `summary()` | summary phrases only |
-| `live()` | every registered axis, even when `grouping.curate` is false |
+| `live()` | every registered axis when `grouping.curate` is true; repeat only when false |
 
-When `grouping.curate` is false, `live()` returns only repeat groups. The doctor
-does not inspect this setting, so it may report missing headlines for object
-or target groups selected earlier.
+When `grouping.curate` is false, the aggregate check samples repeat groups
+with at least two members, whether or not they are selected for display
+(`winner = true`). Historical selections on other axes are excluded.
 
-The aggregate check also queries groups selected for display (`winner = true`). It can miss repeat
-groups returned by a repeats-only feed, or by the fallback for an activity
-without another group selected. A clean aggregate report does not prove that every visible
-repeat group has a headline. Check a representative repeats-only payload and
-its headline definitions directly. These are coverage limits, not reasons to
-run `storyfeed:curate` or change the feed mode solely to clear a report.
+When `grouping.curate` is true, the check samples only groups selected for
+display (`winner = true`). It can miss repeat groups returned by the fallback
+for activities without a selected group. A clean aggregate report does not
+prove that every visible group has a headline. Check a representative feed
+payload and its headline definitions directly. These are coverage limits,
+not reasons to run `storyfeed:curate` or change the feed mode solely to clear
+a report.
 
 <a id="handling-deliberate-gaps"></a>
 
 The doctor has no built-in way to mark one finding as accepted or hide it with
 a recorded reason. It reports `aggregates.latent` based on registered feed
-modes, not a decision recorded by an operator. A repeats-only `live()` feed does
-not receive that inference for its unused axes.
+modes and verb filters, not a decision recorded by an operator.
 
 See [Handling Deliberate Findings](/deeper/diagnosing#handling-deliberate-findings)
 for recording and revisiting a deliberate gap.
