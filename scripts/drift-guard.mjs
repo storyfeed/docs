@@ -44,3 +44,18 @@ if (run.status !== 0) {
 }
 
 console.log('drift: no stale references');
+
+// Reference › Schema is generated from core's migrations (scripts/schema.mjs).
+// A migration that adds, drops or changes a column fails here until the page
+// is regenerated with `npm run schema`.
+const schema = spawnSync(process.execPath, [resolve(here, 'schema.mjs'), '--check'], {
+    encoding: 'utf8',
+    env: { ...process.env, STORYFEED_CORE: core },
+});
+
+process.stdout.write(schema.stdout || '');
+
+if (schema.status !== 0) {
+    console.error(schema.stderr || 'schema: check failed');
+    process.exit(1);
+}

@@ -8,6 +8,11 @@ type throws an exception before an activity is recorded.
 [Static analysis](#checking-names-with-static-analysis) can also check these
 names in your code.
 
+A declaration's name is used by application code; its verb is stored with
+activities. Renaming a declaration does not require changing stored activities,
+but you must update code that uses the name. Changing the stored verb requires
+a data migration.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
@@ -29,15 +34,36 @@ Story::for(Order::class)->verb('place')
 
 <a id="publishing-an-activity"></a>
 
+You can name declarations for a specific verb. Fallback declarations
+(`fallback()` or verb `*`) supply defaults and cannot be named; calling `name`
+on them throws an exception. Exclude fallbacks when testing that every
+declaration has a name.
+
 ## Publishing Named Stories
 
 Publish it by name:
 
-```php
-story('order.place', $order)
-    ->by($request->user())
-    ->to($order->shop)
-    ->publish();
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class PlaceOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $activity = story('order.place', $order)
+            ->by($request->user())
+            ->to($order->shop)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
 <FeedExample :items="[placed]" />
@@ -48,8 +74,8 @@ Laravel's `URL::route()`.
 
 An unknown name throws `Story [x] not defined.` An object with the wrong morph
 type throws `StoryObjectMismatch`. Both methods require a registered name.
-To publish an unnamed verb, use `Storyfeed::activity()` or an enum's
-`Act::Place->of($order)`.
+To publish an unnamed order-placement verb, use
+`Storyfeed::activity('place', $order)`.
 
 A Story that requires constructor data must still be published with
 `Storyfeed::publish(new OrderWasPlaced(...))`. Naming its declaration does not
@@ -75,7 +101,7 @@ Story::as('billing.')->group(function () {
 
 <FeedExample :items="[placed]" />
 
-This is an alternative to the preceding declaration. The prefix is appended
+This is an alternative to the preceding declaration. The prefix is prepended
 exactly as written, including the dot, producing `billing.place`.
 
 The `Story::name` method is an alias for `Story::as`, following Laravel's
@@ -187,6 +213,9 @@ alternative option on the resource declaration:
 | `->names('checkout')` | `checkout.create`, `checkout.update`, and the other verbs under `checkout` |
 | `->names(['confirm' => 'checkout.confirm'])` | only `confirm` is renamed |
 
+These change only the names. The stored verb is still `confirm`, the snake_cased
+name of the `OrderStory::confirm()` method.
+
 Individually declared verbs have no name until you call `->name()`, including
 verbs registered with a single-verb class or a Story that accepts constructor data.
 
@@ -204,6 +233,8 @@ JSON output include each definition's name.
 <a id="inspecting-names"></a>
 
 ### Matching Names
+
+Use `$activity` returned by `publish()` in the controller above:
 
 ```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
 use Storyfeed\Facades\Story;
@@ -223,13 +254,60 @@ activities. The `storyName` method looks up the activity's object type and verb.
 If its declaration is unnamed, `storyName` returns `null` and `storyIs` returns
 `false`.
 
+The `Storyfeed\Facades\Storyfeed` facade also provides these lookups:
+
+| Method | Returns |
+|---|---|
+| `Storyfeed::storyNames()` | all names as `name => type.verb` |
+| `Storyfeed::namedStory($name)` | the definition key, or `null` |
+| `Storyfeed::storyNameFor($type, $verb)` | the name, including a wildcard type fallback |
+
 <a id="checking-names-during-deployment"></a>
 
 ## Caching Named Stories
 
+```bash
+php artisan storyfeed:cache
+```
+
+Require this command to succeed in an isolated CI or deployment run. It checks
+for duplicate names, conflicting definitions and uncacheable closures. See
+[Caching Definitions](/reference/commands#caching-definitions).
+
 Duplicate names cause [`storyfeed:cache`](/basics/the-feed-file#caching-definitions)
 to fail with both declaration locations, as they do for Laravel's `route:cache`.
 At runtime, the last declaration with that name is used.
+
+## Testing Story Names
+
+If your application requires every concrete declaration to have a name, test
+the definitions returned by the public listing command. Run these tests with
+an uncached application so they check the current declarations:
+
+```php memo="tests/Feature/StoryNamesTest.php"
+use Illuminate\Support\Facades\Artisan;
+
+it('names every concrete declaration', function () {
+    expect(Artisan::call('storyfeed:list', ['--json' => true]))->toBe(0);
+
+    $rows = json_decode(Artisan::output(), true, flags: JSON_THROW_ON_ERROR);
+    $concrete = array_values(array_filter(
+        $rows,
+        fn (array $row): bool => $row['verb'] !== '*',
+    ));
+
+    expect($concrete)->not->toBeEmpty();
+
+    foreach ($concrete as $row) {
+        expect($row['name'], $row['type'].'.'.$row['verb'])
+            ->toBeString()->not->toBe('');
+    }
+});
+```
+
+This checks each declaration's own name. A named wildcard declaration does
+not make an unnamed type-specific declaration pass. Hand-written registry
+entries are not declarations and do not appear in this listing.
 
 <a id="checking-names-with-phpstan"></a>
 

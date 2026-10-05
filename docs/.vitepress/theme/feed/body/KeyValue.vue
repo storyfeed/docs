@@ -8,8 +8,14 @@ import { computed } from 'vue'
 const props = defineProps<{ payload: Record<string, any> }>()
 
 const rows = computed(() =>
-    (props.payload.items ?? []).filter(
-        (row: any) => !(row.value === null || row.value === '') || row.missing != null,
+    (props.payload.items ?? []).map((row: any) => ({
+        ...row,
+        placeholder: 'placeholder' in row ? row.placeholder
+            : (props.payload.$v ?? 1) < 2 && 'missing' in row ? row.missing
+                : 'defaultPlaceholder' in props.payload ? props.payload.defaultPlaceholder
+                    : (props.payload.$v ?? 1) < 2 ? props.payload.missing : null,
+    })).filter(
+        (row: any) => !(row.value === null || row.value === '') || row.placeholder != null,
     ),
 )
 
@@ -27,7 +33,7 @@ const text = (value: unknown) => (typeof value === 'boolean' ? (value ? 'Yes' : 
                     :class="{ 'sf-facts__value--verbatim': row.verbatim }"
                     :title="row.verbatim && typeof row.value === 'string' ? row.value : undefined"
                 >
-                    <span v-if="row.value === null || row.value === ''" class="sf-facts__value--absent">{{ row.missing }}</span>
+                    <span v-if="row.value === null || row.value === ''" class="sf-facts__value--absent">{{ row.placeholder }}</span>
                     <template v-else>{{ text(row.value) }}</template>
                 </dd>
             </div>

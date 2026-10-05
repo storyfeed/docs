@@ -1,4 +1,9 @@
 import { defineConfig } from 'vitepress'
+
+// R&D pages (docs/rnd/) are proposals written as if shipped, for review before
+// any code exists. They show only on the local dev server: gitignored, left out
+// of every build, and absent from the sidebar the llms script reads.
+const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
@@ -18,7 +23,7 @@ export default defineConfig({
   // briefs sit inside the source root, so without this a committed one becomes
   // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
   // convention somebody can defeat with `git add -f`.
-  srcExclude: ['briefs/**'],
+  srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
 
   markdown: {
     config(md) {
@@ -126,9 +131,22 @@ export default defineConfig({
   },
 
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
-    ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { name: 'author', content: 'Jasper Tey' }],
+    ['meta', { property: 'article:author', content: 'Jasper Tey' }],
+    ['meta', { property: 'article:publisher', content: 'Tey Labs' }],
+    ['meta', { property: 'article:published_time', content: '2026-09-30T19:00:00-04:00' }],
+    ['meta', { property: 'og:site_name', content: 'Storyfeed' }],
+    ['meta', { property: 'og:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=4' }],
+    ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
+    ['meta', { property: 'og:image:width', content: '2400' }],
+    ['meta', { property: 'og:image:height', content: '1200' }],
+    ['meta', { property: 'og:image:alt', content: 'The Storyfeed mark and the words Storyfeed, Activity streams for Laravel, over a faded feed of Storyfeed milestones' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=4' }],
+    ['link', { rel: 'icon', href: '/favicon.ico?v=2', sizes: 'any' }],
+    ['link', { rel: 'icon', href: '/favicon.svg?v=2', type: 'image/svg+xml' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=2' }],
     ['meta', { name: 'theme-color', content: '#0f172a' }],
   ],
 
@@ -155,6 +173,9 @@ export default defineConfig({
     // the documentation before deciding to trust it. Every entry resolves —
     // planned-but-unwritten pages live in IA.md, never here.
     sidebar: [
+      ...(rnd ? [{ text: 'R&D (local only)', items: [
+        { text: 'Body Versions', link: '/rnd/body-versions' },
+      ] }] : []),
       {
         // Laravel's order: set up, get it working, then see what it can do.
         text: 'Getting Started',
@@ -171,6 +192,7 @@ export default defineConfig({
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
+          { text: 'Feed Media', link: '/basics/feed-media' },
           { text: 'Recording Activities', link: '/basics/recording' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Verbs', link: '/basics/verbs' },
@@ -179,9 +201,9 @@ export default defineConfig({
       },
       {
         // Choose the feed, then inspect it, then draw it.
-        text: 'Reading and Rendering',
+        text: 'Retrieving and Rendering',
         items: [
-          { text: 'Reading Feeds', link: '/basics/reading' },
+          { text: 'Retrieving Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'The Payload', link: '/basics/the-payload' },
           { text: 'Rendering', link: '/basics/rendering' },
@@ -212,6 +234,7 @@ export default defineConfig({
           { text: 'Grouping Periods', link: '/deeper/grouping-periods' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
+          { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies' },
           { text: 'Custom Body Types', link: '/deeper/body' },
           { text: 'Localization', link: '/deeper/localization' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
@@ -229,6 +252,12 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Package Authors',
+        items: [
+          { text: 'Package Integration', link: '/deeper/package-integration' },
+        ],
+      },
+      {
         // Application recipes, in the order a reader meets the problem.
         text: 'Cookbook',
         items: [
@@ -240,7 +269,9 @@ export default defineConfig({
           { text: 'Recording Deletions', link: '/cookbook/activities-about-deletions' },
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
+          { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
+          { text: 'Naming Group Members From Activity Data', link: '/cookbook/naming-group-members' },
           { text: 'Computed Values in the Feed', link: '/cookbook/computed-values' },
         ],
       },
@@ -256,7 +287,7 @@ export default defineConfig({
           { text: 'Verb Vocabulary', link: '/reference/verbs' },
           { text: 'The Payload Contract', link: '/reference/payload' },
           { text: 'Schema', link: '/reference/schema' },
-          { text: 'Compatibility', link: '/reference/compatibility' },
+          { text: 'Storage Architecture', link: '/reference/storage' },
           { text: 'Glossary', link: '/reference/glossary' },
         ],
       },

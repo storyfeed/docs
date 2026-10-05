@@ -32,7 +32,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | Term | Meaning |
 |---|---|
 | **[aggregation](/deeper/aggregation)** | Combining activities that share values, such as the same actor or target, into one feed item. |
-| **group** | Related activities represented by one item, such as one customer's orders at the same shop. See [Reading Feeds](/basics/reading#groups). |
+| **group** | Related activities represented by one item, such as one customer's orders at the same shop. See [Retrieving Feeds](/basics/reading#groups). |
 | **axis** | What a group has in common, such as the same actor, verb, and target. This is the API term for its grouping rule. See [Aggregation](/deeper/aggregation#built-in-axes). |
 | **repeat** | The fallback group for one actor repeating a verb on the same object type with the same target. |
 | **[threshold](/deeper/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
@@ -57,7 +57,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **item** | One entry in a feed, represented by `FeedItem` or an array from `$page->items()`. |
 | **node** | A payload representation, such as an activity node or group node. |
 | **[named feed](/basics/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
-| **read mode** | The API choice of `log()`, `live()`, or `summary()`. See [Reading Feeds](/basics/reading). |
+| **read mode** | The API choice of `log()`, `live()`, or `summary()`. See [Retrieving Feeds](/basics/reading). |
 | **[live](/basics/reading#live)** | The default read mode, with each activity shown in one selected group. |
 | **[summary](/basics/reading#summary)** | The mode that summarises an actor's activities per calendar period using per-verb phrases, displayed as a summary row. |
 | **[log](/basics/reading#log)** | The mode that returns one item per activity without grouping. |
@@ -75,7 +75,8 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **`glyph` / `glyph()`** | The payload key and FeedItem method containing the activity's icon token. |
 | **intent** | The icon's meaning, declared with `intent()` and returned in `glyph_intent`, such as `success`. Storyfeed defines no fixed vocabulary. See [Icons and Intents](/basics/rendering#glyphs-and-intents). |
 | **icon image** | A model's picture in `entity.media.icon`, such as an avatar or logo. See [Image Slots](/reference/feedable#image-slots). |
-| **[body](/deeper/body)** | Typed content beneath a headline, such as an excerpt or list. Its kind is its **body type**. |
+| **[body](/basics/activity-content#adding-entity-bodies)** | Typed content beneath a headline, such as an excerpt or list. Its kind is its **body type**. |
+| **[excerpt](/basics/activity-content#adding-quoted-text)** | A body containing quoted words, optional source attribution, and a flag indicating whether the text is partial. It belongs to the entity snapshot. |
 | **degraded** | An entity with no snapshot yet, returned with `label: null` and `url: null`. Its activity still appears. See [Handling Missing Values](/basics/rendering#degraded-entities). |
 | **redundant** | An activity with a tombstone in a role selected by its verb for redundancy checks. It still records what happened. See [Redundant Roles](/deeper/deleted-models#roles-that-determine-redundancy). |
 

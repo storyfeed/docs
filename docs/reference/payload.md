@@ -139,14 +139,14 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
     "height": 3024,
     "alt": "Pad thai, table 4"
   },
-  "attachments": []
+  "files": []
 }
 ```
 
 | Value | Meaning |
 |---|---|
 | `media: null` | the entity has no media; the common case |
-| `media: {…}` | all four image keys present, each an image object or `null`, plus `attachments` (an empty list when none) |
+| `media: {…}` | all four image keys present, each an image object or `null`, plus `files` (an empty list when none) |
 | `media.url !== null` | `entity.url` identifies an image |
 | `width`, `height` | dimensions for reserving display space before loading; `null` when unknown, never `0` |
 
@@ -156,7 +156,7 @@ use Activity Streams 2.0 definitions: for a photo, `url` identifies the full
 image and `preview` its thumbnail. Group `sample` entities use the same media
 structure.
 
-`attachments` is a list of resources carrying `type`, `href`, `mediaType`,
+`files` is a list of resources carrying `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 <span id="one-payload-one-feed"></span>
@@ -203,10 +203,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
   "data": {},
-  // optional FeedThread conversation metadata
-  "thread": null,
-  // optional FeedChange before/after facts
-  "change": null,
   // the roles holding a tombstone, in role order
   "tombstoned": [],
   // one of them is a role the verb is about
@@ -230,8 +226,6 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
 | `data` | map or null | what the recording call passed to `data()` |
-| `thread` | object or null | the utterance the activity is about; see [Threads](#threads) |
-| `change` | object or null | before and after values; see [Changes](#changes) |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
 | `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
@@ -240,26 +234,9 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 A redundant activity still records what happened, but a relevant model has
 been deleted. Your renderer may display the original or missing headline.
 
-### Threads
+<a id="threads"></a>
 
-Set `thread` with `FeedThread` to include something someone said:
-
-| Key | Type | Holds |
-|---|---|---|
-| `text` | string | the utterance to show, as recorded; Storyfeed does not shorten it |
-| `by` | string or null | its author, when the headline does not already name them |
-| `kind` | string or null | the app's word for the act, such as `"replied"` |
-| `replies` | int or null | the size of the conversation, or `null` when not counted |
-| `truncated` | boolean | `true` when the app shortened `text` |
-
-### Changes
-
-`change` is set with `FeedChange`:
-
-| Key | Type | Holds |
-|---|---|---|
-| `changes` | list | one entry per changed field: `label` (string), `before` and `after` (each a string or `null`) |
-
+Quoted words belong in an entity's [`Excerpt` body](/basics/activity-content#adding-quoted-text).
 <span id="group-node"></span>
 
 ## Group Nodes

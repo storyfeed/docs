@@ -20,7 +20,7 @@ A page containing one activity has this payload:
 <FeedExample payload :items="[scene.order]" />
 
 Pass `next_cursor` to retrieve the next page. See
-[Reading Feeds](/basics/reading#pagination) for pagination and
+[Retrieving Feeds](/basics/reading#pagination) for pagination and
 [Response Envelope](/reference/payload#response-envelope) for all response fields.
 
 <a id="one-activity"></a>

@@ -49,8 +49,9 @@ const maxHeight = computed(() => {
 
 const slots = useSlots()
 // The default slot is the example's caption, drawn as a bar at the top of the
-// card; every other slot belongs to the stream.
-const streamSlots = computed(() => Object.keys(slots).filter((name) => name !== 'default'))
+// card. The preview slot replaces the drawing while keeping the same payload;
+// the remaining slots belong to the stream.
+const streamSlots = computed(() => Object.keys(slots).filter((name) => !['default', 'preview'].includes(name)))
 const open = ref(props.expanded || props.payload)
 const copied = ref(false)
 
@@ -157,11 +158,13 @@ async function copy() {
             :style="maxHeight ? { maxHeight } : undefined"
             :tabindex="maxHeight ? 0 : undefined"
         >
-            <FeedStream :items="drawn" :grouped="days" v-bind="$attrs">
-                <template v-for="name in streamSlots" #[name]="slotProps">
-                    <slot :name="name" v-bind="slotProps as any" />
-                </template>
-            </FeedStream>
+            <slot name="preview" :items="items">
+                <FeedStream :items="drawn" :grouped="days" v-bind="$attrs">
+                    <template v-for="name in streamSlots" #[name]="slotProps">
+                        <slot :name="name" v-bind="slotProps as any" />
+                    </template>
+                </FeedStream>
+            </slot>
         </div>
 
         <div class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">

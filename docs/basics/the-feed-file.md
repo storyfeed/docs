@@ -18,6 +18,7 @@ const created = scene.basics.feedFile.created
 const ready = scene.basics.activityContent.ready
 const fellBack = { ...ready, headline_template: ':actor updated :object', glyph: null,
   object: { ...ready.object, body: null } }
+const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object with :target' }
 </script>
 
 ## Basic Definitions
@@ -235,6 +236,47 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 You may also define [group headlines](/deeper/aggregation#defining-group-headlines)
 and [headlines for deleted models](/deeper/deleted-models).
 
+## Overriding Package Stories
+
+In this example, an installed package defines the `place` verb for `order`
+activities with the headline `:actor placed :object with :target`, a shopping-bag icon, and the
+repeat-group headline `:actor made :count order placements with :target`. To change
+only its single-activity headline, declare an explicit override:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+
+Story::for('order')
+    ->verb('place')
+    ->override()
+    ->headline(':actor submitted :object with :target');
+```
+
+<FeedExample :items="[overriddenOrder]" />
+
+Only the headline changes. The package's shopping-bag icon and repeat-group
+headline remain. Its action or message binding also remains when the
+application supplies only presentation fields.
+
+For presentation fields, `override()` applies to the same object type and
+verb. It takes precedence over the original declaration regardless of
+registration order. [Wildcard precedence](#definition-precedence) still
+applies between different keys.
+
+| Supplied Option | What Changes |
+|---|---|
+| Headline, anonymous headline, icon, or intent | that value |
+| Group headlines | each supplied axis headline; other axes remain |
+| Casts | each supplied data key; other keys remain |
+| Role constraints | each supplied role; other roles remain |
+| Queue options | each supplied option; other options remain |
+| Middleware, missing-role policy, or keep-latest policy | the whole supplied property |
+
+Ordinary declarations from different source locations that claim the same
+headline or icon key cause an error, even if their values are identical. Explicit
+overrides from different source locations that claim the same field and key
+also cause an error. Caching still requires unique story names.
+
 ## Listing Definitions
 
 List the definitions loaded by your application:
@@ -244,8 +286,10 @@ php artisan storyfeed:list
 ```
 
 Use `--type=order` or `--verb=place` to filter definitions, and `--json` for JSON
-output. Each entry includes the headline, icon, and declaration location.
-See [Commands](/reference/commands) for all options.
+output. Entries include declarations from service providers and the feed file,
+with their headline, icon, and source location. Explicit overrides are marked
+in the listing. See [Commands](/reference/commands#listing-definitions) for all
+options.
 
 ## Caching Definitions
 
@@ -255,7 +299,10 @@ Cache definitions during deployment:
 php artisan storyfeed:cache
 ```
 
-Storyfeed loads cached definitions without evaluating `routes/feed.php`.
+The cache includes stories registered by service providers and the feed file.
+Storyfeed uses the compiled cache when retrieving feeds. Providers still boot,
+but `routes/feed.php` is not evaluated. The listing shows authored declarations;
+it does not show the merged definitions used by a cached feed.
 The `optimize` Artisan command also caches these definitions. Rebuild the cache
 after changing them. To clear it:
 

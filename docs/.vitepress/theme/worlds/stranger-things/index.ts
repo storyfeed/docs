@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
+  DOCUMENT_WORKFLOW, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -85,7 +85,7 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // A body belongs to its entity, so it is set here, once, and every row that
 // names the thing shows the same preview. Each names its subject, even where
 // the headline already does. Its form follows what the thing is: a record is a
-// card, a description is titled Prose, a signed document is a File, a passage
+// card, a description is titled Prose, a signed document is a FileAttachment, a passage
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
 // standard example, and its pages teach the bare `toFeed()`. A page that
 // teaches a body on an order builds it on its own example.
@@ -145,7 +145,7 @@ for (const key of Object.keys(TICKETS) as (keyof typeof TICKETS)[])
 // A signed document is its file. Sizes are ours.
 const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, internship: 61870, farmSale: 132406 }
 for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
-  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/File', $v: 1,
+  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
     name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
 // Nancy's story quotes the woman she interviewed (SOURCES.post: Driscoll's rats, S3E2).
 // The words are Doris Driscoll's, so `from` names her. The wording is ours, not a canon line.
@@ -177,14 +177,14 @@ const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $
     FARE.pretzel,
   ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042' } }] }
 const hoursTitle = `${VENUES.scoops} opening hours`
-const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
   subject: { label: hoursTitle, href: '/notices/101' },
   content: 'The counter opens at 10 am. Orders are available until 9 pm.',
-  image: null, attachments: [], footnote: null }] })
-const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+  image: null, files: [], footnote: null }] })
+const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
   subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.url}/guide` },
   content: 'The visitor guide includes entrances, parking and shop locations.',
-  image: null, attachments: [], footnote: null }] })
+  image: null, files: [], footnote: null }] })
 
 // uncertain: the branches, file counts and titles are invented for the cameo merges.
 const PULLS: Record<number, [string, number]> = {
@@ -245,18 +245,20 @@ const ALT: Record<string, string> = {
 }
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
-const mediaOf = (file: string) => ({ icon: null, image: null, attachments: [],
-  preview: picture(file), url: picture(file) })
+const mediaOf = (file: string) => ({ icon: null, image: null, files: [],
+  preview: picture(file), url: null })
+const imageBody = (caption: string) => [{ $body: 'Storyfeed/Body/Image', $v: 1,
+  caption, alt: caption, width: null, height: null, image: 'preview' }]
 
 const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,
-  file ? { media: mediaOf(file) } : {})
-for (const [key, file] of Object.entries(photographed)) things[key] = { ...things[key], media: mediaOf(file) }
-venues.scoops = { ...venues.scoops, media: mediaOf('parlour') }
-fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel') }
-fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog') }
+  file ? { media: mediaOf(file), body: imageBody(ALT[file]) } : {})
+for (const [key, file] of Object.entries(photographed)) things[key] = { ...things[key], media: mediaOf(file), body: [...(things[key].body ?? []), ...imageBody(things[key].label)] }
+venues.scoops = { ...venues.scoops, media: mediaOf('parlour'), body: [...(venues.scoops.body ?? []), ...imageBody(venues.scoops.label)] }
+fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel'), body: [...(fare.pretzel.body ?? []), ...imageBody(fare.pretzel.label)] }
+fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog'), body: [...(fare.hotDog.body ?? []), ...imageBody(fare.hotDog.label)] }
 // The photo belongs to the photo activity; the menu item's own preview is its
 // details card (set with the other bodies above).
-const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, picture('sundae').src, { media: mediaOf('sundae') })
+const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { media: mediaOf('sundae'), body: imageBody(fare.butterscotch.label) })
 
 // ── The verbs ────────────────────────────────────────────────────────────────
 
@@ -539,10 +541,41 @@ ROWS.push(
   cookbookRow('crowd3', '1985-07-01 12:02', 'place', linguist, order(1104), v.scoops),
 )
 
+// Document workflows are illustrative app transactions using the shared cast.
+const agreement = entity('agreement', '301', DOCUMENT_WORKFLOW.agreement, '/agreements/301')
+const proposal = entity('proposal', '302', DOCUMENT_WORKFLOW.proposal, '/proposals/302')
+const document = entity('document', '303', DOCUMENT_WORKFLOW.agreement, '/documents/303')
+const acceptance = entity('acceptance', '304', DOCUMENT_WORKFLOW.acceptance, '/acceptances/304')
+const menu = entity('menu', '305', DOCUMENT_WORKFLOW.menu, '/menus/305')
+const choice = (id: string, verb: string, object: any, target: any, headline: string, data = {}) =>
+  row(`choice-${id}`, '1985-07-04 18:00', verb, scout, object, target, 'splice',
+    { headline, data, uncertain: 'Illustrative software transaction, not an on-screen event.' })
+ROWS.push(
+  choice('agreement', 'accept', agreement, null, ':actor accepted the agreement :object'),
+  choice('proposal', 'accept', proposal, null, ':actor accepted the proposal :object'),
+  choice('send', 'send', agreement, scooper, ':actor sent :object to :target'),
+  choice('invite', 'invite', agreement, scooper, ':actor invited :target to sign :object'),
+  choice('decision', 'create', acceptance, document, ':actor recorded :object for :target'),
+  choice('clause', 'remove', document, null, ':actor removed a clause from :object', { clause: 'delivery-window' }),
+  choice('attachment', 'remove', document, null, ':actor removed an attachment from :object', { attachment: 'schedule' }),
+  choice('create', 'create', fare.butterscotch, null, ':actor created :object'),
+  choice('add', 'add', fare.butterscotch, menu, ':actor added :object to :target'),
+  ...DOCUMENT_WORKFLOW.clauses.map((clause, i) => ({
+    ...choice(`rewrite-${i}`, 'rewrite', document, null, ':actor rewrote :object',
+      { clause, agreement: document.label }), at: `1985-07-04 18:0${3 - i}`,
+  })),
+)
+VERBS.send = { glyph: 'send', headline: ':actor sent :object to :target' }
+VERBS.accept = { glyph: 'check', headline: ':actor accepted :object' }
+VERBS.invite = { glyph: 'mail', headline: ':actor invited :target to :object' }
+VERBS.rewrite = { glyph: 'file-pen', headline: ':actor rewrote :object' }
+
 // Basics/guide examples use the modern app premise. These are software
 // transactions, not additional on-screen events or quoted dialogue. The existing
 // j84 order is itself an illustrative transaction (troop/S3E4).
 const demo = { uncertain: 'Illustrative shop-app transaction, not an on-screen event' }
+ROWS.push(row('filter-note', '1985-07-04 16:45', 'note', scooper, worldNotes.forLife, v.scoops, 'splice', demo))
+VERBS.note = { glyph: 'sticky-note', headline: ':actor noted :object at :target' }
 ROWS.push(
   // splice: one customer's three separate order requests, near the existing j84.
   row('a-order-2', '1985-07-02 12:01', 'place', scout, order(1040), v.scoops, 'splice', demo),
@@ -628,6 +661,16 @@ const deeperRows: Row[] = [
     deeperRow(`view-${i}`, `1985-07-04 ${time}`, 'view', scooper, order(2061 + i))),  // At closing time a scheduled command cancels an order nobody paid for.
   deeperRow('system-cancel', '1985-07-03 21:00', 'cancel', register, order(2071), v.scoops),
 ]
+deeperRows.push(
+  ...Object.values(fare).slice(0, 2).map((dish, i) => ({
+    ...deeperRow(`menu-${i}`, `1985-07-04 16:0${i}`, 'add', scooper, dish, menu),
+    headline: ':actor put :object on the menu',
+  })),
+  ...[scout, radio, linguist].map((actor, i) => ({
+    ...deeperRow(`context-${i}`, `1985-07-04 18:1${i}`, 'ask', actor, null, fare.butterscotch),
+    context: v.scoops,
+  })),
+)
 ROWS.push(...deeperRows)
 VERBS.write = { glyph: 'pencil', headline: ':actor wrote :object', summary: 'wrote :object|wrote :count records' }
 VERBS.ready = { glyph: 'circle-check', headline: ':actor marked :object ready', repeat: ':actor marked :count orders ready', summary: 'marked :object ready|marked :count orders ready' }
@@ -651,6 +694,8 @@ export default {
   },
   scenes: {
     cookbook: {
+      verbChoices: Object.fromEntries(['agreement', 'proposal', 'send', 'invite', 'decision', 'clause', 'attachment', 'create', 'add'].map(key => [key, `choice-${key}`])),
+      rewrites: ['choice-rewrite-0', 'choice-rewrite-1', 'choice-rewrite-2'],
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
       transitions: { confirmed: 'cookbook-confirmed', timeline: ['j84', 'cookbook-confirmed', 'cookbook-replaced'] },
       pricing: ['cookbook-added', 'cookbook-repriced'],
@@ -661,7 +706,7 @@ export default {
     },
     deeper: {
       body: { progress: 'deeper-pickup-progress' },
-      aggregation: { orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
+      aggregation: { menu: ['deeper-menu-0', 'deeper-menu-1'], contexts: ['deeper-context-0', 'deeper-context-1', 'deeper-context-2'], orders: ['deeper-order-0', 'deeper-order-1', 'deeper-order-2'],
         customers: Array.from({ length: 5 }, (_, i) => `deeper-customer-${i}`) },
       latestPerObject: { timeline: ['deeper-order-0', 'deeper-confirm-0', 'deeper-ready', 'deeper-paid'],
         board: ['deeper-paid', 'deeper-confirm-1', 'deeper-order-2'],
@@ -684,6 +729,7 @@ export default {
       usageExamples: { repeatOrders: ['j84', 'a-order-2', 'a-order-3'], photos: ['j54', 'j55', 'j56'] },
     },
     basics: {
+      reading: { note: 'filter-note' },
       activityContent: { note: 'a-note', ready: 'a-ready', confirmed: 'a-confirm', photo: 'a-photo', product: 'a-product',
         program: 'prose-program', terminal: 'prose-terminal', radioLog: 'prose-radio',
         caseMemo: 'prose-memo', labReport: 'prose-report', alphabet: 'prose-alphabet', planck: 'prose-planck',

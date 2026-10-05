@@ -419,11 +419,11 @@ Who acted and where, then the classes and pipeline built on them.
 - ✅ Publishing From Events — the listener, `PublishesToFeed`, events core emits
 - ✅ Parties & Anonymous Actors — named non-model participants, declared parties, anonymous activities and headlines
 - ✅ Containers & Context — the fourth role, target vs context, the container query
-- ✅ Activity Scopes — `Storyfeed::actor()` / `Storyfeed::context()` over a callback or request, role precedence
-- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, resource methods, request-based actors
+- ✅ Activity Scopes — `Storyfeed::actor()` / `Storyfeed::context()` over a callback or request, explicit-versus-scoped precedence
+- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, class-level casts, resource methods, request-based actors
 - ✅ Named Stories — names, prefixes, group attributes, `story()`, `Story::has()` / `storyIs()`
 - ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches and inspection
-- ✅ Story Middleware & Batching — middleware classes and closures, aliases and groups, batch windows, default roles
+- ✅ Story Middleware & Batching — middleware classes and closures, aliases and groups, batch windows, default roles, complete cross-feature role precedence
 - ✅ Queued Publishing (`deeper/queues`) — `queue()`, queued Story classes, publication time and snapshots, transactions, missing models, actor/context carry
 
 ### Shaping the Feed
@@ -434,7 +434,8 @@ How stored activities become the rows a feed shows, grouping first.
 - ✅ Grouping Periods — the calendar boundary a verb groups within
 - ✅ Keeping the Latest Activity — `keepLatest()`: a new activity replaces earlier matching ones when stored
 - ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
-- ✅ Custom Body Types (`deeper/body`) — what Activity Content doesn't cover: resolving bodies at read time, custom components, writing body types, versions
+- ✅ Resolving Bodies When Retrieved (`deeper/resolving-bodies`) — current values, deferred construction, snapshot data and batched hydration; Feed Media owns links and picture slots
+- ✅ Custom Body Types (`deeper/body`) — custom components, writing body types, versions; Activity Content owns ordinary attachment
 - ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
 - ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
 
@@ -461,7 +462,17 @@ example; the mechanics stay on the concept page it links.
 What you type, then the shapes, then the policy pages.
 
 - ✅ Configuration · Commands · Doctor Checks (`reference/doctor`: every check and finding) · Feedable API · Verb Vocabulary · The Payload
-  Contract · Schema · Compatibility · Glossary
+  Contract · Schema · Storage Architecture · Compatibility · Glossary
+- Schema (`reference/schema`) is the one home for tables, columns and indexes:
+  the ER diagram and the column and index tables are GENERATED from core's
+  migrations by `npm run schema` (`scripts/schema.mjs`; purposes in
+  `scripts/schema-notes.json`), and the drift guard fails the build when they
+  disagree. Edit the prose around the `<!-- schema:… -->` blocks, never inside.
+- Storage Architecture (`reference/storage`) explains what one publish writes,
+  how a page is read, what is kept current, and the costs (owner ruling
+  2026-10-01: split from Schema, title passes the spine test). Concept pages
+  link to it where they touch storage: Aggregation, Reading Feeds (pagination),
+  Story Middleware & Batching, Deleted Models, Retention.
 
 ## Pending coverage
 

@@ -183,9 +183,12 @@ are separate from Laravel job batches created with `Bus::batch()`.
 
 The window determines how long Storyfeed waits for more activities before
 closing the batch. Each batched activity extends the closing time to its
-`published_at` plus its verb's window, if that is later. An activity before the
-closing time joins the batch; one at or after it starts a new batch.
+`published_at` plus its verb's window, if that is later. An activity joins an
+available open batch only when `opened_at <= published_at < closes_at`.
+An out-of-order arrival before an available window, or an activity at or after
+its closing time, starts a separate batch. Closed batches are not reopened.
 Anonymous activities cannot join a batch because they have no recorded actor.
+Batches are stored in [`feed_batches`](/reference/schema#feed-batches).
 
 | Declaration | Batch Behaviour |
 |---|---|
@@ -252,9 +255,28 @@ class UseServiceActor
 
 Call `hasActor()` before supplying an actor; it also returns `true` for explicit
 anonymity. Call `has('context')` before supplying context. These checks preserve
-[actor and context precedence](/deeper/activity-scopes#actor-and-context-precedence).
+[actor and context precedence](#resolving-role-precedence).
 Declare party names in the [party list](/deeper/parties#declaring-parties),
 because the `by` method does not check that list.
+
+## Resolving Role Precedence
+
+Storyfeed resolves each role from the first applicable source:
+
+| Priority | Actor | Context |
+|---|---|---|
+| Call site | `->by($user)` or explicit anonymity | `->context($model)` |
+| Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
+| [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
+| Verb | the [verb's actor](/deeper/stories#request-based-actors) | none |
+| Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
+| Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
+
+A custom resolver replaces the authenticated user as a source. If it returns
+`null`, the fallback party applies. Explicit anonymity records no actor.
+Without a resolved actor, the activity is anonymous and cannot join a
+[batch](/deeper/story-middleware-and-batching#batch-windows). If no context is
+supplied, that role remains empty.
 
 <a id="caching-closure-middleware"></a>
 <a id="inspecting-middleware"></a>

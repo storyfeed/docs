@@ -109,7 +109,7 @@ places the order:
 ## Displaying Feeds
 
 You may display the same activities in three modes. See
-[Reading Feeds](/basics/reading) to select a mode.
+[Retrieving Feeds](/basics/reading) to select a mode.
 
 ### Live
 

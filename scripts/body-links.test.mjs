@@ -15,11 +15,11 @@ const server = await createServer({
 })
 after(() => server.close())
 const { default: FeedItem } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/FeedItem.vue')
-const render = (body, url = '/notices/1', data = {}) => renderToString(createSSRApp({
+const render = (body, url = '/notices/1', data = {}, entityMedia = null) => renderToString(createSSRApp({
   render: () => h(FeedItem, { item: {
     kind: 'activity', id: 'test', published_at: '2026-09-26T12:00:00Z',
     actor: null, target: null, context: null, verb: 'publish', headline_template: null, headline: 'A notice was published', data,
-    object: { type: 'notice', id: '1', label: 'Notice', url, body },
+    object: { type: 'notice', id: '1', label: 'Notice', url, body, media: entityMedia },
   } }),
 })).then(html => html.replace(/<!--[\s\S]*?-->/g, ''))
 const media = (subject, footnote) => ({ $body: 'Storyfeed/Body/MediaObject', $v: 1, subject, footnote })
@@ -64,6 +64,43 @@ test('activity data does not borrow the object URL for an unattributed body', as
   assert.doesNotMatch(html, /<a\b/)
 })
 
+test('FileAttachment and stored File tokens render the same file details', async () => {
+  const body = { $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'archive.zip', size: 512, mediaType: 'application/zip' }
+  const current = await render([body])
+  const stored = await render([{ ...body, $body: 'Storyfeed/Body/File' }])
+  assert.equal(stored, current)
+  assert.match(stored, /archive.zip/)
+  assert.match(stored, /512 B/)
+})
+
+test('KeyValue upgrades stored placeholders and preserves explicit null over the default', async () => {
+  for (const version of [1, 2]) {
+    const key = version === 1 ? 'missing' : 'placeholder'
+    const html = await render([{ $body: 'Storyfeed/Body/KeyValue', $v: version,
+      [version === 1 ? 'missing' : 'defaultPlaceholder']: 'Unknown', items: [
+        { key: 'Seat', value: null, [key]: 'Not seated' },
+        { key: 'Silent', value: null, [key]: null },
+        { key: 'Default', value: null },
+        { key: 'Explicit null', value: null, missing: 'Old', placeholder: null },
+      ] }])
+    assert.match(html, /Not seated/)
+    assert.match(html, /Unknown/)
+    assert.doesNotMatch(html, /Silent|Explicit null|Old/)
+  }
+})
+
+test('MediaObject renders stored attachments and current files with new-key precedence', async () => {
+  for (const version of [1, 2]) {
+    const html = await render([{ $body: 'Storyfeed/Body/MediaObject', $v: version,
+      [version === 1 ? 'attachments' : 'files']: [{ href: '/old.pdf', name: 'Stored file' }] }])
+    assert.match(html, /href="\/old.pdf"/)
+    assert.match(html, /Stored file/)
+  }
+  const html = await render([{ $body: 'Storyfeed/Body/MediaObject', $v: 1,
+    attachments: [{ href: '/old.pdf', name: 'Old' }], files: [] }])
+  assert.doesNotMatch(html, /old.pdf/)
+})
+
 const prose = (content, mediaType, verbatim = false) => ({
   $body: 'Storyfeed/Body/Prose', $v: 1, title: 'System notes', content, mediaType, verbatim,
 })
@@ -87,4 +124,37 @@ test('Prose preserves escaped source for verbatim, plain and unknown formats', a
     if (verbatim) assert.match(html, /<pre[^>]*tabindex="0"/)
     assert.match(html, /System notes/)
   }
+})
+
+test('pictures require Image bodies and never use the entity URL', async () => {
+  const slots = { preview: { src: '/preview.jpg' }, image: { src: '/image.jpg' }, url: { src: '/not-an-image' } }
+  assert.doesNotMatch(await render([], '/photo/show', {}, slots), /<img/)
+  const body = { $body: 'Storyfeed/Body/Image', $v: 1, image: 'image', caption: '<Boat>' }
+  const html = await render([body], '/photo/show', {}, slots)
+  assert.match(html, /src="\/image.jpg"/)
+  assert.match(html, /alt="&lt;Boat&gt;"/)
+  assert.match(html, /<figcaption[^>]*>&lt;Boat&gt;<\/figcaption>/)
+  assert.doesNotMatch(html, /preview.jpg|not-an-image/)
+  assert.doesNotMatch(await render([{ ...body, image: 'icon' }], null, {}, slots), /<img|<figcaption/)
+})
+
+test('group samples require Image bodies and use their chosen slot', async () => {
+  const { imageOf } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/body/index.ts')
+  const media = { preview: { src: '/preview.jpg' }, image: { src: '/image.jpg' }, url: { src: '/show-page' } }
+  assert.equal(imageOf({ media }), null)
+  assert.equal(imageOf({ media, body: [{ $body: 'Storyfeed/Body/Image', image: 'image' }] }).src, '/image.jpg')
+  assert.equal(imageOf({ media, body: [{ $body: 'Storyfeed/Body/Image', image: 'url' }] }), null)
+})
+
+test('the world keeps every object photograph explicit after removing automatic previews', async () => {
+  const { everything } = await server.ssrLoadModule('/docs/.vitepress/theme/world.ts')
+  const nodes = everything()
+  let pictures = 0
+  for (const node of nodes) {
+    const object = node.object
+    if (!object?.media?.preview?.src) continue
+    pictures++
+    assert.ok(object.body?.some(body => body.$body === 'Storyfeed/Body/Image'), `missing Image body: ${object.label}`)
+  }
+  assert.ok(pictures > 0)
 })

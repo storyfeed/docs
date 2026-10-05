@@ -110,7 +110,11 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-- The mapping sets only the document's `type`.
+- The mapping sets the document's `type` and affects default deletion rules.
+  `Delete`, `Remove`, `Undo`, and `Reject` have no constitutive roles by default;
+  other types use the object. Explicit rules can override this. See
+  [Deleted Models](/deeper/deleted-models) for how missing roles make an activity
+  redundant.
 - Without an app or built-in AS2 mapping, the type is `Activity` and `sf:verb`
   holds the verb. The document's JSON-LD context, `https://ns.storyfeed.dev`,
   defines `sf:verb`. Intransitive types also fall back to `Activity` when an
@@ -134,4 +138,4 @@ On a model, implement `Storyfeed\Contracts\HasActivityStreamsType`.
 
 `Storyfeed\Serialization\Reader::activity()` parses a Storyfeed document,
 preserving its `uid`, verb, `type`, roles, and `published_at` to the whole
-second. It discards `summary` and `replies`.
+second. Other document properties are not returned.

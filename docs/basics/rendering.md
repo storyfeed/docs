@@ -1,10 +1,17 @@
 # Rendering
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { computed } from 'vue'
+import FeedHeadline from '../.vitepress/theme/feed/FeedHeadline.vue'
+import EntityLink from '../.vitepress/theme/feed/EntityLink.vue'
+import FeedIcon from '../.vitepress/theme/feed/FeedIcon.vue'
+import { useRelativeTime } from '../.vitepress/theme/feed/useRelativeTime'
+import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
 
-const bare = { ...scene.order, glyph: null }
 const one = scene.order
+const time = useRelativeTime(computed(() => one.published_at))
+const summary = summaryOf(scene.cookbook.transitions.timeline)
+const vueHeadlines = { [one.id]: `${one.actor.label} placed ${one.object.label} with ${one.target.label}` }
 const grouped = liveOf(scene.busyPlace)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
@@ -12,15 +19,13 @@ const complete = scene.basics.feedFile.completed
 const degraded = { ...scene.order, actor: null,
   object: { ...scene.order.object, label: null, url: null } }
 const content = scene.basics.activityContent
-const withThread = { ...content.note,
-  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
-    { key: 'Items', value: '1', verbatim: false, missing: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
-    { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
+    { key: 'Items', value: '1', verbatim: false, placeholder: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
+    { key: 'Table', value: null, verbatim: false, placeholder: 'not seated' },
   ] }] } }
 </script>
 
@@ -98,7 +103,7 @@ and indigo for links. To change these styles, publish the views and edit their
 utility classes. You may also customize Tailwind's existing theme variables,
 such as `--color-indigo-700` and `--color-indigo-300`, in your application's
 `@theme` block. These changes apply to every component using those colours.
-The kit defines no additional theme variables. ItemList, Prose, and Excerpt use the
+Storyfeed UI defines no additional theme variables. ItemList, Prose, and Excerpt use the
 Typography plugin's `prose` styles.
 
 The components include `dark:` variants and follow your application's
@@ -122,7 +127,27 @@ are your application's own anonymous components in
 `<x-feed.item>`, and so on, separately from Storyfeed UI's
 `<x-storyfeed::feed>`.
 
-### Reading Feed Items
+### The Feed Components
+
+Create these anonymous Blade components in `resources/views/components/feed`:
+
+| Component | File | Renders |
+|---|---|---|
+| `<x-feed>` | `feed.blade.php` | the feed and pagination link |
+| `<x-feed.item>` | `item.blade.php` | an activity or group |
+| `<x-feed.activity>` | `activity.blade.php` | an activity row |
+| `<x-feed.group>` | `group.blade.php` | a group row and its members |
+| `<x-feed.glyph>` | `glyph.blade.php` | the icon |
+| `<x-feed.time>` | `time.blade.php` | the publication time |
+| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | a body using its type |
+
+Blade renders `feed/feed.blade.php` as `<x-feed>` because the file name matches
+its directory. See Laravel's
+[anonymous index components](https://laravel.com/docs/13.x/blade#anonymous-index-components).
+
+<a id="reading-feed-items"></a>
+
+### Accessing Feed Items
 
 Iterating over a feed page returns each item as a `Storyfeed\Support\FeedItem`.
 Use its methods to access the [payload](/reference/payload):
@@ -134,6 +159,12 @@ Use its methods to access the [payload](/reference/payload):
     {{ $item->publishedAt()->diffForHumans() }}
 @endforeach
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /><br />{{ one.actor.label }}<br /><time :datetime="one.published_at">{{ time.label.value }}</time>
+  </template>
+</FeedExample>
 
 Echo `$item->headline()` to render the headline with linked entity labels.
 Items also support array access, such as `$item['verb']`. The `$page->items()`
@@ -149,56 +180,12 @@ for all methods.
 | icon | `glyph()`, `intent()`, `actor()` | `glyph`, `glyph_intent`, `actor` |
 | headline | `headline()` | `headline_template` or `headline`, the role keys |
 | time | `publishedAt()` | `published_at` |
-| quote | `thread()` | `thread` |
 | media | `object()->media()` | `object.media` |
 | body | `object()->bodies()` | an entity's `body` list |
 | group images | `actors()`, `distinct('actors')` | a group's `sample`, `distinct` |
 | group members | `children()`, `count()` | `children`, `count` |
 
 Omit elements whose corresponding fields are empty.
-
-### Displaying the Feed
-
-Pass a paginator to the view. The `cursorPaginate` method retrieves the
-current request's cursor for [subsequent pages](/basics/reading#pagination):
-
-```php memo="routes/web.php"
-use Illuminate\Support\Facades\Route;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function () {
-    return view('feed', [
-        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
-    ]);
-});
-```
-
-Render the feed with the `x-feed` component:
-
-```blade memo="resources/views/feed.blade.php"
-<x-feed :page="$page" />
-```
-
-<FeedExample :items="[grouped, complete, one]" />
-
-#### The Feed Components
-
-Create these anonymous Blade components in `resources/views/components/feed`:
-
-| Component | File | Renders |
-|---|---|---|
-| `<x-feed>` | `feed.blade.php` | the feed and pagination link |
-| `<x-feed.item>` | `item.blade.php` | an activity or group |
-| `<x-feed.activity>` | `activity.blade.php` | an activity row |
-| `<x-feed.group>` | `group.blade.php` | a group row and its members |
-| `<x-feed.glyph>` | `glyph.blade.php` | the icon |
-| `<x-feed.time>` | `time.blade.php` | the publication time |
-| `<x-feed.body>` | `body.blade.php`, `body/key-value.blade.php`, … | a body using its type |
-| `<x-feed.pager>` | `pager.blade.php` | the next-page link |
-
-Blade renders `feed/feed.blade.php` as `<x-feed>` because the file name matches
-its directory. See Laravel's
-[anonymous index components](https://laravel.com/docs/13.x/blade#anonymous-index-components).
 
 ### Rendering Activities
 
@@ -212,7 +199,11 @@ To render a headline in Blade, echo the value returned by the `headline` method:
 {{ $activity->headline() }}
 ```
 
-<FeedExample expanded :items="[bare]" />
+<FeedExample :items="[one]">
+  <template #preview>
+    <FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" />
+  </template>
+</FeedExample>
 
 The headline replaces role tokens in `headline_template` with entity labels.
 Entities with a `url` render as links with their attributes, such as `target`.
@@ -236,6 +227,12 @@ role. Echo the entity to display its label, linked when it has a URL:
 {{ $activity->object() }}
 ```
 
+<FeedExample :items="[one]">
+  <template #preview>
+    <EntityLink :entity="one.object" />
+  </template>
+</FeedExample>
+
 Use the `label`, `url`, and `type` methods to access individual values.
 
 To customize entity markup, pass a closure to the `toHtml` method. It receives
@@ -246,6 +243,12 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 
 {!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <span><strong><EntityLink :entity="one.actor" /></strong> placed <strong><EntityLink :entity="one.object" /></strong> with <strong><EntityLink :entity="one.target" /></strong></span>
+  </template>
+</FeedExample>
 
 #### Timestamps
 
@@ -258,6 +261,12 @@ The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance:
     {{ $at->diffForHumans() }}
 </time>
 ```
+
+<FeedExample :items="[one]">
+  <template #preview>
+    <time :datetime="one.published_at">{{ time.label.value }}</time>
+  </template>
+</FeedExample>
 
 #### Icons and Intents {#glyphs-and-intents}
 
@@ -274,7 +283,12 @@ The `glyph` method returns the registered icon identifier, such as
 
 The `intent` method returns the application-defined value used to style the icon:
 
-<FeedExample expanded :items="[complete, scene.order]" />
+<FeedExample :items="[complete, one]">
+  <template #preview>
+    <FeedIcon :icon="complete.glyph" :intent="complete.glyph_intent" />
+    <FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+  </template>
+</FeedExample>
 
 Define intent values with the verb's
 [`intent` method](/basics/the-feed-file#adding-an-icon). Storyfeed provides no
@@ -299,7 +313,14 @@ Combine the icon, headline, and timestamp in the activity component:
 </article>
 ```
 
-<FeedExample :items="[one]" />
+<FeedExample :items="[one]">
+  <template #preview>
+    <article><FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+      <div><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></div>
+      <time :datetime="one.published_at">{{ time.label.value }}</time>
+    </article>
+  </template>
+</FeedExample>
 
 <a id="groups"></a>
 
@@ -320,7 +341,7 @@ and headline tokens.
     <div>{{ $group->headline() }}</div>
     <x-feed.time :at="$group->publishedAt()" />
 
-    <details>
+    <details @if ($group->headline()->isFallback()) open @endif>
         <summary>{{ $group->count() }} activities</summary>
 
         @foreach ($group->children() as $child)
@@ -330,7 +351,10 @@ and headline tokens.
 </article>
 ```
 
-The `count` method returns the total member count. If `children` contains fewer
+<FeedExample :items="[grouped]" />
+
+The preview shows the group headline, time and supplied members using the
+docs' styling. The `count` method returns the total member count. If `children` contains fewer
 members, `childrenTruncated` returns `true`.
 
 #### Plural Roles
@@ -357,14 +381,31 @@ To render the sample as images, get the role's entities and total count:
 #### Groups Without Headlines
 
 If neither a group headline nor the single-activity headline applies,
-Storyfeed displays the count, such as "5 activities". The headline's
-`isFallback` method returns `true`:
+both payload headline fields are `null`. The PHP reader's `$group->headline()`
+returns a `Headline` value: `isFallback()` is `true`, and `toString()` returns
+the translated count, such as “3 activities”. An explicitly returned empty
+string does not use this null-field fallback.
+
+Storyfeed UI's Blade group component opens its disclosure when supplied
+children exist. Its open control says “Show less”; collapsed, it says
+“Show all 3”. If the response limits the children, it reports the number not
+shown. Expanding displays the supplied children; it does not fetch more.
+
+The custom component above opens its supplied members through the conditional
+`open` attribute. You can style its fallback headline separately:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
 ```
 
+The preview shows the expanded members and fallback headline produced by this
+component, using the docs’ styling:
+
 <FeedExample :items="[unnamed]" />
+
+See [Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the
+authored, noun and null payload outcomes, including a safe template whose
+wording undercounts the activities.
 
 #### Summary Rows {#digest-rows}
 
@@ -372,6 +413,8 @@ A [summary row](/basics/reading#summary) displays the actors followed by per-ver
 phrases. The group component renders it without changes. To render each phrase
 separately, use the `phrases` method. It returns feed items with their own
 `headline` and `count` methods.
+
+<FeedExample :items="summary" />
 
 <a id="activity-data-and-bodies"></a>
 
@@ -381,15 +424,8 @@ separately, use the `phrases` method. It returns feed items with their own
 
 #### Quoted Text
 
-Use the `thread` method to display recorded quoted text in the activity row:
-
-```blade memo="resources/views/components/feed/activity.blade.php" at="<article>"
-@if ($thread = $activity->thread())
-    <blockquote>{{ $thread->text }}</blockquote>
-@endif
-```
-
-<FeedExample :items="[withThread]" />
+Render quoted words as an [`Excerpt` body](/basics/activity-content#adding-quoted-text).
+The body component and Excerpt component below handle its text and attribution.
 
 The `data` method returns values stored with the activity. Choose which values
 to display.
@@ -406,22 +442,43 @@ bodies in the activity row:
 ```
 
 Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
-The body component maps it to `feed.body.key-value` and renders it with
-`<x-dynamic-component>`. Types without a matching component are skipped:
+Match that full identifier to an explicit body class and component. Upgrade
+the stored version before rendering; Storyfeed preserves the stored shape. Skip
+unknown types and versions newer than this renderer supports. Extend this map
+when adding another body component:
 
 ```blade memo="resources/views/components/feed/body.blade.php"
 @props(['body'])
 
 @php
-    $component = 'feed.body.'.Str::kebab(class_basename($body['$body']));
+    use Storyfeed\Body\Excerpt;
+    use Storyfeed\Body\KeyValue;
+
+    $renderers = [
+        KeyValue::bodyType() => [KeyValue::class, 'feed.body.key-value'],
+        Excerpt::bodyType() => [Excerpt::class, 'feed.body.excerpt'],
+    ];
+    $renderer = $renderers[$body['$body'] ?? ''] ?? null;
+    $version = $body['$v'] ?? 1;
+    $component = null;
+
+    if ($renderer !== null && is_int($version) && $version >= 1) {
+        [$class, $view] = $renderer;
+
+        if ($version <= $class::version()) {
+            $body = $class::upgrade($body, $version);
+            $component = $view;
+        }
+    }
 @endphp
 
-@if (view()->exists("components.{$component}"))
+@if ($component !== null)
     <x-dynamic-component :component="$component" :body="$body" />
 @endif
 ```
 
-Add a component for each body type you render:
+Add a component for each body type you render. This KeyValue component displays
+the placeholder when a value is null, or an empty string when both are null:
 
 ```blade memo="resources/views/components/feed/body/key-value.blade.php"
 @props(['body'])
@@ -429,12 +486,20 @@ Add a component for each body type you render:
 <dl {{ $attributes }}>
     @foreach ($body['items'] as $item)
         <dt>{{ $item['key'] }}</dt>
-        <dd>{{ $item['value'] ?? $item['missing'] }}</dd>
+        <dd>{{ $item['value'] ?? $item['placeholder'] ?? '' }}</dd>
     @endforeach
 </dl>
 ```
 
-<FeedExample :items="[withKeyValue]" />
+<FeedExample :items="[withKeyValue]">
+  <template #preview>
+    <dl>
+      <template v-for="item in withKeyValue.object.body[0].items" :key="item.key">
+        <dt>{{ item.key }}</dt><dd>{{ item.value ?? item.placeholder ?? '' }}</dd>
+      </template>
+    </dl>
+  </template>
+</FeedExample>
 
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
@@ -448,43 +513,17 @@ Add a component for each body type you render:
 </figure>
 ```
 
+<FeedExample :items="[content.planck]">
+  <template #preview>
+    <figure>
+      <blockquote>{{ content.planck.object.body[0].text }}<template v-if="content.planck.object.body[0].truncated">…</template></blockquote>
+      <figcaption v-if="content.planck.object.body[0].from">{{ content.planck.object.body[0].from }}</figcaption>
+    </figure>
+  </template>
+</FeedExample>
+
 See [Activity Content](/basics/activity-content#available-body-types) for body
 types and fields, or [Custom Body Types](/deeper/body) to define your own.
-
-### Assembling the Feed
-
-The item component selects the component matching the item's kind:
-
-```blade memo="resources/views/components/feed/item.blade.php"
-@props(['item'])
-
-@if ($item->isActivity())
-    <x-feed.activity :activity="$item" />
-@elseif ($item->isGroup())
-    <x-feed.group :group="$item" />
-@endif
-```
-
-The feed component renders each item, followed by the pagination link:
-
-```blade memo="resources/views/components/feed/feed.blade.php"
-@props(['page'])
-
-<div role="feed" {{ $attributes }}>
-    @foreach ($page as $item)
-        <x-feed.item :item="$item" />
-    @endforeach
-</div>
-
-{{ $page->links() }}
-```
-
-Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
-feed's root element.
-
-The `links` method renders Laravel's simple pagination view. You may customize
-it through Laravel's pagination views. Feeds support forward pagination only;
-the previous-page link is disabled and no links appear on the last page.
 
 <a id="degraded-entities"></a>
 
@@ -514,12 +553,74 @@ php artisan vendor:publish --tag=storyfeed-translations
 
 The command publishes `lang/vendor/storyfeed/en/feed.php`.
 
+### Assembling the Feed
+
+The item component selects the component matching the item's kind:
+
+```blade memo="resources/views/components/feed/item.blade.php"
+@props(['item'])
+
+@if ($item->isActivity())
+    <x-feed.activity :activity="$item" />
+@elseif ($item->isGroup())
+    <x-feed.group :group="$item" />
+@endif
+```
+
+<FeedExample :items="[grouped, one]" />
+
+The feed component renders each item, followed by the pagination link:
+
+```blade memo="resources/views/components/feed/feed.blade.php"
+@props(['page'])
+
+<div role="feed" {{ $attributes }}>
+    @foreach ($page as $item)
+        <x-feed.item :item="$item" />
+    @endforeach
+</div>
+
+{{ $page->links() }}
+```
+
+Attributes such as `<x-feed :page="$page" class="…" />` are applied to the
+feed's root element.
+
+The `links` method renders Laravel's simple pagination view. You may customize
+it through Laravel's pagination views. Feeds support forward pagination only;
+the previous-page link is disabled and no links appear on the last page.
+
+### Displaying the Feed
+
+Pass a paginator to the view. The `cursorPaginate` method retrieves the
+current request's cursor for [subsequent pages](/basics/reading#pagination):
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', [
+        'page' => Storyfeed::feed()->cursorPaginate(15)->withQueryString(),
+    ]);
+});
+```
+
+Render the feed with the `x-feed` component:
+
+```blade memo="resources/views/feed.blade.php"
+<x-feed :page="$page" />
+```
+
+<FeedExample :items="[grouped, complete, one]" />
+
 <a id="verifying-your-renderer"></a>
 
 ## Rendering With Vue
 
-With Inertia, pass the feed to the page as a prop. Use the query string's cursor
-to retrieve subsequent pages through the same route:
+With Inertia, pass the feed payload to the page as a prop. This example uses
+log mode for individual activities. The PHP headline reader also supplies a
+plain-text headline for each item, so the Vue row needs no token parser:
 
 ```php memo="routes/web.php"
 use Illuminate\Http\Request;
@@ -528,236 +629,56 @@ use Inertia\Inertia;
 use Storyfeed\Facades\Storyfeed;
 
 Route::get('/', function (Request $request) {
+    $page = Storyfeed::feed()->log()->cursor($request->query('cursor'))->get();
+    $headlines = [];
+
+    foreach ($page as $item) {
+        $headlines[$item->id()] = $item->headline()->toString();
+    }
+
     return Inertia::render('Home', [
-        'feed' => Storyfeed::feed()->cursor($request->query('cursor'))->get(),
+        'feed' => $page,
+        'headlines' => $headlines,
     ]);
 });
 ```
 
-Render the feed with the `Feed` component:
+Vue receives a feed object containing an `items` array. `headlines` is an
+application-defined prop keyed by item ID. Render each headline as escaped
+text and the publication time as an ISO timestamp:
 
 ```vue memo="resources/js/pages/Home.vue"
 <script setup lang="ts">
-import Feed from '../components/feed/Feed.vue'
-
-defineProps<{ feed: Record<string, any> }>()
+defineProps<{
+    feed: { items: Array<{ id: string; published_at: string }> }
+    headlines: Record<string, string>
+}>()
 </script>
 
 <template>
-    <Feed :page="feed" />
+    <ul>
+        <li v-for="item in feed.items" :key="item.id">
+            <p>{{ headlines[item.id] }}</p>
+            <time :datetime="item.published_at">{{ item.published_at }}</time>
+        </li>
+    </ul>
 </template>
 ```
 
-Vue receives the payload as arrays. The `FeedHeadline` component separates the
-template into text and entities. The `Feed` component retains loaded items and
-retrieves the next page with a partial reload of the `feed` prop:
+For the shared order example, this produces:
 
-::: code-group
-```vue [Feed.vue] memo="resources/js/components/feed/Feed.vue"
-<script setup lang="ts">
-import { router } from '@inertiajs/vue3'
-import { ref } from 'vue'
-import FeedItem from './FeedItem.vue'
+<FeedExample :items="[one]">
+  <template #preview="{ items }">
+    <ul>
+      <li v-for="item in items" :key="item.id">
+        <p>{{ vueHeadlines[item.id] }}</p>
+        <time :datetime="item.published_at">{{ item.published_at }}</time>
+      </li>
+    </ul>
+  </template>
+</FeedExample>
 
-type Page = { items: Record<string, any>[]; next_cursor: string | null; sync_token: string | null }
-
-const props = defineProps<{ page: Page }>()
-
-const items = ref([...props.page.items])
-const nextCursor = ref(props.page.next_cursor)
-const syncToken = props.page.sync_token
-const loading = ref(false)
-
-function loadMore() {
-    router.reload({
-        only: ['feed'],   // the page's prop
-        data: { cursor: nextCursor.value },
-        preserveUrl: true,
-        onStart: () => (loading.value = true),
-        onFinish: () => (loading.value = false),
-        onSuccess: (response) => {
-            const page = response.props.feed as Page
-
-            if (page.sync_token !== syncToken) {
-                router.visit(window.location.pathname)   // earlier pages changed: start again
-
-                return
-            }
-
-            items.value.push(...page.items)
-            nextCursor.value = page.next_cursor
-        },
-    })
-}
-</script>
-
-<template>
-    <div role="feed">
-        <FeedItem v-for="item in items" :key="item.id" :item="item" />
-    </div>
-
-    <button v-if="nextCursor" :disabled="loading" @click="loadMore">
-        Older activity
-    </button>
-</template>
-```
-
-```vue [FeedItem.vue] memo="resources/js/components/feed/FeedItem.vue"
-<script setup lang="ts">
-import FeedActivity from './FeedActivity.vue'
-import FeedGroup from './FeedGroup.vue'
-
-defineProps<{ item: Record<string, any> }>()
-</script>
-
-<template>
-    <FeedActivity v-if="item.kind === 'activity'" :activity="item" />
-    <FeedGroup v-else-if="item.kind === 'group'" :group="item" />
-</template>
-```
-
-```vue [FeedActivity.vue] memo="resources/js/components/feed/FeedActivity.vue"
-<script setup lang="ts">
-import FeedHeadline from './FeedHeadline.vue'
-
-defineProps<{ activity: Record<string, any> }>()
-</script>
-
-<template>
-    <article>
-        <FeedHeadline :item="activity" />
-        <time :datetime="activity.published_at">
-            {{ new Date(activity.published_at).toLocaleString() }}
-        </time>
-    </article>
-</template>
-```
-
-```vue [FeedGroup.vue] memo="resources/js/components/feed/FeedGroup.vue"
-<script setup lang="ts">
-import FeedActivity from './FeedActivity.vue'
-import FeedHeadline from './FeedHeadline.vue'
-
-defineProps<{ group: Record<string, any> }>()
-</script>
-
-<template>
-    <article>
-        <FeedHeadline :item="group">{{ group.count }} activities</FeedHeadline>
-        <time :datetime="group.published_at">
-            {{ new Date(group.published_at).toLocaleString() }}
-        </time>
-
-        <details>
-            <summary>{{ group.count }} activities</summary>
-            <FeedActivity v-for="child in group.children" :key="child.id" :activity="child" />
-        </details>
-    </article>
-</template>
-```
-
-```vue [FeedHeadline.vue] memo="resources/js/components/feed/FeedHeadline.vue"
-<script setup lang="ts">
-import { computed } from 'vue'
-import EntityLink from './EntityLink.vue'
-import EntityList from './EntityList.vue'
-
-type Entity = Record<string, any>
-type Part =
-    | { type: 'text'; text: string }
-    | { type: 'entity'; entity: Entity | null; fallback: string }
-    | { type: 'list'; entities: Entity[]; total: number }
-
-const props = defineProps<{ item: Record<string, any> }>()
-
-const roles = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
-
-const parts = computed(() =>
-    (props.item.headline_template ?? '')
-        .split(/(:[a-z]+)/)
-        .filter(Boolean)
-        .map((segment: string): Part => {
-            const role = segment.slice(1).replace(/s$/, '')
-
-            if (segment === ':count') {
-                return { type: 'text', text: String(props.item.count) }
-            }
-
-            if (!segment.startsWith(':') || !roles.includes(role)) {
-                return { type: 'text', text: segment }
-            }
-
-            const shown: Entity[] = props.item.sample?.[`${role}s`] ?? []
-            const total: number = props.item.distinct?.[`${role}s`] ?? 1
-
-            // One entity: an activity's own, or the only one a group holds.
-            if (segment === `:${role}` && total <= 1) {
-                return {
-                    type: 'entity',
-                    entity: props.item[role] ?? shown[0] ?? null,
-                    fallback: role === 'actor' ? 'Someone' : 'Something',
-                }
-            }
-
-            return { type: 'list', entities: shown, total }
-        }),
-)
-</script>
-
-<template>
-    <div>
-        <template v-if="item.headline_template">
-            <template v-for="(part, index) in parts" :key="index">
-                <EntityLink v-if="part.type === 'entity'" :entity="part.entity" :fallback="part.fallback" />
-                <EntityList v-else-if="part.type === 'list'" :entities="part.entities" :total="part.total" />
-                <template v-else>{{ part.text }}</template>
-            </template>
-        </template>
-        <template v-else-if="item.headline">{{ item.headline }}</template>
-        <slot v-else />
-    </div>
-</template>
-```
-
-```vue [EntityList.vue] memo="resources/js/components/feed/EntityList.vue"
-<script setup lang="ts">
-import EntityLink from './EntityLink.vue'
-
-defineProps<{ entities: Record<string, any>[]; total: number }>()
-</script>
-
-<template>
-    <template v-for="(entity, index) in entities" :key="entity.id">
-        <template v-if="index > 0">, </template>
-        <EntityLink :entity="entity" />
-    </template>
-    <template v-if="total > entities.length"> and {{ total - entities.length }} more</template>
-</template>
-```
-
-```vue [EntityLink.vue] memo="resources/js/components/feed/EntityLink.vue"
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(
-    defineProps<{ entity: Record<string, any> | null; fallback?: string }>(),
-    { fallback: 'Something' },
-)
-
-const label = computed(() => {
-    const tombstone = props.entity?.tombstone
-
-    return props.entity?.label ?? (tombstone ? `a removed ${tombstone.formerType}` : props.fallback)
-})
-</script>
-
-<template>
-    <a v-bind="entity?.attributes" :href="entity?.url ?? undefined">{{ label }}</a>
-</template>
-```
-:::
-
-When `next_cursor` is `null`, the button is hidden. If `sync_token` changes,
-`Feed` discards loaded items and retrieves the first page again. Render icons,
-summary rows, quoted text, and bodies using components equivalent to the Blade
-examples.
+This small component renders plain text without entity links. Use the
+[Payload Contract](/reference/payload) for the role, group and body fields
+when extending your application's renderer. See
+[Paginating Results](/basics/reading#paginating-results) for cursor handling.

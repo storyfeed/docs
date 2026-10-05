@@ -7,9 +7,13 @@ Each entry is four parts, and they are the package's own vocabulary:
 | part | colour | what it is |
 |---|---|---|
 | actor node | `#FBBF24` dark / `#D9A008` light | who did it |
-| headline | `#EE876B` | the sentence the feed prints |
+| headline | `#B65326` | the sentence the feed prints; Tey Labs orange |
 | body | `#438D98` | what the activity shows |
 | rail | `#858585` | the thread the entries hang from |
+
+**The headline is Tey Labs orange** (`#B65326`, from teylabs `BRAND.md`).
+Every Tey Labs product carries it somewhere in its mark, as TalkingFeed does in
+its top bar. It replaced coral `#EE876B` on 2026-09-28.
 
 ## The files
 
@@ -17,17 +21,20 @@ Each entry is four parts, and they are the package's own vocabulary:
 |---|---|
 | `full-light.svg` | the mark on a light surface — **source of truth** |
 | `full-dark.svg` | the mark on a dark surface |
-| `restrained-{light,dark}.svg` | three colours, coral dropped |
+| `restrained-{light,dark}.svg` | three colours, orange dropped |
 | `yellow-{light,dark}.svg` | single colour |
 | `mono-{light,dark}.svg` | one ink, for stamps, print and embroidery |
 | `avatar.svg`, `avatar-512.png` | contained on `#202735`, for the GitHub org avatar |
 | `avatar-transparent.svg`, `avatar-transparent-{512,1000}.png` | transparent light-surface avatar, no dark tile; PNGs for GitHub |
 | `storyfeed-motion-{light,dark}.svg` | the advancing carousel, 4s cadence |
 | `storyfeed-readme.{svg,png}` | 1200×320 repository banner |
-| `storyfeed-social.{svg,png}` | 1280×640 social card |
+| `storyfeed-social.{html,png}` | 1200×627 share card (PNG at 2×), deployed on both sites as `og-image.jpg`, rendered at exactly 2:1, 2400×1200, JPEG quality 88 (~120 KB). LinkedIn kept only a 160px copy, shown blurred, of both a 1.91:1 2× PNG and a 1200×627 JPEG; the one card it showed sharply was 2:1 at 2×: the mark and name over a faded feed of real Storyfeed milestones (GPUG unveiling, releases, the first commit). Re-render the HTML at 1200×627, device scale 2, and bump the `?v=` on both sites |
 
 `docs/public/` carries the deployed copies: `logo-light.svg`, `logo-dark.svg`,
-`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`.
+`favicon.svg`, `favicon.ico` (16/32/48) and `apple-touch-icon.png`. The favicon
+is the light mark on a transparent field (the navy-tiled version read poorly in
+a tab); the apple-touch icon puts it on `#FAFAF7`. Their URLs carry `?v=N`,
+because Cloudflare caches them for four hours: bump it when they change.
 
 **The banner wordmark is drawn as outlines, not text.** Instrument Sans is the
 site's face, it ships as woff2, and neither GitHub nor a rasteriser will resolve

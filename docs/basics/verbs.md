@@ -9,8 +9,12 @@ const confirmed = scene.basics.activityContent.confirmed
 
 ## Introduction
 
-A verb identifies the action recorded by an activity. You may use a string or
-an enum case.
+A verb names the action in base form, such as `place` or `email`. The object
+type is stored separately, so use `place` rather than `order.place` or
+`place_order`. See [Choosing a Verb](/cookbook/choosing-a-verb) for examples.
+Declaring or publishing a dotted verb throws `Storyfeed\Exceptions\DottedVerb`; use a [story name](/deeper/named-stories) for dotted lookups such as `order.place`.
+
+You may use a string or an enum case.
 
 <a id="using-strings"></a>
 
@@ -79,25 +83,60 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-You may now publish from the enum case. The `record` method on the `Storyfeed`
+You may publish from the enum case. The `record` method on the `Storyfeed`
 facade also accepts an enum case as its `verb` argument, without requiring the
 trait:
 
 ::: code-group
-```php [Fluent Syntax]
-OrderActivity::Placed->by($request->user())
-    ->object($order)
-    ->to($shop)
-    ->publish();
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\OrderActivity;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+
+class PlaceOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        OrderActivity::Placed->by($request->user())
+            ->object($order)
+            ->to($order->shop)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
-Storyfeed::record(
-    verb: OrderActivity::Placed,
-    object: $order,
-    actor: $request->user(),
-    target: $shop,
-);
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\OrderActivity;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+use Illuminate\Http\RedirectResponse;
+
+class PlaceOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        Storyfeed::record(
+            verb: OrderActivity::Placed,
+            object: $order,
+            actor: $request->user(),
+            target: $order->shop,
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
@@ -118,18 +157,51 @@ Story::for(Order::class)->verb(Act::Confirm)
 ```
 
 ::: code-group
-```php [Fluent Syntax]
-Act::Confirm->by($request->user())
-    ->object($order)
-    ->publish();
+```php [Fluent Syntax] memo="app/Http/Controllers/ConfirmOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Storyfeed\Act;
+use Illuminate\Http\RedirectResponse;
+
+class ConfirmOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        Act::Confirm->by($request->user())->object($order)->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
-Storyfeed::record(
-    verb: Act::Confirm,
-    object: $order,
-    actor: $request->user(),
-);
+```php [Named Arguments] memo="app/Http/Controllers/ConfirmOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Storyfeed\Act;
+use Storyfeed\Facades\Storyfeed;
+use Illuminate\Http\RedirectResponse;
+
+class ConfirmOrderController
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        Storyfeed::record(
+            verb: Act::Confirm,
+            object: $order,
+            actor: $request->user(),
+        );
+
+        return back();
+    }
+}
 ```
 :::
 

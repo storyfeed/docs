@@ -84,10 +84,9 @@ const aboutRoles = (verb: string) => (REMOVALS.includes(verb) ? [] : ['object'])
  *
  * In a real app this is one registration:
  *
- *   Storyfeed::glyphIntents([
- *       '*.approve' => 'success',
- *       ...
- *   ]);
+ *   use Storyfeed\Facades\Story;
+ *
+ *   Story::verb('approve')->intent('success');
  *
  * Keys are `type.verb` with wildcards, resolved most-specific first —
  * `type.verb`, `type.*`, `*.verb`, `*.*` — which is `resolveIntent` below and
@@ -140,8 +139,6 @@ export function activity(over: Record<string, any>) {
     result: over.result ?? null,
     instrument: over.instrument ?? null,
     data: over.data ?? {},
-    thread: over.thread ?? null,
-    change: over.change ?? null,
     ...tombstoneFacts(over),
   }
 }

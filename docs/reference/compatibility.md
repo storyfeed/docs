@@ -1,11 +1,18 @@
+---
+title: Compatibility
+sidebar: false
+outline: false
+head:
+  - - meta
+    - http-equiv: refresh
+      content: '0; url=/guide/installation#requirements'
+  - - link
+    - rel: canonical
+      href: https://docs.storyfeed.dev/guide/installation
+---
+
 # Compatibility
 
-Storyfeed requires PHP 8.4 or newer and Laravel 12 or 13.
+<a id="requirements"></a>
 
-## Requirements
-
-| Requirement | Supported Versions |
-|---|---|
-| PHP | 8.4 and newer |
-| Laravel | 12 and 13 |
-| Databases | MySQL, PostgreSQL, SQLite, SQL Server |
+See [Installation requirements](/guide/installation#requirements).

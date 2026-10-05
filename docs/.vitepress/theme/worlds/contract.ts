@@ -35,6 +35,8 @@ export type Row = {
   actor: any
   object?: any
   target?: any
+  data?: Record<string, any>
+  context?: any
   /** The row's own headline, when the verb's default does not fit. */
   headline?: string
   /** A key of the pack's `sources`. */
@@ -84,7 +86,7 @@ export type Roles = {
  */
 export type DeeperSceneIds = {
   body: { progress: string }
-  aggregation: { orders: string[]; customers: string[] }
+  aggregation: { orders: string[]; customers: string[]; menu: string[]; contexts: string[] }
   latestPerObject: { timeline: string[]; board: string[]; confirmations: string[] }
   keepingLatest: { saves: string[] }
   groupingPeriods: { orders: string[] }
@@ -95,6 +97,8 @@ export type DeeperSceneIds = {
 export type SceneIds = {
   /** Cookbook software examples; illustrative interactions, not new plot claims. */
   cookbook: {
+    verbChoices: Record<string, string>
+    rewrites: string[]
     actorless: { anonymous: string; paid: string; expired: string }
     transitions: { confirmed: string; timeline: string[] }
     pricing: string[]
@@ -129,6 +133,7 @@ export type SceneIds = {
   }
   /** Basics demonstrations. Rows describe illustrative app transactions, not new canon. */
   basics: {
+    reading: { note: string }
     activityContent: { note: string; ready: string; confirmed: string; photo: string; product: string;
       program: string; terminal: string; radioLog: string; caseMemo: string; labReport: string; alphabet: string; planck: string;
       itemList: string; notice: string; linkedNotice: string }

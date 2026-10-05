@@ -55,7 +55,7 @@ prints the `routes/feed.php` binding for you to add.
 
 | Command | Description |
 |---|---|
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
+| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, grouping period, the keep-latest policy, and the `file:line` or action that defined it. Includes provider declarations and their source locations. The Override column shows `yes` for explicit overrides; JSON includes an `override` boolean. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
 | `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | lists publishers and models that could publish but have no recorded activities. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
 
@@ -65,13 +65,17 @@ prints the `routes/feed.php` binding for you to add.
 
 | Command | Description |
 |---|---|
-| `storyfeed:cache` | compiles registered stories and `routes/feed.php` into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
+| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
 | `storyfeed:clear` | removes the cached manifest |
 
 Like `route:cache`, `storyfeed:cache` prevents the definitions file from
 loading at boot. It serialises closure headlines and fails with a `file:line`
 reference if a closure cannot be serialised. Keep only Story definitions in
 the feed file; register verb vocabulary in a service provider.
+
+Providers still boot when definitions are cached. Feeds use the compiled
+manifest, while `storyfeed:list` shows authored declarations rather than
+the merged definitions used by a cached feed.
 
 <span id="diagnostics"></span>
 
@@ -149,7 +153,6 @@ when you:
 
 - register an axis
 - change an axis's grouping key
-- adjust `grouping.policy` thresholds
 - change a published activity's verb or roles
 
 Neither `storyfeed:rebuild` nor `storyfeed:curate` without `--rehash` applies
@@ -158,6 +161,10 @@ these changes to existing groups. To regroup stored activities:
 ```bash
 php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
+
+Changes to `grouping.policy` thresholds only affect eligibility. Plain
+`php artisan storyfeed:curate` re-evaluates existing candidate hashes against
+those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 
@@ -178,6 +185,8 @@ php artisan storyfeed:curate --release   # a second run changes nothing
 
 Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
+<a id="seeding-demo-data"></a>
+
 ### Other Maintenance Commands
 
 | Command | Description |
@@ -189,9 +198,3 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
 `bundle` and `curate` can change existing groups and their `sync_token`.
 Clients that accumulate nodes must then fetch the feed again.
-
-## Seeding Demo Data
-
-| Command | Description |
-|---|---|
-| `storyfeed:demo` | seeds a fictional demo tenant. `--days=7`, `--seed=1` select the history and deterministic seed; `--fresh` removes prior demo data first, `--clear` removes it without seeding, and `--force` allows production use |

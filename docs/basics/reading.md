@@ -1,4 +1,6 @@
-# Reading Feeds
+<a id="reading-feeds"></a>
+
+# Retrieving Feeds
 
 <script setup>
 import { scene, everything, WORLD_ANCHOR, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
@@ -13,6 +15,18 @@ const live = liveOf(rows)
 const summary = summaryOf(rows)
 const weekly = summaryOf(rows, 'week')
 const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
+const filterRows = logOf([
+  ...scene.cookbook.transitions.timeline,
+  scene.basics.activityContent.ready,
+  scene.cookbook.pricing[1], scene.question, scene.basics.reading.note,
+  ...scene.deeper.aggregation.contexts,
+])
+const same = (a, b) => a && b && a.type === b.type && a.id === b.id
+const involving = entity => filterRows.filter(row =>
+  ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument'].some(role => same(row[role], entity)))
+const shopRows = involving(scene.order.target)
+const sinceFive = WORLD_ANCHOR - 2 * 60 * 60 * 1000
+const pages = [logOf(scene.guide.usageExamples.repeatOrders).slice(0, 2), logOf(scene.guide.usageExamples.repeatOrders).slice(2)]
 </script>
 
 ## Introduction
@@ -20,7 +34,9 @@ const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 To retrieve a page of activities, call the `feed` method on the `Storyfeed`
 facade, followed by the `get` method.
 
-## Reading a Feed
+<a id="reading-a-feed"></a>
+
+## Retrieving a Feed
 
 You may return the feed from a route:
 
@@ -65,13 +81,16 @@ The following feeds display the same week of activities in each mode:
 Live mode groups repeated actions and activities from several actors with the
 same target. It is the default, so you may omit the `live` method.
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->live()->get();
 ```
 
 <FeedExample :items="live" days height="520" />
+
+See [Choosing What to Group](/cookbook/choosing-what-to-group) when deciding
+which events belong in an overview and which need individual rows.
 
 ### Summary
 
@@ -80,7 +99,7 @@ Summary mode groups activities by actor and day, with phrases such as
 activity may share a row. See [Summary Rows](/reference/payload#digest-rows)
 for the payload fields.
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->summary()->get();
@@ -90,9 +109,9 @@ Storyfeed::feed()->summary()->get();
 
 ### Log
 
-Log mode displays each activity in a separate row.
+Log mode returns one item per activity.
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->log()->get();
@@ -109,7 +128,7 @@ All modes use the same payload structures.
 The `summary` method groups by day by default. Pass a `Period` to select
 another calendar period:
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Grouping\Period;
 
@@ -135,6 +154,10 @@ period separately; see [Grouping Periods](/deeper/grouping-periods).
 
 ## Filtering Activities
 
+The filtering examples use this set of activities:
+
+<FeedExample :items="filterRows" days height="420" />
+
 <a id="scoping"></a>
 
 ### Filtering by Entity or Role
@@ -142,12 +165,28 @@ period separately; see [Grouping Periods](/deeper/grouping-periods).
 Use the `involving` method to retrieve activities that reference an entity in
 any role:
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="routes/web.php"
+use App\Models\Order;
+use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::feed()->involving($order)->get();
-$order->storyfeed()->get();   // the same read, from the model
+Route::get('/orders/{order}/feed', function (Order $order) {
+    return Storyfeed::feed()->involving($order)->get();
+});
 ```
+
+For the order in the sample, the filter keeps its placements, confirmation and readiness activity:
+
+<FeedExample :items="liveOf(involving(scene.order.object))" />
+
+Inside that route, the model provides the same query:
+
+```php memo="routes/web.php" at="order feed route"
+// Retrieve the same activities through the model.
+return $order->storyfeed()->get();
+```
+
+<FeedExample :items="liveOf(involving(scene.order.object))" />
 
 You may also filter by a specific role:
 
@@ -158,8 +197,10 @@ You may also filter by a specific role:
 | `->actor($customer)` | activities performed by the customer |
 | `->object($order)` / `->target($shop)` | activities matching the specified role |
 
-Activities must match all applied filters. Group counts include only matching
-activities.
+Filters on different roles apply together. Group counts include only matching
+activities. Setting the same role again replaces its previous value, unless a
+feed class fixes that role. Additional filters cannot change a role fixed by
+the feed class.
 
 > [!NOTE]
 > **The difference between involving and context**
@@ -175,15 +216,42 @@ activities.
 Use the `verb` method to filter by one verb. The `only` and `except` methods
 accept lists:
 
-```php memo="A controller, or wherever the feed is read"
-use App\Enums\OrderActivity;
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::feed()->verb('place')->get();
+```
+
+<FeedExample :items="liveOf(filterRows.filter(row => row.verb === 'place'))" />
+
+```php memo="A controller, or wherever the feed is retrieved"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->only(['place', 'ready'])->get();
-Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get(); // matches ready, reprice and confirm
+```
+
+<FeedExample :items="liveOf(filterRows.filter(row => ['place', 'ready'].includes(row.verb)))" />
+
+```php memo="A controller, or wherever the feed is retrieved"
+use App\Enums\OrderActivity;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->only(['re*', OrderActivity::Confirmed])->get();
+```
+
+This matches `ready`, `reprice` and `confirm` in the sample:
+
+<FeedExample :items="liveOf(filterRows.filter(row => row.verb.startsWith('re') || row.verb === 'confirm'))" />
+
+```php memo="A controller, or wherever the feed is retrieved"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed()->except(['note'])->get();
 ```
+
+The note is omitted; the other activities remain:
+
+<FeedExample :items="liveOf(filterRows.filter(row => row.verb !== 'note'))" />
 
 | Input | Behaviour |
 |---|---|
@@ -191,7 +259,8 @@ Storyfeed::feed()->except(['note'])->get();
 | `re*` | matches verbs starting with `re` |
 | an unrecognised verb | matches no activities unless that verb has been recorded; does not throw |
 | `only([])` or `except([])` | throws an exception |
-| repeated calls | activities must match every filter |
+| repeated `only()` / `except()` calls | activities must match every accumulated filter |
+| repeated `verb()` calls | the last value replaces the previous verb |
 
 Groups include only activities whose verbs match the filter.
 
@@ -199,22 +268,38 @@ Groups include only activities whose verbs match the filter.
 
 Use the `query` method to apply custom constraints to the activity query:
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="routes/web.php"
+use App\Models\Shop;
+use Illuminate\Support\Facades\Route;
 use Storyfeed\Models\Builders\ActivityBuilder;
 
-// everything except notes
-$shop->storyfeed()
-    ->query(fn (ActivityBuilder $q) => $q->whereNot('verb', 'note'))
-    ->get();
+Route::get('/shops/{shop}/feed', function (Shop $shop) {
+    return $shop->storyfeed()
+        ->query(fn (ActivityBuilder $query) => $query->whereNot('verb', 'note'))
+        ->get();
+});
+```
 
-// tonight's service
-$shop->storyfeed()
-    ->query(
-        fn (ActivityBuilder $query) => $query
-            ->where('published_at', '>=', today()->setHour(17)),
-    )
+For the sample shop, this excludes notes while retaining its other activities:
+
+<FeedExample :items="liveOf(shopRows.filter(row => row.verb !== 'note'))" />
+
+To limit that route to activities published since 5 pm, replace its return
+expression with:
+
+```php memo="routes/web.php" at="shop feed route"
+use Storyfeed\Models\Builders\ActivityBuilder;
+
+// Activities published since 5 pm today.
+return $shop->storyfeed()
+    ->query(fn (ActivityBuilder $query) => $query
+        ->where('published_at', '>=', today()->setHour(17)))
     ->get();
 ```
+
+At the shared sample clock, the questions published after 5 pm remain:
+
+<FeedExample :items="liveOf(shopRows.filter(row => Date.parse(row.published_at) >= sinceFive))" />
 
 Constraints apply to activities and groups. The callback can only narrow the
 results: `orWhere` cannot bypass existing filters, ordering is ignored, and
@@ -227,15 +312,30 @@ builder's `limit` method.
 
 Use the `when` method to apply a filter only when a value is present:
 
-```php memo="A controller, or wherever the feed is read"
+```php memo="routes/web.php"
 use App\Models\Shop;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\FeedBuilder;
 
-Storyfeed::feed()
-    ->when($request->shop, fn (FeedBuilder $feed, Shop $shop) => $feed->involving($shop))
-    ->get();
+Route::get('/feed', function (Request $request) {
+    $input = $request->validate(['shop' => ['nullable', 'integer', 'exists:shops,id']]);
+    $shop = isset($input['shop']) ? Shop::find($input['shop']) : null;
+
+    return Storyfeed::feed()
+        ->when($shop, fn (FeedBuilder $feed, Shop $shop) => $feed->involving($shop))
+        ->get();
+});
 ```
+
+With the sample shop selected, only activities involving it remain:
+
+<FeedExample :items="liveOf(shopRows)" />
+
+Without `shop`, the query returns the whole sample:
+
+<FeedExample :items="liveOf(filterRows)" />
 
 <a id="pagination"></a>
 
@@ -252,7 +352,7 @@ use Storyfeed\Facades\Storyfeed;
 
 Route::get('/', function () {
     return view('feed', [
-        'page' => Storyfeed::feed()->cursorPaginate(15),
+        'page' => Storyfeed::feed()->log()->cursorPaginate(2),
     ]);
 });
 ```
@@ -271,11 +371,29 @@ To display pagination links in Blade, call the `links` method:
 {{ $page->links() }}
 ```
 
+For the three placements shown at the start of this page, a page size of two
+in log mode gives these page boundaries. Page one contains the newest two:
+
+<FeedExample :items="pages[0]" />
+
+Follow `$page->nextPageUrl()` to retrieve the remaining placement:
+
+<FeedExample :items="pages[1]" />
+
+| Response Field | Page One | Next Page |
+|---|---|---|
+| `items` / `data` | two newest placements | one remaining placement |
+| `next_cursor` | the opaque string from `$page->nextCursor()->encode()` | `null` |
+| `next_page_url` | URL containing that cursor | `null` |
+| `prev_cursor` / `prev_page_url` | `null` | `null` |
+| `sync_token` | feed token | same token while the feed state is unchanged |
+
 The paginator uses Laravel's simple pagination views, including any views you
 have customized in your application. Feeds paginate forward only, so the
 previous-page link is disabled. The `nextPageUrl` method returns the next
 page's URL, or `null` on the last page. The `previousPageUrl` method returns
-`null`.
+`null`. See [Storage Architecture](/reference/storage#pagination) for what a
+cursor holds.
 
 ### Customizing Pagination URLs
 

@@ -43,6 +43,15 @@ export interface FeedMedia {
     image: FeedImage | null;
     preview: FeedImage | null;
     url: FeedImage | null;
+    /** Absent in older cached payloads. */
+    files?: FeedResource[];
+}
+
+export interface FeedResource {
+    type: string;
+    href: string;
+    mediaType: string | null;
+    name: string | null;
 }
 
 /** width/height are int or null, never zero, so an aspect box is safe when both are set. */
@@ -52,22 +61,6 @@ export interface FeedImage {
     width: number | null;
     height: number | null;
     alt: string | null;
-}
-
-/**
- * The utterance a row is about, and the conversation around it (storyfeed >=
- * c7fbb35, additive). Null on nearly every activity. Every key is present
- * when the object is, so a missing fact reads as null, never as undefined.
- *
- * `kind` is the recording app's own word ('commented', 'replied', 'decided') —
- * a renderer prints it and never switches on it.
- */
-export interface FeedThread {
-    text: string;
-    by: string | null;
-    kind: string | null;
-    replies: number | null;
-    truncated: boolean;
 }
 
 interface BaseNode {
@@ -103,7 +96,6 @@ export interface ActivityNode extends BaseNode {
     missing_headline?: string | null;
     data?: Record<string, unknown>;
     /** Activity-scoped passage; group children carry it normally. */
-    thread?: FeedThread | null;
     actor: FeedEntity | null;
     object: FeedEntity | null;
     target: FeedEntity | null;

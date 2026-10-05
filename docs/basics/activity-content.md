@@ -4,26 +4,31 @@
 import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
-const withThread = { ...content.note,
-  thread: { text: content.note.object.label, by: content.note.actor.label, kind: 'note', replies: null, truncated: false } }
+const attributedNote = { ...content.note,
+  object: { ...content.note.object, label: 'Order note', body: [{
+    $body: 'Storyfeed/Body/Excerpt', $v: 1, text: content.note.object.label,
+    from: content.note.actor.label, truncated: false,
+  }] } }
 const withProse = { ...content.ready,
   object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
     content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
     title: `${content.ready.object.label} instructions` }] } }
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 1,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, missing: null },
-    { key: 'Items', value: '1', verbatim: false, missing: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, missing: null },
-    { key: 'Table', value: null, verbatim: false, missing: 'not seated' },
+    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
+    { key: 'Items', value: '1', verbatim: false, placeholder: null },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
+    { key: 'Table', value: null, verbatim: false, placeholder: 'not seated' },
   ] }] } }
 // The pack's own passage from a source: the oldest row whose object quotes one.
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
-const withFile = { ...content.photo, object: { ...content.photo.object,
-  body: [{ $body: 'Storyfeed/Body/File', $v: 1,
-    name: content.photo.object.label, size: 137767, mediaType: 'image/jpeg' }] } }
+const withImage = content.photo
+const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
+  type: 'document', label: 'Signed Agreement.pdf', url: '/documents/signed-agreement', media: null,
+  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
+    name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 </script>
 
 ## Introduction
@@ -37,43 +42,69 @@ activity's headline.
 
 ## Adding Quoted Text
 
-To record quoted text with an activity, call the `thread` method:
+Use an `Excerpt` body for someone's words or a passage from a document.
+Define the body on the quoted model in `toFeed()`:
 
 ::: code-group
-```php [Fluent Syntax]
-$customer = $request->user();
-$note = $order->notes()->create($request->validated());
+```php [Fluent Syntax] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
 
-Storyfeed::activity()
-    ->by($customer)
-    ->action('post', $note)
-    ->on($order)
-    ->thread(FeedThread::make(text: $note->body, by: $customer->name, kind: 'note'))
-    ->publish();
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label('Order note')
+        ->body(
+            Excerpt::make()
+                ->text($this->body)
+                ->from($this->author->name)
+                ->truncated(false),
+        );
+}
 ```
 
-```php [Named Arguments]
-$customer = $request->user();
-$note = $order->notes()->create($request->validated());
+```php [Named Arguments] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
 
-Storyfeed::record(
-    verb: 'post',
-    object: $note,
-    actor: $customer,
-    target: $order,
-    thread: FeedThread::make(
-        text: $note->body,
-        by: $customer->name,
-        kind: 'note',
-    ),
-);
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: 'Order note',
+        body: Excerpt::make(
+            text: $this->body,
+            from: $this->author->name,
+            truncated: false,
+        ),
+    );
+}
 ```
 :::
 
-<FeedExample :items="[withThread]" />
+Here `author` is the note's author relationship. `from()` names whose words
+are being quoted. Set `truncated(false)` when the body contains the complete
+text. The attribution appears below the quotation:
 
-Storyfeed stores the text on the activity. Editing the note later does not
-change the recorded text.
+<FeedExample :items="[attributedNote]" />
+
+Record the note as the activity's object and the order as its target:
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+$note = $order->notes()->create($request->validated());
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('post', $note)
+    ->to($order)
+    ->publish();
+```
+
+The body belongs to the note's shared entity snapshot. Saving the note can
+change the text shown on older activities. To preserve text exactly as it was
+when the event happened, also record it in activity
+[`data`](/basics/recording#adding-activity-data).
 
 <a id="entity-bodies"></a>
 
@@ -81,7 +112,9 @@ change the recorded text.
 
 A **body** contains an entity's structured content. Define it in the model's
 `toFeed` method and render it in your frontend. The body is available wherever
-the entity appears.
+the entity appears. With `InteractsWithFeed`, saving the model refreshes its
+shared snapshot while recording is enabled. That can change the body shown on
+older activities too. Use activity `data` to capture values as they were at the event.
 
 ### Text and Labelled Values
 
@@ -154,6 +187,9 @@ Use `KeyValue` for labelled values:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label("Order #{$this->reference}")
     ->body(
@@ -161,12 +197,15 @@ FeedEntity::make()
             'Pickup' => $this->pickup_at->format('g:i a'),
             'Items' => $this->items->count(),
             'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            'Table' => KeyValue::placeholder($this->table, 'not seated'),
         ]),
     );
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: "Order #{$this->reference}",
     body: KeyValue::make(
@@ -175,7 +214,7 @@ FeedEntity::make(
             'Pickup' => $this->pickup_at->format('g:i a'),
             'Items' => $this->items->count(),
             'Reference' => KeyValue::verbatim($this->reference),
-            'Table' => KeyValue::missingAs($this->table, 'not seated'),
+            'Table' => KeyValue::placeholder($this->table, 'not seated'),
         ],
     ),
 );
@@ -185,7 +224,9 @@ FeedEntity::make(
 
 <FeedExample :items="[withKeyValue]" />
 
-Use the `KeyValue::missingAs` method to specify text for an empty value.
+Use the `KeyValue::placeholder` method to specify text for an empty value.
+Use `->defaultPlaceholder('—')` to set the default for every row without its own placeholder,
+or pass `defaultPlaceholder:` to `KeyValue::make()`.
 The `KeyValue::verbatim` method marks a value for display without formatting,
 such as a reference number.
 
@@ -223,6 +264,9 @@ story. The `from` argument names who said them or where they came from:
 ::: code-group
 
 ```php [Fluent Syntax]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make()
     ->label($this->title)
     ->body(
@@ -233,6 +277,9 @@ FeedEntity::make()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
 FeedEntity::make(
     label: $this->title,
     body: Excerpt::make(
@@ -255,35 +302,62 @@ and marks the text as complete:
 
 <FeedExample :items="[content.planck]" />
 
-### File Details
+### Adding an Image
 
-Use `File` in a `Photo` model's `toFeed` method to include the photo's file details:
+Use an `Image` body to show a photograph with a caption. The body names a
+`feedMedia` slot; it never stores the picture's URL. `withPreview()` selects
+the preview slot, which is also the default:
 
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Photo.php" at="toFeed()"
-use Storyfeed\Body\File;
+```php memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\Image;
 use Storyfeed\FeedEntity;
 
 return FeedEntity::make()
     ->label($this->name)
     ->body(
-        File::make()
+        Image::make()
+            ->caption($this->subject)
+            ->alt($this->description)
+            ->withPreview()
+    );
+```
+
+<FeedExample :items="[withImage]" />
+
+Use `withImage()` for the image slot or `withIcon()` for the icon slot.
+The renderer uses `alt`, then the caption, then an empty alt attribute. An empty
+slot draws nothing, including the caption. See [Feed Media](/basics/feed-media#showing-pictures)
+for the resolver that supplies the picture.
+
+### File Attachment
+
+Use `FileAttachment` in a `Document` model's `toFeed` method to describe a PDF, such as a signed agreement:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Document.php" at="toFeed()"
+use Storyfeed\Body\FileAttachment;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label($this->name)
+    ->body(
+        FileAttachment::make()
             ->size($this->bytes)
-            ->mediaType($this->mime)
+            ->mediaType('application/pdf')
             ->name($this->name)
     );
 ```
 
-```php [Named Arguments] memo="app/Models/Photo.php" at="toFeed()"
-use Storyfeed\Body\File;
+```php [Named Arguments] memo="app/Models/Document.php" at="toFeed()"
+use Storyfeed\Body\FileAttachment;
 use Storyfeed\FeedEntity;
 
 return FeedEntity::make(
     label: $this->name,
-    body: File::make(
+    body: FileAttachment::make(
         size: $this->bytes,
-        mediaType: $this->mime,
+        mediaType: 'application/pdf',
         name: $this->name,
     ),
 );
@@ -293,8 +367,8 @@ return FeedEntity::make(
 
 <FeedExample :items="[withFile]" />
 
-The `File` body stores file details. Configure the URL separately with the
-[link resolver](/basics/feedable-models#the-link).
+The `FileAttachment` body stores file details. Configure the URL separately with the
+[link resolver](/basics/feed-media#linking-to-the-model).
 
 ### Lists of Items
 
@@ -365,6 +439,73 @@ provides a link to the order containing the remaining items. Use
 A list can also preserve a short arrangement of items:
 
 <FeedExample :items="[content.alphabet]" />
+
+### Adding Multiple Bodies
+
+<a id="bodies-by-role"></a>
+<a id="multiple-bodies"></a>
+
+Entities in any role can have bodies. Your frontend chooses which to display.
+Each `body()` call appends a body in the order given:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->body(Prose::make($this->description))
+            ->body(KeyValue::make()->items('Station', $this->station));
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\Body\Prose;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedEntity;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            body: [
+                Prose::make($this->description),
+                KeyValue::make(items: ['Station' => $this->station]),
+            ],
+        );
+    }
+}
+```
+
+:::
 
 ### Linking a Title
 
@@ -465,13 +606,13 @@ body fields that accept it.
 
 | Body Type | Content | Payload Keys |
 |---|---|---|
-| `KeyValue` | labelled values | `title`, `items[]` of `key`, `value`, `verbatim`, `missing` |
+| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
 | `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
-| `Change` | before and after values for one or more fields | `items`, a map of field to `[before, after]` |
-| `File` | file name, size, and media type | `name`, `size`, `mediaType` |
+| `Image` | a picture and caption | `caption`, `alt`, `width`, `height`, `image` (slot name) |
+| `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `MediaObject` | a title, text, image, and attachments | `subject`, `content`, `image`, `attachments`, `footnote` |
+| `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
 | `Component` | a custom component name and props | `name`, `props` |
 
 These classes use the `Storyfeed\Body` namespace. Each body's payload includes
@@ -479,5 +620,6 @@ its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
 Your renderer uses these fields to display the body. Passing a string as a body
 creates a `Prose` body.
 
-See [Custom Body Types](/deeper/body) to resolve bodies when retrieving the feed,
-render custom components, or define your own body types.
+See [Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current
+and deferred values, or [Custom Body Types](/deeper/body) to render custom
+components and define your own body types.

@@ -65,6 +65,7 @@ the tombstone contains only the model's former type and deletion time:
 | `tombstoned` | the roles holding a tombstone: `["object"]` |
 
 The full shape is in [The Payload Contract](/reference/payload#tombstones).
+Tombstones are stored in [`feed_tombstones`](/reference/schema#feed-tombstones).
 
 The activity keeps the headline, icon, and intent defined for `order.place`.
 

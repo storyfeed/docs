@@ -101,6 +101,60 @@ uses the same `toFeedActivity` method and publishes when dispatched. A Story
 can be published independently, like a notification, so use it when the
 activity has no corresponding application event.
 
+### Declaring Casts on a Story Class
+
+A Story class declares its casts in a `casts` method, as a model does. This
+alternative order-placement class records a channel and promised time:
+
+```php memo="app/Stories/OrderPlaced.php"
+<?php
+
+namespace App\Stories;
+
+use App\Enums\Channel;
+use App\Models\Order;
+use Storyfeed\PendingActivity;
+use Storyfeed\Stories\Story;
+
+class OrderPlaced extends Story
+{
+    public string|array|null $objectType = Order::class;
+
+    public function __construct(public Order $order) {}
+
+    public function toFeedActivity(): ?PendingActivity
+    {
+        return $this->activity($this->order)->data([
+            'channel' => $this->order->channel,
+            'promised_at' => $this->order->promised_at,
+        ]);
+    }
+
+    public function headline(): string
+    {
+        return ':actor placed :object';
+    }
+
+    public function casts(): array // [!code highlight]
+    {
+        return [
+            'channel' => Channel::class,
+            'promised_at' => 'immutable_datetime',
+        ];
+    }
+}
+```
+
+To use this class instead of `OrderWasPlaced`, bind it to the order's verb:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderPlaced;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', OrderPlaced::class);
+```
+
 ### Registering the Story
 
 Register the class for its object type and verb in the feed file:
@@ -152,7 +206,7 @@ class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
 }
 ```
 
-The `Storyfeed::publish` method now queues the Story. Use the `Queueable`
+The `Storyfeed::publish` method queues a Story that implements `ShouldQueue`. Use the `Queueable`
 trait's methods to select the connection and queue:
 
 ```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
@@ -243,6 +297,8 @@ Publish the verb with [the activity builder](/basics/recording). An invokable
 declaration may return a `Verb` or headline string, as a resource method does.
 Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
 object types, so its headline must describe each supported type.
+
+Package authors can [register Story classes in a service provider](/deeper/package-integration#registering-stories-in-a-service-provider).
 
 <a id="every-activity-for-one-model"></a>
 
@@ -396,6 +452,7 @@ resource registrations. To share middleware or role constraints, wrap it in a
 
 ```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
 use Illuminate\Http\Request;
+use Storyfeed\Stories\Verb;
 
 public function confirmPayment(Verb $verb, Request $request): Verb
 {
@@ -431,9 +488,14 @@ The verb's actor applies when no actor is assigned explicitly or through a
 `Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
 headlines, icons, intents, grouping, and other settings must remain consistent.
 A request-dependent headline throws an exception when `grammar.strict` is
-enabled, as it is by default in local and testing environments. Dispatched
-jobs retain the selected actor; see
-[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#request-based-actors).
+enabled, as it is by default in local and testing environments.
+
+#### Carrying Request-Based Actors Into Jobs
+
+Jobs dispatched during a request carry the actor selected by the request-based
+verb actor. The worker retains that selection without needing the original
+HTTP request. For callback and request scopes, see
+[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
 
 <a id="generating-from-doctor-findings"></a>
 

@@ -16,7 +16,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | Key | Default | Description |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable loading |
+| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable file loading. [Provider registrations](/deeper/package-integration#registering-stories-in-a-service-provider) remain available |
 
 After editing cached definitions, run `storyfeed:cache` again.
 
@@ -96,9 +96,12 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 Increase a limit when your frontend displays more names:
 
 ```php memo="config/storyfeed.php"
-'sample_limits' => [
-    'object' => 6,  // this feed shows the objects' pictures
-    // everything else stays at 3
+'grouping' => [
+    // Keep the other grouping settings here.
+    'sample_limits' => [
+        'object' => 6,  // this feed shows the objects' pictures
+        // everything else stays at 3
+    ],
 ],
 ```
 
@@ -148,4 +151,3 @@ Increase a limit when your frontend displays more names:
 | `doctor.stale_after` | `30` | days without new activity before the doctor reports a stale feed; `null` disables |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |
-| `demo.enabled` | `false` | register the vocabulary used by `storyfeed:demo` so seeded activities render; enable only in the demo environment |

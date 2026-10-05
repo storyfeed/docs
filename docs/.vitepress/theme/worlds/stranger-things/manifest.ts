@@ -220,3 +220,9 @@ export const RECORD_TEXT = {
   planck: 'Planck’s constant is 6.62607004.',
   planckFrom: 'Suzie, over Cerebro',
 }
+
+/** Illustrative document workflow labels used by the cookbook. */
+export const DOCUMENT_WORKFLOW = {
+  agreement: 'Service terms', proposal: 'New shop', acceptance: 'Acceptance',
+  menu: 'Seasonal menu', clauses: ['Scope', 'Termination', 'Payment terms'],
+}

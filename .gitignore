@@ -30,3 +30,7 @@ docs/public/llms-full.txt
 # page — and a push to main here DEPLOYS. Ignored so `git add -A` cannot publish
 # them, and excluded from the build below so a tracked one still would not.
 docs/briefs/
+
+# R&D proposals written as if shipped. Local only: the repo is public, so they are
+# never committed, and config.ts leaves them out of every build.
+docs/rnd/
