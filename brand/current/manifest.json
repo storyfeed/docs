@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "sha256": "282bca4cf3f7eacbb31371855118bd31a203377b5013a70d0eda492571bdebc4",
-    "bytes": 5758
+    "sha256": "3bd87166c2cdbe40e75c4a2e75d68e44daba46e3d60b178f12aa6acf621e730e",
+    "bytes": 5972
   },
   "avatars/contained-dark-1000.png": {
     "sha256": "f41675bb7c9027ab5804504b27f40a3d2613158c4cb6d9d8af82a8c51c96db9f",
@@ -680,8 +680,8 @@
     "bytes": 1107
   },
   "readme-preview.html": {
-    "sha256": "ea152ede55f52e90cbe29fb0ac913272b4d629371f0f0b4de63c40e60084ffb0",
-    "bytes": 4876
+    "sha256": "5a6ecba96cb8f286be289f75a54afb40bd20b66a3f06e242084cc126827c06cc",
+    "bytes": 4746
   },
   "regenerate_social.py": {
     "sha256": "f6f61c1552c8d5b1cb9ac85de353163a2cface2d68077bc01082a143de64e1bd",
@@ -924,7 +924,7 @@
     "bytes": 4282
   },
   "verify.py": {
-    "sha256": "7e24ac3251901da422ea1a9fb5c58c27c22c426e69c525fff5f009071da81898",
-    "bytes": 4327
+    "sha256": "477b9ba36eb9e56f2883c283f588bcdd354cd1741c16835e110f3b78a4c8d0ce",
+    "bytes": 4332
   }
 }

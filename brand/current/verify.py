@@ -38,7 +38,7 @@ with tempfile.TemporaryDirectory(prefix='storyfeed-current-') as tmp:
    page.goto(url+'/readme-preview.html');page.locator('picture img').evaluate('(e)=>e.decode()')
    result=page.locator('picture img').evaluate('(e)=>({src:e.currentSrc,naturalWidth:e.naturalWidth,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height})')
    assert result['naturalWidth']==1600
-   assert ('static' if rm=='reduce' else 'animated')+'-'+theme in result['src'],result
+   assert (('static-light' if rm=='reduce' else 'animated-'+theme)) in result['src'],result
    assert result['width']==(800 if width==1000 else 358),result
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
    checks.append({'theme':theme,'viewport':width,'reduced_motion':rm,**result});page.close()
