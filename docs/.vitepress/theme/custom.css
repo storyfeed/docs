@@ -362,3 +362,6 @@
     border-radius: 0;
   }
 }
+
+/* Outlined identity includes both the mark and lowercase wordmark. */
+.VPNavBarTitle .logo { width: 151px; height: 40px; margin-right: 0; }

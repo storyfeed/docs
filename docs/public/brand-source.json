@@ -1,0 +1,32 @@
+{
+  "identity": "Tim Wood concept; Storyfeed adaptation approved by Jasper. Lowercase single-ink wordmark; selected07 mark.",
+  "kit_commit": "d333016e5d520c1b861b1c62c73ca50ca5684d50",
+  "hero_commit": "71acaa91b176a3362e7b12e3677f5ec1ae63b9fe",
+  "font": "Instrument Sans 700 wdth100, outlined; Rodrigo Fuenzalida and Jordan Egstad. SIL OFL 1.1, see brand-OFL.txt. Google Fonts 6e8069ff8ba3dab2a397fb30e7fbd243aba9b57a.",
+  "assets": {
+    "favicon.svg": {
+      "source": "kit-08/icons/favicon.svg",
+      "sha256": "d313984f54247e22bf6c82fd141287d2a02864e86db0fabbb775ea14f754d79f"
+    },
+    "favicon.ico": {
+      "source": "kit-08/icons/favicon.ico",
+      "sha256": "9fee5f471baa019a5e4caf6558602e865d8e3de91514eb51bdb9d84d26b083bf"
+    },
+    "apple-touch-icon.png": {
+      "source": "kit-08/icons/apple-touch-icon.png",
+      "sha256": "f21b749f6568b9523ae217deec2de6e4b57899ca2f9ce550168eccbd5217561e"
+    },
+    "og-image.jpg": {
+      "source": "kit-08/social/baseline-light.jpg",
+      "sha256": "8b9482aa22be70ce181f3caeecd9970d65951d1a9191869fe6ea347252ba3e8b"
+    },
+    "logo-light.svg": {
+      "source": "kit-08/lockups/horizontal-baseline-light.svg",
+      "sha256": "81b42d2916dfcdb3b6d7eed1f8609bc0ab95c39623b272c6d43d7cd2df77dc3c"
+    },
+    "logo-dark.svg": {
+      "source": "kit-08/lockups/horizontal-baseline-dark.svg",
+      "sha256": "b9ae27e9ba981812e11e9437cf0656103c78230eb9d11a68dd693fb2c98fdfb5"
+    }
+  }
+}

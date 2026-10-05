@@ -137,21 +137,22 @@ export default defineConfig({
     ['meta', { property: 'article:publisher', content: 'Tey Labs' }],
     ['meta', { property: 'article:published_time', content: '2026-09-30T19:00:00-04:00' }],
     ['meta', { property: 'og:site_name', content: 'Storyfeed' }],
-    ['meta', { property: 'og:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=4' }],
+    ['meta', { property: 'og:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=tim08' }],
     ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
     ['meta', { property: 'og:image:width', content: '2400' }],
     ['meta', { property: 'og:image:height', content: '1200' }],
-    ['meta', { property: 'og:image:alt', content: 'The Storyfeed mark and the words Storyfeed, Activity streams for Laravel, over a faded feed of Storyfeed milestones' }],
+    ['meta', { property: 'og:image:alt', content: 'The Storyfeed mark and lowercase wordmark above a quiet feed of Storyfeed milestones. Activity streams for Laravel.' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=4' }],
-    ['link', { rel: 'icon', href: '/favicon.ico?v=2', sizes: 'any' }],
-    ['link', { rel: 'icon', href: '/favicon.svg?v=2', type: 'image/svg+xml' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=2' }],
+    ['meta', { name: 'twitter:image', content: 'https://docs.storyfeed.dev/og-image.jpg?v=tim08' }],
+    ['link', { rel: 'icon', href: '/favicon.ico?v=tim08', sizes: 'any' }],
+    ['link', { rel: 'icon', href: '/favicon.svg?v=tim08', type: 'image/svg+xml' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=tim08' }],
     ['meta', { name: 'theme-color', content: '#0f172a' }],
   ],
 
   themeConfig: {
-    logo: { light: '/logo-light.svg', dark: '/logo-dark.svg' },
+    logo: { light: '/logo-light.svg?v=tim08', dark: '/logo-dark.svg?v=tim08', alt: 'Storyfeed' },
+    siteTitle: false,
 
     // The trifecta convention: every site's chrome links the other two, same
     // order everywhere — storyfeed.dev pitches, this site teaches, the
