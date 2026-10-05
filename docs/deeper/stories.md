@@ -10,6 +10,7 @@ import { scene, activity } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
 const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay'),
   verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
+const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object with :target' }
 </script>
 
 <a id="publishing-an-activity"></a>
@@ -298,8 +299,8 @@ declaration may return a `Verb` or headline string, as a resource method does.
 Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
 object types, so its headline must describe each supported type.
 
-Story classes can also be [registered in a service provider](/basics/the-feed-file#registering-stories-in-a-service-provider).
-Use an [explicit override](/basics/the-feed-file#overriding-package-stories)
+Story classes can also be [registered in a service provider](#registering-stories-in-a-service-provider).
+Use an [explicit override](#overriding-package-stories)
 to customize supplied fields of a package story.
 
 <a id="every-activity-for-one-model"></a>
@@ -498,6 +499,83 @@ Jobs dispatched during a request carry the actor selected by the request-based
 verb actor. The worker retains that selection without needing the original
 HTTP request. For callback and request scopes, see
 [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
+
+## Registering Stories in a Service Provider
+
+A service provider can register stories without a feed file:
+
+```php memo="A package service provider"
+<?php
+
+namespace Vendor\Orders;
+
+use Illuminate\Support\ServiceProvider;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+class OrderFeedServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        Story::for('order')
+            ->verb('place')
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag')
+            ->grouped(
+                fn (GroupBuilder $group) => $group
+                    ->repeat(':actor placed :count orders with :target'),
+            );
+    }
+}
+```
+
+<FeedExample :items="[scene.order]" />
+
+The string `order` is the model's morph alias. Using the alias lets a package
+register its stories before the application registers its morph map.
+
+Provider registrations remain available when the configured definitions file
+is missing or `definitions` is `false`. They are included when
+[caching definitions](/basics/the-feed-file#caching-definitions). The repeat headline applies to
+[grouped orders](/deeper/aggregation#repeated-activities).
+
+## Overriding Package Stories
+
+To change the package's order-placement headline, declare an explicit override:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+
+Story::for('order')
+    ->verb('place')
+    ->override()
+    ->headline(':actor submitted :object with :target');
+```
+
+<FeedExample :items="[overriddenOrder]" />
+
+Only the headline changes. The package's shopping-bag icon and repeat-group
+headline remain. Its action or message binding also remains when the
+application supplies only presentation fields.
+
+For presentation fields, `override()` applies to the same object type and
+verb. It takes precedence over the original declaration regardless of
+registration order. [Wildcard precedence](/basics/the-feed-file#definition-precedence) still
+applies between different keys.
+
+| Supplied Option | What Changes |
+|---|---|
+| Headline, anonymous headline, icon, or intent | that value |
+| Group headlines | each supplied axis headline; other axes remain |
+| Casts | each supplied data key; other keys remain |
+| Role constraints | each supplied role; other roles remain |
+| Queue options | each supplied option; other options remain |
+| Middleware, missing-role policy, or keep-latest policy | the whole supplied property |
+
+Ordinary declarations from different source locations that claim the same
+headline or icon key cause an error, even if their values are identical. Explicit
+overrides from different source locations that claim the same field and key
+also cause an error. Caching still requires unique story names.
 
 <a id="generating-from-doctor-findings"></a>
 
