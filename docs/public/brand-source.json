@@ -21,12 +21,13 @@
       "sha256": "8b9482aa22be70ce181f3caeecd9970d65951d1a9191869fe6ea347252ba3e8b"
     },
     "logo-light.svg": {
-      "source": "kit-08/lockups/horizontal-baseline-light.svg",
-      "sha256": "81b42d2916dfcdb3b6d7eed1f8609bc0ab95c39623b272c6d43d7cd2df77dc3c"
+      "source": "kit-08/marks/mark-light.svg",
+      "sha256": "fae98c87279972d94408fcd400d5b9f6091889277ed572922a1b1577fc898904"
     },
     "logo-dark.svg": {
-      "source": "kit-08/lockups/horizontal-baseline-dark.svg",
-      "sha256": "b9ae27e9ba981812e11e9437cf0656103c78230eb9d11a68dd693fb2c98fdfb5"
+      "source": "kit-08/marks/mark-dark.svg",
+      "sha256": "f0d7ef250242e48c90da9acfcd77175ec2447b22f05338621629da68170aa90a"
     }
-  }
+  },
+  "navigation": "Native lowercase site title beside exact selected07 mark; exported outlined artwork remains unchanged."
 }

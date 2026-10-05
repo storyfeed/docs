@@ -151,8 +151,8 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: { light: '/logo-light.svg?v=tim08', dark: '/logo-dark.svg?v=tim08', alt: 'Storyfeed' },
-    siteTitle: false,
+    logo: { light: '/logo-light.svg?v=tim09-text', dark: '/logo-dark.svg?v=tim09-text', alt: '' },
+    siteTitle: 'storyfeed',
 
     // The trifecta convention: every site's chrome links the other two, same
     // order everywhere — storyfeed.dev pitches, this site teaches, the

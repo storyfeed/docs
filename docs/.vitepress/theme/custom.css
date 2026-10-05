@@ -363,5 +363,5 @@
   }
 }
 
-/* Outlined identity includes both the mark and lowercase wordmark. */
-.VPNavBarTitle .logo { width: 151px; height: 40px; margin-right: 0; }
+/* Standalone mark beside the native lowercase site title. */
+.VPNavBarTitle .logo { width: 40px; height: 40px; margin-right: 8px; }
