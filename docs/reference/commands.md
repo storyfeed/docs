@@ -88,6 +88,11 @@ the merged definitions used by a cached feed.
 See [Diagnosing Your Feed](/deeper/diagnosing) for usage and
 [Doctor Checks](/reference/doctor) for the checks.
 
+Link findings describe sampled named-feed pages and are informational.
+[Acknowledged findings](/reference/doctor#acknowledgment-policy) remain visible
+in text and JSON with their written reasons, but do not fail `--fail-on` or
+generate `--stubs`. `--list` lists names without executing checks or policy.
+
 ### `php artisan about`
 
 Laravel's `about` command has a Storyfeed section:
