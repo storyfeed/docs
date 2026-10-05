@@ -2,19 +2,21 @@
   "frozen_files": 210,
   "manifest_files": 232,
   "archive_repeat_exact": true,
-  "archive_bytes": 6674381,
+  "archive_bytes": 6675525,
   "gif_dimensions": [
     1600,
     428
   ],
   "gif_duration_ms": 33750,
   "stationary_text_all_frames": true,
+  "exact_brand_colours_first_frame": true,
+  "exact_github_background_all_frames": true,
   "github_api_html_picture_selection": [
     {
       "theme": "light",
       "viewport": 1000,
       "reduced_motion": "no-preference",
-      "src": "http://127.0.0.1:51494/banners/storyfeed-animated-light.gif",
+      "src": "http://127.0.0.1:53603/banners/storyfeed-animated-light.gif",
       "naturalWidth": 1600,
       "width": 800,
       "height": 214
@@ -23,7 +25,7 @@
       "theme": "dark",
       "viewport": 1000,
       "reduced_motion": "no-preference",
-      "src": "http://127.0.0.1:51494/banners/storyfeed-animated-dark.gif",
+      "src": "http://127.0.0.1:53603/banners/storyfeed-animated-dark.gif",
       "naturalWidth": 1600,
       "width": 800,
       "height": 214
@@ -32,7 +34,7 @@
       "theme": "light",
       "viewport": 390,
       "reduced_motion": "reduce",
-      "src": "http://127.0.0.1:51494/banners/storyfeed-static-light.png",
+      "src": "http://127.0.0.1:53603/banners/storyfeed-static-light.png",
       "naturalWidth": 1600,
       "width": 358,
       "height": 95.75
@@ -41,7 +43,7 @@
       "theme": "dark",
       "viewport": 390,
       "reduced_motion": "reduce",
-      "src": "http://127.0.0.1:51494/banners/storyfeed-static-light.png",
+      "src": "http://127.0.0.1:53603/banners/storyfeed-static-light.png",
       "naturalWidth": 1600,
       "width": 358,
       "height": 95.75

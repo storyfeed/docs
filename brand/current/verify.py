@@ -16,8 +16,13 @@ for theme in ['light','dark']:
  gif=Image.open(P/f'banners/storyfeed-animated-{theme}.gif');assert gif.size==(1600,428) and gif.info['loop']==0
  assert Image.open(P/f'banners/storyfeed-static-{theme}.png').size==(1600,428)
  duration=0;words=None;bodies=set()
+ background=(255,255,255) if theme=='light' else (13,17,23)
+ gif.seek(0);first=gif.convert('RGB');colours=set(first.getdata())
+ for colour in [(217,160,8) if theme=='light' else (251,191,36),(182,83,38),(67,141,152)]:assert colour in colours,(theme,colour)
+ assert Image.open(P/f'banners/storyfeed-static-{theme}.png').convert('RGB').getpixel((1599,427))==background
  for i in range(gif.n_frames):
   gif.seek(i);duration+=gif.info['duration'];rgb=gif.convert('RGB');text=rgb.crop((420,0,1600,428)).tobytes()
+  assert rgb.getpixel((1599,427))==background,(theme,i)
   if words is None:words=text
   assert text==words,('stationary outlined text changed',theme,i)
   bodies.add(sha(rgb.crop((0,0,410,428)).tobytes()))
@@ -49,5 +54,5 @@ with tempfile.TemporaryDirectory(prefix='storyfeed-current-') as tmp:
   page.goto(url+'/harness/site/');assert page.locator('[role=listitem]').count()==8
   b.close()
  server.shutdown()
-result={'frozen_files':len(frozen),'manifest_files':len(manifest),'archive_repeat_exact':True,'archive_bytes':len(before),'gif_dimensions':[1600,428],'gif_duration_ms':33750,'stationary_text_all_frames':True,'github_api_html_picture_selection':checks,'standalone_review_hero_native_fixture':True,'old_motion_suite':'not rerun','hosted_github_readme':'pending approved push; API HTML/local browser only'}
+result={'frozen_files':len(frozen),'manifest_files':len(manifest),'archive_repeat_exact':True,'archive_bytes':len(before),'gif_dimensions':[1600,428],'gif_duration_ms':33750,'stationary_text_all_frames':True,'exact_brand_colours_first_frame':True,'exact_github_background_all_frames':True,'github_api_html_picture_selection':checks,'standalone_review_hero_native_fixture':True,'old_motion_suite':'not rerun','hosted_github_readme':'pending approved push; API HTML/local browser only'}
 (P/'verification.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
