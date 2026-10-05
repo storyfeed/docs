@@ -17,8 +17,9 @@
       "sha256": "f21b749f6568b9523ae217deec2de6e4b57899ca2f9ce550168eccbd5217561e"
     },
     "og-image.jpg": {
-      "source": "kit-08/social/baseline-light.jpg",
-      "sha256": "8b9482aa22be70ce181f3caeecd9970d65951d1a9191869fe6ea347252ba3e8b"
+      "source": "iteration-10/social/baseline-light.jpg",
+      "source_commit": "da8b64aea9d1a014ae34f5d5b78125f9f86b54f3",
+      "sha256": "0145d3ad7907f16bd50ac07c693afeb65793c35bc444e33cdb1e36d88b38024e"
     },
     "logo-light.svg": {
       "source": "kit-08/marks/mark-light.svg",
