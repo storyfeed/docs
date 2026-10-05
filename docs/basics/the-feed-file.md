@@ -240,7 +240,7 @@ and [headlines for deleted models](/deeper/deleted-models).
 
 In this example, an installed package defines the `place` verb for `order`
 activities with the headline `:actor placed :object with :target`, a shopping-bag icon, and the
-repeat-group headline `:actor placed :count orders with :target`. To change
+repeat-group headline `:actor made :count order placements with :target`. To change
 only its single-activity headline, declare an explicit override:
 
 ```php memo="routes/feed.php"

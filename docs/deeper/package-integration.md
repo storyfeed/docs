@@ -30,7 +30,7 @@ class OrderFeedServiceProvider extends ServiceProvider
             ->icon('shopping-bag')
             ->grouped(
                 fn (GroupBuilder $group) => $group
-                    ->repeat(':actor placed :count orders with :target'),
+                    ->repeat(':actor made :count order placements with :target'),
             );
     }
 }
