@@ -1,0 +1,842 @@
+{
+  "marks/mark-dark-1024.png": {
+    "source": "kit-08/marks/mark-dark-1024.png",
+    "sha256": "8c1356589bca8689e9df96be83f5ac8b465a2a916f70a97a1dac62793c4b7613"
+  },
+  "marks/mark-dark-16.png": {
+    "source": "kit-08/marks/mark-dark-16.png",
+    "sha256": "67b8ee233bf7a22628cd88acdd718c30a4eb9b4ae61a3169aecb77b6054dab94"
+  },
+  "marks/mark-dark-24.png": {
+    "source": "kit-08/marks/mark-dark-24.png",
+    "sha256": "b2968fa7296e08fc7697805bd41314ef53ff09f2c3a4e1f2fe6988f8bb904a42"
+  },
+  "marks/mark-dark-32.png": {
+    "source": "kit-08/marks/mark-dark-32.png",
+    "sha256": "e8b1e19a680ee33cec6db918e15176601defd19e5b4076aabf699b60f8525aab"
+  },
+  "marks/mark-dark-48.png": {
+    "source": "kit-08/marks/mark-dark-48.png",
+    "sha256": "b383a23168fba15ad549c762f428670bbde300fa6b23497390fd0744e040e9c9"
+  },
+  "marks/mark-dark-512.png": {
+    "source": "kit-08/marks/mark-dark-512.png",
+    "sha256": "1fdffe6e757d192d56151a0d1794f8aa913ad7a89c81a677af245fb2ec80953f"
+  },
+  "marks/mark-dark-small.svg": {
+    "source": "kit-08/marks/mark-dark-small.svg",
+    "sha256": "343f44ad68bfff01d7b48fbf1ae7cf2abcc07df6e52e2e4e4266fb0b8eab9b8a"
+  },
+  "marks/mark-dark.svg": {
+    "source": "kit-08/marks/mark-dark.svg",
+    "sha256": "f0d7ef250242e48c90da9acfcd77175ec2447b22f05338621629da68170aa90a"
+  },
+  "marks/mark-light-1024.png": {
+    "source": "kit-08/marks/mark-light-1024.png",
+    "sha256": "7926a59f1fb919ee614c413c9ba8a1536675d60ef19642ff0c4a6142b1208b01"
+  },
+  "marks/mark-light-16.png": {
+    "source": "kit-08/marks/mark-light-16.png",
+    "sha256": "5a41c09e21c9d4f39a24ffcfe85ae8ac6499dca64bd0a906e4bcc726ac18c996"
+  },
+  "marks/mark-light-24.png": {
+    "source": "kit-08/marks/mark-light-24.png",
+    "sha256": "5f23987c2d8c54d1db33910b96ddadd54fcebd05d3f47cbe19e5902c2d5921dc"
+  },
+  "marks/mark-light-32.png": {
+    "source": "kit-08/marks/mark-light-32.png",
+    "sha256": "05276dbb757bdb1d867f99b0c54bb2cf4b1d79237056aec451bfbcf674f2318a"
+  },
+  "marks/mark-light-48.png": {
+    "source": "kit-08/marks/mark-light-48.png",
+    "sha256": "5581dc77278708bad0924bc552ade279b117b164a6f90712a2004d309ae4ebbe"
+  },
+  "marks/mark-light-512.png": {
+    "source": "kit-08/marks/mark-light-512.png",
+    "sha256": "f5b0e23a18fe2d5b3e2fdf1045d384db743f9b6f2e23cd33a4ffc0857e996cad"
+  },
+  "marks/mark-light-small.svg": {
+    "source": "kit-08/marks/mark-light-small.svg",
+    "sha256": "d313984f54247e22bf6c82fd141287d2a02864e86db0fabbb775ea14f754d79f"
+  },
+  "marks/mark-light.svg": {
+    "source": "kit-08/marks/mark-light.svg",
+    "sha256": "fae98c87279972d94408fcd400d5b9f6091889277ed572922a1b1577fc898904"
+  },
+  "marks/mark-mono-1024.png": {
+    "source": "kit-08/marks/mark-mono-1024.png",
+    "sha256": "f9ee675c6907ce990325630ec79933de9067afdd765870d4f1de5a73343d915d"
+  },
+  "marks/mark-mono-16.png": {
+    "source": "kit-08/marks/mark-mono-16.png",
+    "sha256": "e540a5218588c905a84238b0ae4ef35936b3df5805fb41bbd00ab8378c86a9e9"
+  },
+  "marks/mark-mono-24.png": {
+    "source": "kit-08/marks/mark-mono-24.png",
+    "sha256": "e14596937b217782a302f7df55b2889f430701be33c753c5d03e86962f8a8761"
+  },
+  "marks/mark-mono-32.png": {
+    "source": "kit-08/marks/mark-mono-32.png",
+    "sha256": "23cee3240988adfe60ca167b0136a7d1e674a552ae51ef741cd7df84656c5ae5"
+  },
+  "marks/mark-mono-48.png": {
+    "source": "kit-08/marks/mark-mono-48.png",
+    "sha256": "8aeec3a47b09aa4a63834564a4b1b1cf2203f5359520b42613e7f7bb5f5a6cba"
+  },
+  "marks/mark-mono-512.png": {
+    "source": "kit-08/marks/mark-mono-512.png",
+    "sha256": "c83b4d6042e712441ab9b5f0c6161dab18e6e6c7a4ccddd0a434165a43d10e56"
+  },
+  "marks/mark-mono-small.svg": {
+    "source": "kit-08/marks/mark-mono-small.svg",
+    "sha256": "f0c622175f5930a5ec3e7fcf93a8c4d65ccc3c3db9d3d65667bfac3e6330703f"
+  },
+  "marks/mark-mono.svg": {
+    "source": "kit-08/marks/mark-mono.svg",
+    "sha256": "0f68dc83d8430aa8881ad8789b9eb2164625b0d68455e811c9f3df440b61bc08"
+  },
+  "marks/mark-reverse-1024.png": {
+    "source": "kit-08/marks/mark-reverse-1024.png",
+    "sha256": "77b640090f23a09b2ce05274f00e58e10936e5eab6706b9490f744884b89a6c2"
+  },
+  "marks/mark-reverse-16.png": {
+    "source": "kit-08/marks/mark-reverse-16.png",
+    "sha256": "bce7627149709e97954dbccc2421565f83811ab2d917d6ece9d32b1381508705"
+  },
+  "marks/mark-reverse-24.png": {
+    "source": "kit-08/marks/mark-reverse-24.png",
+    "sha256": "e24374b073a0bb61db0943397b290266308f9dc0d5ffaaccbe267b806da2aeb4"
+  },
+  "marks/mark-reverse-32.png": {
+    "source": "kit-08/marks/mark-reverse-32.png",
+    "sha256": "91d37e72cdc6881131db52eef55b49eba774ce001dde99d0200b98f5a6520de5"
+  },
+  "marks/mark-reverse-48.png": {
+    "source": "kit-08/marks/mark-reverse-48.png",
+    "sha256": "dab662fe77a4c63c4f070f9a3e3aad4ee92e5d3bdfba32b9c99e95d62f372d98"
+  },
+  "marks/mark-reverse-512.png": {
+    "source": "kit-08/marks/mark-reverse-512.png",
+    "sha256": "9211862d0bdc0676e5f22b46f0a160ce2f4c967c1ac8ef9e657c6444803efbd7"
+  },
+  "marks/mark-reverse-small.svg": {
+    "source": "kit-08/marks/mark-reverse-small.svg",
+    "sha256": "66eaa28b20455b727d896d23042ca42ec24ab5e89877d0f979ee98e97f122b81"
+  },
+  "marks/mark-reverse.svg": {
+    "source": "kit-08/marks/mark-reverse.svg",
+    "sha256": "e06e5196399b9ba837d6f60ada0960fdf2fc7883d748c90c91aa8800d8930d61"
+  },
+  "avatars/contained-dark-1000.png": {
+    "source": "kit-08/avatars/contained-dark-1000.png",
+    "sha256": "f41675bb7c9027ab5804504b27f40a3d2613158c4cb6d9d8af82a8c51c96db9f"
+  },
+  "avatars/contained-dark-512.png": {
+    "source": "kit-08/avatars/contained-dark-512.png",
+    "sha256": "77334fed122d12769c3a9117834d332e5589b9dee232ef00a5211641af4c7c5e"
+  },
+  "avatars/contained-dark.svg": {
+    "source": "kit-08/avatars/contained-dark.svg",
+    "sha256": "0b9246ca4821e665697e04262927b80ffd7e40cc7dcd689566dac0557848a6dd"
+  },
+  "avatars/contained-light-1000.png": {
+    "source": "kit-08/avatars/contained-light-1000.png",
+    "sha256": "e5c7886e9d1656c1e07c2a722a3f60ee67460266a73cb42d15d93bfda3a91531"
+  },
+  "avatars/contained-light-512.png": {
+    "source": "kit-08/avatars/contained-light-512.png",
+    "sha256": "9d5108b803359124fad0e80ded6cf62c77a610d331b8f19ba652c7e09096c2c6"
+  },
+  "avatars/contained-light.svg": {
+    "source": "kit-08/avatars/contained-light.svg",
+    "sha256": "52dbd6388bdc7806f9de8edae2cc4f19ea8df23aadf11dd03129a40fad1e430a"
+  },
+  "avatars/transparent-dark-1000.png": {
+    "source": "kit-08/avatars/transparent-dark-1000.png",
+    "sha256": "8e5e68b1a387677667115e8227e682ea00e3040ee088d1af92315ebc568d030a"
+  },
+  "avatars/transparent-dark-512.png": {
+    "source": "kit-08/avatars/transparent-dark-512.png",
+    "sha256": "1fdffe6e757d192d56151a0d1794f8aa913ad7a89c81a677af245fb2ec80953f"
+  },
+  "avatars/transparent-dark.svg": {
+    "source": "kit-08/avatars/transparent-dark.svg",
+    "sha256": "d79a88af0052359b3d2600da84456e4cbebdcb1d5eb82c21ecdef8206241f1f1"
+  },
+  "avatars/transparent-light-1000.png": {
+    "source": "kit-08/avatars/transparent-light-1000.png",
+    "sha256": "cc5e6467200314a66c2b44f75e626a5cc6b9270619d5cacf3605bbb1f655a239"
+  },
+  "avatars/transparent-light-512.png": {
+    "source": "kit-08/avatars/transparent-light-512.png",
+    "sha256": "f5b0e23a18fe2d5b3e2fdf1045d384db743f9b6f2e23cd33a4ffc0857e996cad"
+  },
+  "avatars/transparent-light.svg": {
+    "source": "kit-08/avatars/transparent-light.svg",
+    "sha256": "88a09424c9f2083ea196d656f6590da953308185a8c47163b9355b0f9dd97a86"
+  },
+  "icons/app-icon-192.png": {
+    "source": "kit-08/icons/app-icon-192.png",
+    "sha256": "37714c53a5799666a9a6c48e5a4e848bd31bed3ee8115a9a18caf5dd115fbd17"
+  },
+  "icons/app-icon-512.png": {
+    "source": "kit-08/icons/app-icon-512.png",
+    "sha256": "9d5108b803359124fad0e80ded6cf62c77a610d331b8f19ba652c7e09096c2c6"
+  },
+  "icons/apple-touch-icon.png": {
+    "source": "kit-08/icons/apple-touch-icon.png",
+    "sha256": "f21b749f6568b9523ae217deec2de6e4b57899ca2f9ce550168eccbd5217561e"
+  },
+  "icons/apple-touch-icon.svg": {
+    "source": "kit-08/icons/apple-touch-icon.svg",
+    "sha256": "cd7fadb1cf048323aaed8a590cade03cffe03b439ecaea5ab20fa222793d8b8e"
+  },
+  "icons/favicon-16.png": {
+    "source": "kit-08/icons/favicon-16.png",
+    "sha256": "5a41c09e21c9d4f39a24ffcfe85ae8ac6499dca64bd0a906e4bcc726ac18c996"
+  },
+  "icons/favicon-32.png": {
+    "source": "kit-08/icons/favicon-32.png",
+    "sha256": "05276dbb757bdb1d867f99b0c54bb2cf4b1d79237056aec451bfbcf674f2318a"
+  },
+  "icons/favicon-48.png": {
+    "source": "kit-08/icons/favicon-48.png",
+    "sha256": "5581dc77278708bad0924bc552ade279b117b164a6f90712a2004d309ae4ebbe"
+  },
+  "icons/favicon.ico": {
+    "source": "kit-08/icons/favicon.ico",
+    "sha256": "9fee5f471baa019a5e4caf6558602e865d8e3de91514eb51bdb9d84d26b083bf"
+  },
+  "icons/favicon.svg": {
+    "source": "kit-08/icons/favicon.svg",
+    "sha256": "d313984f54247e22bf6c82fd141287d2a02864e86db0fabbb775ea14f754d79f"
+  },
+  "lockups/horizontal-baseline-dark.png": {
+    "source": "kit-08/lockups/horizontal-baseline-dark.png",
+    "sha256": "145458345686fa109230564cbd9bf9ec65739b3bd7516daf611ec0e27a9efb3b"
+  },
+  "lockups/horizontal-baseline-dark.svg": {
+    "source": "kit-08/lockups/horizontal-baseline-dark.svg",
+    "sha256": "b9ae27e9ba981812e11e9437cf0656103c78230eb9d11a68dd693fb2c98fdfb5"
+  },
+  "lockups/horizontal-baseline-light.png": {
+    "source": "kit-08/lockups/horizontal-baseline-light.png",
+    "sha256": "734dc9207b4565d31b6b6a2f828d7f8df069dde448cb590ab93a756aa6cbff83"
+  },
+  "lockups/horizontal-baseline-light.svg": {
+    "source": "kit-08/lockups/horizontal-baseline-light.svg",
+    "sha256": "81b42d2916dfcdb3b6d7eed1f8609bc0ab95c39623b272c6d43d7cd2df77dc3c"
+  },
+  "lockups/horizontal-feed-orange-dark.png": {
+    "source": "kit-08/lockups/horizontal-feed-orange-dark.png",
+    "sha256": "bd548a2adaf272ba8d77575a2869c5bf61740502d9c9689aef80e39f192cdd94"
+  },
+  "lockups/horizontal-feed-orange-dark.svg": {
+    "source": "kit-08/lockups/horizontal-feed-orange-dark.svg",
+    "sha256": "61c4d163b8b20447f6e0152ec2a8ec38c8972ab4a8559b1ce0a9c2c697feb517"
+  },
+  "lockups/horizontal-feed-orange-light.png": {
+    "source": "kit-08/lockups/horizontal-feed-orange-light.png",
+    "sha256": "d548f58d1b60092ef433d47b28476ddf9ba0ec1dd8be3987242c4ed68dcd2184"
+  },
+  "lockups/horizontal-feed-orange-light.svg": {
+    "source": "kit-08/lockups/horizontal-feed-orange-light.svg",
+    "sha256": "1395c3c23d7269ffa3adfbc96315e7d1044663193e64b2c5b4cdeda9bafa113d"
+  },
+  "lockups/horizontal-feed-teal-dark.png": {
+    "source": "kit-08/lockups/horizontal-feed-teal-dark.png",
+    "sha256": "8be8869b8d8ee0d8ddacd3d6eab1189e6ef5d995a6f1844478b421496e35cee3"
+  },
+  "lockups/horizontal-feed-teal-dark.svg": {
+    "source": "kit-08/lockups/horizontal-feed-teal-dark.svg",
+    "sha256": "93e1e9c8b81d594418eb7c35e3efe01888024d279eb94d2731976d6e63098953"
+  },
+  "lockups/horizontal-feed-teal-light.png": {
+    "source": "kit-08/lockups/horizontal-feed-teal-light.png",
+    "sha256": "4a2bc92eb94daddc86a9a78606fa6fac71215a849dfa2fb1c3d2cf37ea072ae9"
+  },
+  "lockups/horizontal-feed-teal-light.svg": {
+    "source": "kit-08/lockups/horizontal-feed-teal-light.svg",
+    "sha256": "a1df48e51eda035de25eec60afd49ae0b7e581f19de4ecf0a4cf8a5d28ce5919"
+  },
+  "lockups/horizontal-mono-1360.png": {
+    "source": "kit-08/lockups/horizontal-mono-1360.png",
+    "sha256": "21a5568cef5c1ba064194bcc8e93a0eb45ebef17416bfd642653604f55bc9c2a"
+  },
+  "lockups/horizontal-mono-680.png": {
+    "source": "kit-08/lockups/horizontal-mono-680.png",
+    "sha256": "8fdd59554ef313cf3b5824b7241952331bfbc53757cac3df9f9de182b8c324d8"
+  },
+  "lockups/horizontal-mono.svg": {
+    "source": "kit-08/lockups/horizontal-mono.svg",
+    "sha256": "0496686e9c94f6249efde88733beecb380e7aa8576d9e9828fffa0a7c52521c6"
+  },
+  "lockups/horizontal-reverse-1360.png": {
+    "source": "kit-08/lockups/horizontal-reverse-1360.png",
+    "sha256": "9ec24bd59242bb0469264deaaf5ba26d9e23780703b623588b3b2b8ec24e829c"
+  },
+  "lockups/horizontal-reverse-680.png": {
+    "source": "kit-08/lockups/horizontal-reverse-680.png",
+    "sha256": "0e00b4a8c6ff3436723916e72788bc31e4f3796b9cb51810bb3d065e3b1cf8f4"
+  },
+  "lockups/horizontal-reverse.svg": {
+    "source": "kit-08/lockups/horizontal-reverse.svg",
+    "sha256": "5a035e1d1dbe259c04894b920f0427101609993084829c767ed69a12243b0305"
+  },
+  "lockups/horizontal-story-teal-dark.png": {
+    "source": "kit-08/lockups/horizontal-story-teal-dark.png",
+    "sha256": "fb3ef036deec9d6bef21084d22a9c4e57f5ecaaa123afac712234a58954ce33c"
+  },
+  "lockups/horizontal-story-teal-dark.svg": {
+    "source": "kit-08/lockups/horizontal-story-teal-dark.svg",
+    "sha256": "95d33cf9cf39db5808bf1b6bd471cf2aa96170828d3cd93c101d01b433dc1ac2"
+  },
+  "lockups/horizontal-story-teal-light.png": {
+    "source": "kit-08/lockups/horizontal-story-teal-light.png",
+    "sha256": "182f923f9bb1b651a706b35a1210ac641fe3a87ac06d9a15b9e844e25232aec2"
+  },
+  "lockups/horizontal-story-teal-light.svg": {
+    "source": "kit-08/lockups/horizontal-story-teal-light.svg",
+    "sha256": "0d67ad3c64416fd23668b66171b4d5866d2ce7a35cb2414ad27edcb48b3e6654"
+  },
+  "lockups/horizontal-teal-pair-dark.png": {
+    "source": "kit-08/lockups/horizontal-teal-pair-dark.png",
+    "sha256": "d5a03aa3709fe6a485eb5d526da3cbf4876ede62c10763f715f2c23eb8fb6cde"
+  },
+  "lockups/horizontal-teal-pair-dark.svg": {
+    "source": "kit-08/lockups/horizontal-teal-pair-dark.svg",
+    "sha256": "4c371bdf90a0e5c91adef168f7145e8a73878700a9d88328f0889ef6ff5728e6"
+  },
+  "lockups/horizontal-teal-pair-light.png": {
+    "source": "kit-08/lockups/horizontal-teal-pair-light.png",
+    "sha256": "6d76d993174edecfa76302276f2289dc5b1d1413ab99c3ddbcac22facebb8bfb"
+  },
+  "lockups/horizontal-teal-pair-light.svg": {
+    "source": "kit-08/lockups/horizontal-teal-pair-light.svg",
+    "sha256": "7b5b4ae41b9bd8bc169c90ecb74ae02a98fbf91508df52697cdd238ce1ae61d9"
+  },
+  "lockups/stacked-baseline-dark.png": {
+    "source": "kit-08/lockups/stacked-baseline-dark.png",
+    "sha256": "388d880eb524ec04c1831fe17dfd2b122d776e6bcb1bc944437be070ff5e9568"
+  },
+  "lockups/stacked-baseline-dark.svg": {
+    "source": "kit-08/lockups/stacked-baseline-dark.svg",
+    "sha256": "226619867c8fe22d340e36be236e03acd91c72cbc1548ff2c220ea9f79e0a6cb"
+  },
+  "lockups/stacked-baseline-light.png": {
+    "source": "kit-08/lockups/stacked-baseline-light.png",
+    "sha256": "69c6f09ceb069935be0c72c2e5958981ccb436e5ff3d23d3ab3d24866d84a93b"
+  },
+  "lockups/stacked-baseline-light.svg": {
+    "source": "kit-08/lockups/stacked-baseline-light.svg",
+    "sha256": "7364e4cae05906da032f1f2f19cc03df87aad34d5c649dd83afd517e2446f6c1"
+  },
+  "lockups/stacked-feed-orange-dark.png": {
+    "source": "kit-08/lockups/stacked-feed-orange-dark.png",
+    "sha256": "8eace7b8dcec6d24696d4be4e2b36033297d155143aef185db35ffb44721ee88"
+  },
+  "lockups/stacked-feed-orange-dark.svg": {
+    "source": "kit-08/lockups/stacked-feed-orange-dark.svg",
+    "sha256": "d8eba3d75e690f93dab15bc747bfc84725cc575cb4be9e180959a9ee1299d447"
+  },
+  "lockups/stacked-feed-orange-light.png": {
+    "source": "kit-08/lockups/stacked-feed-orange-light.png",
+    "sha256": "a0b52a72a1d8f9328e6dcf31171ac0b6aed44c7e2e28a9df199432744368e109"
+  },
+  "lockups/stacked-feed-orange-light.svg": {
+    "source": "kit-08/lockups/stacked-feed-orange-light.svg",
+    "sha256": "551c3ffa6ec5c00ddbe2487ebeb3afbed7ff59c8f113ab67105bcdf0487a4596"
+  },
+  "lockups/stacked-feed-teal-dark.png": {
+    "source": "kit-08/lockups/stacked-feed-teal-dark.png",
+    "sha256": "9322295ae2afe86304727760eac75590de1834f8b7cd376cc21af17c72fa794a"
+  },
+  "lockups/stacked-feed-teal-dark.svg": {
+    "source": "kit-08/lockups/stacked-feed-teal-dark.svg",
+    "sha256": "24eb8d1adf215bcd4331ca70b9e502fc48826e3aa5fa5d5d0cb580e22db0f4b2"
+  },
+  "lockups/stacked-feed-teal-light.png": {
+    "source": "kit-08/lockups/stacked-feed-teal-light.png",
+    "sha256": "ea54e150b841993e7742f770106dc3358821020b148b15cb572b6909c81e7f98"
+  },
+  "lockups/stacked-feed-teal-light.svg": {
+    "source": "kit-08/lockups/stacked-feed-teal-light.svg",
+    "sha256": "05c00cd49322e31a4f551e0eea30785780f4d04e02b6c8c9751c8d086119f600"
+  },
+  "lockups/stacked-mono.png": {
+    "source": "kit-08/lockups/stacked-mono.png",
+    "sha256": "a941acfe6557f79159b2b199803fd54654f4531b5c7282aaee930706952d00cc"
+  },
+  "lockups/stacked-mono.svg": {
+    "source": "kit-08/lockups/stacked-mono.svg",
+    "sha256": "4215536d29d37fa563663de849f392bc0cc91f0e13bb33c6db67a457350419fc"
+  },
+  "lockups/stacked-reverse.png": {
+    "source": "kit-08/lockups/stacked-reverse.png",
+    "sha256": "e84425b22ecf6ab09e8c2380eb74be335dac61bf073cc457ba59dec276e3f184"
+  },
+  "lockups/stacked-reverse.svg": {
+    "source": "kit-08/lockups/stacked-reverse.svg",
+    "sha256": "4c964dd1a85f3a1bf9f9c34fde9df9e97126b88d42aa03e062091521ac17094a"
+  },
+  "lockups/stacked-story-teal-dark.png": {
+    "source": "kit-08/lockups/stacked-story-teal-dark.png",
+    "sha256": "daab47c57d06045e05ab5420a4f123f43269a4f3f9589769f76b13df6a7c1538"
+  },
+  "lockups/stacked-story-teal-dark.svg": {
+    "source": "kit-08/lockups/stacked-story-teal-dark.svg",
+    "sha256": "bc098b48d83329a714049c8ce4be4e89bf116d34b0478c615c0f771194a7c006"
+  },
+  "lockups/stacked-story-teal-light.png": {
+    "source": "kit-08/lockups/stacked-story-teal-light.png",
+    "sha256": "14deca2fe4388a3917178e6ad10604e9070fc3b821598b60b509402ef707b50b"
+  },
+  "lockups/stacked-story-teal-light.svg": {
+    "source": "kit-08/lockups/stacked-story-teal-light.svg",
+    "sha256": "8eede6acf062a6d171da6c70799d10ccbe98798c81728cfe1a06e0b27516ff3d"
+  },
+  "lockups/stacked-teal-pair-dark.png": {
+    "source": "kit-08/lockups/stacked-teal-pair-dark.png",
+    "sha256": "22e616b8404cc1835c70c63657fee07fc1790c010dab0c64c2f6a50be39b2eef"
+  },
+  "lockups/stacked-teal-pair-dark.svg": {
+    "source": "kit-08/lockups/stacked-teal-pair-dark.svg",
+    "sha256": "6e203a0f9b04faeb8cf1600b14c70966129dfda881806a437b0bcf31826edb26"
+  },
+  "lockups/stacked-teal-pair-light.png": {
+    "source": "kit-08/lockups/stacked-teal-pair-light.png",
+    "sha256": "24b01daeee978ff3d1ff3b5536ab41af6c614249afe8363ba8832d270ee52b4c"
+  },
+  "lockups/stacked-teal-pair-light.svg": {
+    "source": "kit-08/lockups/stacked-teal-pair-light.svg",
+    "sha256": "9d80d2ec5ea14dbc43473d119d491b15452cf1334d39b801ed9338c5bba0dbfc"
+  },
+  "lockups/word-baseline-dark.svg": {
+    "source": "kit-08/lockups/word-baseline-dark.svg",
+    "sha256": "842146194f28b37b1ef425dfe8e34367b2cc39cf8c9b3da2200b378cbd9e7d84"
+  },
+  "lockups/word-baseline-light.svg": {
+    "source": "kit-08/lockups/word-baseline-light.svg",
+    "sha256": "d0e2df18e22851fdd6de9c8ad316165a8472d73ff3884d70c2d099182b84b31e"
+  },
+  "lockups/word-feed-orange-dark.svg": {
+    "source": "kit-08/lockups/word-feed-orange-dark.svg",
+    "sha256": "bff92a4c56e1e749237f05ae1ab9112a06d2494efdbede38af00396eac90e1cd"
+  },
+  "lockups/word-feed-orange-light.svg": {
+    "source": "kit-08/lockups/word-feed-orange-light.svg",
+    "sha256": "6c5666758720f7f0541b5a71c289aa38783e2eac2bcb1d23ec5284a927ed0456"
+  },
+  "lockups/word-feed-teal-dark.svg": {
+    "source": "kit-08/lockups/word-feed-teal-dark.svg",
+    "sha256": "d25e45a203c74e90ed46b2393c39dae363854ee6703c13c5f291056d64807df3"
+  },
+  "lockups/word-feed-teal-light.svg": {
+    "source": "kit-08/lockups/word-feed-teal-light.svg",
+    "sha256": "2f49d96d33142200ebc8a5ab918e62cc184a23208f976ca7eec7fa5141fd6c04"
+  },
+  "lockups/word-story-teal-dark.svg": {
+    "source": "kit-08/lockups/word-story-teal-dark.svg",
+    "sha256": "444aa51762f58625fe9f86989f13801582d6161532b088153c2fac35cb245a2d"
+  },
+  "lockups/word-story-teal-light.svg": {
+    "source": "kit-08/lockups/word-story-teal-light.svg",
+    "sha256": "eb910f29cedfb88031d0d86e485617ce989133ed621b1ebbc896bad4123ad71c"
+  },
+  "lockups/word-teal-pair-dark.svg": {
+    "source": "kit-08/lockups/word-teal-pair-dark.svg",
+    "sha256": "78e53ff78722814f1d19af8917a527ab70005049c5edf32d13079e98a0c35c64"
+  },
+  "lockups/word-teal-pair-light.svg": {
+    "source": "kit-08/lockups/word-teal-pair-light.svg",
+    "sha256": "d5842676d073d58fe7a8cfc8b2111e07e696e4a90bc56c2f4f6ddba497cbdad6"
+  },
+  "fonts/InstrumentSans.ttf": {
+    "source": "kit-08/fonts/InstrumentSans.ttf",
+    "sha256": "b24f1812584816958afcf22e22d08e44318c5e51651e25d2438efdde389b33b1"
+  },
+  "fonts/METADATA.pb": {
+    "source": "kit-08/fonts/METADATA.pb",
+    "sha256": "111191daf841919d5d09b88ca7a17fb691c4b835c61ca81c958f334c40c11535"
+  },
+  "fonts/OFL.txt": {
+    "source": "kit-08/fonts/OFL.txt",
+    "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+  },
+  "banners/repository-dark.png": {
+    "source": "kit-08/banners/repository-dark.png",
+    "sha256": "81214873d7615bfda82311e802954ae4543b0ae4b722f5a8618e71e1a53d9264"
+  },
+  "banners/repository-dark.svg": {
+    "source": "kit-08/banners/repository-dark.svg",
+    "sha256": "817ee068d2d9fee397795af1b1728c429952c9dc3daa32784c0ff0753ebe5ef0"
+  },
+  "banners/repository-dark@2x.png": {
+    "source": "kit-08/banners/repository-dark@2x.png",
+    "sha256": "98ef1ac1e3767de2a30861cd43e07d731443de46302f4c31311dc478eea8a4ba"
+  },
+  "banners/repository-light.png": {
+    "source": "kit-08/banners/repository-light.png",
+    "sha256": "27551b0b1939b7c3f53d372cfb8f1195870c4224f25b44011ad5fa58914bb6b2"
+  },
+  "banners/repository-light.svg": {
+    "source": "kit-08/banners/repository-light.svg",
+    "sha256": "228d76a82b8815c08a7a0668f73cf538b7f329b2465f9b2d008c5819abb90867"
+  },
+  "banners/repository-light@2x.png": {
+    "source": "kit-08/banners/repository-light@2x.png",
+    "sha256": "7e994630ff7e390bf34ec80dbf9bfa331584a289b0c19af93a7761f0cf9b50ce"
+  },
+  "social/baseline-dark-crop.jpg": {
+    "source": "iteration-10/social/baseline-dark-crop.jpg",
+    "sha256": "71a289f288d8fbbb03209461517d03bd2cb9bb579c3a4677bdd37e567176d099"
+  },
+  "social/baseline-dark-crop.png": {
+    "source": "iteration-10/social/baseline-dark-crop.png",
+    "sha256": "d55c3cea18002b519ceda0f70cd0d8bbbafa64856a4e186b3d7c7e1776937e3c"
+  },
+  "social/baseline-dark-crop.svg": {
+    "source": "iteration-10/social/baseline-dark-crop.svg",
+    "sha256": "0e53ab11a36078c11b80fc91d8a4695e5077133d3ff78bfa813ae7d3f55aa0a2"
+  },
+  "social/baseline-dark.jpg": {
+    "source": "iteration-10/social/baseline-dark.jpg",
+    "sha256": "7c89bd3e3e2ea5aaf1efa3847ed3a8963b54ff3dffafce78ed52ae8af75b72c9"
+  },
+  "social/baseline-dark.png": {
+    "source": "iteration-10/social/baseline-dark.png",
+    "sha256": "70fc5d29ee26cb4f5db0b23eb965f65d81358ee1b1c68d72f78636ab0e8ff788"
+  },
+  "social/baseline-dark.svg": {
+    "source": "iteration-10/social/baseline-dark.svg",
+    "sha256": "82aedaea252dfd77b77e13311625e1f8e4be0f8acec1918907c818c0313345ad"
+  },
+  "social/baseline-light-crop.jpg": {
+    "source": "iteration-10/social/baseline-light-crop.jpg",
+    "sha256": "527a608a1182a749b689c4b8a96e4c88ffa54feaf12640b53027c54ce96c0d53"
+  },
+  "social/baseline-light-crop.png": {
+    "source": "iteration-10/social/baseline-light-crop.png",
+    "sha256": "bab1f78f34ab7c4585f72b3f8464157fd766edb91cb31e82337df61cd6dbe9d1"
+  },
+  "social/baseline-light-crop.svg": {
+    "source": "iteration-10/social/baseline-light-crop.svg",
+    "sha256": "b0a8e3f07132f8eb95464a1120abcc6b31f43ed13eab8b387d110bcae9ee0a33"
+  },
+  "social/baseline-light.jpg": {
+    "source": "iteration-10/social/baseline-light.jpg",
+    "sha256": "0145d3ad7907f16bd50ac07c693afeb65793c35bc444e33cdb1e36d88b38024e"
+  },
+  "social/baseline-light.png": {
+    "source": "iteration-10/social/baseline-light.png",
+    "sha256": "5d57a62d00ea272a711c67f6398714ab1338f3f1a924309687f61ecee71e1de2"
+  },
+  "social/baseline-light.svg": {
+    "source": "iteration-10/social/baseline-light.svg",
+    "sha256": "a23fc5103ad9f1cb7453d793f611e5883dc834154c28a1365fe8c11dd41472f7"
+  },
+  "motion/queue.js": {
+    "source": "iteration-09/queue.js",
+    "sha256": "38c049277c5632d70b249c8f0f4aa101ea5787b31b02274099ca65bc8ef075fb"
+  },
+  "motion/queue.css": {
+    "source": "iteration-09/queue.css",
+    "sha256": "2eb2460d832da012a6793ca2053454fddeda07b3544f78fb9e776a41edd0dc38"
+  },
+  "motion/review.css": {
+    "source": "iteration-09/review.css",
+    "sha256": "8f51c25c07180c5384bb3ba56a38bed3b40ed56ec788aac9bbd6cbb55afa0f5b"
+  },
+  "motion/index.html": {
+    "source": "iteration-09/index.html",
+    "sha256": "9c0d29a2e95d1f0e0508802455b2203b48855213a3649bcba1bc4fc8de087b7c"
+  },
+  "motion/hero.html": {
+    "source": "iteration-09/hero.html",
+    "sha256": "831f574ba914c2b013d28774f4d205ea677512045ace908ab86e6f37f2981f4f"
+  },
+  "motion/sequence.json": {
+    "source": "iteration-09/sequence.json",
+    "sha256": "71919bca816ade62b551812da83200bd3dd8760dcdedbd77e01583d18e2a27be"
+  },
+  "motion/marks/mark-dark.svg": {
+    "source": "iteration-09/marks/mark-dark.svg",
+    "sha256": "f0d7ef250242e48c90da9acfcd77175ec2447b22f05338621629da68170aa90a"
+  },
+  "motion/marks/mark-light.svg": {
+    "source": "iteration-09/marks/mark-light.svg",
+    "sha256": "fae98c87279972d94408fcd400d5b9f6091889277ed572922a1b1577fc898904"
+  },
+  "motion/lockups/word-baseline-dark.svg": {
+    "source": "iteration-09/lockups/word-baseline-dark.svg",
+    "sha256": "842146194f28b37b1ef425dfe8e34367b2cc39cf8c9b3da2200b378cbd9e7d84"
+  },
+  "motion/lockups/word-baseline-light.svg": {
+    "source": "iteration-09/lockups/word-baseline-light.svg",
+    "sha256": "d0e2df18e22851fdd6de9c8ad316165a8472d73ff3884d70c2d099182b84b31e"
+  },
+  "motion/fonts/InstrumentSans.ttf": {
+    "source": "iteration-09/fonts/InstrumentSans.ttf",
+    "sha256": "b24f1812584816958afcf22e22d08e44318c5e51651e25d2438efdde389b33b1"
+  },
+  "motion/fonts/OFL.txt": {
+    "source": "iteration-09/fonts/OFL.txt",
+    "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+  },
+  "motion/source/Component.php": {
+    "source": "iteration-09/source/Component.php",
+    "sha256": "ba5f17b81c3d6dd64e6aa86004c839d8f01d96eeb77bcaadd7952d2daebb74dd"
+  },
+  "motion/source/Excerpt.php": {
+    "source": "iteration-09/source/Excerpt.php",
+    "sha256": "deae48ddb2699be4372637301f9a07e9010904a9d1dd0d3d0c21f9d61b7901fe"
+  },
+  "motion/source/FileAttachment.php": {
+    "source": "iteration-09/source/FileAttachment.php",
+    "sha256": "75b401f3cff55c880f1a5fc25c274c048aefd7421f4d2702e7063a42ab6ca8ce"
+  },
+  "motion/source/Image.php": {
+    "source": "iteration-09/source/Image.php",
+    "sha256": "3821533cbd24678367aecd9ce2d0af0480a1209e4aa14961dabc638f8f2dffc3"
+  },
+  "motion/source/ItemList.php": {
+    "source": "iteration-09/source/ItemList.php",
+    "sha256": "e76db5d46921d9ee5d0326f1dad91f02cb3b01e464693eaa315648086d35363a"
+  },
+  "motion/source/KeyValue.php": {
+    "source": "iteration-09/source/KeyValue.php",
+    "sha256": "67d6bd2c4e9d4edc0e04d31b0b39573c1bd3ea231f3b0657cee2fc4da2407382"
+  },
+  "motion/source/MediaObject.php": {
+    "source": "iteration-09/source/MediaObject.php",
+    "sha256": "cbbe5404a77f93321f9313e8c0011040531c3cb2f3f8d563aa6c8086a443e25d"
+  },
+  "motion/source/Prose.php": {
+    "source": "iteration-09/source/Prose.php",
+    "sha256": "4aec663fb1624b60bdc4532ae4d45b625b0625de9cf3c138961ad4b62e9633fb"
+  },
+  "motion/source/provenance.json": {
+    "source": "iteration-09/source/provenance.json",
+    "sha256": "ac17e75c705feaccc175c611680681607030a21610453f70bb6589d764c5f958"
+  },
+  "source/motion09-notes.md": {
+    "source": "iteration-09/README.md",
+    "sha256": "0f4ddab195fe7553ad5f2e725d13c7f492c6d4885671a96538a9d8f9942607d9"
+  },
+  "source/website/package-lock.json": {
+    "source": "kit-08/source/website/package-lock.json",
+    "sha256": "ffc3777588da9f09050e678d04beb72a6b39bf12bd0ef350b2073b1b00be7fd3"
+  },
+  "source/website/package.json": {
+    "source": "kit-08/source/website/package.json",
+    "sha256": "e5db5592a7427ab87bb4ac5a8e11f928ce9acd995c574c50d893443e67311616"
+  },
+  "source/website/preflight.css": {
+    "source": "kit-08/source/website/preflight.css",
+    "sha256": "ace8310eed6dc5568a56fc16e1d695cf58da7528d81d66d81649e93cce644df6"
+  },
+  "source/website/resources/css/app.css": {
+    "source": "kit-08/source/website/resources/css/app.css",
+    "sha256": "becf55443137535a108092d0ae1827cc6d55116c302c807df0e31220a39a4511"
+  },
+  "source/website/resources/css/storyfeed-tokens.css": {
+    "source": "kit-08/source/website/resources/css/storyfeed-tokens.css",
+    "sha256": "6a9e3ba96c2c8a90ece1f23997875622853e3be476482ff2899d016d34975f24"
+  },
+  "source/website/resources/js/demo/DemoFeed.vue": {
+    "source": "kit-08/source/website/resources/js/demo/DemoFeed.vue",
+    "sha256": "d6c1ca20dd36380aac6c7910def31479773b4cd7307070b8efcdaaf2d14ec470"
+  },
+  "source/website/resources/js/demo/FeedBody.vue": {
+    "source": "kit-08/source/website/resources/js/demo/FeedBody.vue",
+    "sha256": "059889dde58a91a9de1d2b002442c423ed3a12d64cb1b496b3a47d3a64de8575"
+  },
+  "source/website/resources/js/feed/EntityAvatar.vue": {
+    "source": "kit-08/source/website/resources/js/feed/EntityAvatar.vue",
+    "sha256": "f8c951a99bb5140099fd9891b16ca62387fdbfa6e62c0cf8ac392fee233125a3"
+  },
+  "source/website/resources/js/feed/EntityLink.vue": {
+    "source": "kit-08/source/website/resources/js/feed/EntityLink.vue",
+    "sha256": "8c6a5fd9c526f080770e9acdf6b04dbeb0f222a767b689f26006a646c9c93520"
+  },
+  "source/website/resources/js/feed/FeedGroup.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedGroup.vue",
+    "sha256": "4306c16dd600f252f751bd2269b555ca567874e1b49bad8d046bf5544ad814db"
+  },
+  "source/website/resources/js/feed/FeedHeadline.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedHeadline.vue",
+    "sha256": "ba512a089da3f5e40e77a26ab3f3860a82f11e7b59e751800f059790d414d9e9"
+  },
+  "source/website/resources/js/feed/FeedIcon.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedIcon.vue",
+    "sha256": "579c32932a296f7b4cba0b4baea072610583d0e7d242afd7f6de11871ef643b4"
+  },
+  "source/website/resources/js/feed/FeedItem.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedItem.vue",
+    "sha256": "710756fa16fbab2ce03a9731bebd708a9f47fe43dd61a76649c17eb3d118a332"
+  },
+  "source/website/resources/js/feed/FeedNode.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedNode.vue",
+    "sha256": "df407d33b28ee12027f014b7273c4ae9a88859e342c0f34f248cf9bfd8830dde"
+  },
+  "source/website/resources/js/feed/FeedStream.vue": {
+    "source": "kit-08/source/website/resources/js/feed/FeedStream.vue",
+    "sha256": "94aa91074ede0d6a50afce1ca7bc18fd80b7d9ba5e74c49e1b02c38c56b9048d"
+  },
+  "source/website/resources/js/feed/bodies/Note.vue": {
+    "source": "kit-08/source/website/resources/js/feed/bodies/Note.vue",
+    "sha256": "5dc514d2f88a304c3ff392f7837ee463628b629cb31ae44a6a169cbf1be59d5a"
+  },
+  "source/website/resources/js/feed/bodies/index.ts": {
+    "source": "kit-08/source/website/resources/js/feed/bodies/index.ts",
+    "sha256": "dc601338e88c656ad610dcd768efdf907330e981a4a3dd7a8450a26b20f71835"
+  },
+  "source/website/resources/js/feed/feed.css": {
+    "source": "kit-08/source/website/resources/js/feed/feed.css",
+    "sha256": "ddcb2f53753eab093a7af3610693909d2c588a3cde733e59a882ad5b75454810"
+  },
+  "source/website/resources/js/feed/keys.ts": {
+    "source": "kit-08/source/website/resources/js/feed/keys.ts",
+    "sha256": "6125a85f086ae8104e6eb3fc5a91a1540421f578304317a06b72b2f7f590b52d"
+  },
+  "source/website/resources/js/feed/types.ts": {
+    "source": "kit-08/source/website/resources/js/feed/types.ts",
+    "sha256": "92b7a8878849f6cd9ce2bab86f3537f4a4949a8cc25ccd5303d386d0427bf935"
+  },
+  "source/website/resources/js/feed/useRelativeTime.ts": {
+    "source": "kit-08/source/website/resources/js/feed/useRelativeTime.ts",
+    "sha256": "aec16ce877a0e8864f8faf45a4698dddba31495bd985e0782f30d8a0c78bbfd6"
+  },
+  "source/licenses/@vue-reactivity-LICENSE": {
+    "source": "kit-08/source/licenses/@vue-reactivity-LICENSE",
+    "sha256": "1bb85cc9b13b81ef41c81c51866172fc345e0503c86726a6755b796590b70175"
+  },
+  "source/licenses/@vue-runtime-core-LICENSE": {
+    "source": "kit-08/source/licenses/@vue-runtime-core-LICENSE",
+    "sha256": "1bb85cc9b13b81ef41c81c51866172fc345e0503c86726a6755b796590b70175"
+  },
+  "source/licenses/@vue-runtime-dom-LICENSE": {
+    "source": "kit-08/source/licenses/@vue-runtime-dom-LICENSE",
+    "sha256": "1bb85cc9b13b81ef41c81c51866172fc345e0503c86726a6755b796590b70175"
+  },
+  "source/licenses/@vue-shared-LICENSE": {
+    "source": "kit-08/source/licenses/@vue-shared-LICENSE",
+    "sha256": "1bb85cc9b13b81ef41c81c51866172fc345e0503c86726a6755b796590b70175"
+  },
+  "source/licenses/lucide-vue-next-LICENSE": {
+    "source": "kit-08/source/licenses/lucide-vue-next-LICENSE",
+    "sha256": "668dcc52803480e0a026b31140a4cae668772663cd764e5991d252eef03f98db"
+  },
+  "source/licenses/vue-LICENSE": {
+    "source": "kit-08/source/licenses/vue-LICENSE",
+    "sha256": "1bb85cc9b13b81ef41c81c51866172fc345e0503c86726a6755b796590b70175"
+  },
+  "source/tim-wood-original.png": {
+    "source": "kit-08/source/tim-wood-original.png",
+    "sha256": "ead435fcad8259ebdbbc13ea2f0b7b7a7a6a4fdb35f757cd31e16a0ad1caebb3"
+  },
+  "source/social10/source/OFL.txt": {
+    "source": "iteration-10/source/OFL.txt",
+    "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+  },
+  "source/social10/source/baseline-dark-crop.png": {
+    "source": "iteration-10/source/baseline-dark-crop.png",
+    "sha256": "b31dd12d9eff1bb34e897d614a90fcb1111bc4c15955599f61bce45e349cf43f"
+  },
+  "source/social10/source/baseline-dark-crop.svg": {
+    "source": "iteration-10/source/baseline-dark-crop.svg",
+    "sha256": "88c62d87b58fb667598765e1f4a17a9ef2cac9bbe5bc071c654fb977d543a04f"
+  },
+  "source/social10/source/baseline-dark.png": {
+    "source": "iteration-10/source/baseline-dark.png",
+    "sha256": "4f1f7f704c0e2359bbd039de2936578a77540ff99d976efcbe6d9daa10552ce8"
+  },
+  "source/social10/source/baseline-dark.svg": {
+    "source": "iteration-10/source/baseline-dark.svg",
+    "sha256": "91693e2d23badca2e108afdea8a2871dc430e5da56855105219bf29dca673376"
+  },
+  "source/social10/source/baseline-light-crop.png": {
+    "source": "iteration-10/source/baseline-light-crop.png",
+    "sha256": "ed7ad24864b1be4c1da20daf5db677ed195dfe3780316d4603ff44b1803513c9"
+  },
+  "source/social10/source/baseline-light-crop.svg": {
+    "source": "iteration-10/source/baseline-light-crop.svg",
+    "sha256": "01a7f73517dd0dd2ea02adb3984c416cc3207c19bf570584d563863f762b74b1"
+  },
+  "source/social10/source/baseline-light.png": {
+    "source": "iteration-10/source/baseline-light.png",
+    "sha256": "1dc8ddbf1a8ca17f04148e6ac11e6b355344212d2d8991289bb8af7286b0aa3a"
+  },
+  "source/social10/source/baseline-light.svg": {
+    "source": "iteration-10/source/baseline-light.svg",
+    "sha256": "20fd8420903101f83bba7ae15e392d2dcca39d9dfecb197ed6b34ff29eb58305"
+  },
+  "source/social10/source/provenance.json": {
+    "source": "iteration-10/source/provenance.json",
+    "sha256": "6db35bf1e41659de6a0ca375d14962f918eaad19a81d6a2a482ba5b40cb97d54"
+  },
+  "source/social10/source/renderer-provenance.json": {
+    "source": "iteration-10/source/renderer-provenance.json",
+    "sha256": "b2cf4c34b3af490be5e5ef34f1f8c091749326c9d5f01d60defb66f906b6719e"
+  },
+  "source/social10/captures/feed-dark.png": {
+    "source": "iteration-10/captures/feed-dark.png",
+    "sha256": "f3cce73d02124e93584c3b62ab81a01a6f223475bb004e64c6bcc6d6ea2dedad"
+  },
+  "source/social10/captures/feed-light.png": {
+    "source": "iteration-10/captures/feed-light.png",
+    "sha256": "2595b55bc3976250b896a8922ac107bcf268139a3a01ca678bb532f6e24be5fd"
+  },
+  "source/social10/measurements.json": {
+    "source": "iteration-10/measurements.json",
+    "sha256": "35d45df1a6b2e6672c785edd132a53b217d4088c4c8ce12389177e19afdc5b44"
+  },
+  "harness/Fixture.vue": {
+    "source": "kit-08/harness/Fixture.vue",
+    "sha256": "4a48ff00fd278233247c87db6f082bc901b141cd5e0a7d92b36facc7728c89c1"
+  },
+  "harness/build-verification.json": {
+    "source": "kit-08/harness/build-verification.json",
+    "sha256": "756866e70b8d05bb0823b9807b0225642f04add19f1c03ec73788ef4e67f8205"
+  },
+  "harness/build.mjs": {
+    "source": "kit-08/harness/build.mjs",
+    "sha256": "9d8c4716d225e1b2aaee9cc803ed83001752fcbbba340eb3de5b34deec4c66c3"
+  },
+  "harness/dependency-versions.json": {
+    "source": "kit-08/harness/dependency-versions.json",
+    "sha256": "1e0efacaa9f13364b1b19def7f294b9df552d13a8e5c62a2b1df017968ef49a9"
+  },
+  "harness/fixture.json": {
+    "source": "kit-08/harness/fixture.json",
+    "sha256": "5eeff7f2981476fe342f40711943d62363802ce531dd34667384636e9e33a9d6"
+  },
+  "harness/index.html": {
+    "source": "kit-08/harness/index.html",
+    "sha256": "904b87d45096cce2a9e4e043917b9cc4b5353e23c868b256bb6e2555199afb46"
+  },
+  "harness/main.ts": {
+    "source": "kit-08/harness/main.ts",
+    "sha256": "525ba2333cbd419eff25479a12c0941b7f987dd504c4475cba42faf7940ff3c8"
+  },
+  "harness/package.json": {
+    "source": "kit-08/harness/package.json",
+    "sha256": "7b4f4c1dbe3549ea7718e43c4d770c54503f482b89c8fff7a41663bb6eddb11f"
+  },
+  "harness/shell.css": {
+    "source": "kit-08/harness/shell.css",
+    "sha256": "aebd6aacd4bbfe4bed420c1ca45e9c7b5767f217aac52b9ddc7ac8b670e9571a"
+  },
+  "harness/site/assets/index-O7D-xxw_.css": {
+    "source": "kit-08/harness/site/assets/index-O7D-xxw_.css",
+    "sha256": "e424c1b76fa4fa711978d9313a3b15fe059fa82abcdaed29fdebdcb4ae5abaff"
+  },
+  "harness/site/assets/index-_oMMSfd_.js": {
+    "source": "kit-08/harness/site/assets/index-_oMMSfd_.js",
+    "sha256": "9fb334bcf09b5f255db2246e4195370d2c52a9fdd06824460373c0240ddac3f1"
+  },
+  "harness/site/index.html": {
+    "source": "kit-08/harness/site/index.html",
+    "sha256": "c2a2313cd9ac68241bb064173f1923d38e70c293d6c7614490a025cccc59143a"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "frozen_files": 210,
+  "manifest_files": 232,
+  "archive_repeat_exact": true,
+  "archive_bytes": 6674319,
+  "gif_dimensions": [
+    1600,
+    428
+  ],
+  "gif_duration_ms": 33750,
+  "stationary_text_all_frames": true,
+  "github_api_html_picture_selection": [
+    {
+      "theme": "light",
+      "viewport": 1000,
+      "reduced_motion": "no-preference",
+      "src": "http://127.0.0.1:50978/banners/storyfeed-animated-light.gif",
+      "naturalWidth": 1600,
+      "width": 800,
+      "height": 214
+    },
+    {
+      "theme": "dark",
+      "viewport": 1000,
+      "reduced_motion": "no-preference",
+      "src": "http://127.0.0.1:50978/banners/storyfeed-animated-dark.gif",
+      "naturalWidth": 1600,
+      "width": 800,
+      "height": 214
+    },
+    {
+      "theme": "light",
+      "viewport": 390,
+      "reduced_motion": "reduce",
+      "src": "http://127.0.0.1:50978/banners/storyfeed-static-light.png",
+      "naturalWidth": 1600,
+      "width": 358,
+      "height": 95.75
+    },
+    {
+      "theme": "dark",
+      "viewport": 390,
+      "reduced_motion": "reduce",
+      "src": "http://127.0.0.1:50978/banners/storyfeed-static-dark.png",
+      "naturalWidth": 1600,
+      "width": 358,
+      "height": 95.75
+    }
+  ],
+  "standalone_review_hero_native_fixture": true,
+  "old_motion_suite": "not rerun",
+  "hosted_github_readme": "pending approved push; API HTML/local browser only"
+}

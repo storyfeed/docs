@@ -1,0 +1,23 @@
+{
+  "baseline": "d333016e5d520c1b861b1c62c73ca50ca5684d50",
+  "core_revision": "c6ae5864f199ce80429b1bf2fbbc3e1bff55a271",
+  "contracts": {
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/Prose.php": "4aec663fb1624b60bdc4532ae4d45b625b0625de9cf3c138961ad4b62e9633fb",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/Excerpt.php": "deae48ddb2699be4372637301f9a07e9010904a9d1dd0d3d0c21f9d61b7901fe",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/Image.php": "3821533cbd24678367aecd9ce2d0af0480a1209e4aa14961dabc638f8f2dffc3",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/MediaObject.php": "cbbe5404a77f93321f9313e8c0011040531c3cb2f3f8d563aa6c8086a443e25d",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/FileAttachment.php": "75b401f3cff55c880f1a5fc25c274c048aefd7421f4d2702e7063a42ab6ca8ce",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/KeyValue.php": "67d6bd2c4e9d4edc0e04d31b0b39573c1bd3ea231f3b0657cee2fc4da2407382",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/ItemList.php": "e76db5d46921d9ee5d0326f1dad91f02cb3b01e464693eaa315648086d35363a",
+    "/Users/jasper/Dev/projects/storyfeed/src/Body/Component.php": "ba5f17b81c3d6dd64e6aa86004c839d8f01d96eeb77bcaadd7952d2daebb74dd"
+  },
+  "copied_kit08": {
+    "marks/mark-light.svg": "fae98c87279972d94408fcd400d5b9f6091889277ed572922a1b1577fc898904",
+    "marks/mark-dark.svg": "f0d7ef250242e48c90da9acfcd77175ec2447b22f05338621629da68170aa90a",
+    "fonts/InstrumentSans.ttf": "b24f1812584816958afcf22e22d08e44318c5e51651e25d2438efdde389b33b1",
+    "fonts/OFL.txt": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966",
+    "lockups/word-baseline-light.svg": "d0e2df18e22851fdd6de9c8ad316165a8472d73ff3884d70c2d099182b84b31e",
+    "lockups/word-baseline-dark.svg": "842146194f28b37b1ef425dfe8e34367b2cc39cf8c9b3da2200b378cbd9e7d84"
+  },
+  "boundary": "Abstract hero motifs grounded in core contracts; not actual renderer output or production activities."
+}

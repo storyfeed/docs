@@ -1,0 +1,12 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
+const root=path.dirname(fileURLToPath(import.meta.url));
+const website=root;
+const require=createRequire(path.join(website,'package.json'));
+const {build}=await import(pathToFileURL(require.resolve('vite')).href);
+const {default:vue}=await import(pathToFileURL(require.resolve('@vitejs/plugin-vue')).href);
+const versions=Object.fromEntries(['vue','vite','@vitejs/plugin-vue','lucide-vue-next','@vue/compiler-sfc'].map(n=>[n,JSON.parse(fs.readFileSync(path.join(website,'node_modules',n,'package.json'))).version]));
+fs.writeFileSync(path.join(root,'dependency-versions.json'),JSON.stringify(versions,null,2)+'\n');
+await build({root,configFile:false,base:'./',cacheDir:path.join(root,'.vite'),plugins:[vue()],resolve:{alias:{'@':path.join(root,'../source/website/resources/js'),'vue':require.resolve('vue/dist/vue.runtime.esm-bundler.js'),'lucide-vue-next':require.resolve('lucide-vue-next')}},build:{outDir:path.join(root,'site'),emptyOutDir:true,assetsInlineLimit:200000}});

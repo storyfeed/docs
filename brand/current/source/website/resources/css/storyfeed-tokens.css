@@ -1,0 +1,31 @@
+/*
+ * The design tokens the ported feed kit and demo read (--vp-c-*). The kit was
+ * written against VitePress's variables with hard fallbacks; defining the same
+ * names here means the port stays a copy, not a fork — re-porting is a diff.
+ * Values mirror the docs site, the Carousel palette included.
+ */
+:root {
+    --vp-font-family-mono:
+        ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    --vp-c-bg: #ffffff;
+    --vp-c-divider: #e2e2e3;
+    --vp-c-text-1: #3c3c43;
+    --vp-c-text-2: #67676c;
+    --vp-c-text-3: #929295;
+    --vp-c-default-soft: rgba(142, 150, 170, 0.14);
+    --vp-c-brand-1: #356f78;
+    --vp-c-brand-2: #2b6069;
+    --vp-c-brand-3: #438d98;
+}
+
+.dark {
+    --vp-c-bg: #1b1b1f;
+    --vp-c-divider: #2e2e32;
+    --vp-c-text-1: rgba(255, 255, 245, 0.86);
+    --vp-c-text-2: rgba(235, 235, 245, 0.6);
+    --vp-c-text-3: rgba(235, 235, 245, 0.38);
+    --vp-c-default-soft: rgba(101, 117, 133, 0.16);
+    --vp-c-brand-1: #7cc3ce;
+    --vp-c-brand-2: #6fb5c0;
+    --vp-c-brand-3: #438d98;
+}

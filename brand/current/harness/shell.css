@@ -1,0 +1,3 @@
+@font-face{font-family:'Instrument Sans';src:url('../fonts/InstrumentSans.ttf');font-weight:400 700;font-display:block}
+/* Document shell only: no renderer selectors, row markup or spacing overrides. */
+html{font-size:16px}body{margin:0;background:transparent;font-family:'Instrument Sans',ui-sans-serif,system-ui,sans-serif}#capture{width:560px}#fixture-note{font-size:14px;line-height:1.5;padding:20px;max-width:760px;color:#67676c}html.dark #fixture-note{color:#b7b9bc}html.dark body:not([data-capture]){background:#1b1b1f}

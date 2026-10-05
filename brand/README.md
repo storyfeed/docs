@@ -1,3 +1,9 @@
+# Current Storyfeed identity
+
+The selected stacked-card identity, refreshing queue, centered social assets and complete downloadable ZIP now live in **[current/](current/README.md)**. The material below records the previous identity and is retained as history; it is not the current mark specification. Existing site imports remain unchanged.
+
+---
+
 # Brand assets
 
 **The Carousel.** One activity in focus, with the entries either side of it

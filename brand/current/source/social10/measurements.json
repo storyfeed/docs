@@ -1,0 +1,62 @@
+{
+  "canvas": [
+    2400,
+    1200
+  ],
+  "transform": "translate(189.12 -43.48) scale(1.08)",
+  "scale": 1.08,
+  "translation": [
+    189.12,
+    -43.48
+  ],
+  "source_foreground_bounds": [
+    151,
+    351,
+    1721,
+    736
+  ],
+  "foreground_bounds": [
+    352.2,
+    335.6,
+    2047.8,
+    751.4
+  ],
+  "foreground_center": [
+    1200,
+    543.5
+  ],
+  "foreground_margins": [
+    352.2,
+    352.2
+  ],
+  "feed_bounds": [
+    595.2,
+    142.82,
+    1804.8,
+    944.18
+  ],
+  "feed_center": [
+    1200,
+    543.5
+  ],
+  "capture_pixels": [
+    1120,
+    742
+  ],
+  "feed_date_bounds": [
+    1673.41125,
+    1804.8
+  ],
+  "crop_viewbox": [
+    57.142857,
+    0,
+    2285.714286,
+    1200
+  ],
+  "crop_foreground_bounds": [
+    154.905,
+    176.19,
+    1045.095,
+    394.485
+  ]
+}

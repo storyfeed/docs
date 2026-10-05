@@ -1,0 +1,47 @@
+[
+  {
+    "id": 0,
+    "type": "Grouped entity media",
+    "description": "Three media tiles; not a core Body type."
+  },
+  {
+    "id": 1,
+    "type": "Prose",
+    "description": "Authored content and encoding; three text strokes."
+  },
+  {
+    "id": 2,
+    "type": "Image",
+    "description": "Resolved entity media slot; one image and caption."
+  },
+  {
+    "id": 3,
+    "type": "KeyValue",
+    "description": "Label/value pairs; two aligned columns."
+  },
+  {
+    "id": 4,
+    "type": "FileAttachment",
+    "description": "Name, byte size and media type; file and metadata."
+  },
+  {
+    "id": 5,
+    "type": "Excerpt",
+    "description": "Passage and attribution; quoted text strokes."
+  },
+  {
+    "id": 6,
+    "type": "MediaObject",
+    "description": "Optional subject, content, image slot, files and footnote; image beside content."
+  },
+  {
+    "id": 7,
+    "type": "ItemList",
+    "description": "Individual strings/links, optionally ordered; three items."
+  },
+  {
+    "id": 8,
+    "type": "Component",
+    "description": "App-defined name and props; an illustrative custom module, not a core visual."
+  }
+]

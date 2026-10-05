@@ -1,0 +1,240 @@
+[
+  {
+    "kind": "activity",
+    "id": "source-milestone-0",
+    "verb": "launched",
+    "published_at": "2026-10-01T12:00:00Z",
+    "headline_template": ":actor launched :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "organization",
+      "id": "TL",
+      "label": "Tey Labs",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "TL",
+        "avatar_color": "#B65326"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-0",
+      "label": "the docs MCP server",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-1",
+    "verb": "unveiled",
+    "published_at": "2026-09-30T12:00:00Z",
+    "headline_template": ":actor unveiled :object at :target",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "person",
+      "id": "JT",
+      "label": "Jasper",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "JT",
+        "avatar_color": "#17434B"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-1",
+      "label": "Storyfeed",
+      "url": null,
+      "body": null
+    },
+    "target": {
+      "type": "milestone",
+      "id": "GPUG",
+      "label": "GPUG",
+      "url": null,
+      "body": null
+    },
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-2",
+    "verb": "released",
+    "published_at": "2026-09-30T12:00:00Z",
+    "headline_template": ":actor released :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "organization",
+      "id": "TL",
+      "label": "Tey Labs",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "TL",
+        "avatar_color": "#B65326"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-2",
+      "label": "Storyfeed v0.11.0",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-3",
+    "verb": "took questions at",
+    "published_at": "2026-09-30T12:00:00Z",
+    "headline_template": ":actor took questions at :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "person",
+      "id": "JT",
+      "label": "Jasper",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "JT",
+        "avatar_color": "#17434B"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-3",
+      "label": "GPUG",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-4",
+    "verb": "released",
+    "published_at": "2026-09-30T12:00:00Z",
+    "headline_template": ":actor released :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "organization",
+      "id": "TL",
+      "label": "Tey Labs",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "TL",
+        "avatar_color": "#B65326"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-4",
+      "label": "storyfeed/ui v0.2.0",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-5",
+    "verb": "painted",
+    "published_at": "2026-09-28T12:00:00Z",
+    "headline_template": ":actor painted :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "person",
+      "id": "JT",
+      "label": "Jasper",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "JT",
+        "avatar_color": "#17434B"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-5",
+      "label": "the mark Tey orange",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-6",
+    "verb": "released",
+    "published_at": "2026-09-10T12:00:00Z",
+    "headline_template": ":actor released :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "organization",
+      "id": "TL",
+      "label": "Tey Labs",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "TL",
+        "avatar_color": "#B65326"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-6",
+      "label": "Storyfeed v0.10.0",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  },
+  {
+    "kind": "activity",
+    "id": "source-milestone-7",
+    "verb": "started",
+    "published_at": "2026-08-10T12:00:00Z",
+    "headline_template": ":actor started :object",
+    "headline": null,
+    "glyph": "activity",
+    "actor": {
+      "type": "person",
+      "id": "JT",
+      "label": "Jasper",
+      "url": null,
+      "body": null,
+      "data": {
+        "initials": "JT",
+        "avatar_color": "#17434B"
+      }
+    },
+    "object": {
+      "type": "milestone",
+      "id": "object-7",
+      "label": "Storyfeed",
+      "url": null,
+      "body": null
+    },
+    "target": null,
+    "context": null
+  }
+]

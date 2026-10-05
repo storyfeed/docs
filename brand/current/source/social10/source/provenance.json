@@ -1,0 +1,56 @@
+{
+  "baseline_commit": "71acaa91b176a3362e7b12e3677f5ec1ae63b9fe",
+  "frozen_files": {
+    "source/baseline-light.svg": {
+      "source": "iteration-08/social/baseline-light.svg",
+      "sha256": "20fd8420903101f83bba7ae15e392d2dcca39d9dfecb197ed6b34ff29eb58305"
+    },
+    "source/baseline-light-crop.svg": {
+      "source": "iteration-08/social/baseline-light-crop.svg",
+      "sha256": "01a7f73517dd0dd2ea02adb3984c416cc3207c19bf570584d563863f762b74b1"
+    },
+    "source/baseline-light.png": {
+      "source": "iteration-08/social/baseline-light.png",
+      "sha256": "1dc8ddbf1a8ca17f04148e6ac11e6b355344212d2d8991289bb8af7286b0aa3a"
+    },
+    "source/baseline-light-crop.png": {
+      "source": "iteration-08/social/baseline-light-crop.png",
+      "sha256": "ed7ad24864b1be4c1da20daf5db677ed195dfe3780316d4603ff44b1803513c9"
+    },
+    "captures/feed-light.png": {
+      "source": "iteration-08/captures/feed-light.png",
+      "sha256": "2595b55bc3976250b896a8922ac107bcf268139a3a01ca678bb532f6e24be5fd"
+    },
+    "source/baseline-dark.svg": {
+      "source": "iteration-08/social/baseline-dark.svg",
+      "sha256": "91693e2d23badca2e108afdea8a2871dc430e5da56855105219bf29dca673376"
+    },
+    "source/baseline-dark-crop.svg": {
+      "source": "iteration-08/social/baseline-dark-crop.svg",
+      "sha256": "88c62d87b58fb667598765e1f4a17a9ef2cac9bbe5bc071c654fb977d543a04f"
+    },
+    "source/baseline-dark.png": {
+      "source": "iteration-08/social/baseline-dark.png",
+      "sha256": "4f1f7f704c0e2359bbd039de2936578a77540ff99d976efcbe6d9daa10552ce8"
+    },
+    "source/baseline-dark-crop.png": {
+      "source": "iteration-08/social/baseline-dark-crop.png",
+      "sha256": "b31dd12d9eff1bb34e897d614a90fcb1111bc4c15955599f61bce45e349cf43f"
+    },
+    "captures/feed-dark.png": {
+      "source": "iteration-08/captures/feed-dark.png",
+      "sha256": "f3cce73d02124e93584c3b62ab81a01a6f223475bb004e64c6bcc6d6ea2dedad"
+    },
+    "source/OFL.txt": {
+      "source": "kit-08/fonts/OFL.txt",
+      "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+    },
+    "source/renderer-provenance.json": {
+      "source": "iteration-08/source/provenance.json",
+      "sha256": "b2cf4c34b3af490be5e5ef34f1f8c091749326c9d5f01d60defb66f906b6719e"
+    }
+  },
+  "identity": "Selected07, lowercase single ink; outlined Instrument Sans unchanged.",
+  "renderer_boundary": "Exact iteration08 genuine website-renderer capture, not rerendered or reconstructed. No production/crawler claims.",
+  "transform": "translate(189.12 -43.48) scale(1.08)"
+}
