@@ -12,7 +12,7 @@ After extracting the ZIP, run `python3 -m http.server 8802` in its `storyfeed-cu
 - `lockups/`: frozen outlined Instrument Sans 700 / width100 lowercase geometry. Single ink is the baseline. The four named duotone treatments are available comparisons, not a new final selection.
 - `social/`: **iteration10 only**, light/dark 2400×1200 canonical and 1200×630 crop, SVG/PNG/JPG. The centered foreground and genuine captured feed share the approved 1.08 transform. No old social composition is distributed here.
 - `motion/`: exact iteration09 queue renderer and controls. Nine compact abstract motifs remain attached to their activity identity through front/middle/rear. Three-second holds and .75-second advances form a 33.75-second cycle. This is a hero illustration, not a production feed or a new logo. Exact selected07 stills are the reduced-motion fallback.
-- `banners/`: frozen repository banners plus the new README GIF and static PNG/SVG exports. GIFs are captured at 1600px, displayed at 800px, with stationary outlined lettering. README derivatives use pure white / GitHub dark backgrounds and reserve exact brand colours in their global GIF palette. GIF palette conversion can soften antialiased edges; the PNG/SVG alternatives preserve full-colour/vector stills.
+- `banners/`: frozen repository banners plus the new README GIF and static PNG/SVG exports. GIFs are captured at 1600px, displayed at 800px, with a stationary, vertically centered outlined wordmark and no tagline. README derivatives use pure white / GitHub dark backgrounds and reserve exact brand colours in their global GIF palette. GIF palette conversion can soften antialiased edges; the PNG/SVG alternatives preserve full-colour/vector stills.
 
 ## Provenance and licences
 

@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "sha256": "034233067caa3febaf15cbaaed05212dbc4515ff8d1210ea33703b8a57cc3462",
-    "bytes": 6108
+    "sha256": "ae2a29a4ac05185628892b77a18c8c3432a5969182619f03ddb5c7e3f836f7a4",
+    "bytes": 6145
   },
   "avatars/contained-dark-1000.png": {
     "sha256": "f41675bb7c9027ab5804504b27f40a3d2613158c4cb6d9d8af82a8c51c96db9f",
@@ -76,40 +76,40 @@
     "bytes": 38870
   },
   "banners/storyfeed-animated-dark.gif": {
-    "sha256": "50cc00d694159df92dfc9e2b52f221c378638d200c6a18adae41c5ed2757e330",
-    "bytes": 1090396
+    "sha256": "2895700038598a6e5b1573b109c3fc165028d513f7c340c63476938f52735fe3",
+    "bytes": 1093720
   },
   "banners/storyfeed-animated-light.gif": {
-    "sha256": "87cdcb29fe3583fb8007227a8359296c7f99c6f4fa19172ed45ae3c8c4db1088",
-    "bytes": 1050437
+    "sha256": "74942a073a074886d1da8bd01676c56920c6cf96b37ac94f3e3a708be0c46d17",
+    "bytes": 1054306
   },
   "banners/storyfeed-static-dark.png": {
-    "sha256": "bbccdfd2c3b366b10298447677b34bb6129cbf689590ff0c2748e9abab5a58aa",
-    "bytes": 25229
+    "sha256": "3761e303eb9615873b26d2b6ad83ff2d7c0d874404712fcdbf1ad52d758fd4f6",
+    "bytes": 20620
   },
   "banners/storyfeed-static-dark.svg": {
-    "sha256": "7231e5dd69aa5beca8eec6b19325d655b4984240f69b4eca15dfab19ec17e190",
-    "bytes": 29237
+    "sha256": "2b60e5184c5d5fb39a8f02668f0c337a96d98a7708fd43c6bff6047279e5d6bf",
+    "bytes": 5619
   },
   "banners/storyfeed-static-light.png": {
-    "sha256": "6f0b43e0d5e5fa3d6f2d7b7211a14bb9b9bf52c4f104699d193547a2604a5315",
-    "bytes": 24800
+    "sha256": "fc78f61c07bae7a11aa2f010b2cc53f89d94c2db7f20e3c409e3051ccf6b02d9",
+    "bytes": 20465
   },
   "banners/storyfeed-static-light.svg": {
-    "sha256": "6019f64befd0a31e8d6001373db464300520338431c008587f22d046c42cc99e",
-    "bytes": 29238
+    "sha256": "ad5d22f6ebedb9d414ee0dfbb0e1e28e65bb9af821e16dad2b419f241fc3e1e8",
+    "bytes": 5620
   },
   "build_review.py": {
     "sha256": "e7d89d2351cfdb52e4fed08c47edad7f509c45c0643b61b5e30c9f61f33126db",
     "bytes": 5435
   },
   "capture-dark.html": {
-    "sha256": "ffe266af736ed5d982d681f30883debcd371aae98b9923c0f5bce095f8e9fe5b",
-    "bytes": 27933
+    "sha256": "64a781f555d54d083261e67a1a3ac85fb195074093cd9dd67b48d72143fdde03",
+    "bytes": 4315
   },
   "capture-light.html": {
-    "sha256": "921abd84ee0a7de98d8a3b3b5cd3458f5d730bf02c985416f6b828de1ee09207",
-    "bytes": 27934
+    "sha256": "36290434a6c9048c6869ff917b3b25db27f756b40f7fdec0144f643fef7152c9",
+    "bytes": 4316
   },
   "capture_feed.py": {
     "sha256": "80bb97310a2ec58170f701c6622f696e918cb6c04e561229c9deee294631e978",
@@ -688,8 +688,8 @@
     "bytes": 1149
   },
   "render_banner.py": {
-    "sha256": "8861d630f90f715e7f13e010eea0409ac572e5507c213f184070b205303a038c",
-    "bytes": 5825
+    "sha256": "e512f1989015328f27228c3bd01038d98cb7943b4b363b52ed1495c64a0395b0",
+    "bytes": 6235
   },
   "requirements.txt": {
     "sha256": "2e1598bf34e7a1ff357b3e84a8961a0e7b205ee939d46dd9de47f331d2933d2d",
@@ -744,8 +744,8 @@
     "bytes": 207032
   },
   "source/banner-render.json": {
-    "sha256": "7039628cad97deda065b081a1495128a61299c5c6084dc0cb20c2aa71d85b663",
-    "bytes": 578
+    "sha256": "bdd8874ee23716b453ef2a8afab0473d87f9027db344d0e1991103b33762c542",
+    "bytes": 700
   },
   "source/frozen-assets.json": {
     "sha256": "e5392e5f6cc8504d89188620645b151797941f58f4c688118c749c9f3a285c76",

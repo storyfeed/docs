@@ -12,6 +12,11 @@ BACKGROUNDS={'light':'#FFFFFF','dark':'#0d1117'}
 def banner(theme):
  r=ET.parse(P/f'banners/repository-{theme}.svg').getroot()
  next(c for c in r if c.tag==f'{{{NS}}}rect').set('fill',BACKGROUNDS[theme])
+ # README composition: logo and vertically centered wordmark, without the tagline.
+ tagline=next(c for c in r if c.get('transform')=='translate(330 220) scale(0.036 -0.036)')
+ r.remove(tagline)
+ wordmark=next(c for c in r if c.get('transform')=='translate(325 157) scale(0.112 -0.112)')
+ wordmark.set('transform','translate(325 190) scale(0.112 -0.112)')
  return r
 controls='<div hidden><select id="theme"><option>light</option><option>dark</option></select><button id="pause"></button><button id="replay"></button><button id="previous"></button><button id="next"></button><span id="status"></span></div>'
 for theme in ['light','dark']:
@@ -61,7 +66,7 @@ with sync_playwright() as pw:
   r=banner(theme);r.set('width','800');r.set('height','214');(P/f'banners/storyfeed-static-{theme}.svg').write_text(ET.tostring(r,encoding='unicode')+'\n')
   im=Image.open(dest);total=0
   for n in range(im.n_frames):im.seek(n);total+=im.info['duration']
-  results[theme]={'dimensions':list(im.size),'frames':im.n_frames,'duration_ms':total,'loop':im.info.get('loop'),'bytes':dest.stat().st_size,'renderer':'byte-identical iteration09 queue.js','capture_fps_during_transition':20,'hold_ms':3000,'advance_ms':750}
+  results[theme]={'dimensions':list(im.size),'frames':im.n_frames,'duration_ms':total,'loop':im.info.get('loop'),'bytes':dest.stat().st_size,'composition':'logo and centered wordmark, no tagline','renderer':'byte-identical iteration09 queue.js','capture_fps_during_transition':20,'hold_ms':3000,'advance_ms':750}
   assert im.size==(1600,428)
   assert Image.open(P/f'banners/storyfeed-static-{theme}.png').size==(1600,428)
   assert total==33750
