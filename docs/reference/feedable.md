@@ -222,7 +222,7 @@ use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::guessFeedLabelsUsing(
-    fn (Model $model) => $model->getAttribute('reference'), // [!code highlight]
+    fn (Model $model) => $model->getAttribute('reference'),
 );
 ```
 
@@ -278,7 +278,7 @@ Storyfeed::feedable(Media::class)
     ->toFeedUsing(
         fn (Media $photo, FeedEntity $entity) => $entity
             ->label($photo->name)
-            ->data(['mediaType' => $photo->mime_type]), // [!code highlight]
+            ->data(['mediaType' => $photo->mime_type]),
     )
     ->feedMediaUsing(
         fn (FeedContext $context, FeedMedia $media) => $media

@@ -49,7 +49,7 @@ use Storyfeed\Contracts\Feedable;
 
 class Order extends Model implements Feedable
 {
-    use InteractsWithFeed; // [!code highlight]
+    use InteractsWithFeed;
 }
 ```
 

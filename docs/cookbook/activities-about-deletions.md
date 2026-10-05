@@ -14,7 +14,7 @@ Storyfeed::activity()
     ->to($menu)
     ->publish();
 
-$product->delete(); // [!code highlight]
+$product->delete();
 ```
 
 ```php [Named Arguments]
@@ -25,7 +25,7 @@ Storyfeed::record(
     actor: $request->user(),
 );
 
-$product->delete(); // [!code highlight]
+$product->delete();
 ```
 :::
 

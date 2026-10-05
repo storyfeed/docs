@@ -24,7 +24,7 @@ Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
     ->to($order->shop)
-    ->queue(); // [!code highlight]
+    ->queue();
 ```
 
 After the worker publishes it:

@@ -22,7 +22,7 @@ const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
 
 ::: code-group
 ```php [Fluent Syntax]
-Storyfeed::context($order->shop, function () use ($request, $order) { // [!code highlight]
+Storyfeed::context($order->shop, function () use ($request, $order) {
     Storyfeed::activity()
         ->by($request->user())
         ->action('place', $order)
@@ -31,7 +31,7 @@ Storyfeed::context($order->shop, function () use ($request, $order) { // [!code 
 ```
 
 ```php [Named Arguments]
-Storyfeed::context($order->shop, function () use ($request, $order) { // [!code highlight]
+Storyfeed::context($order->shop, function () use ($request, $order) {
     Storyfeed::record(
         verb: 'place',
         object: $order,

@@ -85,7 +85,7 @@ the actor using the `by` method:
 ::: code-group
 ```php [Fluent Syntax]
 Storyfeed::activity()
-    ->by($order->customer) // [!code highlight]
+    ->by($order->customer)
     ->action('place', $order)
     ->to($order->shop)
     ->publish();
@@ -95,7 +95,7 @@ Storyfeed::activity()
 Storyfeed::record(
     verb: 'place',
     object: $order,
-    actor: $order->customer, // [!code highlight]
+    actor: $order->customer,
     target: $order->shop,
 );
 ```
@@ -142,7 +142,7 @@ $product->update(['price' => $request->integer('price')]);
 Storyfeed::activity()
     ->by($request->user())
     ->action('reprice', $product)
-    ->data(['from' => $from, 'to' => $product->price]) // [!code highlight]
+    ->data(['from' => $from, 'to' => $product->price])
     ->publish();
 ```
 
@@ -155,7 +155,7 @@ Storyfeed::record(
     verb: 'reprice',
     object: $product,
     actor: $request->user(),
-    data: ['from' => $from, 'to' => $product->price], // [!code highlight]
+    data: ['from' => $from, 'to' => $product->price],
 );
 ```
 :::
@@ -178,7 +178,7 @@ foreach ($rows as $row) {
         ->by(User::findOrFail($row['user_id']))
         ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
         ->data(['from' => $row['from'], 'to' => $row['to']])
-        ->publishedAt($row['changed_at']) // [!code highlight]
+        ->publishedAt($row['changed_at'])
         ->publish();
 }
 ```
@@ -194,7 +194,7 @@ foreach ($rows as $row) {
         object: MenuItem::findOrFail($row['menu_item_id']),
         actor: User::findOrFail($row['user_id']),
         data: ['from' => $row['from'], 'to' => $row['to']],
-        publishedAt: $row['changed_at'], // [!code highlight]
+        publishedAt: $row['changed_at'],
     );
 }
 ```
@@ -224,14 +224,14 @@ Then publish the photos:
 Storyfeed::activity()
     ->by($request->user())
     ->verb('upload')
-    ->objects($photos) // [!code highlight]
+    ->objects($photos)
     ->publish();
 ```
 
 ```php [Named Arguments]
 Storyfeed::record(
     verb: 'upload',
-    objects: $photos, // [!code highlight]
+    objects: $photos,
     actor: $request->user(),
 );
 ```

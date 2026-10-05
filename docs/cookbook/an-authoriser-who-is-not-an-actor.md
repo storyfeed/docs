@@ -26,13 +26,13 @@ Story::for(Photo::class)->verb('publish')
 ::: code-group
 ```php [Fluent Syntax]
 Storyfeed::activity() // the contributor's activity
-    ->by($photo->user) // [!code highlight]
+    ->by($photo->user)
     ->action('publish', $photo)
     ->to($photo->menuItem)
     ->publish();
 
 Storyfeed::activity() // the approval; exclude its verb from displayed feeds
-    ->by($request->user()) // [!code highlight]
+    ->by($request->user())
     ->action('approve', $photo)
     ->publish();
 ```
@@ -41,14 +41,14 @@ Storyfeed::activity() // the approval; exclude its verb from displayed feeds
 Storyfeed::record( // the contributor's activity
     verb: 'publish',
     object: $photo,
-    actor: $photo->user, // [!code highlight]
+    actor: $photo->user,
     target: $photo->menuItem,
 );
 
 Storyfeed::record( // the approval; exclude its verb from displayed feeds
     verb: 'approve',
     object: $photo,
-    actor: $request->user(), // [!code highlight]
+    actor: $request->user(),
 );
 ```
 :::
