@@ -16,7 +16,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | Key | Default | Description |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable file loading. [Provider registrations](/deeper/stories#registering-stories-in-a-service-provider) remain available |
+| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable file loading. [Provider registrations](/deeper/package-integration#registering-stories-in-a-service-provider) remain available |
 
 After editing cached definitions, run `storyfeed:cache` again.
 
