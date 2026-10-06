@@ -176,6 +176,7 @@ export default defineConfig({
     sidebar: [
       ...(rnd ? [{ text: 'R&D (local only)', items: [
         { text: 'Body Versions', link: '/rnd/body-versions' },
+        { text: 'Autoconfig', link: '/rnd/autoconfig' },
       ] }] : []),
       {
         // Laravel's order: set up, get it working, then see what it can do.
