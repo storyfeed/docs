@@ -107,6 +107,9 @@ The `$event->activity` value is an immutable copy of the activity, not an
 Eloquent model. Both events are dispatched after the outermost transaction
 commits. A rollback dispatches neither event.
 
+Every non-null role ID in `$event->activity` is a string, including integer
+model keys: compare with `'1'`, not `1`. Null role IDs remain `null`.
+
 A listener for these events can implement `ShouldQueue`. `Storyfeed::fake()`
 does not dispatch them, so use `Queue::fake()` alone when asserting that a
 listener was queued.

@@ -115,7 +115,9 @@ publication path. Leave that application event unfaked so its listeners run.
 
 To test that an `ActivityPublished` listener is queued, use Laravel's
 `Queue::fake()` without `Storyfeed::fake()`. The publication must run normally
-to dispatch that event after the transaction commits.
+to dispatch that event after the transaction commits. Role IDs in the event
+payload are strings when non-null, so listener assertions should compare with
+`'1'`, not `1`.
 
 <a id="coverage-assertions"></a>
 

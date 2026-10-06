@@ -227,6 +227,9 @@ the outermost transaction commits. The event's `$event->batch` contains an
 immutable copy of the closed batch and its activities. Register a listener to
 handle the completed batch.
 
+The batch's `actor_id` and every role ID in its activities are strings when
+non-null: compare with `'1'`, not `1`. Null role IDs remain `null`.
+
 <a id="preserving-an-actor-or-context"></a>
 <a id="preserving-actor-and-context-values"></a>
 
