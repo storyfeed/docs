@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { FeedEntity } from './types';
 
 const props = withDefaults(
@@ -26,6 +26,17 @@ const FALLBACK_COLORS = [
     '#6366f1',
     '#14b8a6',
 ];
+
+// An entity's icon is its face when it has one; a broken image falls back to
+// initials rather than an empty disc.
+// A deleted entity stays a grey disc, so it never shows its former icon.
+const icon = computed(() =>
+    props.entity?.tombstone ? undefined : props.entity?.media?.icon?.src,
+);
+const imageFailed = ref(false);
+watch(icon, () => {
+    imageFailed.value = false;
+});
 
 const initials = computed(() => {
     const provided = props.entity?.data?.initials;
@@ -81,6 +92,13 @@ const color = computed(() => {
         :class="`sf-avatar--${size}`"
         :style="{ backgroundColor: color }"
     >
-        {{ initials }}
+        <img
+            v-if="icon && !imageFailed"
+            :src="icon"
+            :alt="entity?.media?.icon?.alt ?? entity?.label ?? 'Someone'"
+            class="sf-avatar__image"
+            @error="imageFailed = true"
+        />
+        <template v-else>{{ initials }}</template>
     </span>
 </template>

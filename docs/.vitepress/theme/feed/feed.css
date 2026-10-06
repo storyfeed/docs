@@ -175,6 +175,15 @@ a.sf-entity:hover {
     box-shadow: 0 0 0 2px var(--sf-ring);
 }
 
+/* An entity's icon (media.icon), when it has one, fills the disc. */
+.sf-avatar__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    object-fit: contain;
+}
+
 .sf-avatar--md {
     width: 2rem;
     height: 2rem;
