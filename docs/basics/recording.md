@@ -131,7 +131,8 @@ Story::for(MenuItem::class)->verb('reprice')
 Here `$product` is a `MenuItem`.
 
 Use the `data` method to store arbitrary values on an activity. Storyfeed
-returns them in the activity's `data` field:
+returns them in the activity's `data` field. On MySQL, JSON object key order may
+differ from the order you wrote because native JSON columns normalise it:
 
 ::: code-group
 ```php [Fluent Syntax]
