@@ -8,7 +8,13 @@ Install Storyfeed and create the tables that store your activities.
 |---|---|
 | PHP | 8.4+ |
 | Laravel | 12 or 13 |
-| Database | MySQL, PostgreSQL, SQLite, or SQL Server |
+| Database | SQLite, MySQL 8.0+, MariaDB, or PostgreSQL |
+
+Each supported database is tested in CI. MySQL 5.7 is not supported because
+the feed query uses window functions. SQL Server is not supported.
+
+Your models may use integer, UUID, or ULID keys, including a mix across models,
+without configuration. Storyfeed stores model IDs as strings.
 
 <a id="install"></a>
 
