@@ -65,3 +65,32 @@ test('every table needs a block on the page', () => {
   const tables = extract([['create.php.stub', create]])
   assert.throws(() => renderPage('no blocks here', tables, {}), /no <!-- schema:feed_widgets --> block/)
 })
+
+test('MorphKeyType morphs preserve nullable columns, indexes and loop roles', () => {
+  const stringCreate = create.replace("$table->nullableMorphs('actor')", "MorphKeyType::nullableMorphs($table, 'actor')")
+  const stringAdd = add.replace("$blueprint->foreignId('cached_'.$role.'_id')->nullable();", "MorphKeyType::nullableMorphs($blueprint, $role);\n                    $blueprint->foreignId('cached_'.$role.'_id')->nullable();")
+  const t = extract([['create.php.stub', stringCreate], ['add.php.stub', stringAdd]]).get('feed_widgets')
+  for (const role of ['actor', 'origin', 'result']) {
+    assert.deepEqual(t.columns.find(c => c.name === `${role}_type`), { name: `${role}_type`, type: 'string(255)', nullable: true, default: undefined })
+    assert.deepEqual(t.columns.find(c => c.name === `${role}_id`), { name: `${role}_id`, type: 'string(36)', nullable: true, default: undefined })
+    assert.ok(t.indexes.some(i => i.kind === 'index' && i.columns.join() === `${role}_type,${role}_id`))
+  }
+  assert.equal(t.columns.find(c => c.name === 'cached_origin_id').type, 'unsigned bigint')
+})
+
+test('MorphKeyType ids preserve chained modifiers without becoming primary keys', () => {
+  const source = create.replace("$table->nullableMorphs('actor');", `MorphKeyType::id($table, 'model_id');
+            MorphKeyType::id($table, 'entity_id')->nullable()->index();`)
+  const t = extract([['create.php.stub', source]]).get('feed_widgets')
+  assert.deepEqual(t.columns.find(c => c.name === 'model_id'), { name: 'model_id', type: 'string(36)', nullable: false, default: undefined })
+  assert.deepEqual(t.columns.find(c => c.name === 'entity_id'), { name: 'entity_id', type: 'string(36)', nullable: true, default: undefined })
+  assert.deepEqual(t.indexes.filter(i => i.kind === 'primary').map(i => i.columns), [['id']])
+  assert.ok(t.indexes.some(i => i.kind === 'index' && i.columns.join() === 'entity_id'))
+  assert.equal(t.columns.find(c => c.name === 'id').type, 'bigint, increments')
+})
+
+test('unknown MorphKeyType methods and id modifiers fail loudly', () => {
+  const source = create.replace("$table->nullableMorphs('actor');", "MorphKeyType::uuid($table, 'actor_id');")
+  assert.throws(() => extract([['create.php.stub', source]]), /unknown MorphKeyType method uuid/)
+  assert.throws(() => extract([['create.php.stub', source.replace("::uuid($table, 'actor_id')", "::id($table, 'actor_id')->invisible()")]]), /unknown column modifier invisible/)
+})

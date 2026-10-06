@@ -199,13 +199,13 @@ removing or changing an alias leaves affected roles unresolved.
 | `uid` | ulid | unique | The activity's public identifier, the payload's `id`. |
 | `verb` | string(255) | index | The verb, as a plain string. |
 | `actor_type` | string(255) | nullable | The actor's morph alias. Null when no actor is recorded. |
-| `actor_id` | unsigned bigint | nullable | The actor's key. |
+| `actor_id` | string(36) | nullable | The actor's key. |
 | `object_type` | string(255) | nullable | The object's morph alias. |
-| `object_id` | unsigned bigint | nullable | The object's key. |
+| `object_id` | string(36) | nullable | The object's key. |
 | `target_type` | string(255) | nullable | The target's morph alias. |
-| `target_id` | unsigned bigint | nullable | The target's key. |
+| `target_id` | string(36) | nullable | The target's key. |
 | `context_type` | string(255) | nullable | The context's morph alias. |
-| `context_id` | unsigned bigint | nullable | The context's key. |
+| `context_id` | string(36) | nullable | The context's key. |
 | `cached_actor_id` | unsigned bigint | index, nullable | The actor's row in `feed_snapshots`. |
 | `cached_object_id` | unsigned bigint | index, nullable | The object's row in `feed_snapshots`. |
 | `cached_target_id` | unsigned bigint | index, nullable | The target's row in `feed_snapshots`. |
@@ -216,13 +216,13 @@ removing or changing an alias leaves affected roles unresolved.
 | `updated_at` | timestamp(6) | nullable | When the row last changed. |
 | `deleted_at` | timestamp(6) | nullable | Set when an activity is soft-deleted, by `deleteFromFeed()` for example. Soft-deleted activities are not shown. |
 | `origin_type` | string(255) | nullable | The origin's morph alias. |
-| `origin_id` | unsigned bigint | nullable | The origin's key. |
+| `origin_id` | string(36) | nullable | The origin's key. |
 | `cached_origin_id` | unsigned bigint | nullable | The origin's row in `feed_snapshots`. |
 | `result_type` | string(255) | nullable | The result's morph alias. |
-| `result_id` | unsigned bigint | nullable | The result's key. |
+| `result_id` | string(36) | nullable | The result's key. |
 | `cached_result_id` | unsigned bigint | nullable | The result's row in `feed_snapshots`. |
 | `instrument_type` | string(255) | nullable | The instrument's morph alias. |
-| `instrument_id` | unsigned bigint | nullable | The instrument's key. |
+| `instrument_id` | string(36) | nullable | The instrument's key. |
 | `cached_instrument_id` | unsigned bigint | nullable | The instrument's row in `feed_snapshots`. |
 
 | Index | Columns |
@@ -254,7 +254,7 @@ rebuilds them. Model keys are unsigned big integers; UUID keys are not supported
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. Activities point here through `cached_{role}_id`. |
 | `model_type` | string(255) |  | The entity's morph alias. |
-| `model_id` | unsigned bigint |  | The entity's key. |
+| `model_id` | string(36) |  | The entity's key. MySQL and MariaDB use the `ascii_bin` binary collation; SQL Server uses `Latin1_General_100_BIN2`. |
 | `label` | string(255) | nullable | The label from `toFeed()`. |
 | `component` | string(255) | nullable | Not written by Storyfeed. |
 | `data` | json | nullable | The `data` from `toFeed()`. |
@@ -316,7 +316,7 @@ frozen copy of this metadata in the batch snapshot's `meta` field.
 | `id` | bigint, increments | PK | Primary key. |
 | `uid` | ulid | unique | The batch's identifier. A `batch` grouping row's `hash` holds it. |
 | `actor_type` | string(255) | nullable | The actor's morph alias. |
-| `actor_id` | unsigned bigint | nullable | The actor's key. |
+| `actor_id` | string(36) | nullable | The actor's key. |
 | `opened_at` | timestamp |  | The `published_at` of the batch's first activity. |
 | `closed_at` | timestamp | index, nullable | When the batch closed. Null while it is open. |
 | `activities_count` | unsigned int | default `0` | How many activities joined the batch. |
@@ -341,7 +341,7 @@ Stores one lock per batched actor so concurrent publications join the same batch
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
 | `actor_type` | string(255) |  | The actor's morph alias. |
-| `actor_id` | string(255) |  | The actor's key, as a string. |
+| `actor_id` | string(36) |  | The actor's key, as a string. |
 | `open_batches` | json | nullable | The ids of the actor's open batches. |
 | `locked_at` | timestamp | nullable | When a publish last locked the row. |
 
@@ -381,7 +381,7 @@ Indexes each activity's filled roles for `involving()` and
 | `activity_id` | unsigned bigint |  | The activity. |
 | `role` | string(20) |  | Which role the entity fills: `actor`, `object`, `target`, `context`, `origin`, `result` or `instrument`. |
 | `entity_type` | string(255) |  | The entity's morph alias. |
-| `entity_id` | string(255) |  | The entity's key, as a string. |
+| `entity_id` | string(36) |  | The entity's key, as a string. |
 | `published_at` | timestamp(6) | nullable | Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
@@ -411,7 +411,7 @@ an option on the deletion declaration.
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. Activities point at a tombstone with the `storyfeed.tombstone` alias. |
 | `model_type` | string(255) |  | The deleted model's morph alias. |
-| `model_id` | string(255) |  | The deleted model's key, as a string. |
+| `model_id` | string(36) |  | The deleted model's key, as a string. |
 | `restorable` | boolean | default `false` | True while the model is soft-deleted and can come back. |
 | `approximate` | boolean | default `false` | True when `storyfeed:trickle` found the deletion, so `deleted_at` is when it was found. |
 | `deleted_at` | timestamp | nullable | When the model was deleted. |

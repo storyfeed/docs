@@ -140,10 +140,14 @@ const TYPES = {
 };
 
 function apply(tables, table, statement, file) {
-  const call = statement.match(/^\$\w+->(\w+)\(/);
+  const helper = statement.startsWith('MorphKeyType::');
+  const call = statement.match(helper ? /^MorphKeyType::(\w+)\(/ : /^\$\w+->(\w+)\(/);
   if (!call) throw new Error(`schema: cannot read ${statement} in ${file}`);
   const first = balanced(statement, call[0].length - 1);
-  const args = splitArgs(first.inner).map(a => value(a, file));
+  const rawArgs = splitArgs(first.inner);
+  if (helper && !/^\$\w+$/.test(rawArgs.shift() ?? '')) throw new Error(`schema: MorphKeyType requires a Blueprint argument in ${file}`);
+  const args = rawArgs.map(a => value(a, file));
+  if (helper && !['nullableMorphs', 'id'].includes(call[1])) throw new Error(`schema: unknown MorphKeyType method ${call[1]}() in ${file}; teach scripts/schema.mjs`);
   const chain = [];
   for (let rest = statement.slice(first.end + 1); rest.trim() !== '';) {
     const link = rest.match(/^\s*->(\w+)\(/);
@@ -180,16 +184,16 @@ function apply(tables, table, statement, file) {
   }
   if (method === 'nullableMorphs') {
     add(`${args[0]}_type`, { type: 'string(255)', nullable: true });
-    add(`${args[0]}_id`, { type: 'unsigned bigint', nullable: true });
+    add(`${args[0]}_id`, { type: helper ? 'string(36)' : 'unsigned bigint', nullable: true });
     index('index', [`${args[0]}_type`, `${args[0]}_id`]);
     return;
   }
   if (!TYPES[method]) throw new Error(`schema: unknown Blueprint method ${method}() in ${file}; teach scripts/schema.mjs`);
 
-  const name = method === 'id' ? 'id' : args[0];
+  const name = method === 'id' && !helper ? 'id' : args[0];
   if (typeof name !== 'string') throw new Error(`schema: ${method}() without a column name in ${file}`);
-  const column = add(name, TYPES[method](args));
-  if (method === 'id') index('primary', ['id']);
+  const column = add(name, helper ? TYPES.string([name, 36]) : TYPES[method](args));
+  if (method === 'id' && !helper) index('primary', ['id']);
   for (const [modifier, margs] of chain) {
     if (modifier === 'nullable') column.nullable = margs[0] ?? true;
     else if (modifier === 'default') column.default = margs[0];
@@ -256,7 +260,7 @@ export function extract(sources) {
       const open = m.index + m[0].length + args.inner.indexOf('{', args.inner.indexOf(closure[0]));
       const block = balanced(body, open).inner;
       const statements = block.split('\n').map(l => l.replace(/\/\/.*$/, '')).join('\n')
-        .split(';').map(s => s.replace(/\s+/g, ' ').trim()).filter(s => s.startsWith(`$${closure[1]}->`));
+        .split(';').map(s => s.replace(/\s+/g, ' ').trim()).filter(s => s.startsWith(`$${closure[1]}->`) || s.startsWith('MorphKeyType::'));
       for (const s of statements) apply(tables, table, s, file);
       re.lastIndex = args.end;
     }
