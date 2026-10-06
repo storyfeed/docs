@@ -247,7 +247,8 @@ Stores each model's label, data, and bodies from `toFeed()`. Feed retrieval
 uses these snapshots to resolve entity labels and links.
 [`storyfeed:trickle`](/reference/commands#scheduled) creates and refreshes
 snapshots; [`storyfeed:rebuild`](/reference/commands#rebuilding-snapshots)
-rebuilds them. Model keys are unsigned big integers; UUID keys are not supported.
+rebuilds them. Model keys are stored as strings, so integer, UUID and ULID keys
+all work, including a mix of them in one app.
 
 <!-- schema:feed_snapshots -->
 | Column | Type | Attributes | Purpose |
