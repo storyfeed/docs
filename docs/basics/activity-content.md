@@ -45,8 +45,6 @@ Choose a body from the evidence you have:
 
 Put supporting detail in the body rather than a headline closure.
 
-For a curated history or changelog, a [Milestone model](/cookbook/curated-timelines) supplies the entry's label and body.
-
 <a id="headlines"></a>
 
 <a id="quoted-text"></a>

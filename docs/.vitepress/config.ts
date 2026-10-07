@@ -264,7 +264,6 @@ export default defineConfig({
         text: 'Cookbook',
         items: [
           { text: 'Composing a Coherent Activity', link: '/cookbook/read-the-fields-back' },
-          { text: 'Curated Timelines', link: '/cookbook/curated-timelines' },
           { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
