@@ -1,7 +1,8 @@
 # Composing a Coherent Activity
 
 Before recording a new kind of activity, list its fields and check that they
-describe what happened.
+describe what happened. The headline states the minimal fact, no less and no
+more; evidence and detail belong in the body.
 
 ## Composing an Activity
 
@@ -11,6 +12,13 @@ describe what happened.
 
 Fill in the values you plan to record, using `—` for empty fields. Check that
 they explain the event before writing its headline.
+
+## Naming the Object
+
+Use the object's plain name as its label. In `Storyfeed for Laravel`, the
+object is `Storyfeed` and the target is `Laravel`; the headline template
+supplies `for :target`. A qualifier such as `as a Recommendation` belongs in
+the body.
 
 ## Recording an Accepted Invitation
 
@@ -35,21 +43,55 @@ profile is both actor and object.
 Record the activity where your application accepts the invitation:
 
 ::: code-group
-```php [Fluent Syntax]
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('accept', $invitation)
-    ->to($invitation->project)
-    ->publish();
+```php [Fluent Syntax] memo="app/Http/Controllers/AcceptInvitationController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Invitation;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class AcceptInvitationController
+{
+    public function __invoke(Request $request, Invitation $invitation): RedirectResponse
+    {
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('accept', $invitation)
+            ->to($invitation->project)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
-Storyfeed::record(
-    verb: 'accept',
-    object: $invitation,
-    actor: $request->user(),
-    target: $invitation->project,
-);
+```php [Named Arguments] memo="app/Http/Controllers/AcceptInvitationController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Invitation;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class AcceptInvitationController
+{
+    public function __invoke(Request $request, Invitation $invitation): RedirectResponse
+    {
+        Storyfeed::record(
+            verb: 'accept',
+            object: $invitation,
+            actor: $request->user(),
+            target: $invitation->project,
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
@@ -58,7 +100,7 @@ use App\Models\Invitation;
 use Storyfeed\Facades\Story;
 
 Story::for(Invitation::class)->verb('accept')
-    ->headline(':actor accepted :object to :target');
+    ->headline(':actor accepted :object for :target');
 ```
 
 <span id="coherence-and-completeness"></span>
@@ -75,8 +117,9 @@ This records the move but omits the document's original folder. Decide
 whether the event needs that detail; its omission does not make the other
 fields incorrect.
 
-Check the stored values independently of the headline, since headline
-definitions can change later.
+Check the stored values, then read the rendered headline aloud. Compare
+`$item->headline()->toString()` with the sentence you intended; its verb,
+roles, and preposition should state that fact.
 
 <span id="duplicate-occurrences"></span>
 
