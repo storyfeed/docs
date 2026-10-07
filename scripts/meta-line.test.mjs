@@ -42,10 +42,11 @@ test('digest consumes only displayed phrase tokens; redundant activity uses its 
  assert.doesNotMatch((await render(node)).split('class="sf-meta"')[1], /Claude/)
  assert.match(await render({ ...item, headline_template: ':instrument posted', redundant: true, missing_headline_template: ':actor posted' }), /sf-meta__role">via /)
 })
-test('fixed role order, absent roles, and token boundaries', async () => {
+test('fixed role order, context never on the meta line, absent roles, and token boundaries', async () => {
  const html = await render({ ...item, headline_template: ':actor posted :instrumental', origin: entity('Backlog'), result: entity('Report'), context: entity('Sprint'), location: entity('Toronto'), generator: entity('Bot') })
  const meta = html.split('class="sf-meta"')[1]
- for (const [before, next] of [['Claude', 'Backlog'], ['Backlog', 'Report'], ['Report', 'Sprint'], ['Sprint', 'Toronto'], ['Toronto', 'Bot']]) assert.ok(meta.indexOf(before) < meta.indexOf(next))
+ for (const [before, next] of [['Claude', 'Backlog'], ['Backlog', 'Report'], ['Report', 'Toronto'], ['Toronto', 'Bot']]) assert.ok(meta.indexOf(before) < meta.indexOf(next))
+ assert.doesNotMatch(meta, /Sprint/)
  assert.doesNotMatch((await render({ ...item, instrument: null })).split('class="sf-meta"')[1], /via /)
 })
 test('calendar ladder covers today, yesterday across midnight, this year, older and year boundary', () => {

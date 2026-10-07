@@ -131,8 +131,10 @@ The docs maps these to VitePress tokens in `../custom.css`.
 ## Meta line
 
 Activity and group headlines are followed by a tight, muted meta line: date,
-then leftover instrument (via), origin (from), result (to), context (in),
-location (at), and generator (from), separated by ` · `. Singular and plural
+then leftover instrument (via), origin (from), result (to), location (at), and
+generator (from), separated by ` · `. Context never appears here: it groups
+activities rather than describing one, and a headline naming `:context` still
+shows it. Singular and plural
 headline tokens consume their roles; digest phrases consume their own tokens.
 Entity links and sample remainders match headline rendering. Lead-in words
 live in `messages.ts` for translation, with a fixed order in `meta.ts`.

@@ -1,8 +1,12 @@
 import type { FeedNode, FeedSingularRole } from './types';
 import { messages } from './messages';
 
-/** Fixed order; only tokens in the headline actually drawn consume roles. */
-export const metaRoles = ['instrument', 'origin', 'result', 'context', 'location', 'generator'] as const;
+/**
+ * Fixed order; only tokens in the headline actually drawn consume roles.
+ * Context is never here: it groups activities (often what the feed is read by)
+ * rather than describing one. A headline naming :context still shows it.
+ */
+export const metaRoles = ['instrument', 'origin', 'result', 'location', 'generator'] as const;
 
 export function leftoverRoles(node: FeedNode, templates: (string | null | undefined)[]) {
     const tokens = new Set(templates.flatMap(template => template?.match(/:[a-z_]+/g) ?? []));
