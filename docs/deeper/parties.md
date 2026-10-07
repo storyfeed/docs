@@ -14,7 +14,7 @@ const { anonymous } = scene.cookbook.actorless
 |  | Means | In the Payload |
 |---|---|---|
 | **anonymous** | no recorded actor | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
-| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and `url: null` |
+| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and an optional external `url` |
 
 <a id="parties"></a>
 
@@ -94,6 +94,34 @@ later activities.
 
 Without `by('Scoops Register')` or another actor default, this command records
 an [anonymous activity](#recording-anonymous-activities).
+
+### Linking a Party
+
+Pass an external home to `Party::make()`, then use the party's name as a string
+when recording an activity:
+
+```php memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Party;
+
+Party::make('Scoops Register', url: 'https://example.com/register');
+
+Storyfeed::activity()
+    ->by('Scoops Register')
+    ->action('cancel', $order)
+    ->publish();
+```
+
+The feed shows Scoops Register as a link to its external home.
+
+<FeedExample :items="[{ ...cancelled, actor: { ...cancelled.actor, url: 'https://example.com/register' } }]" />
+
+The URL can appear in any party role, and Activity Streams output includes
+it as `url`, including for the actor. Without a URL, the party remains unlinked.
+Renaming a party with the same key or replacing its application data preserves
+the link. Passing another URL updates existing activities through the snapshot;
+passing `url: null` explicitly removes it. Retrieving the feed uses the snapshot
+without querying or writing the party.
 
 ### Using Parties in Other Roles
 

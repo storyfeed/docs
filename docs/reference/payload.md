@@ -63,6 +63,10 @@ See [Activity Content](/basics/activity-content#built-in-body-types) and
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
 non-null; an empty `content` string is preserved.
 
+Party nodes may carry an external home in the same `url` field in any role.
+Without an external home, `url` is `null`. See
+[Linking a Party](/deeper/parties#linking-a-party).
+
 <span id="tombstoned-entities"></span>
 
 ### Tombstones
