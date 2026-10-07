@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import EntityLink from './EntityLink.vue';
-import type { FeedEntity, FeedRole } from './types';
+import type { FeedEntities, FeedEntity, FeedRole, FeedSingularRole } from './types';
 
 const props = defineProps<{
     template: string | null;
     /** Pre-rendered fallback for closure-based grammar; template wins when present. */
     headline?: string | null;
     /** Singular slots — only ever filled for roles the axis pins. */
-    entities: Partial<
-        Record<'actor' | 'object' | 'target' | 'context', FeedEntity | null>
-    >;
+    entities: FeedEntities;
     /** Aggregate context (group nodes): sample lists and their true totals. */
     sample?: Partial<Record<FeedRole, FeedEntity[]>>;
     distinct?: Partial<Record<FeedRole, number>>;
@@ -27,7 +25,7 @@ const props = defineProps<{
 
 type Part =
     | { type: 'text'; text: string }
-    | { type: 'entity'; role: 'actor' | 'object' | 'target' | 'context' }
+    | { type: 'entity'; role: FeedSingularRole }
     | { type: 'list'; role: FeedRole }
     | { type: 'count' }
     | { type: 'others' };
@@ -37,6 +35,11 @@ const PLURALS: Record<string, FeedRole> = {
     ':objects': 'objects',
     ':targets': 'targets',
     ':contexts': 'contexts',
+    ':instruments': 'instruments',
+    ':origins': 'origins',
+    ':results': 'results',
+    ':locations': 'locations',
+    ':generators': 'generators',
 };
 
 // One generic pass over /:(\w+)/ — new tokens in the payload never require
@@ -59,13 +62,14 @@ const parts = computed<Part[]>(() => {
                 case ':object':
                 case ':target':
                 case ':context':
+                case ':instrument':
+                case ':origin':
+                case ':result':
+                case ':location':
+                case ':generator':
                     return {
                         type: 'entity',
-                        role: segment.slice(1) as
-                            | 'actor'
-                            | 'object'
-                            | 'target'
-                            | 'context',
+                        role: segment.slice(1) as FeedSingularRole,
                     };
                 case ':count':
                     return { type: 'count' };

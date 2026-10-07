@@ -127,3 +127,17 @@ Set `--sf-text-color`, `--sf-muted-color`, `--sf-faint-color`,
 The docs maps these to VitePress tokens in `../custom.css`.
 `bodies/index.ts` exports `resolveBody` for app-side body slot fillers;
 `bodies/Note.vue` is the worked example, not an automatic renderer body.
+
+## Meta line
+
+Activity and group headlines are followed by a tight, muted meta line: date,
+then leftover instrument (via), origin (from), result (to), context (in),
+location (at), and generator (from), separated by ` · `. Singular and plural
+headline tokens consume their roles; digest phrases consume their own tokens.
+Entity links and sample remainders match headline rendering. Lead-in words
+live in `messages.ts` for translation, with a fixed order in `meta.ts`.
+
+Dates use local calendar boundaries: relative today, Yesterday with time,
+weekday/day/month with time this year, day/month/year with time for older
+entries. Every date retains its absolute hover title and `#time` override.
+Run `node --test scripts/meta-line.test.mjs` as well as `npm run build`.

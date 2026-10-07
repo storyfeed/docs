@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { createServer } from 'vite'
@@ -157,4 +158,8 @@ test('the world keeps every object photograph explicit after removing automatic 
     assert.ok(object.body?.some(body => body.$body === 'Storyfeed/Body/Image'), `missing Image body: ${object.label}`)
   }
   assert.ok(pictures > 0)
+})
+
+test('meta line rendering and timestamp ladder', () => {
+  execFileSync(process.execPath, ['--test', 'scripts/meta-line.test.mjs'], { stdio: 'pipe' })
 })

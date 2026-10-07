@@ -3,7 +3,9 @@
  * W72 reconciles the W47 fields; newer contract gaps are recorded in its todo.
  */
 
-export type FeedRole = 'actors' | 'objects' | 'targets' | 'contexts';
+export type FeedSingularRole = 'actor' | 'object' | 'target' | 'context' | 'instrument' | 'origin' | 'result' | 'location' | 'generator';
+export type FeedRole = `${FeedSingularRole}s`;
+export type FeedEntities = Partial<Record<FeedSingularRole, FeedEntity | null>>;
 
 export interface FeedEntity {
     type: string;
@@ -63,7 +65,7 @@ export interface FeedImage {
     alt: string | null;
 }
 
-interface BaseNode {
+interface BaseNode extends FeedEntities {
     id: string;
     published_at: string;
     headline_template: string | null;
@@ -125,7 +127,7 @@ export interface GroupNode extends BaseNode {
     children: ActivityNode[];
     children_truncated: boolean;
     /** Every role is a list, even when the axis pins it to one. */
-    sample: Record<FeedRole, FeedEntity[]>;
+    sample: Partial<Record<FeedRole, FeedEntity[]>>;
     /** True distinct totals per role, for computing overflow. */
     distinct: Partial<Record<FeedRole, number>>;
     /** How many of the distinct entities per role are tombstones. */

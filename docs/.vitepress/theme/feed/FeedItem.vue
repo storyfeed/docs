@@ -3,6 +3,7 @@ import { imageOf } from './body'
 import { computed, toRef } from 'vue';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
+import FeedMeta from './FeedMeta.vue';
 import FeedIcon from './FeedIcon.vue';
 import { formsIn, resolve } from './body';
 import FeedMediaStrip from './FeedMediaStrip.vue';
@@ -169,9 +170,17 @@ const slots = computed(() =>
                         object: item.object,
                         target: item.target,
                         context: item.context,
+                        instrument: item.instrument,
+                        origin: item.origin,
+                        result: item.result,
+                        location: item.location,
+                        generator: item.generator,
+
                     }"
                     :verb="item.verb"
                 />
+            </div>
+            <FeedMeta :node="item" :templates="[reading.template]">
                 <time
                     :datetime="item.published_at"
                     :title="time.full.value"
@@ -186,7 +195,7 @@ const slots = computed(() =>
                         time.label.value
                     }}</slot>
                 </time>
-            </div>
+            </FeedMeta>
 
             <!--
                 Body slot: render a preview under the headline — a comment's

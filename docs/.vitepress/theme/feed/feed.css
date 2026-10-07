@@ -112,7 +112,6 @@
 .sf-head {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
     gap: 0.75rem;
 }
 
@@ -146,9 +145,17 @@ a.sf-entity:hover {
     font-weight: 400;
 }
 
+/* Tight secondary line avoids wide headline/date gaps and leaves room for roles. */
+.sf-meta {
+    margin-top: 2px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--sf-faint);
+    overflow-wrap: anywhere;
+}
+.sf-meta .sf-entity { color: inherit; font-weight: 400; }
+
 .sf-time {
-    flex-shrink: 0;
-    white-space: nowrap;
     font-size: 0.75rem;
     color: var(--sf-faint);
 }

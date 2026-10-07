@@ -3,13 +3,14 @@ import { imageOf } from './body'
 import { computed, ref, toRef } from 'vue';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
+import FeedMeta from './FeedMeta.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedItem from './FeedItem.vue';
 import FeedMediaStrip from './FeedMediaStrip.vue';
 import { rail as parseRail, railFor } from './rail';
 import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
-import type { FeedPhrase, GroupNode } from './types';
+import type { FeedPhrase, GroupNode, FeedSingularRole } from './types';
 
 const props = withDefaults(
     defineProps<{
@@ -29,7 +30,7 @@ const resolved = computed<Rail>(() =>
 // A group's faces come from its sample, capped at three — and more than one of
 // them suppresses the badge, because a single face over a group of several
 // actors is the one-actor lie the sample list exists to refuse.
-const faces = computed(() => props.item.sample.actors.slice(0, 3));
+const faces = computed(() => (props.item.sample.actors ?? []).slice(0, 3));
 
 const slots = computed(() =>
     railFor(resolved.value, {
@@ -61,7 +62,7 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
 // Recover a singular from the sample ONLY when the group genuinely has one.
 // `distinct` is the true total from the aggregate query, so a one-item sample
 // list is not on its own proof.
-const singular = (role: 'actor' | 'object' | 'target' | 'context') => {
+const singular = (role: FeedSingularRole) => {
     const named = props.item[role];
 
     if (named) return named;
@@ -96,7 +97,7 @@ const phrasesBeyond = computed(() =>
 /** A phrase's own singulars, where its sample genuinely has one. */
 const phraseEntities = (phrase: FeedPhrase) =>
     Object.fromEntries(
-        (['object', 'target'] as const).map((role) => {
+        (['object', 'target', 'context', 'instrument', 'origin', 'result', 'location', 'generator'] as const).map((role) => {
             const shown = phrase.sample[`${role}s`] ?? [];
 
             return [
@@ -120,6 +121,12 @@ const entities = computed(() => ({
     object: singular('object'),
     target: singular('target'),
     context: singular('context'),
+    instrument: singular('instrument'),
+    origin: singular('origin'),
+    result: singular('result'),
+    location: singular('location'),
+    generator: singular('generator'),
+
 }));
 
 /**
@@ -223,6 +230,8 @@ const hiddenBeyondChildren = computed(
                     :verb="item.verb"
                     aggregate
                 />
+            </div>
+            <FeedMeta :node="item" :templates="phrases.length ? phrases.map(phrase => phrase.headline_template) : [item.headline_template]">
                 <time
                     :datetime="item.published_at"
                     :title="time.full.value"
@@ -230,7 +239,7 @@ const hiddenBeyondChildren = computed(
                 >
                     <slot name="time" :node="item" :label="time.label.value">{{ time.label.value }}</slot>
                 </time>
-            </div>
+            </FeedMeta>
 
             <!--
                 A group is a node too, so it gets the same annotations slot an

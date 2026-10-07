@@ -1,6 +1,7 @@
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
 import { FEED_NOW } from './keys';
+import { formatTimestamp } from './timestamp';
 
 /**
  * Re-exported for callers that import the key from here. It MUST come from
@@ -13,8 +14,7 @@ export { FEED_NOW };
 
 /**
  * Self-refreshing relative timestamp with a tiered cadence: every second
- * under a minute, every minute under an hour, hourly under a day, then a
- * static absolute date.
+ * under a minute, every minute under an hour, hourly thereafter so calendar rungs also refresh.
  *
  * SSR-safe. No timer is started until mount, so a server or prerender pass
  * produces one deterministic string and never leaves a handle open.
@@ -31,13 +31,7 @@ export function useRelativeTime(iso: Ref<string>) {
                 ? 1_000
                 : age < 3_600_000
                   ? 60_000
-                  : age < 86_400_000
-                    ? 3_600_000
-                    : null;
-
-        if (delay === null) {
-            return;
-        }
+                  : 3_600_000;
 
         timer = setTimeout(() => {
             now.value = Date.now();
@@ -57,35 +51,7 @@ export function useRelativeTime(iso: Ref<string>) {
         }
     });
 
-    const label = computed<string>(() => {
-        const date = new Date(iso.value);
-        const seconds = Math.max(
-            0,
-            Math.floor((now.value - date.getTime()) / 1000),
-        );
-
-        if (seconds < 45) {
-            return 'just now';
-        }
-
-        if (seconds < 3_600) {
-            return `${Math.max(1, Math.floor(seconds / 60))}m ago`;
-        }
-
-        if (seconds < 86_400) {
-            return `${Math.floor(seconds / 3_600)}h ago`;
-        }
-
-        if (seconds < 604_800) {
-            return `${Math.floor(seconds / 86_400)}d ago`;
-        }
-
-        return date.toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
-    });
+    const label = computed(() => formatTimestamp(iso.value, now.value));
 
     const full = computed<string>(() =>
         new Date(iso.value).toLocaleString(undefined, {
