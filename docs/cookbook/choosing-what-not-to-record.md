@@ -1,11 +1,13 @@
 # Choosing What Not to Record
 
-Publish activities that help people follow what happened. Routine saves,
-drafts, and background work usually do not belong in the feed.
+Record what the reader of this particular feed would want to follow. The same
+event can belong on an admin feed and not on a public one.
 
 <span id="events-to-omit"></span>
 
 ## Choosing Events to Record
+
+For a customer feed:
 
 | Event | Record It? | Reason |
 |---|---|---|
