@@ -3,8 +3,11 @@
 Choose a verb that describes the event, then use roles to identify what was involved.
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { activity, scene } from '../.vitepress/theme/world'
 const choices = scene.cookbook.verbChoices
+const createdOrder = activity({ ...scene.order, id: 'verb-created-order', verb: 'create',
+  target: null, glyph: null, headline_template: ':actor created :object' })
+const placedOrder = { ...scene.order, headline_template: ':actor placed :object at :target' }
 </script>
 
 <span id="naming-a-verb"></span>
@@ -75,9 +78,7 @@ class PlaceOrderController
 Headlines are defined by object type and verb, so including the type in the
 verb repeats information. A verb such as `place` also works for other types.
 
-Before inventing a verb, check the shipped [Verb Vocabulary](/reference/verbs).
-`remind`, `invite`, `download`, `archive` and `view` already describe common
-actions. Use roles for the things involved and data for event details:
+Use roles for the things involved and data for event details:
 
 | Instead of | Record |
 | --- | --- |
@@ -89,6 +90,26 @@ actions. Use roles for the things involved and data for event details:
 
 Use base-form verbs such as `place`. Use past tense in headlines:
 `:actor placed :object`.
+
+## Choosing a Precise Verb
+
+Choose the verb that states the fact: `launch` or `unveil` when that is what
+happened. The [Verb Vocabulary](/reference/verbs) is a starting point, not a limit.
+
+For an order placement, `place` says more than `create`:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('create')
+    ->headline(':actor created :object');
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object at :target');
+```
+
+<FeedExample :items="[createdOrder, placedOrder]" />
 
 <a id="when-events-share-a-verb"></a>
 
