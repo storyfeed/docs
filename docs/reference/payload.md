@@ -241,6 +241,8 @@ been deleted. Your renderer may display the original or missing headline.
 <a id="threads"></a>
 
 Quoted words belong in an entity's [`Excerpt` body](/basics/activity-content#adding-quoted-text).
+Its `from` field is `null` when no separate source attribution is set, such as
+when the headline already names the speaker.
 <span id="group-node"></span>
 
 ## Group Nodes

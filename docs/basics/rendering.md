@@ -425,7 +425,9 @@ separately, use the `phrases` method. It returns feed items with their own
 #### Quoted Text
 
 Render quoted words as an [`Excerpt` body](/basics/activity-content#adding-quoted-text).
-The body component and Excerpt component below handle its text and attribution.
+The body component and Excerpt component below handle its text and optional
+attribution. Show the attribution when `from` has a value; leave it out when
+the headline already names the source.
 
 The `data` method returns values stored with the activity. Choose which values
 to display.

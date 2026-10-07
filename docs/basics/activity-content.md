@@ -4,10 +4,10 @@
 import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
-const attributedNote = { ...content.note,
+const quotedNote = { ...content.note,
   object: { ...content.note.object, label: 'Order note', body: [{
     $body: 'Storyfeed/Body/Excerpt', $v: 1, text: content.note.object.label,
-    from: content.note.actor.label, truncated: false,
+    from: null, truncated: false,
   }] } }
 const withProse = { ...content.ready,
   object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
@@ -43,6 +43,7 @@ activity's headline.
 ## Adding Quoted Text
 
 Use an `Excerpt` body for someone's words or a passage from a document.
+Leave out `from` when the headline already says who said it; add it when the passage comes from someone or somewhere the headline does not name.
 Define the body on the quoted model in `toFeed()`:
 
 ::: code-group
@@ -57,7 +58,6 @@ public function toFeed(): FeedEntity
         ->body(
             Excerpt::make()
                 ->text($this->body)
-                ->from($this->author->name)
                 ->truncated(false),
         );
 }
@@ -73,7 +73,6 @@ public function toFeed(): FeedEntity
         label: 'Order note',
         body: Excerpt::make(
             text: $this->body,
-            from: $this->author->name,
             truncated: false,
         ),
     );
@@ -81,11 +80,10 @@ public function toFeed(): FeedEntity
 ```
 :::
 
-Here `author` is the note's author relationship. `from()` names whose words
-are being quoted. Set `truncated(false)` when the body contains the complete
-text. The attribution appears below the quotation:
+Set `truncated(false)` when the body contains the complete text. The headline
+names the note's author, so the quotation needs no separate attribution:
 
-<FeedExample :items="[attributedNote]" />
+<FeedExample :items="[quotedNote]" />
 
 Record the note as the activity's object and the order as its target:
 
@@ -259,7 +257,8 @@ Prose::markdown($this->notes, title: $this->title);
 ### Quoting a Source
 
 Use `Excerpt` to quote someone else's words, such as a person interviewed for a
-story. The `from` argument names who said them or where they came from:
+story. Here the headline names the article, and `from` names the source of
+the quoted passage:
 
 ::: code-group
 
@@ -607,7 +606,7 @@ body fields that accept it.
 | Body Type | Content | Payload Keys |
 |---|---|---|
 | `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
-| `Excerpt` | a quoted passage and its source | `text`, `from`, `truncated` |
+| `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` |
 | `Image` | a picture and caption | `caption`, `alt`, `width`, `height`, `image` (slot name) |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
