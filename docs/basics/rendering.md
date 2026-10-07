@@ -2,10 +2,10 @@
 
 <script setup>
 import { computed } from 'vue'
-import FeedHeadline from '../.vitepress/theme/feed/FeedHeadline.vue'
-import EntityLink from '../.vitepress/theme/feed/EntityLink.vue'
-import FeedIcon from '../.vitepress/theme/feed/FeedIcon.vue'
-import { useRelativeTime } from '../.vitepress/theme/feed/useRelativeTime'
+import FeedHeadline from '@storyfeed/ui/FeedHeadline.vue'
+import EntityLink from '@storyfeed/ui/EntityLink.vue'
+import FeedIcon from '@storyfeed/ui/FeedIcon.vue'
+import { useRelativeTime } from '@storyfeed/ui/useRelativeTime'
 import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
 
 const one = scene.order

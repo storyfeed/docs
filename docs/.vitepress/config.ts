@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitepress'
+import tailwindcss from '@tailwindcss/vite'
+import { uiResolve, uiSource } from '../../scripts/ui-kit.mjs'
 
 // R&D pages (docs/rnd/) are proposals written as if shipped, for review before
 // any code exists. They show only on the local dev server: gitignored, left out
@@ -8,6 +10,10 @@ import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  vite: {
+    resolve: uiResolve,
+    plugins: [uiSource, tailwindcss()],
+  },
   title: 'Storyfeed',
   description: 'The activity feed pattern for Laravel — timeline and aggregated reads, W3C Activity Streams 2.0 serialization.',
   lang: 'en-US',

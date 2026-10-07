@@ -139,9 +139,7 @@ Use this renderer for bodies whose `$body` is `Storyfeed/Body/Component`.
 Style the list as a stepper, with `[aria-current="step"]` highlighting the
 current step. The following item uses that mapping and a styled component:
 
-<FeedExample :items="[scene.deeper.body.progress]">
-  <template #body="{ node }"><FeedBody :node="node" /></template>
-</FeedExample>
+<FeedExample :items="[scene.deeper.body.progress]" />
 
 Names are stored unchanged. Like `data()`, `props()` merges an array of keys
 or sets one with `->props('current', 'Ready')`.

@@ -2,7 +2,7 @@
   "name": "storyfeed-docs",
   "private": true,
   "type": "module",
-  "description": "Documentation site for storyfeed/storyfeed \u2014 docs.storyfeed.dev",
+  "description": "Documentation site for storyfeed/storyfeed — docs.storyfeed.dev",
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
     "build": "node --test scripts/cast.test.mjs scripts/code-memo.test.mjs scripts/world.test.mjs scripts/body-links.test.mjs scripts/schema.test.mjs && node scripts/drift-guard.mjs && node scripts/llms.mjs && vitepress build docs",
@@ -19,7 +19,9 @@
     "test:schema": "node --test scripts/schema.test.mjs"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "markdown-it-container": "^4.0.0",
+    "tailwindcss": "^4.3.3",
     "vitepress": "^2.0.0-alpha.19"
   },
   "dependencies": {

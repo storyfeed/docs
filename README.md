@@ -22,6 +22,16 @@ npm run build    # docs/.vitepress/dist
 npm run preview
 ```
 
+The feed examples consume the Tailwind Vue kit from `storyfeed/ui` by alias.
+Clone that public repository beside this one as `../storyfeed-ui`, or set
+`STORYFEED_UI_PATH` to its `resources/js/vue` directory (relative paths resolve
+from this repo). Vite, Tailwind's `@source`, and SSR tests use the same path.
+The deploy workflow checks out both repositories as siblings. Kit changes
+belong upstream; docs-only bodies live in `docs/.vitepress/theme/bodies` and
+are provided through `FEED_COMPONENTS`. `tailwind.css` maps starter-kit tokens
+to the light/dark VitePress palette, omits preflight, and scopes utilities to
+article content.
+
 Port 5174 is deliberate: 5173 belongs to the Laravel apps in this project, and
 two Vite dev servers fighting over one port is a confusing five minutes.
 

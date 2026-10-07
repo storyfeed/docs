@@ -1,0 +1,25 @@
+/* No preflight: VitePress owns document defaults and its navigation chrome. */
+@import "tailwindcss/theme.css" layer(theme);
+@source "@storyfeed/ui";
+@source "./bodies";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* These are the Laravel starter-kit tokens required by the shared Vue kit.
+   VitePress changes its palette on .dark, so both modes use the same mapping. */
+@theme inline {
+  --color-background: var(--vp-c-bg);
+  --color-foreground: var(--vp-c-text-1);
+  --color-card: var(--vp-c-bg-soft);
+  --color-muted: var(--vp-c-bg-soft);
+  --color-muted-foreground: var(--vp-c-text-2);
+  --color-primary: var(--vp-c-brand-1);
+  --color-primary-foreground: var(--vp-c-white);
+  --color-border: var(--vp-c-divider);
+  --color-ring: var(--vp-c-brand-1);
+}
+
+/* Utilities belong to examples in the article, never VitePress chrome. */
+@scope (.vp-doc) {
+  @tailwind utilities;
+}

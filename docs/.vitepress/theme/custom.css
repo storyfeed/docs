@@ -57,9 +57,7 @@
    page-coloured inside a ring, because one is what you type and the other is what
    a browser shows.
 
-   These rules live here rather than in feed/feed.css so that file stays
-   byte-comparable with the demo app's copy, and re-porting is a diff not a
-   merge. */
+   These docs-only wells wrap the shared kit without changing its source. */
 
 .vp-doc .sf-feed {
   position: relative;
@@ -142,6 +140,25 @@
   margin-top: 8px;
 }
 
+/* Day labels are feed metadata, not VitePress article section headings. */
+.vp-doc h2.sf-day {
+  margin: 0;
+  border-top: 0;
+  padding-top: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Preserve article typography inside the docs' rich body examples. */
+.vp-doc .sf-rich-text h2 {
+  line-height: 32px;
+}
+
+/* The docs stepper already draws its own surface below the metadata. */
+.vp-doc .sf-body-form:has(> .sf-order-progress) {
+  margin-top: 0;
+}
+
 /* VitePress gives every `.vp-doc img` a 16px vertical margin; inside a feed
    thumbnail that pushed the photo down and left a grey lip above it. */
 .vp-doc .sf-media img {
@@ -165,19 +182,9 @@
 }
 
 
-/* App-side mapping for the framework-independent feed kit. */
-:root, .dark {
-  --sf-text-color: var(--vp-c-text-1);
-  --sf-muted-color: var(--vp-c-text-2);
-  --sf-faint-color: var(--vp-c-text-3);
-  --sf-line-color: var(--vp-c-divider);
-  --sf-hover-color: var(--vp-c-bg-soft);
-  --sf-ring-color: var(--vp-c-bg);
-}
-
 /*
  * The three glyph intents THIS SITE's examples use, in this site's colours.
- * The kit ships light defaults and reads these; Storyfeed itself ships neither
+ * The docs own both the light and dark mapping; Storyfeed itself ships neither
  * a vocabulary of intents nor a palette for one — mapping the app's own word
  * onto a colour is the renderer's side of the contract, and this is ours.
  */
@@ -191,6 +198,24 @@
   --sf-pending-line: #6b5522;
   --sf-pending-color: #d8b463;
   --sf-pending-fill: #221c10;
+}
+
+.sf-icon[data-sf-intent='success'] {
+    border-color: var(--sf-success-line, #86c69f);
+    color: var(--sf-success-color, #2f8355);
+    background: var(--sf-success-fill, #eef8f2);
+}
+
+.sf-icon[data-sf-intent='danger'] {
+    border-color: var(--sf-danger-line, #e2a19b);
+    color: var(--sf-danger-color, #b4443a);
+    background: var(--sf-danger-fill, #fdf1f0);
+}
+
+.sf-icon[data-sf-intent='pending'] {
+    border-color: var(--sf-pending-line, #ddbd7d);
+    color: var(--sf-pending-color, #8a6a1c);
+    background: var(--sf-pending-fill, #fbf4e6);
 }
 
 /*

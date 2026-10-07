@@ -7,11 +7,11 @@ import OrderProgress from './OrderProgress.vue';
  * carries. The registry keeps the renderer domain-free: an unknown name
  * renders no body.
  */
-const BODIES: Record<string, Component> = {
+export const BODIES: Record<string, Component> = {
     Note,
     'Orders/Progress': OrderProgress,
 };
 
 export function resolveBody(name: string | null | undefined): Component | null {
-    return name ? (BODIES[name] ?? null) : null;
+    return name && Object.hasOwn(BODIES, name) ? BODIES[name] : null;
 }

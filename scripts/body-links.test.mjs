@@ -2,20 +2,21 @@ import { execFileSync } from 'node:child_process'
 import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { createServer } from 'vite'
+import { uiResolve } from './ui-kit.mjs'
 import vue from '@vitejs/plugin-vue'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 
 // Exercise the actual Vue templates, including the entity URL passed by FeedItem.
 const server = await createServer({
-  configFile: false,
+  configFile: false, resolve: uiResolve,
   plugins: [vue()],
   server: { middlewareMode: true, watch: null },
   appType: 'custom',
   optimizeDeps: { noDiscovery: true, include: [] },
 })
 after(() => server.close())
-const { default: FeedItem } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/FeedItem.vue')
+const { default: FeedItem } = await server.ssrLoadModule('@storyfeed/ui/FeedItem.vue')
 const render = (body, url = '/notices/1', data = {}, entityMedia = null) => renderToString(createSSRApp({
   render: () => h(FeedItem, { item: {
     kind: 'activity', id: 'test', published_at: '2026-09-26T12:00:00Z',
@@ -140,7 +141,7 @@ test('pictures require Image bodies and never use the entity URL', async () => {
 })
 
 test('group samples require Image bodies and use their chosen slot', async () => {
-  const { imageOf } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/body/index.ts')
+  const { imageOf } = await server.ssrLoadModule('@storyfeed/ui/body/index.ts')
   const media = { preview: { src: '/preview.jpg' }, image: { src: '/image.jpg' }, url: { src: '/show-page' } }
   assert.equal(imageOf({ media }), null)
   assert.equal(imageOf({ media, body: [{ $body: 'Storyfeed/Body/Image', image: 'image' }] }).src, '/image.jpg')
@@ -165,7 +166,7 @@ test('meta line rendering and timestamp ladder', () => {
 })
 
 test('Component bodies use the app registry with props and skip unknown names', async () => {
-  const { FEED_COMPONENTS } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/keys.ts')
+  const { FEED_COMPONENTS } = await server.ssrLoadModule('@storyfeed/ui/keys.ts')
   const mapped = { props: ['message'], render() { return h('strong', this.message) } }
   for (const [name, expected] of [['App/Message', 'Mapped props'], ['Unknown', null], ['toString', null]]) {
     const app = createSSRApp({ render: () => h(FeedItem, { item: {
@@ -178,5 +179,23 @@ test('Component bodies use the app registry with props and skip unknown names', 
     if (expected) assert.match(html, /<strong>Mapped props<\/strong>/)
     else assert.doesNotMatch(html, /<strong>|Mapped props/)
     assert.doesNotMatch(html, /sf-meta|<time/)
+  }
+})
+
+
+test('docs-owned Note and Orders/Progress bodies render through the shared registry', async () => {
+  const { FEED_COMPONENTS } = await server.ssrLoadModule('@storyfeed/ui/keys.ts')
+  const { BODIES } = await server.ssrLoadModule('/docs/.vitepress/theme/bodies/index.ts')
+  for (const [name, props, expected] of [
+    ['Note', { excerpt: 'A docs note' }, 'A docs note'],
+    ['Orders/Progress', { title: 'Order 1042', steps: ['Placed', 'Ready'], current: 'Ready', pickup: '4 PM' }, 'Order 1042 pickup progress'],
+  ]) {
+    const app = createSSRApp({ render: () => h(FeedItem, { item: {
+      kind: 'activity', id: 'docs-body', published_at: '2026-09-26T12:00:00Z',
+      verb: 'publish', headline: 'Docs example',
+      object: { body: [{ $body: 'Storyfeed/Body/Component', name, props }] },
+    } }) })
+    app.provide(FEED_COMPONENTS, BODIES)
+    assert.ok((await renderToString(app)).includes(expected))
   }
 })

@@ -19,17 +19,29 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: storyfeed-docs
+    env:
+      STORYFEED_UI_PATH: ../storyfeed-ui/resources/js/vue
     steps:
       - uses: actions/checkout@v4
         with:
           # VitePress lastUpdated reads git history, so a shallow clone would
           # stamp every page with the same date.
           fetch-depth: 0
+          path: storyfeed-docs
+
+      - uses: actions/checkout@v4
+        with:
+          repository: storyfeed/ui
+          path: storyfeed-ui
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: storyfeed-docs/package-lock.json
 
       - run: npm ci
 
@@ -44,7 +56,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/.vitepress/dist
+          path: storyfeed-docs/docs/.vitepress/dist
 
   deploy:
     needs: build
