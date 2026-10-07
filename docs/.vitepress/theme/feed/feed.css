@@ -310,8 +310,25 @@ a.sf-entity:hover {
 
 /* ---- day headings, empty state, pager ---- */
 
+/* A divider is a node on the rail: a solid dot where the line passes, with
+   its label beside it, so a day heading or a section label reads as part of
+   the stream rather than a heading over it. */
+.sf-rail__node {
+    flex-shrink: 0;
+    width: 0.5625rem;
+    height: 0.5625rem;
+    margin-top: 0.3125rem;
+    border-radius: 9999px;
+    background: var(--sf-faint);
+    box-shadow: 0 0 0 3px var(--sf-ring);
+}
+
+.sf-divider .sf-rail__line {
+    margin-top: 0.3125rem;
+}
+
 .sf-day {
-    padding-bottom: 1rem;
+    padding-bottom: 1.25rem;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.05em;

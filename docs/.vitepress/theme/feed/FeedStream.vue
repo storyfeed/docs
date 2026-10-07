@@ -19,8 +19,20 @@ const props = withDefaults(
          * `rail.ts` and `/basics/the-rail`.
          */
         rail?: Rail | RailName | null;
+        /**
+         * Labels to draw on the rail before particular items, keyed by item
+         * id: `{ [firstTimelineId]: 'Timeline' }`. Drawn like a day heading,
+         * as a node on the rail rather than a heading above it.
+         */
+        dividers?: Record<string, string>;
     }>(),
-    { nextCursor: null, loadingMore: false, grouped: true, rail: null },
+    {
+        nextCursor: null,
+        loadingMore: false,
+        grouped: true,
+        rail: null,
+        dividers: () => ({}),
+    },
 );
 
 const emit = defineEmits<{ loadMore: [] }>();
@@ -36,20 +48,12 @@ const days = useFeedDays(toRef(() => props.items));
 
         <div v-else role="list">
             <section v-for="(day, dayIndex) in days" :key="day.label">
-                <div v-if="grouped" class="sf-row">
+                <div v-if="grouped" class="sf-row sf-divider">
                     <div class="sf-rail">
-                        <div
-                            aria-hidden="true"
-                            class="sf-rail__line"
-                            :class="dayIndex === 0 ? 'sf-rail__line--lead' : ''"
-                        />
+                        <div aria-hidden="true" class="sf-rail__node" />
+                        <div aria-hidden="true" class="sf-rail__line" />
                     </div>
-                    <h2
-                        class="sf-day"
-                        :class="dayIndex === 0 ? '' : 'sf-day--later'"
-                    >
-                        {{ day.label }}
-                    </h2>
+                    <h2 class="sf-day">{{ day.label }}</h2>
                 </div>
 
                 <div
@@ -57,6 +61,13 @@ const days = useFeedDays(toRef(() => props.items));
                     :key="item.id"
                     role="listitem"
                 >
+                    <div v-if="dividers[item.id]" class="sf-row sf-divider">
+                        <div class="sf-rail">
+                            <div aria-hidden="true" class="sf-rail__node" />
+                            <div aria-hidden="true" class="sf-rail__line" />
+                        </div>
+                        <h2 class="sf-day">{{ dividers[item.id] }}</h2>
+                    </div>
                     <FeedNodeView
                         :item="item"
                         :is-last="
