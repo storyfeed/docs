@@ -18,6 +18,8 @@ const { anonymous } = scene.cookbook.actorless
 
 <a id="parties"></a>
 
+For a curated entry with a body, use a [Milestone model](/cookbook/curated-timelines) as the object and parties for who and where.
+
 ## Recording a Party
 
 When {{ role.mall.label }} closes for the night, a scheduled Artisan command

@@ -36,6 +36,8 @@ const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor 
 You may display quoted text, structured values, or file details below an
 activity's headline.
 
+For a curated history or changelog, a [Milestone model](/cookbook/curated-timelines) supplies the entry's label and body.
+
 <a id="headlines"></a>
 
 <a id="quoted-text"></a>
