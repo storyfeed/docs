@@ -11,12 +11,14 @@ Storyfeed does not choose the reader's locale.
 <script setup>
 import { activity, scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
 const french = activity({ ...scene.order,
-  headline_template: ':actor a passé :object auprès de :target' })
-const frenchGroup = liveOf(logOf(scene.deeper.aggregation.orders), {
+  headline_template: ':actor a passé :object chez :target' })
+const frenchGroup = liveOf(logOf(scene.deeper.aggregation.orders).map(row => ({
+  ...row, headline_template: french.headline_template,
+})), {
   ...VERBS,
   place: {
     ...VERBS.place,
-    repeat: ':actor a passé commande :count fois auprès de :target',
+    repeat: ':actor a passé commande :count fois chez :target',
   },
 })[0]
 </script>
@@ -32,13 +34,13 @@ Define the template for each supported locale, starting with the default:
 ```php [English] memo="lang/en/feed.php"
 return [
     // Without this line, English readers see "feed.order_placed".
-    'order_placed' => ':actor placed :object with :target',
+    'order_placed' => ':actor placed :object at :target',
 ];
 ```
 
 ```php [French] memo="lang/fr/feed.php"
 return [
-    'order_placed' => ':actor a passé :object auprès de :target',
+    'order_placed' => ':actor a passé :object chez :target',
 ];
 ```
 
@@ -74,13 +76,13 @@ Add a template for the repeat group to each locale's `feed.php` file:
 
 ```php [English] memo="lang/en/feed.php"
 return [
-    'order_placements' => ':actor made :count order placements with :target',
+    'order_placements' => ':actor made :count order placements at :target',
 ];
 ```
 
 ```php [French] memo="lang/fr/feed.php"
 return [
-    'order_placements' => ':actor a passé commande :count fois auprès de :target',
+    'order_placements' => ':actor a passé commande :count fois chez :target',
 ];
 ```
 

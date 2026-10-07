@@ -7,10 +7,12 @@ Daily grouping is the default.
 
 <script setup>
 import { scene, logOf, group, role } from '../.vitepress/theme/world'
-const children = logOf(scene.deeper.groupingPeriods.orders)
+const children = logOf(scene.deeper.groupingPeriods.orders).map(row => ({
+  ...row, headline_template: ':actor placed :object at :target',
+}))
 const weekly = group({ id: 'period-week', verb: 'place', axis: 'repeat', count: children.length,
   glyph: 'shopping-bag', published_at: children[0].published_at,
-  headline_template: ':actor placed :count orders with :target',
+  headline_template: ':actor placed :count orders at :target',
   actors: [role.customer], objects: children.map(row => row.object), targets: [role.shop],
   distinct: { actors: 1, objects: children.length, targets: 1 }, children })
 </script>
@@ -25,12 +27,12 @@ use Storyfeed\Facades\Story;
 use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
+    ->headline(':actor placed :object at :target')
     ->icon('shopping-bag')
     ->groupedWeekly()
     ->grouped(
         fn (GroupBuilder $group) => $group
-            ->repeat(':actor placed :count orders with :target'),
+            ->repeat(':actor placed :count orders at :target'),
     );
 ```
 

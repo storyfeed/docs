@@ -7,7 +7,8 @@ The [installer](/guide/installation#running-the-installer) creates this file.
 import { scene } from '../.vitepress/theme/world'
 
 // Presentation variants of catalogue facts, as different feed definitions render them.
-const withoutIcon = { ...scene.order, glyph: null }
+const placed = { ...scene.order, headline_template: ':actor placed :object at :target' }
+const withoutIcon = { ...placed, glyph: null }
 const complete = { ...scene.basics.feedFile.completed, glyph: 'receipt' }
 const completeWithIntent = { ...complete, glyph_intent: 'success' }
 const completeWithoutIcon = { ...complete, glyph: null }
@@ -18,7 +19,7 @@ const created = scene.basics.feedFile.created
 const ready = scene.basics.activityContent.ready
 const fellBack = { ...ready, headline_template: ':actor updated :object', glyph: null,
   object: { ...ready.object, body: null } }
-const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object with :target' }
+const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object to :target' }
 </script>
 
 ## Basic Definitions
@@ -36,7 +37,7 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(':actor placed :object with :target');
+    ->headline(':actor placed :object at :target');
 ```
 
 <FeedExample :items="[withoutIcon]" />
@@ -76,13 +77,13 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(':actor placed :object[ with :target]');
+    ->headline(':actor placed :object[ at :target]');
 ```
 
-<FeedExample :items="[placedAtCounter, scene.order]" />
+<FeedExample :items="[placedAtCounter, placed]" />
 
 Storyfeed resolves optional segments before returning the payload. In this
-example, it includes ` with :target` only when the activity has a target.
+example, it includes ` at :target` only when the activity has a target.
 Without brackets, an empty role leaves its token in the template.
 
 <a id="choosing-a-headline-per-activity"></a>
@@ -101,11 +102,11 @@ Story::for(Order::class)
     ->headline(
         fn (ActivityContext $activity) => $activity->boolean('rush')
             ? ':actor rushed :object to :target'
-            : ':actor placed :object with :target',
+            : ':actor placed :object at :target',
     );
 ```
 
-<FeedExample :items="[rushed, scene.order]" />
+<FeedExample :items="[rushed, placed]" />
 
 The closure receives an [ActivityContext](/reference/feedable#activitycontext),
 which provides typed helpers for the activity’s data and accessors for its roles.
@@ -123,7 +124,7 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(':actor placed :object with :target')
+    ->headline(':actor placed :object at :target')
     ->icon('shopping-bag');
 
 Story::for(Order::class)
@@ -132,7 +133,7 @@ Story::for(Order::class)
     ->icon('receipt');
 ```
 
-<FeedExample :items="[complete, scene.order]" />
+<FeedExample :items="[complete, placed]" />
 
 Use the `intent` method to assign an application-defined value, such as
 `success` or `danger`. Storyfeed returns it in the `glyph_intent` field:
@@ -158,7 +159,7 @@ use App\Models\Order;
 use Storyfeed\Facades\Story;
 
 Story::for(Order::class)->group(function () {
-    Story::verb('place')->headline(':actor placed :object with :target');
+    Story::verb('place')->headline(':actor placed :object at :target');
     Story::verb('complete')->headline(':actor completed :object');
 });
 ```
@@ -249,7 +250,7 @@ use Storyfeed\Facades\Story;
 Story::for('order')
     ->verb('place')
     ->override()
-    ->headline(':actor submitted :object with :target');
+    ->headline(':actor submitted :object to :target');
 ```
 
 <FeedExample :items="[overriddenOrder]" />
