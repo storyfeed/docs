@@ -33,8 +33,17 @@ const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor 
 
 ## Introduction
 
-You may display quoted text, structured values, or file details below an
-activity's headline.
+Choose a body from the evidence you have:
+
+| Evidence | Body |
+|---|---|
+| page with a share preview | `MediaObject` card with the title, description, and image from its preview metadata |
+| passage from a source | `Excerpt` |
+| photo | `Image` |
+| a few labelled values | `KeyValue` |
+| nothing to add | no body; the headline alone |
+
+Put supporting detail in the body rather than a headline closure.
 
 For a curated history or changelog, a [Milestone model](/cookbook/curated-timelines) supplies the entry's label and body.
 
