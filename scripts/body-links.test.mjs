@@ -163,3 +163,20 @@ test('the world keeps every object photograph explicit after removing automatic 
 test('meta line rendering and timestamp ladder', () => {
   execFileSync(process.execPath, ['--test', 'scripts/meta-line.test.mjs'], { stdio: 'pipe' })
 })
+
+test('Component bodies use the app registry with props and skip unknown names', async () => {
+  const { FEED_COMPONENTS } = await server.ssrLoadModule('/docs/.vitepress/theme/feed/keys.ts')
+  const mapped = { props: ['message'], render() { return h('strong', this.message) } }
+  for (const [name, expected] of [['App/Message', 'Mapped props'], ['Unknown', null], ['toString', null]]) {
+    const app = createSSRApp({ render: () => h(FeedItem, { item: {
+      kind: 'activity', id: 'site', published_at: '1970-01-01T00:00:00Z',
+      actor: null, object: null, target: null, context: null, verb: 'introduces', headline_template: null,
+      data: { body: { $body: 'Storyfeed/Body/Component', name, props: { message: 'Mapped props' } } },
+    } }, { time: () => [] }) })
+    app.provide(FEED_COMPONENTS, { 'App/Message': mapped })
+    const html = (await renderToString(app)).replace(/<!--[\s\S]*?-->/g, '')
+    if (expected) assert.match(html, /<strong>Mapped props<\/strong>/)
+    else assert.doesNotMatch(html, /<strong>|Mapped props/)
+    assert.doesNotMatch(html, /sf-meta|<time/)
+  }
+})

@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import KeyValue from './KeyValue.vue'
+import ComponentBody from './ComponentBody.vue'
 import Excerpt from './Excerpt.vue'
 import FileAttachment from './FileAttachment.vue'
 import Prose from './Prose.vue'
@@ -17,6 +18,7 @@ import MediaObject from './MediaObject.vue'
  * casing is part of the name.
  */
 const FORMS: Record<string, Component> = {
+  'Storyfeed/Body/Component': ComponentBody,
     'Storyfeed/Body/KeyValue': KeyValue,
     'Storyfeed/Body/Excerpt': Excerpt,
     'Storyfeed/Body/FileAttachment': FileAttachment,

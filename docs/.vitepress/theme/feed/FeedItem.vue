@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { imageOf } from './body'
 import { computed, toRef } from 'vue';
+import { imageOf } from './body';
+import { formsIn, resolve } from './body';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
-import FeedMeta from './FeedMeta.vue';
 import FeedIcon from './FeedIcon.vue';
-import { formsIn, resolve } from './body';
 import FeedMediaStrip from './FeedMediaStrip.vue';
+import FeedMeta from './FeedMeta.vue';
 import { rail as parseRail, railFor, withoutSecondary } from './rail';
-import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
 import type { ActivityNode } from './types';
+import { useRelativeTime } from './useRelativeTime';
 
 const props = withDefaults(
     defineProps<{
@@ -33,9 +33,16 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
 // Once redundant, a verb may have its own reading. This kit draws it in place
 // of the headline; the ordinary one stays in the payload beside it.
 const reading = computed(() =>
-    props.item.redundant && (props.item.missing_headline_template || props.item.missing_headline)
-        ? { template: props.item.missing_headline_template ?? null, headline: props.item.missing_headline ?? null }
-        : { template: props.item.headline_template, headline: props.item.headline ?? null },
+    props.item.redundant &&
+    (props.item.missing_headline_template || props.item.missing_headline)
+        ? {
+              template: props.item.missing_headline_template ?? null,
+              headline: props.item.missing_headline ?? null,
+          }
+        : {
+              template: props.item.headline_template,
+              headline: props.item.headline ?? null,
+          },
 );
 
 /**
@@ -58,7 +65,6 @@ const resolved = computed<Rail>(() => {
     return props.dense ? withoutSecondary(asked) : asked;
 });
 
-
 /**
  * A collapsed group shows a SAMPLE of its members' photographs. A tile stands
  * for an entity, so it keeps that entity's link, and the overflow counts the
@@ -66,8 +72,13 @@ const resolved = computed<Rail>(() => {
  */
 const strip = computed(() => {
     const sample = (props.item as any).sample?.objects ?? [];
-    const tiles = sample.map((entity: any) => ({ image: imageOf(entity), href: entity.url ?? null }))
+    const tiles = sample
+        .map((entity: any) => ({
+            image: imageOf(entity),
+            href: entity.url ?? null,
+        }))
         .filter((tile: any) => tile.image !== null);
+
     return { tiles, overflow: 0 };
 });
 
@@ -133,7 +144,11 @@ const slots = computed(() =>
                     :icon="item.glyph"
                     :intent="item.glyph_intent"
                 />
-                <span v-else class="sf-icon sf-icon--blank" aria-hidden="true" />
+                <span
+                    v-else
+                    class="sf-icon sf-icon--blank"
+                    aria-hidden="true"
+                />
 
                 <!--
                     THE BADGE, on the disc's lower corner. It is why this rail
@@ -175,13 +190,16 @@ const slots = computed(() =>
                         result: item.result,
                         location: item.location,
                         generator: item.generator,
-
                     }"
                     :verb="item.verb"
                 />
             </div>
             <FeedMeta :node="item" :templates="[reading.template]">
+                <template v-if="$slots.time">
+                    <slot name="time" :node="item" :label="time.label.value" />
+                </template>
                 <time
+                    v-else
                     :datetime="item.published_at"
                     :title="time.full.value"
                     class="sf-time"
@@ -191,9 +209,7 @@ const slots = computed(() =>
                         the activity's Activity Streams 2.0 document, without
                         this component knowing your routes.
                     -->
-                    <slot name="time" :node="item" :label="time.label.value">{{
-                        time.label.value
-                    }}</slot>
+                    {{ time.label.value }}
                 </time>
             </FeedMeta>
 
@@ -203,7 +219,6 @@ const slots = computed(() =>
                 belongs here is entirely app-specific.
             -->
             <slot name="body" :node="item" />
-
 
             <FeedMediaStrip
                 v-if="strip.tiles.length"

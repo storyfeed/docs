@@ -27,17 +27,19 @@ withDefaults(
         :is-last="isLast"
         :rail="rail"
     >
-        <template #body="slotProps"><slot name="body" v-bind="slotProps" /></template>
-        <template #annotations="slotProps"><slot name="annotations" v-bind="slotProps" /></template>
+        <template #body="slotProps"
+            ><slot name="body" v-bind="slotProps"
+        /></template>
+        <template #annotations="slotProps"
+            ><slot name="annotations" v-bind="slotProps"
+        /></template>
         <!--
             The fallback matters: forwarding a slot the consumer did not
             provide would render empty and silently erase the timestamp.
         -->
-        <template #time="slotProps"
-            ><slot name="time" v-bind="slotProps">{{
-                slotProps.label
-            }}</slot></template
-        >
+        <template v-if="$slots.time" #time="slotProps"
+            ><slot name="time" v-bind="slotProps"
+        /></template>
     </FeedItem>
     <FeedGroup
         v-else-if="item.kind === 'group'"
@@ -45,10 +47,14 @@ withDefaults(
         :is-last="isLast"
         :rail="rail"
     >
-        <template #body="slotProps"><slot name="body" v-bind="slotProps" /></template>
-        <template #annotations="slotProps"><slot name="annotations" v-bind="slotProps" /></template>
-        <template #time="slotProps">
-            <slot name="time" v-bind="slotProps">{{ slotProps.label }}</slot>
+        <template #body="slotProps"
+            ><slot name="body" v-bind="slotProps"
+        /></template>
+        <template #annotations="slotProps"
+            ><slot name="annotations" v-bind="slotProps"
+        /></template>
+        <template v-if="$slots.time" #time="slotProps">
+            <slot name="time" v-bind="slotProps" />
         </template>
     </FeedGroup>
     <!-- Unknown kinds (future payload additions) are skipped, never fatal. -->

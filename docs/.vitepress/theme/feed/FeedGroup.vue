@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { imageOf } from './body'
 import { computed, ref, toRef } from 'vue';
+import { imageOf } from './body';
 import EntityAvatar from './EntityAvatar.vue';
 import FeedHeadline from './FeedHeadline.vue';
-import FeedMeta from './FeedMeta.vue';
 import FeedIcon from './FeedIcon.vue';
 import FeedItem from './FeedItem.vue';
 import FeedMediaStrip from './FeedMediaStrip.vue';
+import FeedMeta from './FeedMeta.vue';
 import { rail as parseRail, railFor } from './rail';
-import { useRelativeTime } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
 import type { FeedPhrase, GroupNode, FeedSingularRole } from './types';
+import { useRelativeTime } from './useRelativeTime';
 
 const props = withDefaults(
     defineProps<{
@@ -65,7 +65,9 @@ const time = useRelativeTime(toRef(() => props.item.published_at));
 const singular = (role: FeedSingularRole) => {
     const named = props.item[role];
 
-    if (named) return named;
+    if (named) {
+        return named;
+    }
 
     const shown = props.item.sample[`${role}s`] ?? [];
 
@@ -97,7 +99,18 @@ const phrasesBeyond = computed(() =>
 /** A phrase's own singulars, where its sample genuinely has one. */
 const phraseEntities = (phrase: FeedPhrase) =>
     Object.fromEntries(
-        (['object', 'target', 'context', 'instrument', 'origin', 'result', 'location', 'generator'] as const).map((role) => {
+        (
+            [
+                'object',
+                'target',
+                'context',
+                'instrument',
+                'origin',
+                'result',
+                'location',
+                'generator',
+            ] as const
+        ).map((role) => {
             const shown = phrase.sample[`${role}s`] ?? [];
 
             return [
@@ -126,7 +139,6 @@ const entities = computed(() => ({
     result: singular('result'),
     location: singular('location'),
     generator: singular('generator'),
-
 }));
 
 /**
@@ -140,8 +152,13 @@ const entities = computed(() => ({
  */
 const strip = computed(() => {
     const sample = (props.item as any).sample?.objects ?? [];
-    const tiles = sample.map((entity: any) => ({ image: imageOf(entity), href: entity.url ?? null }))
+    const tiles = sample
+        .map((entity: any) => ({
+            image: imageOf(entity),
+            href: entity.url ?? null,
+        }))
         .filter((tile: any) => tile.image !== null);
+
     return { tiles, overflow: 0 };
 });
 
@@ -173,7 +190,11 @@ const hiddenBeyondChildren = computed(
                     :icon="item.glyph"
                     :intent="item.glyph_intent"
                 />
-                <span v-else class="sf-icon sf-icon--blank" aria-hidden="true" />
+                <span
+                    v-else
+                    class="sf-icon sf-icon--blank"
+                    aria-hidden="true"
+                />
 
                 <FeedIcon
                     v-if="slots.badge === 'activity'"
@@ -193,7 +214,10 @@ const hiddenBeyondChildren = computed(
             />
         </div>
 
-        <div class="sf-body" :class="isLast && !expanded ? '' : 'sf-body--spaced'">
+        <div
+            class="sf-body"
+            :class="isLast && !expanded ? '' : 'sf-body--spaced'"
+        >
             <div class="sf-head">
                 <span v-if="phrases.length > 0" class="sf-headline">
                     <FeedHeadline
@@ -204,7 +228,9 @@ const hiddenBeyondChildren = computed(
                         :verb="null"
                         aggregate
                     />{{ ' '
-                    }}<template v-for="(phrase, index) in phrases" :key="phrase.verb"
+                    }}<template
+                        v-for="(phrase, index) in phrases"
+                        :key="phrase.verb"
                         ><FeedHeadline
                             v-if="phrase.headline_template || phrase.headline"
                             :template="phrase.headline_template"
@@ -215,9 +241,12 @@ const hiddenBeyondChildren = computed(
                             :count="phrase.count"
                             :verb="phrase.verb"
                             aggregate
-                        /><span v-else class="sf-label">{{ phrase.verb }} ×{{ phrase.count }}</span
+                        /><span v-else class="sf-label"
+                            >{{ phrase.verb }} ×{{ phrase.count }}</span
                         >{{ phraseSeparator(index) }}</template
-                    ><template v-if="phrasesBeyond > 0"> and {{ phrasesBeyond }} more</template>
+                    ><template v-if="phrasesBeyond > 0">
+                        and {{ phrasesBeyond }} more</template
+                    >
                 </span>
                 <FeedHeadline
                     v-else
@@ -231,13 +260,24 @@ const hiddenBeyondChildren = computed(
                     aggregate
                 />
             </div>
-            <FeedMeta :node="item" :templates="phrases.length ? phrases.map(phrase => phrase.headline_template) : [item.headline_template]">
+            <FeedMeta
+                :node="item"
+                :templates="
+                    phrases.length
+                        ? phrases.map((phrase) => phrase.headline_template)
+                        : [item.headline_template]
+                "
+            >
+                <template v-if="$slots.time">
+                    <slot name="time" :node="item" :label="time.label.value" />
+                </template>
                 <time
+                    v-else
                     :datetime="item.published_at"
                     :title="time.full.value"
                     class="sf-time"
                 >
-                    <slot name="time" :node="item" :label="time.label.value">{{ time.label.value }}</slot>
+                    {{ time.label.value }}
                 </time>
             </FeedMeta>
 
@@ -279,7 +319,9 @@ const hiddenBeyondChildren = computed(
                     "
                 >
                     <template #time="slotProps">
-                        <slot name="time" v-bind="slotProps">{{ slotProps.label }}</slot>
+                        <slot name="time" v-bind="slotProps">{{
+                            slotProps.label
+                        }}</slot>
                     </template>
                     <template #body="slotProps">
                         <slot name="body" v-bind="slotProps" />

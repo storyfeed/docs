@@ -387,6 +387,10 @@ a.sf-entity:hover {
  * this wrapper the same name, and every headline in the site dropped 0.5rem
  * below its avatar.
  */
+.sf-body-form:empty {
+    display: none;
+}
+
 .sf-body-form {
     margin-top: 0.5rem;
     max-width: 44rem;

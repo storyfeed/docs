@@ -18,3 +18,8 @@ export const FEED_LINK = Symbol('feedLink') as InjectionKey<Component | string>;
  * relative times are stable and honest about their reference point.
  */
 export const FEED_NOW = Symbol('feedNow') as InjectionKey<number>;
+
+/** App-owned Component bodies, keyed by their exact payload name. */
+export const FEED_COMPONENTS = Symbol('feedComponents') as InjectionKey<
+    Readonly<Record<string, Component>>
+>;

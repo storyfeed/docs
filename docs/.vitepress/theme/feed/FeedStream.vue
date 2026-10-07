@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { toRef } from 'vue';
 import FeedNodeView from './FeedNode.vue';
-import { useFeedDays } from './useRelativeTime';
 import type { Rail, RailName } from './rail';
 import type { FeedNode } from './types';
+import { useFeedDays } from './useRelativeTime';
 
 const props = withDefaults(
     defineProps<{
@@ -72,11 +72,9 @@ const days = useFeedDays(toRef(() => props.items));
                         <template #annotations="slotProps"
                             ><slot name="annotations" v-bind="slotProps"
                         /></template>
-                        <template #time="slotProps"
-                            ><slot name="time" v-bind="slotProps">{{
-                                slotProps.label
-                            }}</slot></template
-                        >
+                        <template v-if="$slots.time" #time="slotProps"
+                            ><slot name="time" v-bind="slotProps"
+                        /></template>
                     </FeedNodeView>
                 </div>
             </section>
