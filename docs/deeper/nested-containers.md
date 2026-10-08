@@ -157,7 +157,7 @@ Route::get('/tenants/{tenant}/feed', function (Tenant $tenant) {
 ```
 
 At publication, Storyfeed follows parents from the **object**, **target** and
-**context**. Shared ancestors are recorded once, at their shortest depth.
+**context**. Shared ancestors are recorded once per activity.
 The default limit is ten parent links per starting role. Set
 `storyfeed.ancestors.max_depth` to change it. A cycle or an unresolvable parent
 ends that chain; the activity remains available.

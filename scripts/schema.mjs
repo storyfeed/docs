@@ -134,7 +134,6 @@ const TYPES = {
   json: () => ({ type: 'json' }),
   boolean: () => ({ type: 'boolean' }),
   unsignedInteger: () => ({ type: 'unsigned int' }),
-  unsignedSmallInteger: () => ({ type: 'unsigned smallint' }),
   unsignedBigInteger: () => ({ type: 'unsigned bigint' }),
   foreignId: () => ({ type: 'unsigned bigint' }),
   timestamp: (a) => ({ type: a[1] ? `timestamp(${a[1]})` : 'timestamp' }),

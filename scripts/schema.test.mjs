@@ -115,15 +115,13 @@ test('ancestor upgrades replace the role unique key and keep the covering index'
     public function up(): void {
       $name = config('storyfeed.tables.widgets', 'feed_widgets');
       Schema::table($name, function (Blueprint $table) {
-        $table->unsignedSmallInteger('depth')->default(0);
         $table->dropUnique(['kind', 'id']);
         $table->unique(['id', 'uid'], 'entity_unique');
       });
     }
   };`
   const table = extract([['create', source], ['upgrade', upgrade]]).get('feed_widgets')
-  assert.equal(table.columns.find(c => c.name === 'depth').type, 'unsigned smallint')
-  assert.equal(table.columns.find(c => c.name === 'depth').default, 0)
+  assert.deepEqual(table.columns, extract([['create', source]]).get('feed_widgets').columns)
   assert.ok(!table.indexes.some(i => i.kind === 'unique' && i.columns.join() === 'kind,id'))
   assert.ok(table.indexes.some(i => i.name === 'entity_unique'))
   assert.ok(table.indexes.some(i => i.name === 'widgets_kind_index'))
