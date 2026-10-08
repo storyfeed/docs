@@ -105,13 +105,4 @@ for the commands to schedule in production.
 
 ## Installing Storyfeed UI
 
-Storyfeed UI supplies Blade, Vue and React kits:
-
-```bash
-composer require storyfeed/ui
-```
-
-All three use Tailwind CSS v4 and the colour variables Laravel's starter kits define.
-See [Installing the Kits](/ui/installation) for the copy command, dependencies
-and Tailwind source paths, or [Rendering](/basics/rendering) to build custom
-components.
+Storyfeed UI supplies Blade, Vue and React components; see [Installing the Kits](/ui/installation).

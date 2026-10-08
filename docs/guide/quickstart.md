@@ -3,7 +3,7 @@
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 
-// What these three steps produce: no links and no icon are defined yet, so
+// What the recording produces: no links and no icon are defined yet, so
 // every url and the glyph are null.
 const unlinked = (entity) => entity && { ...entity, url: null, media: null }
 const order = { ...scene.order, glyph: null, glyph_intent: null,
@@ -12,8 +12,8 @@ const order = { ...scene.order, glyph: null, glyph_intent: null,
 
 ## Introduction
 
-To record an activity, prepare the models, define a headline, and publish the
-activity from your application. This example records a customer placing an
+Record an activity and display it with the Blade kit. Prepare the models,
+define a headline, and publish the activity from your application. This example records a customer placing an
 order with a shop.
 
 <a id="making-the-models-feedable"></a>
@@ -122,11 +122,51 @@ The route returns a JSON payload:
 
 <FeedExample payload :items="[order]" />
 
-<a id="rendering-the-feed"></a>
 <a id="rendered-feed"></a>
 <a id="rendering-with-vue"></a>
 
-::: headless
-:::
+## Rendering the Feed
 
-See [Rendering](/basics/rendering) to display the feed with Blade or Vue.
+Install the Blade kit:
+
+```bash
+composer require storyfeed/ui
+```
+
+Register its Tailwind CSS v4 utilities:
+
+```css memo="resources/css/app.css"
+@source "../../vendor/storyfeed/ui/resources/views";
+```
+
+Return a view from the route:
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', ['page' => Storyfeed::feed()->get()]);
+});
+```
+
+Render the page in the view and load your application's CSS:
+
+```blade memo="resources/views/feed.blade.php"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @vite('resources/css/app.css')
+</head>
+<body>
+    <x-storyfeed::feed :page="$page" />
+</body>
+</html>
+```
+
+Compile the CSS with `npm run build`. The feed displays the order placement:
+
+<FeedExample :items="[order]" />
+
+For Inertia applications, use the [Vue](/ui/vue) or [React](/ui/react) kit.

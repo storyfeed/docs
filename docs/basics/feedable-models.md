@@ -12,8 +12,6 @@ const withLink = [scene.order]
 A feedable model provides a label for its activities. Storyfeed supplies a
 default label; links and images are optional.
 
-<a id="models-you-don-t-own"></a>
-<a id="registering-external-models"></a>
 <a id="writing-tofeed-by-hand"></a>
 <a id="implementing-the-feedable-contract"></a>
 <a id="the-model-s-own-feed"></a>
@@ -56,8 +54,6 @@ commonly used columns, falling back on the class name and key.
 
 <FeedExample :items="withSnapshot" />
 
-For a model from another package, such as Spatie Media Library, see
-[Registering External Models](/reference/feedable#registering-external-models).
 To implement the contract's methods yourself, see
 [Implementing the Feedable Contract](/reference/feedable#implementing-the-feedable-contract).
 To retrieve a model's activities, see
@@ -123,17 +119,86 @@ class Order extends Model implements Feedable
 The `toFeed` method returns a `FeedEntity` containing the model's label.
 
 `InteractsWithFeed` refreshes the shared snapshot on model saves while
-recording is enabled. Changes to its label, body, or data can therefore appear
+recording is enabled. Changes to its snapshot values can therefore appear
 on older activities too. Activity `data` preserves the values recorded for that event.
 
-<a id="custom-labels"></a>
-
-You may also [customize default labels across your application](/reference/feedable#custom-labels).
-
 <a id="describing-the-snapshot"></a>
-<a id="describing-the-snapshot-with-describefeed"></a>
 
-To add snapshot values while retaining a default label, use [`describeFeed()`](/reference/feedable#describing-the-snapshot-with-describefeed).
+## Describing the Snapshot with `describeFeed()`
+
+Define snapshot values by modifying the entity returned by `$this->feedEntity()`:
+
+```php memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function describeFeed(): void
+    {
+        $this->feedEntity()
+            ->data(['reference' => $this->reference]); // [!code highlight]
+    }
+}
+```
+
+This example adds snapshot data while retaining the default label. You may
+also set a label or combine values from a parent model and its subclasses.
+Unset fields remain empty except for the label. If you implement `toFeed`,
+the trait does not call `describeFeed`.
+
+## Custom Labels
+
+To customize default labels across your application, register a callback in a
+service provider. Return `null` to use the default rules:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::guessFeedLabelsUsing(
+    fn (Model $model) => $model->getAttribute('reference'),
+);
+```
+
+To customize one model's default label, override its `guessFeedLabel` method.
+Overriding `guessFeedLabel()` bypasses the application-wide guesser. To call
+the trait's implementation from your override, alias it:
+`use InteractsWithFeed { guessFeedLabel as guessedFeedLabel; }`.
+
+<span id="models-you-don-t-own"></span>
+
+## Registering External Models
+
+To include a model from another package without modifying its class, register
+it in a service provider:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedEntity;
+
+Storyfeed::feedable(Media::class)
+    ->toFeedUsing(
+        fn (Media $photo, FeedEntity $entity) => $entity
+            ->label($photo->name)
+            ->data(['mediaType' => $photo->mime_type]),
+    );
+```
+
+The closure is optional. Storyfeed treats the registered class as Feedable:
+saves refresh snapshots, and deletion and restoration update its activities.
+Register the exact instantiated class; parent registrations do not apply to
+subclasses. Classes implementing `Feedable` cannot also be registered.
+See the [registration methods](/reference/feedable#registering-external-models)
+for the optional link resolver.
 
 <a id="resolving-links-and-images"></a>
 <a id="the-link"></a>

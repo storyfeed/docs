@@ -54,8 +54,7 @@ A verb's `bursts()` declaration overrides these defaults. A type-and-verb
 declaration takes precedence over a verb-only declaration.
 Windows must be positive intervals of at least one second.
 
-Calendar declarations such as `groupedWeekly()` apply to custom axes whose
-keys include the calendar field `d`. Built-in Live axes use burst windows.
+See [Custom Axes](/deeper/custom-axes#calendar-periods) for calendar-based grouping.
 Batch windows independently determine when a batch closes; see
 [Story Middleware & Batching](/deeper/story-middleware-and-batching#batch-windows).
 
@@ -64,6 +63,14 @@ Batch windows independently determine when a batch closes; see
 
 ## Applying Window Changes
 
-Changed windows apply to new activity. Existing memberships remain until a
-rebuild with `storyfeed:curate --rebuild-bursts`; see
-[Rehashing Groups](/reference/commands#rehashing-groups).
+Changed windows apply to new activity. To rebuild existing memberships, pause
+every publisher, queue worker, and publishing schedule for the full rebuild.
+Maintenance mode alone does not stop queue workers.
+
+```bash
+php artisan storyfeed:curate --rebuild-bursts --writers-paused
+```
+
+After an interruption, add `--resume` to continue from the committed cursor;
+add `--restart` to discard progress and replay all history. Keep writers paused
+until the rebuild completes. See [Rehashing Groups](/reference/commands#rehashing-groups).

@@ -1,4 +1,6 @@
-# Tokens and Host Seams
+<a id="tokens-and-host-seams"></a>
+
+# Customizing the Kits
 
 The kits take their colours from your CSS variables and use your own
 components for links, bodies and pictures.

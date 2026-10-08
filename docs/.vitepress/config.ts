@@ -112,7 +112,7 @@ export default defineConfig({
        * A container rather than a Vue component, because house rule 9 allows
        * exactly one spelling of a callout and it is the container spelling.
        */
-      const HEADLESS_TITLE = 'Storyfeed is headless: it has no views'
+      const HEADLESS_TITLE = 'Rendering the Feed'
       const HEADLESS_BODY =
         'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. Storyfeed UI supplies Blade, Vue and React components.'
 
@@ -200,31 +200,30 @@ export default defineConfig({
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
-          { text: 'Feed Media', link: '/basics/feed-media' },
           { text: 'Recording Activities', link: '/basics/recording' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Activity Verbs', link: '/basics/verbs' },
           { text: 'Activity Content', link: '/basics/activity-content' },
+          { text: 'Feed Media', link: '/basics/feed-media' },
         ],
       },
       {
-        // Choose the feed, then inspect it, then draw it.
+        // Choose and retrieve the feed before using a rendering kit.
         text: 'Retrieving and Rendering',
         items: [
           { text: 'Retrieving Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
-          { text: 'The Payload', link: '/basics/the-payload' },
-          { text: 'Rendering', link: '/basics/rendering' },
         ],
       },
       {
         text: 'Storyfeed UI',
         items: [
           { text: 'Installing the Kits', link: '/ui/installation' },
+          { text: 'Blade', link: '/ui/blade' },
           { text: 'Vue', link: '/ui/vue' },
           { text: 'React', link: '/ui/react' },
-          { text: 'Blade', link: '/ui/blade' },
-          { text: 'Tokens and Host Seams', link: '/ui/customizing' },
+          { text: 'Customizing the Kits', link: '/ui/customizing' },
+          { text: 'Custom Rendering', link: '/basics/rendering' },
         ],
       },
       {
@@ -250,6 +249,7 @@ export default defineConfig({
         items: [
           { text: 'Aggregation', link: '/deeper/aggregation' },
           { text: 'Live Burst Windows', link: '/deeper/grouping-periods' },
+          { text: 'Custom Axes', link: '/deeper/custom-axes' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
           { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies' },

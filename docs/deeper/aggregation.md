@@ -8,25 +8,16 @@ from one customer appear as one row. See
 helps the reader.
 
 <script setup>
-import { scene, logOf, liveOf, everything, VERBS, group } from '../.vitepress/theme/world'
+import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
 const repeat = liveOf(log, { ...VERBS, place: { ...VERBS.place, repeat: ':actor made :count order placements with :target' } })[0]
 const customers = logOf(scene.deeper.aggregation.customers)
 const actors = liveOf(customers)[0]
-const live = liveOf(everything())
 const nounFallback = { ...repeat, headline_template: ':actor placed orders with :target', headline: null }
 const singularFallback = { ...repeat, headline_template: ':actor placed an order with :target', headline: null }
 const unnamedGroup = { ...repeat, headline_template: null, headline: null }
 const menuRows = scene.deeper.aggregation.menu
 const menuGroup = { ...liveOf(menuRows)[0], headline_template: ':actor put dishes on the menu' }
-const contextRows = logOf(scene.deeper.aggregation.contexts)
-const contextGroup = (members) => group({
-  id: `scene-${members.length}`, axis: 'scene', verb: 'ask', count: members.length,
-  published_at: members[0].published_at, headline_template: ':actors asked questions in :context',
-  glyph: members[0].glyph, actors: members.map(m => m.actor),
-  targets: [members[0].target], contexts: [members[0].context], children: members,
-})
-const contextActors = liveOf(contextRows, { ...VERBS, ask: { ...VERBS.ask, actors_target: ':actors asked about :target' } })
 </script>
 
 ## Grouping Activities
@@ -93,16 +84,11 @@ shows where groups are stored and how a feed retrieves them.
 
 ## Choosing a Read Mode
 
-In a longer feed, repeated actions and activities at busy places appear as
-rows you can expand:
-
-<FeedExample :items="live" days height="520" />
-
-The read mode determines which groups the query returns:
+See [Choosing a Read Mode](/basics/reading#choosing-a-read-mode) for Live and Log.
+Curation controls which groups Live reads:
 
 | Mode | Returns |
 |---|---|
-| `log()` | one item per activity, including each member of a composite |
 | `live()`, `grouping.curate = true` (default) | groups selected across the available axes, with a `repeat` group when no other group is selected |
 | `live()`, `grouping.curate = false` | repeat groups and composites, regardless of inferred groups selected earlier |
 
@@ -134,7 +120,7 @@ published activity with a collection of objects; see [Composites](/deeper/compos
 
 Shared values alone do not select a group: activities must also meet the
 [thresholds](#configuring-grouping-thresholds), and Storyfeed must select the
-group. [Axis Keys](#axis-keys) lists the default keys and their field syntax.
+group. [Default Grouping Keys](/reference/configuration#default-grouping-keys) lists their keys.
 
 Headlines for `repeat` and `object` groups may go in a Story class or inside
 `Story::for()` because each group contains one object type. Define headlines
@@ -333,93 +319,10 @@ See [Groups Without Headlines](/basics/rendering#groups-without-headlines) to
 render this payload.
 
 <a id="custom-axes"></a>
-
-## Defining Custom Axes
-
-Define a custom axis with the fields activities must share and the threshold
-they must meet:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Grouping\Axis;
-
-$scene = Axis::make('scene')
-    ->key('v:ca!:cid!:d')
-    ->eligibleWhenDistinct('actor', min: 2);
-
-Storyfeed::axes([$scene]);
-```
-
-Here, `scene` groups activities in the same [context](/deeper/context), such
-as three customers asking about dishes in one shop. Use `$group->axis('scene', …)`
-inside `grouped()` to define its headline, or `$group->any(…)` to match any axis.
-
-```php memo="routes/feed.php"
-use Storyfeed\Facades\Story;
-use Storyfeed\Grouping\GroupBuilder;
-
-Story::verb('ask')->grouped(fn (GroupBuilder $group): GroupBuilder => $group
-    ->axis('scene', ':actors asked questions in :context')
-    ->actorsOnTarget(':actors asked about :target'));
-```
-
-Two customers sharing a context meet this axis's threshold but not the built-in
-`actors_target` threshold, so the query returns a `scene` group:
-
-<FeedExample :items="[contextGroup(contextRows.slice(0, 2))]" />
-
+<a id="defining-custom-axes"></a>
 <a id="keys"></a>
-
-### Axis Keys
-
-Separate shared fields with `:`. Add `!` after a field to exclude activities
-where it is empty.
-
-| Role | Type Field | Id Field |
-|---|---|---|
-| `actor` | `aa` | `aid` |
-| `object` | `oa` | `oid` |
-| `target` | `ta` | `tid` |
-| `context` | `ca` | `cid` |
-| `origin` | `ora` | `orid` |
-| `result` | `ra` | `rid` |
-| `instrument` | `ia` | `iid` |
-
-The built-in axes use these default keys:
-
-| Axis | Default Grouping Key |
-|---|---|
-| `repeat` | `aa:aid:v:oa:ta:tid:ca:cid` |
-| `actors` | `v:oa!:oid!:ta:tid:ca:cid` |
-| `actors_target` | `v:ta!:tid!:ca:cid` |
-| `targets` | `aa!:aid:v:ca:cid` |
-| `object` | `aa:aid:v:oa!:oid!:ta:tid:ca:cid` |
-
-Built-in axes assign these keys to persisted bursts. Custom axes may add `v`
-to group by verb and `d` to group by calendar period (a day by default).
-A singular token such as `:context` requires both of that role's fields in the
-key. Without `v`, the group may contain several verbs, so define its headline
-on a key without a verb (`scene.*` or `*.*`).
-
+<a id="axis-keys"></a>
 <a id="priority"></a>
+<a id="prioritizing-axes"></a>
 
-### Prioritizing Axes
-
-With three customers, both `actors_target` and `scene` qualify. The built-in `actors_target`
-axis has priority and selects the group:
-
-<FeedExample :items="contextActors" />
-
-New axes have the lowest priority among selectable axes. To put `scene` before
-`actors_target`, reuse the `$scene` defined above:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::axes([$scene], before: 'actors_target');
-```
-
-After group selection runs with this priority, the same activities form a
-`scene` group that names their shared context:
-
-<FeedExample :items="[contextGroup(contextRows)]" />
+See [Custom Axes](/deeper/custom-axes) to define grouping keys, eligibility, and priority.

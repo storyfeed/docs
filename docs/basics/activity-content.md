@@ -46,69 +46,6 @@ a few labelled values. Choose a body from the evidence you have:
 
 Put supporting detail in the body rather than a headline closure.
 
-<a id="headlines"></a>
-
-<a id="quoted-text"></a>
-
-## Adding Quoted Text
-
-Use an `Excerpt` body for someone's words or a passage from a document.
-Leave out `from` when the headline already says who said it; add it when the passage comes from someone or somewhere the headline does not name.
-Define the body on the quoted model in `toFeed()`:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Models/Note.php" at="toFeed()"
-use Storyfeed\Body\Excerpt;
-use Storyfeed\FeedEntity;
-
-public function toFeed(): FeedEntity
-{
-    return FeedEntity::make()
-        ->label('Order note')
-        ->body(
-            Excerpt::make()
-                ->text($this->body)
-                ->truncated(false),
-        );
-}
-```
-
-```php [Named Arguments] memo="app/Models/Note.php" at="toFeed()"
-use Storyfeed\Body\Excerpt;
-use Storyfeed\FeedEntity;
-
-public function toFeed(): FeedEntity
-{
-    return FeedEntity::make(
-        label: 'Order note',
-        body: Excerpt::make(
-            text: $this->body,
-            truncated: false,
-        ),
-    );
-}
-```
-:::
-
-Set `truncated(false)` when the body contains the complete text. The headline
-names the note's author, so the quotation needs no separate attribution:
-
-<FeedExample :items="[quotedNote]" />
-
-Record the note as the activity's object and the order as its target:
-
-```php
-use Storyfeed\Facades\Storyfeed;
-
-$note = $order->notes()->create($request->validated());
-
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('post', $note)
-    ->to($order)
-    ->publish();
-```
-
 <a id="entity-bodies"></a>
 
 ## Adding Entity Bodies
@@ -257,9 +194,74 @@ Prose::markdown($this->notes, title: $this->title);
 
 <FeedExample :items="[content.caseMemo, content.labReport]" />
 
+<a id="headlines"></a>
+
+<a id="quoted-text"></a>
+
+### Adding Quoted Text
+
+Use an `Excerpt` body for someone's words or a passage from a document.
+Leave out `from` when the headline already says who said it; add it when the passage comes from someone or somewhere the headline does not name.
+Define the body on the quoted model in `toFeed()`:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make()
+        ->label('Order note')
+        ->body(
+            Excerpt::make()
+                ->text($this->body)
+                ->truncated(false),
+        );
+}
+```
+
+```php [Named Arguments] memo="app/Models/Note.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+public function toFeed(): FeedEntity
+{
+    return FeedEntity::make(
+        label: 'Order note',
+        body: Excerpt::make(
+            text: $this->body,
+            truncated: false,
+        ),
+    );
+}
+```
+:::
+
+Set `truncated(false)` when the body contains the complete text. The headline
+names the note's author, so the quotation needs no separate attribution:
+
+<FeedExample :items="[quotedNote]" />
+
+Record the note as the activity's object and the order as its target:
+
+```php
+use Storyfeed\Facades\Storyfeed;
+
+$note = $order->notes()->create($request->validated());
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('post', $note)
+    ->to($order)
+    ->publish();
+```
+
 <a id="passages-from-a-source"></a>
 
-### Quoting a Source
+<a id="quoting-a-source"></a>
+
+**When the headline does not name the source.**
 
 Use `Excerpt` to quote someone else's words, such as a person interviewed for a
 story. Here the headline names the article, and `from` names the source of

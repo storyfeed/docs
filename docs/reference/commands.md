@@ -193,12 +193,17 @@ those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 
-To rebuild Live bursts for all stored history, pause everything that publishes
-activities, then run:
+To rebuild Live bursts for all stored history, pause every publisher, queue
+worker, and publishing schedule for the full rebuild. Maintenance mode alone
+does not stop queue workers. Then confirm that writers are paused:
 
 ```bash
-php artisan storyfeed:curate --rebuild-bursts
+php artisan storyfeed:curate --rebuild-bursts --writers-paused
 ```
+
+The rebuild commits progress in chunks. After an interruption, add `--resume`
+to continue from the committed cursor; add `--restart` to discard progress and
+replay all history. Keep writers paused until completion.
 
 Rehashing can move groups past an active cursor, leaving the next page empty.
 It changes `sync_token`, so clients must discard accumulated nodes and fetch
@@ -223,7 +228,7 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
 | Command | Description |
 |---|---|
-| `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release` |
+| `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it |
 | `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
 | `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. Safe to run repeatedly |

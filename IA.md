@@ -373,158 +373,142 @@ Spatie package docs (one page per capability, ruthless brevity), Inertia
 
 ## The structure
 
-Laravel-style grouping: a reader goes Getting Started → The Basics → Reading
-and Rendering → the two depth groups → Testing and Maintenance → Reference, and
-can stop at any tier with a working feed. The list mirrors `config.ts`; no page
-leans on one further down.
+The sidebar in `docs/.vitepress/config.ts` is the published spine. Getting
+Started ends with a rendered Blade feed. The Basics teaches model labels,
+recording, definitions and bodies before Feed Media uses those bodies.
+Retrieval comes before the UI kits; custom rendering follows the kits.
 
 ### Getting Started
 
 - ✅ Introduction — `guide/introduction`
-- ✅ Installation — `guide/installation`: install, run the installer, configure. Maintenance scheduling lives on Reference › Commands (pruning on Retention), with a one-line pointer here
-- ✅ Quickstart — three steps until the app is recording; reading and drawing are choices, not setup. Its model uses `toFeed()`, the style The Basics teaches first
-- ✅ What You Can Build (`guide/usage-examples`) — the showcase: a snippet, the feed it renders, and the page that teaches it. The three read modes are shown once, on Introduction; this page keeps only the weekly summary
+- ✅ Installation — `guide/installation`
+- ✅ Quickstart — `guide/quickstart`: five steps: models, headline, publication, retrieval, then the installed Blade kit and its rendered result
+- ✅ What You Can Build — `guide/usage-examples`
 
 ### The Basics
 
-Feedable Models first, because recording a non-`Feedable` object fails silently.
-Then the elementary act, the headline it reads as, the typed layer over the
-verb, and what an activity shows.
+- ✅ Feedable Models — `basics/feedable-models`: default labels, toFeed(), describeFeed(), custom labels and external model registration; API tables remain in Reference
+- ✅ Recording Activities — `basics/recording`
+- ✅ The Feed File — `basics/the-feed-file`
+- ✅ Activity Verbs — `basics/verbs`
+- ✅ Activity Content — `basics/activity-content`: body definition, Prose and KeyValue, one Excerpt section, images, files, lists, multiple bodies, MediaObject, links and the type table
+- ✅ Feed Media — `basics/feed-media`: current links, picture slots, files and avatars; comes after Activity Content teaches bodies
 
-- ✅ Feedable Models — the guessed label, `toFeed()` (the style Quickstart uses), `describeFeed()` under its own heading as the alternative, `feedMediaUsing()`, a link per feed, models you don't own, the model's own feed, morph aliases
-- ✅ Recording Activities — the builder, the verb as a plain string, roles, the actor, data, the publication time
-- ✅ The Feed File (`basics/the-feed-file`) — `routes/feed.php` and the `Story` facade: headlines, tokens, optional segments, dynamic headlines, icons and intents, definition groups, `Story::resource()`, precedence, listing and caching (the one home for `storyfeed:list` / `storyfeed:cache`). Comes after Recording, so it never teaches a publish. Group headlines live in Aggregation and deleted-model headlines in Deleted Models; this page links both
-- ✅ Activity Verbs (`basics/verbs`) — the same verb typed, as a `FeedVerb` enum (owner's page). Named
-  `Activity Types & Verbs` until 2026-09-14: the compound title was paying for
-  a definition Recording Activities now gives, and AS2.0 has no term "verb"
-  while every reader of an activity feed does. Then `Verbs`, until the owner
-  chose `Activity Verbs` on 2026-09-24: it says whose verbs they are beside
-  Recording Activities and Activity Content, and stays apart from Reference's
-  Verb Vocabulary. The slug stays `basics/verbs`, so no link moves
-- ✅ Activity Content — a headline alone, a quoted utterance, entity bodies and the body-type table (the one home for the table)
+### Retrieving and Rendering
 
-### Reading and Rendering
+- ✅ Retrieving Feeds — `basics/reading`: retrieval, groups, Live and Log, filters, pagination and The Payload
+- ✅ Named Feeds — `basics/named-feeds`
 
-Choose the feed, then inspect it, then draw it.
+### Storyfeed UI
 
-- ✅ Reading Feeds — the builder, the one plain definition of a group, read modes, filtering, `query()`, pagination
-- ✅ Named Feeds — declaring, entering, `only()`/`except()`, `Feed` classes
-- ✅ The Payload — the envelope, one activity node, one group node; every key is in Reference › The Payload Contract
-- ✅ Rendering — which payload field fills which part of a row (moved from Anatomy of a Row, deleted 2026-09-25), the smallest loop, links, what a glyph means, degraded entities, groups, details
+- ✅ Installing the Kits — `ui/installation`
+- ✅ Blade — `ui/blade`
+- ✅ Vue — `ui/vue`
+- ✅ React — `ui/react`
+- ✅ Customizing the Kits — `ui/customizing`
+- ✅ Custom Rendering — `basics/rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
 
 ### Recording in Depth
 
-Who acted and where, then the classes and pipeline built on them.
-
-- ✅ Publishing From Events — the listener, `PublishesToFeed`, events core emits
-- ✅ Parties & Anonymous Actors — named non-model participants, declared parties, anonymous activities and headlines
-- ✅ Containers & Context — the fourth role, target vs context, the container query
-- ✅ Activity Scopes — `Storyfeed::actor()` / `Storyfeed::context()` over a callback or request, explicit-versus-scoped precedence
-- ✅ Story Classes (`deeper/stories`) — the three `make:story` shapes, activities constructed with data and `toFeedActivity()`, class-level casts, resource methods, request-based actors
-- ✅ Named Stories — names, prefixes, group attributes, `story()`, `Story::has()` / `storyIs()`
-- ✅ Constraining Roles (`deeper/constraining-roles`) — allowed role types, parties and empty roles, publish-time mismatches and inspection
-- ✅ Story Middleware & Batching — middleware classes and closures, aliases and groups, batch windows, default roles, complete cross-feature role precedence
-- ✅ Queued Publishing (`deeper/queues`) — `queue()`, queued Story classes, publication time and snapshots, transactions, missing models, actor/context carry
+- ✅ Parties & Anonymous Actors — `deeper/parties`
+- ✅ Publishing From Events — `deeper/events`
+- ✅ Containers & Context — `deeper/context`
+- ✅ Casting Activity Data — `deeper/casting-activity-data`
+- ✅ Activity Scopes — `deeper/activity-scopes`
+- ✅ Story Classes — `deeper/stories`
+- ✅ Constraining Roles — `deeper/constraining-roles`
+- ✅ Story Middleware & Batching — `deeper/story-middleware-and-batching`
+- ✅ Named Stories — `deeper/named-stories`
+- ✅ Queued Publishing — `deeper/queues`
 
 ### Shaping the Feed
 
-How stored activities become the rows a feed shows, grouping first.
-
-- ✅ Aggregation — what a group is made of, axes, group headlines (the one home), plural tokens, nouns, thresholds, custom axes
-- ✅ Grouping Periods — the calendar boundary a verb groups within
-- ✅ Keeping the Latest Activity — `keepLatest()`: a new activity replaces earlier matching ones when stored
-- ✅ Composites — `->objects()`, `Bundleable`, batches, the group and parent headlines
-- ✅ Resolving Bodies When Retrieved (`deeper/resolving-bodies`) — current values, deferred construction, snapshot data and batched hydration; Feed Media owns links and picture slots
-- ✅ Custom Body Types (`deeper/body`) — custom components, writing body types, versions; Activity Content owns ordinary attachment
-- ✅ Localization — `FeedHeadline::trans()`, `FeedNoun::trans()`: translated in the reader's locale when the feed is read. Kept apart from The Feed File, as Laravel keeps Localization apart from Routing
-- ✅ Activity Streams 2.0 — conformance, the route, the `@context`, verb mapping
+- ✅ Aggregation — `deeper/aggregation`: built-in axes, thresholds, group headlines, tokens and fallback nouns; links to the read-mode guide
+- ✅ Live Burst Windows — `deeper/grouping-periods`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
+- ✅ Custom Axes — `deeper/custom-axes`: custom keys, eligibility, calendar periods and priority; default grouping keys live in Reference Configuration
+- ✅ Keeping the Latest Activity — `deeper/keeping-the-latest-activity`
+- ✅ Composites — `deeper/composites`
+- ✅ Resolving Bodies When Retrieved — `deeper/resolving-bodies`
+- ✅ Custom Body Types — `deeper/body`
+- ✅ Localization — `deeper/localization`
+- ✅ Activity Streams 2.0 — `deeper/activity-streams`
 
 ### Testing and Maintenance
 
-- ✅ Testing — `Storyfeed::fake()`, coverage assertions, static analysis
-- ✅ Diagnosing Your Feed (`deeper/diagnosing`) — running the doctor, reading a finding, the findings a developer acts on, `--stubs`, CI. Every check is in Reference › Doctor Checks
-- ✅ Deleted Models — tombstones, restore, force delete, keeping the label, `->missing()`, `->missingHeadline()` (the one home for deleted-model headlines), `->forgetWhenMissing()`, bulk deletes
-- ✅ Retention — per-verb `keepFor()` / `keepForever()` over `prune.after_days`, `--pretend`, groups shrink, orphaned snapshots swept, and the maintenance schedule. Taught with `view`; ephemeral state is Choosing What Not to Record
-- ✅ Healing a Feed — retiring stories whose source is permanently gone
+- ✅ Testing — `deeper/testing`
+- ✅ Diagnosing Your Feed — `deeper/diagnosing`
+- ✅ Deleted Models — `deeper/deleted-models`
+- ✅ Retention — `deeper/retention`
+- ✅ Healing a Feed — `deeper/healing`
+
+### Package Authors
+
+- ✅ Package Integration — `deeper/package-integration`: provider registration and overriding a package's stories; The Feed File keeps a pointer
 
 ### Cookbook
 
-In the order a reader meets the problem. A recipe is a decision plus an
-example; the mechanics stay on the concept page it links.
-
-- ✅ Composing a Coherent Activity · Choosing a Verb · Choosing When to Publish ·
-  Choosing What Not to Record · Repeating Activities · Recording Deletions ·
-  Activities Without an Actor · Recording an Authoriser · Headlines for Grouped
-  Activities · Counts That Keep Changing
+- ✅ Composing a Coherent Activity — `cookbook/read-the-fields-back`
+- ✅ Choosing a Verb — `cookbook/choosing-a-verb`
+- ✅ Choosing When to Publish — `cookbook/choosing-when-to-publish`: domain events first, model observers as a fallback, and transitions worth recording
+- ✅ Choosing What Not to Record — `cookbook/choosing-what-not-to-record`
+- ✅ Repeating Activities — `cookbook/repeating-activities`
+- ✅ Recording Deletions — `cookbook/activities-about-deletions`
+- ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`
+- ✅ Recording an Authoriser — `cookbook/an-authoriser-who-is-not-an-actor`
+- ✅ Choosing What to Group — `cookbook/choosing-what-to-group`
+- ✅ Headlines for Grouped Activities — `cookbook/grouped-headlines`
+- ✅ Naming Group Members From Activity Data — `cookbook/naming-group-members`
+- ✅ Computed Values in the Feed — `cookbook/computed-values`
 
 ### Reference
 
-What you type, then the shapes, then the policy pages.
+- ✅ Configuration — `reference/configuration`
+- ✅ Commands — `reference/commands`
+- ✅ Doctor Checks — `reference/doctor`
+- ✅ Feedable API — `reference/feedable`
+- ✅ FeedItem API — `reference/feed-item`
+- ✅ Verb Vocabulary — `reference/verbs`
+- ✅ The Payload Contract — `reference/payload`
+- ✅ Schema — `reference/schema`: generated table, column and index blocks; edit surrounding prose, not generated blocks
+- ✅ Storage Architecture — `reference/storage`: writes, retrieval, snapshot refresh and storage costs
+- ✅ Glossary — `reference/glossary`
 
-- ✅ Configuration · Commands · Doctor Checks (`reference/doctor`: every check and finding) · Feedable API · Verb Vocabulary · The Payload
-  Contract · Schema · Storage Architecture · Compatibility · Glossary
-- Schema (`reference/schema`) is the one home for tables, columns and indexes:
-  the ER diagram and the column and index tables are GENERATED from core's
-  migrations by `npm run schema` (`scripts/schema.mjs`; purposes in
-  `scripts/schema-notes.json`), and the drift guard fails the build when they
-  disagree. Edit the prose around the `<!-- schema:… -->` blocks, never inside.
-- Storage Architecture (`reference/storage`) explains what one publish writes,
-  how a page is read, what is kept current, and the costs (owner ruling
-  2026-10-01: split from Schema, title passes the spine test). Concept pages
-  link to it where they touch storage: Aggregation, Reading Feeds (pagination),
-  Story Middleware & Batching, Deleted Models, Retention.
+### Routes Outside the Sidebar
+
+These files retain old URLs or anchors and point readers to the canonical page:
+
+| File | Canonical Home |
+|---|---|
+| `docs/index.md` | `guide/introduction` |
+| `guide/anatomy.md` | `guide/introduction` |
+| `reference/compatibility.md` | `guide/installation#requirements` |
+| `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values` |
+| `basics/the-payload.md` | `basics/reading#the-payload` |
+
+The stable routes `basics/rendering`, `basics/reading`,
+`deeper/grouping-periods`, `cookbook/read-the-fields-back`,
+`cookbook/an-authoriser-who-is-not-an-actor` and
+`cookbook/activities-about-deletions` intentionally retain their URLs despite
+title changes. Moved sections on Feedable API, Aggregation and The Feed File
+retain their anchors and link to their canonical homes. Do not add tutorials
+to these compatibility sections.
+
+`guide/upgrading-0.13.md` is an existing unlisted source page, outside the teaching
+spine. `docs/rnd/**` is local research and excluded from production; `docs/briefs/**`
+is internal and excluded from every build.
 
 ## Pending coverage
 
-Gaps handed over by the package lead on 2026-08-27 (Solo todo 411, scratchpad
-63). **Audited 2026-09-14**: what the sweep closed is struck from this list, and
-what is still open is below. Ask the package lead rather than reading the
-source.
+The owner-approved structural pass is implemented: kit-first rendering,
+a Blade Quickstart ending, substantive Feedable Models, body-first Activity
+Content, payload coverage within Retrieving Feeds, a separate Custom Axes page,
+and package overrides within Package Integration. Choosing When to Publish
+leads with domain events. The sidebar lists written pages only.
 
-### Still open
-
-Nothing. Re-audited 2026-09-14 after the sweep; every item below is on the
-deployed site. Ask the package lead rather than reading the source when the
-next gap arrives.
-
-### Void under rule 25
-
-Upgrade notes for v0.8.0 and v0.9.0, and the `storyfeed/filament`
-published-language-file trap. All three describe moving between releases, and
-these pages describe one: `dev-main`, as it is now.
-
-### Closed by the 2026-09-14 sweep
-
-- ✅ `reference/doctor.md` no longer overclaims in "From Findings to Code": it
-  names the two findings that emit no stub, `roles` and `aggregates.latent`,
-  and says why each is deliberate.
-- ✅ Read-mode reachability is on the site: `aggregates.latent` at Info with no
-  fix stub, and `aggregates.reachability_unknown`, both on `reference/doctor.md`.
-  The upgrade note it asked for is void under rule 25.
-- ✅ The Checks table carries a severity column, so Info being load-bearing on
-  `aggregates.latent` and on `roles` over `:actor` is visible without reading
-  the prose.
-- ✅ `deeper/aggregation.md` says which axes each mode reads, as a matrix:
-  `log()` no axis, `live()` repeat plus authored composites, `summary()` the
-  winning axis with a repeat fallback.
-- ✅ `basics/reading.md` chooses a mode per surface, as a table of three
-  surfaces with the reason for each, under the sentence that mode is chosen per
-  surface and not per app.
-
-- ✅ The install line pinned a pre-release; `guide/installation.md` installs
-  `dev-main`.
-- ✅ The destructive-trickle comments, the stale `::: danger` on group-node
-  shape, and the expanded-group advice went with the page rewrites.
-- ✅ Group headlines are keyed by axis and verb, and by type where the axis
-  holds one — `deeper/aggregation.md` says so, with nouns and the fallback to
-  the single-activity headline (Grammar was folded into it on 2026-09-23).
-- ✅ The `roles` check has its row in `reference/doctor.md`.
-- ✅ `basics/named-feeds.md` carries the mode pointer.
-
-### Not for the site
-
-`FeedBuilder::declaredMode()` is `@internal` tooling surface. Recorded here only
-so nobody documents it as public API.
+No unwritten page is scheduled in the sidebar. The existing unlisted
+`guide/upgrading-0.13.md` remains outside this structural pass; release-by-release
+teaching is excluded by rule 25. Future gaps need a specific owner-approved brief.
+`FeedBuilder::declaredMode()` is internal tooling and is not public coverage.
 
 ## Notes
 
@@ -537,43 +521,22 @@ so nobody documents it as public API.
   is describing a release, and these pages describe `dev-main`.
 - Guide pages describe curation **behaviour** as "how it behaves today" —
   policy is explicitly free to change; only the group-node *shape* is contract.
-- **These docs are for someone who installed `storyfeed/storyfeed` and nothing
-  else.** No `storyfeed/ui`, no `storyfeed/filament`: not their APIs, not their
-  config keys, not "the Filament adapter does X" as an aside. A reader who has
-  only the core package must never meet a line they cannot run. Two pages were
-  deleted on 2026-09-14 for breaking this — Setting Up a New Consumer, and The
-  Feed Rail, whose four configurations were the plugin's (its core half, the
-  glyph's intent, moved to Headlines).
+- **Core and UI teaching have separate homes.** Core pages teach
+  `storyfeed/storyfeed`. Installation keeps one pointer to Installing the Kits.
+  Quickstart may install `storyfeed/ui` and ends with a rendered Blade feed.
+  Storyfeed UI owns installation, Blade/Vue/React usage, published views and
+  kit customization. Custom Rendering teaches application-owned components.
+  Other core pages link to those homes instead of repeating their setup.
+- **The shared rendering callout describes the payload boundary.** The
+  `::: headless` container has one message in `config.ts`:
 
-  **Naming the boundary is not the same as teaching across it.** Where the
-  package stops, use the `::: headless` container. It has ONE message, written
-  once in `config.ts` (ruled 2026-09-22: "can't the single one we just refined
-  satisfy all of them?"):
+  > **Rendering the Feed**
+  > Storyfeed serializes the feed as a structured payload, and your frontend
+  > chooses how to render it. Storyfeed UI supplies Blade, Vue and React components.
 
-  > **Storyfeed is headless: it has no views**
-  > Storyfeed serializes the feed as a structured payload. Your frontend
-  > chooses how to render it to suit your application. Official Storyfeed UI
-  > components are currently in development.
-
-  A page writes `::: headless` then `:::` and nothing else; a title or a body
-  on the page fails the build. At most one per page.
-
-  **The Quickstart's closing callout is where a reader first meets it.** It
-  ends the page, after the feed is fetched, shown as a payload, drawn, and
-  sketched in Vue. Every `::: headless` after it is a callback, so none may
-  appear on a page before the Quickstart.
-
-  It is LOUDER than `::: tip`, never a warning: a reader who misses it builds
-  on something the package does not do. Teal is `tip` and yellow is
-  `warning`, so it is loud by contrast: ink edges, an ink title, a solid fill.
-  Rule 9's one-spelling rule still holds: it is a container, not a component.
-- Anything describing `storyfeed/ui` or `storyfeed/filament` waits until that
-  package exists. When the `storyfeed/filament` page lands it is a **pricing and
-  install** page — what it costs, the licence key, the private Composer endpoint
-  — not a normal package page. Licensing and the free-versus-paid reasoning live
-  on the splash site, not on Compatibility (cut 2026-09-14: no promises before v1). Nothing about keeping a feed safe to show belongs on it:
-  audience scoping is in the MIT core, and pricing copy must never imply
-  otherwise.
+  A page writes the empty container; titles and bodies are rejected by the build.
+  Quickstart shows the boundary through its JSON and rendered Blade steps.
+  The Filament adapter is outside this site's current teaching spine.
 - The 2023 scaffold's sidebar anticipated much of this structure; what it got
   wrong was exposing internals (`FeedActivity` etc.) as user-facing pages — the
   contract is the public surface, the models are not.

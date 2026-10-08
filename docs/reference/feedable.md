@@ -136,67 +136,9 @@ Return a URL string, the populated `$media`, or `null` for no link. Registering
 another closure replaces the first. Without a resolver, the model has no link.
 
 <a id="describing-the-snapshot"></a>
+<a id="describing-the-snapshot-with-describefeed"></a>
 
-### Describing the Snapshot with `describeFeed()`
-
-Define snapshot values by modifying the entity returned by `$this->feedEntity()`:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Prose;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function describeFeed(): void
-    {
-        $this->feedEntity()
-            ->body( // [!code highlight]
-                Prose::make($this->instructions),
-            );
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Models/Order.php"
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\Prose;
-use Storyfeed\Concerns\InteractsWithFeed;
-use Storyfeed\Contracts\Feedable;
-
-class Order extends Model implements Feedable
-{
-    use InteractsWithFeed;
-
-    public function describeFeed(): void
-    {
-        $this->feedEntity()
-            ->body( // [!code highlight]
-                Prose::make(content: $this->instructions),
-            );
-    }
-}
-```
-
-:::
-
-This example adds a body while retaining the default label. You may also set
-labels and data, or combine values from a parent model and its subclasses.
-Unset fields remain empty except for the label. If you implement `toFeed`,
-the trait does not call `describeFeed`.
+See [Describing the Snapshot with `describeFeed()`](/basics/feedable-models#describing-the-snapshot-with-describefeed).
 
 <span id="the-default-label"></span>
 
@@ -212,24 +154,9 @@ Unset labels use the first available value:
 | the registered noun and the key | `Dish #42` |
 | the class name as words and the key | `Menu Item #42` |
 
-### Custom Labels
+<a id="custom-labels"></a>
 
-To customize default labels across your application, register a callback in a
-service provider. Return `null` to use the default rules:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::guessFeedLabelsUsing(
-    fn (Model $model) => $model->getAttribute('reference'),
-);
-```
-
-To customize one model's default label, override its `guessFeedLabel` method.
-Overriding `guessFeedLabel()` bypasses the application-wide guesser. To call
-the trait's implementation from your override, alias it:
-`use InteractsWithFeed { guessFeedLabel as guessedFeedLabel; }`.
+See [Custom Labels](/basics/feedable-models#custom-labels) to change the default label guesser.
 
 ### Snapshot Maintenance
 
@@ -261,41 +188,15 @@ when passed a verb. Inside a model, use `$this->storyfeed()` to retrieve that
 model's feed.
 
 <span id="models-you-don-t-own"></span>
-
 ## Registering External Models
 
-To include a model from another package without modifying its class, register
-it in a service provider:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
-use Storyfeed\FeedMedia;
-
-Storyfeed::feedable(Media::class)
-    ->toFeedUsing(
-        fn (Media $photo, FeedEntity $entity) => $entity
-            ->label($photo->name)
-            ->data(['mediaType' => $photo->mime_type]),
-    )
-    ->feedMediaUsing(
-        fn (FeedContext $context, FeedMedia $media) => $media
-            ->url(route('photos.show', $context->routeKey())),
-    );
-```
+See [Registering External Models](/basics/feedable-models#registering-external-models) for setup.
 
 | Method | Receives | Returns |
 |---|---|---|
 | `Storyfeed::feedable($class)` | a model class | a registration to chain the methods below on |
 | `->toFeedUsing(fn (Model $model, FeedEntity $entity) => …)` | the model and an empty `FeedEntity` | the entity, or nothing; an unset label is guessed |
 | `->feedMediaUsing(fn (FeedContext $context, FeedMedia $media) => …)` | the `FeedContext` and an empty `FeedMedia` | a URL string, the `$media`, or `null` |
-
-Both closures are optional. Storyfeed treats the registered class as Feedable:
-saves refresh snapshots, and deletion and restoration update its activities.
-Register the exact instantiated class; parent registrations do not apply to
-subclasses. Classes implementing `Feedable` cannot also be registered.
 
 ## `FeedEntity`
 

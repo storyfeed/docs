@@ -1,4 +1,6 @@
-# Rendering
+<a id="rendering"></a>
+
+# Custom Rendering
 
 <script setup>
 import { computed } from 'vue'
@@ -10,7 +12,6 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 const one = scene.order
 const time = useRelativeTime(computed(() => one.published_at))
-const vueHeadlines = { [one.id]: `${one.actor.label} placed ${one.object.label} with ${one.target.label}` }
 const grouped = liveOf(scene.cookbook.grouped.actors)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
@@ -30,72 +31,17 @@ const withKeyValue = { ...content.confirmed,
 
 ## Introduction
 
-Storyfeed UI renders a feed with one component. You may also build your own components.
-
-::: headless
-:::
+Build your own Blade components to render activity headlines, bodies, groups,
+and pagination. For ready-made components, use [Storyfeed UI](/ui/installation).
 
 <a id="using-storyfeed-ui"></a>
+<a id="installing-storyfeed-ui"></a>
+<a id="rendering-a-page"></a>
+<a id="customizing-the-views"></a>
+<a id="customizing-the-styles"></a>
 
-## Using Storyfeed UI
-
-### Installing Storyfeed UI
-
-```bash
-composer require storyfeed/ui
-```
-
-Storyfeed UI supplies [Blade](/ui/blade), [Vue](/ui/vue) and [React](/ui/react)
-kits. All use Tailwind CSS v4 and [starter-kit colour tokens](/ui/customizing#colour-tokens).
-Register the Blade views in your application's CSS:
-
-```css memo="resources/css/app.css"
-@source "../../vendor/storyfeed/ui/resources/views";
-```
-
-Compile with `npm run build` and load the CSS in your layout, for example
-with `@vite('resources/css/app.css')`. See [Installing the Kits](/ui/installation)
-for Vue and React's copy commands and dependencies.
-
-### Rendering a Page
-
-Pass the feed page to your view and render it with the `feed` component:
-
-```php memo="routes/web.php"
-use Illuminate\Support\Facades\Route;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function () {
-    return view('feed', ['page' => Storyfeed::feed()->get()]);
-});
-```
-
-```blade memo="resources/views/feed.blade.php"
-<x-storyfeed::feed :page="$page" />
-```
-
-<FeedExample :items="[one, withKeyValue]" />
-
-### Customizing the Views
-
-To change the markup, publish the views:
-
-```bash
-php artisan vendor:publish --tag=storyfeed-views
-```
-
-The command publishes views to `resources/views/vendor/storyfeed`. Published
-views override the package's views, so retain only those you customize.
-
-### Customizing the Styles
-
-The components use your application's [colour tokens](/ui/customizing#colour-tokens),
-including dark values. Edit copied components or published Blade views to change
-markup and utilities. No separate stylesheet or Typography plugin is needed.
-
-[Host seams](/ui/customizing#host-seams) supply application links, Component
-bodies, file labels and media placement. `child-rail` controls expanded members
-independently of their parent's rail.
+Storyfeed UI owns [installation](/ui/installation), [Blade usage and published views](/ui/blade),
+and [kit customization](/ui/customizing).
 
 <a id="building-your-own"></a>
 
@@ -580,69 +526,6 @@ Render the feed with the `x-feed` component:
 
 <a id="verifying-your-renderer"></a>
 
-## Rendering With Vue
+<a id="rendering-with-vue"></a>
 
-With Inertia, pass the feed payload to the page as a prop. This example uses
-log mode for individual activities. The PHP headline reader also supplies a
-plain-text headline for each item, so the Vue row needs no token parser:
-
-```php memo="routes/web.php"
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Storyfeed\Facades\Storyfeed;
-
-Route::get('/', function (Request $request) {
-    $page = Storyfeed::feed()->log()->cursor($request->query('cursor'))->get();
-    $headlines = [];
-
-    foreach ($page as $item) {
-        $headlines[$item->id()] = $item->headline()->toString();
-    }
-
-    return Inertia::render('Home', [
-        'feed' => $page,
-        'headlines' => $headlines,
-    ]);
-});
-```
-
-Vue receives a feed object containing an `items` array. `headlines` is an
-application-defined prop keyed by item ID. Render each headline as escaped
-text and the publication time as an ISO timestamp:
-
-```vue memo="resources/js/pages/Home.vue"
-<script setup lang="ts">
-defineProps<{
-    feed: { items: Array<{ id: string; published_at: string }> }
-    headlines: Record<string, string>
-}>()
-</script>
-
-<template>
-    <ul>
-        <li v-for="item in feed.items" :key="item.id">
-            <p>{{ headlines[item.id] }}</p>
-            <time :datetime="item.published_at">{{ item.published_at }}</time>
-        </li>
-    </ul>
-</template>
-```
-
-For the shared order example, this produces:
-
-<FeedExample :items="[one]">
-  <template #preview="{ items }">
-    <ul>
-      <li v-for="item in items" :key="item.id">
-        <p>{{ vueHeadlines[item.id] }}</p>
-        <time :datetime="item.published_at">{{ item.published_at }}</time>
-      </li>
-    </ul>
-  </template>
-</FeedExample>
-
-This small component renders plain text without entity links. Use the
-[Payload Contract](/reference/payload) for the role, group and body fields
-when extending your application's renderer. See
-[Paginating Results](/basics/reading#paginating-results) for cursor handling.
+For Vue components and Inertia usage, see the [Vue kit](/ui/vue).

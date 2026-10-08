@@ -109,6 +109,21 @@ Increase a limit when your frontend displays more names:
 
 `children_limit` still caps the sample.
 
+### Default Grouping Keys
+
+The built-in axes use these default keys:
+
+| Axis | Default Grouping Key |
+|---|---|
+| `repeat` | `aa:aid:v:oa:ta:tid:ca:cid` |
+| `actors` | `v:oa!:oid!:ta:tid:ca:cid` |
+| `actors_target` | `v:ta!:tid!:ca:cid` |
+| `targets` | `aa!:aid:v:ca:cid` |
+| `object` | `aa:aid:v:oa!:oid!:ta:tid:ca:cid` |
+
+These keys identify shared roles within built-in Live bursts. See
+[Custom Axes](/deeper/custom-axes#axis-keys) for field syntax and calendar keys.
+
 <span id="batches-composites"></span>
 
 ### Batches and Composites

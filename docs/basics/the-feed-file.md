@@ -19,7 +19,6 @@ const created = scene.basics.feedFile.created
 const ready = scene.basics.activityContent.ready
 const fellBack = { ...ready, headline_template: ':actor updated :object', glyph: null,
   object: { ...ready.object, body: null } }
-const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object to :target' }
 </script>
 
 ## Basic Definitions
@@ -237,45 +236,9 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 You may also define [group headlines](/deeper/aggregation#defining-group-headlines)
 and [headlines for deleted models](/deeper/deleted-models).
 
-## Overriding Package Stories
+<a id="overriding-package-stories"></a>
 
-In this example, an installed package defines the `place` verb for `order`
-activities with the headline `:actor placed :object with :target`, a shopping-bag icon, and the
-repeat-group headline `:actor made :count order placements with :target`. To change
-only its single-activity headline, declare an explicit override:
-
-```php memo="routes/feed.php"
-use Storyfeed\Facades\Story;
-
-Story::for('order')
-    ->verb('place')
-    ->override()
-    ->headline(':actor submitted :object to :target');
-```
-
-<FeedExample :items="[overriddenOrder]" />
-
-Only the headline changes. The package's shopping-bag icon and repeat-group
-headline remain. Its Story class binding also remains when the application supplies only presentation fields.
-
-For presentation fields, `override()` applies to the same object type and
-verb. It takes precedence over the original declaration regardless of
-registration order. [Wildcard precedence](#definition-precedence) still
-applies between different keys.
-
-| Supplied Option | What Changes |
-|---|---|
-| Headline, anonymous headline, icon, or intent | that value |
-| Group headlines | each supplied axis headline; other axes remain |
-| Casts | each supplied data key; other keys remain |
-| Role constraints | each supplied role; other roles remain |
-| Queue options | each supplied option; other options remain |
-| Middleware, missing-role policy, or keep-latest policy | the whole supplied property |
-
-Ordinary declarations from different source locations that claim the same
-headline or icon key cause an error, even if their values are identical. Explicit
-overrides from different source locations that claim the same field and key
-also cause an error. Caching still requires unique story names.
+See [Overriding a Package's Stories](/deeper/package-integration#overriding-package-stories) to change supplied definitions in your feed file.
 
 ## Listing Definitions
 
