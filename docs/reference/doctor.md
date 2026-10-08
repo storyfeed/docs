@@ -119,6 +119,11 @@ optional keys can produce different shapes. Those differences need no repair.
 Register feeds so the check can inspect their declared read modes and verb
 filters. It does not execute every call-site query. A call site can override a
 feed's mode, and a custom query can narrow it beyond what the doctor sees.
+Custom `query()` callbacks follow Laravel's query-builder model: they can
+express nested conditions, subqueries, and application-specific scopes. The
+doctor does not infer that a group is unreachable from those callbacks or
+from an empty sampled page. Use an exact acknowledgment when every surface
+deliberately excludes the reported group, as shown below.
 
 | Declared Read Mode | Doctor Reachability |
 |---|---|
@@ -170,6 +175,44 @@ them. `problems()`, `count()`, `isHealthy()`, `severity()`, and `fixes()` exclud
 them, so they neither fail CI nor generate stubs. A fix shared with an active
 finding remains available. Text and JSON show the written reason; JSON also
 includes `acknowledged_count`.
+
+#### Custom Query Exclusions
+
+For example, a `portal` feed may exclude clause rewrites from repeat groups
+in its custom query while rendering them on the object axis. The doctor can
+still report `aggregates.missing` for `repeat.agreement.rewrite`, because the
+declared Live mode and verb filter admit that pair. First verify that no
+surface can return the group, then inspect its complete subject:
+
+```sh
+php artisan storyfeed:doctor --only=aggregates --json
+```
+
+If the finding's subject is exactly the example below, add this entry to
+the `doctor.acknowledgments` list in `config/storyfeed.php`:
+
+```php memo="config/storyfeed.php" at="doctor.acknowledgments"
+[
+    'code' => 'aggregates.missing',
+    'subject' => [
+        'axis' => 'repeat',
+        'verb' => 'rewrite',
+        'key' => 'repeat.agreement.rewrite',
+        'read_by' => 'portal',
+    ],
+    'reason' => 'The portal custom query excludes rewrite repeat groups; rewrites render on the object axis.',
+],
+```
+
+Copy your own subject rather than adapting only the key: `read_by` must match
+the complete comma-separated reader string, or `null`, from the finding.
+Rebuild the configuration cache if your deployment uses one, then rerun
+`php artisan storyfeed:doctor --fail-on=error`. The accepted finding stays
+visible with its reason and no longer fails the command or generates stubs.
+Other missing headlines still fail. If a reader is added or removed, the
+subject no longer matches: review the exclusion again before updating the
+acknowledgment. Changes within an existing custom query are opaque to the
+doctor, so revisit the reason whenever that query changes.
 
 | Policy Finding | Severity | Meaning |
 |---|---|---|
