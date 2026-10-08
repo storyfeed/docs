@@ -82,63 +82,51 @@ Describe `Menu` and `Shop` the same way, each with its own parent relationship.
 | `Shop` | `->parent($this->mall)` |
 | `Mall` | no parent |
 
-Publish on the dish. The mall feed includes the activity without a separate
-mall role:
+Record the activity on the dish. The mall's feed includes it without a mall
+role:
 
 ::: code-group
 ```php [Fluent Syntax] memo="routes/web.php"
 use App\Models\Dish;
+use App\Models\Mall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::post('/dishes/{dish}/publish', function (
-    Request $request,
-    Dish $dish,
-) {
+Route::post('/dishes/{dish}/publish', function (Request $request, Dish $dish) {
     Storyfeed::activity()
         ->by($request->user())
         ->action('add', $dish)
         ->publish();
+});
 
-    $mall = $dish->menu->shop->mall;
-
-    return Storyfeed::feed()
-        ->involving($mall)
-        ->get();
+Route::get('/malls/{mall}/feed', function (Mall $mall) {
+    return Storyfeed::feed()->involving($mall)->get();
 });
 ```
 
 ```php [Named Arguments] memo="routes/web.php"
 use App\Models\Dish;
+use App\Models\Mall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
-Route::post('/dishes/{dish}/publish', function (
-    Request $request,
-    Dish $dish,
-) {
+Route::post('/dishes/{dish}/publish', function (Request $request, Dish $dish) {
     Storyfeed::record(
         verb: 'add',
         object: $dish,
         actor: $request->user(),
     );
+});
 
-    $mall = $dish->menu->shop->mall;
-
-    return Storyfeed::feed()
-        ->involving($mall)
-        ->get();
+Route::get('/malls/{mall}/feed', function (Mall $mall) {
+    return Storyfeed::feed()->involving($mall)->get();
 });
 ```
 :::
 
 <FeedExample :items="[added]" />
-
-The activity is an illustrative shop transaction. The dish, shop and mall
-come from the sample world;
-the menu is the existing shop-app example.
 
 ## Deeper Hierarchies
 
