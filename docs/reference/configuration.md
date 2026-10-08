@@ -77,11 +77,13 @@ activities without a recorded actor.
 Register verbs with `Storyfeed::verbs()` or a Story class. See
 [Verb Vocabulary](/reference/verbs#registering-verbs).
 
-## Nested Containers
+<a id="nested-containers"></a>
+
+## Distant Relations
 
 | Key | Default | Purpose |
 |---|---|---|
-| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context (0–255); see [Nested Containers](/deeper/nested-containers) |
+| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context (0–255); see [Distant Relations](/deeper/distant-relations) |
 
 ## Grouping
 

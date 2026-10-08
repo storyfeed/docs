@@ -1,9 +1,10 @@
-# Nested Containers
+# Distant Relations
 
 ## Introduction
 
-A dish belongs to a menu, the menu to a shop, and the shop to a mall.
-Use `involving($mall)` to retrieve activity on any dish beneath it.
+Like Eloquent's `hasManyThrough`, a feed can reach distant relations. A dish
+belongs to a menu, the menu to a shop, and the shop to a mall. Use
+`involving($mall)` to retrieve activity on any dish beneath it.
 
 <script setup>
 import { activity, scene, role } from '../.vitepress/theme/world'

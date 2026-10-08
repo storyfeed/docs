@@ -148,7 +148,7 @@ return $order->storyfeed()->get();
 
 `involving($ancestor)` also includes activity anywhere beneath an ancestor's
 recorded parent hierarchy: task → list → folder → project → workspace → tenant
-is retrieved with `involving($tenant)`. See [Nested Containers](/deeper/nested-containers)
+is retrieved with `involving($tenant)`. See [Distant Relations](/deeper/distant-relations)
 for parent declarations and depth limits.
 
 You may also filter by a specific role:

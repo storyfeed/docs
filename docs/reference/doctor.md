@@ -63,7 +63,7 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
 | `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
-| `ancestors` | broken declared parent chains (`ancestors.unresolvable`) and actor-only self-acting containers (`ancestors.actor_only`). See [Nested Containers](/deeper/nested-containers#checking-parent-chains) | warning |
+| `ancestors` | broken declared parent chains (`ancestors.unresolvable`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/deeper/distant-relations#checking-parent-chains) | warning |
 | `participants` | activities `involving()` cannot find. `storyfeed:participants` backfills them | warning |
 | `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
 | `claims` | composite members still held by a deleted composite. `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |

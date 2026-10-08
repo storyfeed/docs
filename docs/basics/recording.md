@@ -54,7 +54,7 @@ role as a named argument.
 | `instrument` | the tool or service used | the device used to take an order |
 
 Containers above the object, target or context come from each model's
-[`parent()` declaration](/deeper/nested-containers).
+[`parent()` declaration](/deeper/distant-relations).
 
 Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.

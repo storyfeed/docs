@@ -413,7 +413,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Parties & Anonymous Actors — `deeper/parties`
 - ✅ Publishing From Events — `deeper/events`
 - ✅ Containers & Context — `deeper/context`
-- ✅ Nested Containers — `deeper/nested-containers`: parent declarations, recorded ancestry, moves and offline rebuilds
+- ✅ Distant Relations — `deeper/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
 - ✅ Casting Activity Data — `deeper/casting-activity-data`
 - ✅ Activity Scopes — `deeper/activity-scopes`
 - ✅ Story Classes — `deeper/stories`

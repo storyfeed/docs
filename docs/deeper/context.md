@@ -7,7 +7,7 @@ belongs to. Use it to retrieve activities within that shop.
 
 Containers can be nested beyond target and context: dish → menu → shop → mall.
 Each model declares `parent()` so `involving($mall)` finds activity beneath it.
-See [Nested Containers](/deeper/nested-containers).
+See [Distant Relations](/deeper/distant-relations).
 
 <script setup>
 import { activity, scene, role } from '../.vitepress/theme/world'
@@ -94,7 +94,7 @@ Record every role that describes what happened, even if the headline omits it.
 Storyfeed also uses roles for filtering and grouping.
 
 For containers above the target or context, declare each model's
-[parent](/deeper/nested-containers).
+[parent](/deeper/distant-relations).
 
 <a id="uses-of-context"></a>
 
@@ -123,7 +123,7 @@ Storyfeed::feed()->context($shop)->get();
 
 The [`involving` method](/basics/reading#scoping) also includes activities about
 the shop itself, such as its creation, and activity beneath its
-[declared parent hierarchy](/deeper/nested-containers).
+[declared parent hierarchy](/deeper/distant-relations).
 
 <a id="non-model-containers"></a>
 
