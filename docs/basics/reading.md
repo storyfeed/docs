@@ -146,11 +146,16 @@ return $order->storyfeed()->get();
 
 <FeedExample :items="liveOf(involving(scene.order.object))" />
 
+`involving($ancestor)` also includes activity anywhere beneath an ancestor's
+recorded parent hierarchy: task → list → folder → project → workspace → tenant
+is retrieved with `involving($tenant)`. See [Nested Containers](/deeper/nested-containers)
+for parent declarations and depth limits.
+
 You may also filter by a specific role:
 
 | Call | Returns |
 |---|---|
-| `->involving($model)` | activities where the model is actor, object, target, context, origin, result, or instrument |
+| `->involving($model)` | activities where the model is actor, object, target, context, origin, result, or instrument, or a recorded ancestor |
 | `->context($shop)` | activities with the shop in the `context` role |
 | `->actor($customer)` | activities performed by the customer |
 | `->object($order)` / `->target($shop)` | activities matching the specified role |

@@ -117,6 +117,9 @@ class Order extends Model implements Feedable
 <FeedExample :items="withSnapshot" />
 
 The `toFeed` method returns a `FeedEntity` containing the model's label.
+It may also name the closest container with `->parent($this->shop)` (or the
+named argument `parent: $this->shop`). This makes activities on the model
+retrievable through its ancestors. See [Nested Containers](/deeper/nested-containers).
 
 `InteractsWithFeed` refreshes the shared snapshot on model saves while
 recording is enabled. Changes to its snapshot values can therefore appear

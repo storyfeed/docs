@@ -45,7 +45,7 @@
     "attributed_to": "The entity's author IRI, from `toFeed()`.",
     "body": "The entity's bodies, from `toFeed()`.",
     "source_updated_at": "The model's `updated_at` when the snapshot was taken, in UTC. Older writes are rejected only when both source timestamps are known; an incoming unknown timestamp is accepted and clears this watermark.",
-    "meta": "The model's route key, when it differs from the primary key."
+    "meta": "Package metadata: the route key and closest-parent identity when declared."
   },
   "feed_groupings": {
     "id": "Primary key.",
@@ -59,12 +59,13 @@
   "feed_participants": {
     "id": "Primary key.",
     "activity_id": "The activity.",
-    "role": "Which role the entity fills: `actor`, `object`, `target`, `context`, `origin`, `result` or `instrument`.",
+    "role": "A direct role or ancestor; each entity has one row per activity.",
     "entity_type": "The entity's morph alias.",
     "entity_id": "The entity's key, as a string.",
     "published_at": "Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query.",
     "created_at": "When the row was written.",
-    "updated_at": "When the row last changed."
+    "updated_at": "When the row last changed.",
+    "depth": "Zero for direct participation; positive for a recorded ancestor, at its shortest depth."
   },
   "feed_parties": {
     "id": "Primary key.",

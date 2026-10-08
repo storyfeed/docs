@@ -134,6 +134,7 @@ const TYPES = {
   json: () => ({ type: 'json' }),
   boolean: () => ({ type: 'boolean' }),
   unsignedInteger: () => ({ type: 'unsigned int' }),
+  unsignedSmallInteger: () => ({ type: 'unsigned smallint' }),
   unsignedBigInteger: () => ({ type: 'unsigned bigint' }),
   foreignId: () => ({ type: 'unsigned bigint' }),
   timestamp: (a) => ({ type: a[1] ? `timestamp(${a[1]})` : 'timestamp' }),
@@ -171,6 +172,12 @@ function apply(tables, table, statement, file) {
     if (!t.indexes.some(i => i.kind === kind && i.columns.join() === columns.join())) t.indexes.push({ kind, columns, name });
   };
 
+  if (method === 'dropUnique') {
+    const columns = Array.isArray(args[0]) ? args[0] : null;
+    t.indexes = t.indexes.filter(i => !(i.kind === 'unique' &&
+      (columns ? i.columns.join() === columns.join() : i.name === args[0])));
+    return;
+  }
   if (method === 'index' || method === 'unique' || method === 'primary') {
     index(method, [args[0]].flat(), args[1]);
     return;

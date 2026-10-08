@@ -279,7 +279,7 @@ all work, including a mix of them in one app.
 | `attributed_to` | text | nullable | The entity's author IRI, from `toFeed()`. |
 | `body` | json | nullable | The entity's bodies, from `toFeed()`. |
 | `source_updated_at` | datetime(6) | nullable | The model's `updated_at` when the snapshot was taken, in UTC. Older writes are rejected only when both source timestamps are known; an incoming unknown timestamp is accepted and clears this watermark. |
-| `meta` | json | nullable | The model's route key, when it differs from the primary key. |
+| `meta` | json | nullable | Package metadata: the route key and closest-parent identity when declared. |
 
 | Index | Columns |
 |---|---|
@@ -394,17 +394,18 @@ Indexes each activity's filled roles for `involving()` and
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. |
 | `activity_id` | unsigned bigint |  | The activity. |
-| `role` | string(20) |  | Which role the entity fills: `actor`, `object`, `target`, `context`, `origin`, `result` or `instrument`. |
+| `role` | string(20) |  | A direct role or ancestor; each entity has one row per activity. |
 | `entity_type` | string(255) |  | The entity's morph alias. |
 | `entity_id` | string(36) |  | The entity's key, as a string. |
 | `published_at` | timestamp(6) | nullable | Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
+| `depth` | unsigned smallint | default `0` | Zero for direct participation; positive for a recorded ancestor, at its shortest depth. |
 
 | Index | Columns |
 |---|---|
-| unique | `activity_id`, `role` |
 | index | `entity_type`, `entity_id`, `published_at`, `activity_id` |
+| unique | `activity_id`, `entity_type`, `entity_id` |
 <!-- /schema -->
 
 ## Deletion and Metadata

@@ -224,6 +224,7 @@ FeedEntity::make(
 
 | Method | Type | On the Payload |
 |---|---|---|
+| `parent()` | `?Model` | not on the payload: the closest [container](/deeper/nested-containers), followed at publication |
 | `label()` | `?string` | `entity.label` |
 | `data()` | array or `Arrayable`, merged; or a key and a value | `entity.data`, available to `feedMedia()` |
 | `body()` | a body, a string, or a list; each call appends | `entity.body` |

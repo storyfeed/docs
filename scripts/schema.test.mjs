@@ -108,3 +108,23 @@ test('arrow Blueprint callbacks retain covering indexes and string primary keys'
   assert.ok(table.indexes.some(i => i.kind === 'primary' && i.columns.join() === 'key'))
   assert.ok(table.indexes.some(i => i.name === 'covering' && i.columns.join() === 'kind,key'))
 })
+
+test('ancestor upgrades replace the role unique key and keep the covering index', () => {
+  const source = create.replace("$table->string('kind', 20)->default('plain');", "$table->string('kind', 20)->default('plain');\n            $table->unique(['kind', 'id']);")
+  const upgrade = `<?php return new class extends Migration {
+    public function up(): void {
+      $name = config('storyfeed.tables.widgets', 'feed_widgets');
+      Schema::table($name, function (Blueprint $table) {
+        $table->unsignedSmallInteger('depth')->default(0);
+        $table->dropUnique(['kind', 'id']);
+        $table->unique(['id', 'uid'], 'entity_unique');
+      });
+    }
+  };`
+  const table = extract([['create', source], ['upgrade', upgrade]]).get('feed_widgets')
+  assert.equal(table.columns.find(c => c.name === 'depth').type, 'unsigned smallint')
+  assert.equal(table.columns.find(c => c.name === 'depth').default, 0)
+  assert.ok(!table.indexes.some(i => i.kind === 'unique' && i.columns.join() === 'kind,id'))
+  assert.ok(table.indexes.some(i => i.name === 'entity_unique'))
+  assert.ok(table.indexes.some(i => i.name === 'widgets_kind_index'))
+})

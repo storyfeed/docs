@@ -5,6 +5,10 @@
 The `context` role records where an activity happened, such as the shop a dish
 belongs to. Use it to retrieve activities within that shop.
 
+Containers can be nested beyond target and context: dish → menu → shop → mall.
+Each model declares `parent()` so `involving($mall)` finds activity beneath it.
+See [Nested Containers](/deeper/nested-containers).
+
 <script setup>
 import { activity, scene, role } from '../.vitepress/theme/world'
 const inside = activity({ ...scene.question, context: role.shop,
@@ -89,6 +93,9 @@ Storyfeed::record(
 Record every role that describes what happened, even if the headline omits it.
 Storyfeed also uses roles for filtering and grouping.
 
+For containers above the target or context, declare each model's
+[parent](/deeper/nested-containers).
+
 <a id="uses-of-context"></a>
 
 Set the context when you need to filter by it or include it in a headline:
@@ -115,7 +122,8 @@ Storyfeed::feed()->context($shop)->get();
 <FeedExample :items="[inside]" />
 
 The [`involving` method](/basics/reading#scoping) also includes activities about
-the shop itself, such as its creation.
+the shop itself, such as its creation, and activity beneath its
+[declared parent hierarchy](/deeper/nested-containers).
 
 <a id="non-model-containers"></a>
 

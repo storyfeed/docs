@@ -47,8 +47,9 @@ innermost step stores the activity in one database transaction:
    for, written in a single insert. For built-in Live axes, the `hash` identifies a persisted
    [burst](/deeper/grouping-periods) of activities sharing the logical key.
    Custom calendar axes include their period in the key.
-4. **Participants.** One `feed_participants` row per filled role, with
-   `published_at` copied from the activity.
+4. **Participants.** One `feed_participants` row per distinct direct entity or
+   [recorded ancestor](/deeper/nested-containers), with `published_at` copied from
+   the activity.
 5. **Curation.** For each group the activity joined, Storyfeed decides which
    one it appears under in `live()` and sets `winner` on that row.
 
