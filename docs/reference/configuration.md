@@ -81,7 +81,7 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 
 | Key | Default | Purpose |
 |---|---|---|
-| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context; see [Nested Containers](/deeper/nested-containers) |
+| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context (0–255); see [Nested Containers](/deeper/nested-containers) |
 
 ## Grouping
 

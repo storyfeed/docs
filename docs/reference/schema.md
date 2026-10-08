@@ -400,6 +400,7 @@ Indexes each activity's filled roles for `involving()` and
 | `published_at` | timestamp(6) | nullable | Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
+| `depth` | unsigned tinyint | default `0` | Stored distance: zero for direct participation; the minimum distance from object, target or context for an ancestor. Unindexed and unused by reads. |
 
 | Index | Columns |
 |---|---|
