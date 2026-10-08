@@ -37,8 +37,8 @@ Attributes such as `class` land on the feed's root element.
 | `time`, `media`, `body` | a timestamp, picture or body |
 | `pager`, `divider`, `media-strip` | navigation and group presentation |
 
-All use the `storyfeed::` namespace. Raw JSON can use
-`:items="$payload['items']"` and `:next-cursor="$payload['next_cursor']"`.
+All use the `storyfeed::` namespace. To render a payload array instead of a
+`FeedPage`, pass `:items="$payload['items']"` and `:next-cursor="$payload['next_cursor']"`.
 The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
 ## Rails and Groups
@@ -49,20 +49,26 @@ The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
 `rail` accepts `actor`, `activity`, `actor-only` and `activity-only`.
 The default is `actor-only`, with `activity-only` for group children.
-An explicit `child-rail` controls children independently; without an override,
-children inherit the parent posture and dense rows suppress badges.
+An explicit `child-rail` controls members independently; otherwise they
+inherit the group’s rail. Members omit badges. See the
+[rail and group examples](/ui/vue#rails-and-groups).
 
 | Option | Behaviour |
 |---|---|
 | `:grouped="false"` | hides day headings |
 | `dividers` | labels keyed by public item ID |
-| `divider-style="dot|branch"` | divider joint |
+| `divider-style="dot|branch"` | a dot on the rail or a branch off it |
 | `timezone` | display zone for days and timestamps |
 | `interactive`, `collapsed` | group disclosure and initial state |
 
-Native `details` works without JavaScript. Unspecified state opens unnamed
-groups, or all groups when `interactive` is false. Static collapsed members remain available to print.
-The server renders timestamps; the host owns refreshing them.
+Native `details` works without JavaScript. By default, groups without a
+headline open; with `:interactive="false"`, every group opens. Static collapsed members remain available to print.
+Timestamps are rendered once on the server; refresh them in your own
+JavaScript if needed.
+
+The disclosure says “Show less” when open and “Show all 3” for a collapsed
+three-member group. If the response limits the children, it reports how many
+are not shown. Expanding displays the supplied children; it does not fetch more.
 
 ## Registering App Components
 
@@ -73,9 +79,8 @@ app(BodyComponents::class)->register('App/Message', 'feed.message');
 ```
 
 A Component body named `App/Message` renders `<x-feed.message>` with its
-`props`. Unregistered names draw nothing. The mapped component must exist.
-Whole-feed `renderers` callbacks customize time, body, annotations, media,
-file labels and object icons. These are trusted app callbacks returning HTML.
+`props`. A name that is not registered renders nothing.
+
 See [Host Seams](/ui/customizing#blade-host-seams).
 
 ## Publishing Views
@@ -85,11 +90,11 @@ php artisan vendor:publish --tag=storyfeed-views
 ```
 
 Views land in `resources/views/vendor/storyfeed`; keep the ones you change.
-Add glyph views under `icons/`, named for the payload's glyph token.
+Add icon views under `icons/`, named for the payload's glyph token.
 Unmapped tokens use `icons/activity`. Custom body `Acme/Attachment` uses
 `components/body/acme/attachment.blade.php`, receiving `$body` and `$entity`.
 
-Kit words such as “Older activity” use Laravel's `__()` function and can be
-translated in `lang/{locale}.json`.
+The kit’s own strings, such as “Older activity”, are translatable through
+`lang/{locale}.json`.
 See the [package README](https://github.com/storyfeed/ui/blob/main/README.md)
 for the full Blade component and callback contracts.

@@ -1,6 +1,6 @@
 # Vue
 
-The Vue kit draws Storyfeed's serialized items with Vue 3 components.
+The Vue kit renders Storyfeed's serialized items with Vue 3 components.
 Copy it into your app and pass the feed's `items` to `FeedStream`.
 
 ```bash
@@ -23,6 +23,8 @@ defineProps<{ items: FeedNode[] }>();
 
 <script setup>
 import { scene, liveOf } from '../.vitepress/theme/world'
+const groupedOrders = liveOf(scene.deeper.aggregation.orders)
+const divider = { [groupedOrders[0].id]: 'Orders' }
 </script>
 
 <FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
@@ -50,7 +52,7 @@ the pager while loading. Keep the cursor opaque and follow the
 | `#time` | `{ node }` | timestamp content |
 
 These slots reach activities, groups and expanded children.
-Generic bodies come from activity data and the object's body/data.
+Built-in bodies render from the object’s bodies and data, and the activity’s data.
 [Host seams](/ui/customizing#host-seams) supply links, app components and media.
 
 ## Rails and Groups
@@ -59,23 +61,35 @@ Generic bodies come from activity data and the object's body/data.
 <FeedStream :items="feed.items" rail="actor" child-rail="activity-only" />
 ```
 
-`rail` accepts `actor`, `activity`, `actor-only`, `activity-only` or a structured
-`Rail`. Dense children suppress badges. Without `child-rail`, children inherit
-the parent posture. Sampled faces represent the group's actors.
+`rail="actor"` puts the actor’s avatar on the rail with a small verb icon;
+`rail="activity"` puts the icon first. The `-only` variants drop the badge.
+Group members inherit the group’s rail unless `child-rail` says otherwise;
+members omit badges. Groups with several actors show sampled avatars.
+
+<FeedExample :items="[scene.order]" rail="actor">Avatar with a verb icon</FeedExample>
+<FeedExample :items="[scene.order]" rail="activity">Verb icon with an avatar</FeedExample>
+<FeedExample :items="[scene.order]" rail="actor-only">Avatar only</FeedExample>
+<FeedExample :items="[scene.order]" rail="activity-only">Verb icon only</FeedExample>
+<FeedExample :items="groupedOrders" rail="actor" child-rail="activity-only" :collapsed="false">Expanded members with their own rail</FeedExample>
 
 | Option | Behaviour |
 |---|---|
 | `:grouped="false"` | hides day headings |
 | `dividers` | maps item IDs to labels before those items |
-| `divider-style="dot"` or `"branch"` | chooses the divider joint |
-| `:interactive="false"` | draws static groups |
+| `divider-style="dot"` or `"branch"` | how the divider meets the rail: a dot on it or a branch off it |
+| `:interactive="false"` | renders groups without a disclosure control |
 | `collapsed` | chooses initial group state; null opens static groups |
 
-Static collapsed members remain in the HTML for printing.
-Groups use explicit singular payload slots and their own headline; a distinct
-count of one alone does not select a singular role. Photograph strips sample
-Image bodies across roles, objects first, deduplicate sources and cap at three.
-Expanded groups hide the strip.
+<FeedExample :items="groupedOrders" days>Day headings</FeedExample>
+<FeedExample :items="groupedOrders" :grouped="false">Without day headings</FeedExample>
+<FeedExample :items="groupedOrders" :dividers="divider" divider-style="dot">Divider on the rail</FeedExample>
+<FeedExample :items="groupedOrders" :dividers="divider" divider-style="branch">Divider branching off the rail</FeedExample>
+<FeedExample :items="groupedOrders" collapsed>Collapsed disclosure</FeedExample>
+<FeedExample :items="groupedOrders" :interactive="false">Static expanded group</FeedExample>
+<FeedExample :items="groupedOrders" :interactive="false" collapsed>Static collapsed group</FeedExample>
+
+Static collapsed members remain in the HTML for printing. A collapsed group
+shows up to three member pictures; an expanded group hides that strip.
 
 See the [Vue kit README](https://github.com/storyfeed/ui/blob/main/resources/js/vue/README.md)
 for the component contracts.

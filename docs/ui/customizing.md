@@ -1,8 +1,7 @@
 # Tokens and Host Seams
 
-The kits use your app's colours and accept app-owned links, bodies and media.
-Set tokens in CSS and supply host components through Vue injection or React's
-`FeedProvider`.
+The kits take their colours from your CSS variables and use your own
+components for links, bodies and pictures.
 
 ## Colour Tokens
 
@@ -33,10 +32,10 @@ layout selects dark mode with a class.
 | `primary`, `primary-foreground` | primary colour and text on it |
 | `border`, `ring` | boundaries and focus rings |
 
-No package stylesheet or Typography plugin is needed. Avatar snapshot colours
-use `data.avatar_color`, then a stable identity palette. Tombstones stay muted.
-Glyph intents are app-owned `data-sf-intent` values; edit `FeedIcon.vue`,
-`FeedIcon.tsx` or the published Blade glyph view to assign colours.
+ Avatar snapshot colours
+use `data.avatar_color`, then a stable identity palette. Deleted models render in the muted colour.
+An icon’s intent is rendered as `data-sf-intent`; style it in your CSS,
+for example `[data-sf-intent="danger"]`.
 
 ## Host Seams
 
@@ -50,7 +49,8 @@ provide(FEED_LINK, Link);
 </script>
 ```
 
-```tsx
+```tsx memo="resources/js/pages/History.tsx"
+
 <FeedProvider FEED_LINK={Link} FEED_COMPONENTS={{ 'App/Message': Message }}>
     <FeedStream items={feed.items} />
 </FeedProvider>
@@ -63,22 +63,21 @@ Vue imports injection keys from `keys.ts`. React takes the same names as
 |---|---|---|
 | `FEED_LINK` | component accepting `href` | replaces anchors and forwards entity attributes |
 | `FEED_COMPONENTS` | exact body-name → component map | renders Component bodies with their props; unknown names draw nothing |
-| `FEED_FILE_LABELLER` | `({ name, mediaType }) => string \| null` | a host label wins; null uses the MIME map, then the MIME string |
-| `FEED_MEDIA_OBJECT_PLACEMENT` | `'beside'` or `'below'` | puts a MediaObject picture beside prose at 64px or below it; an explicit component prop wins |
+| `FEED_FILE_LABELLER` | `({ name, mediaType }) => string \| null` | return a label, or `null` to use the built-in MIME labels |
+| `FEED_MEDIA_OBJECT_PLACEMENT` | `'beside'` or `'below'` | `beside` shows a MediaObject’s picture beside its text; `below` stacks it. An explicit component prop wins |
 | `FEED_NOW` | millisecond timestamp | pins the clock for deterministic rendering |
 | `FEED_MEDIA` | media component | replaces pictures and tiles, for example with a lightbox |
 
-File names always remain visible. Sizes use decimal units. The kits do not
-guess file kinds from extensions. Vue's MediaObject prop is `image-placement`;
-React's is `imagePlacement`.
+Vue’s MediaObject prop is `image-placement`; React’s is `imagePlacement`.
 
-Generic body rendering reads activity data and the object's body/data.
-Other roles' previews are app-owned. Markdown and rich HTML are sanitized;
-plain and verbatim source are escaped. Historical body versions still render.
+Built-in bodies render from the object’s bodies and data, and the activity’s
+data. Supply your own components for previews in other roles. Markdown and
+rich HTML are sanitized. Plain text and verbatim source are escaped.
+The kits also render supported older body versions.
 
 Instrument, origin and result roles the headline does not name appear after
 the time. Context appears when the headline names it.
-Vue and React lead-in words live in `shared/messages.ts`.
+The words before each role (“with”, “from”) are in `shared/messages.ts`.
 
 ## Child Rails and Spacing
 
@@ -88,9 +87,10 @@ Vue and React lead-in words live in `shared/messages.ts`.
 ```
 
 React uses `childRail`; Blade uses `child-rail`.
-`actor` shows a face with a glyph badge, `activity` a glyph with a face badge.
+`actor` shows the avatar with a small icon; `activity` shows the icon with a
+small avatar.
 `actor-only` and `activity-only` omit the badge. Children can choose an
-independent rail; dense children suppress badges.
+independent rail; members omit badges.
 
 | CSS Property | Controls |
 |---|---|
@@ -99,13 +99,29 @@ independent rail; dense children suppress badges.
 | `--sf-disc` | primary avatar or icon size |
 | `--sf-badge`, `--sf-badge-face` | badge sizes |
 
-Pass `objectIcon(node)` to opt into a linked object icon frame. It uses the
-object's URL and safe scalar attributes; tombstones and missing URLs remain
-unlinked. `FEED_MEDIA` receives the image, href, link attributes and kit classes.
+Pass an `objectIcon` callback to `FeedStream` to show a linked object picture:
+
+```vue memo="resources/js/pages/History.vue"
+<script setup lang="ts">
+import FeedStream from '@/components/storyfeed/FeedStream.vue';
+import type { FeedNode } from '@/components/storyfeed/types';
+
+const objectIcon = (node: FeedNode) => node.object?.media?.icon ?? null;
+</script>
+
+<template>
+    <FeedStream :items="feed.items" :object-icon="objectIcon" />
+</template>
+```
+
+The picture uses the object’s URL and safe scalar attributes. Deleted models
+and objects without URLs remain unlinked. `FEED_MEDIA` receives the image,
+href, link attributes and kit classes.
 
 ## Blade Host Seams
 
-Blade supplies whole-feed callbacks through the `renderers` array.
+Blade supplies whole-feed callbacks through the `renderers` array to
+customize time, bodies, annotations, media, file labels and object icons.
 
 | Callback | Receives | Returns |
 |---|---|---|
@@ -113,12 +129,12 @@ Blade supplies whole-feed callbacks through the `renderers` array.
 | `removed`, `objectIcon` | `FeedItem` | removal text or image array |
 | `glyph`, `avatar` | token/entity and size | app SVG or avatar HTML |
 | `fileLabel` | `{name, mediaType}` array | label or null for built-in MIME labels |
-| `form` | body array, owning entity or null | app HTML, or null for built-in rendering |
+| `form` (a body) | body array, owning entity or null | app HTML, or null for built-in rendering |
 | `mediaTiles`, `mediaOverflow` | group `FeedItem` | sample tiles or overflow count |
 | `media` | tile array and utility classes | picture or tile HTML |
 
 Callbacks are trusted application code; their returned HTML is not sanitized.
-Stored payloads do not supply callbacks. Standalone row components also accept
+ Standalone row components also accept
 body, time and annotations slots. The standalone file component accepts
 `labeller`; `<x-storyfeed::body>` accepts `file-labeller`.
 

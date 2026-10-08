@@ -9,14 +9,11 @@ composer require storyfeed/ui
 
 | Kit | Setup | Requires |
 |---|---|---|
-| [Blade](/ui/blade) | package views, registered automatically | PHP 8.4+ in the PHP 8 series; Tailwind CSS v4 |
+| [Blade](/ui/blade) | package views, registered automatically | PHP 8.4+; Tailwind CSS v4 |
 | [Vue](/ui/vue) | `php artisan storyfeed:ui vue` | Vue 3, TypeScript; Tailwind CSS v4 |
 | [React](/ui/react) | `php artisan storyfeed:ui react` | React 19, TypeScript; Tailwind CSS v4 |
 
-The service provider registers through Laravel package discovery.
 All three kits use the same [colour tokens](/ui/customizing#colour-tokens).
-
-The docs’ rendered examples use the shared Vue kit through `@storyfeed/ui`.
 
 ## Copying Vue or React
 
@@ -27,6 +24,9 @@ php artisan storyfeed:ui vue
 
 The command copies components and their framework-free `shared/` directory to
 `resources/js/components/storyfeed`. Commit those files with your application.
+
+Copied files belong to your application; edit them freely. Re-running the
+command keeps your edits:
 
 | File State | On Re-run |
 |---|---|
@@ -43,9 +43,6 @@ The command copies components and their framework-free `shared/` directory to
 ```bash
 php artisan storyfeed:ui vue --diff
 ```
-
-The command reports written, unchanged and differing files. Diffs need no
-external tool. Copied files belong to your application and may be edited.
 
 ## Scanning Tailwind Utilities
 

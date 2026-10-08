@@ -1,13 +1,17 @@
 # React
 
-The React kit draws Storyfeed's serialized items with React 19 components.
+The React kit renders Storyfeed's serialized items with React 19 components.
 Copy it into your app and wrap the feed in `FeedProvider`.
 
 ```bash
 php artisan storyfeed:ui react
 npm install react@^19 react-dom@^19 lucide-react markdown-it sanitize-html
-npm install -D @types/react @types/react-dom @types/markdown-it @types/sanitize-html
+npm install -D @types/markdown-it @types/sanitize-html
 ```
+
+Laravel's [React starter kit](https://github.com/laravel/react-starter-kit/blob/main/package.json)
+already includes React and its types. In another app, also install
+`@types/react` and `@types/react-dom` as development dependencies.
 
 ```tsx memo="resources/js/pages/History.tsx"
 import { Link } from '@inertiajs/react';
@@ -29,7 +33,7 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 <FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
 
-The kit supports Inertia 2/3's React adapter and Laravel's React starter kit.
+It works with Inertia’s React adapter and Laravel’s React starter kit.
 The copied `shared/` directory makes the imports self-contained. Configure
 [Tailwind scanning and tokens](/ui/installation#scanning-tailwind-utilities).
 
@@ -52,9 +56,9 @@ Follow the [feed's sync token](/basics/reading#handling-a-changed-feed).
 | `annotations` | `{ node }` | app annotations |
 | `time` | `{ node, label }` | timestamp content; null omits time |
 
-These functions reach activities, groups and expanded children. Returning null
-from `time` retains unused role metadata. `FeedProvider` inherits surrounding
-options; explicit values win. See [Host Seams](/ui/customizing#host-seams).
+These functions reach activities, groups and expanded children. Return `null`
+from `time` to omit the timestamp; the other metadata still renders. Nested
+providers inherit the outer options; explicit values win. See [Host Seams](/ui/customizing#host-seams).
 
 ## Rails and Groups
 
@@ -63,23 +67,22 @@ options; explicit values win. See [Host Seams](/ui/customizing#host-seams).
 ```
 
 `rail` accepts `actor`, `activity`, `actor-only`, `activity-only` or a structured
-`Rail`. `childRail` independently controls expanded members. Dense children
-suppress badges. `grouped={false}` hides day headings. `dividers` maps item IDs
-to labels; `dividerStyle` accepts `dot` or `branch`.
+`Rail`. `childRail` controls expanded members. See the [rail and group examples](/ui/vue#rails-and-groups)
+for each appearance, day headings, dividers and disclosure states.
 
-Groups use native `details` and keyboard disclosure. Unnamed groups start open.
-`interactive={false}` draws static groups; `collapsed` chooses their initial
-state. Static collapsed members remain available to print. Groups display true
-member totals and truncation. Photograph strips sample Image bodies across
-roles, objects first, with at most three distinct sources; open groups hide them.
+`grouped={false}` hides day headings. `dividers` maps item IDs to labels;
+`dividerStyle` accepts `dot` or `branch`. Native `details` provides group
+disclosure; groups without headlines start open. `interactive={false}` renders
+static groups, and `collapsed` sets their initial state. Static collapsed
+members remain available to print. A group shows its full member count even
+when the page holds fewer members.
 
 ## Server Rendering
 
 SSR and the first hydration render use ISO timestamps and UTC day keys.
 After mounting, labels use the browser's locale and calendar timezone.
 `FEED_NOW` pins the clock in milliseconds; otherwise relative labels refresh
-according to age. No timer runs during `renderToString`; mounted timers are
-cleaned up on unmount or clock changes.
+according to age.
 
 See the [React kit README](https://github.com/storyfeed/ui/blob/main/resources/js/react/README.md)
 for the provider and component contracts.
