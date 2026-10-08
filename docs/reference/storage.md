@@ -136,9 +136,8 @@ the verb's `repeat` headline in `routes/feed.php`:
 
 <FeedExample :items="[repeat]" />
 
-Curation checks the axes in order: `actors`, then `actors_target` (3 different actors by default),
-`targets`, `object`, then `repeat` when none qualifies. The thresholds are
-in [Aggregation](/deeper/aggregation#thresholds).
+See [Aggregation](/deeper/aggregation#built-in-axes) for the axis order and
+[thresholds](/deeper/aggregation#thresholds) used to select a group.
 
 <a id="read-modes"></a>
 
@@ -172,8 +171,8 @@ rules:
 | a batch's `closed_at` | the actor's next publish arrives after `closes_at`, or `storyfeed:close-batches` runs |
 
 Scheduled curation defaults to the last two days (`storyfeed.curate.window`).
-Weekly and monthly verb grouping widens that window for the affected
-activities. A null or nonpositive configured window removes the time bound.
+Raise it to cover a burst ceiling longer than that window. Custom calendar
+axes widen it for their verbs. A null or nonpositive configured window removes the time bound.
 
 When both the stored and incoming source timestamps are known, a snapshot
 update rejects an older model timestamp. Without a usable incoming timestamp,
@@ -198,8 +197,8 @@ data. See [Caching Definitions](/reference/commands#caching-definitions).
 
 ## Costs at Scale
 
-The default example above writes 1 activity row, 9 grouping rows, and 3
-participant rows. Nine is not a ceiling: custom axes can add or replace keys,
+The default example above writes 1 activity row, up to 6 grouping rows, and 3
+participant rows. Custom axes can add or replace keys,
 and each emitted hash produces a grouping row. Table sizes depend on your
 roles, axes, entities, and retention policy. `feed_snapshots` grows with
 Feedable entities, including those saved without publishing an activity.

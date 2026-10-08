@@ -84,7 +84,9 @@ Story::for(Order::class)
 
 Storyfeed resolves optional segments before returning the payload. In this
 example, it includes ` at :target` only when the activity has a target.
-Without brackets, an empty role leaves its token in the template.
+Without brackets, an empty role stays in the template. The headline reader
+renders it as “Someone” for `:actor` or “Something” for another role. Use
+optional segments to omit the connecting words along with an empty role.
 
 <a id="choosing-a-headline-per-activity"></a>
 

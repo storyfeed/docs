@@ -276,8 +276,8 @@ class RecordOrder implements ShouldQueue
 
 <FeedExample :items="[placed]" />
 
-Publication time determines ordering and the activity's
-[grouping period](/deeper/grouping-periods). Also capture any event values the
+Publication time determines ordering and which [burst](/deeper/grouping-periods)
+the activity joins. Also capture any event values the
 job needs, since restored models contain the worker's current data.
 Calling `queue()` directly already captures publication time at dispatch.
 

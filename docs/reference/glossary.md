@@ -38,7 +38,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **[threshold](/deeper/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
 | **group an activity is shown in** | The one group selected for an activity in `live()`, falling back to `repeat`. |
 | **choosing which group shows** | Selecting among groups whose thresholds are met, with `repeat` as the fallback. This runs at publication and through [`storyfeed:curate`](/reference/commands#other-maintenance-commands). With `grouping.curate` set to `false`, `live()` shows repeats only. |
-| **[burst window](/deeper/grouping-periods)** | A quiet gap and maximum duration that bound a Live group. Defaults: 15 minutes and four hours. |
+| **[burst window](/deeper/grouping-periods)** | A quiet gap and maximum duration that bound a Live group. See [Live Burst Windows](/deeper/grouping-periods) for defaults. |
 | **group node** | A group represented in the payload. See [Group Nodes](/reference/payload#group-node). |
 | **sample** | A limited list of distinct entities in a group; `distinct` contains the full counts. |
 | **count** | The number of activities in a group. `distinct.actors` counts different actors. |

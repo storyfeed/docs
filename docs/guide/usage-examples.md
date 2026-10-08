@@ -54,7 +54,6 @@ activities involving one order into its own timeline.
 ## Grouping Busy Activity
 
 [Live](/basics/reading#live) combines one action per row within a burst.
-Several people acting on one thing take precedence over one person acting
-across things in a place, followed by repeats.
+See [Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row.
 
 <FeedExample :items="live" days height="420" />

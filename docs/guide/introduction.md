@@ -116,9 +116,9 @@ You may display the same activities in two modes. See
 
 ### Live
 
-Live mode is the default. It groups repeated actions and activities from
-several people acting on one thing into single rows within a burst.
-Bursts close after 15 quiet minutes or four hours from their start.
+Live mode is the default. It groups the same action into one row until a
+quiet gap closes the [burst](/deeper/grouping-periods). See
+[Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row.
 
 <FeedExample :items="worldLive" days height="420" />
 

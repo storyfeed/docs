@@ -141,7 +141,7 @@ Increase a limit when your frontend displays more names:
 | Key | Default | Description |
 |---|---|---|
 | `curate.schedule` | `true` | run [`storyfeed:curate`](/reference/commands#other-maintenance-commands) hourly to choose groups for recent activities; requires Laravel's scheduler |
-| `curate.window` | `2` | days included in scheduled grouping; weekly and monthly declarations extend this for their verbs. `null` or `0` includes all activities |
+| `curate.window` | `2` | days included in scheduled grouping; raise this to cover any longer burst ceiling. Custom calendar axes widen it for their verbs. `null` or `0` includes all activities |
 | `prune.after_days` | `null` | default [retention period](/deeper/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
 | `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |
 | `trickle.prune` | `false` | delete activities with an unresolvable role; otherwise count them |

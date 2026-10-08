@@ -61,8 +61,7 @@ children inherit the parent posture and dense rows suppress badges.
 | `interactive`, `collapsed` | group disclosure and initial state |
 
 Native `details` works without JavaScript. Unspecified state opens unnamed
-groups, or all groups when `interactive` is false. Payload `expanded` opens a
-group. Static collapsed members remain available to print.
+groups, or all groups when `interactive` is false. Static collapsed members remain available to print.
 The server renders timestamps; the host owns refreshing them.
 
 ## Registering App Components

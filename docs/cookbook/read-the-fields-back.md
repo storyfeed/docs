@@ -148,7 +148,8 @@ Story::for(Document::class)->verb('archive')
 ```
 
 The fields describe the event, but the headline includes an empty target.
-It displays a fallback where the target's name would be.
+The headline reader substitutes the [empty-role placeholder](/basics/the-feed-file#optional-segments)
+where the target’s name would be.
 
 <span id="repeated-rows"></span>
 <span id="inspecting-repeated-roles"></span>

@@ -37,7 +37,7 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `aggregates` | groups that formed, or could form, with no group headline. See [Group Reachability](#group-reachability) | error · info |
 | `tokens` | group headlines that use a token which can differ between the group's members | warning · info |
 | `axes` | grouping axes that can hold several verbs, where a group headline names one verb or none exists | warning |
-| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) none of their activities carry, so the placeholder shows as text. `:actor` over activities that are all anonymous is info | error · info |
+| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments). `:actor` over activities that are all anonymous is info | error · info |
 | `actorless` | anonymous activities whose verb has no anonymous headline | info |
 | `reflexive` | activities naming the same entity as actor and object | info |
 | `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |

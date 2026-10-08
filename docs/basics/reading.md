@@ -79,11 +79,10 @@ The following feeds display the same week of activities in each mode:
 
 ### Live
 
-Live mode combines one action within a burst: several people on one thing
-(object first, then target), one person across things in the same context,
-then repeated actions. It is the default, so you may omit `live()`.
-A burst closes after 15 quiet minutes or four hours from its start.
-See [Live Burst Windows](/deeper/grouping-periods) for per-verb overrides.
+Live groups the same action into one row until a quiet gap closes the burst.
+It is the default, so you may omit `live()`. See
+[Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row
+and [Live Burst Windows](/deeper/grouping-periods) to set the window.
 
 ```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;

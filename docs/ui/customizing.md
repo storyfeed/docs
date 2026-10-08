@@ -76,8 +76,8 @@ Generic body rendering reads activity data and the object's body/data.
 Other roles' previews are app-owned. Markdown and rich HTML are sanitized;
 plain and verbatim source are escaped. Historical body versions still render.
 
-Metadata follows the headline: time, then unused instrument, origin, result,
-location and generator. Context appears when the headline names it.
+Instrument, origin and result roles the headline does not name appear after
+the time. Context appears when the headline names it.
 Vue and React lead-in words live in `shared/messages.ts`.
 
 ## Child Rails and Spacing

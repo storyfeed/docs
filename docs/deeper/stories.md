@@ -246,7 +246,8 @@ The same restriction applies to all definition methods:
 | `missing()` | the [roles that make it redundant](/deeper/deleted-models#redundant-roles) once deleted |
 | `keepFor()`, `keepForever()` | its [retention](/deeper/retention) |
 | `keepLatest()` | [keeping the latest activity](/deeper/keeping-the-latest-activity) |
-| `period()` | its [grouping period](/deeper/grouping-periods) |
+| `bursts()` | its [burst window](/deeper/grouping-periods) |
+| `period()` | the calendar period for custom axes whose keys include `d` |
 | `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
 
 <a id="a-single-verb"></a>
