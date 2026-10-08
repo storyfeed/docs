@@ -57,7 +57,9 @@ Storyfeed::record(
 | `context` | where it happened | in the shop |
 
 Use `context` when the target belongs to a container, such as a dish in a shop.
-If the target is the container itself, the `target` role is enough:
+Storyfeed never copies the target into `context`. If the target is the
+container itself, the `target` role is enough, and `involving($shop)` already
+finds the activity:
 
 ::: code-group
 ```php [Fluent Syntax]
