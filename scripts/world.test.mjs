@@ -20,7 +20,7 @@ registerHooks({
   },
 })
 
-const { worldOf, BASE_VERBS, liveOf, summaryOf } = await import('../docs/.vitepress/theme/world.ts')
+const { worldOf, BASE_VERBS, liveOf } = await import('../docs/.vitepress/theme/world.ts')
 const { PACKS } = await import('../docs/.vitepress/theme/worlds/index.ts')
 const { APP_KINDS } = await import('../docs/.vitepress/theme/worlds/contract.ts')
 
@@ -85,7 +85,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: every group headline names in the singular only what its axis pins`, () => {
     // StoryfeedManager::defaultAxes(); core refuses anything else (StoryMisconfigured::unpinnedToken).
-    const pins = { repeat: ['actor', 'target'], actors: ['target'], targets: ['actor'], object: ['actor', 'object'] }
+    const pins = { repeat: ['actor', 'target', 'context'], actors: ['object', 'target', 'context'], targets: ['actor', 'context'], object: ['actor', 'object', 'target', 'context'] }
     for (const [verb, wording] of Object.entries(verbs)) {
       for (const [axis, pinned] of Object.entries(pins)) {
         for (const [, role] of (wording[axis] ?? '').matchAll(/:(actor|object|target|context)\b/g)) {
@@ -238,9 +238,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
     const moved = worldOf(pack, MOVED).scene.deeper
     const shifted = Object.values(moved).flatMap(section => Object.values(section).flat())
     nodes.forEach((row, i) => assert.equal(now - Date.parse(row.published_at), MOVED - Date.parse(shifted[i].published_at)))
-    const summary = world.summaryOf(world.everything())
-    assert.ok(summary.filter(row => row.kind === 'group').length >= 5, 'long feed demonstrates several folds')
-    for (const group of summary.filter(row => row.kind === 'group')) assert.equal(group.count, group.children.length)
+    for (const group of world.liveOf(world.everything()).filter(row => row.kind === 'group')) assert.equal(group.count, group.children.length)
   })
 
   test(`${name}: guide and basics scenes support their teaching examples`, () => {
@@ -333,19 +331,17 @@ for (const [name, pack] of Object.entries(PACKS)) {
     }
   })
 
-  test(`${name}: the long reading feed keeps the same facts in all three modes`, () => {
+  test(`${name}: the long reading feed keeps the same facts in both modes`, () => {
     const rows = world.everything().filter(node => Date.parse(node.published_at) >= now - 7 * DAY)
     const live = world.liveOf(rows)
-    const summary = world.summaryOf(rows)
     assert.ok(rows.length > scene.glance.length * 2, 'a long feed')
-    assert.ok(summary.length < live.length && live.length < rows.length)
+    assert.ok(live.length < rows.length)
     const members = nodes => nodes.flatMap(node => node.kind === 'group' ? node.children : [node])
     assert.deepEqual(ids(members(live)), ids(rows))
-    assert.deepEqual(ids(members(summary)), ids(rows))
-    for (const node of [...live, ...summary].filter(node => node.kind === 'group')) {
+    for (const node of live.filter(node => node.kind === 'group')) {
       assert.equal(node.count, node.children.length)
       assert.equal(node.children_truncated, false)
-      assert.equal(new Set(node.children.map(child => child.published_at.slice(0, 10))).size, 1)
+      assert.equal(new Set(node.children.map(child => child.verb)).size, 1)
     }
   })
 
@@ -359,86 +355,16 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
     const groups = (nodes) => nodes.filter((n) => n.kind === 'group')
     const live = world.liveOf(glance)
-    const summary = world.summaryOf(glance)
 
     // Live stays glanceable: it folds every run, and the busy place into one crowd.
-    assert.ok(live.length >= 10 && live.length <= 14, `Live shows ${live.length} rows`)
+    assert.ok(live.length >= 10 && live.length <= 16, `Live shows ${live.length} rows`)
     assert.ok(scene.repeats.length >= 3, 'several expanders')
     const byFirst = (a, b) => a[0].localeCompare(b[0])
     assert.deepEqual(groups(live).filter((g) => ['repeat', 'object'].includes(g.axis)).map((g) => ids(g.children)).sort(byFirst),
-      scene.repeats.map((run) => ids(run)).sort(byFirst))
-    const busy = groups(live).filter((g) => g.axis === 'actors')
-    assert.deepEqual(busy.map((g) => ids(g.children)), [ids(scene.busyPlace)])
-    assert.ok(busy[0].distinct.actors >= 3, 'three people or more')
-    assert.ok(summary.length < live.length && live.length < glance.length, 'Summary < Live < Log')
-  })
-
-  test(`${name}: Summary is one row per person per day, and a crowd for one identical thing`, () => {
-    const summary = world.summaryOf(scene.glance)
-    const members = (nodes) => nodes.flatMap((n) => n.kind === 'group' ? n.children : [n])
-    assert.deepEqual(ids(members(summary)), ids(scene.glance), 'nothing is hidden')
-
-    for (const row of summary.filter((n) => n.kind === 'group')) {
-      assert.equal(row.axis, 'summary')
-      assert.equal(row.period, 'day')
-      assert.equal(row.headline_template, null)
-      assert.equal(row.count, row.children.length)
-      assert.equal(new Set(row.children.map((c) => c.published_at.slice(0, 10))).size, 1, 'one day')
-      assert.equal(row.phrases.reduce((sum, p) => sum + p.count, 0), row.count, 'phrases cover the row')
-      assert.deepEqual(row.phrases.map((p) => p.verb), [...new Set([...row.children].reverse().map((c) => c.verb))],
-        'one phrase per verb, as they happened')
-      for (const p of row.phrases) assert.ok(p.headline_template && !p.headline_template.includes(':actor'), `${p.verb}: a phrase starts at the verb`)
-      const verbs = new Set(row.children.map((c) => c.verb))
-      assert.equal(row.verb, verbs.size === 1 ? row.children[0].verb : null)
-      if (verbs.size > 1) assert.equal(row.glyph, null, 'a row across verbs wears no glyph')
-      if (row.distinct.actors > 1) {
-        assert.equal(row.phrases.length, 1, 'a crowd did one thing')
-        assert.equal(row.actor, null)
-      } else {
-        assert.ok(row.actor, 'the actor is pinned')
-      }
-    }
-    // Every person has one row a day.
-    const perDay = summary.filter((n) => n.kind === 'group' ? n.distinct.actors === 1 : n.actor)
-      .map((n) => `${n.published_at.slice(0, 10)}|${(n.actor ?? n.sample.actors[0]).id}`)
-    assert.equal(new Set(perDay).size, perDay.length, 'one row per person per day')
-
-    // The acceptance picture: each row's shape, day by day.
-    const shapeOf = (n) => n.kind === 'activity' ? `${n.verb}` : n.phrases.map((p) => `${p.verb}×${p.count}`).join('+')
-      + (n.distinct.actors > 1 ? ` by ${n.distinct.actors}` : '')
-    const days = [...new Set(summary.map((n) => n.published_at.slice(0, 10)))]
-      .map((day) => summary.filter((n) => n.published_at.startsWith(day)).map(shapeOf).sort())
-    if (name === 'stranger-things') {
-      assert.deepEqual(days, [
-        ['check_in×1+get×1+ride×3', 'check_in×2 by 2', 'drink', 'pay×3', 'play×3+win×1'],
-        ['complete'],
-        ['call', 'check_in×1+call×2'],
-        ['score'],
-      ])
-    }
-  })
-
-  test(`${name}: a weekly Summary is one row per person per ISO week`, () => {
-    const rows = world.everything().filter((n) => Date.parse(n.published_at) >= now - 7 * DAY)
-    const weekly = world.summaryOf(rows, 'week')
-    assert.ok(weekly.length < world.summaryOf(rows).length)
-    const monday = (iso) => { const at = new Date(iso.slice(0, 10) + 'T00:00:00Z'); return +at - ((at.getUTCDay() + 6) % 7) * DAY }
-    for (const row of weekly.filter((n) => n.kind === 'group')) {
-      assert.equal(row.period, 'week')
-      assert.equal(new Set(row.children.map((c) => monday(c.published_at))).size, 1, 'one week')
-    }
-    const members = (nodes) => nodes.flatMap((n) => n.kind === 'group' ? n.children : [n])
-    assert.deepEqual(ids(members(weekly)), ids(rows), 'nothing is hidden')
-  })
-
-  test(`${name}: a busy day caps its phrases at three and counts the rest`, () => {
-    const rows = world.everything().filter((n) => Date.parse(n.published_at) >= now - 7 * DAY)
-    const busy = world.summaryOf(rows).filter((n) => n.phrases?.length > 3)
-    assert.ok(busy.length > 0, 'someone had a busy day')
-    for (const row of busy) assert.equal(row.phrases.reduce((sum, p) => sum + p.count, 0), row.count)
-    // An activity with no actor stays on its own.
-    const actorless = rows.filter((n) => !n.actor)
-    for (const n of actorless) assert.ok(world.summaryOf(rows).includes(n), `${n.id} stands alone`)
+      scene.repeats.flatMap(run => world.liveOf(run).filter(node => node.kind === 'group').map(node => ids(node.children))).sort(byFirst))
+    const busy = groups(live).filter((g) => ['actors', 'actors_target'].includes(g.axis))
+    assert.equal(busy.length, 0, 'the fair check-ins have a quiet gap before the third person')
+    assert.ok(live.length < glance.length, 'Live combines related actions')
   })
 
   test(`${name}: moving the anchor moves every date and keeps every distance from now`, () => {
@@ -452,7 +378,6 @@ for (const [name, pack] of Object.entries(PACKS)) {
       assert.equal(daysBack(after[i].published_at, MOVED), daysBack(node.published_at, now), node.id)
     }
     assert.deepEqual(shape(moved.liveOf(moved.scene.glance)), shape(world.liveOf(scene.glance)))
-    assert.deepEqual(shape(moved.summaryOf(moved.scene.glance)), shape(world.summaryOf(scene.glance)))
   })
 }
 
@@ -547,13 +472,13 @@ let serial = 0
 const act = (verb, actor, object, target, at = '2026-09-25T12:00') =>
   ({ kind: 'activity', id: `r${String(++serial).padStart(3, '0')}`, verb, glyph: null, headline_template: `:actor ${verb}`,
     published_at: `${at}:00.000000Z`, actor, object, target })
-const WORDS = { go: { glyph: 'x', headline: ':actor went', repeat: 'r', actors: 'a', targets: 't', object: 'o', summary: 'went|went :count times' } }
+const WORDS = { go: { glyph: 'x', headline: ':actor went', repeat: 'r', actors: 'a', actors_target: 'at', targets: 't', object: 'o' } }
 const axes = (nodes) => nodes.map((n) => n.kind === 'group' ? `${n.axis}:${n.count}` : 'activity').sort()
 const fair = it('place', 'fair'), arcade = it('place', 'arcade'), mall = it('place', 'mall')
 
 test('actors: three people at one target, whatever each acted on', () => {
   const rows = ['a', 'b', 'c'].map((p, i) => act('go', who(p), it('ticket', i), fair))
-  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors:3'])
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors_target:3'])
   assert.deepEqual(axes(liveOf(rows.slice(0, 2), WORDS)), ['activity', 'activity'], 'two people are not a crowd')
 })
 
@@ -587,13 +512,13 @@ test('a cluster counts every member, whichever axis each one won', () => {
   // a's check-in at the fair wins actors; her targets cluster still counts it.
   const rows = [act('go', a, null, fair), act('go', b, null, fair), act('go', c, null, fair),
     act('go', a, null, arcade), act('go', a, null, mall)]
-  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors:3', 'targets:2'])
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['actors_target:3', 'targets:2'])
 })
 
-test('no group spans a day, and wording never decides a group', () => {
+test('bursts cross midnight, and wording never decides a group', () => {
   const a = who('a')
   const days = [act('go', a, null, fair, '2026-09-24T23:59'), act('go', a, null, fair, '2026-09-25T00:01')]
-  assert.deepEqual(axes(liveOf(days, WORDS)), ['activity', 'activity'])
+  assert.deepEqual(axes(liveOf(days, WORDS)), ['repeat:2'])
   const [group] = liveOf([act('go', a, null, fair), act('go', a, null, fair)], { go: { glyph: 'x', headline: ':actor went' } })
   assert.equal(group.axis, 'repeat')
   assert.equal(group.headline_template, null)
@@ -605,10 +530,32 @@ test('at one instant a group reads before an activity', () => {
   assert.deepEqual(liveOf(rows, WORDS).map((n) => n.kind), ['group', 'activity'])
 })
 
-test('a summary crowd is one activity each, the same verb at the same target, whatever the object', () => {
-  const rows = [act('go', who('a'), it('ticket', 1), fair), act('go', who('b'), it('ticket', 2), fair), act('go', who('c'), null, arcade)]
-  const digest = summaryOf(rows, 'day', WORDS)
-  assert.deepEqual(axes(digest), ['activity', 'summary:2'])
-  const twice = [act('go', who('a'), null, fair), act('go', who('b'), null, fair), act('go', who('b'), null, fair)]
-  assert.deepEqual(axes(summaryOf(twice, 'day', WORDS)), ['activity', 'summary:2'], 'twice keeps a row of their own')
+
+test('Live prefers one object before one target and pins that object', () => {
+  const object = it('document', 'one')
+  const rows = ['a', 'b', 'c'].map(person => act('go', who(person), object, fair))
+  const [node] = liveOf(rows, WORDS)
+  assert.equal(node.axis, 'actors')
+  assert.deepEqual(node.object, object)
+})
+
+test('quiet gaps split bursts, and continuous activity still meets the ceiling', () => {
+  const a = who('a')
+  const separated = ['12:00', '12:10', '12:26'].map(time => act('go', a, null, fair, `2026-09-25T${time}`))
+  assert.deepEqual(axes(liveOf(separated, WORDS)), ['activity', 'repeat:2'])
+  const continuous = ['12:00', '12:10', '12:20', '12:30'].map(time => act('go', a, null, fair, `2026-09-25T${time}`))
+  assert.deepEqual(axes(liveOf(continuous, WORDS, 15 * 60_000, 25 * 60_000)), ['activity', 'repeat:3'])
+})
+
+test('Live does not combine the same action across contexts or verbs', () => {
+  const a = who('a')
+  const rows = [act('go', a, null, fair), act('go', a, null, fair), act('stop', a, null, fair)]
+  rows[0].context = it('project', 'one')
+  rows[1].context = it('project', 'two')
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['activity', 'activity', 'activity'])
+})
+
+test('an activity exactly at the quiet-gap boundary starts a new burst', () => {
+  const rows = ['12:00', '12:15'].map(time => act('go', who('a'), null, fair, `2026-09-25T${time}`))
+  assert.deepEqual(axes(liveOf(rows, WORDS)), ['activity', 'activity'])
 })

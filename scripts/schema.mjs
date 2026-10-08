@@ -128,6 +128,7 @@ function upBody(source, file) {
 const TYPES = {
   id: () => ({ type: 'bigint, increments' }),
   ulid: () => ({ type: 'ulid' }),
+  char: (a) => ({ type: `char(${a[1] ?? 255})` }),
   string: (a) => ({ type: `string(${a[1] ?? 255})` }),
   text: () => ({ type: 'text' }),
   json: () => ({ type: 'json' }),
@@ -198,6 +199,7 @@ function apply(tables, table, statement, file) {
     if (modifier === 'nullable') column.nullable = margs[0] ?? true;
     else if (modifier === 'default') column.default = margs[0];
     else if (modifier === 'index') index('index', [name]);
+    else if (modifier === 'primary') index('primary', [name]);
     else if (modifier === 'unique') index('unique', [name]);
     else if (modifier === 'after' || modifier === 'change') { /* placement only; the column is restated above */ }
     else throw new Error(`schema: unknown column modifier ${modifier}() in ${file}; teach scripts/schema.mjs`);
@@ -253,12 +255,13 @@ export function extract(sources) {
     while ((m = re.exec(body))) {
       const args = balanced(body, m.index + m[0].length - 1);
       const [expr] = splitArgs(args.inner);
-      const closure = args.inner.match(/function\s*\(\s*Blueprint\s+\$(\w+)\s*\)/);
+      const closure = args.inner.match(/(?:function|fn)\s*\(\s*Blueprint\s+\$(\w+)\s*\)/);
       if (!closure) throw new Error(`schema: Schema::${m[1]} without a Blueprint closure in ${file}`);
       const table = tableName(expr, file, body);
       if (m[1] === 'create') tables.set(table, { columns: [], indexes: [] });
+      const arrow = closure[0].startsWith('fn');
       const open = m.index + m[0].length + args.inner.indexOf('{', args.inner.indexOf(closure[0]));
-      const block = balanced(body, open).inner;
+      const block = arrow ? args.inner.slice(args.inner.indexOf('=>') + 2) : balanced(body, open).inner;
       const statements = block.split('\n').map(l => l.replace(/\/\/.*$/, '')).join('\n')
         .split(';').map(s => s.replace(/\s+/g, ' ').trim()).filter(s => s.startsWith(`$${closure[1]}->`) || s.startsWith('MorphKeyType::'));
       for (const s of statements) apply(tables, table, s, file);
@@ -334,6 +337,7 @@ const DIAGRAM = {
   feed_batches: [RIGHT, 805, [['id', 'PK'], ['uid', 'ULID · unique'], ['actor_type, actor_id', ''], ['opened_at, closes_at', ''], ['closed_at', 'null = open'], ['activities_count', '']],
     ['(actor_type, actor_id, closed_at)', '(closed_at, closes_at)']],
   feed_batch_locks: [LEFT, 790, [['actor_type, actor_id', 'PK'], ['open_batches', 'json'], ['locked_at', '']], []],
+  feed_grouping_bursts: [LEFT, 900, [['key', 'PK'], ['hash', 'burst hash'], ['opened_at, last_activity_at', ''], ['within_seconds, ceiling_seconds', ''], ['locked_at', '']], []],
   feed_meta: [LEFT, 640, [['key', 'unique'], ['value', 'sync_token']], []],
 };
 
@@ -365,8 +369,8 @@ export function renderDiagram(tables) {
     `<path class="e" d="M${RE} ${ry('feed_participants', 1)} H${RE + 18} V${ry('feed_groupings', 1)}"/>`,
     `<path class="e d" d="M${RE} ${ry('feed_groupings', 3)} H${RE + 34} V${ry('feed_batches', 1)} H${RE + 3}" ${A}/>`,
     `<path class="e d" d="M${LE} ${ry('feed_batch_locks', 1)} H${LE + 40} V${ry('feed_batches', 0)} H${RIGHT - 3}" ${A}/>`,
-    `<text class="el" x="${LEFT}" y="1045">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>`,
-    `<text class="el" x="${LEFT}" y="1063">held in another column · no foreign key constraints are declared</text>`,
+    `<text class="el" x="${LEFT}" y="1075">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>`,
+    `<text class="el" x="${LEFT}" y="1093">held in another column · no foreign key constraints are declared</text>`,
     `<text class="el" x="${RE - 4}" y="${DIAGRAM.feed_groupings[1] - 8}" text-anchor="end">batch rows: hash = feed_batches.uid</text>`,
   ];
   const boxes = Object.entries(DIAGRAM).map(([name, [x, y, rows, idx]]) => {
@@ -387,7 +391,7 @@ export function renderDiagram(tables) {
     o.push('</g>');
     return o.join('\n');
   });
-  const H = Math.max(1063, ...Object.keys(DIAGRAM).map(n => DIAGRAM[n][1] + height(n))) + 12;
+  const H = Math.max(1093, ...Object.keys(DIAGRAM).map(n => DIAGRAM[n][1] + height(n))) + 12;
   return `<div class="er-wrap">
 <svg class="er" viewBox="0 0 ${RE + 44} ${H}" role="img" aria-labelledby="er-title" xmlns="http://www.w3.org/2000/svg">
 <title id="er-title">The ${tables.size} tables Storyfeed creates, and how they reference each other</title>

@@ -101,6 +101,7 @@ export function analyze(api, docs) {
       const resolved = resolveName(name, aliases, locals);
       if (!resolved || !resolved.startsWith('Storyfeed\\')) { add(unresolved, line, id, 'No unambiguous core class binding (application, framework, or ambiguous name)'); return; }
       if (names.some(n => n.startsWith(resolved + '\\'))) { add(unresolved, line, id, 'Namespace prefix rather than a proven class reference'); return; }
+      if (resolved.startsWith('Storyfeed\\Ui\\')) { add(unresolved, line, id, 'Storyfeed UI belongs to the separate storyfeed/ui package'); return; }
       mentions.add(resolved);
       const cls = api.classes[resolved];
       if (!cls) { add(stale, line, id, `Core class absent: ${resolved}`); return; }

@@ -28,6 +28,7 @@ After editing cached definitions, run `storyfeed:cache` again.
 |---|---|---|
 | `tables.activities` | `'feed_activities'` | the activities |
 | `tables.snapshots` | `'feed_snapshots'` | entity snapshots |
+| `tables.grouping_bursts` | `'feed_grouping_bursts'` | latest Live burst window and lock per logical axis key |
 | `tables.groupings` | `'feed_groupings'` | each activity's groupings |
 | `tables.participants` | `'feed_participants'` | index queried by `involving()` |
 | `tables.parties` | `'feed_parties'` | named participants |
@@ -81,9 +82,10 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | Key | Default | Description |
 |---|---|---|
 | `grouping.strategy` | `MultiAxisStrategy::class` | grouping strategy; use `NullStrategy` to disable grouping |
-| `grouping.default` | `'live'` | default read mode: `'log'` for individual activities, `'live'` for selected groups, `'summary'` for per-actor summaries |
+| `grouping.default` | `'live'` | default read mode: `'log'` for individual activities, `'live'` for one-action bursts |
+| `grouping.bursts.within` | `'15 minutes'` | quiet gap that closes a Live burst |
+| `grouping.bursts.ceiling` | `'4 hours'` | maximum duration from the burst's start |
 | `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats |
-| `grouping.summary.phrases` | `3` | maximum phrases per summary row; `phrases_truncated` reports omitted phrases |
 | `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
 | `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` axis |

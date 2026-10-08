@@ -51,7 +51,7 @@
     "id": "Primary key.",
     "activity_id": "The activity this row places in a group.",
     "hash": "The group's key on this axis. Activities sharing a `bucket` and `hash` form one group.",
-    "bucket": "The axis: `actors`, `targets`, `object`, `repeat`, a `summary.*` period, `batch` or `composite`.",
+    "bucket": "The axis: `actors`, `actors_target`, `targets`, `object`, `repeat`, `batch` or `composite`.",
     "winner": "True on the row curation chose for `live()`. Null on rows that are never curated.",
     "created_at": "When the row was written.",
     "updated_at": "When the row last changed."
@@ -113,5 +113,14 @@
     "actor_id": "The actor's key, as a string.",
     "open_batches": "The ids of the actor's open batches.",
     "locked_at": "When a publish last locked the row."
+  },
+  "feed_grouping_bursts": {
+    "key": "SHA-256 logical axis key; also serializes publishers on the same key.",
+    "hash": "The current burst membership hash.",
+    "opened_at": "Publication time of the first activity in the current burst.",
+    "last_activity_at": "Publication time of the latest activity in the current burst.",
+    "within_seconds": "Quiet gap used for the current burst.",
+    "ceiling_seconds": "Maximum duration used for the current burst.",
+    "locked_at": "When a publisher last locked this key."
   }
 }

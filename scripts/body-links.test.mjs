@@ -72,7 +72,7 @@ test('FileAttachment and stored File tokens render the same file details', async
   const stored = await render([{ ...body, $body: 'Storyfeed/Body/File' }])
   assert.equal(stored, current)
   assert.match(stored, /archive.zip/)
-  assert.match(stored, /512 B/)
+  assert.match(stored, /512 bytes/)
 })
 
 test('KeyValue upgrades stored placeholders and preserves explicit null over the default', async () => {

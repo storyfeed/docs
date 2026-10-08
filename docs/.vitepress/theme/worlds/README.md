@@ -6,7 +6,7 @@ directory. One config value picks the active pack, and swapping it recasts
 every example on the site.
 
 ```
-theme/world.ts            the engine: anchor, shifting, node builders, Live / Summary / Log
+theme/world.ts            the engine: anchor, shifting, node builders, Live / Log
 theme/worlds/contract.ts  what a pack must supply: roles, scenes, rows (the WorldPack type)
 theme/worlds/index.ts     the registry: every pack, by name
 theme/worlds/<pack>/      one pack: manifest.ts (its strings) and index.ts (everything else)
@@ -19,7 +19,7 @@ for **roles** and **scenes**:
 
 ```vue
 <script setup>
-import { scene, role, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, role, logOf, liveOf } from '../.vitepress/theme/world'
 </script>
 
 **{{ role.customer.label }}** placed **{{ scene.order.object.label }}** with **{{ role.shop.label }}**.
@@ -51,7 +51,7 @@ Code snippets use neutral names too: `$customer`, `$order`, `$shop`.
 | `scene.repeats` | Runs of one person doing one thing at one target twice or more on one day | Live folds each run into one group: `repeat`, or `object` when it is one object again |
 | `scene.distant` | One row from long ago | 30 days or more before now |
 | `scene.cameo` | Jasper's rows | flagged `cameo` |
-| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live shows 10–14 rows over a few days with 3+ expanders; 6+ kinds of activity; Summary < Live < Log; Summary is one row per person per day |
+| `scene.glance` | The short, wide feed: the scenes above plus the pack's `around` rows | Live combines related actions within bursts; Log keeps every activity; 6+ kinds of activity |
 
 The cookbook also requires `scene.cookbook`: `actorless` (anonymous placement,
 service payment, actorless expiry), `transitions` (confirmation and a
@@ -62,9 +62,8 @@ software illustrations: a pack marks invented transactions as uncertain and
 cites its software premise, without claiming they happened on screen.
 
 `everything()` returns every row published by now, for the long feeds later
-in the docs. `liveOf`, `summaryOf` and `logOf` fold any list of rows: Live by the
-axes, Summary as the digest (one row per person per day, a shared row for
-people whose whole day is one identical thing, actorless rows alone).
+in the docs. `liveOf` and `logOf` fold any list of rows: Live uses one-action bursts
+(15-minute quiet gap, four-hour ceiling), and Log keeps individual rows.
 
 **A page that needs a scene the contract lacks adds it to the contract** (a
 key in `SceneIds`, a line in `worldOf`, a check in `scripts/world.test.mjs`)
@@ -84,14 +83,9 @@ and supplies it in every pack. It never reaches into one pack.
    - `sources`: where each fact comes from. Every row's `src` must be a key.
      Mark anything unsettled with `uncertain`.
    - `verbs`: the pack's own verbs, and its own wording for the engine's
-     (`BASE_VERBS` in world.ts). Every row's verb needs wording. `summary`
-     is the verb's Summary phrase, from the verb on, as `singular|plural`:
-     `'got :object|got :count things'`. Without it, a phrase reads as its
-     label (`get ×2`). `repeat`, `actors`, `targets` and `object` are the
-     group headlines per axis, and name in the singular only what their
-     axis pins, as core requires: `repeat` the actor and target, `actors`
-     the target, `targets` the actor, `object` the actor and object. The
-     rest are plural (`:actors`, `:objects`). Grouping never waits on
+     (`BASE_VERBS` in world.ts). Every row's verb needs wording. `repeat`, `actors`,
+     `actors_target`, `targets` and `object` are group headlines. Singular roles
+     follow each axis's shared identities, including context. Grouping never waits on
      wording: a group without one arrives unnamed and opens on its members.
    - `roles` and `scenes`: see the tables above. Scenes name row ids.
 3. Register it in `worlds/index.ts`.

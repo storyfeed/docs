@@ -4,7 +4,7 @@ These examples show the feed each feature produces. Follow the links to learn
 how to build them.
 
 <script setup>
-import { scene, everything, logOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, everything, logOf, liveOf } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const withKeyValue = { ...content.confirmed,
@@ -17,7 +17,7 @@ const withKeyValue = { ...content.confirmed,
 
 const paidByWebhook = logOf([scene.cookbook.actorless.paid])
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)
-const weekly = summaryOf(everything(), 'week')
+const live = liveOf(everything())
 </script>
 
 <a id="one-activity"></a>
@@ -51,9 +51,10 @@ activities involving one order into its own timeline.
 <a id="grouping-activities"></a>
 <a id="a-week-at-a-glance"></a>
 
-## Summarizing a Week
+## Grouping Busy Activity
 
-A [weekly summary](/basics/reading#choosing-the-summary-period) combines each
-person's activities for the week into one item.
+[Live](/basics/reading#live) combines one action per row within a burst.
+Several people acting on one thing take precedence over one person acting
+across things in a place, followed by repeats.
 
-<FeedExample :items="weekly" days height="420" />
+<FeedExample :items="live" days height="420" />

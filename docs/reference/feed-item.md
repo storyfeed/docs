@@ -30,12 +30,11 @@ by `items()`.
 
 | Method | Returns | Payload Field |
 |---|---|---|
-| `kind()` | `activity`, `group`, or `null` for a summary phrase | `kind` |
+| `kind()` | `activity` or `group` | `kind` |
 | `isActivity()`, `isGroup()` | `bool` | `kind` |
-| `isDigest()` | `bool`: a group with `axis` `summary` | `axis` |
 | `id()` | `?string` | `id` |
-| `verb()` | `?string`, `null` for a summary row that spans verbs | `verb` |
-| `publishedAt()` | `?CarbonImmutable`, `null` for a summary phrase | `published_at` |
+| `verb()` | `?string` | `verb` |
+| `publishedAt()` | `?CarbonImmutable` | `published_at` |
 | `headline()` | `Headline` | `headline_template`, `headline` |
 | `missingHeadline()` | `?Headline`: the verb's headline when the activity is redundant | `missing_headline_template`, `missing_headline` |
 | `glyph()` | `?string` | `glyph` |
@@ -70,12 +69,6 @@ are equivalent: `distinct('actor')` and `distinct('actors')` return the same val
 | `children()` | `Collection` of `FeedItem`, newest first | `children` |
 | `childrenTruncated()` | `bool`: `count()` is more than `children()` holds | `children_truncated` |
 | `axis()` | `?string` | `axis` |
-| `period()` | `?string`: `hour`, `day`, `week` or `month` on a summary row | `period` |
-| `phrases()` | `Collection` of `FeedItem`, one per verb on a summary row | `phrases` |
-| `phrasesTruncated()` | `bool` | `phrases_truncated` |
-
-Summary phrases support the same methods: `verb()`, `count()`, `headline()`,
-`glyph()`, and role methods.
 
 ### Array Access
 
@@ -117,8 +110,6 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 | Item | Displays |
 |---|---|
 | a group | its count: `5 activities` |
-| a summary row | the actor once, then the phrases joined: `Ana got a balloon and went on 3 rides` |
-| a summary phrase | its verb and count: `ride (3)` |
 | an activity | its actor, verb and object: `Dana confirm Order #1042` |
 
 ### Segments
@@ -186,7 +177,6 @@ php artisan vendor:publish --tag=storyfeed-translations
 | `others` | `:count other` / `:count others` |
 | `activities` | `:count activity` / `:count activities` |
 | `unnamed` | `:actor :verb[ :object]` |
-| `phrase` | `:verb (:count)` |
 
 `:type` uses the former morph alias with spaces: `line_item` becomes `line item`.
 

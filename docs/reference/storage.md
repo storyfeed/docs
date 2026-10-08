@@ -45,9 +45,9 @@ innermost step stores the activity in one database transaction:
 2. **The activity.** One row in `feed_activities`, with a new ULID `uid`. The
    `uid` becomes the payload's `id`.
 3. **Groupings.** One `feed_groupings` row per axis the activity has a key
-   for, written in a single insert. The `hash` is the axis key: the
-   fields the axis compares, joined, ending with the day (or the verb's
-   [grouping period](/deeper/grouping-periods)).
+   for, written in a single insert. For built-in Live axes, the `hash` identifies a persisted
+   [burst](/deeper/grouping-periods) of activities sharing the logical key.
+   Custom calendar axes include their period in the key.
 4. **Participants.** One `feed_participants` row per filled role, with
    `published_at` copied from the activity.
 5. **Curation.** For each group the activity joined, Storyfeed decides which
@@ -66,13 +66,14 @@ and the default axes and middleware:
 |---|---|---|
 | `feed_activities` | 1 | |
 | `feed_snapshots` | 3 upserted | shared: the customer's row serves every activity that names the customer |
-| `feed_groupings` | 9 | `actors`, `targets`, `object`, `repeat`; `summary.hour`, `summary.day`, `summary.week`, `summary.month`; `batch` |
+| `feed_groupings` | up to 6 | `actors`, `actors_target`, `targets`, `object`, `repeat`; `batch`, when eligible |
+| `feed_grouping_bursts` | up to 5 inserted or updated | persisted burst boundaries for eligible Live axes |
 | `feed_participants` | 3 | actor, object, target |
 | `feed_batches` | 0 or 1 | a new row only when the customer has no open batch; otherwise one update |
 | `feed_batch_locks` | 1 upserted | one per customer, reused |
 
-An activity with fewer roles writes fewer rows. An activity with no actor has
-no `summary.*` rows and joins no batch.
+An activity with fewer roles writes fewer rows. An activity with no actor
+joins no batch.
 
 ### Denormalized Columns
 
@@ -128,14 +129,14 @@ the table above. In `log()`, they are three rows:
 <FeedExample :items="log" />
 
 Their `repeat` rows share one hash: same actor, same verb, same type of
-object, same shop, same day. No other axis qualifies (one actor, one shop,
+object, same shop, same context and burst. No other axis qualifies (one actor, one shop,
 three different orders), so curation sets `winner` on `repeat` for each. The
 group stream returns one group with `count: 3`, and its headline comes from
 the verb's `repeat` headline in `routes/feed.php`:
 
 <FeedExample :items="[repeat]" />
 
-Curation checks the axes in order: `actors` (3 different actors by default),
+Curation checks the axes in order: `actors`, then `actors_target` (3 different actors by default),
 `targets`, `object`, then `repeat` when none qualifies. The thresholds are
 in [Aggregation](/deeper/aggregation#thresholds).
 
@@ -146,7 +147,6 @@ in [Aggregation](/deeper/aggregation#thresholds).
 | Mode | Retrieves |
 |---|---|
 | `live()` | the `winner` grouping row of each activity, or `repeat` when none is stamped |
-| `summary()` | the `summary.{period}` row: one group per actor per period |
 | `log()` | atomic activities without aggregation; one main SELECT checks composite claims in `feed_groupings` with `NOT EXISTS` to suppress parent stories, plus snapshot loads |
 
 ### Pagination
@@ -216,7 +216,6 @@ as data distribution and query constraints change.
 | `->actor()`, `->object()`, `->target()`, `->context()` | `feed_activities ({role}_type, {role}_id, published_at, id)` |
 | `->involving()` | `feed_participants (entity_type, entity_id, published_at, activity_id)` |
 | each activity's winning row in `live()` | `feed_groupings (activity_id)` |
-| each activity's period row in `summary()` | `feed_groupings unique (activity_id, bucket)` |
 | a group's members | `feed_groupings (bucket, hash)` |
 | the solo stream's `repeat` and `composite` checks, per activity | `feed_groupings unique (activity_id, bucket)` |
 

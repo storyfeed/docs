@@ -80,7 +80,7 @@ These checks inspect a limited set:
 | `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; examines nested data maps up to four levels deep | counts body occurrences and malformed maps in sampled records, not all affected activities. One record may contain several maps. The finding states that it is sampled when either query returns 200 records |
 | `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
 | `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
-| `links` | up to 30 top-level items from each constructable named feed in its declared mode | returned entities only, including bounded group samples, children, and digest phrases; not group totals or unsampled history |
+| `links` | up to 30 top-level items from each constructable named feed in its declared mode | returned entities only, including bounded group samples, children; not group totals or unsampled history |
 | `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
 | `aggregates` | groups identified by axis and hash, with at least two members: selected display groups when `grouping.curate` is true, repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
 
@@ -123,7 +123,6 @@ feed's mode, and a custom query can narrow it beyond what the doctor sees.
 | Declared Read Mode | Doctor Reachability |
 |---|---|
 | `log()` | no group axes |
-| `summary()` | summary phrases only |
 | `live()` | every registered axis when `grouping.curate` is true; repeat only when false |
 
 When `grouping.curate` is false, the aggregate check samples repeat groups
@@ -199,7 +198,7 @@ activities, the check returns no findings.
 Only observed, resolvable `Feedable` model entities are counted; tombstones
 are excluded. Within each top-level item, repeated appearances of the same
 role/type/entity ID count once, retaining any non-null URL. Group samples,
-children, and digest phrases are bounded returned entities, not group totals.
+children are bounded returned entities, not group totals.
 One observed URL prevents `links.missing` for that role/type in that feed.
 
 The `links.missing` subject contains `feed`, `role`, `type`, `sampled`, `items`,
@@ -388,7 +387,7 @@ queries required per page.
 | `grouping.uncurated` | warning | activities have eligible groups, but no group has been selected for display, so the query returns repeat groups. Skipped when `grouping.curate` is false |
 
 This check is skipped when `grouping.curate` is false. It counts all eligible
-activities awaiting group selection, excluding composites and summary groups.
+activities awaiting group selection, excluding composites.
 The finding separates activities within the scheduled command's time window
 from older activities that require `storyfeed:curate` without a time limit.
 

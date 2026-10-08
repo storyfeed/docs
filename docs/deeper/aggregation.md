@@ -26,7 +26,7 @@ const contextGroup = (members) => group({
   glyph: members[0].glyph, actors: members.map(m => m.actor),
   targets: [members[0].target], contexts: [members[0].context], children: members,
 })
-const contextActors = liveOf(contextRows, { ...VERBS, ask: { ...VERBS.ask, actors: ':actors asked about :target' } })
+const contextActors = liveOf(contextRows, { ...VERBS, ask: { ...VERBS.ask, actors_target: ':actors asked about :target' } })
 </script>
 
 ## Grouping Activities
@@ -71,14 +71,14 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::verb('place')->grouped(
     fn (GroupBuilder $group) => $group
-        ->actors(':actors ordered from :target'),
+        ->actorsOnTarget(':actors ordered from :target'),
 );
 ```
 
 <FeedExample :items="[actors]" />
 
 A `repeat` group contains one type, so its headline belongs under
-`Story::for(Order::class)` and can say "orders". An `actors` group may also
+`Story::for(Order::class)` and can say "orders". An `actors_target` group may also
 contain reservations, so its headline belongs on the verb alone and must not
 name a type.
 
@@ -102,8 +102,7 @@ The read mode determines which groups the query returns:
 |---|---|
 | `log()` | one item per activity, including each member of a composite |
 | `live()`, `grouping.curate = true` (default) | groups selected across the available axes, with a `repeat` group when no other group is selected |
-| `live()`, `grouping.curate = false` | repeat groups only, regardless of groups selected earlier |
-| `summary()` | one summary item per actor per calendar day (or the period passed to `summary()`), across verbs. See [Retrieving Feeds](/basics/reading#summary) |
+| `live()`, `grouping.curate = false` | repeat groups and composites, regardless of inferred groups selected earlier |
 
 Set `grouping.curate` to `false` for repeat-only `live()` reads.
 `storyfeed:curate` chooses groups for recent activities and runs hourly through
@@ -113,36 +112,34 @@ Laravel's scheduler.
 
 ### Built-In Axes
 
-Activities can share a group only when its shared values match. An identity
-includes both the role's type and its ID. The period is one calendar day by
-default.
+Live selects people acting on one thing first: `actors` for the same object,
+then `actors_target` for the same target. It next selects one person acting
+across things in the same context, then actions on one object, then repeats.
+An identity includes both a role's type and its ID. Every built-in group
+contains one verb and one context, within a [burst window](/deeper/grouping-periods).
 
 | Axis | Shared Values | What May Differ | Singular Tokens Allowed |
 |---|---|---|---|
-| `repeat` | actor identity, verb, object type, target identity, period | object identity | `:actor`, `:target` |
-| `actors` | verb, target identity, period | actor and object identities, including object type | `:target` |
-| `targets` | actor identity, verb, period | target and object identities, including object type | `:actor` |
-| `object` | actor identity, verb, object identity, period | target identity | `:actor`, `:object` |
+| `actors` | verb, object, target, context | actor | `:object`, `:target`, `:context` |
+| `actors_target` | verb, target, context | actor, object | `:target`, `:context` |
+| `targets` | actor, verb, context | target, object | `:actor`, `:context` |
+| `object` | actor, verb, object, target, context | activity data | `:actor`, `:object`, `:target`, `:context` |
+| `repeat` | actor, verb, object type, target, context | object identity | `:actor`, `:target`, `:context` |
 | `composite` | actor, target and context of one published activity | members of its object collection | `:actor`, `:target`, `:context` |
 
-Context, origin, result, instrument and activity data may differ on the four
-ordinary grouping axes. A composite is one published activity with a
-collection of objects; see [Composites](/deeper/composites).
-
-A `repeat` group cannot span two targets. When the document is the object,
-`repeat` requires only the same object type. Use the `object` axis to require
-the same document.
+Origin, result, instrument and activity data may differ. A composite is one
+published activity with a collection of objects; see [Composites](/deeper/composites).
 
 Shared values alone do not select a group: activities must also meet the
 [thresholds](#configuring-grouping-thresholds), and Storyfeed must select the
 group. [Axis Keys](#axis-keys) lists the default keys and their field syntax.
 
 The `batch` axis tracks batches internally; it is not a feed grouping choice.
-[Summary](/basics/reading#summary) groups by actor and period across verbs.
+
 
 Headlines for `repeat` and `object` groups may go in a Story class or inside
 `Story::for()` because each group contains one object type. Define headlines
-for `actors` and `targets` on the verb alone.
+for `actors`, `actors_target` and `targets` on the verb alone.
 
 <a id="thresholds"></a>
 
@@ -161,7 +158,7 @@ for `actors` and `targets` on the verb alone.
 
 | Key | What the Axis Needs | Default |
 |---|---|---|
-| `min_actors` | `actors`: this many different actors | 3 |
+| `min_actors` | `actors` or `actors_target`: this many different actors | 3 |
 | `min_targets` | `targets`: this many different targets | 2 |
 | `min_target_members` | `targets`: this many activities | 3 |
 | `min_object_members` | `object`: this many activities on the one object | 2 |
@@ -181,8 +178,8 @@ Activities below a threshold cannot form that group. They fall back to
 axis's grouping key or newly registered axes require
 [rehashing](/reference/commands#rehashing-existing-rows).
 
-See [Grouping Periods](/deeper/grouping-periods) to choose the calendar
-boundary shared by grouped activities.
+See [Live Burst Windows](/deeper/grouping-periods) to choose the quiet gap
+and maximum duration shared by grouped activities.
 
 <a id="registering-a-group-headline"></a>
 
@@ -258,7 +255,7 @@ Use one list per headline and replace the others with `:count`.
 ### Missing Roles
 
 A plural token lists only filled roles. The `targets` axis groups by actor,
-verb, and calendar period (a day by default). An activity with an empty target
+verb, context and burst window. An activity with an empty target
 can therefore join the group: it contributes to `:count` but adds no name.
 
 ```php
@@ -362,11 +359,11 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::verb('ask')->grouped(fn (GroupBuilder $group): GroupBuilder => $group
     ->axis('scene', ':actors asked questions in :context')
-    ->actors(':actors asked about :target'));
+    ->actorsOnTarget(':actors asked about :target'));
 ```
 
 Two customers sharing a context meet this axis's threshold but not the built-in
-`actors` threshold, so the query returns a `scene` group:
+`actors_target` threshold, so the query returns a `scene` group:
 
 <FeedExample :items="[contextGroup(contextRows.slice(0, 2))]" />
 
@@ -391,13 +388,14 @@ The built-in axes use these default keys:
 
 | Axis | Default Grouping Key |
 |---|---|
-| `repeat` | `aa:aid:v:oa:ta:tid:d` |
-| `actors` | `v:ta!:tid:d` |
-| `targets` | `aa!:aid:v:d` |
-| `object` | `aa:aid:v:oa!:oid!:d` |
-| summary | `aa!:aid!:d` |
+| `repeat` | `aa:aid:v:oa:ta:tid:ca:cid` |
+| `actors` | `v:oa!:oid!:ta:tid:ca:cid` |
+| `actors_target` | `v:ta!:tid!:ca:cid` |
+| `targets` | `aa!:aid:v:ca:cid` |
+| `object` | `aa:aid:v:oa!:oid!:ta:tid:ca:cid` |
 
-Add `v` to group by verb and `d` to group by calendar period (a day by default).
+Built-in axes assign these keys to persisted bursts. Custom axes may add `v`
+to group by verb and `d` to group by calendar period (a day by default).
 A singular token such as `:context` requires both of that role's fields in the
 key. Without `v`, the group may contain several verbs, so define its headline
 on a key without a verb (`scene.*` or `*.*`).
@@ -406,18 +404,18 @@ on a key without a verb (`scene.*` or `*.*`).
 
 ### Prioritizing Axes
 
-With three customers, both `actors` and `scene` qualify. The built-in `actors`
+With three customers, both `actors_target` and `scene` qualify. The built-in `actors_target`
 axis has priority and selects the group:
 
 <FeedExample :items="contextActors" />
 
 New axes have the lowest priority among selectable axes. To put `scene` before
-`actors`, reuse the `$scene` defined above:
+`actors_target`, reuse the `$scene` defined above:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::axes([$scene], before: 'actors');
+Storyfeed::axes([$scene], before: 'actors_target');
 ```
 
 After group selection runs with this priority, the same activities form a

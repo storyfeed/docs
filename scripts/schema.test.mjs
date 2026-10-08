@@ -94,3 +94,17 @@ test('unknown MorphKeyType methods and id modifiers fail loudly', () => {
   assert.throws(() => extract([['create.php.stub', source]]), /unknown MorphKeyType method uuid/)
   assert.throws(() => extract([['create.php.stub', source.replace("::uuid($table, 'actor_id')", "::id($table, 'actor_id')->invisible()")]]), /unknown column modifier invisible/)
 })
+
+test('arrow Blueprint callbacks retain covering indexes and string primary keys', () => {
+  const source = create.replace('$table->id();', "$table->char('key', 64)->primary();")
+  const arrow = `<?php return new class extends Migration {
+    public function up(): void {
+      $name = config('storyfeed.tables.widgets', 'feed_widgets');
+      Schema::table($name, fn (Blueprint $t) => $t->index(['kind', 'key'], 'covering'));
+    }
+  };`
+  const table = extract([['create', source], ['index', arrow]]).get('feed_widgets')
+  assert.equal(table.columns[0].type, 'char(64)')
+  assert.ok(table.indexes.some(i => i.kind === 'primary' && i.columns.join() === 'key'))
+  assert.ok(table.indexes.some(i => i.name === 'covering' && i.columns.join() === 'kind,key'))
+})

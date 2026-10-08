@@ -55,8 +55,8 @@ This example groups three orders placed by one customer:
 <a id="digest-rows"></a>
 
 The `count` field contains the activity count. The `distinct` field counts
-entities in each role, while `sample` contains a limited selection. Summary
-items use `axis: "summary"` and include per-verb phrases. See
+entities in each role, while `sample` contains a limited selection.
+[Live](/basics/reading#live) combines one action within a burst. See
 [Group Items](/reference/payload#group-nodes) for the fields.
 
 <a id="activity-content"></a>

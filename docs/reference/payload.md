@@ -302,9 +302,9 @@ when the headline already names the speaker.
 |---|---|---|
 | `kind` | string | always `"group"` |
 | `id` | string | `grp_` and a hash; stable within its window |
-| `axis` | string | the axis that grouped the members, or `"summary"` on a [summary row](#digest-rows). Render an unknown value as a generic group |
+| `axis` | string | the axis that grouped the members. Render an unknown value as a generic group |
 | `count` | int | the true number of members |
-| `verb` | string or null | the members' verb; `null` on a summary row spanning several verbs |
+| `verb` | string or null | the members' verb |
 | `published_at` | string | the newest member's; the sort key |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
 | `glyph`, `glyph_intent` | string or null | as on an activity node; `null` when `verb` is |
@@ -323,39 +323,12 @@ count is one. Otherwise it is `null`. Each plural role has a limited sample
 and a distinct count; empty roles use `[]` and `0`.
 
 Renderers may rely on the group node's structure. Which groups appear depends
-on server-side rules, thresholds, and periods that may change.
+on server-side rules, thresholds, and burst windows that may change.
 
-### Summary Rows {#digest-rows}
+<a id="digest-rows"></a>
 
-A `summary()` group uses the group shape above with `axis: "summary"` and
-these additional fields:
-
-| Key | Holds |
-|---|---|
-| `period` | `"hour"`, `"day"`, `"week"` or `"month"`, the calendar period passed to `summary()`; `"day"` by default |
-| `phrases` | per-verb summaries, ordered by when each verb first occurred, limited by `grouping.summary.phrases` (default three) |
-| `phrases_truncated` | `true` when more per-verb phrases exist than are included |
-
-Each entry in `phrases` carries its own fields:
-
-| Key | Holds |
-|---|---|
-| `verb`, `count` | the verb and its total activity count |
-| `headline_template`, `headline` | the headline declared as `summary.{type}.{verb}` or `summary.{verb}`; both nullable |
-| `glyph`, `glyph_intent` | presentation for this phrase's verb; both nullable |
-| `sample`, `distinct` | sampled entities and true distinct counts per plural role, as on the group |
-
-The summary node's `headline_template` and `headline` come from `summary.*`
-and may both be null. Nodes spanning several verbs have `verb: null`,
-`glyph: null`, and `glyph_intent: null`; their phrases retain those values.
-To render a summary row, display the actor followed by the joined phrases.
-Actors whose entire period contains the same single activity may share a
-summary node; use `sample.actors` and `distinct.actors` when `actor` is null.
-
-When `phrases_truncated` is true, calculate remaining activities with
-`count - sum(phrases[*].count)`. Use this total for “and N more”; it counts
-activities, not omitted verbs. `grouping.children_limit` separately limits
-`children`, with `children_truncated` indicating omitted members.
+[Live](/basics/reading#live) groups one action within a burst, using the
+group shape above.
 
 ## Presentation Fields
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Storyfeed's migrations create <!-- schema:count -->nine<!-- /schema --> tables. Publish them with `storyfeed:install`
+Storyfeed's migrations create <!-- schema:count -->ten<!-- /schema --> tables. Publish them with `storyfeed:install`
 or the following command:
 
 ```bash
@@ -19,8 +19,8 @@ feed is retrieved from them.
 
 <!-- schema:diagram -->
 <div class="er-wrap">
-<svg class="er" viewBox="0 0 724 1075" role="img" aria-labelledby="er-title" xmlns="http://www.w3.org/2000/svg">
-<title id="er-title">The 9 tables Storyfeed creates, and how they reference each other</title>
+<svg class="er" viewBox="0 0 724 1105" role="img" aria-labelledby="er-title" xmlns="http://www.w3.org/2000/svg">
+<title id="er-title">The 10 tables Storyfeed creates, and how they reference each other</title>
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
 <path class="e" d="M380 117 H340 V51 H313" marker-end="url(#arr)"/>
 <path class="e d" d="M380 139 H358 V481 H313" marker-end="url(#arr)"/>
@@ -29,8 +29,8 @@ feed is retrieved from them.
 <path class="e" d="M680 638 H698 V408"/>
 <path class="e d" d="M680 452 H714 V868 H683" marker-end="url(#arr)"/>
 <path class="e d" d="M310 853 H350 V846 H377" marker-end="url(#arr)"/>
-<text class="el" x="10" y="1045">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>
-<text class="el" x="10" y="1063">held in another column · no foreign key constraints are declared</text>
+<text class="el" x="10" y="1075">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>
+<text class="el" x="10" y="1093">held in another column · no foreign key constraints are declared</text>
 <text class="el" x="676" y="337" text-anchor="end">batch rows: hash = feed_batches.uid</text>
 <g transform="translate(380,10)">
 <rect class="box" width="300" height="310" rx="8"/>
@@ -167,6 +167,18 @@ feed is retrieved from them.
 <text class="n" x="288" y="68" text-anchor="end">json</text>
 <text class="c" x="12" y="90">locked_at</text>
 </g>
+<g transform="translate(10,900)">
+<rect class="box" width="300" height="146" rx="8"/>
+<path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
+<text class="tn" x="12" y="20">feed_grouping_bursts</text>
+<text class="c" x="12" y="46">key</text>
+<text class="n" x="288" y="46" text-anchor="end">PK</text>
+<text class="c" x="12" y="68">hash</text>
+<text class="n" x="288" y="68" text-anchor="end">burst hash</text>
+<text class="c" x="12" y="90">opened_at, last_activity_at</text>
+<text class="c" x="12" y="112">within_seconds, ceiling_seconds</text>
+<text class="c" x="12" y="134">locked_at</text>
+</g>
 <g transform="translate(10,640)">
 <rect class="box" width="300" height="80" rx="8"/>
 <path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
@@ -288,7 +300,7 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 | `id` | bigint, increments | PK | Primary key. |
 | `activity_id` | unsigned bigint | index | The activity this row places in a group. |
 | `hash` | string(255) |  | The group's key on this axis. Activities sharing a `bucket` and `hash` form one group. |
-| `bucket` | string(255) | nullable | The axis: `actors`, `targets`, `object`, `repeat`, a `summary.*` period, `batch` or `composite`. |
+| `bucket` | string(255) | nullable | The axis: `actors`, `actors_target`, `targets`, `object`, `repeat`, `batch` or `composite`. |
 | `winner` | boolean | nullable | True on the row curation chose for `live()`. Null on rows that are never curated. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
@@ -298,6 +310,8 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 | unique | `activity_id`, `bucket` |
 | index | `bucket`, `hash` |
 | index | `winner`, `bucket`, `hash` |
+| index | `activity_id`, `winner`, `bucket` |
+| index | `bucket`, `hash`, `activity_id`, `winner` |
 <!-- /schema -->
 
 ### `feed_batches`
@@ -455,3 +469,20 @@ Stores Storyfeed metadata, including the sync token.
 .er .ah { fill: var(--vp-c-text-2); }
 .er .el { fill: var(--vp-c-text-2); font-size: 12px; font-style: italic; }
 </style>
+
+## Live Burst Boundaries
+
+`feed_grouping_bursts` holds the latest window and publishing lock for each
+logical axis key. Closed memberships remain in `feed_groupings`.
+
+<!-- schema:feed_grouping_bursts -->
+| Column | Type | Attributes | Purpose |
+|---|---|---|---|
+| `key` | char(64) | PK | SHA-256 logical axis key; also serializes publishers on the same key. |
+| `hash` | string(200) | nullable | The current burst membership hash. |
+| `opened_at` | datetime(6) | nullable | Publication time of the first activity in the current burst. |
+| `last_activity_at` | datetime(6) | nullable | Publication time of the latest activity in the current burst. |
+| `within_seconds` | unsigned int | nullable | Quiet gap used for the current burst. |
+| `ceiling_seconds` | unsigned int | nullable | Maximum duration used for the current burst. |
+| `locked_at` | timestamp | nullable | When a publisher last locked this key. |
+<!-- /schema -->

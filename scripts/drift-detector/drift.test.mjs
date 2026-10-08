@@ -166,3 +166,10 @@ test('PHP fences with memos, tabs and highlights retain drift detection', () => 
   assert.deepEqual(decorated, plain);
   assert.deepEqual(decorated.stale.map(s => s.identifier), ['Storyfeed\\DefinitelyMissing']);
 });
+
+test('Storyfeed UI classes are separate-package references while missing core classes stay stale', () => {
+  const r = scan(php('use Storyfeed\\Ui\\Support\\BodyComponents;\nBodyComponents::class;\nuse Storyfeed\\MissingCoreClass;'));
+  assert.ok(r.unresolved.some(f => f.identifier.includes('BodyComponents') && f.reason.includes('separate')));
+  assert.ok(r.stale.some(f => f.identifier.includes('MissingCoreClass')));
+  assert.ok(!r.stale.some(f => f.identifier.includes('BodyComponents')));
+});

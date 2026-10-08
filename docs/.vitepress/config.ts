@@ -114,7 +114,7 @@ export default defineConfig({
        */
       const HEADLESS_TITLE = 'Storyfeed is headless: it has no views'
       const HEADLESS_BODY =
-        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. For Blade, Storyfeed UI renders it with one component.'
+        'Storyfeed serializes the feed as a structured payload, and your frontend chooses how to render it. Storyfeed UI supplies Blade, Vue and React components.'
 
       md.use(container, 'headless', {
         render: (tokens: any[], idx: number) => {
@@ -191,6 +191,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Quickstart', link: '/guide/quickstart' },
+          { text: 'Upgrading from 0.12 to 0.13', link: '/guide/upgrading-0.13' },
           { text: 'What You Can Build', link: '/guide/usage-examples' },
         ],
       },
@@ -218,6 +219,16 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Storyfeed UI',
+        items: [
+          { text: 'Installing the Kits', link: '/ui/installation' },
+          { text: 'Vue', link: '/ui/vue' },
+          { text: 'React', link: '/ui/react' },
+          { text: 'Blade', link: '/ui/blade' },
+          { text: 'Tokens and Host Seams', link: '/ui/customizing' },
+        ],
+      },
+      {
         // Who acted and where first, then the classes and pipeline that
         // build on them: no page leans on one further down.
         text: 'Recording in Depth',
@@ -239,7 +250,7 @@ export default defineConfig({
         text: 'Shaping the Feed',
         items: [
           { text: 'Aggregation', link: '/deeper/aggregation' },
-          { text: 'Grouping Periods', link: '/deeper/grouping-periods' },
+          { text: 'Live Burst Windows', link: '/deeper/grouping-periods' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
           { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies' },

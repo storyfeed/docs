@@ -19,11 +19,7 @@ export type VerbWording = {
   targets?: string
   /** One person acting on one object again: core's `object` axis. */
   object?: string
-  /**
-   * A Summary phrase: the headline from the verb on, with no actor, as
-   * `singular|plural` (`'got :object|got :count things'`).
-   */
-  summary?: string
+  actors_target?: string
 }
 
 /** One dated activity in a pack. */

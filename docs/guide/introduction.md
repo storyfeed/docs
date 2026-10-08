@@ -1,7 +1,7 @@
 # Introduction
 
 Storyfeed provides activity feeds for Laravel. You explicitly record activities
-and display them as a live feed, a summary, or a log. Storyfeed also serializes
+and display them as a live feed or a log. Storyfeed also serializes
 activities as [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
 documents.
 
@@ -10,7 +10,7 @@ documents.
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one. Every example is a scene from the site's world pack,
 // and every name in the prose is a role, so the page reads the same in any pack.
-import { scene, role, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, role, logOf, liveOf } from '../.vitepress/theme/world'
 
 // One fact, three headlines: the verb stays `place`; only the wording moves.
 const sameFact = [
@@ -24,7 +24,6 @@ const sameFact = [
 // always the rows it stands for. The long feeds are later in the docs.
 const worldLog = logOf(scene.glance)
 const worldLive = liveOf(scene.glance)
-const worldSummary = summaryOf(scene.glance)
 </script>
 
 <a id="what-is-an-activity"></a>
@@ -108,25 +107,20 @@ places the order:
 
 ## Displaying Feeds
 
-You may display the same activities in three modes. See
+You may display the same activities in two modes. See
 [Retrieving Feeds](/basics/reading) to select a mode.
+
+<a id="summary"></a>
+<a id="as-a-grouped-summary"></a>
+<a id="aggregated-feeds"></a>
 
 ### Live
 
 Live mode is the default. It groups repeated actions and activities from
-several actors with the same target into single rows.
+several people acting on one thing into single rows within a burst.
+Bursts close after 15 quiet minutes or four hours from their start.
 
 <FeedExample :items="worldLive" days height="420" />
-
-<a id="as-a-grouped-summary"></a>
-<a id="aggregated-feeds"></a>
-
-### Summary
-
-Summary mode groups activities by actor and day, with one phrase per verb.
-Actors with the same single activity may share a row.
-
-<FeedExample :items="worldSummary" days height="420" />
 
 <a id="as-a-timeline"></a>
 <a id="timeline-feeds"></a>

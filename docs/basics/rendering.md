@@ -6,13 +6,12 @@ import FeedHeadline from '@storyfeed/ui/FeedHeadline.vue'
 import EntityLink from '@storyfeed/ui/EntityLink.vue'
 import FeedIcon from '@storyfeed/ui/FeedIcon.vue'
 import { useRelativeTime } from '@storyfeed/ui/useRelativeTime'
-import { scene, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, liveOf } from '../.vitepress/theme/world'
 
 const one = scene.order
 const time = useRelativeTime(computed(() => one.published_at))
-const summary = summaryOf(scene.cookbook.transitions.timeline)
 const vueHeadlines = { [one.id]: `${one.actor.label} placed ${one.object.label} with ${one.target.label}` }
-const grouped = liveOf(scene.busyPlace)[0]
+const grouped = liveOf(scene.cookbook.grouped.actors)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
 const complete = scene.basics.feedFile.completed
@@ -47,24 +46,17 @@ components shown below.
 composer require storyfeed/ui
 ```
 
-Storyfeed UI uses Tailwind CSS v4 and its Typography plugin. Install the plugin:
+Storyfeed UI supplies [Blade](/ui/blade), [Vue](/ui/vue) and [React](/ui/react)
+kits. All use Tailwind CSS v4 and [starter-kit colour tokens](/ui/customizing#colour-tokens).
+Register the Blade views in your application's CSS:
 
-```bash
-npm install -D @tailwindcss/typography
-```
-
-Register the plugin and the package's views in your application's
-`resources/css/app.css` file:
-
-```css
+```css memo="resources/css/app.css"
 @source "../../vendor/storyfeed/ui/resources/views";
-@plugin "@tailwindcss/typography";
 ```
 
-Compile your application's CSS with `npm run build`. Your layout must load
-the compiled CSS, for example with `@vite('resources/css/app.css')`.
-
-If your application does not use Tailwind, see [Building Your Own Components](#building-your-own).
+Compile with `npm run build` and load the CSS in your layout, for example
+with `@vite('resources/css/app.css')`. See [Installing the Kits](/ui/installation)
+for Vue and React's copy commands and dependencies.
 
 ### Rendering a Page
 
@@ -98,24 +90,13 @@ views override the package's views, so retain only those you customize.
 
 ### Customizing the Styles
 
-The components use Tailwind's zinc palette for text, borders, and surfaces,
-and indigo for links. To change these styles, publish the views and edit their
-utility classes. You may also customize Tailwind's existing theme variables,
-such as `--color-indigo-700` and `--color-indigo-300`, in your application's
-`@theme` block. These changes apply to every component using those colours.
-Storyfeed UI defines no additional theme variables. ItemList, Prose, and Excerpt use the
-Typography plugin's `prose` styles.
+The components use your application's [colour tokens](/ui/customizing#colour-tokens),
+including dark values. Edit copied components or published Blade views to change
+markup and utilities. No separate stylesheet or Typography plugin is needed.
 
-The components include `dark:` variants and follow your application's
-[Tailwind dark mode configuration](https://tailwindcss.com/docs/dark-mode).
-
-Prose bodies render Markdown and HTML with sanitization at render time. Plain
-text, unknown media types, and verbatim content are escaped. Verbatim content
-preserves whitespace inside a code block.
-
-Icon intents are application-defined strings exposed through `data-sf-intent`.
-To assign colours to your intent values, add the corresponding Tailwind
-utilities to the published `components/glyph.blade.php` view.
+[Host seams](/ui/customizing#host-seams) supply application links, Component
+bodies, file labels and media placement. `child-rail` controls expanded members
+independently of their parent's rail.
 
 <a id="building-your-own"></a>
 
@@ -407,14 +388,9 @@ See [Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the
 authored, noun and null payload outcomes, including a safe template whose
 wording undercounts the activities.
 
-#### Summary Rows {#digest-rows}
+<a id="digest-rows"></a>
 
-A [summary row](/basics/reading#summary) displays the actors followed by per-verb
-phrases. The group component renders it without changes. To render each phrase
-separately, use the `phrases` method. It returns feed items with their own
-`headline` and `count` methods.
-
-<FeedExample :items="summary" />
+See [Live](/basics/reading#live) for one-action groups.
 
 <a id="activity-data-and-bodies"></a>
 

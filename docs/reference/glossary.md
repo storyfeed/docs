@@ -38,7 +38,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **[threshold](/deeper/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
 | **group an activity is shown in** | The one group selected for an activity in `live()`, falling back to `repeat`. |
 | **choosing which group shows** | Selecting among groups whose thresholds are met, with `repeat` as the fallback. This runs at publication and through [`storyfeed:curate`](/reference/commands#other-maintenance-commands). With `grouping.curate` set to `false`, `live()` shows repeats only. |
-| **[grouping period](/deeper/grouping-periods)** | The calendar hour, day, week, or month a group spans. Daily by default. |
+| **[burst window](/deeper/grouping-periods)** | A quiet gap and maximum duration that bound a Live group. Defaults: 15 minutes and four hours. |
 | **group node** | A group represented in the payload. See [Group Nodes](/reference/payload#group-node). |
 | **sample** | A limited list of distinct entities in a group; `distinct` contains the full counts. |
 | **count** | The number of activities in a group. `distinct.actors` counts different actors. |
@@ -57,9 +57,8 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **item** | One entry in a feed, represented by `FeedItem` or an array from `$page->items()`. |
 | **node** | A payload representation, such as an activity node or group node. |
 | **[named feed](/basics/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
-| **read mode** | The API choice of `log()`, `live()`, or `summary()`. See [Retrieving Feeds](/basics/reading). |
+| **read mode** | The API choice of `log()` or `live()`. See [Retrieving Feeds](/basics/reading). |
 | **[live](/basics/reading#live)** | The default read mode, with each activity shown in one selected group. |
-| **[summary](/basics/reading#summary)** | The mode that summarises an actor's activities per calendar period using per-verb phrases, displayed as a summary row. |
 | **[log](/basics/reading#log)** | The mode that returns one item per activity without grouping. |
 | **cursor** | An opaque page position passed back when requesting another page. |
 | **sync_token** | An opaque value that changes when existing feed history changes. Discard accumulated nodes and fetch again when it changes. See [Synchronization](/reference/payload#sync-tokens). |

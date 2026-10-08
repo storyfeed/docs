@@ -102,26 +102,13 @@ The feed works without a scheduler; once it is live, Storyfeed has [maintenance 
 
 ## Installing Storyfeed UI
 
-To render a feed with Blade components styled using Tailwind CSS v4, install
-[Storyfeed UI](/basics/rendering#using-storyfeed-ui):
+Storyfeed UI supplies Blade, Vue and React kits:
 
 ```bash
 composer require storyfeed/ui
 ```
 
-Install Tailwind's Typography plugin:
-
-```bash
-npm install -D @tailwindcss/typography
-```
-
-Register the plugin and the package's views in `resources/css/app.css`:
-
-```css
-@source "../../vendor/storyfeed/ui/resources/views";
-@plugin "@tailwindcss/typography";
-```
-
-Run `npm run build` to compile your application's CSS. See
-[Rendering](/basics/rendering#using-storyfeed-ui) to display the feed or
-[build your own components](/basics/rendering#building-your-own).
+All three use Tailwind CSS v4 and starter-kit colour tokens.
+See [Installing the Kits](/ui/installation) for the copy command, dependencies
+and Tailwind source paths, or [Rendering](/basics/rendering) to build custom
+components.

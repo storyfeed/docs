@@ -83,7 +83,6 @@ class CompleteTasksController extends Controller
 
 This writes a parent activity and one activity per task. `log()` returns each
 task separately. `live()` returns the parent as one item with `axis: 'composite'`.
-In `summary()`, it contributes a phrase to its actor's summary row.
 [`keepLatest()`](/deeper/keeping-the-latest-activity) never replaces a composite.
 
 <a id="headlines-for-a-composite"></a>

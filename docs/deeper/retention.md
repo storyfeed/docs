@@ -104,7 +104,7 @@ Each run permanently deletes the `view` activities older than 30 days. Other ver
 ## Pruning Groups and Unused Entities
 
 Pruning removes expired members from groups. Here, `keepFor('1 hour')` applies
-to five views in one daily group, three of which are over an hour old.
+to five views in one burst, three of which are over an hour old.
 Before pruning:
 
 <FeedExample :items="[before]" />

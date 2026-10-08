@@ -3,17 +3,15 @@
 # Retrieving Feeds
 
 <script setup>
-import { scene, everything, WORLD_ANCHOR, logOf, liveOf, summaryOf } from '../.vitepress/theme/world'
+import { scene, everything, WORLD_ANCHOR, logOf, liveOf } from '../.vitepress/theme/world'
 
-// One week, ending at the shared clock. The same rows drive all three modes.
+// One week, ending at the shared clock. The same rows drive both modes.
 // Parties and anonymous activities come later in the docs, so only people act here.
 const rows = everything()
   .filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
   .filter(node => node.actor && node.actor.type !== 'storyfeed.party')
 const log = logOf(rows)
 const live = liveOf(rows)
-const summary = summaryOf(rows)
-const weekly = summaryOf(rows, 'week')
 const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
 const filterRows = logOf([
   ...scene.cookbook.transitions.timeline,
@@ -70,16 +68,22 @@ See [Aggregation](/deeper/aggregation) for grouping rules and headlines.
 
 | Call | Returns |
 |---|---|
-| `->live()` | groups of repeated actions or activities from several actors with the same target; the default |
-| `->summary()` | activities grouped by actor and calendar period, summarized by verb |
+| `->live()` | one-action bursts; the default |
 | `->log()` | one item per activity, without groups |
 
 The following feeds display the same week of activities in each mode:
 
+<a id="summary"></a>
+<a id="choosing-the-period"></a>
+<a id="choosing-the-summary-period"></a>
+
 ### Live
 
-Live mode groups repeated actions and activities from several actors with the
-same target. It is the default, so you may omit the `live` method.
+Live mode combines one action within a burst: several people on one thing
+(object first, then target), one person across things in the same context,
+then repeated actions. It is the default, so you may omit `live()`.
+A burst closes after 15 quiet minutes or four hours from its start.
+See [Live Burst Windows](/deeper/grouping-periods) for per-verb overrides.
 
 ```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
@@ -91,21 +95,6 @@ Storyfeed::feed()->live()->get();
 
 See [Choosing What to Group](/cookbook/choosing-what-to-group) when deciding
 which events belong in an overview and which need individual rows.
-
-### Summary
-
-Summary mode groups activities by actor and day, with phrases such as
-"placed 3 orders, asked about a product and paid". Actors with the same single
-activity may share a row. See [Summary Rows](/reference/payload#digest-rows)
-for the payload fields.
-
-```php memo="A controller, or wherever the feed is retrieved"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::feed()->summary()->get();
-```
-
-<FeedExample :items="summary" days height="520" />
 
 ### Log
 
@@ -120,37 +109,6 @@ Storyfeed::feed()->log()->get();
 <FeedExample :items="log" days height="520" />
 
 All modes use the same payload structures.
-
-<a id="choosing-the-period"></a>
-
-### Choosing the Summary Period
-
-The `summary` method groups by day by default. Pass a `Period` to select
-another calendar period:
-
-```php memo="A controller, or wherever the feed is retrieved"
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Grouping\Period;
-
-Storyfeed::feed()->summary(Period::Week)->get();
-```
-
-<FeedExample :items="weekly" />
-
-| Period | Calendar Period |
-|---|---|
-| `Period::Hour` | hour |
-| `Period::Day` | day; the default |
-| `Period::Week` | ISO week, starting Monday |
-| `Period::Month` | month |
-
-You may also pass a string, such as `->summary('week')`. Periods use calendar
-boundaries in `app.timezone`. To retrieve activities from the last hour, apply a
-constraint with the [`query` method](#custom-query-constraints):
-`->query(fn (ActivityBuilder $query) => $query->where('published_at', '>=', now()->subHour()))`.
-
-This period applies only to summary mode. Configure each verb's grouping
-period separately; see [Grouping Periods](/deeper/grouping-periods).
 
 ## Filtering Activities
 

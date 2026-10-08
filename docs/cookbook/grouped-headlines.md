@@ -11,7 +11,7 @@ const grouped = liveOf(placements, {
   ...VERBS,
   place: { ...VERBS.place, object: ':actor placed :object :count times',
     repeat: ':actor made :count order placements with :target' },
-})
+}, 45 * 60 * 1000)
 </script>
 
 <a id="writing-a-group-headline"></a>
@@ -38,8 +38,8 @@ For names recorded in `data` rather than roles, see
 
 ## Wording the Group Headline
 
-Both placements share an actor, verb, object and day, so the default `object`
-axis groups them. Name the shared order and count how many times it was placed.
+Both placements share an actor, verb, object, target and context. Give this
+action a 45-minute quiet gap so the amendment joins the same `object` group. Name the shared order and count how many times it was placed.
 For a `repeat` group across orders, call the events “order placements”:
 
 ```php memo="routes/feed.php"
@@ -49,6 +49,7 @@ use Storyfeed\Grouping\GroupBuilder;
 
 Story::for(Order::class)->verb('place')
     ->headline(':actor placed :object with :target')
+    ->bursts(within: '45 minutes')
     ->grouped(
         fn (GroupBuilder $group): GroupBuilder => $group
             ->object(':actor placed :object :count times')

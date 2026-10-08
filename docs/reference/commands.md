@@ -23,6 +23,12 @@ The installer preserves an existing `routes/feed.php` that is not a Storyfeed
 file and explains how to set another [`definitions`](/reference/configuration#definitions)
 path. Setting `definitions` to `false` disables file creation.
 
+## Installing UI Components
+
+After installing `storyfeed/ui`, use `php artisan storyfeed:ui vue` or
+`php artisan storyfeed:ui react` to copy its kit. See [Installing the Kits](/ui/installation)
+for `--path`, `--diff`, `--force` and file-preservation behaviour.
+
 ## Generating Classes
 
 <span id="generators"></span>
@@ -172,6 +178,10 @@ Changes to `grouping.policy` thresholds only affect eligibility. Plain
 those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
+
+For migration from calendar groups to Live bursts, see
+[Upgrading from 0.12 to 0.13](/guide/upgrading-0.13#rebuilding-stored-groups).
+The release guide marks the pending rebuild flags, resume procedure and timing.
 
 Rehashing can move groups past an active cursor, leaving the next page empty.
 It changes `sync_token`, so clients must discard accumulated nodes and fetch
