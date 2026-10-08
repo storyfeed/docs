@@ -1,5 +1,11 @@
 # Activities Without an Actor
 
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const placed = scene.order
+const { paid, expired } = scene.cookbook.actorless
+</script>
+
 Use the user as actor for a person's action and a named party for a system's
 action. An anonymous activity has no recorded actor: who acted is unknown,
 including when you deliberately use `Storyfeed::anonymous()` or `by(null)`.
@@ -13,12 +19,6 @@ including when you deliberately use `Storyfeed::anonymous()` or `by(null)`.
 | a user places an order | the user | `:actor placed :object with :target` |
 | a job, command, or integration marks an order paid | a named party | `:actor marked :object paid` |
 | an order expires without a recorded actor | none | `:object expired at :target` |
-
-<script setup>
-import { scene } from '../.vitepress/theme/world'
-const placed = scene.order
-const { paid, expired } = scene.cookbook.actorless
-</script>
 
 <span id="the-default-actor"></span>
 
@@ -124,6 +124,8 @@ It records the same activity as the controller above.
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by('Stripe')
     ->action('pay', $order)
@@ -131,6 +133,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'pay',
     object: $order,
@@ -154,6 +158,8 @@ This scheduled command expires unpaid orders without recording an actor.
 Call `Storyfeed::anonymous()` to make that choice explicit:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
     ->action('expire', $order)
     ->to($order->shop)

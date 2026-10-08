@@ -20,6 +20,8 @@ context filter can only find activities recorded with that context.
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('ask', $note)
@@ -29,6 +31,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'ask',
     object: $note,
@@ -57,6 +61,8 @@ If the target is the container itself, the `target` role is enough:
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -65,6 +71,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -90,9 +98,20 @@ Set the context when you need to filter by it or include it in a headline:
 
 <a id="the-container-query"></a>
 
-## Reading Activities in a Container
+<a id="reading-activities-in-a-container"></a>
 
-The `context` method filters activities recorded within the shop.
+## Retrieving Activities in a Container
+
+The `context` method filters activities recorded within the shop:
+
+```php memo="A controller, or wherever the feed is retrieved"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::feed()->context($shop)->get();
+```
+
+<FeedExample :items="[inside]" />
+
 The [`involving` method](/basics/reading#scoping) also includes activities about
 the shop itself, such as its creation.
 

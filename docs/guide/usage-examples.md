@@ -1,8 +1,5 @@
 # What You Can Build
 
-These examples show the feed each feature produces. Follow the links to learn
-how to build them.
-
 <script setup>
 import { scene, everything, logOf, liveOf } from '../.vitepress/theme/world'
 

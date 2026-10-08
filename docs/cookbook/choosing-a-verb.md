@@ -27,9 +27,9 @@ The object identifies what the action happened to:
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class PlaceOrderController
 {
@@ -52,9 +52,9 @@ class PlaceOrderController
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class PlaceOrderController
 {
@@ -198,9 +198,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Acceptance;
 use App\Models\Document;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class RecordAcceptanceController
 {
@@ -251,9 +251,9 @@ Story::for(Document::class)->verb('remove')
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class RecordClauseRemovalController
 {
@@ -336,11 +336,11 @@ Use `create` for a new menu item:
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use App\Http\Requests\StoreMenuItemRequest;
-use Illuminate\Http\RedirectResponse;
 
 class CreateMenuItemController
 {
@@ -360,11 +360,11 @@ class CreateMenuItemController
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use App\Http\Requests\StoreMenuItemRequest;
-use Illuminate\Http\RedirectResponse;
 
 class CreateMenuItemController
 {
@@ -394,12 +394,12 @@ Use `add` when putting an existing menu item on a menu:
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
 use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use App\Models\Menu;
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 
 class AddMenuItemController
 {
@@ -419,12 +419,12 @@ class AddMenuItemController
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
 use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use App\Models\Menu;
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 
 class AddMenuItemController
 {

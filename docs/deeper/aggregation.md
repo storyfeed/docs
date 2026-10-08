@@ -35,7 +35,7 @@ const contextActors = liveOf(contextRows, { ...VERBS, ask: { ...VERBS.ask, actor
 
 ### Repeated Activities
 
-Here are three orders from one customer, minutes apart, in log mode:
+Three orders from one customer, minutes apart, in log mode:
 
 <FeedExample :items="log" />
 
@@ -83,8 +83,10 @@ contain reservations, so its headline belongs on the verb alone and must not
 name a type.
 
 Storyfeed groups activities when published. Each activity belongs to only one
-group per read mode. Quotes and images belong to the activities, so use `log()`
-to show each one. [Storage Architecture](/reference/storage#reading-a-page)
+group per read mode.
+
+To keep quotes and images visible individually, see
+[Choosing What to Group](/cookbook/choosing-what-to-group#keeping-content-visible). [Storage Architecture](/reference/storage#reading-a-page)
 shows where groups are stored and how a feed retrieves them.
 
 <a id="axes-by-read-mode"></a>
@@ -115,7 +117,7 @@ Laravel's scheduler.
 Live selects people acting on one thing first: `actors` for the same object,
 then `actors_target` for the same target. It next selects one person acting
 across things in the same context, then actions on one object, then repeats.
-An identity includes both a role's type and its ID. Every built-in group
+Two entities match when their type and ID match. Every built-in group
 contains one verb and one context, within a [burst window](/deeper/grouping-periods).
 
 | Axis | Shared Values | What May Differ | Singular Tokens Allowed |
@@ -133,9 +135,6 @@ published activity with a collection of objects; see [Composites](/deeper/compos
 Shared values alone do not select a group: activities must also meet the
 [thresholds](#configuring-grouping-thresholds), and Storyfeed must select the
 group. [Axis Keys](#axis-keys) lists the default keys and their field syntax.
-
-The `batch` axis tracks batches internally; it is not a feed grouping choice.
-
 
 Headlines for `repeat` and `object` groups may go in a Story class or inside
 `Story::for()` because each group contains one object type. Define headlines
@@ -273,7 +272,7 @@ When no group headline is defined, Storyfeed uses the single-activity headline
 if its roles can be represented for the group. A role
 that differs across the group becomes a plain noun, such as "dishes", when all
 its entities are one type. Otherwise both `headline_template` and `headline`
-are `null`. That is a supported payload state; it does not require a blank row.
+are `null`. See [Groups Without Headlines](/basics/rendering#groups-without-headlines) for rendering the count.
 Single-activity headline closures cannot supply this fallback because they
 access one member's data rather than the whole group.
 
@@ -297,7 +296,9 @@ The entity count selects the form: `FeedNoun::form('dish|dishes', 7)` returns
 `dishes`. The headline `:actor put :object on the menu` becomes
 `:actor put dishes on the menu`. The noun is plain text; `:actor` remains a link.
 
-### Seeing the Fallback
+<a id="seeing-the-fallback"></a>
+
+### Fallback Headlines
 
 | Available Headline | Payload |
 |---|---|

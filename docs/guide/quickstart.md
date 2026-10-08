@@ -71,8 +71,7 @@ class Order extends Model implements Feedable
 ```
 :::
 
-For the `Shop` and `User` models, implement `Feedable` and use
-`InteractsWithFeed` as well. If you omit the `toFeed` method, Storyfeed generates
+Do the same for `Shop` and `User`. If you omit the `toFeed` method, Storyfeed generates
 a [default label](/basics/feedable-models#default-labels) from the model's
 attributes, such as `name`.
 

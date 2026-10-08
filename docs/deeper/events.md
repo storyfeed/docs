@@ -6,8 +6,7 @@ import { scene } from '../.vitepress/theme/world'
 
 ## Publishing From an Event
 
-In an event-driven application, a controller dispatches an event so listeners
-can handle the resulting work:
+A controller dispatches an event:
 
 ```php memo="app/Http/Controllers/StripeWebhookController.php"
 <?php
@@ -55,7 +54,6 @@ class MarkOrderPaid
     {
         $event->order->update(['paid_at' => now()]);
 
-        // The activity is published automatically.
     }
 }
 ```

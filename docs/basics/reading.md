@@ -107,7 +107,7 @@ Storyfeed::feed()->log()->get();
 
 <FeedExample :items="log" days height="520" />
 
-All modes use the same payload structures.
+Both modes return the same payload shape.
 
 ## Filtering Activities
 
@@ -155,9 +155,7 @@ You may also filter by a specific role:
 | `->object($order)` / `->target($shop)` | activities matching the specified role |
 
 Filters on different roles apply together. Group counts include only matching
-activities. Setting the same role again replaces its previous value, unless a
-feed class fixes that role. Additional filters cannot change a role fixed by
-the feed class.
+activities.
 
 > [!NOTE]
 > **The difference between involving and context**
@@ -254,7 +252,7 @@ return $shop->storyfeed()
     ->get();
 ```
 
-At the shared sample clock, the questions published after 5 pm remain:
+In the sample, only the questions after 5 pm remain:
 
 <FeedExample :items="liveOf(shopRows.filter(row => Date.parse(row.published_at) >= sinceFive))" />
 
@@ -328,8 +326,8 @@ To display pagination links in Blade, call the `links` method:
 {{ $page->links() }}
 ```
 
-For the three placements shown at the start of this page, a page size of two
-in log mode gives these page boundaries. Page one contains the newest two:
+With a page size of two in log mode, the three placements split across two pages.
+Page one holds the newest two: Page one contains the newest two:
 
 <FeedExample :items="pages[0]" />
 
@@ -357,6 +355,8 @@ cursor holds.
 To use a different query string parameter, pass its name as the second argument:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 $page = Storyfeed::feed()->cursorPaginate(15, 'feed_cursor');
 ```
 
@@ -364,6 +364,8 @@ Use the `withQueryString` method to include the current request's query string
 in pagination links. You may also append specific values or a URL fragment:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 $page = Storyfeed::feed()->cursorPaginate(15)->withQueryString();
 
 $page->appends(['filter' => 'mine'])->fragment('activity');
@@ -387,6 +389,8 @@ For jobs and commands, use the `get` method. It returns a `FeedPage`, whose
 `nextCursor` method returns the opaque string for the next page:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 $page = Storyfeed::feed()->limit(15)->get();
 
 if ($cursor = $page->nextCursor()) {

@@ -1,5 +1,10 @@
 # Choosing When to Publish
 
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const confirmed = scene.cookbook.transitions.confirmed
+</script>
+
 Publish meaningful status changes so routine saves do not create duplicate activities.
 
 ## Publishing a Status Transition
@@ -26,14 +31,14 @@ class OrderObserver
     public function updated(Order $order): void
     {
         if (! $order->wasChanged('status')) {
-            return;                                  // a save is not news
+            return;                                  // no status change
         }
 
         $verb = match ($order->status) {
             'confirmed' => 'confirm',
             'ready' => 'ready',
             'completed' => 'complete',
-            default => null,                         // a draft is not news either
+            default => null,                         // drafts are not recorded
         };
 
         if ($verb === null) {
@@ -60,14 +65,14 @@ class OrderObserver
     public function updated(Order $order): void
     {
         if (! $order->wasChanged('status')) {
-            return;                                  // a save is not news
+            return;                                  // no status change
         }
 
         $verb = match ($order->status) {
             'confirmed' => 'confirm',
             'ready' => 'ready',
             'completed' => 'complete',
-            default => null,                         // a draft is not news either
+            default => null,                         // drafts are not recorded
         };
 
         if ($verb === null) {
@@ -110,11 +115,6 @@ Story::for(Order::class)->verb('complete')
     ->headline(':actor completed :object');
 ```
 
-<script setup>
-import { scene } from '../.vitepress/theme/world'
-const confirmed = scene.cookbook.transitions.confirmed
-</script>
-
 When a staff member confirms a placed order:
 
 <FeedExample :items="[confirmed]" />
@@ -142,6 +142,8 @@ If the transition already dispatches a domain event, implement
 `PublishesToFeed` on that event and return its activity from `toFeedActivity()`:
 
 ```php memo="app/Events/OrderConfirmed.php" at="toFeedActivity()"
+use Storyfeed\Facades\Storyfeed;
+
 return Storyfeed::activity()
     ->by($this->staff)
     ->action('confirm', $this->order);

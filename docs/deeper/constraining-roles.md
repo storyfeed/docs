@@ -18,8 +18,8 @@ const placed = { ...scene.order, data: null, glyph_intent: null }
 ## Defining Role Constraints
 
 ```php memo="routes/feed.php"
-use App\Models\Shop;
 use App\Models\Order;
+use App\Models\Shop;
 use App\Models\User;
 use Storyfeed\Facades\Story;
 
@@ -57,8 +57,8 @@ types for that role.
 ### Parties and Empty Roles
 
 ```php memo="routes/feed.php"
-use App\Models\Shop;
 use App\Models\Order;
+use App\Models\Shop;
 use App\Models\User;
 use Storyfeed\Facades\Story;
 

@@ -12,14 +12,12 @@ const confirmed = scene.basics.activityContent.confirmed
 A verb names the action in base form, such as `place` or `email`. The object
 type is stored separately, so use `place` rather than `order.place` or
 `place_order`. See [Choosing a Verb](/cookbook/choosing-a-verb) for examples.
-Declaring or publishing a dotted verb throws `Storyfeed\Exceptions\DottedVerb`; use a [story name](/deeper/named-stories) for dotted lookups such as `order.place`.
-
-You may use a string or an enum case.
+A verb never contains a dot; see [Naming Verbs](/cookbook/choosing-a-verb#naming-verbs).
 
 <a id="using-strings"></a>
 
-For example, `->action('place', $order)` records `place`. Define its headline in
-`routes/feed.php`. Use an enum to share verb values across your application.
+`->action('place', $order)` records the string `place`. To share verb values
+across your application, use an enum:
 
 <a id="using-your-own-enums"></a>
 
@@ -60,7 +58,9 @@ Story::for(Order::class)
 
 This defines a headline for the case's value, `place`, as `->verb('place')` does.
 
-### Adding Fluent Recording
+<a id="adding-fluent-recording"></a>
+
+### Publishing From an Enum Case
 
 To publish directly from an enum case, implement the `FeedVerb` interface and
 use the `AsFeedVerb` trait:
@@ -95,8 +95,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderActivity;
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class PlaceOrderController
 {
@@ -119,9 +119,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderActivity;
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class PlaceOrderController
 {
@@ -163,9 +163,9 @@ Story::for(Order::class)->verb(Act::Confirm)
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Act;
-use Illuminate\Http\RedirectResponse;
 
 class ConfirmOrderController
 {
@@ -184,10 +184,10 @@ class ConfirmOrderController
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
-use Illuminate\Http\RedirectResponse;
 
 class ConfirmOrderController
 {

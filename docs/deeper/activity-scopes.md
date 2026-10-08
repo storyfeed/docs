@@ -22,6 +22,8 @@ const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::context($order->shop, function () use ($request, $order) {
     Storyfeed::activity()
         ->by($request->user())
@@ -31,6 +33,8 @@ Storyfeed::context($order->shop, function () use ($request, $order) {
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::context($order->shop, function () use ($request, $order) {
     Storyfeed::record(
         verb: 'place',
@@ -116,8 +120,8 @@ For implicit binding, type-hint the parameter in the controller:
 
 namespace App\Http\Controllers;
 
-use App\Models\Shop;
 use App\Models\Order;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
@@ -140,8 +144,8 @@ class PlaceOrderController extends Controller
 
 namespace App\Http\Controllers;
 
-use App\Models\Shop;
 use App\Models\Order;
+use App\Models\Shop;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
@@ -217,6 +221,8 @@ job inherit the same user.
 A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::actor('System', fn () => SyncMenu::dispatch());
 ```
 

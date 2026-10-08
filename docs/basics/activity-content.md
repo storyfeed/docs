@@ -33,7 +33,8 @@ const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor 
 
 ## Introduction
 
-Choose a body from the evidence you have:
+A body adds structured content beneath an entity’s label: a quote, a photo,
+a few labelled values. Choose a body from the evidence you have:
 
 | Evidence | Body |
 |---|---|
@@ -107,11 +108,6 @@ Storyfeed::activity()
     ->to($order)
     ->publish();
 ```
-
-The body belongs to the note's shared entity snapshot. Saving the note can
-change the text shown on older activities. To preserve text exactly as it was
-when the event happened, also record it in activity
-[`data`](/basics/recording#adding-activity-data).
 
 <a id="entity-bodies"></a>
 
@@ -337,7 +333,9 @@ The renderer uses `alt`, then the caption, then an empty alt attribute. An empty
 slot draws nothing, including the caption. See [Feed Media](/basics/feed-media#showing-pictures)
 for the resolver that supplies the picture.
 
-### File Attachment
+<a id="file-attachment"></a>
+
+### Attaching a File
 
 Use `FileAttachment` in a `Document` model's `toFeed` method to describe a PDF, such as a signed agreement:
 
@@ -378,7 +376,9 @@ return FeedEntity::make(
 The `FileAttachment` body stores file details. Configure the URL separately with the
 [link resolver](/basics/feed-media#linking-to-the-model).
 
-### Lists of Items
+<a id="lists-of-items"></a>
+
+### Listing Items
 
 Use `ItemList` for an order's items. Each item may be a plain string or a
 `FeedLink` to another page:
@@ -439,9 +439,7 @@ FeedEntity::make(
 
 <FeedExample :items="[content.itemList]" />
 
-This order has five items. The body includes two linked items and one
-plain-string item. The `totalItems` method records the full count, and `more`
-provides a link to the order containing the remaining items. Use
+`totalItems` records the full count and `more` links to the rest. Use
 `ItemList::ordered()` when the sequence of the items matters.
 
 A list can also preserve a short arrangement of items:
@@ -603,8 +601,7 @@ second argument to `FeedLink::make`, or set it with the `href` method.
 The `href` is stored as written. It can become stale if a route changes or a
 signed URL expires.
 
-The label names the thing, such as a notice or an order. It should not be an
-instruction such as “Open the conversation”. See the
+The label names the thing, such as a notice or an order.  See the
 [`FeedLink` reference](/reference/feedable#feedlink) for its methods and the
 body fields that accept it.
 

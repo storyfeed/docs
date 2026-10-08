@@ -12,7 +12,7 @@ Verbs are free-form strings, so you may use your own names, enum cases, or both.
 
 ## Available Verbs
 
-The 67 verbs below are grouped by Activity Streams type. Case names start
+The verbs below are grouped by Activity Streams type. Case names start
 with a capital letter: `Act::TentativelyAccept` stores `tentativelyAccept`.
 
 | Activity type | Verbs |

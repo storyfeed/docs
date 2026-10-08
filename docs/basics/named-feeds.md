@@ -17,32 +17,13 @@ const unlinked = [{ ...scene.order, object: { ...scene.order.object, url: null }
 
 ## Introduction
 
-Most apps show their activity to more than one audience. At
-{{ role.shop.label }}, the kitchen needs every order as it moves, the menu has
-its own change log, and a customer should see only their own order. When each
-screen filters activities in its own controller, those filters drift apart,
-and a newly recorded verb can appear on the customer's page without anyone
-deciding that it should.
-
-A named feed defines an audience once, by name:
-
-- **Every screen shows the same verbs.** A controller, a Filament widget and an
-  API endpoint that retrieve the `'customer'` feed all apply the same filter.
-- **Verb coverage can be checked in CI.** With restricted feeds and no
-  unrestricted feed, the [doctor](/deeper/diagnosing) warns about app-declared
-  or recorded verbs that no feed includes or excludes. See
-  [Checking Verb Coverage](#checking-verb-coverage) for the exceptions.
-- **Each feed can link somewhere different.** An order can open its ticket on
-  the kitchen's board and its status page on the customer's.
-- **A feed class requires its subject.** The customer's feed is always scoped to
-  their order.
+A named feed defines an audience once: its verbs, its mode and its link targets.
+Every screen that retrieves the `'customer'` feed applies the same definition.
 
 <a id="declaring-a-feed"></a>
 
 <a id="registering-a-closure"></a>
 ## Defining Named Feeds
-
-Define separate feeds for the kitchen's order board and the menu's change log:
 
 Register each feed as a closure in a service provider's `boot` method. The
 closure receives the feed builder and configures its filters and mode:
@@ -85,6 +66,8 @@ Storyfeed::feed('kitchen')->get();
 To retrieve the menu's change log:
 
 ```php memo="A controller, or wherever the feed is read"
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::feed('menu')->get();
 ```
 
@@ -248,17 +231,9 @@ On a feed with no name:
 
 ### Checking Verb Coverage
 
-The [doctor](/deeper/diagnosing) checks app-declared and recorded verbs;
-unused package-default verbs are excluded. When at least one restricted feed
-exists and no unrestricted feed is declared, a verb that no restricted feed
-includes or excludes produces a `feeds.unclassified` warning. Run with
-`--fail-on=warning` in CI to fail on these warnings.
-
-Use `->unrestricted()` to declare that a feed includes every verb. Alongside a
-restricted feed, this changes undecided-verb findings to informational
-`feeds.unrestricted`, which does not fail at the warning threshold. With no
-restricted feeds, the check reports informational `feeds.none_restricted` and
-returns. With no registered feeds, it returns without a finding.
+The doctor reports verbs that no restricted feed includes or excludes;
+`->unrestricted()` declares a feed that shows every verb. See
+[Feed Coverage](/reference/doctor#feed-coverage).
 
 <a id="filtering-verbs"></a>
 

@@ -90,7 +90,7 @@ Force-deleting a model makes its tombstone permanent, whether or not the
 model was soft-deleted first:
 
 ```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
-// the activities stay; the tombstone is now their object for good
+// the activities stay, pointing at a permanent tombstone
 $order->forceDelete();
 ```
 

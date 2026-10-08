@@ -3,7 +3,9 @@
 ## Introduction
 
 The doctor checks your definitions, schema, and recorded activities and
-reports how to fix gaps. By default, publishing without a headline definition
+reports how to fix gaps. In local and testing environments, an unregistered
+verb throws `UnknownVerb` by default; a concrete Story definition registers
+the verb and its headline. By default, publishing without a headline definition
 throws `UnauthoredActivity` in local and testing environments. When
 `storyfeed.grammar.strict` is disabled, the activity can publish with a null
 headline; the doctor can find these gaps in already-recorded activities.
@@ -126,18 +128,9 @@ findings are notes, leave CI counts unchanged, and generate no fix. See
 
 ## Handling Deliberate Findings
 
-If a reported headline is deliberately unused, first check the
-[doctor's coverage limits](/reference/doctor#group-reachability). A clean report
-alone does not establish that every group returned by your feed has a headline.
-
-For a deliberate gap, verify that the relevant payload never needs that
-headline. Record the intended read mode and `grouping.curate` setting in your
-application's maintenance notes. Revisit the decision when read modes or
-definitions change.
-
-To accept one supported finding, copy its exact code and complete typed
-`subject` from `storyfeed:doctor --json` into `doctor.acknowledgments` in your
-application's `config/storyfeed.php`. Supply a written reason:
+To accept a deliberate finding, copy its exact code and complete typed
+`subject` from `storyfeed:doctor --json` into `doctor.acknowledgments`, with a
+written reason:
 
 ```php memo="config/storyfeed.php"
 'doctor' => [
@@ -152,25 +145,10 @@ application's `config/storyfeed.php`. Supply a written reason:
 ],
 ```
 
-Use the subject from your own report; `null` and a string are different
-identities. Accepted findings remain visible with their original severity,
-message, and reason. Text prints `Acknowledged [warning]: … Reason: …`;
-JSON retains the finding and adds its `acknowledgment` reason and the report's
-`acknowledged_count`. They no longer count toward active problems, health,
-`--fail-on`, or generated stubs. With no active problems, text prints
-`No unacknowledged problems.`
-
-This policy does not author a headline or icon, change publishing strictness,
-or alter rendering. It accepts only the four codes listed in
-[Acknowledgment Policy](/reference/doctor#acknowledgment-policy), with no
-patterns or code-only entries. That reference also explains invalid, stale,
-and unobserved entries.
-
-Use `--only` to run selected checks, or `--fail-on` to set the severity that
-fails CI. Neither option records an acknowledgment. `--only`
-omits entire checks, and changing the threshold affects all findings of that
-severity.
-Keep the complete report available alongside any focused run.
+Accepted findings stay visible with their reasons but no longer count toward
+active problems, `--fail-on`, or generated stubs. See
+[Acknowledgment Policy](/reference/doctor#acknowledgment-policy) for supported
+codes, coverage limits and validation.
 
 ## Generating Missing Definitions
 

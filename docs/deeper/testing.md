@@ -73,8 +73,8 @@ assert that the activity was queued:
 
 ```php memo="tests/Feature/QueuedOrderTest.php"
 use App\Http\Controllers\PlaceOrderController;
-use App\Models\Shop;
 use App\Models\Order;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -190,7 +190,7 @@ StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 ```
 
 The assertion also fails if a `Feedable` model lacks an enforced morph alias,
-the check cannot run, or no activities are recorded. It works with the fake.
+the check cannot run, or no activities are recorded. It also works under `Storyfeed::fake()`.
 See [Surface](/reference/doctor#feedable-models).
 
 <a id="diagnostics-in-ci"></a>

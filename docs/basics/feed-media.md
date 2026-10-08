@@ -14,13 +14,39 @@ const actor = { ...scene.order, actor: { ...photo.object, body: null,
 ## Introduction
 
 A model's `toFeed()` method describes what is stored. Its static `feedMedia()`
-method resolves links and media when a feed is retrieved. This keeps URLs out
-of stored picture bodies, so changing a route or thumbnail does not require
-rewriting those bodies.
+method resolves links and media when a feed is retrieved:
 
-The method receives a `FeedContext` containing the snapshot's label, route key,
-and data. Return a `FeedMedia`, or `null` when there is no media to resolve.
-With `InteractsWithFeed`, you may instead register a typed closure in `booted()`:
+```php memo="app/Models/Photo.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class Photo extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()->url(route('photos.show', $context->routeKey()));
+    }
+}
+```
+
+<FeedExample :items="[{ ...linked, object: { ...linked.object, modal: false } }]" />
+
+The method receives a `FeedContext` with the snapshot's label, route key and
+data, and returns a `FeedMedia` or `null`. Resolving URLs here lets a route or
+thumbnail change without rewriting stored picture bodies.
+
+### Using a Closure
+
+With `InteractsWithFeed`, you may register a closure in `booted()` instead:
 
 ```php memo="app/Models/Photo.php" at="booted()"
 use Storyfeed\FeedContext;
@@ -31,6 +57,8 @@ static::feedMediaUsing(
         ->url(route('photos.show', $context->routeKey())),
 );
 ```
+
+<FeedExample :items="[{ ...linked, object: { ...linked.object, modal: false } }]" />
 
 A model's own `feedMedia()` method takes precedence over the registered closure.
 A closure may also return a URL string or `null`. Without either resolver,
@@ -57,16 +85,12 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 <FeedExample :items="[linked]" />
 
-The photo's name is linked, but no picture appears. The URL may lead to a show
-page or a modal; it is never assumed to be an image source. A resolver can also
+A link does not show a picture; see [Showing Pictures](#showing-pictures). A resolver can also
 choose a [different link for each feed](/basics/named-feeds#linking-each-feed-somewhere-different).
 
 ### Opening Links in a Modal
 
-The `modal()` call above marks the link for modal navigation. Your renderer
-must handle that hint and the supplied attributes; a URL alone does not open
-a modal. Keep the URL usable as a normal destination when modal navigation
-is unavailable.
+`modal()` sets `entity.modal` to `true`; the URL stays an ordinary destination.
 
 ## Linking Files
 
@@ -81,21 +105,22 @@ return FeedEntity::make()
     ->body(FileAttachment::make()->size($this->bytes)->mediaType('application/pdf'));
 ```
 
-```php memo="app/Models/Document.php" at="booted()"
+```php memo="app/Models/Document.php" at="feedMedia()"
 use Storyfeed\FeedContext;
 use Storyfeed\FeedMedia;
 use Storyfeed\FeedResource;
 
-static::feedMediaUsing(
-    fn (FeedContext $context, FeedMedia $media): FeedMedia => $media
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make()
         ->url(route('documents.show', $context->routeKey()))
         ->files(
             FeedResource::make()
                 ->href(route('documents.download', $context->routeKey()))
                 ->name($context->label())
                 ->mediaType('application/pdf')
-        ),
-);
+        );
+}
 ```
 
 <FeedExample :items="[file]" />
@@ -106,9 +131,6 @@ not create a body or display files automatically. Each call appends resources.
 Activity Streams output carries them in its `attachment` property.
 
 ## Showing Pictures
-
-To retain image dimensions or a media type with the entity,
-[store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
 
 A picture appears only when a body names it. Declare an `Image` body in
 `toFeed()`, then supply the named slot from `feedMedia()`:
@@ -122,16 +144,17 @@ return FeedEntity::make()
     ->body(Image::make()->caption($this->subject)->alt($this->description)->withPreview());
 ```
 
-```php memo="app/Models/Photo.php" at="booted()"
+```php memo="app/Models/Photo.php" at="feedMedia()"
 use Storyfeed\FeedContext;
 use Storyfeed\FeedImage;
 use Storyfeed\FeedMedia;
 
-static::feedMediaUsing(
-    fn (FeedContext $context, FeedMedia $media): FeedMedia => $media
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make()
         ->url(route('photos.show', $context->routeKey()))
-        ->preview(FeedImage::make()->src(route('photos.thumbnail', $context->routeKey()))),
-);
+        ->preview(FeedImage::make()->src(route('photos.thumbnail', $context->routeKey())));
+}
 ```
 
 <FeedExample :items="[photo]" />
@@ -153,27 +176,30 @@ The AS2 serializer emits these as `icon`, `preview`, and `image`. None is the
 entity's link. Collapsed groups sample their members' Image bodies; members
 without one contribute no picture tile.
 
+To retain image dimensions or a media type with the entity,
+[store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
+
 ## Giving an Actor an Avatar
 
 Any feedable model can be an actor. Its `icon` slot supplies the avatar when
 it appears in that role, even if it is usually the object of an activity:
 
-```php memo="app/Models/Photo.php" at="booted()"
+```php memo="app/Models/Photo.php" at="feedMedia()"
 use Storyfeed\FeedContext;
 use Storyfeed\FeedImage;
 use Storyfeed\FeedMedia;
 
-static::feedMediaUsing(
-    fn (FeedContext $context, FeedMedia $media): FeedMedia => $media
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make()
         ->url(route('photos.show', $context->routeKey()))
-        ->icon(FeedImage::make()->src(route('photos.thumbnail', $context->routeKey()))),
-);
+        ->icon(FeedImage::make()->src(route('photos.thumbnail', $context->routeKey())));
+}
 ```
 
 <FeedExample :items="[actor]" rail="actor" />
 
-The actor badge may show the icon without an Image body. This is the exception
-to body-driven pictures: avatars identify participants in the headline.
+An avatar needs no `Image` body.
 See the [Feedable API](/reference/feedable#feedmedia) for the complete method list.
 
 For bodies built from current model values, see

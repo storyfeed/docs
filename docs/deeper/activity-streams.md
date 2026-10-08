@@ -110,19 +110,12 @@ enum OrderActivity: string implements FeedVerb
 }
 ```
 
-- The mapping sets the document's `type` and affects default deletion rules.
-  `Delete`, `Remove`, `Undo`, and `Reject` have no constitutive roles by default;
-  other types use the object. Explicit rules can override this. See
-  [Deleted Models](/deeper/deleted-models) for how missing roles make an activity
-  redundant.
-- Without an app or built-in AS2 mapping, the type is `Activity` and `sf:verb`
-  holds the verb. The document's JSON-LD context, `https://ns.storyfeed.dev`,
-  defines `sf:verb`. Intransitive types also fall back to `Activity` when an
-  object is present.
-- Composite objects serialize as `OrderedCollection`.
-- Entity [media](/reference/payload#entity-media) serialize as AS2 `Link`
-  objects under `icon`, `image`, and `preview`. During serialization,
-  `$context->feed()` in `feedMedia()` returns `null`.
+| Field | Effect |
+|---|---|
+| `type` and deletion rules | The mapping sets the document's type. `Delete`, `Remove`, `Undo` and `Reject` have no constitutive roles by default; other types use the object. Explicit rules can override this; see [Deleted Models](/deeper/deleted-models). |
+| `sf:verb` | Without an app or built-in AS2 mapping, the type is `Activity` and `sf:verb` holds the verb. The JSON-LD context, `https://ns.storyfeed.dev`, defines it. Intransitive types also fall back to `Activity` when an object is present. |
+| composite `object` | Serializes as `OrderedCollection`. |
+| entity media | [Media](/reference/payload#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. |
 
 ### Type Overrides
 

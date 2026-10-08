@@ -20,11 +20,7 @@ const { anonymous } = scene.cookbook.actorless
 
 ## Recording a Party
 
-When {{ role.mall.label }} closes for the night, a scheduled Artisan command
-cancels any {{ role.shop.label }} order left unpaid. The command runs from the
-console, where no user is signed in, so it needs a named actor to identify who
-cancelled the orders. Pass a string to the `by` method to use a party. Strings
-can name parties in any role:
+A scheduled command cancels unpaid orders. No user is signed in, so name the actor:
 
 ::: code-group
 ```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php"
@@ -97,8 +93,7 @@ an [anonymous activity](#recording-anonymous-activities).
 
 ### Linking a Party
 
-Pass an external home to `Party::make()`, then use the party's name as a string
-when recording an activity:
+Give a party a URL with `Party::make()`:
 
 ```php memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
 use Storyfeed\Facades\Storyfeed;
@@ -112,16 +107,11 @@ Storyfeed::activity()
     ->publish();
 ```
 
-The feed shows Scoops Register as a link to its external home.
-
 <FeedExample :items="[{ ...cancelled, actor: { ...cancelled.actor, url: 'https://example.com/register' } }]" />
 
 The URL can appear in any party role, and Activity Streams output includes
 it as `url`, including for the actor. Without a URL, the party remains unlinked.
-Renaming a party with the same key or replacing its application data preserves
-the link. Passing another URL updates existing activities through the snapshot;
-passing `url: null` explicitly removes it. Retrieving the feed uses the snapshot
-without querying or writing the party.
+Pass `url: null` to remove the link.
 
 ### Using Parties in Other Roles
 
@@ -263,6 +253,8 @@ default. To record no actor, even during an authenticated request, pass `null`
 to the `by` method:
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by(null)
     ->action('place', $order)

@@ -25,6 +25,8 @@ Story::for(Photo::class)->verb('publish')
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity() // the contributor's activity
     ->by($photo->user)
     ->action('publish', $photo)
@@ -38,6 +40,8 @@ Storyfeed::activity() // the approval; exclude its verb from displayed feeds
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record( // the contributor's activity
     verb: 'publish',
     object: $photo,

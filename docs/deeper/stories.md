@@ -30,19 +30,14 @@ The command asks for the class name, then **What will this story describe?**
 | Every activity for one model | like a resource controller | one declaration method per verb |
 | A single verb | like a single action controller | that verb's headlines in their own class |
 
-Each choice prints a registration to add to `routes/feed.php` without editing
-that file. The sections below show the command for each class type. See
+Each choice prints the `routes/feed.php` line to add. The sections below show the command for each class type. See
 [Commands](/reference/commands#stories) for all options.
 
 <a id="generator-options"></a>
 
 <a id="spelling-the-past-tense"></a>
 
-A name containing `Was` supplies the headline's past tense. Otherwise, the
-command derives it from the verb and asks when the spelling is uncertain.
-Choosing **None of these**, or running without a terminal, leaves those
-headline lines commented out. Select and uncomment a line before compiling
-the definitions.
+Select and uncomment a generated headline before compiling the definitions.
 
 <a id="one-activity-published-with-its-data"></a>
 
@@ -171,7 +166,10 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class);
 
 Construct the Story with its data and publish it:
 
-```php
+```php memo="Where the order is placed: a controller, an action, a listener"
+use App\Stories\OrderWasPlaced;
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
 ```
 

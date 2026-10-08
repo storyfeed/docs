@@ -27,10 +27,14 @@ Publish as usual. The declaration applies wherever you publish this verb:
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()->by($request->user())->action('save', $order)->publish();
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'save',
     object: $order,

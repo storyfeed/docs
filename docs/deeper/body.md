@@ -136,8 +136,8 @@ const components = { 'Orders/Progress': Progress }
 ```
 
 Use this renderer for bodies whose `$body` is `Storyfeed/Body/Component`.
-Style the list as a stepper, with `[aria-current="step"]` highlighting the
-current step. The following item uses that mapping and a styled component:
+Style the list as a stepper, with `[aria-current="step"]` highlighting the current step.
+Rendered with that mapping:
 
 <FeedExample :items="[scene.deeper.body.progress]" />
 
@@ -240,10 +240,6 @@ payloads for your frontend. Storyfeed preserves the stored body and version.
 Bodies arrive as stored, including `$v`, so your renderer must call the
 body type's `upgrade()` method before displaying versions it supports.
 
-
-::: headless
-:::
-
 <a id="defining-a-body"></a>
 <a id="defining-bodies"></a>
 <a id="text-and-excerpts"></a>
@@ -252,37 +248,17 @@ body type's `upgrade()` method before displaying versions it supports.
 <a id="missing-values"></a>
 <a id="existing-body-types"></a>
 <a id="available-body-types"></a>
-
-For built-in bodies and ordinary attachment, see
-[Activity Content](/basics/activity-content#adding-entity-bodies).
-
 <a id="attaching-bodies-to-entities"></a>
 <a id="bodies-by-role"></a>
 <a id="multiple-bodies"></a>
-
-See [Adding Multiple Bodies](/basics/activity-content#adding-multiple-bodies)
-for appending bodies to an entity in any role.
-
 <a id="resolving-a-body-when-the-feed-is-read"></a>
 <a id="resolving-bodies-at-read-time"></a>
-
-See [Using Current Values](/deeper/resolving-bodies#using-current-values) to
-build a body when the feed is retrieved.
-
 <a id="stored-and-resolved-bodies"></a>
 <a id="stored-and-resolved-values"></a>
-
-See [Choosing Stored or Current Values](/deeper/resolving-bodies#choosing-stored-or-current-values)
-for publication-time data, snapshots, and resolved bodies.
-
 <a id="deferring-the-work"></a>
 <a id="deferred-resolution"></a>
-
-See [Deferring Body Construction](/deeper/resolving-bodies#deferring-body-construction)
-to build a body only when the payload needs it.
-
 <a id="data-available-to-resolvers"></a>
 <a id="resolver-data"></a>
 
-See [Accessing Resolver Data](/deeper/resolving-bodies#accessing-resolver-data)
-for snapshots and batched model loading.
+See [Activity Content](/basics/activity-content) for built-in bodies and
+[Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current values.

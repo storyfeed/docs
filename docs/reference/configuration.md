@@ -36,13 +36,13 @@ After editing cached definitions, run `storyfeed:cache` again.
 | `tables.meta` | `'feed_meta'` | sync tokens and maintenance metadata |
 | `tables.tombstones` | `'feed_tombstones'` | deleted models |
 | `tables.batch_locks` | `'feed_batch_locks'` | one lock per batched actor |
-| `models.activity` | `Activity::class` | |
-| `models.snapshot` | `Snapshot::class` | |
-| `models.grouping` | `Grouping::class` | |
-| `models.party` | `Party::class` | |
-| `models.batch` | `Batch::class` | |
-| `models.meta` | `Meta::class` | |
-| `models.tombstone` | `FeedTombstone::class` | |
+| `models.activity` | `Activity::class` | the Eloquent model for activities |
+| `models.snapshot` | `Snapshot::class` | the Eloquent model for entity snapshots |
+| `models.grouping` | `Grouping::class` | the Eloquent model for activity groupings |
+| `models.party` | `Party::class` | the Eloquent model for named parties |
+| `models.batch` | `Batch::class` | the Eloquent model for actor batches |
+| `models.meta` | `Meta::class` | the Eloquent model for feed metadata |
+| `models.tombstone` | `FeedTombstone::class` | the Eloquent model for deleted entities |
 
 Change table names to avoid collisions or use existing feed tables.
 Replacement models must extend the defaults in `Storyfeed\Models`.

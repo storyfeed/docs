@@ -25,9 +25,9 @@ path. Setting `definitions` to `false` disables file creation.
 
 ## Installing UI Components
 
-After installing `storyfeed/ui`, use `php artisan storyfeed:ui vue` or
-`php artisan storyfeed:ui react` to copy its kit. See [Installing the Kits](/ui/installation)
-for `--path`, `--diff`, `--force` and file-preservation behaviour.
+| Command | Description |
+|---|---|
+| `storyfeed:ui vue` or `storyfeed:ui react` | copies the chosen kit after installing `storyfeed/ui`; see [Installing the Kits](/ui/installation) for `--path`, `--diff`, `--force` and file preservation |
 
 ## Generating Classes
 
@@ -61,9 +61,24 @@ prints the `routes/feed.php` binding for you to add.
 
 | Command | Description |
 |---|---|
-| `storyfeed:list` | lists every definition, as `route:list` lists routes: type, verb, name, the action that declares it (`App\Stories\OrderStory@place`, or a one-verb class), headline, anonymous headline, icon, intent, group headlines, calendar period for custom axes, the keep-latest policy, and the `file:line` or action that defined it. Includes provider declarations and their source locations. The Override column shows `yes` for explicit overrides; JSON includes an `override` boolean. `--type=` (a morph alias or model class), `--verb=`, `--name=` (name contains), `--json`; `-v` adds resolved middleware and a Where column for role constraints; JSON always includes `middleware` and `where` |
+| `storyfeed:list` | lists authored definitions, including provider declarations: type, verb, name, action, headlines, icon, intent, group headlines, calendar period for custom axes, keep-latest policy, override status and source location |
 | `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
 | `storyfeed:stories` | lists publishers and models that could publish but have no recorded activities. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
+
+### Listing Options
+
+| Option | Effect |
+|---|---|
+| `--type=` | filters by morph alias or model class |
+| `--verb=` | filters by verb |
+| `--name=` | filters names containing this value |
+| `--json` | returns JSON, including `override`, `middleware` and `where` |
+| `-v` | adds resolved middleware and role constraints to the table |
+
+The `Action` column names the declaring method, such as
+`App\Stories\OrderStory@place`, or a single-verb class. `Source` identifies
+its file and line or action. `Override` is `yes` for an explicit override.
+The `Period` column describes custom calendar axes; it does not list burst windows.
 
 <span id="manifest"></span>
 
@@ -118,7 +133,6 @@ php artisan about --only=storyfeed
 | Doctor | what the `tables`, `recording` and `manifest` checks report; `storyfeed:doctor` runs them all |
 
 The section works without a database and supports `--json`.
-
 
 <span id="scheduled"></span>
 

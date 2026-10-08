@@ -1,5 +1,15 @@
 # Recording Deletions
 
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+import { activity, tombstone } from '../.vitepress/theme/samples'
+
+const source = scene.cookbook.deletion
+const removed = activity({ ...source,
+  object: tombstone(source.object.type, source.object.id, source.published_at),
+})
+</script>
+
 Publish a removal activity before deleting its model. The activity remains,
 with a tombstone in place of the model. The tombstone records the model's
 former type and deletion time.
@@ -8,6 +18,8 @@ former type and deletion time.
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('remove', $product)
@@ -18,6 +30,8 @@ $product->delete();
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'remove',
     object: $product,
@@ -39,16 +53,6 @@ Story::for(MenuItem::class)
     ->headline(':actor removed :object from :target')
     ->type(ActivityType::Remove); // a removal verb keeps its headline after the delete
 ```
-
-<script setup>
-import { scene } from '../.vitepress/theme/world'
-import { activity, tombstone } from '../.vitepress/theme/samples'
-
-const source = scene.cookbook.deletion
-const removed = activity({ ...source,
-  object: tombstone(source.object.type, source.object.id, source.published_at),
-})
-</script>
 
 <FeedExample :items="[removed]" />
 

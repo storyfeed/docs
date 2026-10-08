@@ -111,7 +111,7 @@ $timeline = Storyfeed::feed()->involving($order)->log()->get();
 ### Keeping the Latest Occurrence
 
 Call `keepLatest()` on each verb to replace its earlier activities. The
-controller publishes as before; the query below retrieves the feed in live mode:
+controller publishes as before; then retrieve the feed:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;

@@ -8,11 +8,6 @@ type throws an exception before an activity is recorded.
 [Static analysis](#checking-names-with-static-analysis) can also check these
 names in your code.
 
-A declaration's name is used by application code; its verb is stored with
-activities. Renaming a declaration does not require changing stored activities,
-but you must update code that uses the name. Changing the stored verb requires
-a data migration.
-
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
@@ -38,6 +33,11 @@ You can name declarations for a specific verb. Fallback declarations
 (`fallback()` or verb `*`) supply defaults and cannot be named; calling `name`
 on them throws an exception. Exclude fallbacks when testing that every
 declaration has a name.
+
+A declaration's name is used by application code; its verb is stored with
+activities. Renaming a declaration does not require changing stored activities,
+but you must update code that uses the name. Changing the stored verb requires
+a data migration.
 
 ## Publishing Named Stories
 
@@ -281,12 +281,12 @@ At runtime, the last declaration with that name is used.
 ## Testing Story Names
 
 If your application requires every concrete declaration to have a name, test
-the definitions returned by the public listing command. Run these tests with
-an uncached application so they check the current declarations:
+the definitions returned by the public listing command:
 
 ```php memo="tests/Feature/StoryNamesTest.php"
 use Illuminate\Support\Facades\Artisan;
 
+// Run with an uncached application to check current declarations.
 it('names every concrete declaration', function () {
     expect(Artisan::call('storyfeed:list', ['--json' => true]))->toBe(0);
 

@@ -73,8 +73,6 @@ The `verb` method sets the verb. You may also use these aliases:
 | `->resulting()` | `result` | the entity produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | the entity the action was directed at |
 
-These aliases let you compose activities expressively, like a natural-language sentence.
-
 <a id="the-actor"></a>
 
 ## Assigning the Actor
@@ -84,6 +82,8 @@ the actor using the `by` method:
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($order->customer)
     ->action('place', $order)
@@ -92,6 +92,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'place',
     object: $order,
@@ -105,8 +107,7 @@ Storyfeed::record(
 
 With the default configuration and no scoped or verb-specific actor, omitting
 `by` records the authenticated user, or no actor when nobody is signed in.
-Scopes, carried job identity, verb actors, custom resolvers, and a configured
-fallback party can change that selection. See
+Other sources can supply the actor; see
 [Role Precedence](/deeper/story-middleware-and-batching#resolving-role-precedence).
 
 Use `by(null)` to bypass default actor selection explicitly. An
@@ -115,10 +116,47 @@ recorded actor.
 
 ## Adding Activity Data
 
-Define each new verb and its headline before publishing. By default, local
-and testing environments throw `UnknownVerb` for an unregistered verb and
-`UnauthoredActivity` for an object-type/verb pair without a headline. A concrete
-Story definition satisfies both checks:
+Use the `data` method to store arbitrary values on an activity. Storyfeed
+returns them in the activity’s `data` field:
+
+::: code-group
+```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
+$from = $menuItem->price;
+
+$menuItem->update(['price' => $request->integer('price')]);
+
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('reprice', $menuItem)
+    ->data(['from' => $from, 'to' => $menuItem->price])
+    ->publish();
+```
+
+```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
+$from = $menuItem->price;
+
+$menuItem->update(['price' => $request->integer('price')]);
+
+Storyfeed::record(
+    verb: 'reprice',
+    object: $menuItem,
+    actor: $request->user(),
+    data: ['from' => $from, 'to' => $menuItem->price],
+);
+```
+:::
+
+<FeedExample :items="[priced]" expanded />
+
+> [!NOTE]
+> On MySQL, JSON object key order may differ from the order you wrote because
+> native JSON columns normalise it.
+
+Declare the verb and its headline in `routes/feed.php`:
 
 ```php memo="routes/feed.php"
 use App\Models\MenuItem;
@@ -127,41 +165,6 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)->verb('reprice')
     ->headline(':actor changed the price of :object');
 ```
-
-Here `$product` is a `MenuItem`.
-
-Use the `data` method to store arbitrary values on an activity. Storyfeed
-returns them in the activity's `data` field. On MySQL, JSON object key order may
-differ from the order you wrote because native JSON columns normalise it:
-
-::: code-group
-```php [Fluent Syntax]
-$from = $product->price;
-
-$product->update(['price' => $request->integer('price')]);
-
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('reprice', $product)
-    ->data(['from' => $from, 'to' => $product->price])
-    ->publish();
-```
-
-```php [Named Arguments]
-$from = $product->price;
-
-$product->update(['price' => $request->integer('price')]);
-
-Storyfeed::record(
-    verb: 'reprice',
-    object: $product,
-    actor: $request->user(),
-    data: ['from' => $from, 'to' => $product->price],
-);
-```
-:::
-
-<FeedExample :items="[priced]" expanded />
 
 ## Setting the Publication Time
 
@@ -208,9 +211,7 @@ foreach ($rows as $row) {
 ## Recording Multiple Objects
 
 To record an activity involving multiple objects, call the `objects` method.
-Storyfeed stores a parent activity and one activity per object. Define the
-upload verb before recording the photos. This verb-wide definition also covers
-the parent activity:
+Storyfeed stores a parent activity and one activity per object. Define the verb once; the same definition covers the parent activity:
 
 ```php memo="routes/feed.php"
 use Storyfeed\Facades\Story;
@@ -222,6 +223,8 @@ Then publish the photos:
 
 ::: code-group
 ```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->verb('upload')
@@ -230,6 +233,8 @@ Storyfeed::activity()
 ```
 
 ```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::record(
     verb: 'upload',
     objects: $photos,

@@ -8,8 +8,7 @@ the entities' labels, the groups the activity can join, and an index of
 who and what it involves. Retrieving a feed queries those rows.
 Storyfeed does not use Laravel's cache for feed data.
 
-This page follows one publish into the database and one page of the feed
-back out. [Schema](/reference/schema) has the diagram of the tables and every
+One publish writes these rows; one page of the feed reads them back. [Schema](/reference/schema) has the diagram of the tables and every
 column.
 
 <script setup>
@@ -203,10 +202,8 @@ and each emitted hash produces a grouping row. Table sizes depend on your
 roles, axes, entities, and retention policy. `feed_snapshots` grows with
 Feedable entities, including those saved without publishing an activity.
 
-The table lists indexes available to these query shapes. Plans were checked
-with 50,000 activities on MariaDB 10.11, PostgreSQL 18, and SQLite 3.45;
-MySQL 8.x was not tested. The planner can choose a different index or a scan
-as data distribution and query constraints change.
+The table lists indexes available to these query shapes. The planner may
+choose a different index or a scan as data and query constraints change.
 [Schema](/reference/schema) lists every index.
 
 | Query | Available Index |
@@ -223,27 +220,10 @@ batches through the `feed_batch_locks` primary key, `(actor_type, actor_id)`.
 The `aggregates` check in `storyfeed:doctor` uses
 `feed_groupings (winner, bucket, hash)`.
 
-The solo stream's winner check can scan much of the stored history even when
-it returns no items. In the measured fixture, it dominated `live()` retrieval
-cost on MariaDB and PostgreSQL. Composite checks also varied: some plans used
-`(bucket, hash)` instead of the unique `(activity_id, bucket)` index. Treat the
-table as available access paths, not a promise that every listed index is
-chosen for every request.
+The solo stream’s winner check can scan much of the stored history even when
+it returns no items. The planner may choose a different index as data changes.
 
 [Retention](/deeper/retention) removes old activities with their grouping
 and participant rows.
 
-## Comparison With a Single Log Table
-
-A single table with one row per event can render `log()`. The questions a
-feed asks next are the ones a single table cannot answer from an index:
-
-| Question | One table | Storyfeed |
-|---|---|---|
-| "What should this row say?" | load each model, per row | the snapshot, eager-loaded |
-| "Placed 4 orders" | group by expressions over history, on every retrieval | rows already share a `hash` |
-| "Which group does this activity belong to?" | decided on every retrieval | decided once, at publish |
-| "Everything involving this order" | `OR` across every role column | one indexed lookup |
-| "The order was deleted" | the label is gone | a tombstone keeps the story readable |
-
-The extra rows are written once, when the activity is published. Subsequent retrieval uses them.
+<a id="comparison-with-a-single-log-table"></a>

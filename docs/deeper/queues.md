@@ -20,6 +20,8 @@ to process queued activities. The `sync` connection runs them immediately.
 ## Queueing Activities
 
 ```php
+use Storyfeed\Facades\Storyfeed;
+
 Storyfeed::activity()
     ->by($request->user())
     ->action('place', $order)
@@ -34,7 +36,7 @@ After the worker publishes it:
 As with Laravel mailables, call `queue()` to queue the activity explicitly.
 It uses your configured queue connection and returns no activity.
 
-`Storyfeed::record()` stays synchronous.
+`Storyfeed::record()` always publishes synchronously.
 
 <a id="choosing-a-queue-and-delay"></a>
 

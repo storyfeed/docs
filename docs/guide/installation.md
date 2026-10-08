@@ -4,7 +4,7 @@ Install Storyfeed and create the tables that store your activities.
 
 ## Requirements
 
-| | |
+| Requirement | Version |
 |---|---|
 | PHP | 8.4+ |
 | Laravel | 12 or 13 |
@@ -76,8 +76,8 @@ Relation::enforceMorphMap([
 ```
 
 `Relation::enforceMorphMap()` requires aliases for every polymorphic relation
-in your application. Choose whether to enforce this requirement for your
-application, and keep aliases used by existing activities in the map.
+in your application. Choose whether to enforce this requirement for your application.
+Keep aliases used by existing activities in the map.
 
 To require aliases only for Feedable models, call
 `Storyfeed::requireFeedableMorphMap()` in your service provider's `boot()` method.
@@ -98,7 +98,10 @@ The installer creates `config/storyfeed.php`. Every setting has a default; see [
 <a id="scheduling"></a>
 <a id="scheduling-maintenance"></a>
 
-The feed works without a scheduler; once it is live, Storyfeed has [maintenance commands](/reference/commands#scheduling-maintenance) worth scheduling.
+## Scheduling Maintenance
+
+Storyfeed works without a scheduler. See [Scheduling Maintenance](/reference/commands#scheduling-maintenance)
+for the commands to schedule in production.
 
 ## Installing Storyfeed UI
 
@@ -108,7 +111,7 @@ Storyfeed UI supplies Blade, Vue and React kits:
 composer require storyfeed/ui
 ```
 
-All three use Tailwind CSS v4 and starter-kit colour tokens.
+All three use Tailwind CSS v4 and the colour variables Laravel's starter kits define.
 See [Installing the Kits](/ui/installation) for the copy command, dependencies
 and Tailwind source paths, or [Rendering](/basics/rendering) to build custom
 components.

@@ -113,8 +113,7 @@ Story::for(Order::class)
 The closure receives an [ActivityContext](/reference/feedable#activitycontext),
 which provides typed helpers for the activity’s data and accessors for its roles.
 It runs when Storyfeed retrieves the feed. Returned role tokens are
-rendered as entity labels and links. Text without role tokens is displayed
-unchanged.
+rendered as entity labels and links.
 
 <a id="adding-an-icon"></a>
 
@@ -205,7 +204,7 @@ Story::resource(Order::class)->except('update');
 Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
-Defining the same verb in both places causes an error with both source locations.
+Defining the same verb twice throws, naming both locations.
 
 ## Definition Precedence
 
@@ -229,7 +228,6 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 ```
 
 <FeedExample :items="[fellBack]" />
-
 
 <a id="headlines-for-a-group"></a>
 <a id="group-headlines"></a>
@@ -258,8 +256,7 @@ Story::for('order')
 <FeedExample :items="[overriddenOrder]" />
 
 Only the headline changes. The package's shopping-bag icon and repeat-group
-headline remain. Its action or message binding also remains when the
-application supplies only presentation fields.
+headline remain. Its Story class binding also remains when the application supplies only presentation fields.
 
 For presentation fields, `override()` applies to the same object type and
 verb. It takes precedence over the original declaration regardless of
@@ -303,9 +300,8 @@ php artisan storyfeed:cache
 ```
 
 The cache includes stories registered by service providers and the feed file.
-Storyfeed uses the compiled cache when retrieving feeds. Providers still boot,
-but `routes/feed.php` is not evaluated. The listing shows authored declarations;
-it does not show the merged definitions used by a cached feed.
+See [Caching Definitions](/reference/commands#caching-definitions) for how cached feeds
+and authored listings differ.
 The `optimize` Artisan command also caches these definitions. Rebuild the cache
 after changing them. To clear it:
 

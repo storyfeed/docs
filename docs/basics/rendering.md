@@ -30,8 +30,7 @@ const withKeyValue = { ...content.confirmed,
 
 ## Introduction
 
-Use Storyfeed UI to render a feed in Blade, or build the custom Blade and Vue
-components shown below.
+Storyfeed UI renders a feed with one component. You may also build your own components.
 
 ::: headless
 :::
@@ -102,7 +101,7 @@ independently of their parent's rail.
 
 ## Building Your Own Components
 
-The following examples build custom Blade components without styling. They
+These components carry no styling. They
 are your application's own anonymous components in
 `resources/views/components/feed`, so Blade names them `<x-feed>`,
 `<x-feed.item>`, and so on, separately from Storyfeed UI's
@@ -334,8 +333,7 @@ and headline tokens.
 
 <FeedExample :items="[grouped]" />
 
-The preview shows the group headline, time and supplied members using the
-docs' styling. The `count` method returns the total member count. If `children` contains fewer
+The `count` method returns the total member count. If `children` contains fewer
 members, `childrenTruncated` returns `true`.
 
 #### Plural Roles
@@ -367,11 +365,6 @@ returns a `Headline` value: `isFallback()` is `true`, and `toString()` returns
 the translated count, such as “3 activities”. An explicitly returned empty
 string does not use this null-field fallback.
 
-Storyfeed UI's Blade group component opens its disclosure when supplied
-children exist. Its open control says “Show less”; collapsed, it says
-“Show all 3”. If the response limits the children, it reports the number not
-shown. Expanding displays the supplied children; it does not fetch more.
-
 The custom component above opens its supplied members through the conditional
 `open` attribute. You can style its fallback headline separately:
 
@@ -379,14 +372,9 @@ The custom component above opens its supplied members through the conditional
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
 ```
 
-The preview shows the expanded members and fallback headline produced by this
-component, using the docs’ styling:
-
 <FeedExample :items="[unnamed]" />
 
-See [Seeing the Fallback](/deeper/aggregation#seeing-the-fallback) for the
-authored, noun and null payload outcomes, including a safe template whose
-wording undercounts the activities.
+See [Fallback Headlines](/deeper/aggregation#fallback-headlines).
 
 <a id="digest-rows"></a>
 
@@ -420,10 +408,8 @@ bodies in the activity row:
 ```
 
 Each body's `$body` field identifies its type, such as `Storyfeed/Body/KeyValue`.
-Match that full identifier to an explicit body class and component. Upgrade
-the stored version before rendering; Storyfeed preserves the stored shape. Skip
-unknown types and versions newer than this renderer supports. Extend this map
-when adding another body component:
+The component maps each `$body` identifier to a class and a view, upgrades
+older versions, and skips types it does not know:
 
 ```blade memo="resources/views/components/feed/body.blade.php"
 @props(['body'])

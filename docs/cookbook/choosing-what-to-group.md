@@ -12,7 +12,9 @@ const system = scene.cookbook.actorless.paid
 const views = logOf(scene.deeper.retention.views)
 </script>
 
-## Start With the Reader's Task
+<a id="start-with-the-reader-s-task"></a>
+
+## The Reader's Task
 
 | Kind of activity | A useful starting point |
 |---|---|
@@ -25,7 +27,9 @@ These are choices for a particular feed. An order-view count may be enough
 on an overview, while an investigation needs every view's time and recorded
 details. Start with what the reader needs to decide, then choose the read mode.
 
-## Group Routine Signals
+<a id="group-routine-signals"></a>
+
+## Grouping Routine Signals
 
 A group of check-ins can answer “who is here?” without a separate headline
 for each person:
@@ -43,7 +47,9 @@ Show a small sample of names and the number remaining. The payload's
 presentation. Use `count` for activities and `distinct` for people or objects;
 one person can act more than once.
 
-## Keep Content and Evidence Visible
+<a id="keep-content-and-evidence-visible"></a>
+
+## Keeping Content Visible
 
 Each notice below has something different to read. A count would hide the
 reason to open the feed:
@@ -75,7 +81,9 @@ whether the request was automated. Storyfeed does not infer those details
 from the verb. Grouping preserves the activities, but a collapsed sentence
 puts their evidence behind another interaction.
 
-## Summarize Bulk Work With Its Members
+<a id="summarize-bulk-work-with-its-members"></a>
+
+## Summarizing Bulk Work
 
 An upload group names the destination and keeps the photos available to
 inspect:
@@ -93,7 +101,9 @@ shows how to limit the displayed names. Count all members, including those
 omitted from the response. A “Show all” control can display only the supplied
 members unless your application fetches the rest.
 
-## Show System Outcomes, Not Every Step
+<a id="show-system-outcomes-not-every-step"></a>
+
+## Showing System Outcomes
 
 A recorded payment can be useful even when a service is the actor:
 
@@ -106,16 +116,17 @@ hide that volume in a group. For already-recorded events, a feed's
 [`only()` or `except()`](/basics/reading#filtering-by-verb) filters can select
 what its readers need.
 
-## Choose the Read Mode for That Feed
+<a id="choose-the-read-mode-for-that-feed"></a>
+
+## Choosing the Read Mode
 
 Use `live()` for a grouped overview and `log()` where every event needs its
 own row. You can offer separate overview and history views of the same data.
 `log()` applies to the whole query.
 
-There is currently no per-verb “never group” declaration. Every activity gets
-its applicable grouping keys, including the default repeat key. Omitting
-`grouped()` changes headline configuration, not grouping eligibility; setting
-`grouping.curate` to `false` still permits repeat groups. See
+Every activity is eligible for grouping; omitting `grouped()` only leaves the
+group without a headline. Setting `grouping.curate` to `false` still permits
+repeat groups. See
 [Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode).
 
 [`keepLatest()`](/deeper/keeping-the-latest-activity) and

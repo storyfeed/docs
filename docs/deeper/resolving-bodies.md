@@ -1,10 +1,7 @@
 # Resolving Bodies When Retrieved
 
-Resolve a body when its values must reflect the current model rather than the
-stored snapshot. Use `FeedMedia::body()` in the model's `feedMedia()` method;
-use [Activity Content](/basics/activity-content#adding-entity-bodies) for bodies
-stored by `toFeed()`. [Feed Media](/basics/feed-media) covers links, files,
-picture slots, and avatars.
+A body built in `feedMedia()` shows the model’s current values instead of the
+stored snapshot.
 
 <a id="resolving-a-body-when-the-feed-is-read"></a>
 
@@ -121,3 +118,5 @@ all models of that class on the page together. Pass relations to
 `$model->orders()->count()` runs once per entity, so use a counter column on
 the model to avoid repeated queries.
 
+See [Activity Content](/basics/activity-content#adding-entity-bodies) for stored
+bodies and [Feed Media](/basics/feed-media) for links, files, pictures and avatars.

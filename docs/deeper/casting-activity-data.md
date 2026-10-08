@@ -48,7 +48,8 @@ Story::for(Order::class)
 
 The activity was recorded with plain data:
 
-```php memo="app/Http/Controllers/OrderController.php" at="store()"
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity('place', $order)
@@ -58,6 +59,20 @@ Storyfeed::activity('place', $order)
     ])
     ->publish();
 ```
+
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    data: [
+        'channel' => $order->channel,
+        'promised_at' => $order->promised_at,
+    ],
+);
+```
+:::
 
 An enum is recorded as its value and a date as an ISO 8601 string. The casts
 read them back as a `Channel` and a `CarbonImmutable`.
@@ -177,7 +192,8 @@ Laravel documentation for writing one.
 recorded as its `toArray` result, and one that implements `JsonSerializable`
 as its JSON:
 
-```php memo="app/Http/Controllers/OrderController.php" at="store()"
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
 use App\ValueObjects\Address;
 use Storyfeed\Facades\Storyfeed;
 
@@ -185,6 +201,18 @@ Storyfeed::activity('ship', $order)
     ->data(['address' => Address::fromOrder($order)])
     ->publish();
 ```
+
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
+use App\ValueObjects\Address;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'ship',
+    object: $order,
+    data: ['address' => Address::fromOrder($order)],
+);
+```
+:::
 
 The row stores the array, and a cast reads it back as an `Address`. A queued
 activity carries the array too, so the class does not need to be

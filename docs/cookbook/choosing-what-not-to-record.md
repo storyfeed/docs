@@ -28,6 +28,8 @@ For an event implementing `PublishesToFeed`, check whether to publish in
 `toFeedActivity()`:
 
 ```php memo="app/Events/OrderPlaced.php" at="toFeedActivity()"
+use Storyfeed\Facades\Storyfeed;
+
 if ($this->order->status === 'draft') {
     return null;                                 // not an activity
 }
@@ -40,6 +42,8 @@ return Storyfeed::activity()
 
 Returning `null` publishes nothing. See
 [Publishing from Events](/deeper/events).
+
+The verb and its headline are declared as usual:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\ActivityStreams\ActivityType;

@@ -10,8 +10,7 @@ const withLink = [scene.order]
 ## Introduction
 
 A feedable model provides a label for its activities. Storyfeed supplies a
-default label; links and images are optional. Making a model feedable does
-not record activities.
+default label; links and images are optional.
 
 <a id="models-you-don-t-own"></a>
 <a id="registering-external-models"></a>
@@ -19,13 +18,6 @@ not record activities.
 <a id="implementing-the-feedable-contract"></a>
 <a id="the-model-s-own-feed"></a>
 <a id="reading-a-model-s-feed"></a>
-
-For a model from another package, such as Spatie Media Library, see
-[Registering External Models](/reference/feedable#registering-external-models).
-To implement the contract's methods yourself, see
-[Implementing the Feedable Contract](/reference/feedable#implementing-the-feedable-contract).
-To retrieve a model's activities, see
-[Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
 
 <a id="making-a-model-feedable"></a>
 
@@ -63,6 +55,13 @@ commonly used columns, falling back on the class name and key.
 | class name and key | `Order #1042` |
 
 <FeedExample :items="withSnapshot" />
+
+For a model from another package, such as Spatie Media Library, see
+[Registering External Models](/reference/feedable#registering-external-models).
+To implement the contract's methods yourself, see
+[Implementing the Feedable Contract](/reference/feedable#implementing-the-feedable-contract).
+To retrieve a model's activities, see
+[Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
 
 <a id="morph-aliases"></a>
 <a id="defining-morph-aliases"></a>
@@ -122,7 +121,7 @@ class Order extends Model implements Feedable
 <FeedExample :items="withSnapshot" />
 
 The `toFeed` method returns a `FeedEntity` containing the model's label.
-Set the label on the returned entity when you implement this method.
+
 `InteractsWithFeed` refreshes the shared snapshot on model saves while
 recording is enabled. Changes to its label, body, or data can therefore appear
 on older activities too. Activity `data` preserves the values recorded for that event.
@@ -157,6 +156,3 @@ and its feed outcome.
 <a id="modal-links"></a>
 
 For stored resolver inputs, see [Storing Snapshot Data](/reference/feedable#storing-snapshot-data).
-
-::: headless
-:::

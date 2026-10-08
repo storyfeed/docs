@@ -4,14 +4,7 @@ Before recording a new kind of activity, list its fields and check that they
 describe what happened. The headline states the minimal fact, no less and no
 more; evidence and detail belong in the body.
 
-## Composing an Activity
-
-```text
-:actor · :verb · :object · :target
-```
-
-Fill in the values you plan to record, using `—` for empty fields. Check that
-they explain the event before writing its headline.
+<a id="composing-an-activity"></a>
 
 ## Naming the Object
 
@@ -20,13 +13,9 @@ object is `Storyfeed` and the target is `Laravel`; the headline template
 supplies `for :target`. A qualifier such as `as a Recommendation` belongs in
 the body.
 
-## Recording an Accepted Invitation
+<a id="recording-an-accepted-invitation"></a>
 
-```text
-inviter · joined   · invitee    · —        incoherent
-invitee · joined   · invitee    · —        incoherent
-invitee · accepted · invitation · project  coherent
-```
+## Choosing the Object and Target
 
 | Composition | Meaning |
 |---|---|
@@ -123,13 +112,7 @@ roles, and preposition should state that fact.
 
 <span id="duplicate-occurrences"></span>
 
-## Checking Multiple Activities
-
-Three autosaves recorded as separate revisions may each describe a valid
-event but produce repetitive activities. See
-[Choosing When to Publish](/cookbook/choosing-when-to-publish) for where to
-publish and [Repeating Activities](/cookbook/repeating-activities) for keeping
-only the latest.
+<a id="checking-multiple-activities"></a>
 
 <a id="unfilled-headline-tokens"></a>
 

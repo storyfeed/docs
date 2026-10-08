@@ -64,7 +64,9 @@ label as it was when the rewrite occurred:
 
 <FeedExample :items="[rewrites[0]]" />
 
-## Write a Group Headline Callback
+<a id="write-a-group-headline-callback"></a>
+
+## Writing a Group Headline Callback
 
 Add the group headline to the same definition in `routes/feed.php`:
 
@@ -112,7 +114,9 @@ return value are not expanded; the payload has a null `headline_template`
 and the finished string in `headline`. Render it as text, with normal HTML
 escaping. It does not create entity links for the clause names.
 
-## Count Rewrites, Not Distinct Clauses
+<a id="count-rewrites-not-distinct-clauses"></a>
+
+## Counting Rewrites
 
 `GroupSlice::count` is the total number of activities in the group.
 `GroupSlice::members` contains the newest members, up to `grouping.children_limit`.
@@ -137,7 +141,9 @@ unique names in the sample is insufficient because older members may repeat
 them. To count distinct clauses, query all activities in the group in your
 application.
 
-## Keep Other Headlines Covered
+<a id="keep-other-headlines-covered"></a>
+
+## Covering Other Axes
 
 This declaration covers only object groups for this verb. Keep its singular
 headline and icon definitions, and add headlines for any other axes your feeds

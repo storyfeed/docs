@@ -140,8 +140,8 @@ a failure does not undo earlier changes.
 
 ## Testing Healers
 
-Test the command with `AssetHealer` registered. Create `$existingAssetActivity`
-for an existing asset and `$deletedAssetActivity` for a permanently deleted one:
+Test the command with `AssetHealer` registered. Given `$existingAssetActivity` for an existing asset and `$deletedAssetActivity`
+for a permanently deleted one:
 
 ```php memo="tests/Feature/FeedTest.php"
 $this->artisan('storyfeed:heal', ['--pretend' => true, '--only' => ['assets']])

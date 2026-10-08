@@ -1,6 +1,6 @@
 # Introduction
 
-Storyfeed provides activity feeds for Laravel. You explicitly record activities
+Storyfeed provides activity feeds for Laravel. You record activities
 and display them as a live feed or a log. Storyfeed also serializes
 activities as [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/)
 documents.
@@ -92,9 +92,7 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(headli
 
 ## Recording Activities
 
-After [installing Storyfeed](/guide/installation) and completing the
-[Quickstart](/guide/quickstart), publish an activity where your application
-places the order:
+Publish an activity where your application places the order:
 
 ::: code-group
 <<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
@@ -107,8 +105,7 @@ places the order:
 
 ## Displaying Feeds
 
-You may display the same activities in two modes. See
-[Retrieving Feeds](/basics/reading) to select a mode.
+The same activities can be displayed in two modes:
 
 <a id="summary"></a>
 <a id="as-a-grouped-summary"></a>
