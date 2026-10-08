@@ -56,6 +56,10 @@ the entity appears. With `InteractsWithFeed`, saving the model refreshes its
 shared snapshot while recording is enabled. That can change the body shown on
 older activities too. Use activity `data` to capture values as they were at the event.
 
+[Storyfeed UI](/ui/installation) draws the bodies of an activity's object
+beneath its row. Bodies on the actor, target or context stay in the payload
+for your own components.
+
 ### Text and Labelled Values
 
 ::: code-group
