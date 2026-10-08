@@ -65,5 +65,5 @@ Batch windows independently determine when a batch closes; see
 ## Applying Window Changes
 
 Changed windows apply to new activity. Existing memberships remain until a
-rebuild. See [Upgrading from 0.12 to 0.13](/guide/upgrading-0.13) for the
-migration and rebuild procedure.
+rebuild with `storyfeed:curate --rebuild-bursts`; see
+[Rehashing Groups](/reference/commands#rehashing-groups).

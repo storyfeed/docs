@@ -191,7 +191,6 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Quickstart', link: '/guide/quickstart' },
-          { text: 'Upgrading from 0.12 to 0.13', link: '/guide/upgrading-0.13' },
           { text: 'What You Can Build', link: '/guide/usage-examples' },
         ],
       },

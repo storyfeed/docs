@@ -179,9 +179,12 @@ those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 
-For migration from calendar groups to Live bursts, see
-[Upgrading from 0.12 to 0.13](/guide/upgrading-0.13#rebuilding-stored-groups).
-The release guide marks the pending rebuild flags, resume procedure and timing.
+To rebuild Live bursts for all stored history, pause everything that publishes
+activities, then run:
+
+```bash
+php artisan storyfeed:curate --rebuild-bursts
+```
 
 Rehashing can move groups past an active cursor, leaving the next page empty.
 It changes `sync_token`, so clients must discard accumulated nodes and fetch
