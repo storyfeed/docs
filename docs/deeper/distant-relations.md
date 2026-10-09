@@ -163,6 +163,36 @@ activity in that tenant's feed, so **the actor's parents are never followed**.
 `involving($sally)` still finds her direct participation. The `origin`, `result`
 and `instrument` roles also contribute only their direct identities.
 
+### Excluding Distant Relations
+
+To retrieve only the activity that names the mall itself, exclude its distant
+relations:
+
+::: code-group
+```php [Fluent Syntax] memo="routes/web.php"
+use App\Models\Mall;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/malls/{mall}/own-feed', function (Mall $mall) {
+    return Storyfeed::feed()->involvingDirectly($mall)->get();
+});
+```
+
+```php [Named Arguments] memo="routes/web.php"
+use App\Models\Mall;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/malls/{mall}/own-feed', function (Mall $mall) {
+    return Storyfeed::feed()->involving($mall, deep: false)->get();
+});
+```
+:::
+
+A cursor keeps the depth it was created with. Resuming it with the other depth
+throws an exception.
+
 ## Common Hierarchies
 
 | Application | Parent Chain | Feed It Unlocks |

@@ -148,7 +148,8 @@ return $order->storyfeed()->get();
 
 `involving($ancestor)` also includes activity anywhere beneath an ancestor's
 recorded parent hierarchy: task → list → folder → project → workspace → tenant
-is retrieved with `involving($tenant)`. See [Distant Relations](/deeper/distant-relations)
+is retrieved with `involving($tenant)`. Use `involvingDirectly($tenant)` to
+exclude that hierarchy. See [Distant Relations](/deeper/distant-relations)
 for parent declarations and depth limits.
 
 You may also filter by a specific role:
@@ -156,6 +157,7 @@ You may also filter by a specific role:
 | Call | Returns |
 |---|---|
 | `->involving($model)` | activities where the model is actor, object, target, context, origin, result, or instrument, or a recorded ancestor |
+| `->involvingDirectly($model)` | the same, without recorded ancestors; also written `->involving($model, deep: false)` |
 | `->context($shop)` | activities with the shop in the `context` role |
 | `->actor($customer)` | activities performed by the customer |
 | `->object($order)` / `->target($shop)` | activities matching the specified role |
