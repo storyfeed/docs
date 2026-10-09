@@ -152,6 +152,21 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.equal(audit.object.type, 'audit_entry')
     assert.equal(audit.data.before, null)
     assert.equal(audit.data.after.name, business.object.label)
+    const email = c.email
+    assert.ok(same(email.sent.actor, role.staff))
+    assert.equal(email.sent.object.type, 'email_message')
+    assert.ok(same(email.sent.object, email.delivered.object))
+    for (const outcome of [email.delivered, email.bounced, email.complaint, email.failed]) {
+      assert.equal(outcome.actor, null)
+      assert.equal(outcome.object.type, 'email_message')
+      assert.ok(same(outcome.target, email.sent.target))
+      assert.ok(!outcome.headline_template.includes(':actor'))
+      assert.ok(outcome.data.recipient && outcome.data.provider)
+    }
+    assert.equal(new Set([email.sent, email.bounced, email.complaint, email.failed].map(row => row.object.id)).size, 4)
+    assert.ok(email.failed.data.reason)
+    assert.equal(email.timeline.length, 7)
+    assert.deepEqual([...email.timeline].sort((a, b) => b.published_at.localeCompare(a.published_at)), email.timeline)
     assert.ok(same(c.computed.object, role.product))
     assert.equal(c.computed.object.body.length, 1)
     assert.equal(c.computed.object.body[0].$body, 'Storyfeed/Body/KeyValue')

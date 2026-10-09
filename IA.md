@@ -457,6 +457,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Recording Deletions — `cookbook/activities-about-deletions`
 - ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`
 - ✅ Recording Signed-Link Access — `cookbook/recording-signed-link-access`: recipient data, anonymous fetch evidence, authenticated actors, and recipient search
+- ✅ Recording Email Lifecycle Events — `cookbook/email-lifecycle-events`: message objects, document targets, anonymous outcomes, and document logs
 - ✅ Recording an Authoriser — `cookbook/an-authoriser-who-is-not-an-actor`: approvals, delegated app instruments, and companion audit entries
 - ✅ Choosing What to Group — `cookbook/choosing-what-to-group`
 - ✅ Headlines for Grouped Activities — `cookbook/grouped-headlines`

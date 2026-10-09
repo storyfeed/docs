@@ -172,3 +172,6 @@ The `expire` headline omits `:actor`. See
 [Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities)
 for the available APIs and [Anonymous Headlines](/deeper/parties#anonymous-headlines)
 for wording when no actor is recorded.
+
+For message delivery, bounces, spam complaints and send failures, see
+[Recording Email Lifecycle Events](/cookbook/email-lifecycle-events).

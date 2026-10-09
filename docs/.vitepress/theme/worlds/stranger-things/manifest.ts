@@ -232,3 +232,14 @@ export const DELEGATED_WRITES = {
   app: 'Menu Desk',
   audit: 'Creation audit',
 }
+
+/** Illustrative email sends and provider reports. */
+export const EMAIL_LIFECYCLE = {
+  first: 'Email #401',
+  second: 'Email #402',
+  third: 'Email #403',
+  fourth: 'Email #404',
+  recipient: 'billing@example.com',
+  provider: 'Post Desk',
+  failure: 'Provider request timed out',
+}

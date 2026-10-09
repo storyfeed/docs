@@ -95,6 +95,7 @@ export type SceneIds = {
   /** Cookbook software examples; illustrative interactions, not new plot claims. */
   cookbook: {
     delegated: { business: string; audit: string }
+    email: { sent: string; delivered: string; bounced: string; complaint: string; failed: string; timeline: string[] }
     verbChoices: Record<string, string>
     rewrites: string[]
     actorless: { anonymous: string; paid: string; expired: string }

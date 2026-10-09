@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  DOCUMENT_WORKFLOW, DELEGATED_WRITES, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
+  DOCUMENT_WORKFLOW, DELEGATED_WRITES, EMAIL_LIFECYCLE, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -584,6 +584,27 @@ VERBS.accept = { glyph: 'check', headline: ':actor accepted :object' }
 VERBS.invite = { glyph: 'mail', headline: ':actor invited :target to :object' }
 VERBS.rewrite = { glyph: 'file-pen', headline: ':actor rewrote :object' }
 
+const emails = (['first', 'second', 'third', 'fourth'] as const).map((key, i) =>
+  entity('email_message', String(401 + i), EMAIL_LIFECYCLE[key], `/email-messages/${401 + i}`))
+const emailData = { recipient: EMAIL_LIFECYCLE.recipient, provider: EMAIL_LIFECYCLE.provider }
+const emailRow = (id: string, minute: string, verb: string, message: any, headline: string, actor: any = null, data: Record<string, any> = emailData) =>
+  row(`email-${id}`, `1985-07-04 18:${minute}`, verb, actor, message, document, 'splice', {
+    headline, data, uncertain: 'Illustrative email lifecycle event, not an on-screen event.',
+  })
+ROWS.push(
+  emailRow('sent', '20', 'send', emails[0], ':actor sent :object carrying :target', scooper),
+  emailRow('delivered', '21', 'deliver', emails[0], ':object carrying :target was delivered'),
+  emailRow('sent-2', '25', 'send', emails[1], ':actor sent :object carrying :target', scooper),
+  emailRow('bounced', '26', 'bounce', emails[1], ':object carrying :target bounced'),
+  emailRow('sent-3', '30', 'send', emails[2], ':actor sent :object carrying :target', scooper),
+  emailRow('complaint', '31', 'complain', emails[2], ':object carrying :target was reported as spam'),
+  emailRow('failed', '35', 'fail', emails[3], ':object carrying :target could not be sent', null,
+    { ...emailData, reason: EMAIL_LIFECYCLE.failure }),
+)
+for (const verb of ['deliver', 'bounce', 'complain', 'fail']) {
+  VERBS[verb] = { glyph: 'mail', headline: ':actor processed :object' }
+}
+
 // Basics/guide examples use the modern app premise. These are software
 // transactions, not additional on-screen events or quoted dialogue. The existing
 // j84 order is itself an illustrative transaction (troop/S3E4).
@@ -709,6 +730,9 @@ export default {
   scenes: {
     cookbook: {
       delegated: { business: 'delegated-business', audit: 'delegated-audit' },
+      email: { sent: 'email-sent', delivered: 'email-delivered', bounced: 'email-bounced',
+        complaint: 'email-complaint', failed: 'email-failed',
+        timeline: ['email-failed', 'email-complaint', 'email-sent-3', 'email-bounced', 'email-sent-2', 'email-delivered', 'email-sent'] },
       verbChoices: Object.fromEntries(['agreement', 'proposal', 'send', 'invite', 'decision', 'clause', 'attachment', 'create', 'add'].map(key => [key, `choice-${key}`])),
       rewrites: ['choice-rewrite-0', 'choice-rewrite-1', 'choice-rewrite-2'],
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },
