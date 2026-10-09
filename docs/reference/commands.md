@@ -147,7 +147,7 @@ Schedule other maintenance commands in your application:
 
 | Command | Description | Suggested |
 |---|---|---|
-| `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` deletes activities with a role that no longer resolves | every minute |
+| `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` soft-deletes activities with an uncached role that cannot resolve | every minute |
 | `storyfeed:close-batches` | closes batches whose window has elapsed, dispatches `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
 | `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
 
@@ -163,6 +163,11 @@ Schedule::command('storyfeed:prune')->daily();
 
 <span id="maintenance"></span>
 
+See [Choosing a Maintenance Operation](/deeper/healing#choosing-a-maintenance-operation)
+for healing, unresolved-role pruning, retention, and tombstones. To correct
+how historical activities appear, see
+[Correcting Historical Presentation](/deeper/healing#correcting-historical-presentation).
+
 ### Rebuilding Snapshots
 
 | Command | Description |
@@ -170,23 +175,22 @@ Schedule::command('storyfeed:prune')->daily();
 | `storyfeed:rebuild` | rebuilds every entity snapshot and link from `toFeed()`; `--recent=N` limits the pass to entities named by the newest N activities |
 | `storyfeed:cache-snapshots` | bounded snapshot refresh run by `php artisan optimize`; skips when the database is unavailable |
 
+`storyfeed:rebuild` does not change the recorded verb, roles, or activity data.
+
 <span id="rehashing-existing-rows"></span>
 
 ### Rehashing Groups
 
-Storyfeed groups activities at publication. Existing groups remain unchanged
-when you:
-
-- register an axis
-- change an axis's grouping key
-- change a published activity's verb or roles
-
-Neither `storyfeed:rebuild` nor `storyfeed:curate` without `--rehash` applies
-these changes to existing groups. To regroup stored activities:
+Storyfeed stores group memberships at publication. To apply a new axis or a
+changed grouping key to existing activities, run:
 
 ```bash
 php artisan storyfeed:curate --rehash   # --window= bounds it by published_at
 ```
+
+`--rehash` reruns the grouping strategy and re-evaluates which group shows each
+activity. It preserves existing burst boundaries; changed burst windows need
+`--rebuild-bursts`. Neither option rewrites an activity's verb, roles, or data.
 
 Changes to `grouping.policy` thresholds only affect eligibility. Plain
 `php artisan storyfeed:curate` re-evaluates existing candidate hashes against
@@ -194,8 +198,8 @@ those thresholds; it does not need `--rehash`.
 
 Scheduled `curate` runs never rehash; run `--rehash` explicitly.
 
-To rebuild Live bursts for all stored history, pause every publisher, queue
-worker, and publishing schedule for the full rebuild. Maintenance mode alone
+To rebuild Live bursts for all stored history, pause readers, every publisher,
+queue worker, and publishing schedule for the full rebuild. Maintenance mode alone
 does not stop queue workers. Then confirm that writers are paused:
 
 ```bash
@@ -204,7 +208,7 @@ php artisan storyfeed:curate --rebuild-bursts --writers-paused
 
 The rebuild commits progress in chunks. After an interruption, add `--resume`
 to continue from the committed cursor; add `--restart` to discard progress and
-replay all history. Keep writers paused until completion.
+replay all history. Keep readers and writers paused until completion.
 
 Rehashing can move groups past an active cursor, leaving the next page empty.
 It changes `sync_token`, so clients must discard accumulated nodes and fetch

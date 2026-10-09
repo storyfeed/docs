@@ -5,6 +5,8 @@
 Activities remain in the feed when a model is deleted. Storyfeed replaces
 the model with a tombstone, which identifies its former type and deletion
 time without keeping its details. The activity still has a headline.
+See [Choosing a Maintenance Operation](/deeper/healing#choosing-a-maintenance-operation)
+to compare tombstones with healing and pruning.
 
 <script setup>
 import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'

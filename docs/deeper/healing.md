@@ -4,7 +4,9 @@
 
 A **healer** selects activities whose source has been permanently deleted,
 such as a file that no longer exists. The `storyfeed:heal` command soft-deletes
-the selected activities.
+the selected activities. Healing does not edit an activity's verb, roles, or
+data. To change how stored activities appear, see
+[Correcting Historical Presentation](#correcting-historical-presentation).
 
 <a id="permanently-missing-sources"></a>
 
@@ -20,9 +22,70 @@ models need no healer: their activities remain with a
 >
 > Each soft-deletion changes the feed's `sync_token`, so clients must refetch
 > their pages, as with
-> [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows).
+> [rebuilding groups](/reference/commands#rehashing-groups).
 > Preview changes and run healing during low traffic. Healers are not scheduled
 > automatically.
+
+## Choosing a Maintenance Operation
+
+| Operation | Trigger | Effect on Activities | Changes `sync_token` | Runs When |
+|---|---|---|---|---|
+| `storyfeed:heal` | a registered healer confirms a permanently absent source | soft-deletes selected activities | each soft-deletion | run manually; no package schedule |
+| `storyfeed:trickle --prune` | an uncached role cannot resolve, such as a model missing `Feedable` | soft-deletes unresolved activities | not for these soft-deletions | run manually or schedule in the app; pruning is opt-in |
+| `storyfeed:prune` | an activity exceeds its retention window | permanently deletes expired activities, including soft-deleted ones | when groups change or composite members are released | run manually or schedule in the app |
+| tombstones | a Feedable model is deleted | keeps activities and replaces references to the model; `forgetWhenMissing()` can permanently delete redundant activities | when references move or activities are forgotten | model events; scheduled `trickle` discovers deletions without events |
+
+Without `--prune`, `trickle` reports unresolved roles and keeps their activities
+unless `storyfeed.trickle.prune` is enabled. Check a model's
+[Feedable setup](/basics/feedable-models) before removing those activities.
+A deleted Feedable model normally receives a
+[tombstone](/deeper/deleted-models), including during `trickle`. That separate
+operation can change `sync_token` even without `--prune`.
+
+See [Retention](/deeper/retention) for retention windows and
+[Scheduling Maintenance](/reference/commands#scheduling-maintenance) for schedules.
+
+## Correcting Historical Presentation
+
+To correct a headline for a recorded verb, change its definition in
+`routes/feed.php`:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(':actor placed :object[ at :target]');
+```
+
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const corrected = { ...scene.order, headline_template: ':actor placed :object at :target' }
+</script>
+
+<FeedExample :items="[corrected]" />
+
+Storyfeed resolves the headline when it retrieves the feed. The new definition
+applies to existing activities with that object type and verb. Use a
+[dynamic headline](/basics/the-feed-file#dynamic-headlines) to choose wording
+from stored activity data, or a
+[fallback](/basics/the-feed-file#definition-precedence) for verbs without a
+specific definition. Rebuild the [definition cache](/basics/the-feed-file#caching-definitions)
+if the app caches definitions.
+
+Storyfeed has no supported API or command for rewriting a stored activity's
+verb, roles, or data and refreshing all dependent records. Correct the
+[recording code](/basics/recording) for future activities. Headline definitions
+can change the presentation of existing facts; they cannot supply a role or
+fact that was never recorded.
+
+`storyfeed:rebuild` refreshes entity snapshots and cached links from `toFeed()`;
+it does not re-compose activities. `storyfeed:participants` rebuilds the
+index used by `involving()` from stored roles and ancestry. Neither command
+corrects the recorded verb, roles, or data. Group maintenance is separate:
+[`curate --rehash` and `curate --rebuild-bursts`](/reference/commands#rehashing-groups)
+update grouping, not activity composition.
 
 <a id="defining-a-healer"></a>
 
