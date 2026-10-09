@@ -215,6 +215,7 @@ export default defineConfig({
         items: [
           { text: 'Retrieving Feeds', link: '/basics/reading' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
+          { text: 'Feed Sources', link: '/basics/feed-sources' },
         ],
       },
       {

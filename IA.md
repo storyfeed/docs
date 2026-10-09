@@ -399,6 +399,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 
 - ✅ Retrieving Feeds — `basics/reading`: retrieval, groups, Live and Log, filters, pagination and The Payload
 - ✅ Named Feeds — `basics/named-feeds`
+- ✅ Feed Sources — `basics/feed-sources`: the array source, named sources, custom drivers, what other sources cannot read, and rendering a page you build yourself
 
 ### Storyfeed UI
 

@@ -20,6 +20,12 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 After editing cached definitions, run `storyfeed:cache` again.
 
+## Sources
+
+| Key | Default | Description |
+|---|---|---|
+| `sources.<name>` | `['database' => ['driver' => 'database']]` | named [feed sources](/basics/feed-sources), each with a `driver`: `database`, `array` (reading its `items`), or one registered with `Storyfeed::extend()`. A feed reads the database unless it calls `source()` |
+
 <span id="tables-models"></span>
 
 ## Tables and Models
