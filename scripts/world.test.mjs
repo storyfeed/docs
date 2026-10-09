@@ -142,6 +142,16 @@ for (const [name, pack] of Object.entries(PACKS)) {
 
   test(`${name}: cookbook scenes preserve the behaviours being taught`, () => {
     const c = scene.cookbook
+    const { business, audit } = c.delegated
+    assert.equal(business.verb, 'create')
+    assert.equal(audit.verb, 'create')
+    assert.ok(same(business.actor, audit.actor))
+    assert.ok(same(business.instrument, audit.instrument))
+    assert.equal(business.instrument.type, 'connected_app')
+    assert.ok(same(business.object, audit.target))
+    assert.equal(audit.object.type, 'audit_entry')
+    assert.equal(audit.data.before, null)
+    assert.equal(audit.data.after.name, business.object.label)
     assert.ok(same(c.computed.object, role.product))
     assert.equal(c.computed.object.body.length, 1)
     assert.equal(c.computed.object.body[0].$body, 'Storyfeed/Body/KeyValue')

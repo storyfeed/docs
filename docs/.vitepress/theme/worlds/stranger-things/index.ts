@@ -1,7 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
-  DOCUMENT_WORKFLOW, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
+  DOCUMENT_WORKFLOW, DELEGATED_WRITES, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
 /**
  * ── Stranger Things: the pack ────────────────────────────────────────────────
@@ -547,6 +547,20 @@ const proposal = entity('proposal', '302', DOCUMENT_WORKFLOW.proposal, '/proposa
 const document = entity('document', '303', DOCUMENT_WORKFLOW.agreement, '/documents/303')
 const acceptance = entity('acceptance', '304', DOCUMENT_WORKFLOW.acceptance, '/acceptances/304')
 const menu = entity('menu', '305', DOCUMENT_WORKFLOW.menu, '/menus/305')
+const connectedApp = entity('connected_app', '306', DELEGATED_WRITES.app, '/connected-apps/306')
+const creationAudit = entity('audit_entry', '307', DELEGATED_WRITES.audit, '/audit-entries/307')
+ROWS.push(
+  row('delegated-business', '1985-07-04 18:10', 'create', scooper, fare.butterscotch, null, 'splice', {
+    instrument: connectedApp, headline: ':actor created :object using :instrument',
+    uncertain: 'Illustrative delegated software write, not an on-screen event.',
+  }),
+  row('delegated-audit', '1985-07-04 18:10', 'create', scooper, creationAudit, fare.butterscotch, 'splice', {
+    instrument: connectedApp, headline: ':actor recorded :object for :target using :instrument',
+    data: { operation: 'create', before: null, after: { name: fare.butterscotch.label },
+      tool: 'create_menu_item', authoriser_id: scooper.id, token_owner_id: scooper.id },
+    uncertain: 'Illustrative audit ledger entry, not an on-screen event.',
+  }),
+)
 const choice = (id: string, verb: string, object: any, target: any, headline: string, data = {}) =>
   row(`choice-${id}`, '1985-07-04 18:00', verb, scout, object, target, 'splice',
     { headline, data, uncertain: 'Illustrative software transaction, not an on-screen event.' })
@@ -694,6 +708,7 @@ export default {
   },
   scenes: {
     cookbook: {
+      delegated: { business: 'delegated-business', audit: 'delegated-audit' },
       verbChoices: Object.fromEntries(['agreement', 'proposal', 'send', 'invite', 'decision', 'clause', 'attachment', 'create', 'add'].map(key => [key, `choice-${key}`])),
       rewrites: ['choice-rewrite-0', 'choice-rewrite-1', 'choice-rewrite-2'],
       actorless: { anonymous: 'cookbook-anonymous', paid: 'cookbook-paid', expired: 'cookbook-expired' },

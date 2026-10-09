@@ -196,6 +196,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       object: r.object ?? null,
       target: r.target ?? null,
       context: r.context ?? null,
+      instrument: r.instrument ?? null,
       data: r.data ?? null,
     })
   }
@@ -214,6 +215,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const deeper = s.deeper
   const scene = {
     cookbook: {
+      delegated: { business: one(s.cookbook.delegated.business), audit: one(s.cookbook.delegated.audit) },
       verbChoices: Object.fromEntries(Object.entries(s.cookbook.verbChoices).map(([key, id]) => [key, one(id)])),
       rewrites: many(s.cookbook.rewrites),
       actorless: { anonymous: one(s.cookbook.actorless.anonymous), paid: one(s.cookbook.actorless.paid), expired: one(s.cookbook.actorless.expired) },

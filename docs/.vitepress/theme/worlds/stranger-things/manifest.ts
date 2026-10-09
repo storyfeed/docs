@@ -226,3 +226,9 @@ export const DOCUMENT_WORKFLOW = {
   agreement: 'Service terms', proposal: 'New shop', acceptance: 'Acceptance',
   menu: 'Seasonal menu', clauses: ['Scope', 'Termination', 'Payment terms'],
 }
+
+/** Illustrative connected-app records. */
+export const DELEGATED_WRITES = {
+  app: 'Menu Desk',
+  audit: 'Creation audit',
+}
