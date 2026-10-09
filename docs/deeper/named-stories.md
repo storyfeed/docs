@@ -306,8 +306,7 @@ it('names every concrete declaration', function () {
 ```
 
 This checks each declaration's own name. A named wildcard declaration does
-not make an unnamed type-specific declaration pass. Hand-written registry
-entries are not declarations and do not appear in this listing.
+not make an unnamed type-specific declaration pass.
 
 <a id="checking-names-with-phpstan"></a>
 
