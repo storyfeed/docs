@@ -91,6 +91,13 @@ Use roles for the things involved and data for event details:
 Use base-form verbs such as `place`. Use past tense in headlines:
 `:actor placed :object`.
 
+::: tip The verb doesn't have to appear in the headline
+The verb is what's recorded; the headline is how the feed phrases it.
+`Act::Begin` can read "Ana opened the poll", and `send` can read "Ana invited Ben
+to sign the contract". A headline can change at any time without changing
+anything stored.
+:::
+
 ## Choosing a Precise Verb
 
 Choose the verb that states the fact: `launch` or `unveil` when that is what
