@@ -6,7 +6,10 @@ const repo = fileURLToPath(new URL('../', import.meta.url))
 export const uiPath = resolve(repo, process.env.STORYFEED_UI_PATH ?? '../storyfeed-ui/resources/js/vue')
 export const uiResolve = {
   alias: { '@storyfeed/ui': uiPath },
-  dedupe: ['vue', 'lucide-vue-next', 'markdown-it', 'sanitize-html'],
+  dedupe: [
+    'vue', 'lucide-vue-next', 'sanitize-html', 'micromark', 'micromark-extension-gfm-autolink-literal',
+    'micromark-extension-gfm-strikethrough', 'micromark-extension-gfm-table', 'micromark-extension-gfm-task-list-item',
+  ],
 }
 export const uiSource = {
   name: 'storyfeed-ui-source',
