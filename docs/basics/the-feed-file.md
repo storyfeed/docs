@@ -203,7 +203,9 @@ Story::resource(Order::class)->except('update');
 Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
-Defining the same verb twice throws, naming both locations.
+Defining the same verb twice inline throws, naming both locations. A later
+[method or invokable binding](/deeper/stories#supplementing-resource-stories)
+replaces the resource definition for that type and verb.
 
 ## Definition Precedence
 

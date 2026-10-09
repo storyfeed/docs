@@ -38,7 +38,8 @@ path. Setting `definitions` to `false` disables file creation.
 `make:story` creates a [Story class](/deeper/stories). Without arguments, it
 prompts for the name and class structure. Passing only a name creates a class
 for one activity, constructed with its data and then published. The command
-prints the `routes/feed.php` binding for you to add.
+prints the `routes/feed.php` binding for you to add. A generated resource class
+can also be bound [one method at a time](/deeper/stories#basic-story-classes).
 
 | Option | Effect |
 |---|---|

@@ -2,8 +2,8 @@
 
 ## Introduction
 
-A Story class can build an activity from the data you give it. You may also
-keep verb definitions in `routes/feed.php` or separate declaration classes.
+A Story class groups a model's verbs, as a controller groups a model's actions.
+Each public verb method defines what an activity says in the feed.
 
 <script setup>
 import { scene, activity } from '../.vitepress/theme/world'
@@ -12,36 +12,355 @@ const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row
   verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
 </script>
 
-<a id="publishing-an-activity"></a>
+## Writing Story Classes
 
-<a id="generating-a-story-class"></a>
+### Basic Story Classes
 
-## Generating Story Classes
+Generate a class and replace its generated methods with the verbs you need:
 
-```bash
-php artisan make:story
+```shell
+php artisan make:story OrderStory --model=Order
 ```
 
-The command asks for the class name, then **What will this story describe?**
+```php memo="app/Stories/OrderStory.php"
+<?php
 
-| Choice | Laravel Analogy | What the Class Contains |
-|---|---|---|
-| One activity, published with its data | like a notification | constructor data and `toFeedActivity()` |
-| Every activity for one model | like a resource controller | one declaration method per verb |
-| A single verb | like a single action controller | that verb's headlines in their own class |
+namespace App\Stories;
 
-Each choice prints the `routes/feed.php` line to add. The sections below show the command for each class type. See
-[Commands](/reference/commands#stories) for all options.
+use Storyfeed\Stories\Verb;
 
-<a id="generator-options"></a>
+class OrderStory
+{
+    public function place(Verb $verb): Verb
+    {
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag');
+    }
 
-<a id="spelling-the-past-tense"></a>
+    public function complete(): string
+    {
+        return ':actor completed :object';
+    }
+}
+```
 
-Select and uncomment a generated headline before compiling the definitions.
+A Story class needs no base class. Bind one public method to a verb in the feed file:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', [OrderStory::class, 'place']);
+```
+
+<FeedExample :items="[placed]" />
+
+Only `place` is registered here. Bind `complete` separately when you need it.
+Use explicit method bindings to select individual verbs from a class.
+Each method returns the supplied `Verb` or a headline string.
+
+The stored verb can differ from the method name:
+
+```php memo="app/Stories/TicketStory.php"
+<?php
+
+namespace App\Stories;
+
+class TicketStory
+{
+    public function reopen(): string
+    {
+        return ':actor reopened :object';
+    }
+}
+```
+
+```php memo="routes/feed.php"
+use App\Models\Ticket;
+use App\Stories\TicketStory;
+use Storyfeed\Facades\Story;
+
+Story::for(Ticket::class)->verb('re-open', [TicketStory::class, 'reopen']);
+```
+
+The binding keeps `re-open` as the stored verb. To apply a method to every
+object type, use `Story::verb('place', [OrderStory::class, 'place'])`.
+Publish with [the activity builder](/basics/recording); the class defines what
+those activities say.
+
+<a id="a-single-verb"></a>
+
+### Single-Verb Stories
+
+#### Generating an Invokable Story
+
+```shell
+php artisan make:story PlaceStory --invokable --verb=place --object=Order
+```
+
+```php memo="app/Stories/PlaceStory.php"
+<?php
+
+namespace App\Stories;
+
+use Storyfeed\Stories\Verb;
+
+class PlaceStory
+{
+    public function __invoke(Verb $verb): Verb
+    {
+        return $verb
+            ->headline(':actor placed :object with :target')
+            ->icon('shopping-bag');
+    }
+}
+```
+
+#### Registering an Invokable Story
+
+Register the invokable class without a method name:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\PlaceStory;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place', PlaceStory::class);
+```
+
+<FeedExample :items="[placed]" />
+
+Publish the verb with [the activity builder](/basics/recording). An invokable
+declaration may return a `Verb` or headline string, as a resource method does.
+Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
+object types, so its headline must describe each supported type.
+
+Package authors can [register Story classes in a service provider](/deeper/package-integration#registering-stories-in-a-service-provider).
+
+## Story Middleware
+
+Attach middleware to a verb binding or a group in `routes/feed.php`. See
+[Story Middleware & Batching](/deeper/story-middleware-and-batching) for
+registration, exclusions, and batching.
+
+<a id="every-activity-for-one-model"></a>
+
+## Resource Stories
+
+<a id="generating-a-resource-story"></a>
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class);
+```
+
+<FeedExample :items="[placed]" />
+
+A resource registration wires the class's public verb methods in one call.
+It also defines `create`, `update`, `delete`, and `restore`; see
+[Conventional Verbs](/basics/the-feed-file#resource-definitions) for their headlines
+and icons. A method with one of those names replaces its complete default definition.
+Use this registration in place of the individual method binding.
+
+Define verbs in the class and publish activities with
+[the activity builder](/basics/recording).
+
+<a id="verbs-from-method-names"></a>
+
+### Verbs and Return Types
+
+The method name becomes the stored verb in snake_case:
+
+| Method | Stored Verb |
+|---|---|
+| `pay()` | `pay` |
+| `store()` | `store` |
+| `confirmPayment()` | `confirm_payment` |
+| `markAsPaid()` | `mark_as_paid` |
+
+PHP reserved words such as `default`, `print`, `match`, and `list` are valid method names.
+
+No other name conversion applies: `store()` records `store`, and `create()`
+records `create`.
+
+<a id="action-return-types"></a>
+
+Each method declares its return type:
+
+| Return Type | The Method Returns |
+|---|---|
+| `Storyfeed\Stories\Verb` | the supplied definition with its options set |
+| `string` | the headline |
+
+Use `Verb` when setting several options, or `string` for a headline alone.
+Keep helpers protected or private, because public methods declare verbs.
+
+<a id="keeping-definitions-for-stored-activities"></a>
+
+Keep a verb's method while stored activities still use it. Storyfeed resolves
+headlines from the current definitions when retrieving the feed, so removing
+the method leaves those activities without a headline:
+
+```php memo="app/Stories/OrderStory.php"
+// Nothing publishes `print` any more; old rows still read.
+public function print(): string
+{
+    return ':actor printed :object';
+}
+```
+
+<a id="headlines-for-deleted-objects"></a>
+<a id="deleted-object-headlines"></a>
+
+The supplied `Verb` supports every definition method, including
+`missingHeadline()` for deleted objects. See
+[Deleted Models](/deeper/deleted-models#missing-headlines).
+
+<a id="conventional-verbs"></a>
+<a id="selecting-resource-verbs"></a>
+
+### Selecting Verbs
+
+Use `only()` or `except()` to filter the class methods and conventional verbs
+by stored verb name:
+
+::: code-group
+```php [Only] memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class)->only('place', 'complete');
+
+```
+
+```php [Except] memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class)->except('restore');
+```
+:::
+
+<FeedExample :items="[placed]" />
+
+Choose one resource registration. Excluded verbs also lose their resource names.
+
+<a id="registering-several-resources"></a>
+
+### Registering Multiple Resources
+
+```php memo="routes/feed.php"
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resources([
+    Order::class => OrderStory::class,
+    MenuItem::class => null,
+], ['except' => ['restore']]);
+```
+
+<FeedExample :items="[placed]" />
+
+The `Story::resources` method registers several models with shared options,
+as `Route::resources` does. A `null` class defines the four conventional verbs.
+The options accept `only` and `except`. Use this example in place of individual
+resource registrations. To share middleware or role constraints, wrap it in a
+[group](/deeper/named-stories#shared-attributes).
+
+### Supplementing Resource Stories
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use App\Stories\PlaceStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class);
+Story::for(Order::class)->verb('place', PlaceStory::class);
+```
+
+<FeedExample :items="[placed]" />
+
+A later explicit method or invokable binding replaces the complete definition
+for that object type and verb, including its name and middleware. Other resource
+verbs keep their definitions. Use this to replace one resource method with a
+dedicated single-verb class.
+
+## Dependency Injection
+
+Storyfeed resolves Story classes through Laravel's service container. Type-hint
+dependencies on a verb method to receive them, including `Illuminate\Http\Request`.
+Explicit method bindings, invokable classes, and resource methods use the same
+injection rules.
+
+<a id="using-the-request"></a>
+
+### Request-Based Actors
+
+```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
+use Illuminate\Http\Request;
+use Storyfeed\Stories\Verb;
+
+public function confirmPayment(Verb $verb, Request $request): Verb
+{
+    return $verb
+        ->headline(':actor confirmed payment for :object')
+        ->icon('credit-card')
+        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
+}
+```
+
+The same webhook can choose between two [declared parties](/deeper/parties#declaring-parties).
+Its controller publishes `confirm_payment` without naming an actor:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity('confirm_payment', $order)->publish();
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(verb: 'confirm_payment', object: $order);
+```
+:::
+
+<a id="tab-437"></a>
+<a id="tab-438"></a>
+
+For a request without the signature header:
+
+<FeedExample :items="[paid]" />
+
+The verb's actor applies when no actor is assigned explicitly or through a
+`Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
+headlines, icons, intents, grouping, and other settings must remain consistent.
+A request-dependent headline throws an exception when `grammar.strict` is
+enabled, as it is by default in local and testing environments.
+
+#### Carrying Request-Based Actors Into Jobs
+
+Jobs dispatched during a request carry the actor selected by the request-based
+verb actor. The worker retains that selection without needing the original
+HTTP request. For callback and request scopes, see
+[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
 
 <a id="one-activity-published-with-its-data"></a>
 
-## Publishing Story Classes
+<a id="publishing-story-classes"></a>
+
+## Publishing From a Story Class
 
 ### Defining the Activity
 
@@ -248,253 +567,32 @@ The same restriction applies to all definition methods:
 | `period()` | the calendar period for custom axes whose keys include `d` |
 | `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
 
-<a id="a-single-verb"></a>
+<a id="publishing-an-activity"></a>
 
-## Single-Verb Stories
+<a id="generating-a-story-class"></a>
 
-### Generating an Invokable Story
+## Generating Story Classes
 
-```shell
-php artisan make:story PlaceStory --invokable --verb=place --object=Order
+```bash
+php artisan make:story
 ```
 
-```php memo="app/Stories/PlaceStory.php"
-<?php
+The command asks for the class name, then **What will this story describe?**
 
-namespace App\Stories;
+| Choice | Laravel Analogy | What the Class Contains |
+|---|---|---|
+| Every activity for one model | like a resource controller | one declaration method per verb |
+| A single verb | like a single action controller | that verb's headlines in their own class |
+| One activity, published with its data | like a notification | constructor data and `toFeedActivity()` |
 
-use Storyfeed\Stories\Verb;
+Each choice prints the `routes/feed.php` line to add. See
+[Commands](/reference/commands#stories) for all options.
 
-class PlaceStory
-{
-    public function __invoke(Verb $verb): Verb
-    {
-        return $verb
-            ->headline(':actor placed :object with :target')
-            ->icon('shopping-bag');
-    }
-}
-```
+<a id="generator-options"></a>
 
-### Registering an Invokable Story
+<a id="spelling-the-past-tense"></a>
 
-When `routes/feed.php` becomes difficult to maintain, move a verb's headlines
-to a single-verb declaration class. It does not require a base class. Register
-it in place of the inline definition:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\PlaceStory;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place', PlaceStory::class);
-```
-
-<FeedExample :items="[placed]" />
-
-Publish the verb with [the activity builder](/basics/recording). An invokable
-declaration may return a `Verb` or headline string, as a resource method does.
-Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
-object types, so its headline must describe each supported type.
-
-Package authors can [register Story classes in a service provider](/deeper/package-integration#registering-stories-in-a-service-provider).
-
-<a id="every-activity-for-one-model"></a>
-
-## Resource Stories
-
-### Generating a Resource Story
-
-```shell
-php artisan make:story OrderStory --model=Order
-```
-
-```php memo="app/Stories/OrderStory.php"
-<?php
-
-namespace App\Stories;
-
-use Storyfeed\Stories\Verb;
-
-class OrderStory
-{
-    public function place(Verb $verb): Verb
-    {
-        return $verb
-            ->headline(':actor placed :object with :target')
-            ->icon('shopping-bag');
-    }
-
-    public function complete(): string
-    {
-        return ':actor completed :object';
-    }
-}
-```
-
-Each public method declares a verb. The class requires no base class or order
-instance. Register it in place of the other `place` definitions:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resource(Order::class, OrderStory::class);
-```
-
-<FeedExample :items="[placed]" />
-
-Use the resource class to define verbs and
-[the activity builder](/basics/recording) to publish activities.
-
-<a id="verbs-from-method-names"></a>
-
-### Verbs and Return Types
-
-The method name becomes the stored verb in snake_case:
-
-| Method | Stored Verb |
-|---|---|
-| `pay()` | `pay` |
-| `store()` | `store` |
-| `confirmPayment()` | `confirm_payment` |
-| `markAsPaid()` | `mark_as_paid` |
-
-No other name conversion applies: `store()` records `store`, and `create()`
-records `create`.
-
-<a id="action-return-types"></a>
-
-Each method declares its return type:
-
-| Return Type | The Method Returns |
-|---|---|
-| `Storyfeed\Stories\Verb` | the supplied definition with its options set |
-| `string` | the headline |
-
-Use `Verb` when setting several options, or `string` for a headline alone.
-Keep helpers protected or private, because public methods declare verbs.
-
-<a id="keeping-definitions-for-stored-activities"></a>
-
-Keep a verb's method while stored activities still use it. Storyfeed resolves
-headlines from the current definitions when retrieving the feed, so removing
-the method leaves those activities without a headline:
-
-```php memo="app/Stories/OrderStory.php"
-// Nothing publishes `print` any more; old rows still read.
-public function print(): string
-{
-    return ':actor printed :object';
-}
-```
-
-<a id="headlines-for-deleted-objects"></a>
-<a id="deleted-object-headlines"></a>
-
-The supplied `Verb` supports every definition method, including
-`missingHeadline()` for deleted objects. See
-[Deleted Models](/deeper/deleted-models#missing-headlines).
-
-<a id="conventional-verbs"></a>
-<a id="selecting-resource-verbs"></a>
-
-### Selecting Verbs
-
-A resource class adds its verbs to the
-[conventional verbs](/basics/the-feed-file#resource-definitions) defined by
-`Story::resource()`. A method with a conventional verb's name replaces its
-complete default definition. Use `only()` or `except()` to filter both sets
-by stored verb name:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resource(Order::class, OrderStory::class)->only('place', 'complete');
-```
-
-<FeedExample :items="[placed]" />
-
-Replace the unfiltered resource registration with this example. Excluded
-verbs also lose their resource names.
-
-<a id="registering-several-resources"></a>
-
-### Registering Multiple Resources
-
-```php memo="routes/feed.php"
-use App\Models\MenuItem;
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resources([
-    Order::class => OrderStory::class,
-    MenuItem::class => null,
-], ['except' => ['restore']]);
-```
-
-<FeedExample :items="[placed]" />
-
-The `Story::resources` method registers several models with shared options,
-as `Route::resources` does. A `null` class defines the four conventional verbs.
-The options accept `only` and `except`. Use this example in place of individual
-resource registrations. To share middleware or role constraints, wrap it in a
-[group](/deeper/named-stories#shared-attributes).
-
-<a id="using-the-request"></a>
-
-### Request-Based Actors
-
-```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
-use Illuminate\Http\Request;
-use Storyfeed\Stories\Verb;
-
-public function confirmPayment(Verb $verb, Request $request): Verb
-{
-    return $verb
-        ->headline(':actor confirmed payment for :object')
-        ->icon('credit-card')
-        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
-}
-```
-
-The same webhook can choose between two [declared parties](/deeper/parties#declaring-parties).
-Its controller publishes `confirm_payment` without naming an actor:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity('confirm_payment', $order)->publish();
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(verb: 'confirm_payment', object: $order);
-```
-:::
-
-For a request without the signature header:
-
-<FeedExample :items="[paid]" />
-
-The verb's actor applies when no actor is assigned explicitly or through a
-`Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
-headlines, icons, intents, grouping, and other settings must remain consistent.
-A request-dependent headline throws an exception when `grammar.strict` is
-enabled, as it is by default in local and testing environments.
-
-#### Carrying Request-Based Actors Into Jobs
-
-Jobs dispatched during a request carry the actor selected by the request-based
-verb actor. The worker retains that selection without needing the original
-HTTP request. For callback and request scopes, see
-[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
+Select and uncomment a generated headline before compiling the definitions.
 
 <a id="generating-from-doctor-findings"></a>
 
