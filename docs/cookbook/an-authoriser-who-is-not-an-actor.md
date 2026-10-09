@@ -327,13 +327,13 @@ Route::get('/connected-apps/{app}/activity', function (ConnectedApp $app) {
 The instrument filter retrieves both records, even when their actors differ.
 An `app_name` value in data does not fill the instrument role.
 `involving($app)` is broader: it also matches the app in any other role.
-To display only business records while retaining audit activities, add a
-query constraint on the object type:
+To display only business records while retaining audit activities, filter by
+the object type:
 
 ```php memo="routes/web.php" at="connected-app activity route"
 ->query(fn (ActivityBuilder $query) => $query
-    ->whereMorphedTo('instrument', $app)
-    ->where('object_type', (new \App\Models\MenuItem)->getMorphClass()))
+    ->whereMorphedTo('instrument', $app))
+->objectType(\App\Models\MenuItem::class)
 ```
 
 <FeedExample :items="[business]" />

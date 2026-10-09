@@ -240,15 +240,13 @@ use App\Models\Document;
 use App\Models\EmailMessage;
 use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Builders\ActivityBuilder;
 
 // Apply the app's document authorization middleware to this route.
 Route::get('/documents/{document}/email-activity',
     function (Document $document) {
         return Storyfeed::feed()
             ->target($document)
-            ->query(fn (ActivityBuilder $query) => $query
-                ->where('object_type', (new EmailMessage)->getMorphClass()))
+            ->objectType(EmailMessage::class)
             ->only(['send', 'deliver', 'bounce', 'complain', 'fail'])
             ->log()
             ->get();
