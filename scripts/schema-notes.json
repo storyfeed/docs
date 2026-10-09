@@ -17,6 +17,8 @@
     "cached_context_id": "The context's row in `feed_snapshots`.",
     "data": "The values passed to `data()`.",
     "published_at": "When the activity happened. The feed orders by it, and only shows activities whose time has come.",
+    "starts_at": "When what the activity describes began, set with `startsAt()`. Null when the range has no start.",
+    "ends_at": "When what the activity describes ended, set with `endsAt()`. Null when the range has no end.",
     "created_at": "When the row was written.",
     "updated_at": "When the row last changed.",
     "deleted_at": "Set when an activity is soft-deleted, by `deleteFromFeed()` for example. Soft-deleted activities are not shown.",

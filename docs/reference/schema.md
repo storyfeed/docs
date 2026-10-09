@@ -236,6 +236,8 @@ removing or changing an alias leaves affected roles unresolved.
 | `instrument_type` | string(255) | nullable | The instrument's morph alias. |
 | `instrument_id` | string(36) | nullable | The instrument's key. |
 | `cached_instrument_id` | unsigned bigint | nullable | The instrument's row in `feed_snapshots`. |
+| `starts_at` | timestamp(6) | nullable | When what the activity describes began, set with `startsAt()`. Null when the range has no start. |
+| `ends_at` | timestamp(6) | nullable | When what the activity describes ended, set with `endsAt()`. Null when the range has no end. |
 
 | Index | Columns |
 |---|---|
