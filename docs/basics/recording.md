@@ -59,6 +59,14 @@ Containers above the object, target or context come from each model's
 Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.
 
+> [!NOTE]
+> A role identifies a participant that exists independently of the activity.
+> A nonempty string passed to a role method creates or reuses a named party.
+> Store names, email addresses, amounts, dates, and settings in activity data.
+> Use a [dynamic headline](/basics/the-feed-file#dynamic-headlines) to display
+> those values. [Recording Value Changes](/cookbook/recording-value-changes)
+> compares the roles, data, and party queries for a rename.
+
 These roles come from [W3C Activity Streams 2.0](/deeper/activity-streams).
 
 <a id="reading-as-a-sentence"></a>

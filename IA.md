@@ -449,6 +449,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 ### Cookbook
 
 - ✅ Composing a Coherent Activity — `cookbook/read-the-fields-back`
+- ✅ Recording Value Changes — `cookbook/recording-value-changes`: rename values in data, dynamic headlines, and party-query comparison
 - ✅ Choosing a Verb — `cookbook/choosing-a-verb`
 - ✅ Choosing When to Publish — `cookbook/choosing-when-to-publish`: domain events first, model observers as a fallback, and transitions worth recording
 - ✅ Choosing What Not to Record — `cookbook/choosing-what-not-to-record`

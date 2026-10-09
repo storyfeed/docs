@@ -282,6 +282,7 @@ export default defineConfig({
         text: 'Cookbook',
         items: [
           { text: 'Composing a Coherent Activity', link: '/cookbook/read-the-fields-back' },
+          { text: 'Recording Value Changes', link: '/cookbook/recording-value-changes' },
           { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
