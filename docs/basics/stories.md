@@ -2,8 +2,9 @@
 
 ## Introduction
 
-A Story class groups a model's verbs, as a controller groups a model's actions.
-Each public verb method defines what an activity says in the feed.
+A Story class groups a model's verb definitions in one file. Each public verb
+method defines what an activity says in the feed, in place of an inline
+definition in `routes/feed.php`.
 
 <script setup>
 import { scene, activity } from '../.vitepress/theme/world'
@@ -16,7 +17,7 @@ const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row
 
 ### Basic Story Classes
 
-Generate a class and replace its generated methods with the verbs you need:
+Generate a Story class for the `Order` model and define its verbs:
 
 ```shell
 php artisan make:story OrderStory --model=Order
@@ -133,7 +134,7 @@ Story::for(Order::class)->verb('place', PlaceStory::class);
 <FeedExample :items="[placed]" />
 
 Publish the verb with [the activity builder](/basics/recording). An invokable
-declaration may return a `Verb` or headline string, as a resource method does.
+declaration may return a `Verb` or headline string.
 Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
 object types, so its headline must describe each supported type.
 
@@ -273,7 +274,7 @@ Story::resources([
 The `Story::resources` method registers several models with shared options,
 as `Route::resources` does. A `null` class defines the four conventional verbs.
 The options accept `only` and `except`. Use this example in place of individual
-resource registrations. To share middleware or role constraints, wrap it in a
+resource registrations. To share middleware or [role constraints](/deeper/constraining-roles), wrap it in a
 [group](/deeper/named-stories#shared-attributes).
 
 ### Supplementing Resource Stories

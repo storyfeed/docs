@@ -241,5 +241,5 @@ when the job throws.
 
 <a id="request-based-actors"></a>
 
-See [Carrying Request-Based Actors Into Jobs](/deeper/stories#carrying-request-based-actors-into-jobs)
+See [Carrying Request-Based Actors Into Jobs](/basics/stories#carrying-request-based-actors-into-jobs)
 for the actor selected by a verb during a request.

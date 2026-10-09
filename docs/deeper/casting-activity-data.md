@@ -80,7 +80,7 @@ read them back as a `Channel` and a `CarbonImmutable`.
 <a id="declaring-casts-on-a-story-class"></a>
 
 For casts declared on a Story class, see
-[Declaring Casts on a Story Class](/deeper/stories#declaring-casts-on-a-story-class).
+[Declaring Casts on a Story Class](/basics/stories#declaring-casts-on-a-story-class).
 
 Like a verb's headline, casts are read when stories compile, and
 `storyfeed:cache` caches them. A cast is a string or a class name, never a

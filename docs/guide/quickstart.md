@@ -170,3 +170,29 @@ Compile the CSS with `npm run build`. The feed displays the order placement:
 <FeedExample :items="[order]" />
 
 For Inertia applications, use the [Vue](/ui/vue) or [React](/ui/react) kit.
+
+## Story Classes
+
+```php memo="app/Stories/OrderStory.php"
+<?php
+
+namespace App\Stories;
+
+class OrderStory
+{
+    public function place(): string
+    {
+        return ':actor placed :object with :target';
+    }
+}
+```
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\Stories\OrderStory;
+use Storyfeed\Facades\Story;
+
+Story::resource(Order::class, OrderStory::class);
+```
+
+See [Story Classes](/basics/stories).

@@ -269,7 +269,7 @@ Storyfeed resolves each role from the first applicable source:
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
 | Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
 | [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
-| Verb | the [verb's actor](/deeper/stories#request-based-actors) | none |
+| Verb | the [verb's actor](/basics/stories#request-based-actors) | none |
 | Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
 | Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
 

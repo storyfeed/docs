@@ -35,11 +35,11 @@ path. Setting `definitions` to `false` disables file creation.
 
 ### Stories
 
-`make:story` creates a [Story class](/deeper/stories). Without arguments, it
+`make:story` creates a [Story class](/basics/stories). Without arguments, it
 prompts for the name and class structure. Passing only a name creates a class
 for one activity, constructed with its data and then published. The command
 prints the `routes/feed.php` binding for you to add. A generated resource class
-can also be bound [one method at a time](/deeper/stories#basic-story-classes).
+can also be bound [one method at a time](/basics/stories#basic-story-classes).
 
 | Option | Effect |
 |---|---|
@@ -49,7 +49,7 @@ can also be bound [one method at a time](/deeper/stories#basic-story-classes).
 | `--verb=` | the stored verb |
 | `--object=` | the object model or morph alias, or `*` for none |
 | `--axes=` | comma-separated grouping axes to pre-fill; default, every axis that applies |
-| `--from-doctor` | one class per recorded type and verb without a headline; see [Generating From Doctor Findings](/deeper/stories#generating-from-doctor-findings) |
+| `--from-doctor` | one class per recorded type and verb without a headline; see [Generating From Doctor Findings](/basics/stories#generating-from-doctor-findings) |
 | `--force` | overwrites an existing story |
 
 ### Feeds
@@ -87,7 +87,7 @@ The `Period` column describes custom calendar axes; it does not list burst windo
 
 | Command | Description |
 |---|---|
-| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/deeper/stories) |
+| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/basics/stories) |
 | `storyfeed:clear` | removes the cached manifest |
 
 Like `route:cache`, `storyfeed:cache` prevents the definitions file from

@@ -390,6 +390,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Feedable Models — `basics/feedable-models`: default labels, toFeed(), describeFeed(), custom labels and external model registration; API tables remain in Reference
 - ✅ Recording Activities — `basics/recording`
 - ✅ The Feed File — `basics/the-feed-file`
+- ✅ Story Classes — `basics/stories`
 - ✅ Activity Verbs — `basics/verbs`
 - ✅ Activity Content — `basics/activity-content`: body definition, Prose and KeyValue, one Excerpt section, images, files, lists, multiple bodies, MediaObject, links and the type table
 - ✅ Feed Media — `basics/feed-media`: current links, picture slots, files and avatars; comes after Activity Content teaches bodies
@@ -416,7 +417,6 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Distant Relations — `deeper/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
 - ✅ Casting Activity Data — `deeper/casting-activity-data`
 - ✅ Activity Scopes — `deeper/activity-scopes`
-- ✅ Story Classes — `deeper/stories`
 - ✅ Constraining Roles — `deeper/constraining-roles`
 - ✅ Story Middleware & Batching — `deeper/story-middleware-and-batching`
 - ✅ Named Stories — `deeper/named-stories`

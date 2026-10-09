@@ -173,7 +173,7 @@ missing definition. See [Doctor Checks](/reference/doctor#generating-definitions
 for the definitions `--stubs` generates.
 
 To write Story classes instead, run
-[`make:story --from-doctor`](/deeper/stories#generating-from-doctor-findings).
+[`make:story --from-doctor`](/basics/stories#generating-from-doctor-findings).
 
 ## Running the Doctor in CI
 

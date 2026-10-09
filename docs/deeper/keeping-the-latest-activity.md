@@ -122,5 +122,5 @@ discarded under `'force'`.
 
 ## Comparing With Unique Stories
 
-[`ShouldBeUnique`](/deeper/stories#queueing-stories) keeps the first pending
+[`ShouldBeUnique`](/basics/stories#queueing-stories) keeps the first pending
 publication. `keepLatest()` replaces matching stored activities after publication.

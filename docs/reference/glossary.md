@@ -21,7 +21,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 
 | Term | Meaning |
 |---|---|
-| **[Story class](/deeper/stories)** | A class that defines activities. A resource class declares verbs; a `Story` subclass receives data and produces an activity. |
+| **[Story class](/basics/stories)** | A class that defines activities. A resource class declares verbs; a `Story` subclass receives data and produces an activity. |
 | **[feed file](/basics/the-feed-file)** | `routes/feed.php`, where `Story::` declares headlines and activity behaviour. It defines no HTTP routes. |
 | **headline** | The displayed wording for an activity or group. |
 | **headline template** | A headline with tokens such as `:actor`, returned in `headline_template`. See [The Feed File](/basics/the-feed-file). |

@@ -204,7 +204,7 @@ Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
 Defining the same verb twice inline throws, naming both locations. A later
-[method or invokable binding](/deeper/stories#supplementing-resource-stories)
+[method or invokable binding](/basics/stories#supplementing-resource-stories)
 replaces the resource definition for that type and verb.
 
 ## Definition Precedence
@@ -277,3 +277,5 @@ php artisan storyfeed:clear
 Storyfeed serializes closure headlines into the cache. If a closure cannot be
 serialized, the command fails and reports its source location. See
 [Commands](/reference/commands#manifest).
+
+As definitions grow, move a model's verbs into a [Story class](/basics/stories).

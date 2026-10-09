@@ -194,7 +194,7 @@ Undeclared names are handled according to the environment:
 | everywhere else | is ignored; the activity retains its default actor and `storyfeed:doctor` reports the name |
 
 The list applies to [`Storyfeed::actor()`](/deeper/activity-scopes#sharing-an-actor)
-and a [verb's `actor` method](/deeper/stories#request-based-actors). The `by`
+and a [verb's `actor` method](/basics/stories#request-based-actors). The `by`
 method does not check it. Without a list, any name is allowed. Names match by
 slug, so `'Stripe'` and `'stripe'` identify the same party.
 
