@@ -73,14 +73,15 @@ const fold = text => {
   return text;
 };
 
-function value(arg, where) {
+function value(arg, where, literals = new Map()) {
   const named = arg.match(/^\w+:\s*(.*)$/s);
   if (named) arg = named[1];
   if (/^'([^']*)'$/.test(arg)) return arg.slice(1, -1);
   if (/^-?\d+$/.test(arg)) return Number(arg);
   if (arg === 'true' || arg === 'false') return arg === 'true';
   if (arg === 'null') return null;
-  if (arg.startsWith('[')) return splitArgs(balanced(arg, 0).inner).map(a => value(a, where));
+  if (arg.startsWith('[')) return splitArgs(balanced(arg, 0).inner).map(a => value(a, where, literals));
+  if (literals.has(arg)) return literals.get(arg);
   throw new Error(`schema: cannot read the argument ${arg} in ${where}`);
 }
 
@@ -141,21 +142,21 @@ const TYPES = {
   dateTime: (a) => ({ type: a[1] ? `datetime(${a[1]})` : 'datetime' }),
 };
 
-function apply(tables, table, statement, file) {
+function apply(tables, table, statement, file, literals) {
   const helper = statement.startsWith('MorphKeyType::');
   const call = statement.match(helper ? /^MorphKeyType::(\w+)\(/ : /^\$\w+->(\w+)\(/);
   if (!call) throw new Error(`schema: cannot read ${statement} in ${file}`);
   const first = balanced(statement, call[0].length - 1);
   const rawArgs = splitArgs(first.inner);
   if (helper && !/^\$\w+$/.test(rawArgs.shift() ?? '')) throw new Error(`schema: MorphKeyType requires a Blueprint argument in ${file}`);
-  const args = rawArgs.map(a => value(a, file));
+  const args = rawArgs.map(a => value(a, file, literals));
   if (helper && !['nullableMorphs', 'id'].includes(call[1])) throw new Error(`schema: unknown MorphKeyType method ${call[1]}() in ${file}; teach scripts/schema.mjs`);
   const chain = [];
   for (let rest = statement.slice(first.end + 1); rest.trim() !== '';) {
     const link = rest.match(/^\s*->(\w+)\(/);
     if (!link) throw new Error(`schema: cannot read the chain ${rest} in ${file}`);
     const b = balanced(rest, link[0].length - 1);
-    chain.push([link[1], splitArgs(b.inner).map(a => value(a, file))]);
+    chain.push([link[1], splitArgs(b.inner).map(a => value(a, file, literals))]);
     rest = rest.slice(b.end + 1);
   }
   const t = tables.get(table) ?? (() => { throw new Error(`schema: ${file} alters ${table} before it exists`); })();
@@ -257,6 +258,13 @@ export function extract(sources) {
       continue;
     }
     const body = unroll(upBody(source, file));
+    // Named index strings in guarded upgrades. Resolve only a single literal
+    // assignment; expressions and reassigned variables still fail in value().
+    const literals = new Map();
+    for (const match of body.matchAll(/(\$\w+)\s*=\s*'([^'\\]*)'\s*;/g)) {
+      const assignments = body.match(new RegExp(`\\${match[1]}\\s*=(?!=|>)`, 'g'));
+      if (assignments?.length === 1) literals.set(match[1], match[2]);
+    }
     const re = /Schema::(create|table)\(/g;
     let m;
     while ((m = re.exec(body))) {
@@ -271,7 +279,7 @@ export function extract(sources) {
       const block = arrow ? args.inner.slice(args.inner.indexOf('=>') + 2) : balanced(body, open).inner;
       const statements = block.split('\n').map(l => l.replace(/\/\/.*$/, '')).join('\n')
         .split(';').map(s => s.replace(/\s+/g, ' ').trim()).filter(s => s.startsWith(`$${closure[1]}->`) || s.startsWith('MorphKeyType::'));
-      for (const s of statements) apply(tables, table, s, file);
+      for (const s of statements) apply(tables, table, s, file, literals);
       re.lastIndex = args.end;
     }
   }

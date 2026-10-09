@@ -128,3 +128,22 @@ test('ancestor upgrades replace the role unique key and keep the covering index'
   assert.ok(table.indexes.some(i => i.name === 'entity_unique'))
   assert.ok(table.indexes.some(i => i.name === 'widgets_kind_index'))
 })
+
+
+test('guarded upgrades resolve literal index names and reject ambiguous variables', () => {
+  const upgrade = `<?php return new class extends Migration {
+    public function up(): void {
+      $name = config('storyfeed.tables.widgets', 'feed_widgets');
+      $identityUnique = 'widget_identity_unique';
+      if (! Schema::hasIndex($name, $identityUnique, 'unique')) {
+        Schema::table($name, fn (Blueprint $table) => $table->unique(['id', 'uid'], $identityUnique));
+      }
+    }
+  };`
+  const table = extract([['create', create], ['upgrade', upgrade]]).get('feed_widgets')
+  assert.ok(table.indexes.some(i => i.name === 'widget_identity_unique' && i.columns.join() === 'id,uid'))
+  for (const replacement of ["$identityUnique = computeName();", "$identityUnique = 'first'; $identityUnique = 'second';"]) {
+    const ambiguous = upgrade.replace("$identityUnique = 'widget_identity_unique';", replacement)
+    assert.throws(() => extract([['create', create], ['upgrade', ambiguous]]), /cannot read the argument \$identityUnique/)
+  }
+})
