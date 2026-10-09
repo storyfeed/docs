@@ -84,6 +84,8 @@ Live groups the same action into one row until a quiet gap closes the burst.
 It is the default, so you may omit `live()`. See
 [Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row
 and [Live Burst Windows](/deeper/grouping-periods) to set the window.
+Which activities share a row, and when, is experimental and keeps improving
+behind the [payload contract](/reference/payload#group-nodes).
 
 ```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;

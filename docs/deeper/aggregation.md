@@ -7,6 +7,9 @@ from one customer appear as one row. See
 [Choosing What to Group](/cookbook/choosing-what-to-group) to decide when that
 helps the reader.
 
+Which activities group together, and when, is experimental and keeps improving
+behind the [payload contract](/reference/payload#group-nodes).
+
 <script setup>
 import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)

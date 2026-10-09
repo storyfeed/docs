@@ -322,8 +322,9 @@ role, every member shares it, its sample has one entry, and its distinct
 count is one. Otherwise it is `null`. Each plural role has a limited sample
 and a distinct count; empty roles use `[]` and `0`.
 
-Renderers may rely on the group node's structure. Which groups appear depends
-on server-side rules, thresholds, and burst windows that may change.
+Renderers may rely on the group node's structure, which is frozen from v0.19.
+Which activities group together, and when, is experimental: the server-side
+rules, thresholds and burst windows keep improving between releases.
 
 <a id="digest-rows"></a>
 
