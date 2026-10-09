@@ -9,6 +9,9 @@ const file = { ...photo, verb: 'upload', headline_template: ':actor uploaded :ob
   body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'Signed Agreement.pdf', size: 48213, mediaType: 'application/pdf' }] } }
 const actor = { ...scene.order, actor: { ...photo.object, body: null,
   media: { ...photo.object.media, icon: photo.object.media.preview } } }
+const team = scene.otherApps.team.target
+const lettered = { ...scene.otherApps.task, actor: { ...team, body: null, data: { ...team.data, initials: 'ST', color: '#438d98' },
+  media: { icon: null, image: null, preview: null, url: null, initials: 'ST', color: '#438d98', files: [] } } }
 </script>
 
 ## Introduction
@@ -200,6 +203,33 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 <FeedExample :items="[actor]" rail="actor" />
 
 An avatar needs no `Image` body.
+
+### Showing Initials Instead of a Picture
+
+A model without a picture, such as a team or a project, may give initials and
+a disc colour instead:
+
+```php memo="app/Models/Team.php" at="feedMedia()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make()
+        ->url(route('teams.show', $context->routeKey()))
+        ->initials($context->data('initials'))
+        ->color($context->data('color'));
+}
+```
+
+<FeedExample :items="[lettered]" rail="actor" />
+
+The colour is a hex value, such as `#438d98`. The initials are black or white,
+whichever contrasts more with the disc. An `icon` image, when present, is shown
+instead. Without initials, the renderer derives them from the label.
+[Store both values in `toFeed()`](/reference/feedable#storing-snapshot-data)
+to read them from `$context->data()`.
+
 See the [Feedable API](/reference/feedable#feedmedia) for the complete method list.
 
 For bodies built from current model values, see

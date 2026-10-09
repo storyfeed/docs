@@ -481,6 +481,8 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 | `attributes()` | array, merged; or a key and a value | `entity.attributes` |
 | `modal()` | bool, default `true` | `entity.modal` |
 | `icon()`, `preview()`, `image()` | `FeedImage`, or a bare src string | `entity.media` |
+| `initials()` | string; blank is `null` | `entity.media.initials` |
+| `color()` | hex string, such as `#438d98`; anything else is `null` | `entity.media.color`, as lowercase `#rrggbb` |
 | `files()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.files` |
 | `body()` | a body, a list, or a closure called when the body is resolved; each call appends | `entity.body`, after the stored bodies |
 

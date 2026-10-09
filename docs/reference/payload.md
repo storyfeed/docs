@@ -122,6 +122,9 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
 "media": {
   // small, representational, ~32×32, 1:1: an avatar, a logo
   "icon": null,
+  // the avatar's text and disc colour, for an entity without an icon image
+  "initials": null,
+  "color": null,
   // a larger visual representation of a NON-image resource
   "image": null,
   // a preview of the resource: the dense-feed thumbnail
@@ -150,7 +153,8 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
 | Value | Meaning |
 |---|---|
 | `media: null` | the entity has no media; the common case |
-| `media: {…}` | all four image keys present, each an image object or `null`, plus `files` (an empty list when none) |
+| `media: {…}` | all four image keys present, each an image object or `null`, plus `initials` and `color` (each a string or `null`) and `files` (an empty list when none) |
+| `media.initials`, `media.color` | the avatar's text and its disc colour as lowercase `#rrggbb`; a renderer prefers `icon` |
 | `media.url !== null` | `entity.url` identifies an image |
 | `width`, `height` | dimensions for reserving display space before loading; `null` when unknown, never `0` |
 
