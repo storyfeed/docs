@@ -204,6 +204,28 @@ throws an exception.
 | Property | maintenance request → unit → building → portfolio | maintenance across a portfolio |
 | Events | question → session → track → conference | questions across a conference |
 
+## Declaring a Parent on Existing History
+
+Activities published before a model declared `parent()` have no recorded path.
+To fill those paths from current parents, pause readers, publishers, queue
+workers and schedulers, then run:
+
+```sh
+php artisan storyfeed:participants --ancestors --missing --writers-paused
+```
+
+The command adds ancestor rows only for roles whose path was never recorded.
+Recorded paths, including paths recorded without a parent, remain unchanged.
+Running it again adds nothing to roles it has already filled. It accepts the
+same `--resume`, `--restart` and `--chunk` options as the full rebuild below.
+
+Snapshots written before Storyfeed recorded `parent(null)` explicitly cannot show
+whether a role had no parent or was never recorded. The command fills those
+roles from current parents.
+
+The doctor reports `ancestors.missing` for each activity role with a declared
+parent and no recorded path.
+
 ## Moving a Container
 
 An activity keeps the path recorded when it was published. Moving a folder
@@ -225,9 +247,10 @@ php artisan storyfeed:participants --ancestors --writers-paused --resume
 ```
 
 Use `--restart` instead of `--resume` to discard progress and start again.
-`--chunk=500` controls batch size, from 1 to 1000. `--missing` cannot be combined
-with `--ancestors`: rebuilding a path includes already indexed activities.
-Keep parent declarations and container relationships unchanged throughout a run.
+`--chunk=500` controls batch size, from 1 to 1000. Without `--missing`, the
+command replaces every recorded path, including paths of already indexed
+activities. Keep parent declarations and container relationships unchanged
+throughout a run.
 
 ## Recording Self-Acting Containers
 

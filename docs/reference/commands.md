@@ -236,7 +236,7 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 | `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it |
 | `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
-| `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/deeper/distant-relations#moving-a-container) |
+| `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; adding `--missing` fills only never-recorded paths. `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/deeper/distant-relations#declaring-a-parent-on-existing-history) |
 
 `bundle` and `curate` can change existing groups and their `sync_token`.
 Clients that accumulate nodes must then fetch the feed again.
