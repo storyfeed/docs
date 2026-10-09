@@ -456,6 +456,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Repeating Activities — `cookbook/repeating-activities`
 - ✅ Recording Deletions — `cookbook/activities-about-deletions`
 - ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`
+- ✅ Recording Signed-Link Access — `cookbook/recording-signed-link-access`: recipient data, anonymous fetch evidence, authenticated actors, and recipient search
 - ✅ Recording an Authoriser — `cookbook/an-authoriser-who-is-not-an-actor`
 - ✅ Choosing What to Group — `cookbook/choosing-what-to-group`
 - ✅ Headlines for Grouped Activities — `cookbook/grouped-headlines`

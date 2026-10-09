@@ -201,3 +201,7 @@ store that value in `data` and include it through a dynamic headline.
 [Assigning Roles](/basics/recording#assigning-roles) defines the participants.
 Use [Containers & Context](/deeper/context#choosing-between-target-and-context)
 when the activity also needs a containing entity.
+
+For a link's intended recipient, keep the recipient identity on the issued-link
+record or in data. [Recording Signed-Link Access](/cookbook/recording-signed-link-access)
+shows how to retrieve those events without assigning the recipient as actor.

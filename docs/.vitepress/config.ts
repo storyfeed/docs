@@ -289,6 +289,7 @@ export default defineConfig({
           { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
           { text: 'Recording Deletions', link: '/cookbook/activities-about-deletions' },
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
+          { text: 'Recording Signed-Link Access', link: '/cookbook/recording-signed-link-access' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
           { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
