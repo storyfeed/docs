@@ -183,22 +183,31 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const canonicalNow = Date.parse(p.canonicalNow)
   const byId = new Map(p.rows.map((r) => [r.id, r]))
 
+  const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
+
+  // Every row's node is core's, read through its array source by
+  // `npm run payloads` (scripts/payloads.mjs), and moved onto the anchor.
+  const order = new Map(Object.keys(p.payloads).map((id, i) => [id, i]))
+  const inCoreOrder = (nodes: any[]) => [...nodes].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+
   const nodeOf = (r: Row) => {
-    const verb = verbs[r.verb]
-    if (!verb) throw new Error(`Row "${r.id}": no wording for verb "${r.verb}"`)
-    return activity({
-      id: r.id,
-      verb: r.verb,
-      glyph: verb.glyph,
-      published_at: micro(localMs(r.at) + (anchor - canonicalNow)),
-      headline_template: r.headline ?? verb.headline,
-      actor: r.actor,
-      object: r.object ?? null,
-      target: r.target ?? null,
-      context: r.context ?? null,
-      instrument: r.instrument ?? null,
-      data: r.data ?? null,
-    })
+    if (!verbs[r.verb]) throw new Error(`Row "${r.id}": no wording for verb "${r.verb}"`)
+    const node = p.payloads[r.id]
+    if (!node) throw new Error(`Row "${r.id}": no payload from core. Run \`npm run payloads\`.`)
+
+    // Laid over core's node: what a source item has no key for. A row's own
+    // headline is one activity's wording, and an entity's media is what an
+    // app's feedMedia() resolves from a model the sample does not have.
+    const media = Object.fromEntries(ROLES
+      .filter((role) => node[role] && (r as any)[role]?.media)
+      .map((role) => [role, { ...node[role], media: (r as any)[role].media }]))
+
+    return {
+      ...node,
+      published_at: micro(Date.parse(node.published_at) + (anchor - canonicalNow)),
+      headline_template: r.headline ?? node.headline_template,
+      ...media,
+    }
   }
 
   const one = (id: string) => {
@@ -257,7 +266,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     /** Jasper's rows. */
     cameo: many(s.cameo),
     /** The short, wide feed: every scene above that belongs in one, and the rows around them. Newest first. */
-    glance: logOf(many(glanceIds)),
+    glance: inCoreOrder(many(glanceIds)),
     guide: {
       usageExamples: {
         repeatOrders: many(s.guide.usageExamples.repeatOrders),
@@ -283,7 +292,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   }
 
   /** Every row published by the anchor (the future is left out), newest first. */
-  const everything = () => logOf(p.rows.filter((r) => localMs(r.at) <= canonicalNow).map(nodeOf))
+  const everything = () => inCoreOrder(p.rows.filter((r) => localMs(r.at) <= canonicalNow).map(nodeOf))
 
   return {
     pack: p, anchor, scene, role: p.roles, everything, nodeOf,

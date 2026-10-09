@@ -1,5 +1,6 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
+import payloads from './payloads.json' with { type: 'json' }
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
   DOCUMENT_WORKFLOW, DELEGATED_WRITES, EMAIL_LIFECYCLE, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
@@ -716,6 +717,7 @@ VERBS.view = { glyph: 'eye', headline: ':actor viewed :object', repeat: ':actor 
 export default {
   name: 'stranger-things',
   canonicalNow: '1985-07-04T19:00:00Z',
+  payloads,
   sources: SOURCES,
   verbs: VERBS,
   rows: ROWS,

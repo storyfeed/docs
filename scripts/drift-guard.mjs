@@ -59,3 +59,17 @@ if (schema.status !== 0) {
     console.error(schema.stderr || 'schema: check failed');
     process.exit(1);
 }
+
+// The world's nodes are core's (scripts/payloads.mjs). A change to how core
+// reads them fails here until they are regenerated with `npm run payloads`.
+const payloads = spawnSync(process.execPath, [resolve(here, 'payloads.mjs'), '--check'], {
+    encoding: 'utf8',
+    env: { ...process.env, STORYFEED_CORE: core },
+});
+
+process.stdout.write(payloads.stdout || '');
+
+if (payloads.status !== 0) {
+    console.error(payloads.stderr || 'payloads: check failed');
+    process.exit(1);
+}

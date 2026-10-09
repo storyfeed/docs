@@ -88,11 +88,23 @@ and supplies it in every pack. It never reaches into one pack.
      follow each axis's shared identities, including context. Grouping never waits on
      wording: a group without one arrives unnamed and opens on its members.
    - `roles` and `scenes`: see the tables above. Scenes name row ids.
-3. Register it in `worlds/index.ts`.
+3. Register it in `worlds/index.ts`, with `payloads` imported from its
+   `payloads.json` (start the file as `{}`), then run `npm run payloads` with
+   `STORYFEED_CORE` pointing at a storyfeed/storyfeed checkout.
 4. Run `npm run test:world`. It checks every registered pack against the
    contract, and it names what is missing or does not do its job.
 5. Select it with `VITE_WORLD_PACK=<name>` at build time, or change the
    default in world.ts.
+
+## Core's nodes
+
+Each row's payload node is Storyfeed's own: `npm run payloads` reads every
+row through core's `array` source, with the pack's verb wording registered as
+definitions, and writes `payloads.json` beside the pack. A row's own
+`headline` and an entity's `media` are laid over core's node in world.ts,
+because a source item has no key for either. Edit a row, then run
+`npm run payloads`; the drift guard fails the build when the file is stale.
+`liveOf()` still folds Live groups for the subsets a page passes it.
 
 ## The anchor
 

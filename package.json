@@ -16,6 +16,7 @@
     "test:memo": "node --test scripts/code-memo.test.mjs",
     "test:world": "node --test scripts/world.test.mjs",
     "schema": "node scripts/schema.mjs",
+    "payloads": "node scripts/payloads.mjs",
     "test:schema": "node --test scripts/schema.test.mjs"
   },
   "devDependencies": {

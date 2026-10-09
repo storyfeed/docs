@@ -154,4 +154,6 @@ export type WorldPack = {
   rows: Row[]
   roles: Roles
   scenes: SceneIds
+  /** Core's payload node for every row, keyed by row id, in core's Log order: `npm run payloads` writes it. */
+  payloads: Record<string, any>
 }
