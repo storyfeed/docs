@@ -160,7 +160,7 @@ You may also filter by a specific role:
 | `->involvingDirectly($model)` | the same, without recorded ancestors; also written `->involving($model, deep: false)` |
 | `->context($shop)` | activities with the shop in the `context` role |
 | `->actor($customer)` | activities performed by the customer |
-| `->object($order)` / `->target($shop)` | activities matching the specified role |
+| `->object($order)` / `->target($shop)` | activities matching the specified role; `origin()`, `result()` and `instrument()` filter the remaining roles the same way |
 | `->objectType(Order::class)` | activities whose object is any order; every role has a `…Type()` method that accepts a model class, a model, a morph alias, or a list of them |
 | `->involvingType(Order::class)` | activities involving any order, as `involving()` does for one model; `deep: false` excludes recorded ancestors |
 

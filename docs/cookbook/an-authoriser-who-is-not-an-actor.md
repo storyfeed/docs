@@ -303,20 +303,18 @@ ledger requirement. Filtering a display feed does not make the ledger atomic.
 
 ## Filtering by App Instrument
 
-To retrieve activities performed using one connected app, constrain its
-polymorphic instrument relation:
+To retrieve activities performed using one connected app, filter by the
+instrument role:
 
 ```php memo="routes/web.php"
 use App\Models\ConnectedApp;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\Models\Builders\ActivityBuilder;
 use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
 
 // Apply the app's authorization middleware to this route.
 Route::get('/connected-apps/{app}/activity', function (ConnectedApp $app) {
     return Storyfeed::feed()
-        ->query(fn (ActivityBuilder $query) => $query
-            ->whereMorphedTo('instrument', $app))
+        ->instrument($app)
         ->log()
         ->get();
 });
@@ -331,8 +329,7 @@ To display only business records while retaining audit activities, filter by
 the object type:
 
 ```php memo="routes/web.php" at="connected-app activity route"
-->query(fn (ActivityBuilder $query) => $query
-    ->whereMorphedTo('instrument', $app))
+->instrument($app)
 ->objectType(\App\Models\MenuItem::class)
 ```
 
