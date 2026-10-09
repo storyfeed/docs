@@ -167,6 +167,7 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
       { text: 'storyfeed.dev', link: 'https://storyfeed.dev' },
       { text: 'Live demo', link: 'https://newsroom.storyfeed.dev' },
+      { text: 'Sponsor', link: 'https://github.com/sponsors/storyfeed' },
       {
         text: 'v0.x',
         items: [

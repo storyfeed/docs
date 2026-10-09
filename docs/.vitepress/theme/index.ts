@@ -6,6 +6,7 @@ import FeedNode from '@storyfeed/ui/FeedNode.vue'
 import SlotMapping from './components/SlotMapping.vue'
 import Annotation from './components/Annotation.vue'
 import StabilityBanner from './components/StabilityBanner.vue'
+import PartnerSponsors from './components/PartnerSponsors.vue'
 import BodyPlaceholder from './components/BodyPlaceholder.vue'
 import FeedExample from './components/FeedExample.vue'
 import SampleLink from './components/SampleLink.vue'
@@ -38,6 +39,7 @@ export default {
   // route rather than only on the pages a reader enters through.
   Layout: () => h(DefaultTheme.Layout, null, {
     'layout-top': () => h(StabilityBanner),
+    'sidebar-nav-after': () => h(PartnerSponsors),
   }),
   enhanceApp({ app }) {
     app.component('FeedStream', FeedStream)
