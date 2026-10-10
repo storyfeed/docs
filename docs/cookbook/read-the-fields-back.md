@@ -8,10 +8,10 @@ more; evidence and detail belong in the body.
 
 ## Naming the Object
 
-Use the object's plain name as its label. In `Storyfeed for Laravel`, the
-object is `Storyfeed` and the target is `Laravel`; the headline template
-supplies `for :target`. A qualifier such as `as a Recommendation` belongs in
-the body.
+Use the object's plain name as its label. When a user accepts an invitation
+to a project, the invitation's label names the invitation and the project's
+label names the project; the headline template supplies `for :target`. A
+qualifier such as `as a reviewer` belongs in the body.
 
 <a id="recording-an-accepted-invitation"></a>
 
