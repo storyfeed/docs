@@ -81,7 +81,7 @@ Each item is an array with these keys:
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | a role (see below) |
 | `starts_at`, `ends_at` | the time range the activity describes |
 | `data` | an array, carried as the activity's `data` |
-| `body` | the object's body: a string, a body, or a list of bodies |
+| `body` | the object's body: a string, a body, or a list of bodies; an item with a `body` needs an `object` |
 | `id` | the activity's payload `id`; derived from the item when absent |
 
 Any other key throws an `InvalidArgumentException`.
@@ -142,7 +142,8 @@ the database.
 ## Writing a Custom Driver
 
 A driver is a class that implements `Storyfeed\Contracts\FeedSource`. Its
-`items` method returns the source's items, as arrays or `SourceItem`s.
+`items` method returns the source's items, as arrays, `SourceItem`s or
+`Storyfeed\Models\Activity` models.
 This driver reads a repository's releases from GitHub:
 
 ```php memo="app/Sources/GitHubSource.php"
@@ -226,7 +227,9 @@ that party name.
 Live groups are worked out from all of the source's items each time the feed
 is read, with the same axes, thresholds and burst windows as stored activities.
 
-## Rendering a Payload You Build Yourself
+<a id="rendering-a-payload-you-build-yourself"></a>
+
+## Rendering a Source's Feed
 
 A source's page renders like any other. Hand it to the Blade kit:
 
