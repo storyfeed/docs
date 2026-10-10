@@ -50,8 +50,10 @@ determines which people and things can share it.
 ],
 ```
 
-A verb's `bursts()` declaration overrides these defaults. A type-and-verb
-declaration takes precedence over a verb-only declaration.
+A verb's `bursts()` declaration overrides both defaults. An argument it leaves
+out is `15 minutes` for `within` or `4 hours` for `ceiling`, not the configured
+value, so pass both when your defaults differ. A type-and-verb declaration
+takes precedence over a verb-only declaration.
 Windows must be positive intervals of at least one second.
 
 See [Custom Axes](/deeper/custom-axes#calendar-periods) for calendar-based grouping.
