@@ -421,33 +421,45 @@ support macros or dynamic property access.
 
 ## `FeedLink`
 
-A `FeedLink` contains a label and an `href`. Bodies accept it wherever
-a piece of text may link to a page.
+A `FeedLink` is where a tap goes: a label, an `href`, and how the renderer
+should open it. An entity's link and the links inside bodies share it.
 
 ```php
 use Storyfeed\FeedLink;
 
 FeedLink::make($label, $url);
 FeedLink::make()->label($label)->href($url);
+FeedLink::to($url)->modal();
+FeedLink::toEntity();
 ```
 
 | Method | Effect |
 |---|---|
-| `make($label, $href)` | create a link with its label and destination |
-| `label(string $label)` | set the text to display |
+| `make($label, $href)` | create a link with its label and destination, for a body |
+| `to($href)` | create a link without a label, for an entity or a call to action |
+| `toEntity($label = null)` | link to the entity the body belongs to, resolved by the renderer when the feed is read |
+| `label($label)` | set the text to display |
 | `href($href)` | set the destination URL |
+| `modal($modal = true)` | hint that the renderer should open the link as a modal |
+| `attributes($key, $value = null)` | add attributes for the rendered link; an array merges |
+
+A link written by `make()` or `to()` without an `href` throws when it is
+stored. The payload is `{label, href, modal, attributes}`; a `toEntity()` link
+has an `href` of `null`.
 
 | Body | Fields That Accept `FeedLink` |
 |---|---|
 | `ItemList` | each entry in `items` (also accepts strings), and `more` |
 | `MediaObject` | `subject` and `footnote` (both also accept strings) |
+| `Table` | any cell |
+| `CallToAction` | the link passed to `action()` (also accepts a string) |
 
 The `href` is stored as written and may become stale if its destination changes
 or a signed URL expires. A plain string remains unlinked.
 
 The label names the thing being linked to; it is not an instruction such as
-“Open the conversation”. See [Links in Bodies](/basics/activity-content#links-in-bodies)
-for examples.
+“Open the conversation”. A call to action's own text is the instruction. See
+[Links in Bodies](/basics/activity-content#links-in-bodies) for examples.
 
 
 ## `FeedMedia`
@@ -457,20 +469,20 @@ Every argument `FeedMedia::make()` takes has a method of the same name.
 ::: code-group
 
 ```php [Fluent Syntax]
-FeedMedia::make()->url($url)->attributes(['target' => '_blank']);
+FeedMedia::make()->url($url);
 // replaces the snapshot label on the item
 FeedMedia::make()->url($url)->label($label);
 // hint the renderer to open as a modal
-FeedMedia::make()->url($url)->modal();
+FeedMedia::make()->link(FeedLink::to($url)->modal()->attributes(['target' => '_blank']));
 FeedMedia::make()->url($url)->preview($thumb)->icon($avatar);
 ```
 
 ```php [Named Arguments]
-FeedMedia::make(url: $url, attributes: ['target' => '_blank']);
+FeedMedia::make(url: $url);
 // replaces the snapshot label on the item
 FeedMedia::make(url: $url, label: $label);
 // hint the renderer to open as a modal
-FeedMedia::make(url: $url, modal: true);
+FeedMedia::make(link: FeedLink::to($url)->modal()->attributes(['target' => '_blank']));
 FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 ```
 
@@ -478,15 +490,18 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 
 | Method | Type | On the Payload |
 |---|---|---|
-| `url()` | string, or a `FeedImage` when the resource is an image | `entity.url` |
+| `url()` | string; short for `link(FeedLink::to($url))` | `entity.link.href` |
+| `link()` | a `FeedLink` made with `to()`, or a string | `entity.link` |
 | `label()` | string | replaces `entity.label` |
-| `attributes()` | array, merged; or a key and a value | `entity.attributes` |
-| `modal()` | bool, default `true` | `entity.modal` |
 | `icon()`, `preview()`, `image()` | `FeedImage`, or a bare src string | `entity.media` |
+| `slot($name, $media)` | a `FeedImage` or `FeedResource` under a name of your own; setting a name again replaces it | `entity.media.slots` |
 | `initials()` | string; blank is `null` | `entity.media.initials` |
 | `color()` | hex string, such as `#438d98`; anything else is `null` | `entity.media.color`, as lowercase `#rrggbb` |
 | `files()` | `FeedResource`s, for a PDF or other non-image resource; each call appends | `entity.media.files` |
 | `body()` | a body, a list, or a closure called when the body is resolved; each call appends | `entity.body`, after the stored bodies |
+
+A slot name is letters, digits, `_` and `-`, starting with a letter. `slot()`
+throws for `icon`, `preview` and `image`, which have their own methods.
 
 ### Modal Links
 
@@ -502,7 +517,18 @@ only when a body names its slot; the entity URL is only a link destination.
 
 ### Image Slots
 
-See [Feed Media](/basics/feed-media#showing-pictures) for the three slots and
+A body shows one of the model's `feedMedia()` pictures by naming its slot.
+`InteractsWithFeed` provides the methods that name one:
+
+| Method | Slot |
+|---|---|
+| `feedMediaIcon()` | `icon` |
+| `feedMediaPreview()` | `preview` |
+| `feedMediaImage()` | `image` |
+| `getFeedMedia($slot)` | a built-in slot by name or `MediaSlot` case, or a custom slot set with `slot()` |
+
+`Image::make()` and `MediaObject::image()` accept the value they return. See
+[Feed Media](/basics/feed-media#showing-pictures) for the three slots and
 their Activity Streams meanings.
 
 ### Rich Content
