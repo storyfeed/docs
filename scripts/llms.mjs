@@ -15,7 +15,7 @@
  * refers to something they cannot see. So each one becomes a visible marker
  * naming what was there and where to look at it.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -32,7 +32,8 @@ const sidebar = config.slice(config.indexOf('sidebar'))
 const routes = [...new Set(
   [...sidebar.matchAll(/'(\/[a-z0-9/-]+)'/g)]
     .map((m) => m[1].replace(/^\//, ''))
-    .filter((r) => r && !r.includes('#') && existsSync(join(docs, r + '.md'))),
+    // R&D pages are local-only and never built (config.ts), so never exported.
+    .filter((r) => r && !r.includes('#') && !r.startsWith('rnd/') && existsSync(join(docs, r + '.md'))),
 )]
 
 const COMPONENTS = 'FeedStream|FeedNode|FeedBody|SlotMapping|Annotation'
@@ -107,5 +108,15 @@ const out = join(docs, 'public')
 mkdirSync(out, { recursive: true })
 writeFileSync(join(out, 'llms.txt'), index)
 writeFileSync(join(out, 'llms-full.txt'), full)
+// The plain-text copy of each page llms.txt links to, at <page>.md beside the
+// page itself. Built here and copied into dist by config.ts (buildEnd), since a
+// .md file under docs/public would be read as a page of its own.
+const copies = join(docs, '.vitepress/llms')
+rmSync(copies, { recursive: true, force: true })
+for (const p of pages) {
+  mkdirSync(dirname(join(copies, p.route)), { recursive: true })
+  writeFileSync(join(copies, p.route + '.md'), p.body + '\n')
+}
+
 console.log(`llms.txt: ${pages.length} pages, ${index.length} bytes`)
 console.log(`llms-full.txt: ${(full.length / 1024).toFixed(0)} KB`)

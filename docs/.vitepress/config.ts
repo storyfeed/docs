@@ -8,7 +8,7 @@ import { uiResolve, uiSource } from '../../scripts/ui-kit.mjs'
 const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 import { createHighlighter } from 'shiki'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { REDIRECTS, redirectPage } from './redirects.ts'
 
@@ -48,13 +48,17 @@ export default defineConfig({
   // convention somebody can defeat with `git add -f`.
   srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
 
-  // A page at every old URL, sending the reader on (see redirects.ts).
+  // A page at every old URL, sending the reader on (see redirects.ts), and
+  // the plain-text pages llms.txt links to.
   buildEnd({ outDir, srcDir }) {
     for (const [from, to] of Object.entries(REDIRECTS)) {
       const title = readFileSync(join(srcDir, `${to.split('#')[0]}.md`), 'utf8').match(/^# (.+)$/m)![1]
       mkdirSync(dirname(join(outDir, from)), { recursive: true })
       writeFileSync(join(outDir, `${from}.html`), redirectPage(to, title))
     }
+    // Each page's plain-text copy, which llms.txt links to (scripts/llms.mjs).
+    const copies = join(srcDir, '.vitepress/llms')
+    if (existsSync(copies)) cpSync(copies, outDir, { recursive: true })
   },
 
   markdown: {
