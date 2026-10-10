@@ -72,7 +72,7 @@ activities without a recorded actor.
 | Key | Default | Description |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | when disabled, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `keep_latest.delete` | `'soft'` | how [`keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) deletes superseded activities. `'soft'` soft-deletes them until `storyfeed:prune` removes them; `'force'` deletes them immediately. Any other value throws when publishing |
+| `keep_latest.delete` | `'soft'` | how [`keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) deletes superseded activities. `'soft'` soft-deletes them, and [`storyfeed:prune`](/reference/commands#scheduled) removes them once they pass their retention window; `'force'` deletes them immediately. Any other value throws when publishing |
 
 ### Verbs
 
@@ -102,7 +102,7 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats |
 | `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
-| `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` axis |
+| `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` and `actors_target` axes |
 | `grouping.policy.min_targets` | `2` | distinct targets required for `targets` |
 | `grouping.policy.min_target_members` | `3` | activities required for `targets` |
 | `grouping.policy.min_object_members` | `2` | activities required for `object` |
@@ -157,6 +157,16 @@ These keys identify shared roles within built-in Live bursts. See
 |---|---|---|
 | `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the current model, with one query per class per page. When disabled, it returns `null` for your resolver to handle |
 
+## Snapshots
+
+| Key | Default | Description |
+|---|---|---|
+| `snapshots.compile` | `env('STORYFEED_SNAPSHOTS', 'cached')` | when `toFeed()` output is recompiled. `'cached'`: `php artisan optimize` recompiles the snapshots of the newest 1,000 activities ([`storyfeed:cache-snapshots`](/reference/commands#rebuilding-snapshots)) and `storyfeed:trickle` catches up the rest. `'sync'`: when a feedable model or Story class file changes, the next feed read runs that same pass once. Any other value throws |
+
+[`storyfeed:install`](/reference/commands#installing-storyfeed) writes
+`STORYFEED_SNAPSHOTS=sync` to `.env`. The doctor warns when `sync` is set
+outside local and testing; see [Available Checks](/reference/doctor#available-checks).
+
 <span id="as2-0-routes"></span>
 
 ## Activity Streams Routes
@@ -175,7 +185,7 @@ These keys identify shared roles within built-in Live bursts. See
 | `curate.window` | `2` | days included in scheduled grouping; raise this to cover any longer burst ceiling. Custom calendar axes widen it for their verbs. `null` or `0` includes all activities |
 | `prune.after_days` | `null` | default [retention period](/deeper/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
 | `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |
-| `trickle.prune` | `false` | delete activities with an unresolvable role; otherwise count them |
+| `trickle.prune` | `false` | soft-delete activities with an unresolvable role; otherwise count them |
 
 ## Diagnostics
 
