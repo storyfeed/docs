@@ -113,3 +113,94 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::verbs(Act::only(Act::Create, Act::Confirm));
 Storyfeed::verbs(ShopActivity::class);
 ```
+
+### Replacing the Registered Verbs
+
+Pass `merge: false` to replace every registered verb, the shipped defaults
+included, with the given map:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\Enums\ShopActivity;
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::verbs(ShopActivity::class, merge: false);
+```
+
+## Verb Enums
+
+A backed string enum that implements `Storyfeed\Contracts\FeedVerb` can be
+registered with `Storyfeed::verbs(ShopActivity::class)` and passed wherever a
+verb is accepted. See [Publishing From an Enum Case](/basics/verbs#publishing-from-an-enum-case).
+
+### The `FeedVerb` Contract
+
+| Method | Returns |
+|---|---|
+| `verb()` | the verb string stored on the activity |
+| `activityType()` | an `ActivityType` case, an extension type string kept as given, or `null` |
+
+When `activityType()` returns `null`, registering the enum maps the case to the
+type of the [default verb](#unregistered-verbs) with the same name, or to
+`Activity` when there is none.
+
+### `AsFeedVerb` Methods
+
+The `Storyfeed\Concerns\AsFeedVerb` trait implements the contract: `verb()`
+returns the case's value and `activityType()` returns `null`. Override
+`activityType()` to declare a type. The trait also adds these methods to each
+case:
+
+| Method | Returns |
+|---|---|
+| `of($object = null)` | a `PendingActivity` with this verb and the object |
+| `anonymous($object = null)` | the same, with no actor recorded |
+| `publish($object = null)` | the published `Activity` |
+| `record(object:, actor:, target:, …)` | the published `Activity`; takes the named arguments of `Storyfeed::record()`, except `verb` and `anonymous` |
+| `by()`, `to()`, `object()`, `data()`, and the other `PendingActivity` methods | a `PendingActivity` with this verb, after calling that method on it |
+
+## Unregistered Verbs
+
+Storyfeed registers these 29 verbs without a `Storyfeed::verbs()` call:
+
+| Activity type | Verbs |
+| --- | --- |
+| `Accept` | `accept` |
+| `Add` | `add` |
+| `Announce` | `announce`, `share` |
+| `Arrive` | `arrive` |
+| `Block` | `block` |
+| `Create` | `create` |
+| `Delete` | `delete` |
+| `Dislike` | `dislike` |
+| `Flag` | `flag` |
+| `Follow` | `follow` |
+| `Ignore` | `ignore` |
+| `Invite` | `invite` |
+| `Join` | `join` |
+| `Leave` | `leave` |
+| `Like` | `like` |
+| `Listen` | `listen` |
+| `Move` | `move` |
+| `Offer` | `offer` |
+| `Question` | `question` |
+| `Read` | `read` |
+| `Reject` | `reject` |
+| `Remove` | `remove` |
+| `TentativeAccept` | `tentativeAccept` |
+| `TentativeReject` | `tentativeReject` |
+| `Travel` | `travel` |
+| `Undo` | `undo` |
+| `Update` | `update` |
+| `View` | `view` |
+
+Publishing any other verb before it is registered depends on
+[`verbs.strict`](/reference/configuration#verbs):
+
+| `verbs.strict` | Result |
+|---|---|
+| `true`, or `null` in the `local` and `testing` environments | throws `Storyfeed\Exceptions\UnknownVerb` |
+| `false`, or `null` in other environments | publishes; the activity serializes as `"type": "Activity"` |
+
+A verb containing a dot throws `Storyfeed\Exceptions\DottedVerb` when it is
+registered, declared or published, whatever `verbs.strict` says. See
+[Naming Verbs](/cookbook/choosing-a-verb#naming-a-verb).
