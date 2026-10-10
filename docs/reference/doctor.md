@@ -443,7 +443,8 @@ queries required per page.
 | `grouping.ungrouped` | warning | activities have no grouping records and can only appear individually; run `storyfeed:curate --rehash` |
 | `grouping.uncurated` | warning | activities have eligible groups, but no group has been selected for display, so the query returns repeat groups. Skipped when `grouping.curate` is false |
 
-This check is skipped when `grouping.curate` is false. It counts all eligible
+`grouping.uncurated` is skipped when `grouping.curate` is false;
+`grouping.ungrouped` still runs. `grouping.uncurated` counts all eligible
 activities awaiting group selection, excluding composites.
 The finding separates activities within the scheduled command's time window
 from older activities that require `storyfeed:curate` without a time limit.
