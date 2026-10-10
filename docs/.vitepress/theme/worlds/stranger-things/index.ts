@@ -212,7 +212,8 @@ const invoice = (n: number) => entity('invoice', String(n), `Scoops Ahoy invoice
 // ── Photographs ──────────────────────────────────────────────────────────────
 // Free photos from Unsplash (unsplash.com/license), self-hosted under
 // public/media/worlds/stranger-things/, 960x720. Stock pictures of ordinary
-// things, never of the show: no brands, logos or recognisable faces.
+// things, never of the show: no brands, logos or recognisable faces. Portraits
+// (256x256, under avatars/) are ordinary people, never the actors.
 // Kept inside the pack so another world supplies its own media.
 export const PHOTO_CREDITS: Record<string, { photographer: string, profile: string, photo: string }> = {
   sundae: { photographer: 'Molly Keesling', profile: 'https://unsplash.com/@mollysuek', photo: 'https://unsplash.com/photos/7YhrOw6Kngo' },
@@ -228,6 +229,17 @@ export const PHOTO_CREDITS: Record<string, { photographer: string, profile: stri
   darkroom: { photographer: 'Vladimir Fedotov', profile: 'https://unsplash.com/@fedotov_vs', photo: 'https://unsplash.com/photos/RSN0hnHOclQ' },
   newspapers: { photographer: 'Jonathan Gong', profile: 'https://unsplash.com/@jonathangongphotography', photo: 'https://unsplash.com/photos/izRQ870yJO8' },
   street: { photographer: 'Nils Huenerfuerst', profile: 'https://unsplash.com/@nhuenerfuerst', photo: 'https://unsplash.com/photos/pBmOfkly5eg' },
+  // Portraits, under avatars/ (see PORTRAITS below).
+  scout: { photographer: 'Kindred Hues Photography', profile: 'https://unsplash.com/@kindredhues', photo: 'https://unsplash.com/photos/Vw07IRhemag' },
+  linguist: { photographer: 'Filipp Romanovski', profile: 'https://unsplash.com/@filipp_roman_photography', photo: 'https://unsplash.com/photos/CGKYNN3uuVo' },
+  radio: { photographer: 'Lesli Whitecotton', profile: 'https://unsplash.com/@lnicolern', photo: 'https://unsplash.com/photos/zjXQJLHjkF8' },
+  scooper: { photographer: 'Erik Lucatero', profile: 'https://unsplash.com/@erik_lucatero', photo: 'https://unsplash.com/photos/d2MSDujJl2g' },
+  clerk: { photographer: 'Davide Aracri', profile: 'https://unsplash.com/@davieees', photo: 'https://unsplash.com/photos/0NDVW4wO1Ms' },
+  chief: { photographer: 'Lance Reis', profile: 'https://unsplash.com/@lancereis', photo: 'https://unsplash.com/photos/TTdJV-K1IUg' },
+  slinger: { photographer: 'Bonnie Musweswe', profile: 'https://unsplash.com/@thefreshprinceofpretoria', photo: 'https://unsplash.com/photos/0TuRtylgAtQ' },
+  skater: { photographer: 'Jennifer Burk', profile: 'https://unsplash.com/@jenandjoon', photo: 'https://unsplash.com/photos/o5NBw8GTnMc' },
+  investigator: { photographer: 'Vidak', profile: 'https://unsplash.com/@vidak', photo: 'https://unsplash.com/photos/Si5f1I73nkw' },
+  poolside: { photographer: 'Meg Wagener', profile: 'https://unsplash.com/@megwagener', photo: 'https://unsplash.com/photos/M7fbJyBuAag' },
 }
 const ALT: Record<string, string> = {
   sundae: 'A sundae with whipped cream, sauce and a cherry',
@@ -256,6 +268,14 @@ for (const [key, file] of Object.entries(photographed)) things[key] = { ...thing
 venues.scoops = { ...venues.scoops, media: mediaOf('parlour'), body: [...(venues.scoops.body ?? []), ...imageBody(venues.scoops.label)] }
 fare.pretzel = { ...fare.pretzel, media: mediaOf('pretzel'), body: [...(fare.pretzel.body ?? []), ...imageBody(fare.pretzel.label)] }
 fare.hotDog = { ...fare.hotDog, media: mediaOf('hotdog'), body: [...(fare.hotDog.body ?? []), ...imageBody(fare.hotDog.label)] }
+// Portraits for the people the examples show most: stock photos of ordinary
+// people standing in for the cast, never the actors, cropped square to 256x256.
+// The rest of the cast keep initials, so examples still show the fallback.
+// The alt is null so the avatar reads as the person's name.
+const PORTRAITS = ['scout', 'linguist', 'radio', 'scooper', 'clerk', 'chief', 'slinger', 'skater', 'investigator', 'poolside'] as const
+for (const key of PORTRAITS) cast[key] = { ...cast[key], media: { ...cast[key].media, initials: null, color: null,
+  icon: { src: `/media/worlds/stranger-things/avatars/${key}.jpg`, mediaType: 'image/jpeg', width: 256, height: 256, alt: null } } }
+
 // The photo belongs to the photo activity; the menu item's own preview is its
 // details card (set with the other bodies above).
 const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { media: mediaOf('sundae'), body: imageBody(fare.butterscotch.label) })

@@ -45,8 +45,13 @@ const props = withDefaults(
          * length. The caption and the payload bar stay put.
          */
         height?: number | string
+        /**
+         * Leave out the payload bar, for one of a run of variants drawn from
+         * the same nodes, where one bar per card would only repeat itself.
+         */
+        hidePayload?: boolean
     }>(),
-    { expanded: false, label: 'Payload', context: false, payload: false, paginated: false, days: false },
+    { expanded: false, label: 'Payload', context: false, payload: false, paginated: false, days: false, hidePayload: false },
 )
 
 const maxHeight = computed(() => {
@@ -184,7 +189,7 @@ async function copy() {
             </slot>
         </div>
 
-        <div class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
+        <div v-if="!hidePayload" class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
             <button
                 v-if="!payload"
                 type="button"
@@ -244,6 +249,24 @@ async function copy() {
 }
 .sf-example__caption :deep(p) {
     margin: 0;
+}
+/* A caption that is the code producing the example stays one line, and
+   scrolls inside the bar where the page is too narrow for it. */
+.sf-example__caption:has(.sf-inline-code) {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.sf-example__caption :deep(.sf-inline-code) {
+    white-space: nowrap;
+}
+/* Code in a caption is part of the sentence: its tokens sit on the bar like
+   text, without the chip inline code wears in prose. */
+.sf-example__caption :deep(code) {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: 0.93em;
+    color: var(--vp-c-text-1);
 }
 .sf-example__caption :deep(strong) {
     color: var(--vp-c-text-1);
