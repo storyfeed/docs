@@ -411,6 +411,15 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ React — `ui/react`
 - ✅ Customizing the Kits — `ui/customizing`
 - ✅ Custom Rendering — `ui/custom-rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
+- ✅ Blade Components — `ui/reference/blade`: every component, attribute, slot and renderer
+- ✅ Vue Components — `ui/reference/vue`: every component, prop, slot, event and injection key
+- ✅ React Components — `ui/reference/react`: every component, prop, render prop and provider option
+- ✅ Pages, Rails and Styles — `ui/reference/options`: page shapes, rails, dividers, group state, CSS variables
+
+The four reference pages are exhaustive and checked against the kits' source
+(`scripts/ui-reference.mjs`, part of `npm run build`): a documented name or
+default the kit doesn't have fails the build. The kit pages above them teach
+the one obvious path and link here.
 
 ### Recording in Depth
 
