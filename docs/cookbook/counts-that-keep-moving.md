@@ -1,3 +1,18 @@
+---
+title: Counts That Keep Moving
+sidebar: false
+outline: false
+head:
+  - - meta
+    - http-equiv: refresh
+      content: '0; url=/cookbook/computed-values'
+  - - link
+    - rel: canonical
+      href: https://docs.storyfeed.dev/cookbook/computed-values
+---
+
+# Counts That Keep Moving
+
 <a id="recording-counts"></a>
 <a id="choosing-counts-to-resolve"></a>
 <a id="choosing-fixed-or-live-counts"></a>
