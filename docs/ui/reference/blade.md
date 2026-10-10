@@ -31,7 +31,7 @@ A page of the feed: day headings, each item, then a link to older activity.
 | `rail` | `null` | a [rail](/ui/reference/options#rails); `null` draws `actor-only` |
 | `child-rail` | `null` | the rail for expanded group members; `null` inherits the group's |
 | `dividers` | `[]` | labels keyed by item id, drawn on the rail before those items |
-| `divider-style` | `'dot'` | how a divider meets the rail: `dot` or `branch` |
+| `divider-style` | `'branch'` | how a divider meets the rail: `branch` or `dot` |
 | `interactive` | `true` | `false` draws groups without a disclosure control |
 | `collapsed` | `null` | the initial group state; see [Group State](/ui/reference/options#group-state) |
 | `timezone` | `null` | the zone for day headings, timestamps and time ranges; `null` uses the app's |
@@ -85,7 +85,7 @@ A label on the rail, drawn like a day heading.
 | Attribute | Default | Accepts |
 |---|---|---|
 | `label` | | the text |
-| `divider-style` | `'dot'` | `dot` or `branch` |
+| `divider-style` | `'branch'` | `branch` or `dot` |
 
 ## Rows
 
