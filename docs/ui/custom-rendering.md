@@ -8,7 +8,7 @@ import FeedHeadline from '@storyfeed/ui/FeedHeadline.vue'
 import EntityLink from '@storyfeed/ui/EntityLink.vue'
 import FeedIcon from '@storyfeed/ui/FeedIcon.vue'
 import { useRelativeTime } from '@storyfeed/ui/useRelativeTime'
-import { scene, liveOf, avatar } from '../.vitepress/theme/world'
+import { scene, liveOf, avatar, everything } from '../.vitepress/theme/world'
 
 const one = scene.order
 const time = useRelativeTime(computed(() => one.published_at))
@@ -16,6 +16,7 @@ const grouped = liveOf(scene.cookbook.grouped.actors)[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
 const complete = scene.basics.feedFile.completed
+const intents = ['success', 'pending'].map((intent) => everything().find((item) => item.glyph_intent === intent))
 const degraded = { ...scene.order, actor: null,
   object: { ...scene.order.object, label: null, link: null, media: avatar(scene.order.object.type, scene.order.object.id, null) } }
 const content = scene.basics.activityContent
@@ -165,7 +166,9 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 ```blade memo="resources/views/components/feed/activity.blade.php"
 @use('Storyfeed\Support\Entity')
 
-{!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
+{!! $activity->headline()->toHtml(
+    fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>'
+) !!}
 ```
 
 <FeedExample :items="[one]">
@@ -207,15 +210,19 @@ The `glyph` method returns the registered icon identifier, such as
 
 The `intent` method returns the application-defined value used to style the icon:
 
-<FeedExample :items="[complete, one]">
+<FeedExample :items="intents">
   <template #preview>
-    <FeedIcon :icon="complete.glyph" :intent="complete.glyph_intent" />
-    <FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+    <div class="flex flex-col gap-3">
+      <div v-for="item in intents" :key="item.id" class="flex items-center gap-3">
+        <FeedIcon :icon="item.glyph" :intent="item.glyph_intent" />
+        <code>{{ item.glyph_intent }}</code>
+      </div>
+    </div>
   </template>
 </FeedExample>
 
 Define intent values with the verb's
-[`intent` method](/basics/the-feed-file#adding-an-icon). Storyfeed provides no
+[`intent`](/basics/the-feed-file#adding-an-icon) method. Storyfeed provides no
 default values or colours and does not validate these strings. Map values such
 as `success`, `pending`, and `danger` to your CSS, for example with a
 `[data-intent="success"]` selector.
@@ -230,17 +237,20 @@ Combine the icon, headline, and timestamp in the activity component:
 ```blade memo="resources/views/components/feed/activity.blade.php"
 @props(['activity'])
 
-<article {{ $attributes }}>
-    <x-feed.glyph :glyph="$activity->glyph()" :intent="$activity->intent()" />
-    <div>{{ $activity->headline() }}</div>
+<article {{ $attributes->class('flex items-center gap-3') }}>
+    <x-feed.glyph
+        :glyph="$activity->glyph()"
+        :intent="$activity->intent()"
+    />
+    <div class="flex-1">{{ $activity->headline() }}</div>
     <x-feed.time :at="$activity->publishedAt()" />
 </article>
 ```
 
 <FeedExample :items="[one]">
   <template #preview>
-    <article><FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
-      <div><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></div>
+    <article class="flex items-center gap-3"><FeedIcon :icon="one.glyph" :intent="one.glyph_intent" />
+      <div class="flex-1"><FeedHeadline :template="one.headline_template" :headline="one.headline" :entities="one" :verb="one.verb" /></div>
       <time :datetime="one.published_at">{{ time.label.value }}</time>
     </article>
   </template>
@@ -261,7 +271,10 @@ and headline tokens.
 @props(['group'])
 
 <article {{ $attributes }}>
-    <x-feed.glyph :glyph="$group->glyph()" :intent="$group->intent()" />
+    <x-feed.glyph
+        :glyph="$group->glyph()"
+        :intent="$group->intent()"
+    />
     <div>{{ $group->headline() }}</div>
     <x-feed.time :at="$group->publishedAt()" />
 
