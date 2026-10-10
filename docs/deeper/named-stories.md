@@ -72,7 +72,8 @@ The `story` helper accepts a name, like Laravel's `route` helper.
 You may also use `Storyfeed::route('order.place', $order)`, as you would use
 Laravel's `URL::route()`.
 
-An unknown name throws `Story [x] not defined.` An object with the wrong morph
+An unknown name throws `Storyfeed\Exceptions\StoryNotFound`, with the
+message `Story [x] not defined.` An object with the wrong morph
 type throws `StoryObjectMismatch`. Both methods require a registered name.
 To publish an unnamed order-placement verb, use
 `Storyfeed::activity('place', $order)`.
@@ -212,6 +213,7 @@ alternative option on the resource declaration:
 |---|---|
 | `->names('checkout')` | `checkout.create`, `checkout.update`, and the other verbs under `checkout` |
 | `->names(['confirm' => 'checkout.confirm'])` | only `confirm` is renamed |
+| `->name('confirm', 'checkout.confirm')` | only `confirm` is renamed; call it once per verb |
 
 These change only the names. The stored verb is still `confirm`, the snake_cased
 name of the `OrderStory::confirm()` method.
