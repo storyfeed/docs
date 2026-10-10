@@ -89,59 +89,151 @@ class OrderController extends Controller
 
 ## Preserving an Actor in Background Work
 
-A job dispatched from an authenticated request carries that user. A job
-started by a console command or scheduler has no authenticated user. To
-record the person who acted, pass that user to the event or job and call `by()`:
+A job dispatched from an authenticated request publishes as that user. A job
+started by a console command or the scheduler has no authenticated user. To
+record the person who acted, pass that user to the job and call `by()`:
 
-```php memo="app/Events/OrderPlaced.php"
+::: code-group
+```php [Fluent Syntax] memo="app/Jobs/PlaceOrder.php"
 <?php
 
-namespace App\Events;
+namespace App\Jobs;
 
 use App\Models\Order;
 use App\Models\User;
-use Storyfeed\Contracts\PublishesToFeed;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Storyfeed\Facades\Storyfeed;
-use Storyfeed\PendingActivity;
 
-class OrderPlaced implements PublishesToFeed
+class PlaceOrder implements ShouldQueue
 {
+    use Queueable;
+
     public function __construct(public Order $order, public User $customer) {}
 
-    public function toFeedActivity(): ?PendingActivity
+    public function handle(): void
     {
-        return Storyfeed::activity()
-            ->by($this->customer) // the actor travels on the event
+        $this->order->update(['status' => 'placed']);
+
+        Storyfeed::activity()
+            ->by($this->customer) // the actor travels with the job
             ->action('place', $this->order)
-            ->to($this->order->shop);
+            ->to($this->order->shop)
+            ->publish();
     }
 }
 ```
 
-It records the same activity as the controller above.
+```php [Named Arguments] memo="app/Jobs/PlaceOrder.php"
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Storyfeed\Facades\Storyfeed;
+
+class PlaceOrder implements ShouldQueue
+{
+    use Queueable;
+
+    public function __construct(public Order $order, public User $customer) {}
+
+    public function handle(): void
+    {
+        $this->order->update(['status' => 'placed']);
+
+        Storyfeed::record(
+            verb: 'place',
+            object: $this->order,
+            actor: $this->customer, // the actor travels with the job
+            target: $this->order->shop,
+        );
+    }
+}
+```
+:::
+
+<FeedExample :items="[placed]" />
+
+See [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs)
+for the user and scopes a queued job inherits.
 
 ## Recording a System Actor
 
+Pass a string to `by()` to record a named party, such as the payment service
+that confirmed the payment:
+
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Jobs/MarkOrderPaid.php"
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by('Stripe')
-    ->action('pay', $order)
-    ->publish();
+class MarkOrderPaid implements ShouldQueue
+{
+    use Queueable;
+
+    public function __construct(public Order $order) {}
+
+    public function handle(): void
+    {
+        $this->order->update(['status' => 'paid']);
+
+        Storyfeed::activity()
+            ->by('Stripe')
+            ->action('pay', $this->order)
+            ->publish();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Jobs/MarkOrderPaid.php"
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Order;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'pay',
-    object: $order,
-    actor: 'Stripe',
-);
+class MarkOrderPaid implements ShouldQueue
+{
+    use Queueable;
+
+    public function __construct(public Order $order) {}
+
+    public function handle(): void
+    {
+        $this->order->update(['status' => 'paid']);
+
+        Storyfeed::record(
+            verb: 'pay',
+            object: $this->order,
+            actor: 'Stripe',
+        );
+    }
+}
 ```
 :::
+
+Define the headline for the verb:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('pay')
+    ->headline(':actor marked :object paid');
+```
 
 <FeedExample :items="[paid]" />
 
@@ -157,18 +249,51 @@ throughout a job. Parties can also fill
 This scheduled command expires unpaid orders without recording an actor.
 Call `Storyfeed::anonymous()` to make that choice explicit:
 
-```php
+```php memo="app/Console/Commands/ExpireUnpaidOrders.php"
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Order;
+use Illuminate\Console\Command;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
-    ->action('expire', $order)
-    ->to($order->shop)
-    ->publish();
+class ExpireUnpaidOrders extends Command
+{
+    protected $signature = 'orders:expire';
+
+    protected $description = 'Expire orders that were not paid within a day';
+
+    public function handle(): void
+    {
+        Order::query()
+            ->where('status', 'placed')
+            ->where('created_at', '<', now()->subDay())
+            ->each(function (Order $order) {
+                $order->update(['status' => 'expired']);
+
+                Storyfeed::anonymous() // no actor, even inside Storyfeed::actor()
+                    ->action('expire', $order)
+                    ->to($order->shop)
+                    ->publish();
+            });
+    }
+}
+```
+
+Define a headline that omits `:actor`:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('expire')
+    ->headline(':object expired at :target');
 ```
 
 <FeedExample :items="[expired]" />
 
-The `expire` headline omits `:actor`. See
+See
 [Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities)
 for the available APIs and [Anonymous Headlines](/deeper/parties#anonymous-headlines)
 for wording when no actor is recorded.
