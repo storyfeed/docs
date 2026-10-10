@@ -7,6 +7,20 @@ import { uiResolve, uiSource } from '../../scripts/ui-kit.mjs'
 // of every build, and absent from the sidebar the llms script reads.
 const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
+import { createHighlighter } from 'shiki'
+
+// Inline code's highlighter (see code_inline below), with VitePress's own
+// colour replacements so a token matches the same token in a code block.
+const INLINE_LANGS = ['css', 'attrs']
+const inlineHighlighter = await createHighlighter({ themes: ['github-light', 'github-dark'], langs: ['css', 'html'] })
+const colorReplacements = {
+  'github-light': {
+    '#959da5': '#6c676f', '#28a745': '#0e790b', '#b08800': '#846312', '#e36209': '#c13617',
+    '#3192aa': '#05728b', '#d73a49': '#c62739', '#22863a': '#11782a', '#6a737d': '#62687b',
+    '#1b7c83': '#06747a', '#0366d6': '#0663d0', '#cb2431': '#c82430',
+  },
+  'github-dark': { '#586069': '#5b93a3', '#6a737d': '#818e99', '#ea4a5a': '#ef5564', '#2188ff': '#268bf9' },
+}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -99,6 +113,35 @@ export default defineConfig({
         // Keep button → language → pre siblings intact for VitePress's copy handler.
         return html.replace(/^(<div class="[^"]*)"([^>]*>)/,
           (_, opening, closing) => `${opening} sf-code-memo"${closing}${memoBar(memo, at)}`)
+      }
+
+      /*
+       * Highlighted inline code: `.sf-feed { --sf-gap: 2rem; }`{css} runs the
+       * span through Shiki with the code blocks' themes and colours.
+       * `{attrs}` is for a component's attributes alone, `rail="activity"`,
+       * which no grammar reads outside a tag: they are highlighted inside one
+       * and the tag's tokens are dropped again. VitePress's own highlighter is
+       * async and markdown-it's inline renderer is not, hence a second one.
+       */
+      const codeInline = md.renderer.rules.code_inline!
+      md.renderer.rules.code_inline = (tokens, idx, options, env, self) => {
+        const token = tokens[idx]
+        const lang = INLINE_LANGS.find((name) => token.attrGet(name) !== null)
+        if (!lang) return codeInline(tokens, idx, options, env, self)
+        token.attrs = token.attrs!.filter(([name]) => name !== lang)
+        const attrs = lang === 'attrs'
+        const [line] = inlineHighlighter.codeToTokens(attrs ? `<a ${token.content}>` : token.content, {
+          lang: attrs ? 'html' : lang, themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: false, colorReplacements,
+        }).tokens
+        const kept = attrs ? line.slice(2, -1) : line
+        if (attrs && (line[1]?.content !== 'a' || line.at(-1)?.content !== '>')) {
+          throw new Error(`Inline attrs did not highlight as attributes: ${token.content}`)
+        }
+        const spans = kept.filter((t) => t.content.trim() !== '' || t !== kept[0]).map((t) => {
+          const style = Object.entries(t.htmlStyle ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
+          return `<span style="${style}">${md.utils.escapeHtml(t.content)}</span>`
+        })
+        return `<code class="shiki sf-inline-code" v-pre>${spans.join('').replace(/^(<span[^>]*>)\s+/, '$1')}</code>`
       }
 
       /*

@@ -49,13 +49,29 @@ The rail is the column on the left of each row: a disc and, on it, a badge.
 | `actor-only` | the actor's avatar | none |
 | `activity-only` | the activity's icon | none |
 
-<FeedExample hide-payload :items="order" rail="actor"><code>rail="actor"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="actor">
 
-<FeedExample hide-payload :items="order" rail="activity"><code>rail="activity"</code></FeedExample>
+`rail="actor"`{attrs}
 
-<FeedExample hide-payload :items="order" rail="actor-only"><code>rail="actor-only"</code></FeedExample>
+</FeedExample>
 
-<FeedExample hide-payload :items="order" rail="activity-only"><code>rail="activity-only"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="activity">
+
+`rail="activity"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="order" rail="actor-only">
+
+`rail="actor-only"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="order" rail="activity-only">
+
+`rail="activity-only"`{attrs}
+
+</FeedExample>
 
 Rows default to `actor-only` and expanded group members to `activity-only`.
 Members follow `child-rail` when it is set, else their group's rail, and draw
@@ -63,15 +79,35 @@ no badge. A row without the disc's subject draws the other one, then a blank
 disc. A row with several actors draws two faces in the disc and never a face
 badge.
 
-<FeedExample hide-payload :items="orders" :collapsed="false"><code>rail</code> unset</FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="false">
 
-<FeedExample hide-payload :items="orders" rail="actor" :collapsed="false"><code>rail="actor"</code></FeedExample>
+`rail`{attrs} unset
 
-<FeedExample hide-payload :items="orders" rail="actor" child-rail="activity-only" :collapsed="false"><code>rail="actor" child-rail="activity-only"</code></FeedExample>
+</FeedExample>
 
-<FeedExample hide-payload :items="anonymous" rail="actor"><code>rail="actor"</code>, no actor</FeedExample>
+<FeedExample hide-payload :items="orders" rail="actor" :collapsed="false">
 
-<FeedExample hide-payload :items="crowd" rail="actor" collapsed><code>rail="actor"</code>, several actors</FeedExample>
+`rail="actor"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="orders" rail="actor" child-rail="activity-only" :collapsed="false">
+
+`rail="actor" child-rail="activity-only"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="anonymous" rail="actor">
+
+`rail="actor"`{attrs}, no actor
+
+</FeedExample>
+
+<FeedExample hide-payload :items="crowd" rail="actor" collapsed>
+
+`rail="actor"`{attrs}, several actors
+
+</FeedExample>
 
 Vue and React also take a rail as `{ primary, secondary }`, each slot one of
 `actor`, `activity` or `none`, the two never the same.
@@ -86,9 +122,17 @@ Vue and React also take a rail as `{ primary, secondary }`, each slot one of
 The style applies to day headings and to the labels in `dividers`. `dividers`
 is keyed by item id: `{ "01K…": "Timeline" }`.
 
-<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="branch"><code>divider-style="branch"</code></FeedExample>
+<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="branch">
 
-<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="dot"><code>divider-style="dot"</code></FeedExample>
+`divider-style="branch"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="dot">
+
+`divider-style="dot"`{attrs}
+
+</FeedExample>
 
 ## Group State
 
@@ -100,13 +144,29 @@ is keyed by item id: `{ "01K…": "Timeline" }`.
 | `false` | `null` | open, with no disclosure control |
 | `false` | `true` | closed, with no disclosure control; members stay in the HTML for printing |
 
-<FeedExample hide-payload :items="orders" :collapsed="true"><code>collapsed: true</code></FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="true">
 
-<FeedExample hide-payload :items="orders" :collapsed="false"><code>collapsed: false</code></FeedExample>
+`:collapsed="true"`{attrs}
 
-<FeedExample hide-payload :items="orders" :interactive="false"><code>interactive: false</code></FeedExample>
+</FeedExample>
 
-<FeedExample hide-payload :items="orders" :interactive="false" :collapsed="true"><code>interactive: false, collapsed: true</code></FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="false">
+
+`:collapsed="false"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="orders" :interactive="false">
+
+`:interactive="false"`{attrs}
+
+</FeedExample>
+
+<FeedExample hide-payload :items="orders" :interactive="false" :collapsed="true">
+
+`:interactive="false" :collapsed="true"`{attrs}
+
+</FeedExample>
 
 A group whose node has `expanded: true` opens in every case. Expanding shows
 the members the node carries; it fetches nothing.
@@ -126,91 +186,91 @@ The feed's body text. The other sizes follow it, and so do Tailwind's
 your own slot content on those utilities scales with the feed. Defaults to
 `1rem`.
 
-```css
-.sf-feed { --sf-font-size: 1.25rem; }
-```
+<FeedExample :items="order" rail="actor" style="--sf-font-size: 1.25rem">
 
-<FeedExample :items="order" rail="actor" style="--sf-font-size: 1.25rem" />
+`.sf-feed { --sf-font-size: 1.25rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-gutter`
 
 The rail's width. Defaults to 2 × the font size.
 
-```css
-.sf-feed { --sf-gutter: 5rem; }
-```
+<FeedExample :items="order" rail="actor" style="--sf-gutter: 5rem">
 
-<FeedExample :items="order" rail="actor" style="--sf-gutter: 5rem" />
+`.sf-feed { --sf-gutter: 5rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-gap`
 
 The space between the rail and the row. Defaults to 0.75 × the font size.
 
-```css
-.sf-feed { --sf-gap: 2.5rem; }
-```
+<FeedExample :items="order" rail="actor" style="--sf-gap: 2.5rem">
 
-<FeedExample :items="order" rail="actor" style="--sf-gap: 2.5rem" />
+`.sf-feed { --sf-gap: 2.5rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-disc`
 
 The disc's size. Defaults to 2 × the font size.
 
-```css
-.sf-feed { --sf-disc: 2.5rem; }
-```
+<FeedExample :items="order" rail="actor" style="--sf-disc: 2.5rem">
 
-<FeedExample :items="order" rail="actor" style="--sf-disc: 2.5rem" />
+`.sf-feed { --sf-disc: 2.5rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-badge`
 
 An icon badge's size, on the `actor` rail. Defaults to 0.875 × the font size.
 
-```css
-.sf-feed { --sf-badge: 1rem; }
-```
+<FeedExample :items="order" rail="actor" style="--sf-badge: 1rem">
 
-<FeedExample :items="order" rail="actor" style="--sf-badge: 1rem" />
+`.sf-feed { --sf-badge: 1rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-badge-face`
 
 An avatar badge's size, on the `activity` rail. Defaults to 1.125 × the font size.
 
-```css
-.sf-feed { --sf-badge-face: 1.25rem; }
-```
+<FeedExample :items="order" rail="activity" style="--sf-badge-face: 1.25rem">
 
-<FeedExample :items="order" rail="activity" style="--sf-badge-face: 1.25rem" />
+`.sf-feed { --sf-badge-face: 1.25rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-prose-max-h`
 
 The height at which code and verbatim `Prose` scroll. Defaults to 24 × the font size.
 
-```css
-.sf-feed { --sf-prose-max-h: 6rem; }
-```
+<FeedExample :items="terminal" style="--sf-prose-max-h: 6rem">
 
-<FeedExample :items="terminal" style="--sf-prose-max-h: 6rem" />
+`.sf-feed { --sf-prose-max-h: 6rem; }`{css}
+
+</FeedExample>
 
 ### `--sf-code-bg`
 
 Verbatim `Prose`'s background. Defaults to `#18181b`.
 
-```css
-.sf-feed { --sf-code-bg: #1e3a5f; }
-```
+<FeedExample :items="terminal" style="--sf-code-bg: #1e3a5f">
 
-<FeedExample :items="terminal" style="--sf-code-bg: #1e3a5f" />
+`.sf-feed { --sf-code-bg: #1e3a5f; }`{css}
+
+</FeedExample>
 
 ### `--sf-code-fg`
 
 Verbatim `Prose`'s text. Defaults to `#f4f4f5`.
 
-```css
-.sf-feed { --sf-code-fg: #fde68a; }
-```
+<FeedExample :items="terminal" style="--sf-code-fg: #fde68a">
 
-<FeedExample :items="terminal" style="--sf-code-fg: #fde68a" />
+`.sf-feed { --sf-code-fg: #fde68a; }`{css}
+
+</FeedExample>
 
 ## Colour Tokens
 

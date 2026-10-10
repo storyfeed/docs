@@ -251,6 +251,15 @@ async function copy() {
 .sf-example__caption :deep(p) {
     margin: 0;
 }
+/* A caption that is the code producing the example stays one line, and
+   scrolls inside the bar where the page is too narrow for it. */
+.sf-example__caption:has(.sf-inline-code) {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.sf-example__caption :deep(.sf-inline-code) {
+    white-space: nowrap;
+}
 .sf-example__caption :deep(strong) {
     color: var(--vp-c-text-1);
 }
