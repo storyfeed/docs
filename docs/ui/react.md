@@ -72,5 +72,5 @@ After mounting, labels use the browser's locale and calendar timezone.
 `FEED_NOW` pins the clock in milliseconds; otherwise relative labels refresh
 according to age.
 
-See the [React kit README](https://github.com/storyfeed/ui/blob/main/resources/js/react/README.md)
-for the provider and component contracts.
+[React Components](/ui/reference/react) lists every component, prop, render
+prop and provider option.

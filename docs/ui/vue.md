@@ -61,5 +61,5 @@ Built-in bodies render from the object’s bodies and data, and the activity’s
 
 Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
 
-See the [Vue kit README](https://github.com/storyfeed/ui/blob/main/resources/js/vue/README.md)
-for the component contracts.
+[Vue Components](/ui/reference/vue) lists every component, prop, slot, event
+and injection key.
