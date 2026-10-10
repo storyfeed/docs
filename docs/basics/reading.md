@@ -85,8 +85,6 @@ Live groups the same action into one row until a quiet gap closes the burst.
 It is the default, so you may omit `live()`. See
 [Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row
 and [Live Burst Windows](/deeper/grouping-periods) to set the window.
-Which activities share a row, and when, is experimental and keeps improving
-behind the [payload contract](/reference/payload#group-nodes).
 
 ```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
@@ -170,12 +168,11 @@ You may also filter by a specific role:
 Filters on different roles apply together. Group counts include only matching
 activities.
 
-> [!NOTE]
-> **The difference between involving and context**
->
-> The `context` method matches only the context role. An activity that adds a
-> product to a menu assigns the product to the object role, so use `involving`
-> to include it in the product's feed. See [Containers & Context](/deeper/context).
+### The Difference Between Involving and Context
+
+The `context` method matches only the context role. An activity that adds a
+product to a menu assigns the product to the object role, so use `involving`
+to include it in the product's feed. See [Containers & Context](/deeper/context).
 
 <a id="filtering-verbs"></a>
 
@@ -359,7 +356,7 @@ previous-page link is disabled: `previousPageUrl` returns `null`, and
 
 To use a different query string parameter, pass its name as the second argument:
 
-```php
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 $page = Storyfeed::feed()->cursorPaginate(15, 'feed_cursor');
@@ -368,7 +365,7 @@ $page = Storyfeed::feed()->cursorPaginate(15, 'feed_cursor');
 Use the `withQueryString` method to include the current request's query string
 in pagination links. You may also append specific values or a URL fragment:
 
-```php
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 $page = Storyfeed::feed()->cursorPaginate(15)->withQueryString();
@@ -526,8 +523,6 @@ The following item represents a customer placing an order:
 Each role contains an entity with fields such as `type`, `id`, `label`, and
 `link`. See [Entities](/reference/payload#entities) for the complete structure.
 An empty role is `null`.
-
-<a id="group-nodes"></a>
 
 ### Group Items {#group-nodes}
 
