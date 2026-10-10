@@ -18,7 +18,9 @@ const attachment = { ...choices.attachment, verb: 'update' }
 
 A verb is an action alone. It never names its object, before or after, with
 any separator: `accept`, not `offer.accept`, `accept_offer` or `acceptOffer`.
-Declaring or publishing a dotted verb throws `Storyfeed\Exceptions\DottedVerb`; use a [story name](/deeper/named-stories) for dotted lookups such as `order.place`.
+A verb [never contains a dot](/basics/verbs): declaring or publishing one
+throws `Storyfeed\Exceptions\DottedVerb`. Use a
+[story name](/deeper/named-stories) for dotted lookups such as `order.place`.
 
 The object identifies what the action happened to:
 
