@@ -10,7 +10,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 |---|---|
 | **activity** | One published fact, with a verb, roles, and publication time. |
 | **verb** | The action recorded as a string, such as `upload`. See [Activity Verbs](/basics/verbs). |
-| **actor / object / target / context** | Who acted, what they acted on, what the action was directed at, and its container. [Recording](/basics/recording#roles) covers all seven roles. |
+| **actor / object / target / context** | Who acted, what they acted on, what the action was directed at, and its container. [Recording](/basics/recording#roles) covers all nine roles. |
 | **entity** | A model or party filling a role. Each payload role contains an [entity object](/reference/payload#entities) or `null`. |
 | **[Feedable](/basics/feedable-models)** | A model that can appear in an activity and provide its label, link, and other feed details. |
 | **party** | A [named participant without an application model](/deeper/parties), such as a system or integration. |
@@ -36,7 +36,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **axis** | What a group has in common, such as the same actor, verb, and target. This is the API term for its grouping rule. See [Aggregation](/deeper/aggregation#built-in-axes). |
 | **repeat** | The fallback group for one actor repeating a verb on the same object type with the same target. |
 | **[threshold](/deeper/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
-| **group an activity is shown in** | The one group selected for an activity in `live()`, falling back to `repeat`. |
+| **winning group** | The one group selected for an activity in `live()`, marked by `winner` on its `feed_groupings` row; `repeat` when none is selected. |
 | **group selection** | Selecting among groups whose thresholds are met, with `repeat` as the fallback. This runs at publication and through [`storyfeed:curate`](/reference/commands#other-maintenance-commands). With `grouping.curate` set to `false`, `live()` shows repeats only. |
 | **[burst window](/deeper/grouping-periods)** | A quiet gap and maximum duration that bound a Live group. See [Live Burst Windows](/deeper/grouping-periods) for defaults. |
 | **group node** | A group represented in the payload. See [Group Nodes](/reference/payload#group-node). |
