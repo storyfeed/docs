@@ -68,9 +68,9 @@ See [Publishing From Events](/deeper/events) for listeners and conditional publi
 
 ## Publishing From an Observer
 
-When a transition has no domain event yet, create one for it. An observer can
-record model transitions while the application still relies on model events.
-Use one publication site for each transition to avoid recording it twice.
+Use a model observer when the application has no domain event for a
+transition. Use one publication site for each transition to avoid recording
+it twice.
 
 Create an observer for the model whose status changes:
 
@@ -99,7 +99,7 @@ class OrderObserver
 
         $verb = match ($order->status) {
             'confirmed' => 'confirm',
-            'ready' => 'ready',
+            'ready' => 'prepare',
             'completed' => 'complete',
             default => null,                         // drafts are not recorded
         };
@@ -133,7 +133,7 @@ class OrderObserver
 
         $verb = match ($order->status) {
             'confirmed' => 'confirm',
-            'ready' => 'ready',
+            'ready' => 'prepare',
             'completed' => 'complete',
             default => null,                         // drafts are not recorded
         };
@@ -171,16 +171,20 @@ use Storyfeed\Facades\Story;
 Story::for(Order::class)->verb('confirm')
     ->headline(':actor confirmed :object');
 
-Story::for(Order::class)->verb('ready')
-    ->headline(':actor marked :object ready');
+Story::for(Order::class)->verb('prepare')
+    ->headline(':actor prepared :object');
 
 Story::for(Order::class)->verb('complete')
     ->headline(':actor completed :object');
 ```
 
-The observer records the transition without an actor:
+Without `by()`, Storyfeed records the signed-in user as the actor:
 
-<FeedExample :items="[{ ...confirmed, actor: null }]" />
+<FeedExample :items="[confirmed]" />
+
+A save in a console command or a scheduled task has no signed-in user. The
+activity then uses the [default actor](/deeper/parties#setting-a-default-actor),
+or has no actor.
 
 ## Choosing Transitions to Record
 
@@ -189,7 +193,7 @@ The observer records the transition without an actor:
 | created as a draft | no | |
 | saved with no status change | no | |
 | placed → confirmed | yes | `confirm` |
-| confirmed → ready | yes | `ready` |
+| confirmed → ready | yes | `prepare` |
 | ready → completed | yes | `complete` |
 
 Use a separate verb for each transition so each has its own headline and
