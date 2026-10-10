@@ -13,8 +13,9 @@ const views = logOf(scene.deeper.retention.views)
 </script>
 
 <a id="start-with-the-reader-s-task"></a>
+<a id="the-reader-s-task"></a>
 
-## The Reader's Task
+## Choosing by the Reader's Task
 
 | Kind of activity | A useful starting point |
 |---|---|
@@ -40,7 +41,7 @@ The sentence names the place as well as the people. Prefer that to an isolated
 “5 check-ins”. A reaction group should likewise name the thing people reacted
 to. Choose a [grouping axis](/deeper/aggregation#built-in-axes) whose activities
 share the role you want to name. The built-in `actors` axis requires the same
-target; its objects may differ.
+object. The `actors_target` axis requires the same target; its objects may differ.
 
 Show a small sample of names and the number remaining. The payload's
 [`sample` and `distinct`](/reference/payload#group-node) fields support that
@@ -64,7 +65,7 @@ a choice in your renderer, not a different Storyfeed read mode.
 
 When each view is evidence, keep those rows separate too:
 
-```php
+```php memo="A controller, or wherever the feed is retrieved"
 use Storyfeed\Facades\Storyfeed;
 
 $views = Storyfeed::feed()
@@ -124,9 +125,9 @@ Use `live()` for a grouped overview and `log()` where every event needs its
 own row. You can offer separate overview and history views of the same data.
 `log()` applies to the whole query.
 
-Every activity is eligible for grouping; omitting `grouped()` only leaves the
-group without a headline. Setting `grouping.curate` to `false` still permits
-repeat groups. See
+Every activity is eligible for grouping. Without `grouped()`, a group uses a
+[fallback headline](/deeper/aggregation#fallback-headlines). Setting
+`grouping.curate` to `false` still permits repeat groups. See
 [Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode).
 
 [`keepLatest()`](/deeper/keeping-the-latest-activity) and
