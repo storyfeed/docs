@@ -410,7 +410,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Vue — `ui/vue`
 - ✅ React — `ui/react`
 - ✅ Customizing the Kits — `ui/customizing`
-- ✅ Custom Rendering — `basics/rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
+- ✅ Custom Rendering — `ui/custom-rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
 
 ### Recording in Depth
 
@@ -492,8 +492,9 @@ These files retain old URLs or anchors and point readers to the canonical page:
 | `reference/compatibility.md` | `guide/installation#requirements` |
 | `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values` |
 | `basics/the-payload.md` | `basics/reading#the-payload` |
+| `basics/rendering.md` | `ui/custom-rendering`, keeping the anchor in the URL |
 
-The stable routes `basics/rendering`, `basics/reading`,
+The stable routes `basics/reading`,
 `deeper/grouping-periods`, `cookbook/read-the-fields-back`,
 `cookbook/an-authoriser-who-is-not-an-actor` and
 `cookbook/activities-about-deletions` intentionally retain their URLs despite

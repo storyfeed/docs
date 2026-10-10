@@ -72,11 +72,11 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **token** | A placeholder such as `:actor` in a headline template. |
 | **icon** | An activity's symbol, declared with `icon()`. Your frontend maps its token, such as `shopping-bag`, to artwork. |
 | **`glyph` / `glyph()`** | The payload key and FeedItem method containing the activity's icon token. |
-| **intent** | The icon's meaning, declared with `intent()` and returned in `glyph_intent`, such as `success`. Storyfeed defines no fixed vocabulary. See [Icons and Intents](/basics/rendering#glyphs-and-intents). |
+| **intent** | The icon's meaning, declared with `intent()` and returned in `glyph_intent`, such as `success`. Storyfeed defines no fixed vocabulary. See [Icons and Intents](/ui/custom-rendering#glyphs-and-intents). |
 | **icon image** | A model's picture in `entity.media.icon`, such as an avatar or logo. See [Image Slots](/reference/feedable#image-slots). |
 | **[body](/basics/activity-content#adding-entity-bodies)** | Typed content beneath a headline, such as an excerpt or list. Its kind is its **body type**. |
 | **[excerpt](/basics/activity-content#adding-quoted-text)** | A body containing quoted words, optional source attribution, and a flag indicating whether the text is partial. It belongs to the entity snapshot. |
-| **degraded** | An entity with no snapshot yet, returned with `label: null` and `link: null`. Its activity still appears. See [Handling Missing Values](/basics/rendering#degraded-entities). |
+| **degraded** | An entity with no snapshot yet, returned with `label: null` and `link: null`. Its activity still appears. See [Handling Missing Values](/ui/custom-rendering#degraded-entities). |
 | **redundant** | An activity with a tombstone in a role selected by its verb for redundancy checks. It still records what happened. See [Redundant Roles](/deeper/deleted-models#roles-that-determine-redundancy). |
 
 <span id="storage-maintenance"></span>

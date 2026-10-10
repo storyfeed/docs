@@ -4,7 +4,7 @@
 
 `Storyfeed\Support\FeedItem`, `Headline`, and `Entity` provide named methods
 for accessing the [payload](/reference/payload) without changing it.
-See [Rendering](/basics/rendering) for examples.
+See [Rendering](/ui/custom-rendering) for examples.
 
 ```blade
 @foreach ($page as $item)

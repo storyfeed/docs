@@ -226,7 +226,7 @@ export default defineConfig({
           { text: 'Vue', link: '/ui/vue' },
           { text: 'React', link: '/ui/react' },
           { text: 'Customizing the Kits', link: '/ui/customizing' },
-          { text: 'Custom Rendering', link: '/basics/rendering' },
+          { text: 'Custom Rendering', link: '/ui/custom-rendering' },
         ],
       },
       {

@@ -375,7 +375,7 @@ set and returns `null` when no icon is defined for the type and verb.
 `glyph_intent` contains the token declared with `intent()`, such as `"success"`
 or `"danger"`. It describes the icon's meaning. Any string is accepted; Storyfeed
 provides no fixed vocabulary or validation. Without a declaration, it is `null`.
-See [icon meanings](/basics/rendering#glyphs-and-intents).
+See [icon meanings](/ui/custom-rendering#glyphs-and-intents).
 
 Icons and intents are resolved independently in this order: `type.verb`,
 `type.*`, `*.verb`, then `*.*`.
@@ -393,7 +393,7 @@ Tests for activity closures returning tokens should check `headline_template`.
 
 Both fields are null when no headline describes every group member.
 Renderers must handle this case; see
-[Rendering](/basics/rendering#groups-without-headlines).
+[Rendering](/ui/custom-rendering#groups-without-headlines).
 
 See [Aggregation](/deeper/aggregation) for allowed group tokens. Singular
 tokens require a shared grouping role. The
