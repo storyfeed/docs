@@ -50,10 +50,10 @@ The rail is the column on the left of each row: a disc and, on it, a badge.
 | `activity-only` | the activity's icon | none |
 
 <div class="sf-variants">
-<FeedExample :items="order" rail="actor"><code>rail="actor"</code></FeedExample>
-<FeedExample :items="order" rail="activity"><code>rail="activity"</code></FeedExample>
-<FeedExample :items="order" rail="actor-only"><code>rail="actor-only"</code></FeedExample>
-<FeedExample :items="order" rail="activity-only"><code>rail="activity-only"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="actor"><code>rail="actor"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="activity"><code>rail="activity"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="actor-only"><code>rail="actor-only"</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="activity-only"><code>rail="activity-only"</code></FeedExample>
 </div>
 
 Rows default to `actor-only` and expanded group members to `activity-only`.
@@ -63,11 +63,11 @@ disc. A row with several actors draws two faces in the disc and never a face
 badge.
 
 <div class="sf-variants">
-<FeedExample :items="orders" :collapsed="false"><code>rail</code> unset</FeedExample>
-<FeedExample :items="orders" rail="actor" :collapsed="false"><code>rail="actor"</code></FeedExample>
-<FeedExample :items="orders" rail="actor" child-rail="activity-only" :collapsed="false"><code>rail="actor" child-rail="activity-only"</code></FeedExample>
-<FeedExample :items="anonymous" rail="actor"><code>rail="actor"</code>, no actor</FeedExample>
-<FeedExample :items="crowd" rail="actor" collapsed><code>rail="actor"</code>, several actors</FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="false"><code>rail</code> unset</FeedExample>
+<FeedExample hide-payload :items="orders" rail="actor" :collapsed="false"><code>rail="actor"</code></FeedExample>
+<FeedExample hide-payload :items="orders" rail="actor" child-rail="activity-only" :collapsed="false"><code>rail="actor" child-rail="activity-only"</code></FeedExample>
+<FeedExample hide-payload :items="anonymous" rail="actor"><code>rail="actor"</code>, no actor</FeedExample>
+<FeedExample hide-payload :items="crowd" rail="actor" collapsed><code>rail="actor"</code>, several actors</FeedExample>
 </div>
 
 Vue and React also take a rail as `{ primary, secondary }`, each slot one of
@@ -84,8 +84,8 @@ The style applies to day headings and to the labels in `dividers`. `dividers`
 is keyed by item id: `{ "01K…": "Timeline" }`.
 
 <div class="sf-variants">
-<FeedExample :items="order" :dividers="labelled" divider-style="branch"><code>divider-style="branch"</code></FeedExample>
-<FeedExample :items="order" :dividers="labelled" divider-style="dot"><code>divider-style="dot"</code></FeedExample>
+<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="branch"><code>divider-style="branch"</code></FeedExample>
+<FeedExample hide-payload :items="order" :dividers="labelled" divider-style="dot"><code>divider-style="dot"</code></FeedExample>
 </div>
 
 ## Group State
@@ -99,10 +99,10 @@ is keyed by item id: `{ "01K…": "Timeline" }`.
 | `false` | `true` | closed, with no disclosure control; members stay in the HTML for printing |
 
 <div class="sf-variants">
-<FeedExample :items="orders" :collapsed="true"><code>collapsed: true</code></FeedExample>
-<FeedExample :items="orders" :collapsed="false"><code>collapsed: false</code></FeedExample>
-<FeedExample :items="orders" :interactive="false"><code>interactive: false</code></FeedExample>
-<FeedExample :items="orders" :interactive="false" :collapsed="true"><code>interactive: false, collapsed: true</code></FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="true"><code>collapsed: true</code></FeedExample>
+<FeedExample hide-payload :items="orders" :collapsed="false"><code>collapsed: false</code></FeedExample>
+<FeedExample hide-payload :items="orders" :interactive="false"><code>interactive: false</code></FeedExample>
+<FeedExample hide-payload :items="orders" :interactive="false" :collapsed="true"><code>interactive: false, collapsed: true</code></FeedExample>
 </div>
 
 A group whose node has `expanded: true` opens in every case. Expanding shows
@@ -129,10 +129,13 @@ Set them on the feed or on any element around it.
 | `--sf-code-fg` | verbatim `Prose`'s text | `#f4f4f5` |
 
 <div class="sf-variants">
-<FeedExample :items="order" rail="actor">Defaults</FeedExample>
-<FeedExample :items="order" rail="actor" style="--sf-font-size: 0.8125rem"><code>--sf-font-size: 0.8125rem</code></FeedExample>
-<FeedExample :items="terminal">Defaults</FeedExample>
-<FeedExample :items="terminal" style="--sf-prose-max-h: 6rem; --sf-code-bg: #1e3a5f; --sf-code-fg: #fde68a"><code>--sf-prose-max-h: 6rem</code>, <code>--sf-code-bg</code>, <code>--sf-code-fg</code></FeedExample>
+<FeedExample hide-payload :items="order" rail="actor">Defaults</FeedExample>
+<FeedExample hide-payload :items="order" rail="actor" style="--sf-font-size: 0.8125rem"><code>--sf-font-size: 0.8125rem</code></FeedExample>
+</div>
+
+<div class="sf-variants sf-variants--stack">
+<FeedExample hide-payload :items="terminal">Defaults</FeedExample>
+<FeedExample hide-payload :items="terminal" style="--sf-prose-max-h: 6rem; --sf-code-bg: #1e3a5f; --sf-code-fg: #fde68a"><code>--sf-prose-max-h: 6rem</code>, <code>--sf-code-bg</code>, <code>--sf-code-fg</code></FeedExample>
 </div>
 
 Inside the feed, Tailwind's `--spacing`, `--text-xs`, `--text-sm` and

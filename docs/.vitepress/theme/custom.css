@@ -130,6 +130,25 @@
   margin: 0;
 }
 
+/* A comparison whose rows carry a body needs the full width to read. */
+@media (min-width: 720px) {
+  .vp-doc .sf-variants--stack {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Light chrome for a variant: the label is a small caption, not a header bar. */
+.vp-doc .sf-variants .sf-example__caption {
+  padding: 0.55rem 0.9rem 0;
+  border-bottom: 0;
+  background: none;
+  font-size: 12.5px;
+}
+
+.vp-doc .sf-variants .sf-example__preview {
+  padding: 0.6rem 0.9rem 0.8rem;
+}
+
 /* Day labels are feed metadata, not VitePress article section headings. */
 .vp-doc h2.sf-day {
   margin: 0;

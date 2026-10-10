@@ -45,8 +45,13 @@ const props = withDefaults(
          * length. The caption and the payload bar stay put.
          */
         height?: number | string
+        /**
+         * Leave out the payload bar, for an example sitting beside others drawn
+         * from the same nodes, where one bar per card would only repeat itself.
+         */
+        hidePayload?: boolean
     }>(),
-    { expanded: false, label: 'Payload', context: false, payload: false, paginated: false, days: false },
+    { expanded: false, label: 'Payload', context: false, payload: false, paginated: false, days: false, hidePayload: false },
 )
 
 const maxHeight = computed(() => {
@@ -184,7 +189,7 @@ async function copy() {
             </slot>
         </div>
 
-        <div class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
+        <div v-if="!hidePayload" class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
             <button
                 v-if="!payload"
                 type="button"
