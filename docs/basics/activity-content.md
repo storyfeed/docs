@@ -71,9 +71,9 @@ the entity appears. With `InteractsWithFeed`, saving the model refreshes its
 shared snapshot while recording is enabled. That can change the body shown on
 older activities too. Use activity `data` to capture values as they were at the event.
 
-[Storyfeed UI](/ui/installation) draws the bodies of an activity's object
-beneath its row. Bodies on the actor, target or context stay in the payload
-for your own components. To feature another role's entity instead, see
+Every entity in the payload carries its own bodies, in any role. An
+activity's `featured` key names the role it features, the object by default.
+To feature another role's entity, see
 [Featuring Another Role](#featuring-another-role).
 
 ### Text and Labelled Values
@@ -829,8 +829,8 @@ components and define your own body types.
 
 ## Featuring Another Role
 
-An activity features its object: the entity whose bodies its row shows. To
-feature another role, call a `featuring` method:
+An activity features its object by default. To feature another role, call a
+`featuring` method:
 
 ```php memo="Where the order is placed: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
