@@ -162,9 +162,6 @@ The doctor reports `aggregates.latent` based on registered feed modes and verb
 filters. To accept a deliberate `aggregates.missing` finding with a written
 reason, use the exact subject in [Acknowledgment Policy](#acknowledgment-policy).
 
-See [Handling Deliberate Findings](/deeper/diagnosing#handling-deliberate-findings)
-for recording and revisiting a deliberate gap.
-
 ### Acknowledgment Policy
 
 `storyfeed.doctor.acknowledgments` defaults to `[]`. Each list entry must

@@ -129,19 +129,10 @@ and `guard` names the test assertion that fails while the finding stands, or is
 
 See [Doctor Checks](/reference/doctor#interpreting-findings) for all findings.
 
-### Reading Link Findings
+<a id="reading-link-findings"></a>
 
-`links.missing` is informational: every inspected entity of one type and role
-had a null URL in that named feed's sampled page. Unlinked entities are
-legitimate. The doctor reads up to 30 top-level items in each constructable
-named feed's declared mode, including the entities returned in bounded group
-samples and children. It cannot establish that a type is always unlinked or
-count unsampled history. Another named feed may return different links.
-
-`links.uninspectable` means a feed could not be read, for example because it
-requires a subject. The doctor does not substitute an unscoped feed. Both
-findings are notes, leave CI counts unchanged, and generate no fix. See
-[Link Sampling](/reference/doctor#link-sampling) for the subject fields.
+`links.*` findings are notes about sampled named-feed pages; see
+[Link Sampling](/reference/doctor#link-sampling).
 
 <a id="handling-deliberate-gaps"></a>
 
@@ -164,10 +155,8 @@ written reason:
 ],
 ```
 
-Accepted findings stay visible with their reasons but no longer count toward
-active problems, `--fail-on`, or generated stubs. See
-[Acknowledgment Policy](/reference/doctor#acknowledgment-policy) for supported
-codes, coverage limits and validation.
+See [Acknowledgment Policy](/reference/doctor#acknowledgment-policy) for the
+supported codes and how accepted findings are counted.
 
 ## Generating Missing Definitions
 

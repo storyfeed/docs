@@ -105,15 +105,11 @@ the merged definitions used by a cached feed.
 
 | Command | Description |
 |---|---|
-| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. `--json`; `--stubs` prints the `routes/feed.php` suggested definitions, with their `use` lines; `--only=`; `--list` names the checks `--only=` accepts; `--fail-on=warning\|error` exits non-zero at the selected severity |
+| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. See [Command Options](/reference/doctor#command-options) for its flags |
 
 See [Diagnosing Your Feed](/deeper/diagnosing) for usage and
-[Doctor Checks](/reference/doctor) for the checks.
-
-Link findings describe sampled named-feed pages and are informational.
-[Acknowledged findings](/reference/doctor#acknowledgment-policy) remain visible
-in text and JSON with their written reasons, but do not fail `--fail-on` or
-generate `--stubs`. `--list` lists names without executing checks or policy.
+[Doctor Checks](/reference/doctor) for the checks, link sampling and
+[acknowledgments](/reference/doctor#acknowledgment-policy).
 
 <a id="php-artisan-about"></a>
 
