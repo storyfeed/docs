@@ -96,7 +96,7 @@ Choose when a value is decided:
 | `->body(…)` on `FeedEntity` in `toFeed()` | whenever the model is saved | stored and updated with the model |
 | `->body(…)` on `FeedMedia` in `feedMedia()` | whenever the feed is retrieved | built from current values and never stored |
 
-See [Computed Values in the Feed](/cookbook/computed-values) for publication-time facts and counts computed on retrieval.
+See [Computed Values in the Feed](/cookbook/computed-values) for a count computed on retrieval.
 
 <a id="deferring-the-work"></a>
 
