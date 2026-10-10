@@ -85,8 +85,9 @@ for (const [name, pack] of Object.entries(PACKS)) {
       } else {
         assert.equal(body.$body, 'Storyfeed/Body/Prose')
         assert.ok(body.content.length > 0)
-        assert.equal(body.mediaType, key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain')
-        assert.equal(body.verbatim, ['program', 'terminal', 'radioLog'].includes(key))
+        // Stored as Storyfeed writes it: a field at its default is left out.
+        assert.equal(body.mediaType ?? 'text/plain', key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain')
+        assert.equal(body.verbatim ?? false, ['program', 'terminal', 'radioLog'].includes(key))
       }
     }
   })

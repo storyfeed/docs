@@ -87,7 +87,7 @@ export const user = (id: string, label: string) => entity('user', id, label, `/u
  */
 export const note = (id: string, body: string) =>
   entity('note', id, body, null, {
-    body: [{ $body: 'Storyfeed/Body/Component', $v: 1, name: 'Note', props: { excerpt: body } }],
+    body: [{ $body: 'Storyfeed/Body/Component', $v: 2, name: 'Note', props: { excerpt: body } }],
   })
 
 /**

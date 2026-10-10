@@ -54,10 +54,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Get Planck's constant to open the safe. Suzie knows it.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Find Planck's constant"
         }
       ],
@@ -425,7 +423,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Excerpt",
-          "$v": 1,
+          "$v": 2,
           "text": "Planck’s constant is 6.62607004.",
           "from": "Suzie, over Cerebro",
           "truncated": false
@@ -778,11 +776,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "the Ferris wheel",
+          "$v": 3,
           "alt": "the Ferris wheel",
-          "width": null,
-          "height": null,
+          "caption": "the Ferris wheel",
           "image": "preview"
         }
       ],
@@ -947,11 +943,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "a hot dog",
+          "$v": 3,
           "alt": "a hot dog",
-          "width": null,
-          "height": null,
+          "caption": "a hot dog",
           "image": "preview"
         }
       ],
@@ -2342,32 +2336,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -2396,11 +2382,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -2474,32 +2458,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -2528,11 +2504,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -2606,32 +2580,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -2660,11 +2626,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -2828,32 +2792,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -2958,32 +2914,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -3080,11 +3028,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "a bag of soft pretzels",
+          "$v": 3,
           "alt": "a bag of soft pretzels",
-          "width": null,
-          "height": null,
+          "caption": "a bag of soft pretzels",
           "image": "preview"
         }
       ],
@@ -3249,11 +3195,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "the carousel",
+          "$v": 3,
           "alt": "the carousel",
-          "width": null,
-          "height": null,
+          "caption": "the carousel",
           "image": "preview"
         }
       ],
@@ -3565,24 +3509,29 @@
       "body": [
         {
           "$body": "Storyfeed/Body/ItemList",
-          "$v": 1,
+          "$v": 3,
           "title": "Order #1042 items",
-          "ordered": false,
           "items": [
             {
               "label": "a hot dog",
-              "href": "/menu/hot-dog"
+              "href": "/menu/hot-dog",
+              "modal": false,
+              "attributes": []
             },
             {
               "label": "a corn dog",
-              "href": "/menu/corn-dog"
+              "href": "/menu/corn-dog",
+              "modal": false,
+              "attributes": []
             },
             "a pretzel"
           ],
           "totalItems": 5,
           "more": {
             "label": "Order #1042",
-            "href": "/orders/1042"
+            "href": "/orders/1042",
+            "modal": false,
+            "attributes": []
           }
         }
       ],
@@ -3678,32 +3627,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -3800,32 +3741,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -4748,11 +4681,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "a pretzel",
+          "$v": 3,
           "alt": "a pretzel",
-          "width": null,
-          "height": null,
+          "caption": "a pretzel",
           "image": "preview"
         }
       ],
@@ -5141,7 +5072,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Component",
-          "$v": 1,
+          "$v": 2,
           "name": "Note",
           "props": {
             "excerpt": "Is that free for life, or only for today?"
@@ -5172,11 +5103,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -5250,11 +5179,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "the fireworks",
+          "$v": 3,
           "alt": "the fireworks",
-          "width": null,
-          "height": null,
+          "caption": "the fireworks",
           "image": "preview"
         }
       ],
@@ -5530,32 +5457,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -6200,26 +6119,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1988",
           "items": [
             {
               "key": "Amount",
-              "value": "$148.80",
-              "verbatim": false,
-              "missing": null
+              "value": "$148.80"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1988",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -6291,26 +6205,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1987",
           "items": [
             {
               "key": "Amount",
-              "value": "$96.00",
-              "verbatim": false,
-              "missing": null
+              "value": "$96.00"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1987",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -6382,11 +6291,10 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
-          "title": "Murray’s gate investigation",
+          "$v": 2,
           "content": "## What the machine needs\n\n**Alexei’s account:** the machine is opening a gate beneath the mall.\n\n- Locate the control room.\n- Reach the two shutdown keys.\n- Check the safe combination before going in.\n\n> Working note: translation is evidence, not a complete floor plan.",
           "mediaType": "text/markdown",
-          "verbatim": false
+          "title": "Murray’s gate investigation"
         }
       ],
       "tombstone": null
@@ -6477,26 +6385,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1986",
           "items": [
             {
               "key": "Amount",
-              "value": "$610.40",
-              "verbatim": false,
-              "missing": null
+              "value": "$610.40"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1986",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -6573,11 +6476,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -6828,11 +6729,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -6906,10 +6805,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Find out where the elevator in the storeroom goes down to.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Find where the elevator goes"
         }
       ],
@@ -7372,11 +7269,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -7609,32 +7504,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -7663,11 +7550,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -7879,10 +7764,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Unlock the storeroom door from the inside so the others can get in.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Open the loading bay door"
         }
       ],
@@ -7978,10 +7861,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Crawl through the ducts into the locked storeroom.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Get through the air ducts"
         }
       ],
@@ -8513,11 +8394,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -8587,26 +8466,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1985",
           "items": [
             {
               "key": "Amount",
-              "value": "$497.00",
-              "verbatim": false,
-              "missing": null
+              "value": "$497.00"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1985",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -8704,11 +8578,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -8804,11 +8676,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -8904,11 +8774,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9004,11 +8872,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9104,11 +8970,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9200,11 +9064,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9300,11 +9162,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9400,11 +9260,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9500,11 +9358,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9600,11 +9456,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9700,11 +9554,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9800,11 +9652,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -9969,11 +9819,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -10341,11 +10189,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -10485,11 +10331,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -10654,11 +10498,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -10819,11 +10661,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -10897,7 +10737,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Component",
-          "$v": 1,
+          "$v": 2,
           "name": "Orders/Progress",
           "props": {
             "title": "Order #2081",
@@ -10935,11 +10775,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11009,7 +10847,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Component",
-          "$v": 1,
+          "$v": 2,
           "name": "Note",
           "props": {
             "excerpt": "Is that free for life, or only for today?"
@@ -11040,32 +10878,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -11136,7 +10966,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Component",
-          "$v": 1,
+          "$v": 2,
           "name": "Note",
           "props": {
             "excerpt": "Can I collect this at the counter?"
@@ -11257,11 +11087,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11357,11 +11185,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11457,11 +11283,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11557,11 +11381,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11657,11 +11479,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -11942,32 +11762,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -11996,11 +11808,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -12074,11 +11884,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "USS Butterscotch",
+          "$v": 3,
           "alt": "USS Butterscotch",
-          "width": null,
-          "height": null,
+          "caption": "USS Butterscotch",
           "image": "preview"
         }
       ],
@@ -12106,32 +11914,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -12206,7 +12006,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "hawkins-post-internship-agreement.pdf",
           "size": 61870,
           "mediaType": "application/pdf"
@@ -12304,32 +12104,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -12358,11 +12150,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -12436,7 +12226,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "hawkins-post-internship-agreement.pdf",
           "size": 61870,
           "mediaType": "application/pdf"
@@ -12672,15 +12462,14 @@
       "body": [
         {
           "$body": "Storyfeed/Body/MediaObject",
-          "$v": 2,
+          "$v": 5,
           "subject": {
             "label": "Starcourt Mall visitor guide",
-            "href": "/venues/mall/guide"
+            "href": "/venues/mall/guide",
+            "modal": false,
+            "attributes": []
           },
-          "content": "The visitor guide includes entrances, parking and shop locations.",
-          "image": null,
-          "files": [],
-          "footnote": null
+          "content": "The visitor guide includes entrances, parking and shop locations."
         }
       ],
       "tombstone": null
@@ -12707,11 +12496,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -12785,15 +12572,14 @@
       "body": [
         {
           "$body": "Storyfeed/Body/MediaObject",
-          "$v": 2,
+          "$v": 5,
           "subject": {
             "label": "Scoops Ahoy opening hours",
-            "href": "/notices/101"
+            "href": "/notices/101",
+            "modal": false,
+            "attributes": []
           },
-          "content": "The counter opens at 10 am. Orders are available until 9 pm.",
-          "image": null,
-          "files": [],
-          "footnote": null
+          "content": "The counter opens at 10 am. Orders are available until 9 pm."
         }
       ],
       "tombstone": null
@@ -12820,11 +12606,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -13036,11 +12820,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "A fairground at night",
+          "$v": 3,
           "alt": "A fairground at night",
-          "width": null,
-          "height": null,
+          "caption": "A fairground at night",
           "image": "preview"
         }
       ],
@@ -13136,26 +12918,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Pull request #5",
           "items": [
             {
               "key": "Title",
-              "value": "Filter out the static",
-              "verbatim": false,
-              "missing": null
+              "value": "Filter out the static"
             },
             {
               "key": "Branch",
               "value": "static-filter",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             },
             {
               "key": "Files changed",
-              "value": "2",
-              "verbatim": false,
-              "missing": null
+              "value": "2"
             }
           ]
         }
@@ -13184,20 +12961,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -13272,26 +13045,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Pull request #4",
           "items": [
             {
               "key": "Title",
-              "value": "Add a tape recorder input",
-              "verbatim": false,
-              "missing": null
+              "value": "Add a tape recorder input"
             },
             {
               "key": "Branch",
               "value": "tape-input",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             },
             {
               "key": "Files changed",
-              "value": "4",
-              "verbatim": false,
-              "missing": null
+              "value": "4"
             }
           ]
         }
@@ -13320,20 +13088,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -13430,11 +13194,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -13508,10 +13270,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Match each line of the message to a place in the mall.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Map the code to the mall"
         }
       ],
@@ -13629,11 +13389,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -13729,11 +13487,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -13829,11 +13585,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -13929,11 +13683,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -14029,11 +13781,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -14129,11 +13879,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -14207,10 +13955,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Every magnet on the store display fell off at once, then did it again an hour later.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Ticket #101"
         }
       ],
@@ -14423,10 +14169,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Pick out the mall in the sounds behind the message on the tape.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Match the music to the mall"
         }
       ],
@@ -14522,10 +14266,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Work out what the Russian message on the tape is saying.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Crack the code"
         }
       ],
@@ -14824,26 +14566,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1984",
           "items": [
             {
               "key": "Amount",
-              "value": "$520.75",
-              "verbatim": false,
-              "missing": null
+              "value": "$520.75"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1984",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -15217,11 +14954,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -15296,11 +15031,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Scoops Ahoy",
+          "$v": 3,
           "alt": "Scoops Ahoy",
-          "width": null,
-          "height": null,
+          "caption": "Scoops Ahoy",
           "image": "preview"
         }
       ],
@@ -15374,11 +15107,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Rolled newspapers",
+          "$v": 3,
           "alt": "Rolled newspapers",
-          "width": null,
-          "height": null,
+          "caption": "Rolled newspapers",
           "image": "preview"
         }
       ],
@@ -15474,11 +15205,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "A room lit red",
+          "$v": 3,
           "alt": "A room lit red",
-          "width": null,
-          "height": null,
+          "caption": "A room lit red",
           "image": "preview"
         }
       ],
@@ -15574,11 +15303,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "Arcade machines in a dark room",
+          "$v": 3,
           "alt": "Arcade machines in a dark room",
-          "width": null,
-          "height": null,
+          "caption": "Arcade machines in a dark room",
           "image": "preview"
         }
       ],
@@ -15674,11 +15401,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Image",
-          "$v": 1,
-          "caption": "A small-town street from above",
+          "$v": 3,
           "alt": "A small-town street from above",
-          "width": null,
-          "height": null,
+          "caption": "A small-town street from above",
           "image": "preview"
         }
       ],
@@ -15774,10 +15499,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Excerpt",
-          "$v": 1,
+          "$v": 2,
           "text": "They came back every night for my fertilizer, bag after bag",
-          "from": "Doris Driscoll",
-          "truncated": true
+          "from": "Doris Driscoll"
         }
       ],
       "tombstone": null
@@ -15851,10 +15575,9 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Excerpt",
-          "$v": 1,
+          "$v": 2,
           "text": "They came back every night for my fertilizer, bag after bag",
-          "from": "Doris Driscoll",
-          "truncated": true
+          "from": "Doris Driscoll"
         }
       ],
       "tombstone": null
@@ -15949,32 +15672,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -16050,32 +15765,24 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "USS Butterscotch",
           "items": [
             {
               "key": "Price",
-              "value": "$2.95",
-              "verbatim": false,
-              "missing": null
+              "value": "$2.95"
             },
             {
               "key": "Section",
-              "value": "Sundaes",
-              "verbatim": false,
-              "missing": null
+              "value": "Sundaes"
             },
             {
               "key": "Available",
-              "value": "At the counter",
-              "verbatim": false,
-              "missing": null
+              "value": "At the counter"
             },
             {
               "key": "Orders",
-              "value": 12,
-              "verbatim": false,
-              "missing": null
+              "value": 12
             }
           ]
         }
@@ -16151,10 +15858,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Every magnet on the store display fell off at once, then did it again an hour later.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Ticket #101"
         }
       ],
@@ -16250,10 +15955,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Every magnet on the store display fell off at once, then did it again an hour later.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Ticket #101"
         }
       ],
@@ -16393,11 +16096,10 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
-          "title": "Cerebro reception log",
+          "$v": 2,
           "content": "STATION: CEREBRO / WEATHERTOP\nCALL TO UTAH .......... NO REPLY\nUNEXPECTED SIGNAL .... VOICE / RUSSIAN\nMESSAGE .............. REPEATING\nNEXT STEP ............ KEEP THE TAPE",
-          "mediaType": "text/plain",
-          "verbatim": true
+          "verbatim": true,
+          "title": "Cerebro reception log"
         }
       ],
       "tombstone": null
@@ -16630,10 +16332,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "Tape the Russian message Cerebro picked up on Weathertop.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Record the broadcast"
         }
       ],
@@ -17281,20 +16981,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -17439,10 +17135,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
+          "$v": 2,
           "content": "The power went out across town this evening. It came back on its own a minute later.",
-          "mediaType": "text/plain",
-          "verbatim": false,
           "title": "Ticket #102"
         }
       ],
@@ -17517,20 +17211,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Day of the Dead",
           "items": [
             {
               "key": "Director",
-              "value": "George A. Romero",
-              "verbatim": false,
-              "missing": null
+              "value": "George A. Romero"
             },
             {
               "key": "Showing",
-              "value": "Sneak preview",
-              "verbatim": false,
-              "missing": null
+              "value": "Sneak preview"
             }
           ]
         }
@@ -17627,20 +17317,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Day of the Dead",
           "items": [
             {
               "key": "Director",
-              "value": "George A. Romero",
-              "verbatim": false,
-              "missing": null
+              "value": "George A. Romero"
             },
             {
               "key": "Showing",
-              "value": "Sneak preview",
-              "verbatim": false,
-              "missing": null
+              "value": "Sneak preview"
             }
           ]
         }
@@ -17737,20 +17423,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Day of the Dead",
           "items": [
             {
               "key": "Director",
-              "value": "George A. Romero",
-              "verbatim": false,
-              "missing": null
+              "value": "George A. Romero"
             },
             {
               "key": "Showing",
-              "value": "Sneak preview",
-              "verbatim": false,
-              "missing": null
+              "value": "Sneak preview"
             }
           ]
         }
@@ -17847,20 +17529,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Day of the Dead",
           "items": [
             {
               "key": "Director",
-              "value": "George A. Romero",
-              "verbatim": false,
-              "missing": null
+              "value": "George A. Romero"
             },
             {
               "key": "Showing",
-              "value": "Sneak preview",
-              "verbatim": false,
-              "missing": null
+              "value": "Sneak preview"
             }
           ]
         }
@@ -18164,26 +17842,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Pull request #3",
           "items": [
             {
               "key": "Title",
-              "value": "Boost the range to reach Utah",
-              "verbatim": false,
-              "missing": null
+              "value": "Boost the range to reach Utah"
             },
             {
               "key": "Branch",
               "value": "utah-range",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             },
             {
               "key": "Files changed",
-              "value": "2",
-              "verbatim": false,
-              "missing": null
+              "value": "2"
             }
           ]
         }
@@ -18212,20 +17885,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -18300,26 +17969,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Pull request #2",
           "items": [
             {
               "key": "Title",
-              "value": "Wire up the transmitter",
-              "verbatim": false,
-              "missing": null
+              "value": "Wire up the transmitter"
             },
             {
               "key": "Branch",
               "value": "transmitter",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             },
             {
               "key": "Files changed",
-              "value": "5",
-              "verbatim": false,
-              "missing": null
+              "value": "5"
             }
           ]
         }
@@ -18348,20 +18012,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -18436,26 +18096,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Pull request #1",
           "items": [
             {
               "key": "Title",
-              "value": "Add the antenna mount",
-              "verbatim": false,
-              "missing": null
+              "value": "Add the antenna mount"
             },
             {
               "key": "Branch",
               "value": "antenna-mount",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             },
             {
               "key": "Files changed",
-              "value": "3",
-              "verbatim": false,
-              "missing": null
+              "value": "3"
             }
           ]
         }
@@ -18484,20 +18139,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -18572,20 +18223,16 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "cerebro",
           "items": [
             {
               "key": "About",
-              "value": "The radio built at camp, to reach Utah from Weathertop",
-              "verbatim": false,
-              "missing": null
+              "value": "The radio built at camp, to reach Utah from Weathertop"
             },
             {
               "key": "Visibility",
-              "value": "Public",
-              "verbatim": false,
-              "missing": null
+              "value": "Public"
             }
           ]
         }
@@ -18657,26 +18304,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1983",
           "items": [
             {
               "key": "Amount",
-              "value": "$455.25",
-              "verbatim": false,
-              "missing": null
+              "value": "$455.25"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1983",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -18748,26 +18390,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1982",
           "items": [
             {
               "key": "Amount",
-              "value": "$388.00",
-              "verbatim": false,
-              "missing": null
+              "value": "$388.00"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1982",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -18839,26 +18476,21 @@
       "body": [
         {
           "$body": "Storyfeed/Body/KeyValue",
-          "$v": 1,
+          "$v": 3,
           "title": "Scoops Ahoy invoice #1981",
           "items": [
             {
               "key": "Amount",
-              "value": "$412.50",
-              "verbatim": false,
-              "missing": null
+              "value": "$412.50"
             },
             {
               "key": "Billed to",
-              "value": "Starcourt Mall",
-              "verbatim": false,
-              "missing": null
+              "value": "Starcourt Mall"
             },
             {
               "key": "Reference",
               "value": "INV-1981",
-              "verbatim": true,
-              "missing": null
+              "verbatim": true
             }
           ]
         }
@@ -18934,7 +18566,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "hawkins-post-internship-agreement.pdf",
           "size": 61870,
           "mediaType": "application/pdf"
@@ -19011,7 +18643,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "hawkins-post-internship-agreement.pdf",
           "size": 61870,
           "mediaType": "application/pdf"
@@ -19088,7 +18720,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "scoops-ahoy-employment-contract.pdf",
           "size": 48213,
           "mediaType": "application/pdf"
@@ -19165,7 +18797,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "scoops-ahoy-employment-contract.pdf",
           "size": 48213,
           "mediaType": "application/pdf"
@@ -19656,7 +19288,7 @@
       "body": [
         {
           "$body": "Storyfeed/Body/FileAttachment",
-          "$v": 1,
+          "$v": 2,
           "name": "hess-farm-sale-agreement.pdf",
           "size": 132406,
           "mediaType": "application/pdf"
@@ -19777,11 +19409,10 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
-          "title": "Hawkins Lab system report",
+          "$v": 2,
           "content": "<p><strong>Door control restored.</strong> The restart has returned the locks to manual control.</p><ul><li>Keep the exit route clear.</li><li>Confirm that everyone has left the building.</li></ul>",
           "mediaType": "text/html",
-          "verbatim": false
+          "title": "Hawkins Lab system report"
         }
       ],
       "tombstone": null
@@ -19851,11 +19482,10 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
-          "title": "Hawkins Lab lock status",
+          "$v": 2,
           "content": "SYSTEM RESTART ........ COMPLETE\nMANUAL INPUT .......... ACCEPTED\nDOOR CONTROL .......... ONLINE\nEXIT LOCKS ............ RELEASED",
-          "mediaType": "text/plain",
-          "verbatim": true
+          "verbatim": true,
+          "title": "Hawkins Lab lock status"
         }
       ],
       "tombstone": null
@@ -19946,11 +19576,10 @@
       "body": [
         {
           "$body": "Storyfeed/Body/Prose",
-          "$v": 1,
-          "title": "Hawkins Lab door override",
+          "$v": 2,
           "content": "10 REM DOOR OVERRIDE — ILLUSTRATIVE BASIC\n20 INPUT \"SECURITY CODE\"; C$\n30 IF C$ = \"\" THEN GOTO 20\n40 PRINT \"MANUAL OVERRIDE REQUESTED\"\n50 FOR D = 1 TO 4\n60 PRINT \"DOOR\"; D; \" RELEASE REQUEST SENT\"\n70 NEXT D\n80 END",
-          "mediaType": "text/plain",
-          "verbatim": true
+          "verbatim": true,
+          "title": "Hawkins Lab door override"
         }
       ],
       "tombstone": null
@@ -21106,9 +20735,8 @@
       "body": [
         {
           "$body": "Storyfeed/Body/ItemList",
-          "$v": 1,
+          "$v": 3,
           "title": "Joyce’s alphabet wall",
-          "ordered": false,
           "items": [
             "A B C D E F G H",
             "I J K L M N O P Q",

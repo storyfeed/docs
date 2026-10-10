@@ -90,11 +90,13 @@ const slug = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`
 // from a paper is an Excerpt. Orders carry none: the order is the docs'
 // standard example, and its pages teach the bare `toFeed()`. A page that
 // teaches a body on an order builds it on its own example.
-const detail = (key: string, value: string | number, verbatim = false) => ({ key, value, verbatim, missing: null })
+// Bodies are written as Storyfeed writes them: the current version, with any
+// field still at its default left out.
+const detail = (key: string, value: string | number, verbatim = false) => ({ key, value, ...(verbatim ? { verbatim } : {}) })
 const card = (title: string, items: ReturnType<typeof detail>[]) =>
-  [{ $body: 'Storyfeed/Body/KeyValue', $v: 1, title, items }]
+  [{ $body: 'Storyfeed/Body/KeyValue', $v: 3, title, items }]
 const prose = (title: string, content: string) =>
-  [{ $body: 'Storyfeed/Body/Prose', $v: 1, content, mediaType: 'text/plain', verbatim: false, title }]
+  [{ $body: 'Storyfeed/Body/Prose', $v: 2, content, title }]
 
 
 const cast = build(CAST, (id, label) => user(id, label))
@@ -146,12 +148,12 @@ for (const key of Object.keys(TICKETS) as (keyof typeof TICKETS)[])
 // A signed document is its file. Sizes are ours.
 const signed: Record<keyof typeof DOCUMENT_FILES, number> = { contract: 48213, internship: 61870, farmSale: 132406 }
 for (const key of Object.keys(DOCUMENT_FILES) as (keyof typeof DOCUMENT_FILES)[])
-  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
+  things[key] = { ...things[key], body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2,
     name: DOCUMENT_FILES[key], size: signed[key], mediaType: 'application/pdf' }] }
 // Nancy's story quotes the woman she interviewed (SOURCES.post: Driscoll's rats, S3E2).
 // The words are Doris Driscoll's, so `from` names her. The wording is ours, not a canon line.
-things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 1,
-  text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom, truncated: true }] }
+things.ratStory = { ...things.ratStory, body: [{ $body: 'Storyfeed/Body/Excerpt', $v: 2,
+  text: ENTITY_CONTENT.ratStory, from: ENTITY_CONTENT.ratStoryFrom }] }
 // The film is a real one (SOURCES.cinema): its facts, never its poster.
 things.film = { ...things.film, body: card(HOLDINGS.film, [
   detail('Director', ENTITY_CONTENT.director), detail('Showing', ENTITY_CONTENT.showing)]) }
@@ -170,22 +172,20 @@ const order = (n: number) => entity('order', String(n), `Order #${n}`, `/orders/
 // FeedLink lessons: the fair's food comes from FARE (SOURCES.fair). The order,
 // quantities, notices and their wording are illustrative app content, not canon.
 const fairOrderLabel = 'Order #1042'
-const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $v: 1,
-  title: `${fairOrderLabel} items`, ordered: false,
+const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $v: 3,
+  title: `${fairOrderLabel} items`,
   items: [
-    { label: FARE.hotDog, href: fare.hotDog.link.href },
-    { label: FARE.cornDog, href: fare.cornDog.link.href },
+    { label: FARE.hotDog, href: fare.hotDog.link.href, modal: false, attributes: [] },
+    { label: FARE.cornDog, href: fare.cornDog.link.href, modal: false, attributes: [] },
     FARE.pretzel,
-  ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042' } }] }
+  ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042', modal: false, attributes: [] } }] }
 const hoursTitle = `${VENUES.scoops} opening hours`
-const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
-  subject: { label: hoursTitle, href: '/notices/101' },
-  content: 'The counter opens at 10 am. Orders are available until 9 pm.',
-  image: null, files: [], footnote: null }] })
-const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
-  subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.link.href}/guide` },
-  content: 'The visitor guide includes entrances, parking and shop locations.',
-  image: null, files: [], footnote: null }] })
+const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 5,
+  subject: { label: hoursTitle, href: '/notices/101', modal: false, attributes: [] },
+  content: 'The counter opens at 10 am. Orders are available until 9 pm.' }] })
+const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 5,
+  subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.link.href}/guide`, modal: false, attributes: [] },
+  content: 'The visitor guide includes entrances, parking and shop locations.' }] })
 
 // uncertain: the branches, file counts and titles are invented for the cameo merges.
 const PULLS: Record<number, [string, number]> = {
@@ -247,8 +247,8 @@ const ALT: Record<string, string> = {
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
 const mediaOf = (file: string) => ({ preview: picture(file) })
-const imageBody = (caption: string) => [{ $body: 'Storyfeed/Body/Image', $v: 1,
-  caption, alt: caption, width: null, height: null, image: 'preview' }]
+const imageBody = (caption: string) => [{ $body: 'Storyfeed/Body/Image', $v: 3,
+  alt: caption, caption, image: 'preview' }]
 
 const photo = (n: number, file?: string) => entity('photo', String(n), `IMG_${n}.jpg`, `/photos/${n}`,
   file ? { media: mediaOf(file), body: imageBody(ALT[file]) } : {})
@@ -639,13 +639,13 @@ ROWS.push(
 const records = build(RECORD_TITLES, (id, label, key) => entity('field_record', id, label, null, {
   // Suzie's answer, as Dustin took it down: her words, so an Excerpt from her.
   body: key === 'planck'
-    ? [{ $body: 'Storyfeed/Body/Excerpt', $v: 1, text: RECORD_TEXT.planck, from: RECORD_TEXT.planckFrom, truncated: false }]
+    ? [{ $body: 'Storyfeed/Body/Excerpt', $v: 2, text: RECORD_TEXT.planck, from: RECORD_TEXT.planckFrom, truncated: false }]
     : key === 'alphabet'
-    ? [{ $body: 'Storyfeed/Body/ItemList', $v: 1, title: label, ordered: false,
+    ? [{ $body: 'Storyfeed/Body/ItemList', $v: 3, title: label,
         items: [RECORD_TEXT.alphabetTop, RECORD_TEXT.alphabetMiddle, RECORD_TEXT.alphabetBottom] }]
-    : [{ $body: 'Storyfeed/Body/Prose', $v: 1, title: label, content: RECORD_TEXT[key],
-        mediaType: key === 'caseMemo' ? 'text/markdown' : key === 'labReport' ? 'text/html' : 'text/plain',
-        verbatim: ['program', 'terminal', 'radioLog'].includes(key) }],
+    : [{ $body: 'Storyfeed/Body/Prose', $v: 2, content: RECORD_TEXT[key],
+        ...(key === 'caseMemo' ? { mediaType: 'text/markdown' } : key === 'labReport' ? { mediaType: 'text/html' } : {}),
+        ...(['program', 'terminal', 'radioLog'].includes(key) ? { verbatim: true } : {}), title: label }],
 }))
 const illustrativeRecord = { uncertain: 'Original illustrative record around a sourced plot event; text, format and clock time are invented, not a screen transcript' }
 ROWS.push(
@@ -669,7 +669,7 @@ const deeperRow = (id: string, at: string, verb: string, actor: any, object: any
   row(`deeper-${id}`, at, verb, actor, object, target, 'splice',
     { uncertain: 'Illustrative software action; not an on-screen event' })
 const pickupOrder = order(2081)
-pickupOrder.body = [{ $body: 'Storyfeed/Body/Component', $v: 1, name: 'Orders/Progress', props: {
+pickupOrder.body = [{ $body: 'Storyfeed/Body/Component', $v: 2, name: 'Orders/Progress', props: {
   title: pickupOrder.label,
   steps: ['Placed', 'Confirmed', 'Ready'],
   current: 'Confirmed',
