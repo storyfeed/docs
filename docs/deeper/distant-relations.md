@@ -157,10 +157,11 @@ An explicit `context()` still records a place outside the object's parent chain.
 
 ### Keeping Actor and Place Separate
 
-If Sally works on an Acme task, the task's parents lead to Acme's tenant.
-Sally's own parent may be her home tenant. Walking her parents would put Acme's
-activity in that tenant's feed, so **the actor's parents are never followed**.
-`involving($sally)` still finds her direct participation. The `origin`,
+When a user works on a task in another tenant, the task's parents lead to that
+tenant. The user's own parent may be their home tenant. Walking the user's
+parents would put the other tenant's activity in the home tenant's feed, so
+**the actor's parents are never followed**. `involving($user)` still finds the
+user's direct participation. The `origin`,
 `result`, `instrument`, `location` and `generator` roles also contribute only
 their direct identities.
 
@@ -194,16 +195,7 @@ Route::get('/malls/{mall}/own-feed', function (Mall $mall) {
 A cursor keeps the depth it was created with. Resuming it with the other depth
 throws an exception.
 
-## Common Hierarchies
-
-| Application | Parent Chain | Feed It Unlocks |
-|---|---|---|
-| Helpdesk | reply → ticket → queue → team → account | every ticket interaction in an account |
-| Code Hosting | comment → pull request → repository → organization | all repository activity in an organization |
-| Learning | submission → lesson → module → course → school | submissions across a school |
-| Commerce | refund → order → store → merchant | refunds across a merchant's stores |
-| Property | maintenance request → unit → building → portfolio | maintenance across a portfolio |
-| Events | question → session → track → conference | questions across a conference |
+<a id="common-hierarchies"></a>
 
 ## Declaring a Parent on Existing History
 
@@ -220,9 +212,8 @@ Recorded paths, including paths recorded without a parent, remain unchanged.
 Running it again adds nothing to roles it has already filled. It accepts the
 same `--resume`, `--restart` and `--chunk` options as the full rebuild below.
 
-Snapshots written before Storyfeed recorded `parent(null)` explicitly cannot show
-whether a role had no parent or was never recorded. The command fills those
-roles from current parents.
+A snapshot that does not record whether its role had a parent counts as never
+recorded, and the command fills it from current parents.
 
 The doctor reports `ancestors.missing` for each activity role with a declared
 parent and no recorded path.
