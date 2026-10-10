@@ -81,11 +81,14 @@ use App\Models\MenuItem;
 use Storyfeed\Facades\Story;
 
 Story::for(MenuItem::class)
-    ->verb('delete') // a removal verb: the tombstone doesn't make it redundant
+    ->verb('delete')
     ->headline(':actor deleted :object from :target');
 ```
 
 <FeedExample :items="[deleted]" />
+
+`delete` is a [removal verb](/deeper/deleted-models#removal-verbs), so the
+tombstone does not make its activity redundant.
 
 ## Choosing What Stays
 
