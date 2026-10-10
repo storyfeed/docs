@@ -123,7 +123,9 @@ It may also name the closest container with `->parent($this->shop)` (or the
 named argument `parent: $this->shop`). This makes activities on the model
 retrievable through its ancestors. See [Distant Relations](/deeper/distant-relations).
 
-`InteractsWithFeed` refreshes the shared snapshot on model saves while
+Storyfeed stores the entity as the model's snapshot: one saved copy of its
+label and values, shared by every activity the model appears in.
+`InteractsWithFeed` refreshes the snapshot on model saves while
 recording is enabled. Changes to its snapshot values can therefore appear
 on older activities too. Activity `data` preserves the values recorded for that event.
 
@@ -159,7 +161,9 @@ also set a label or combine values from a parent model and its subclasses.
 Unset fields remain empty except for the label. If you implement `toFeed`,
 the trait does not call `describeFeed`.
 
-## Custom Labels
+<a id="custom-labels"></a>
+
+## Customizing Default Labels
 
 To customize default labels across your application, register a callback in a
 service provider. Return `null` to use the default rules:
