@@ -55,8 +55,8 @@ Vue and React also take a rail as `{ primary, secondary }`, each slot one of
 
 | Divider style | Draws |
 |---|---|
+| `branch` | the default: a curve off the rail into the label, darkening from the rail's colour (`border`) to the label's (`muted-foreground`); the rail line stops a small gap above it |
 | `dot` | a dot on the rail, the label beside it |
-| `branch` | a line branching off the rail to the label |
 
 The style applies to day headings and to the labels in `dividers`. `dividers`
 is keyed by item id: `{ "01K…": "Timeline" }`.
