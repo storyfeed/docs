@@ -20,15 +20,25 @@ For an order-placement activity recorded with strict grammar disabled and no
 headline definition, the report shows:
 
 ```txt
-No headline resolves for `order.place` — headlines will be null.
-No icon resolves for `order.place`.
+Snapshots compile: sync (STORYFEED_SNAPSHOTS)
+Installed: storyfeed/storyfeed dev-main@8b55f7b
+No headline resolves for `order.place` — headlines will be null. Guard it in a test with `HeadlineCoverage::assertCoversRecorded()`.
+No icon resolves for `order.place`. Guard it in a test with `HeadlineCoverage::assertCoversRecorded()`.
 Note: verb `place` has no AS2.0 mapping — will serialize as base `Activity`.
 2 finding(s) — see above.
 Run with --stubs to print the registrations these imply.
+
+  --fail-on=error   exit non-zero when an error is present (`warning` gates on warnings too)
+  --only=<check>    report one check at a time; --list names them
+  --json            the same report, machine-readable
 ```
 
-The count excludes notes and acknowledged findings. With no active errors or
-warnings and no acknowledgments, the command prints `Storyfeed looks healthy.`
+The report opens with the snapshot mode and every installed `storyfeed/*`
+package, with its commit, so a pasted report says which code produced it. A
+finding that a [coverage assertion](/deeper/testing#testing-headline-coverage)
+guards ends by naming it. The count excludes notes and acknowledged findings.
+With no active errors or warnings and no acknowledgments, the command prints
+`Storyfeed looks healthy.` The flags at the end print on every run.
 
 Most checks query recorded activities, so use a database with traffic, such
 as staging or a production copy. With no activities, configuration, schema,
@@ -65,7 +75,7 @@ php artisan storyfeed:doctor --json
         {
             "code": "grammar.missing",
             "severity": "error",
-            "message": "No headline resolves for `order.place` — headlines will be null.",
+            "message": "No headline resolves for `order.place` — headlines will be null. Guard it in a test with `HeadlineCoverage::assertCoversRecorded()`.",
             "subject": {
                 "type": "order",
                 "verb": "place"
@@ -74,19 +84,28 @@ php artisan storyfeed:doctor --json
             "fix": {
                 "registry": "grammar",
                 "key": "order.place",
-                "tokens": [":actor", ":object", ":target", ":context", ":origin", ":result", ":instrument"],
+                "tokens": [":actor", ":object", ":target", ":context", ":origin", ":result", ":instrument", ":location", ":generator"],
                 "snippet": "Story::for(Order::class)->verb('place')->headline(':actor placed :object');",
-                "definition": "Story::for(Order::class)->verb('place')->headline(':actor placed :object');"
+                "definition": "Story::for(Order::class)->verb('place')->headline(':actor placed :object');",
+                "guard": "Storyfeed\\Testing\\HeadlineCoverage::assertCoversRecorded()"
             }
         }
-    ]
+    ],
+    "installed": {
+        "storyfeed/storyfeed": {
+            "version": "dev-main",
+            "reference": "8b55f7b53d823c9c7f4031265fa33611211eb5f0"
+        }
+    }
 }
 ```
 
 The other findings use the same structure. Findings without a generated fix
 have `"fix": null`. `acknowledgment` is the written reason for an accepted
 finding, or `null`. The code's first segment identifies the check; `subject`
-identifies what it checked. `definition` contains the line printed by `--stubs`.
+identifies what it checked. `definition` contains the line printed by `--stubs`,
+and `guard` names the test assertion that fails while the finding stands, or is
+`null`. `installed` lists each installed `storyfeed/*` package.
 
 | Severity | Meaning |
 |---|---|
