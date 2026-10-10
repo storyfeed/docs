@@ -46,9 +46,8 @@ const props = withDefaults(
          */
         height?: number | string
         /**
-         * Leave out the payload bar and draw the caption as a small label, for
-         * one of a run of variants drawn from the same nodes, where one bar per
-         * card would only repeat itself.
+         * Leave out the payload bar, for one of a run of variants drawn from
+         * the same nodes, where one bar per card would only repeat itself.
          */
         hidePayload?: boolean
     }>(),
@@ -169,7 +168,7 @@ async function copy() {
 </script>
 
 <template>
-    <div class="sf-example" :class="[pad > 0 ? `sf-example--pad-${pad}` : '', { 'sf-example--variant': hidePayload }]">
+    <div class="sf-example" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
         <div v-if="slots.default" class="sf-example__caption">
             <slot />
         </div>
@@ -260,26 +259,21 @@ async function copy() {
 .sf-example__caption :deep(.sf-inline-code) {
     white-space: nowrap;
 }
+/* Code in a caption is part of the sentence: its tokens sit on the bar like
+   text, without the chip inline code wears in prose. */
+.sf-example__caption :deep(code) {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: 0.93em;
+    color: var(--vp-c-text-1);
+}
 .sf-example__caption :deep(strong) {
     color: var(--vp-c-text-1);
 }
 /* A captioned example is a unit: give consecutive ones room to read apart. */
 .sf-example:has(.sf-example__caption) {
     margin: 1.75rem 0;
-}
-/* A variant in a run: the label is a small caption, not a header bar, and the
-   run reads as one set. */
-.sf-example--variant:has(.sf-example__caption) {
-    margin: 1rem 0;
-}
-.sf-example--variant .sf-example__caption {
-    padding: 0.55rem 0.9rem 0;
-    border-bottom: 0;
-    background: none;
-    font-size: 12.5px;
-}
-.sf-example--variant .sf-example__preview {
-    padding: 0.6rem 0.9rem 0.8rem;
 }
 .sf-example__code {
     border-top: 1px solid var(--vp-c-divider);
