@@ -126,7 +126,7 @@ With the locale set to French:
 <FeedExample :items="[frenchGroup]" />
 
 The translation is resolved when the feed is read, including when definitions
-are cached. Role tokens remain linked, and `:count` counts activities.
+are cached. Role tokens remain linked.
 
 Translated group tokens are not checked at boot. Each locale must use only
 [tokens supported by the group's axis](/deeper/aggregation#singular-and-plural-tokens).
@@ -168,4 +168,4 @@ return [
 
 :::
 
-See [Aggregation](/deeper/aggregation#group-headline-tokens) for where nouns appear.
+See [Aggregation](/deeper/aggregation#fallback-nouns) for where nouns appear.
