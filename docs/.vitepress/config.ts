@@ -228,6 +228,7 @@ export default defineConfig({
           { text: 'Customizing the Kits', link: '/ui/customizing' },
           { text: 'Custom Rendering', link: '/ui/custom-rendering' },
           { text: 'Blade Components', link: '/ui/reference/blade' },
+          { text: 'Vue Components', link: '/ui/reference/vue' },
           { text: 'Pages, Rails and Styles', link: '/ui/reference/options' },
         ],
       },
