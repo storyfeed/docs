@@ -18,7 +18,9 @@ const unlinked = [{ ...scene.order, object: { ...scene.order.object, link: null 
 ## Introduction
 
 A named feed defines an audience once: its verbs, its mode and its link targets.
-Every screen that retrieves the `'customer'` feed applies the same definition.
+Every screen that retrieves the `'kitchen'` feed applies the same definition. A
+feed class that takes a subject, such as an order, is retrieved through its
+`make` method instead.
 
 <a id="declaring-a-feed"></a>
 
@@ -137,7 +139,8 @@ See [Commands](/reference/commands) for all `make:feed` options.
 <a id="scoping-by-subject"></a>
 
 <a id="defining-verbs-and-read-modes"></a>
-### Defining and Scoping Hooks
+<a id="defining-and-scoping-hooks"></a>
+### Defining and Scoping a Feed Class
 
 The `define` method configures the feed without constructor values, including
 when the doctor checks verb coverage. The `scope` method applies the subject
@@ -206,17 +209,32 @@ A model's [link resolver](/basics/feedable-models#the-link) can call the
 context's `feed` method to get the registered feed name. Use it to return a
 kitchen ticket URL, customer status URL, or no link:
 
-```php memo="app/Models/Order.php" at="booted()"
+```php memo="app/Models/Order.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
 
-static::feedMediaUsing(
-    fn (FeedContext $context) => match ($context->feed()) {
-        'kitchen' => route('kitchen.ticket', $context->routeKey()),
-        'customer' => route('orders.status', $context->routeKey()),
-        // an ad-hoc feed reports no name; without this arm the match throws
-        default => null,
-    },
-);
+class Order extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    protected static function booted(): void
+    {
+        static::feedMediaUsing(
+            fn (FeedContext $context) => match ($context->feed()) {
+                'kitchen' => route('kitchen.ticket', $context->routeKey()),
+                'customer' => route('orders.status', $context->routeKey()),
+                // an ad-hoc feed reports no name; without this arm the match throws
+                default => null,
+            },
+        );
+    }
+}
 ```
 
 On the `kitchen` feed:
