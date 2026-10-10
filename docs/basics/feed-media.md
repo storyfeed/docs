@@ -3,7 +3,13 @@
 <script setup>
 import { scene, avatar } from '../.vitepress/theme/world'
 const photo = scene.basics.activityContent.photo
-const linked = { ...photo, object: { ...photo.object, link: { ...photo.object.link, modal: true }, body: null } }
+const plain = { ...photo, object: { ...photo.object, body: null } }
+const linked = { ...plain, object: { ...plain.object, link: { ...plain.object.link, modal: true, attributes: { 'aria-label': 'Open photo' } } } }
+const sparkline = { src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="24"><polyline fill="none" stroke="#0f766e" stroke-width="2" points="0,20 20,16 40,18 60,10 80,12 100,4 120,6"/></svg>'), width: 120, height: 24, alt: 'Orders this week', mediaType: 'image/svg+xml' }
+const target = photo.target
+const charted = { ...photo, target: null, object: { ...target,
+  media: { ...target.media, slots: { sparkline } },
+  body: [{ $body: 'Storyfeed/Body/Image', $v: 3, image: 'slots.sparkline' }] } }
 const file = { ...photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...photo.object, type: 'document', label: 'Signed Agreement.pdf',
   link: { href: '/documents/signed-agreement', modal: false, attributes: [] }, media: avatar('document', photo.object.id, 'Signed Agreement.pdf'),
   body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'Signed Agreement.pdf', size: 48213, mediaType: 'application/pdf' }] } }
@@ -41,7 +47,7 @@ class Photo extends Model implements Feedable
 }
 ```
 
-<FeedExample :items="[{ ...linked, object: { ...linked.object, modal: false } }]" />
+<FeedExample :items="[plain]" />
 
 The method receives a `FeedContext` with the snapshot's label, route key and
 data, and returns a `FeedMedia` or `null`. Resolving URLs here lets a route or
@@ -61,7 +67,7 @@ static::feedMediaUsing(
 );
 ```
 
-<FeedExample :items="[{ ...linked, object: { ...linked.object, modal: false } }]" />
+<FeedExample :items="[plain]" />
 
 A model's own `feedMedia()` method takes precedence over the registered closure.
 A closure may also return a URL string or `null`. Without either resolver,
@@ -69,22 +75,45 @@ the trait returns `null`.
 
 ## Linking to the Model
 
-Use `url()` for the destination of the entity's name in the headline. Use
-`modal()` to hint that the renderer should open it in place, and `attributes()`
-for link attributes:
+Use `url()` for the destination of the entity's name in the headline. To say
+more about the link, pass a `FeedLink` to `link()`. Its `modal()` method hints
+that the renderer should open the link in place, and `attributes()` adds link
+attributes:
 
-```php memo="app/Models/Photo.php"
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Photo.php" at="feedMedia()"
 use Storyfeed\FeedContext;
+use Storyfeed\FeedLink;
 use Storyfeed\FeedMedia;
 
 public static function feedMedia(FeedContext $context): ?FeedMedia
 {
     return FeedMedia::make()
-        ->url(route('photos.show', $context->routeKey()))
-        ->modal()
-        ->attributes(['aria-label' => 'Open photo']);
+        ->link(
+            FeedLink::to(route('photos.show', $context->routeKey()))
+                ->modal()
+                ->attributes(['aria-label' => 'Open photo'])
+        );
 }
 ```
+
+```php [Named Arguments] memo="app/Models/Photo.php" at="feedMedia()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedLink;
+use Storyfeed\FeedMedia;
+
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make(
+        link: FeedLink::to(route('photos.show', $context->routeKey()))
+            ->modal()
+            ->attributes(['aria-label' => 'Open photo']),
+    );
+}
+```
+
+:::
 
 <FeedExample :items="[linked]" />
 
@@ -93,7 +122,8 @@ choose a [different link for each feed](/basics/named-feeds#linking-each-feed-so
 
 ### Opening Links in a Modal
 
-`modal()` sets `entity.modal` to `true`; the URL stays an ordinary destination.
+`modal()` sets the entity's `link.modal` to `true`; the URL stays an ordinary
+destination. `url($href)` is the short form of `link(FeedLink::to($href))`.
 
 ## Linking Files
 
@@ -135,8 +165,9 @@ Activity Streams output carries them in its `attachment` property.
 
 ## Showing Pictures
 
-A picture appears only when a body names it. Declare an `Image` body in
-`toFeed()`, then supply the named slot from `feedMedia()`:
+A picture from `feedMedia()` appears only when a body names its slot. Declare
+an `Image` body in `toFeed()` with the model's `feedMediaPreview()`, then supply
+the preview from `feedMedia()`:
 
 ```php memo="app/Models/Photo.php" at="toFeed()"
 use Storyfeed\Body\Image;
@@ -144,7 +175,11 @@ use Storyfeed\FeedEntity;
 
 return FeedEntity::make()
     ->label($this->name)
-    ->body(Image::make()->caption($this->subject)->alt($this->description)->withPreview());
+    ->body(
+        Image::make($this->feedMediaPreview())
+            ->caption($this->subject)
+            ->alt($this->description)
+    );
 ```
 
 ```php memo="app/Models/Photo.php" at="feedMedia()"
@@ -162,18 +197,21 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 <FeedExample :items="[photo]" />
 
-The caption belongs to the body. The picture's location is resolved when the
-feed is read. An empty slot draws nothing. An Image body defaults to `preview`;
-`withIcon()`, `withPreview()`, and `withImage()` explicitly name one slot.
-`MediaObject` offers the same methods for a picture alongside its text.
+The caption belongs to the body. The body stores the slot's name, and the
+picture is resolved each time the feed is read, so a changed thumbnail shows
+on every row. An empty slot draws nothing. `Image::make()` with no picture
+shows the `preview` slot. `MediaObject::image()` accepts the same values for a
+picture alongside its text.
 
 The three slots retain their Activity Streams 2.0 names:
 
-| Slot | Job | Body Method |
+| Slot | Job | Model Method |
 |---|---|---|
-| `icon` | a small representation that identifies the entity, such as an avatar or logo | `withIcon()` |
-| `preview` | a preview of the entity, such as a photograph's thumbnail or a page's link-card image | `withPreview()` |
-| `image` | a larger picture of a non-image entity, such as a menu item | `withImage()` |
+| `icon` | a small representation that identifies the entity, such as an avatar or logo | `feedMediaIcon()` |
+| `preview` | a preview of the entity, such as a photograph's thumbnail or a page's link-card image | `feedMediaPreview()` |
+| `image` | a larger picture of a non-image entity, such as a menu item | `feedMediaImage()` |
+
+Each method is shorthand for `getFeedMedia()`, such as `getFeedMedia('icon')`.
 
 The AS2 serializer emits these as `icon`, `preview`, and `image`. None is the
 entity's link. Collapsed groups sample their members' Image bodies; members
@@ -181,6 +219,46 @@ without one contribute no picture tile.
 
 To retain image dimensions or a media type with the entity,
 [store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
+
+### Adding Your Own Slots
+
+For a picture the three slots do not describe, such as a chart of a menu
+item's orders, name a slot of your own with `slot()`:
+
+```php memo="app/Models/MenuItem.php" at="feedMedia()"
+use Storyfeed\FeedContext;
+use Storyfeed\FeedImage;
+use Storyfeed\FeedMedia;
+
+public static function feedMedia(FeedContext $context): ?FeedMedia
+{
+    return FeedMedia::make()
+        ->url(route('menu.show', $context->routeKey()))
+        ->slot('sparkline', FeedImage::make()
+            ->src(route('menu.sparkline', $context->routeKey()))
+            ->width(120)
+            ->height(24)
+            ->alt('Orders this week'));
+}
+```
+
+A body shows it with `getFeedMedia()`:
+
+```php memo="app/Models/MenuItem.php" at="toFeed()"
+use Storyfeed\Body\Image;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label($this->name)
+    ->body(Image::make($this->getFeedMedia('sparkline')));
+```
+
+<FeedExample :items="[charted]" />
+
+A slot name is letters, digits, `_` and `-`, starting with a letter. The
+built-in names `icon`, `preview` and `image` have their own methods. Custom
+slots appear under `media.slots` in the payload and are left out of Activity
+Streams output. Pass a generated SVG as a `data:` URL in `src`.
 
 ## Giving an Actor an Avatar
 
