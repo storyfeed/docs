@@ -293,6 +293,7 @@ export default defineConfig({
           { text: 'Recording Signed-Link Access', link: '/cookbook/recording-signed-link-access' },
           { text: 'Recording Email Lifecycle Events', link: '/cookbook/email-lifecycle-events' },
           { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
+          { text: 'Recording Connected App Writes', link: '/cookbook/recording-connected-app-writes' },
           { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
           { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
           { text: 'Naming Group Members From Activity Data', link: '/cookbook/naming-group-members' },
