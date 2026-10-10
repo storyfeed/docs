@@ -45,6 +45,7 @@ export const REDIRECTS: Record<string, string> = {
   '/deeper/grammar': '/deeper/aggregation#registering-a-group-headline',
   '/deeper/nested-containers': '/deeper/distant-relations',
   '/deeper/stories': '/basics/story-classes',
+  '/cookbook/verbs-and-grammar-together': '/basics/story-classes',
 }
 
 /** The page left at an old URL: noindex, canonical, a meta refresh, and a script that keeps the anchor. */
