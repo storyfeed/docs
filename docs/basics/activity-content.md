@@ -37,6 +37,10 @@ const withTable = { ...content.itemList, object: { ...content.itemList.object, b
 const withCallToAction = { ...content.notice, object: { ...content.notice.object, body: [{
   $body: 'Storyfeed/Body/CallToAction', $v: 1, $fallback: 'Read the notice', content: content.notice.object.body[0].content,
   action: { label: 'Read the notice', link: { href: null, modal: false, attributes: [] } } }] } }
+// The order's pickup time, with a plain-text line for a renderer without KeyValue.
+const withFallback = { ...content.confirmed,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 3,
+    $fallback: 'Pickup at 12:10 pm', items: [{ key: 'Pickup', value: '12:10 pm' }] }] } }
 // The order, featuring the shop it was placed with.
 const featuringShop = { ...scene.order, featured: 'target' }
 const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
@@ -202,6 +206,17 @@ Prose::verbatim($this->output, title: $this->name);
 ```
 
 <FeedExample :items="[content.program, content.terminal, content.radioLog]" />
+
+To name the code's language, use `Prose::code` with a media type, such as
+`text/x-php` or `application/json`:
+
+```php
+use Storyfeed\Body\Prose;
+
+Prose::code($this->source, 'text/x-php', title: $this->path);
+```
+
+The body stores the media type with the source, as verbatim text.
 
 For formatted text, use `Prose::markdown` or `Prose::html`. Storyfeed stores
 the source, and the renderer converts and sanitizes it:
@@ -799,22 +814,67 @@ Both write the body's `$meta.maxHeight`. Add your own renderer settings with
 Prose::markdown($this->notes)->withMeta(['acme.layout' => 'wide']);
 ```
 
+<a id="body-fallback"></a>
+
+### Adding a Fallback Line
+
+Every body accepts a `fallback`: one line of plain text, stored in the body's
+`$fallback` key, for a renderer that does not draw its type:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(
+        KeyValue::make()
+            ->items('Pickup', $this->pickup_at->format('g:i a'))
+            ->fallback("Pickup at {$this->pickup_at->format('g:i a')}"),
+    );
+```
+
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
+use Storyfeed\Body\KeyValue;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
+    label: "Order #{$this->reference}",
+    body: KeyValue::make(
+        items: ['Pickup' => $this->pickup_at->format('g:i a')],
+    )->fallback("Pickup at {$this->pickup_at->format('g:i a')}"),
+);
+```
+
+:::
+
+<FeedExample payload :items="[withFallback]" />
+
+Without one, a `Table` stores its title and a `CallToAction` its subject or
+action text as the fallback. Other body types store none.
+
 <a id="built-in-body-types"></a>
 
 ### Available Body Types
 
-| Body Type | Content | Payload Keys |
-|---|---|---|
-| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
-| `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` |
-| `Image` | a picture and caption | `src`, `mediaType`, `caption`, `alt`, `width`, `height`, `image` (slot name) |
-| `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
-| `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
-| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
-| `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
-| `Table` | rows and columns | `title`, `headers`, `rows`, `footer` |
-| `CallToAction` | a heading, text, and one action | `subject`, `content`, `action` of `label`, `link` |
-| `Component` | a custom component name and props | `name`, `props` |
+| Body Type | Content | Payload Keys | Left Out at Their Default |
+|---|---|---|---|
+| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` | `title`, `defaultPlaceholder`; a row's `verbatim` (`false`) and `placeholder` (the body's `defaultPlaceholder`) |
+| `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` | `from`, `truncated` (`true`) |
+| `Image` | a picture and caption | `src`, `mediaType`, `caption`, `alt`, `width`, `height`, `image` (slot name) | all |
+| `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` | all |
+| `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` | `mediaType` (`text/plain`), `verbatim` (`false`), `title` |
+| `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` | `title`, `ordered` (`false`), `totalItems`, `more` |
+| `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` | `subject`, `content`, `image`, `files` (`[]`), `footnote` |
+| `Table` | rows and columns | `title`, `headers`, `rows`, `footer` | `title`, `headers` (`[]`), `footer` (`[]`) |
+| `CallToAction` | a heading, text, and one action | `subject`, `content`, `action` of `label`, `link` | `subject`, `content` |
+| `Component` | a custom component name and props | `name`, `props` | `props` (`[]`) |
+
+A stored body leaves out each key that holds its default, which is `null`
+unless the table says otherwise. A body class's static `upgrade($payload,
+$version)` method returns the payload with every key filled in.
 
 These classes use the `Storyfeed\Body` namespace. Each body's payload includes
 its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
