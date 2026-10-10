@@ -138,13 +138,18 @@ Story::for(Order::class)
 <FeedExample :items="[complete, placed]" />
 
 Use the `intent` method to assign an application-defined value, such as
-`success` or `danger`. Storyfeed returns it in the `glyph_intent` field:
+`success` or `danger`. Add it to the verb's definition, and Storyfeed returns
+it in the `glyph_intent` field:
 
 ```php memo="routes/feed.php"
 use App\Models\Order;
 use Storyfeed\Facades\Story;
 
-Story::for(Order::class)->verb('complete')->icon('receipt')->intent('success');
+Story::for(Order::class)
+    ->verb('complete')
+    ->headline(':actor completed :object')
+    ->icon('receipt')
+    ->intent('success'); // [!code highlight]
 ```
 
 <FeedExample :items="[completeWithIntent]" expanded />
@@ -205,7 +210,8 @@ Story::resource(Order::class)->except('update');
 Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
-Defining the same verb twice inline throws, naming both locations. A later
+Two inline definitions of the same verb that set the same field, such as two
+headlines or two icons, throw, naming both locations. A later
 [method or invokable binding](/basics/stories#supplementing-resource-stories)
 replaces the resource definition for that type and verb.
 
@@ -220,7 +226,7 @@ Storyfeed applies definitions in this order, from most to least specific:
 | `Story::verb('place')` | that verb on any object type |
 | `Story::fallback()` | everything with no more specific entry |
 
-This precedence applies to both headlines and intents. Use a fallback to
+This precedence applies to headlines, icons and intents. Use a fallback to
 define a headline for order verbs without their own definition:
 
 ```php memo="routes/feed.php"
