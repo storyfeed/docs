@@ -7,7 +7,8 @@ An **anonymous** activity has no recorded actor.
 
 <script setup>
 import { scene, role } from '../.vitepress/theme/world'
-const cancelled = scene.deeper.parties.system
+const system = scene.deeper.parties.system
+const cancelled = { ...system, actor: { ...system.actor, label: 'Register' } }
 const { anonymous } = scene.cookbook.actorless
 </script>
 
@@ -44,7 +45,7 @@ class CancelUnpaidOrders extends Command
             $order->update(['cancelled_at' => now()]);
 
             Storyfeed::activity()
-                ->by('Scoops Register') // [!code highlight]
+                ->by('Register') // [!code highlight]
                 ->action('cancel', $order)
                 ->publish();
         });
@@ -75,7 +76,7 @@ class CancelUnpaidOrders extends Command
             Storyfeed::record(
                 verb: 'cancel',
                 object: $order,
-                actor: 'Scoops Register', // [!code highlight]
+                actor: 'Register', // [!code highlight]
             );
         });
     }
@@ -88,30 +89,93 @@ class CancelUnpaidOrders extends Command
 Storyfeed creates the party when its name is first used and reuses it for
 later activities.
 
-Without `by('Scoops Register')` or another actor default, this command records
+Without `by('Register')` or another actor default, this command records
 an [anonymous activity](#recording-anonymous-activities).
 
 ### Linking a Party
 
 Give a party a URL with `Party::make()`:
 
-```php memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
+::: code-group
+```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
 use Storyfeed\Facades\Storyfeed;
 use Storyfeed\Models\Party;
 
-Party::make('Scoops Register', url: 'https://example.com/register');
+Party::make('Register', url: 'https://example.com/register');
 
 Storyfeed::activity()
-    ->by('Scoops Register')
+    ->by('Register')
     ->action('cancel', $order)
     ->publish();
 ```
+
+```php [Named Arguments] memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Party;
+
+Party::make('Register', url: 'https://example.com/register');
+
+Storyfeed::record(
+    verb: 'cancel',
+    object: $order,
+    actor: 'Register',
+);
+```
+:::
 
 <FeedExample :items="[{ ...cancelled, actor: { ...cancelled.actor, link: { href: 'https://example.com/register', modal: false, attributes: [] } } }]" />
 
 The URL can appear in any party role, and Activity Streams output includes
 it as `url`, including for the actor. Without a URL, the party remains unlinked.
 Pass `url: null` to remove the link.
+
+`Party::make()` creates the party or updates the one with the same key:
+
+| Argument | Sets | Default |
+|---|---|---|
+| `name` | the party's label | required |
+| `key` | the party's identity | the slug of `name` |
+| `type` | its Activity Streams object type, an `ObjectType` or a string | `ObjectType::Service` |
+| `data` | your own data stored on the party; replacing it keeps the URL | `[]` |
+| `url` | its external link; `null` removes it | the stored link |
+
+### Renaming a Party
+
+A party's name is part of its default key, so a new name creates a new party.
+Pass the existing key to rename the party instead, and record with the model
+`Party::make()` returns:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Party;
+
+$register = Party::make('Front Register', key: 'register');
+
+Storyfeed::activity()
+    ->by($register)
+    ->action('cancel', $order)
+    ->publish();
+```
+
+```php [Named Arguments] memo="app/Console/Commands/CancelUnpaidOrders.php" at="handle()"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\Models\Party;
+
+$register = Party::make('Front Register', key: 'register');
+
+Storyfeed::record(
+    verb: 'cancel',
+    object: $order,
+    actor: $register,
+);
+```
+:::
+
+Activities already recorded with the party show the new name. A party name
+passed as a string goes through `Party::make()` too, so after the rename
+`by('Front Register')` creates a separate party and `by('Register')` renames it
+back.
 
 ### Using Parties in Other Roles
 
@@ -183,7 +247,7 @@ Declare allowed actor names to detect these mistakes:
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::parties(['Stripe', 'Scoops Register']);
+Storyfeed::parties(['Stripe', 'Register']);
 ```
 
 Undeclared names are handled according to the environment:
@@ -252,7 +316,7 @@ If you omit the actor, Storyfeed uses the authenticated user or a configured
 default. To record no actor, even during an authenticated request, pass `null`
 to the `by` method:
 
-```php
+```php memo="Where the activity happens: a controller, an action, a listener"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
