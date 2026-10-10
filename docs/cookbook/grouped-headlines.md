@@ -15,8 +15,9 @@ const grouped = liveOf(placements, {
 </script>
 
 <a id="writing-a-group-headline"></a>
+<a id="counting-placements-of-the-same-order"></a>
 
-## Counting Placements of the Same Order
+## Counting Repeated Activities
 
 Suppose a customer places an order, then places it again after an amendment.
 [Keep both occurrences](/cookbook/repeating-activities#keeping-every-occurrence)

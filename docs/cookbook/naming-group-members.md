@@ -23,8 +23,9 @@ const duplicate = [rewrites[0], { ...rewrites[1], data: rewrites[0].data }, rewr
 </script>
 
 <a id="record-the-name-with-each-rewrite"></a>
+<a id="recording-clause-names"></a>
 
-## Recording Clause Names
+## Recording Member Names in Data
 
 Define the individual headline for an agreement represented by the application's
 `Document` model:
@@ -115,8 +116,9 @@ and the finished string in `headline`. Render it as text, with normal HTML
 escaping. It does not create entity links for the clause names.
 
 <a id="count-rewrites-not-distinct-clauses"></a>
+<a id="counting-rewrites"></a>
 
-## Counting Rewrites
+## Counting Members Beyond the Sample
 
 `GroupSlice::count` is the total number of activities in the group.
 `GroupSlice::members` contains the newest members, up to `grouping.children_limit`.
