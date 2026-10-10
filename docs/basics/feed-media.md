@@ -214,8 +214,7 @@ The three slots retain their Activity Streams 2.0 names:
 Each method is shorthand for `getFeedMedia()`, such as `getFeedMedia('icon')`.
 
 The AS2 serializer emits these as `icon`, `preview`, and `image`. None is the
-entity's link. Collapsed groups sample their members' Image bodies; members
-without one contribute no picture tile.
+entity's link.
 
 To retain image dimensions or a media type with the entity,
 [store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
@@ -302,9 +301,9 @@ public static function feedMedia(FeedContext $context): ?FeedMedia
 
 <FeedExample :items="[lettered]" rail="actor" />
 
-The colour is a hex value, such as `#438d98`. The initials are black or white,
-whichever contrasts more with the disc. An `icon` image, when present, is shown
-instead. Without initials, the renderer derives them from the label.
+The colour is a hex value, such as `#438d98`. Without them, Storyfeed derives
+initials from the label and a colour from the type and key. An entity with an
+`icon` gets neither.
 [Store both values in `toFeed()`](/reference/feedable#storing-snapshot-data)
 to read them from `$context->data()`.
 
