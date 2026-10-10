@@ -390,3 +390,6 @@
 
 /* Standalone mark beside the native lowercase site title. */
 .VPNavBarTitle .logo { width: 40px; height: 40px; margin-right: 8px; }
+
+/* Strip tiles are links; the content link underline would otherwise reach their labels. */
+.vp-doc .sf-media-strip__link { text-decoration: none; }
