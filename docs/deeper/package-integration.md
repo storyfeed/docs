@@ -1,12 +1,14 @@
 # Package Integration
 
-Ship activity definitions from your Laravel package's service provider.
-Applications can use them without creating a feed file.
-
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const overriddenOrder = { ...scene.order, headline_template: ':actor submitted :object to :target' }
 </script>
+
+## Introduction
+
+Ship activity definitions from your Laravel package's service provider.
+Applications can use them without creating a feed file.
 
 ## Registering Stories in a Service Provider
 

@@ -122,8 +122,5 @@ activity uses. The command keeps no record of what it removed. See
 [Storage Architecture](/reference/storage#costs-at-scale) for the rows each
 activity stores.
 
-> [!NOTE]
-> **Pruning and not recording**
->
-> Avoid recording short-lived state such as typing indicators. See
-> [Choosing What Not to Record](/cookbook/choosing-what-not-to-record).
+For short-lived state such as typing indicators, see
+[Choosing What Not to Record](/cookbook/choosing-what-not-to-record).
