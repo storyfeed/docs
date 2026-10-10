@@ -2,7 +2,8 @@
 
 The values all three kits share: the page shapes they read, the rails, the
 group states and the CSS variables. The attribute and prop names are on
-[Blade Components](/ui/reference/blade) and [Vue Components](/ui/reference/vue).
+[Blade Components](/ui/reference/blade), [Vue Components](/ui/reference/vue)
+and [React Components](/ui/reference/react).
 
 ## Page Shapes
 

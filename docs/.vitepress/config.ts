@@ -229,6 +229,7 @@ export default defineConfig({
           { text: 'Custom Rendering', link: '/ui/custom-rendering' },
           { text: 'Blade Components', link: '/ui/reference/blade' },
           { text: 'Vue Components', link: '/ui/reference/vue' },
+          { text: 'React Components', link: '/ui/reference/react' },
           { text: 'Pages, Rails and Styles', link: '/ui/reference/options' },
         ],
       },
