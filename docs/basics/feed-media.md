@@ -14,7 +14,7 @@ const charted = { ...photo, target: null, object: { ...target,
 const file = { ...photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...photo.object, type: 'document', label: 'Signed Agreement.pdf',
   link: { href: '/documents/signed-agreement', modal: false, attributes: [] }, media: avatar('document', photo.object.id, 'Signed Agreement.pdf', { files: [
     { type: 'Document', href: '/documents/signed-agreement/download', mediaType: 'application/pdf', name: 'Signed Agreement.pdf' }] }),
-  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2, size: 48213, mediaType: 'application/pdf' }] } }
+  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2, name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 const actor = { ...scene.order, actor: { ...photo.object, body: null,
   media: avatar(photo.object.type, photo.object.id, photo.object.label, { icon: photo.object.media.preview }) } }
 const team = scene.otherApps.team.target
@@ -181,7 +181,10 @@ destination. `url($href)` is the short form of `link(FeedLink::to($href))`.
 
 ## Linking Files
 
-Use a `FileAttachment` body to describe a PDF and the entity URL to open it:
+A `Document` model describes its PDF with a
+[`FileAttachment` body](/basics/activity-content#attaching-a-file) in
+`toFeed()`. Use `files()` in `feedMedia()` to supply the link that opens the
+document and the file to download:
 
 ::: code-group
 
@@ -191,24 +194,15 @@ Use a `FileAttachment` body to describe a PDF and the entity URL to open it:
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\FileAttachment;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 use Storyfeed\FeedResource;
 
 class Document extends Model implements Feedable
 {
     use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make()
-            ->label($this->name)
-            ->body(FileAttachment::make()->size($this->bytes)->mediaType('application/pdf'));
-    }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
@@ -230,28 +224,15 @@ class Document extends Model implements Feedable
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Storyfeed\Body\FileAttachment;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
-use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 use Storyfeed\FeedResource;
 
 class Document extends Model implements Feedable
 {
     use InteractsWithFeed;
-
-    public function toFeed(): FeedEntity
-    {
-        return FeedEntity::make(
-            label: $this->name,
-            body: FileAttachment::make(
-                size: $this->bytes,
-                mediaType: 'application/pdf',
-            ),
-        );
-    }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
@@ -273,10 +254,9 @@ class Document extends Model implements Feedable
 
 <FeedExample :items="[file]" />
 
-The body stores the file's size and media type, and the entity link points to
-the document. The `files()` list adds resources to `entity.media.files`; it
-does not create a body. Each call appends resources. Activity Streams output
-carries them in its `attachment` property.
+The entity link points to the document. The `files()` list adds resources to
+`entity.media.files`; it does not create a body. Each call appends resources.
+Activity Streams output carries them in its `attachment` property.
 
 ## Showing Pictures
 

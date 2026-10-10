@@ -22,7 +22,6 @@ const withKeyValue = { ...content.confirmed,
 // The pack's own passage from a source: the oldest row whose object quotes one.
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
-const withImage = content.photo
 const picture = content.photo.object.media.preview
 const withStoredImage = { ...content.photo, object: { ...content.photo.object, body: [{
   $body: 'Storyfeed/Body/Image', $v: 3, src: picture.src, width: picture.width, height: picture.height,
@@ -499,28 +498,10 @@ The body stores the URL, so it keeps showing that address. You may also pass a
 `FeedImage`, whose `alt`, `width` and `height` become the body's.
 
 For a URL that changes, such as a signed link, pass one of the model's
-`feedMedia()` pictures instead. The body stores the slot's name, and the
-picture is resolved each time the feed is read:
-
-```php memo="app/Models/Photo.php" at="toFeed()"
-use Storyfeed\Body\Image;
-use Storyfeed\FeedEntity;
-
-return FeedEntity::make()
-    ->label($this->name)
-    ->body(
-        Image::make($this->feedMediaPreview())
-            ->alt($this->description)
-            ->caption($this->subject)
-    );
-```
-
-<FeedExample :items="[withImage]" />
-
-Use `feedMediaImage()` for the image slot or `feedMediaIcon()` for the icon
-slot. See
-[Feed Media](/basics/feed-media#showing-pictures) for the resolver that
-supplies the picture.
+`feedMedia()` picture slots instead, such as `$this->feedMediaPreview()`. The
+body stores the slot's name, and
+[Feed Media](/basics/feed-media#showing-pictures) resolves the picture each
+time the feed is read.
 
 <a id="file-attachment"></a>
 
@@ -562,8 +543,9 @@ return FeedEntity::make(
 
 <FeedExample :items="[withFile]" />
 
-The `FileAttachment` body stores file details. Configure the URL separately with the
-[link resolver](/basics/feed-media#linking-to-the-model).
+The `FileAttachment` body stores file details. The link to open the document
+and the download itself come from the model's resolver; see
+[Linking Files](/basics/feed-media#linking-files).
 
 <a id="lists-of-items"></a>
 
