@@ -21,27 +21,61 @@ const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
 ### Sharing Context
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::context($order->shop, function () use ($request, $order) {
-    Storyfeed::activity()
-        ->by($request->user())
-        ->action('place', $order)
-        ->publish();
-});
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::context($order->shop, function () use ($request, $order) {
+            Storyfeed::activity()
+                ->by($request->user())
+                ->action('place', $order)
+                ->publish();
+        });
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::context($order->shop, function () use ($request, $order) {
-    Storyfeed::record(
-        verb: 'place',
-        object: $order,
-        actor: $request->user(),
-    );
-});
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::context($order->shop, function () use ($request, $order) {
+            Storyfeed::record(
+                verb: 'place',
+                object: $order,
+                actor: $request->user(),
+            );
+        });
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 :::
 
@@ -52,7 +86,7 @@ With `:actor placed :object in :context` declared as the headline:
 Every activity published inside the callback inherits the context, including
 activities published by methods the callback calls.
 
-The scope accepts an Eloquent model or a declared party name and returns the
+The scope accepts an Eloquent model or a party name and returns the
 callback's result. Without a callback, `Storyfeed::context($model)` returns an
 activity builder with that context set.
 
@@ -220,7 +254,8 @@ job inherit the same user.
 
 A job dispatched inside `Storyfeed::actor()` runs as that actor on the worker:
 
-```php
+```php memo="Where you dispatch the job: a controller, a command, a listener"
+use App\Jobs\SyncMenu;
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::actor('System', fn () => SyncMenu::dispatch());
