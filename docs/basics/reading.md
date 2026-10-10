@@ -48,6 +48,9 @@ Route::get('/', function () {
 });
 ```
 
+A feed is ordered by `published_at`, newest first. Items without a date aren't
+supported yet.
+
 For three order placements, the response contains:
 
 <FeedExample payload :items="scoped" />

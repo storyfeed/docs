@@ -86,6 +86,9 @@ Each item is an array with these keys:
 
 Any other key throws an `InvalidArgumentException`.
 
+A feed is ordered by `published_at`, newest first. Items without a date aren't
+supported yet.
+
 A role may be any of these:
 
 | Role Value | Example | In the Payload |
