@@ -34,8 +34,9 @@ layout selects dark mode with a class.
 | `primary`, `primary-foreground` | primary colour and text on it |
 | `border`, `ring` | boundaries and focus rings |
 
- Avatar snapshot colours
-use `data.avatar_color`, then a stable identity palette. Deleted models render in the muted colour.
+An avatar draws the entity's `media.icon`, else its `media.initials` on a
+`media.color` disc, else `data.initials` on `data.avatar_color`, else a colour
+from a stable identity palette. Deleted models render in the muted colour.
 An icon’s intent is rendered as `data-sf-intent`; style it in your CSS,
 for example `[data-sf-intent="danger"]`.
 
@@ -52,10 +53,18 @@ provide(FEED_LINK, Link);
 ```
 
 ```tsx memo="resources/js/pages/History.tsx"
+import { Link } from '@inertiajs/react';
+import { FeedProvider, FeedStream } from '@/components/storyfeed';
+import type { FeedPagePayload } from '@/components/storyfeed';
+import Message from '@/components/feed/Message';
 
-<FeedProvider FEED_LINK={Link} FEED_COMPONENTS={{ 'App/Message': Message }}>
-    <FeedStream page={feed} />
-</FeedProvider>
+export default function History({ feed }: { feed: FeedPagePayload }) {
+    return (
+        <FeedProvider FEED_LINK={Link} FEED_COMPONENTS={{ 'App/Message': Message }}>
+            <FeedStream page={feed} />
+        </FeedProvider>
+    );
+}
 ```
 
 Vue imports injection keys from `keys.ts`. React takes the same names as
@@ -65,6 +74,7 @@ Vue imports injection keys from `keys.ts`. React takes the same names as
 |---|---|---|
 | `FEED_LINK` | component accepting `href` | replaces anchors and forwards entity attributes |
 | `FEED_COMPONENTS` | exact body-name → component map | renders Component bodies with their props; unknown names draw nothing |
+| `FEED_BODIES` | exact body-type → component map | draws a body type, such as `Acme/Shipment`; one registered for a built-in type replaces the kit's |
 | `FEED_FILE_LABELLER` | `({ name, mediaType }) => string \| null` | return a label, or `null` to use the built-in MIME labels |
 | `FEED_MEDIA_OBJECT_PLACEMENT` | `'beside'` or `'below'` | `beside` shows a MediaObject’s picture beside its text; `below` stacks it. An explicit component prop wins |
 | `FEED_NOW` | millisecond timestamp | pins the clock for deterministic rendering |
@@ -75,15 +85,64 @@ Vue’s MediaObject prop is `image-placement`; React’s is `imagePlacement`.
 Built-in bodies render from the object’s bodies and data, and the activity’s
 data. Supply your own components for previews in other roles. Markdown and
 rich HTML are sanitized. Plain text and verbatim source are escaped.
-The kits also render supported older body versions.
 
-Instrument, origin and result roles the headline does not name appear after
-the time. Context appears when the headline names it.
-The words before each role (“with”, “from”) are in `shared/messages.ts`.
+## Rendering Custom Body Types
+
+In Vue, install renderers with the `feedBodies()` plugin. Each install merges
+into the renderers already installed:
+
+```ts memo="resources/js/app.ts"
+import { feedBodies } from '@/components/storyfeed/body';
+import Shipment from '@/components/feed/Shipment.vue';
+
+createApp(App).use(feedBodies({ 'Acme/Shipment': Shipment }));
+```
+
+The renderer receives `payload`, `entityLabel`, `entityUrl` and `entityMedia`
+props. To register renderers for one part of the page, `provide()` a map with
+the `FEED_BODIES` key.
+
+In React, pass `FEED_BODIES` to `FeedProvider`. A renderer receives `BodyProps`;
+nested providers merge their maps:
+
+```tsx memo="resources/js/components/feed/Shipment.tsx"
+import type { BodyProps } from '@/components/storyfeed';
+
+export default function Shipment({ payload }: BodyProps) {
+    return <p>{payload.carrier} · {payload.tracking}</p>;
+}
+```
+
+```tsx memo="resources/js/pages/History.tsx" at="History()"
+<FeedProvider FEED_BODIES={{ 'Acme/Shipment': Shipment }}>
+    <FeedStream page={feed} />
+</FeedProvider>
+```
+
+A body type with no renderer draws its `$fallback` line as muted text, or
+nothing without one. Blade draws a body type from a
+[published view](/ui/blade#publishing-views).
+
+## Roles After the Time
+
+Roles the headline does not name appear after the time, each after a word:
+
+| Role | Word |
+|---|---|
+| `instrument` | via |
+| `origin` | from |
+| `result` | to |
+| `location` | at |
+| `generator` | from |
+
+Context appears only when the headline names it. Vue and React keep the words
+in `shared/messages.ts`. Blade reads them from the `storyfeed-ui::meta`
+translation namespace; override them in
+`lang/vendor/storyfeed-ui/{locale}/meta.php`.
 
 ## Child Rails and Spacing
 
-```vue
+```vue memo="resources/js/pages/History.vue" at="template"
 <FeedStream :page="feed" rail="actor" child-rail="activity-only"
     style="--sf-gutter: 2.5rem" />
 ```
@@ -101,6 +160,21 @@ independent rail; members omit badges.
 | `--sf-disc` | primary avatar or icon size |
 | `--sf-badge`, `--sf-badge-face` | badge sizes |
 
+## Feed Size and Code Blocks
+
+```blade memo="resources/views/history.blade.php"
+<x-storyfeed::feed :page="$page" class="[--sf-font-size:0.875rem]" />
+```
+
+`--sf-font-size` scales text, spacing, avatars, badges and the rail together.
+Set it on the feed or on any element around it, in `rem` or `px`.
+
+| CSS Property | Controls | Default |
+|---|---|---|
+| `--sf-font-size` | the feed's body text size; every other size follows it | `1rem` |
+| `--sf-prose-max-h` | the height at which code and verbatim `Prose` scroll | `24rem` |
+| `--sf-code-bg`, `--sf-code-fg` | the background and text of verbatim `Prose` | a dark surface with light text |
+
 ## Blade Host Seams
 
 Blade supplies whole-feed callbacks through the `renderers` array to
@@ -116,8 +190,14 @@ customize time, bodies, annotations, media and file labels.
 | `mediaTiles`, `mediaOverflow` | group `FeedItem` | sample tiles or overflow count |
 | `media` | tile array and utility classes | picture or tile HTML |
 
+```blade memo="resources/views/history.blade.php"
+<x-storyfeed::feed :page="$page" :renderers="[
+    'fileLabel' => fn (array $file) => $file['mediaType'] === 'application/vnd.apple.keynote' ? 'Keynote' : null,
+]" />
+```
+
 Callbacks are trusted application code; their returned HTML is not sanitized.
- Standalone row components also accept
+Standalone row components also accept
 body, time and annotations slots. The standalone file component accepts
 `labeller`; `<x-storyfeed::body>` accepts `file-labeller`.
 
