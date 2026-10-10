@@ -44,12 +44,14 @@ class Order extends Model implements Feedable
 ```
 
 Without any configuration, Storyfeed guesses a model's feed label by checking
-commonly used columns, falling back on the class name and key.
+commonly used columns, then the type's registered noun, falling back on the
+class name and key. It uses the first source that has a value:
 
 | Source | Example |
 |---|---|
 | `name` attribute | {{ role.product.label }} |
 | `title` attribute | `Spring Menu` |
+| the type's [noun](/deeper/aggregation#fallback-nouns) and key | `Ticket #42` |
 | class name and key | `Order #1042` |
 
 <FeedExample :items="withSnapshot" />
