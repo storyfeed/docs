@@ -247,10 +247,17 @@ export function migrationOrder(core) {
   return splitArgs(balanced(provider, at + '->hasMigrations('.length).inner).map(a => value(a, 'hasMigrations'));
 }
 
+/**
+ * Migrations that only reshape tables published by an older release. A fresh
+ * install runs them and changes nothing, so the page describes no change.
+ */
+const UPGRADES_ONLY = new Set(['change_feed_references_to_strings.php.stub']);
+
 /** @returns {Map<string, {columns: object[], indexes: object[]}>} */
 export function extract(sources) {
   const tables = new Map();
   for (const [file, raw] of sources) {
+    if (UPGRADES_ONLY.has(file)) continue;
     // Comments first: an apostrophe in "doesn't" would read as a string.
     const source = raw.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"])\/\/.*$/gm, '$1');
     if (/function\s+columns\s*\(\s*\)\s*:\s*array/.test(source) && /->change\(\)/.test(source)) {

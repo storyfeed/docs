@@ -39,6 +39,6 @@ foreach ($input['intents'] as $key => $intent) {
     Story::for($type)->verb($verb)->intent($intent);
 }
 
-$items = Storyfeed::feed()->source(new ArraySource($input['items']))->log()->limit(PHP_INT_MAX)->get()->items();
+$items = Storyfeed::feed()->source(new ArraySource($input['items']))->log()->limit(PHP_INT_MAX)->get()->toArray();
 
 echo json_encode(array_column($items, null, 'id'), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

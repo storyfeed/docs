@@ -30,7 +30,15 @@
     "cached_result_id": "The result's row in `feed_snapshots`.",
     "instrument_type": "The instrument's morph alias.",
     "instrument_id": "The instrument's key.",
-    "cached_instrument_id": "The instrument's row in `feed_snapshots`."
+    "cached_instrument_id": "The instrument's row in `feed_snapshots`.",
+    "entities": "Roles filled by an entity with no model behind it, stored inline with the activity: label, url, data and body by role. Null when every role has a model.",
+    "location_type": "The location's morph alias.",
+    "location_id": "The location's key.",
+    "cached_location_id": "The location's row in `feed_snapshots`.",
+    "generator_type": "The generator's morph alias.",
+    "generator_id": "The generator's key.",
+    "cached_generator_id": "The generator's row in `feed_snapshots`.",
+    "featured": "The role whose entity the row draws as its body, set with `featuring…()`. Null draws none."
   },
   "feed_snapshots": {
     "id": "Primary key. Activities point here through `cached_{role}_id`.",

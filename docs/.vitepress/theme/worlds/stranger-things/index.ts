@@ -173,8 +173,8 @@ const fairOrderLabel = 'Order #1042'
 const fairOrder = { ...order(1042), body: [{ $body: 'Storyfeed/Body/ItemList', $v: 1,
   title: `${fairOrderLabel} items`, ordered: false,
   items: [
-    { label: FARE.hotDog, href: fare.hotDog.url },
-    { label: FARE.cornDog, href: fare.cornDog.url },
+    { label: FARE.hotDog, href: fare.hotDog.link.href },
+    { label: FARE.cornDog, href: fare.cornDog.link.href },
     FARE.pretzel,
   ], totalItems: 5, more: { label: fairOrderLabel, href: '/orders/1042' } }] }
 const hoursTitle = `${VENUES.scoops} opening hours`
@@ -183,7 +183,7 @@ const hoursNotice = entity('notice', '101', hoursTitle, '/notices/101', { body: 
   content: 'The counter opens at 10 am. Orders are available until 9 pm.',
   image: null, files: [], footnote: null }] })
 const visitorNotice = entity('notice', '102', `${VENUES.scoops} visitor information`, '/notices/102', { body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 2,
-  subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.url}/guide` },
+  subject: { label: `${VENUES.mall} visitor guide`, href: `${venues.mall.link.href}/guide` },
   content: 'The visitor guide includes entrances, parking and shop locations.',
   image: null, files: [], footnote: null }] })
 
@@ -246,8 +246,7 @@ const ALT: Record<string, string> = {
 }
 const picture = (file: string) => ({ src: `/media/worlds/stranger-things/${file}.jpg`,
   mediaType: 'image/jpeg', width: 960, height: 720, alt: ALT[file] })
-const mediaOf = (file: string) => ({ icon: null, image: null, files: [],
-  preview: picture(file), url: null })
+const mediaOf = (file: string) => ({ preview: picture(file) })
 const imageBody = (caption: string) => [{ $body: 'Storyfeed/Body/Image', $v: 1,
   caption, alt: caption, width: null, height: null, image: 'preview' }]
 
