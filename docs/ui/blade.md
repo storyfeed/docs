@@ -77,5 +77,5 @@ The kit’s own strings, such as “Older activity”, are translatable through
 `lang/{locale}.json`. The [role words after the time](/ui/customizing#roles-after-the-time)
 and the date-range words (“from”, “until”) are in the `storyfeed-ui::meta`
 namespace; override them in `lang/vendor/storyfeed-ui/{locale}/meta.php`.
-See the [package README](https://github.com/storyfeed/ui/blob/main/README.md)
-for the full Blade component and callback contracts.
+[Blade Components](/ui/reference/blade) lists every component, attribute,
+slot and renderer.
