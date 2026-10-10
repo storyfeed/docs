@@ -5,56 +5,87 @@ import { scene } from '../.vitepress/theme/world'
 import { activity, tombstone } from '../.vitepress/theme/samples'
 
 const source = scene.cookbook.deletion
-const removed = activity({ ...source,
+const deleted = activity({ ...source, verb: 'delete',
+  headline_template: ':actor deleted :object from :target',
   object: tombstone(source.object.type, source.object.id, source.published_at),
 })
 </script>
 
-Publish a removal activity before deleting its model. The activity remains,
+Publish a `delete` activity before deleting its model. The activity remains,
 with a tombstone in place of the model. The tombstone records the model's
 former type and deletion time.
 
 ## Recording a Deletion
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Menu;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('remove', $product)
-    ->to($menu)
-    ->publish();
+class MenuItemController
+{
+    public function destroy(Request $request, Menu $menu, MenuItem $menuItem): RedirectResponse
+    {
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('delete', $menuItem)
+            ->to($menu)
+            ->publish();
 
-$product->delete();
+        $menuItem->delete();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Menu;
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'remove',
-    object: $product,
-    target: $menu,
-    actor: $request->user(),
-);
+class MenuItemController
+{
+    public function destroy(Request $request, Menu $menu, MenuItem $menuItem): RedirectResponse
+    {
+        Storyfeed::record(
+            verb: 'delete',
+            object: $menuItem,
+            actor: $request->user(),
+            target: $menu,
+        );
 
-$product->delete();
+        $menuItem->delete();
+
+        return back();
+    }
+}
 ```
 :::
 
 ```php memo="routes/feed.php"
 use App\Models\MenuItem;
-use Storyfeed\ActivityStreams\ActivityType;
 use Storyfeed\Facades\Story;
 
 Story::for(MenuItem::class)
-    ->verb('remove')
-    ->headline(':actor removed :object from :target')
-    ->type(ActivityType::Remove); // a removal verb keeps its headline after the delete
+    ->verb('delete') // a removal verb: the tombstone doesn't make it redundant
+    ->headline(':actor deleted :object from :target');
 ```
 
-<FeedExample :items="[removed]" />
+<FeedExample :items="[deleted]" />
 
 ## Choosing What Stays
 
