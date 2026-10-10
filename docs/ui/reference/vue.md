@@ -34,7 +34,7 @@ component's root element.
 | `interactive` | `true` | `false` draws groups without a disclosure control |
 | `collapsed` | `null` | the initial group state; see [Group State](/ui/reference/options#group-state) |
 | `dividers` | `{}` | labels keyed by item id, drawn on the rail before those items |
-| `divider-style` | `'dot'` | how a divider meets the rail: `dot` or `branch` |
+| `divider-style` | `'branch'` | how a divider meets the rail: `branch` or `dot` |
 
 | Slot | Receives | Replaces |
 |---|---|---|
