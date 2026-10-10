@@ -25,14 +25,75 @@ keeps values current even when changes to other models affect them.
 Use `->data()` to store facts about the moment an activity was published.
 For example, record the old and new prices when a menu item's price changes:
 
-```php
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($staff)
-    ->action('reprice', $menuItem)
-    ->data(['old_price' => $oldPrice, 'new_price' => $menuItem->price])
-    ->publish();
+class MenuItemPriceController
+{
+    public function update(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $input = $request->validate(['price' => ['required', 'numeric', 'min:0']]);
+        $oldPrice = $menuItem->price;
+        $menuItem->update(['price' => $input['price']]);
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('reprice', $menuItem)
+            ->data(['old_price' => $oldPrice, 'new_price' => $menuItem->price])
+            ->publish();
+
+        return back();
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemPriceController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class MenuItemPriceController
+{
+    public function update(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $input = $request->validate(['price' => ['required', 'numeric', 'min:0']]);
+        $oldPrice = $menuItem->price;
+        $menuItem->update(['price' => $input['price']]);
+
+        Storyfeed::record(
+            verb: 'reprice',
+            object: $menuItem,
+            actor: $request->user(),
+            data: ['old_price' => $oldPrice, 'new_price' => $menuItem->price],
+        );
+
+        return back();
+    }
+}
+```
+:::
+
+Define the headline for the verb:
+
+```php memo="routes/feed.php"
+use App\Models\MenuItem;
+use Storyfeed\Facades\Story;
+
+Story::for(MenuItem::class)->verb('reprice')
+    ->headline(':actor changed the price of :object');
 ```
 
 The activity keeps those prices after later changes. Values in the model's
@@ -42,28 +103,86 @@ The activity keeps those prices after later changes. Values in the model's
 
 A menu item's order count changes when an order is placed, even if the menu
 item itself is not saved. Return a closure body from `feedMedia()` to compute
-the count when the feed is retrieved. Assuming the model defines an `orders`
-relationship, pass it to `$context->model(withCount: ['orders'])`:
+the count when the feed is retrieved. Pass the model's `orders` relationship
+to `$context->model(withCount: ['orders'])`:
 
-```php memo="app/Models/MenuItem.php"
+::: code-group
+```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+class MenuItem extends Model implements Feedable
 {
-    return FeedMedia::make()
-        ->body(
-            function () use ($context): KeyValue {
-                $menuItem = $context->model(withCount: ['orders']); // [!code highlight]
+    use InteractsWithFeed;
 
-                return KeyValue::make()
-                    ->title($menuItem?->name)
-                    ->items('Orders', $menuItem?->orders_count);
-            },
-        );
+    public function orders(): BelongsToMany
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()
+            ->body(
+                function () use ($context): KeyValue {
+                    $menuItem = $context->model(withCount: ['orders']); // [!code highlight]
+
+                    return KeyValue::make()
+                        ->title($menuItem?->name)
+                        ->items('Orders', $menuItem?->orders_count);
+                },
+            );
+    }
 }
 ```
+
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
+use Storyfeed\FeedContext;
+use Storyfeed\FeedMedia;
+
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function orders(): BelongsToMany
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            body: function () use ($context): KeyValue {
+                $menuItem = $context->model(withCount: ['orders']); // [!code highlight]
+
+                return KeyValue::make(
+                    items: ['Orders' => $menuItem?->orders_count],
+                    title: $menuItem?->name,
+                );
+            },
+        );
+    }
+}
+```
+:::
 
 Models load once per model class for the page, with the requested counts
 loaded together. The closure defers building the body until the payload needs
