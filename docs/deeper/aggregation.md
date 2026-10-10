@@ -7,9 +7,6 @@ from one customer appear as one row. See
 [Choosing What to Group](/cookbook/choosing-what-to-group) to decide when that
 helps the reader.
 
-Which activities group together, and when, is experimental and keeps improving
-behind the [payload contract](/reference/payload#group-nodes).
-
 <script setup>
 import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
@@ -98,7 +95,7 @@ together, these are the photos:
 
 | Key | Holds |
 |---|---|
-| `featured` | the role every member features, when the axis pins it to one entity, which is then in that role's key; otherwise `null` |
+| `featured` | the role every member features, when every member shares that role's entity, which is then in the role's key; otherwise `null` |
 | `sample.featured` | each sampled member's featured entity, newest first; a member that features nothing adds no entry |
 | `distinct.featured` | how many members across the whole group feature an entity |
 | `distinct_tombstoned.featured` | how many of those entities are tombstones |
@@ -106,8 +103,9 @@ together, these are the photos:
 `grouping.sample_limits.featured` caps `sample.featured`, three by default.
 
 <a id="axes-by-read-mode"></a>
+<a id="choosing-a-read-mode"></a>
 
-## Choosing a Read Mode
+## Configuring Curation
 
 See [Choosing a Read Mode](/basics/reading#choosing-a-read-mode) for Live and Log.
 Curation controls which groups Live reads:
@@ -147,9 +145,9 @@ Shared values alone do not select a group: activities must also meet the
 [thresholds](#configuring-grouping-thresholds), and Storyfeed must select the
 group. [Default Grouping Keys](/reference/configuration#default-grouping-keys) lists their keys.
 
-Headlines for `repeat` and `object` groups may go in a Story class or inside
-`Story::for()` because each group contains one object type. Define headlines
-for `actors`, `actors_target` and `targets` on the verb alone.
+Headlines for `actors`, `repeat` and `object` groups may go in a Story class or
+inside `Story::for()` because each group contains one object type. Define
+headlines for `actors_target` and `targets` on the verb alone.
 
 <a id="thresholds"></a>
 
@@ -209,13 +207,12 @@ Where you declare it determines which groups use it.
 Storyfeed tries the key with the group's type first, then the key without it.
 
 Choose the declaration location from the [built-in axis table](#built-in-axes):
-`repeat` and `object` share an object type; `actors` and `targets` may span types.
+`actors`, `repeat` and `object` share an object type; `actors_target` and
+`targets` may span types.
 
 A type-level headline may name that type because every member shares it.
 A verb-level headline may describe several object types, so avoid naming a
-particular type. `:count` counts activities, not distinct objects; see
-[the repeated-order example](/cookbook/grouped-headlines#counting-placements-of-the-same-order)
-for wording that keeps this distinction visible.
+particular type.
 
 <a id="plural-tokens"></a>
 
@@ -235,7 +232,9 @@ for wording that keeps this distinction visible.
 
 A plural token displays a few names and a count of the rest. See
 [Rendering](/basics/rendering#groups) for details. `:count` is the number of
-activities in the group.
+activities in the group, not of distinct objects; see
+[the repeated-order example](/cookbook/grouped-headlines#counting-placements-of-the-same-order)
+for wording that keeps this visible.
 
 <a id="group-headline-tokens"></a>
 
@@ -315,7 +314,7 @@ The entity count selects the form: `FeedNoun::form('dish|dishes', 7)` returns
 
 | Available Headline | Payload |
 |---|---|
-| An authored group headline | The authored template or finished text; `:count` supplies the activity count. |
+| An authored group headline | The authored template or finished text. |
 | A safe single-activity template | The single-activity template with unshared roles replaced by nouns where possible; no count is added automatically. |
 | Neither a group headline nor a safe single-activity template | Both `headline_template` and `headline` are `null`; member counts and children remain available. |
 
@@ -332,10 +331,9 @@ still undercount. “Placed an order” below describes three activities as one:
 
 <FeedExample :items="[singularFallback]" />
 
-The same problem occurs with “removed a clause from :target” for two removals.
-Token validation checks that roles are shared; it does not check the words “a clause”. Write
-an explicit group headline such as “:actor recorded :count clause removals from :target”
-when each activity represents one removal. If individual details matter, use
+Token validation checks that roles are shared; it does not check the words
+“an order”. Write an explicit group headline, such as the
+[repeat headline](#grouping-repeats) above. If individual details matter, use
 [`log()`](/basics/reading#log) instead.
 
 With both headline fields absent, the count and member rows remain visible:
