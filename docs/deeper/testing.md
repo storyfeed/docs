@@ -119,6 +119,47 @@ to dispatch that event after the transaction commits. Role IDs in the event
 payload are strings when non-null, so listener assertions should compare with
 `'1'`, not `1`.
 
+## Muting Recording in Tests
+
+To keep a suite from writing activities, set `STORYFEED_RECORDING_ENABLED` to
+`false` in `phpunit.xml`:
+
+```xml memo="phpunit.xml"
+<php>
+    <env name="STORYFEED_RECORDING_ENABLED" value="false"/>
+</php>
+```
+
+Every `publish()` then returns an unsaved activity and dispatches no event.
+`Storyfeed::fake()` still captures activities while recording is off. Opt the
+tests that assert on real feed rows back in with the `RecordsStories` trait:
+
+```php memo="tests/Pest.php"
+use Storyfeed\Testing\RecordsStories;
+
+uses(RecordsStories::class)->in('Feature/Feed');
+```
+
+In a suite that records, the `WithoutRecording` trait mutes one test file
+instead:
+
+```php memo="tests/Feature/ImportMenuTest.php"
+use Storyfeed\Testing\WithoutRecording;
+
+uses(WithoutRecording::class);
+```
+
+While recording is off, `Feedable` models also stop refreshing their snapshots
+on save. To switch recording for part of a test, call the facade:
+
+| Method | Effect |
+|---|---|
+| `Storyfeed::withoutRecording($callback)` | runs the callback with recording off, then restores the previous state |
+| `Storyfeed::recording($callback)` | runs the callback with recording on, then restores the previous state |
+| `Storyfeed::stopRecording()` | turns recording off for the rest of the process |
+| `Storyfeed::startRecording()` | turns recording on for the rest of the process |
+| `Storyfeed::isRecording()` | returns whether activities are being written |
+
 <a id="coverage-assertions"></a>
 
 ## Testing Headline Coverage
@@ -197,6 +238,32 @@ StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 The assertion also fails if a `Feedable` model lacks an enforced morph alias,
 the check cannot run, or no activities are recorded. It also works under `Storyfeed::fake()`.
 See [Surface](/reference/doctor#feedable-models).
+
+## Testing Feed Audiences
+
+`FeedAudience` asserts which verbs a [named feed](/basics/named-feeds) shows:
+
+```php memo="tests/Feature/FeedAudienceTest.php"
+use Storyfeed\Testing\FeedAudience;
+
+it('shows the kitchen only order verbs', function () {
+    FeedAudience::assertAllows('kitchen', ['place', 'confirm']);
+    FeedAudience::assertRefuses('kitchen', 'reprice');
+    FeedAudience::assertAllowsOnly('kitchen', ['place', 'confirm', 'ready']);
+});
+```
+
+| Method | Assertion |
+|---|---|
+| `assertAllows($feed, $verbs)` | the feed shows every one of the verbs |
+| `assertRefuses($feed, $verbs)` | the feed shows none of the verbs |
+| `assertAllowsOnly($feed, $verbs)` | the feed shows every one of the verbs and no other verb the application declares with `Storyfeed::verbs()` or has recorded |
+
+Each method accepts one verb, an array of verbs, or verb enums. The assertions
+read the feed's `only()` and `except()` declarations, so they work with or
+without `Storyfeed::fake()`. A verb removed inside a `query()` callback is not
+visible to them; assert that over the feed's payload. `assertAllowsOnly()`
+fails when no verbs are declared or recorded.
 
 <a id="diagnostics-in-ci"></a>
 
