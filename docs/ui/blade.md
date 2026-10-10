@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Storyfeed\Facades\Storyfeed;
 
 Route::get('/history', fn () => view('history', [
-    'page' => Storyfeed::feed()->get(),
+    'page' => Storyfeed::feed()->cursorPaginate(),
 ]));
 ```
 
@@ -45,7 +45,7 @@ The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
 ## Rails and Groups
 
-```blade
+```blade memo="resources/views/history.blade.php"
 <x-storyfeed::feed :page="$page" rail="actor" child-rail="activity-only" />
 ```
 
@@ -97,6 +97,8 @@ Unmapped tokens use `icons/activity`. Custom body `Acme/Attachment` uses
 `components/body/acme/attachment.blade.php`, receiving `$body` and `$entity`.
 
 The kit’s own strings, such as “Older activity”, are translatable through
-`lang/{locale}.json`.
+`lang/{locale}.json`. The [role words after the time](/ui/customizing#roles-after-the-time)
+and the date-range words (“from”, “until”) are in the `storyfeed-ui::meta`
+namespace; override them in `lang/vendor/storyfeed-ui/{locale}/meta.php`.
 See the [package README](https://github.com/storyfeed/ui/blob/main/README.md)
 for the full Blade component and callback contracts.
