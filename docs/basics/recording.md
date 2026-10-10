@@ -1,13 +1,16 @@
 # Recording Activities
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { scene, role, entity } from '../.vitepress/theme/world'
 
 // A price change draws no card: the item's details would show today's price, not the change.
 const recorded = scene.basics.recording.priced
 const priced = { ...recorded, object: { ...recorded.object, body: null }, data: { from: 275, to: 295 } }
 // The same change, imported with a date from long ago.
 const backdated = { ...priced, published_at: scene.distant.published_at }
+// The order again, placed at the mall from the shop's app: a string names a party.
+const app = entity('storyfeed.party', 'ios-app', 'iOS app', null, { data: { key: 'ios-app', type: 'Service' } })
+const placedInApp = { ...scene.order, location: role.mall, generator: app }
 </script>
 
 ## Introduction
@@ -52,12 +55,43 @@ role as a named argument.
 | `origin` | the source | the source of an accepted invitation |
 | `result` | the entity produced | a receipt or generated file |
 | `instrument` | the tool or service used | the device used to take an order |
+| `location` | where the action happened | the mall the shop is in |
+| `generator` | the app or agent that produced the activity | the app the order was placed from |
 
 Containers above the object, target or context come from each model's
 [`parent()` declaration](/deeper/distant-relations).
 
 Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.
+
+::: code-group
+```php [Fluent Syntax]
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($order->customer)
+    ->action('place', $order)
+    ->to($order->shop)
+    ->at($order->shop->mall)
+    ->generator('iOS app')
+    ->publish();
+```
+
+```php [Named Arguments]
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    actor: $order->customer,
+    target: $order->shop,
+    location: $order->shop->mall,
+    generator: 'iOS app',
+);
+```
+:::
+
+<FeedExample :items="[placedInApp]" />
 
 > [!NOTE]
 > A role identifies a participant that exists independently of the activity.
@@ -81,6 +115,7 @@ The `verb` method sets the verb. You may also use these aliases:
 | `->by()` | `actor` | who performed the action |
 | `->action()` | `verb` and `object` | the action and affected entity |
 | `->using()` | `instrument` | the tool or service used |
+| `->at()` | `location` | where the action happened |
 | `->resulting()` | `result` | the entity produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | the entity the action was directed at |
 

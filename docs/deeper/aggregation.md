@@ -21,6 +21,7 @@ const singularFallback = { ...repeat, headline_template: ':actor placed an order
 const unnamedGroup = { ...repeat, headline_template: null, headline: null }
 const menuRows = scene.deeper.aggregation.menu
 const menuGroup = { ...liveOf(menuRows)[0], headline_template: ':actor put dishes on the menu' }
+const photoGroup = liveOf(scene.guide.usageExamples.photos)[0]
 </script>
 
 ## Grouping Activities
@@ -83,6 +84,27 @@ To keep quotes and images visible individually, see
 [Choosing What to Group](/cookbook/choosing-what-to-group#keeping-content-visible). [Storage Architecture](/reference/storage#reading-a-page)
 shows where groups are stored and how a feed retrieves them.
 
+<a id="featured-entities"></a>
+
+### Members' Featured Entities
+
+Each activity features one role's entity, its object unless the activity says
+otherwise; see [Featuring Another Role](/basics/activity-content#featuring-another-role).
+A group lists the entity each member features in `sample.featured`, newest
+first, one entry per member, so an entity can repeat. For photos uploaded
+together, these are the photos:
+
+<FeedExample expanded :items="[photoGroup]" />
+
+| Key | Holds |
+|---|---|
+| `featured` | the role every member features, when the axis pins it to one entity, which is then in that role's key; otherwise `null` |
+| `sample.featured` | each sampled member's featured entity, newest first; a member that features nothing adds no entry |
+| `distinct.featured` | how many members across the whole group feature an entity |
+| `distinct_tombstoned.featured` | how many of those entities are tombstones |
+
+`grouping.sample_limits.featured` caps `sample.featured`, three by default.
+
 <a id="axes-by-read-mode"></a>
 
 ## Choosing a Read Mode
@@ -118,7 +140,7 @@ contains one verb and one context, within a [burst window](/deeper/grouping-peri
 | `repeat` | actor, verb, object type, target, context | object identity | `:actor`, `:target`, `:context` |
 | `composite` | actor, target and context of one published activity | members of its object collection | `:actor`, `:target`, `:context` |
 
-Origin, result, instrument and activity data may differ. A composite is one
+Origin, result, instrument, location, generator and activity data may differ. A composite is one
 published activity with a collection of objects; see [Composites](/deeper/composites).
 
 Shared values alone do not select a group: activities must also meet the
@@ -208,6 +230,8 @@ for wording that keeps this distinction visible.
 | `:origin` | `:origins` | the source |
 | `:result` | `:results` | the produced entity |
 | `:instrument` | `:instruments` | the tool or service used |
+| `:location` | `:locations` | where the action happened |
+| `:generator` | `:generators` | the app or agent that produced the activity |
 
 A plural token displays a few names and a count of the rest. See
 [Rendering](/basics/rendering#groups) for details. `:count` is the number of

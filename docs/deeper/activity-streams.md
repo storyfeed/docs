@@ -65,13 +65,17 @@ cursor as the third. Use `null` for the first page.
 
 <a id="source-outcome-and-means"></a>
 
-### Origin, Result and Instrument
+<a id="origin-result-and-instrument"></a>
+
+### Origin, Result, Instrument, Location and Generator
 
 | Role | AS2 Meaning |
 |---|---|
 | [`origin`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-origin) | the source; Move, Remove and Delete can identify the source container |
 | [`result`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-result) | an entity produced by the activity |
 | [`instrument`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-instrument) | the means used, such as a service |
+| [`location`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-location) | where the activity happened |
+| [`generator`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-generator) | the application that produced the activity |
 
 ## Mapping Activity Types
 

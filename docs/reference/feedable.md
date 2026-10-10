@@ -369,6 +369,8 @@ activity's data, verb, publication time and roles. It does not expose the
 | `origin()` | the origin's `FeedContext`, or `null` |
 | `result()` | the result's `FeedContext`, or `null` |
 | `instrument()` | the instrument's `FeedContext`, or `null` |
+| `location()` | the location's `FeedContext`, or `null` |
+| `generator()` | the generator's `FeedContext`, or `null` |
 
 For example, `$activity->actor()?->label()` returns the actor's cached label.
 An empty role returns `null`. A role whose snapshot is missing still provides

@@ -22,7 +22,7 @@ const filterRows = logOf([
 ])
 const same = (a, b) => a && b && a.type === b.type && a.id === b.id
 const involving = entity => filterRows.filter(row =>
-  ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument'].some(role => same(row[role], entity)))
+  ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator'].some(role => same(row[role], entity)))
 const shopRows = involving(scene.order.target)
 const sinceFive = WORLD_ANCHOR - 2 * 60 * 60 * 1000
 const pages = [logOf(scene.guide.usageExamples.repeatOrders).slice(0, 2), logOf(scene.guide.usageExamples.repeatOrders).slice(2)]
@@ -159,11 +159,11 @@ You may also filter by a specific role:
 
 | Call | Returns |
 |---|---|
-| `->involving($model)` | activities where the model is actor, object, target, context, origin, result, or instrument, or a recorded ancestor |
+| `->involving($model)` | activities where the model holds any role, or is a recorded ancestor |
 | `->involvingDirectly($model)` | the same, without recorded ancestors; also written `->involving($model, deep: false)` |
 | `->context($shop)` | activities with the shop in the `context` role |
 | `->actor($customer)` | activities performed by the customer |
-| `->object($order)` / `->target($shop)` | activities matching the specified role; `origin()`, `result()` and `instrument()` filter the remaining roles the same way |
+| `->object($order)` / `->target($shop)` | activities matching the specified role; `origin()`, `result()`, `instrument()`, `location()` and `generator()` filter the remaining roles the same way |
 | `->objectType(Order::class)` | activities whose object is any order; every role has a `…Type()` method that accepts a model class, a model, a morph alias, or a list of them |
 | `->involvingType(Order::class)` | activities involving any order, as `involving()` does for one model; `deep: false` excludes recorded ancestors |
 

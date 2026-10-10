@@ -62,6 +62,8 @@ activities involving an order.
 | `:origin` | the source |
 | `:result` | the entity produced |
 | `:instrument` | the tool or service used |
+| `:location` | where the action happened |
+| `:generator` | the app or agent that produced the activity |
 
 Each token is replaced with the entity's label and linked when it has a URL.
 

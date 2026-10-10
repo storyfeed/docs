@@ -42,7 +42,7 @@ values. Storyfeed checks model types when publishing the activity.
 | `whereObject(Order::class)` | object |
 | `whereTarget(Shop::class)` | target |
 | `whereContext(Shop::class)` | context |
-| `whereRole('origin', Shop::class)` | origin; also accepts `result`, `instrument` or any role above |
+| `whereRole('origin', Shop::class)` | origin; also accepts `result`, `instrument`, `location`, `generator` or any role above |
 
 ### Model Types and Morph Aliases
 

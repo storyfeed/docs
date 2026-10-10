@@ -39,7 +39,7 @@ string-keyed maps serialize as JSON objects.
 
 ## Entities
 
-Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`) is `null` or:
+Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator`) is `null` or:
 
 ```jsonc
 {
@@ -225,6 +225,10 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "origin": { /* entity or null */ },
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
+  "location": { /* entity or null */ },
+  "generator": { /* entity or null */ },
+  // the role whose entity the row shows, or null
+  "featured": "object",
   "data": null,
   // the roles holding a tombstone, in role order
   "tombstoned": [],
@@ -248,7 +252,8 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
 | `glyph` | string or null | the icon token; see [Icons](#glyphs) |
 | `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
-| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the [entity](#entities) in each role |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the [entity](#entities) in each role |
+| `featured` | string or null | the role whose entity the row shows: `"object"` unless the activity [features another role](/basics/activity-content#featuring-another-role); `null` for none |
 | `data` | map or null | what the recording call passed to `data()` |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
@@ -290,6 +295,10 @@ when the headline already names the speaker.
   "origin": null,
   "result": null,
   "instrument": null,
+  "location": null,
+  "generator": null,
+  // the role every member features, when the axis pins it; else null
+  "featured": null,
   // every role is a LIST
   "sample": {
     "actors": [ /* up to 3 entities */ ],
@@ -298,11 +307,16 @@ when the headline already names the speaker.
     "contexts": [ /* one context entity */ ],
     "origins": [],
     "results": [],
-    "instruments": []
+    "instruments": [],
+    "locations": [],
+    "generators": [],
+    // each sampled member's featured entity, newest first
+    "featured": [ /* up to 3 entities */ ]
   },
   "distinct": {
     "actors": 5, "objects": 3, "targets": 1, "contexts": 1,
-    "origins": 0, "results": 0, "instruments": 0
+    "origins": 0, "results": 0, "instruments": 0,
+    "locations": 0, "generators": 0, "featured": 5
   },
   "children": [ /* member activity nodes, newest first, possibly truncated */ ],
   "children_truncated": false,
@@ -313,7 +327,8 @@ when the headline already names the speaker.
   // per role, how many distinct entities are tombstones
   "distinct_tombstoned": {
     "actors": 0, "objects": 0, "targets": 0, "contexts": 0,
-    "origins": 0, "results": 0, "instruments": 0
+    "origins": 0, "results": 0, "instruments": 0,
+    "locations": 0, "generators": 0, "featured": 0
   }
 }
 ```
@@ -328,14 +343,16 @@ when the headline already names the speaker.
 | `published_at` | string | the newest member's; the sort key |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
 | `glyph`, `glyph_intent` | string or null | as on an activity node; `null` when `verb` is |
-| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the role's one entity, when every member shares it; see below |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the role's one entity, when every member shares it; see below |
+| `featured` | string or null | the role every member features, when that role holds one entity across the group; otherwise `null` |
 | `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
-| `distinct` | map of ints | per role, the true count of distinct entities across all members |
+| `sample.featured` | list | each sampled member's featured entity, newest first, one per member, so an entity can repeat; limited by `grouping.sample_limits.featured` (default three) |
+| `distinct` | map of ints | per role, the true count of distinct entities across all members; `featured` counts the members that feature an entity |
 | `children` | list | member activity nodes, newest first, at most `grouping.children_limit`; [`members()`](/basics/reading#group-members) pages through all of them |
 | `children_truncated` | boolean | `true` when `count` is more than the `children` included |
 | `tombstoned` | list | the roles with at least one tombstone among their distinct entities |
 | `redundant` | boolean | `true` only when every member is redundant |
-| `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones |
+| `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones; `featured`, how many featured entities are |
 
 A singular role contains an entity only when the grouping rule uses that
 role, every member shares it, its sample has one entry, and its distinct
