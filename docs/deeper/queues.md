@@ -19,14 +19,31 @@ to process queued activities. The `sync` connection runs them immediately.
 
 ## Queueing Activities
 
-```php
+```php memo="app/Http/Controllers/PlaceOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('place', $order)
-    ->to($order->shop)
-    ->queue();
+class PlaceOrderController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'placed']);
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('place', $order)
+            ->to($order->shop)
+            ->queue();
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
 After the worker publishes it:
@@ -211,16 +228,14 @@ activity belongs to that earlier moment:
 namespace App\Jobs;
 
 use App\Models\Order;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
 use Storyfeed\Facades\Storyfeed;
 
 class RecordOrder implements ShouldQueue
 {
-    use Dispatchable, Queueable, SerializesModels;
+    use Queueable;
 
     public Carbon $occurredAt;
 
@@ -245,16 +260,14 @@ class RecordOrder implements ShouldQueue
 namespace App\Jobs;
 
 use App\Models\Order;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
 use Storyfeed\Facades\Storyfeed;
 
 class RecordOrder implements ShouldQueue
 {
-    use Dispatchable, Queueable, SerializesModels;
+    use Queueable;
 
     public Carbon $occurredAt;
 
