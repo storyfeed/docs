@@ -582,9 +582,9 @@ The command asks for the class name, then **What will this story describe?**
 
 | Choice | Laravel Analogy | What the Class Contains |
 |---|---|---|
+| One activity, published with its data | like an event | constructor data and `toFeedActivity()` |
 | Every activity for one model | like a resource controller | one declaration method per verb |
 | A single verb | like a single action controller | that verb's headlines in their own class |
-| One activity, published with its data | like a notification | constructor data and `toFeedActivity()` |
 
 Each choice prints the `routes/feed.php` line to add. See
 [Commands](/reference/commands#stories) for all options.
