@@ -24,59 +24,6 @@ For a customer feed:
 
 ## Skipping Publication
 
-For an event implementing `PublishesToFeed`, check whether to publish in
-`toFeedActivity()`:
-
-```php memo="app/Events/OrderPlaced.php"
-<?php
-
-namespace App\Events;
-
-use App\Models\Order;
-use App\Models\User;
-use Illuminate\Foundation\Events\Dispatchable;
-use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\PendingActivity;
-
-class OrderPlaced implements PublishesToFeed
-{
-    use Dispatchable;
-
-    public function __construct(public Order $order, public User $customer) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        if ($this->order->status === 'draft') {
-            return null;                         // not an activity
-        }
-
-        return Storyfeed::activity()
-            ->by($this->customer)
-            ->action('place', $this->order)
-            ->to($this->order->shop);
-    }
-}
-```
-
-Returning `null` publishes nothing. See
-[Publishing from Events](/deeper/events).
-
-The verb and its headline are declared as usual:
-
-```php memo="app/Providers/AppServiceProvider.php" at="boot()"
-use Storyfeed\ActivityStreams\ActivityType;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::verbs([
-    'place' => ActivityType::Create,
-]);
-```
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target');
-```
+To leave a draft out of the feed, return `null` from the event's
+`toFeedActivity()` method. See
+[Skipping Publication](/deeper/events#skipping-publication).
