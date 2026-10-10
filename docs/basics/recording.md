@@ -11,6 +11,17 @@ const backdated = { ...priced, published_at: scene.distant.published_at }
 // The order again, placed at the mall from the shop's app: a string names a party.
 const app = entity('storyfeed.party', 'ios-app', 'iOS app', null, { data: { key: 'ios-app', type: 'Service' } })
 const placedInApp = { ...scene.order, location: role.mall, generator: app }
+// A delivery booked with a courier's API: an entity with no model behind it.
+const delivery = entity('delivery', 'DL-4821', 'Delivery DL-4821', 'https://courier.example/track/DL-4821')
+const booked = { ...scene.order, verb: 'book', headline_template: ':actor booked :result for :object',
+  glyph: null, glyph_intent: null, actor: role.staff, target: null, result: delivery }
+// The shop closed over a few days, a week after the closure was recorded.
+const day = 24 * 60 * 60 * 1000
+const iso = (ms) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, '.000000Z')
+const recordedAt = Date.parse(scene.order.published_at)
+const closed = { ...scene.order, verb: 'close', headline_template: ':actor closed :object',
+  glyph: null, glyph_intent: null, actor: role.staff, object: role.shop, target: null,
+  starts_at: iso(recordedAt + 7 * day), ends_at: iso(recordedAt + 9 * day) }
 </script>
 
 ## Introduction
@@ -94,8 +105,9 @@ Storyfeed::record(
 <FeedExample :items="[placedInApp]" />
 
 > [!NOTE]
-> A role identifies a participant that exists independently of the activity.
-> A nonempty string passed to a role method creates or reuses a named party.
+> A role names a participant: a model, a party, or an
+> [entity without a model](#entities-without-a-model). A nonempty string
+> passed to a role method creates or reuses a named party.
 > Store names, email addresses, amounts, dates, and settings in activity data.
 > Use a [dynamic headline](/basics/the-feed-file#dynamic-headlines) to display
 > those values. [Recording Value Changes](/cookbook/recording-value-changes)
@@ -118,6 +130,109 @@ The `verb` method sets the verb. You may also use these aliases:
 | `->at()` | `location` | where the action happened |
 | `->resulting()` | `result` | the entity produced |
 | `->to()` `->for()` `->on()` `->with()` `->into()` `->in()` `->from()` | `target` | the entity the action was directed at |
+
+### Entities Without a Model
+
+To fill a role with something your application has no model for, such as a
+delivery booked through a courier's API, pass an array with a `type` and a
+`label`:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/BookDeliveryController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Storyfeed\Facades\Storyfeed;
+
+class BookDeliveryController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $delivery = Http::post('https://courier.example/deliveries', [
+            'reference' => $order->reference,
+        ])->json();
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('book', $order)
+            ->resulting([
+                'type' => 'delivery',
+                'id' => $delivery['id'],
+                'label' => "Delivery {$delivery['id']}",
+                'url' => $delivery['tracking_url'],
+            ])
+            ->publish();
+
+        return back();
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/BookDeliveryController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Storyfeed\Facades\Storyfeed;
+
+class BookDeliveryController extends Controller
+{
+    public function __invoke(Request $request, Order $order): RedirectResponse
+    {
+        $delivery = Http::post('https://courier.example/deliveries', [
+            'reference' => $order->reference,
+        ])->json();
+
+        Storyfeed::record(
+            verb: 'book',
+            object: $order,
+            actor: $request->user(),
+            result: [
+                'type' => 'delivery',
+                'id' => $delivery['id'],
+                'label' => "Delivery {$delivery['id']}",
+                'url' => $delivery['tracking_url'],
+            ],
+        );
+
+        return back();
+    }
+}
+```
+:::
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('book')->headline(':actor booked :result for :object');
+```
+
+<FeedExample :items="[booked]" />
+
+| Key | Holds |
+|---|---|
+| `type` | the entity's type; required |
+| `label` | the entity's label; required |
+| `id` | an identifier of up to 36 characters |
+| `url` | the entity's link |
+| `data` | values stored with the entity |
+| `body` | the entity's [bodies](/basics/activity-content) |
+
+Storyfeed stores the entity with the activity, exactly as recorded: nothing
+refreshes it later. The activity's `inlineEntity` method returns the stored
+array for a role, such as `$activity->inlineEntity('result')`, or `null` when
+the role holds a model, a party, or nothing. See
+[Entities](/reference/payload#entities) for its payload.
 
 <a id="the-actor"></a>
 
@@ -251,6 +366,91 @@ foreach ($rows as $row) {
 :::
 
 <FeedExample :items="[backdated]" />
+
+## Recording a Time Range
+
+When an activity describes something that spans a period, such as a closure
+or a meeting, record its start and end with the `startsAt` and `endsAt`
+methods:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/CloseShopController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Shop;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class CloseShopController extends Controller
+{
+    public function __invoke(Request $request, Shop $shop): RedirectResponse
+    {
+        $request->validate([
+            'from' => ['required', 'date'],
+            'until' => ['required', 'date', 'after_or_equal:from'],
+        ]);
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('close', $shop)
+            ->startsAt($request->date('from'))
+            ->endsAt($request->date('until'))
+            ->publish();
+
+        return back();
+    }
+}
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/CloseShopController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Shop;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class CloseShopController extends Controller
+{
+    public function __invoke(Request $request, Shop $shop): RedirectResponse
+    {
+        $request->validate([
+            'from' => ['required', 'date'],
+            'until' => ['required', 'date', 'after_or_equal:from'],
+        ]);
+
+        Storyfeed::record(
+            verb: 'close',
+            object: $shop,
+            actor: $request->user(),
+            startsAt: $request->date('from'),
+            endsAt: $request->date('until'),
+        );
+
+        return back();
+    }
+}
+```
+:::
+
+```php memo="routes/feed.php"
+use App\Models\Shop;
+use Storyfeed\Facades\Story;
+
+Story::for(Shop::class)->verb('close')->headline(':actor closed :object');
+```
+
+<FeedExample :items="[closed]" />
+
+Storyfeed returns the range in the activity's `starts_at` and `ends_at` fields.
+It is stored beside `published_at`, which still orders the feed. Either end
+may be left out for an open range, and an end before the start throws an
+`InvalidArgumentException`.
 
 <a id="recording-many-objects-at-once"></a>
 
