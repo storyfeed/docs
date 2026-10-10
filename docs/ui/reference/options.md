@@ -116,31 +116,98 @@ Set them on the feed or on any element around it.
 <x-storyfeed::feed :page="$page" class="[--sf-font-size:0.875rem]" />
 ```
 
-| CSS Variable | Controls | Default |
-|---|---|---|
-| `--sf-font-size` | the feed's body text; every size below follows it | `1rem` |
-| `--sf-gutter` | the rail's width | 2 × the font size |
-| `--sf-gap` | the space between the rail and the row | 0.75 × the font size |
-| `--sf-disc` | the disc's size | 2 × the font size |
-| `--sf-badge` | an icon badge's size | 0.875 × the font size |
-| `--sf-badge-face` | an avatar badge's size | 1.125 × the font size |
-| `--sf-prose-max-h` | the height at which code and verbatim `Prose` scroll | 24 × the font size |
-| `--sf-code-bg` | verbatim `Prose`'s background | `#18181b` |
-| `--sf-code-fg` | verbatim `Prose`'s text | `#f4f4f5` |
+### `--sf-font-size`
 
-<div class="sf-variants">
-<FeedExample hide-payload :items="order" rail="actor">Defaults</FeedExample>
-<FeedExample hide-payload :items="order" rail="actor" style="--sf-font-size: 0.8125rem"><code>--sf-font-size: 0.8125rem</code></FeedExample>
-</div>
+The feed's body text. The other sizes follow it, and so do Tailwind's
+`--spacing`, `--text-xs`, `--text-sm` and `--text-base` inside the feed, so
+your own slot content on those utilities scales with the feed. Defaults to
+`1rem`.
 
-<div class="sf-variants sf-variants--stack">
-<FeedExample hide-payload :items="terminal">Defaults</FeedExample>
-<FeedExample hide-payload :items="terminal" style="--sf-prose-max-h: 6rem; --sf-code-bg: #1e3a5f; --sf-code-fg: #fde68a"><code>--sf-prose-max-h: 6rem</code>, <code>--sf-code-bg</code>, <code>--sf-code-fg</code></FeedExample>
-</div>
+```css
+.sf-feed { --sf-font-size: 1.25rem; }
+```
 
-Inside the feed, Tailwind's `--spacing`, `--text-xs`, `--text-sm` and
-`--text-base` follow `--sf-font-size`, so your own slot content on those
-utilities scales with the feed.
+<FeedExample :items="order" rail="actor" style="--sf-font-size: 1.25rem" />
+
+### `--sf-gutter`
+
+The rail's width. Defaults to 2 × the font size.
+
+```css
+.sf-feed { --sf-gutter: 4rem; }
+```
+
+<FeedExample :items="order" rail="actor" style="--sf-gutter: 4rem" />
+
+### `--sf-gap`
+
+The space between the rail and the row. Defaults to 0.75 × the font size.
+
+```css
+.sf-feed { --sf-gap: 2.5rem; }
+```
+
+<FeedExample :items="order" rail="actor" style="--sf-gap: 2.5rem" />
+
+### `--sf-disc`
+
+The disc's size. Defaults to 2 × the font size.
+
+```css
+.sf-feed { --sf-disc: 1.5rem; }
+```
+
+<FeedExample :items="order" rail="actor" style="--sf-disc: 1.5rem" />
+
+### `--sf-badge`
+
+An icon badge's size, on the `actor` rail. Defaults to 0.875 × the font size.
+
+```css
+.sf-feed { --sf-badge: 1.25rem; }
+```
+
+<FeedExample :items="order" rail="actor" style="--sf-badge: 1.25rem" />
+
+### `--sf-badge-face`
+
+An avatar badge's size, on the `activity` rail. Defaults to 1.125 × the font size.
+
+```css
+.sf-feed { --sf-badge-face: 1.5rem; }
+```
+
+<FeedExample :items="order" rail="activity" style="--sf-badge-face: 1.5rem" />
+
+### `--sf-prose-max-h`
+
+The height at which code and verbatim `Prose` scroll. Defaults to 24 × the font size.
+
+```css
+.sf-feed { --sf-prose-max-h: 6rem; }
+```
+
+<FeedExample :items="terminal" style="--sf-prose-max-h: 6rem" />
+
+### `--sf-code-bg`
+
+Verbatim `Prose`'s background. Defaults to `#18181b`.
+
+```css
+.sf-feed { --sf-code-bg: #1e3a5f; }
+```
+
+<FeedExample :items="terminal" style="--sf-code-bg: #1e3a5f" />
+
+### `--sf-code-fg`
+
+Verbatim `Prose`'s text. Defaults to `#f4f4f5`.
+
+```css
+.sf-feed { --sf-code-fg: #fde68a; }
+```
+
+<FeedExample :items="terminal" style="--sf-code-fg: #fde68a" />
 
 ## Colour Tokens
 
