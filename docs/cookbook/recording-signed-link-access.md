@@ -100,7 +100,7 @@ was used.
 [Activities Without an Actor](/cookbook/activities-without-an-actor) explains
 the anonymous APIs. A string passed to a role creates or reuses a named
 party; it does not verify identity. Keep recipient names and addresses in
-[data](/cookbook/recording-value-changes), rather than string roles.
+[data](/basics/recording#adding-activity-data), rather than string roles.
 
 ## Retrieving Fetch Evidence
 
