@@ -94,10 +94,10 @@ $approval = Storyfeed::feed()
     ->log()
     ->limit(1)
     ->get()
-    ->items()[0] ?? null;
+    ->first();
 
-$approvedBy = $approval['actor']['label'] ?? null;
-$approvedAt = $approval['published_at'] ?? null;
+$approvedBy = $approval?->actor()?->label();
+$approvedAt = $approval?->publishedAt();
 ```
 
 `ActivityType::Accept` maps the approval to Activity Streams `Accept`.

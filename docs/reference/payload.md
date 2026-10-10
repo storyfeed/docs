@@ -8,14 +8,29 @@ Payload v1 describes each feed node for rendering without domain-specific knowle
 
 ## Response Envelope
 
+`get()` returns a collection whose JSON is a plain array of nodes, newest
+first. `cursorPaginate()` and `members()` return Laravel's cursor paginator,
+with two keys after Laravel's own:
+
 ```jsonc
 {
+  "data": [ /* activity nodes and group nodes, newest first */ ],
+  "path": "https://example.com/feed",
+  "per_page": 30,
+  // opaque string, or null at the end of the feed
+  "next_cursor": "eyJ...",
+  "next_page_url": "https://example.com/feed?cursor=eyJ...",
+  // always null: a feed pages forward only
+  "prev_cursor": null,
+  "prev_page_url": null,
   "payload_version": 1,
-  "items": [ /* activity nodes and group nodes, newest first */ ],
-  "next_cursor": "eyJ...",   // opaque string, or null at end of feed
-  "sync_token": "01J3…"      // opaque string, or null
+  // opaque string, or null
+  "sync_token": "01J3…"
 }
 ```
+
+`simplePaginate()` returns Laravel's simple paginator, with the nodes in
+`data` and the same two keys after Laravel's.
 
 Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
@@ -255,8 +270,8 @@ when the headline already names the speaker.
 ```jsonc
 {
   "kind": "group",
-  // stable within its window
-  "id": "grp_3f9a…",
+  // opaque and stable; members() reads the group back from it
+  "id": "grp_djIfcmVwZWF0…",
   // unknown values: render as a generic group
   "axis": "actors",
   // true total members
@@ -306,7 +321,7 @@ when the headline already names the speaker.
 | Key | Type | Holds |
 |---|---|---|
 | `kind` | string | always `"group"` |
-| `id` | string | `grp_` and a hash; stable within its window |
+| `id` | string | `grp_` and an opaque key; stable, and accepted by [`members()`](/basics/reading#group-members) |
 | `axis` | string | the axis that grouped the members. Render an unknown value as a generic group |
 | `count` | int | the true number of members |
 | `verb` | string or null | the members' verb |
@@ -316,7 +331,7 @@ when the headline already names the speaker.
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | entity or null | the role's one entity, when every member shares it; see below |
 | `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
 | `distinct` | map of ints | per role, the true count of distinct entities across all members |
-| `children` | list | member activity nodes, newest first, at most `grouping.children_limit` |
+| `children` | list | member activity nodes, newest first, at most `grouping.children_limit`; [`members()`](/basics/reading#group-members) pages through all of them |
 | `children_truncated` | boolean | `true` when `count` is more than the `children` included |
 | `tombstoned` | list | the roles with at least one tombstone among their distinct entities |
 | `redundant` | boolean | `true` only when every member is redundant |
@@ -394,6 +409,6 @@ If a later page's token differs, discard all accumulated nodes and fetch from
 the start. A change from `null` to a non-null value also requires this.
 
 [`storyfeed:curate --rehash`](/reference/commands#rehashing-existing-rows) can
-change the token during pagination. Check it even when `items` is empty and
+change the token during pagination. Check it even when `data` is empty and
 `next_cursor` is non-null. Clients must handle changed tokens to comply with
 the payload contract.

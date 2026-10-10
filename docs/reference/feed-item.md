@@ -16,13 +16,14 @@ See [Rendering](/basics/rendering) for examples.
 
 | Method | Returns |
 |---|---|
-| `foreach ($page as $item)` | each item as a `FeedItem` |
-| `$page->collect()` | the items as a `Collection` of `FeedItem` |
-| `$page->items()` | the items as the payload's arrays |
-| `$page->nextCursor()` | the cursor of the next page, or `null` |
+| `Storyfeed::feed()->get()` | a `Collection` of `FeedItem` |
+| `foreach ($page as $item)` | each item of a paginator as a `FeedItem` |
+| `$page->nextCursor()` | the next page's cursor, or `null` |
+| `$page->syncToken()` | the page's sync token, or `null` |
+| `$item->toArray()` | the item's payload array |
 
-Call `FeedItem::of($array)` to wrap an existing array, such as one returned
-by `items()`.
+Call `FeedItem::of($array)` to wrap an existing array, such as an item from a
+page's JSON.
 
 ## FeedItem
 

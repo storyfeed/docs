@@ -1,7 +1,7 @@
 # Vue
 
 The Vue kit renders Storyfeed's serialized items with Vue 3 components.
-Copy it into your app and pass the feed's `items` to `FeedStream`.
+Copy it into your app and pass a feed page to `FeedStream`.
 
 ```bash
 php artisan storyfeed:ui vue
@@ -11,13 +11,13 @@ npm install lucide-vue-next markdown-it sanitize-html
 ```vue memo="resources/js/pages/History.vue"
 <script setup lang="ts">
 import FeedStream from '@/components/storyfeed/FeedStream.vue';
-import type { FeedNode } from '@/components/storyfeed/types';
+import type { FeedPagePayload } from '@/components/storyfeed/types';
 
-defineProps<{ items: FeedNode[] }>();
+defineProps<{ feed: FeedPagePayload }>();
 </script>
 
 <template>
-    <FeedStream :items="items" />
+    <FeedStream :page="feed" />
 </template>
 ```
 
@@ -29,17 +29,20 @@ const divider = { [groupedOrders[0].id]: 'Orders' }
 
 <FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
 
-The copied kit includes its `shared/` imports. Configure [Tailwind scanning
+`page` takes the JSON of a page from `cursorPaginate()` or `simplePaginate()`,
+which holds the items in `data`, or the plain array `get()` returns. The copied
+kit includes its `shared/` imports. Configure [Tailwind scanning
 and tokens](/ui/installation#scanning-tailwind-utilities) in the host app.
 
 ## Loading Older Activity
 
 ```vue
-<FeedStream :items="feed.items" :next-cursor="feed.next_cursor"
+<FeedStream :items="items" :next-cursor="nextCursor"
     :loading-more="loading" @load-more="loadOlder" />
 ```
 
-The app fetches the next page and appends its items. `loading-more` disables
+The app fetches the next page from `next_cursor` and appends its `data` to
+`items`. `loading-more` disables
 the pager while loading. Keep the cursor opaque and follow the
 [feed's sync token](/basics/reading#handling-a-changed-feed).
 
@@ -58,7 +61,7 @@ Built-in bodies render from the object’s bodies and data, and the activity’s
 ## Rails and Groups
 
 ```vue
-<FeedStream :items="feed.items" rail="actor" child-rail="activity-only" />
+<FeedStream :page="feed" rail="actor" child-rail="activity-only" />
 ```
 
 `rail="actor"` puts the actor’s avatar on the rail with a small verb icon;

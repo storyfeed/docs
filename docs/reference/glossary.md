@@ -54,7 +54,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 |---|---|
 | **retrieve / query** | Access the database for feed data. |
 | **return** | Produce a PHP value. |
-| **item** | One entry in a feed, represented by `FeedItem` or an array from `$page->items()`. |
+| **item** | One entry in a feed, represented by `FeedItem` or its payload array. |
 | **node** | A payload representation, such as an activity node or group node. |
 | **[named feed](/basics/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
 | **read mode** | The API choice of `log()` or `live()`. See [Retrieving Feeds](/basics/reading). |

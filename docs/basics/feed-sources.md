@@ -214,7 +214,8 @@ history, so they behave differently:
 |---|---|
 | `involving()`, `involvingDirectly()`, `involvingType()` | throws `FeedMisconfigured` |
 | `query()` | throws `FeedMisconfigured` |
-| `sync_token` | always `null` |
+| `members()` | throws `FeedMisconfigured` |
+| `sync_token` | always `null` on a paginated page |
 
 Filter a source by role instead: `actor()`, `object()`, `target()`,
 `context()`, `origin()`, `result()`, `instrument()` and their `*Type()`

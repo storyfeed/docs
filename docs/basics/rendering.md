@@ -93,10 +93,8 @@ Use its methods to access the [payload](/reference/payload):
 </FeedExample>
 
 Echo `$item->headline()` to render the headline with linked entity labels.
-Items also support array access, such as `$item['verb']`. The `$page->items()`
-method on a `FeedPage` returns the underlying arrays. On a
-`FeedPaginator`, it returns `FeedItem` instances; use `toArray()['items']`
-for the payload arrays. See [FeedItem API](/reference/feed-item)
+Items also support array access, such as `$item['verb']`, and `toArray()`
+returns the item's payload array. See [FeedItem API](/reference/feed-item)
 for all methods.
 
 ### Parts of a Row

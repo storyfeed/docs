@@ -37,8 +37,10 @@ Attributes such as `class` land on the feed's root element.
 | `time`, `media`, `body` | a timestamp, picture or body |
 | `pager`, `divider`, `media-strip` | navigation and group presentation |
 
-All use the `storyfeed::` namespace. To render a payload array instead of a
-`FeedPage`, pass `:items="$payload['items']"` and `:next-cursor="$payload['next_cursor']"`.
+All use the `storyfeed::` namespace. `page` takes what `get()`,
+`cursorPaginate()` or `simplePaginate()` returns, or its JSON decoded as an
+array. To render items you hold yourself, pass `:items="$items"` and
+`:next-cursor="$cursor"`.
 The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
 ## Rails and Groups

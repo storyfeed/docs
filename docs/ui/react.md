@@ -1,7 +1,8 @@
 # React
 
 The React kit renders Storyfeed's serialized items with React 19 components.
-Copy it into your app and wrap the feed in `FeedProvider`.
+Copy it into your app, wrap the feed in `FeedProvider`, and pass a feed page to
+`FeedStream`.
 
 ```bash
 php artisan storyfeed:ui react
@@ -16,12 +17,12 @@ already includes React and its types. In another app, also install
 ```tsx memo="resources/js/pages/History.tsx"
 import { Link } from '@inertiajs/react';
 import { FeedProvider, FeedStream } from '@/components/storyfeed';
-import type { FeedPayload } from '@/components/storyfeed';
+import type { FeedPagePayload } from '@/components/storyfeed';
 
-export default function History({ feed }: { feed: FeedPayload }) {
+export default function History({ feed }: { feed: FeedPagePayload }) {
     return (
         <FeedProvider FEED_LINK={Link}>
-            <FeedStream items={feed.items} />
+            <FeedStream page={feed} />
         </FeedProvider>
     );
 }
@@ -33,6 +34,8 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 <FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
 
+`page` takes the JSON of a page from `cursorPaginate()` or `simplePaginate()`,
+which holds the items in `data`, or the plain array `get()` returns.
 It works with Inertia’s React adapter and Laravel’s React starter kit.
 The copied `shared/` directory makes the imports self-contained. Configure
 [Tailwind scanning and tokens](/ui/installation#scanning-tailwind-utilities).
@@ -40,11 +43,12 @@ The copied `shared/` directory makes the imports self-contained. Configure
 ## Loading Older Activity
 
 ```tsx
-<FeedStream items={feed.items} nextCursor={feed.next_cursor}
+<FeedStream items={items} nextCursor={nextCursor}
     loadingMore={loading} onLoadMore={loadOlder} />
 ```
 
-The app fetches and appends older items. `loadingMore` disables the pager.
+The app fetches the next page from `next_cursor` and appends its `data` to
+`items`. `loadingMore` disables the pager.
 Follow the [feed's sync token](/basics/reading#handling-a-changed-feed).
 `empty` accepts a React node for an empty page.
 
@@ -63,7 +67,7 @@ providers inherit the outer options; explicit values win. See [Host Seams](/ui/c
 ## Rails and Groups
 
 ```tsx
-<FeedStream items={feed.items} rail="actor" childRail="activity-only" />
+<FeedStream page={feed} rail="actor" childRail="activity-only" />
 ```
 
 `rail` accepts `actor`, `activity`, `actor-only`, `activity-only` or a structured
