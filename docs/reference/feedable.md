@@ -329,7 +329,7 @@ should not write data or query the database except through `model()`.
 | `$context->model()` | the current model, or `null` |
 
 If the resolver throws, Storyfeed reports the exception and returns
-`url: null` and `media: null` for that entity. The rest of the feed still renders.
+`link: null` and the derived avatar for that entity. The rest of the feed still renders.
 
 <span id="context-model"></span>
 

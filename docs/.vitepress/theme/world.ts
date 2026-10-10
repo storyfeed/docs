@@ -1,5 +1,5 @@
 import { activity, group } from './samples'
-export { activity, entity, group, tombstone } from './samples'
+export { activity, avatar, entity, group, tombstone } from './samples'
 import { APP_KINDS, type AppKind, type Row, type VerbWording, type WorldPack } from './worlds/contract'
 import { PACKS } from './worlds'
 

@@ -64,13 +64,15 @@ export function entity(
   over: Record<string, any> = {},
 ) {
   const { media, ...rest } = over
+  // Core hashes a party's colour by its key, not its row id.
+  const key = type === 'storyfeed.party' && typeof rest.data?.key === 'string' ? rest.data.key : id
   return {
     type,
     id,
     label,
     link: url === null ? null : { href: url, modal: false, attributes: [] },
     data: [],
-    media: avatar(type, id, label, media ?? null),
+    media: avatar(type, key, label, media ?? null),
     body: null,
     tombstone: null,
     ...rest,

@@ -92,7 +92,7 @@ A role may be any of these:
 |---|---|---|
 | a model | `$project` | the model's entity, from its `toFeed()` |
 | a party name | `'Storyfeed'` | a party entity, `type: "storyfeed.party"` |
-| an entity with no model | `['type' => 'release', 'label' => 'v0.18.0', 'url' => '…']` | an entity with that `type`, `label` and `url` |
+| an entity with no model | `['type' => 'release', 'label' => 'v0.18.0', 'url' => '…']` | an entity with that `type` and `label`, linked to the `url` |
 
 An entity array may also carry an `id`, which defaults to its label, plus
 `data` and a `body`.

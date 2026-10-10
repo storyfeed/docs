@@ -1,11 +1,11 @@
 # Quickstart
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { scene, avatar } from '../.vitepress/theme/world'
 
 // What the recording produces: no links and no icon are defined yet, so
-// every url and the glyph are null.
-const unlinked = (entity) => entity && { ...entity, url: null, media: null }
+// every link and the glyph are null, and each entity shows its avatar.
+const unlinked = (entity) => entity && { ...entity, link: null, media: avatar(entity.type, entity.id, entity.label) }
 const order = { ...scene.order, glyph: null, glyph_intent: null,
   actor: unlinked(scene.order.actor), object: unlinked(scene.order.object), target: unlinked(scene.order.target) }
 </script>

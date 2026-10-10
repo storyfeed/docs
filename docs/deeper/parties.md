@@ -14,7 +14,7 @@ const { anonymous } = scene.cookbook.actorless
 |  | Means | In the Payload |
 |---|---|---|
 | **anonymous** | no recorded actor | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
-| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and an optional external `url` |
+| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and an optional external `link` |
 
 <a id="parties"></a>
 
@@ -107,7 +107,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-<FeedExample :items="[{ ...cancelled, actor: { ...cancelled.actor, url: 'https://example.com/register' } }]" />
+<FeedExample :items="[{ ...cancelled, actor: { ...cancelled.actor, link: { href: 'https://example.com/register', modal: false, attributes: [] } } }]" />
 
 The URL can appear in any party role, and Activity Streams output includes
 it as `url`, including for the actor. Without a URL, the party remains unlinked.

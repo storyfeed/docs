@@ -12,7 +12,7 @@ const customer = logOf(scene.basics.namedFeeds.shop.filter(node =>
   ['place', 'confirm', 'ready'].includes(node.verb) && node.object?.id === scene.order.object.id))
 // One order, linked on the kitchen's feed and unlinked on a feed with no name.
 const linked = [scene.order]
-const unlinked = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
+const unlinked = [{ ...scene.order, object: { ...scene.order.object, link: null } }]
 </script>
 
 ## Introduction

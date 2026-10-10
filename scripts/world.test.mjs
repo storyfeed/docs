@@ -23,6 +23,7 @@ registerHooks({
 const { worldOf, BASE_VERBS, liveOf } = await import('../docs/.vitepress/theme/world.ts')
 const { PACKS } = await import('../docs/.vitepress/theme/worlds/index.ts')
 const { APP_KINDS } = await import('../docs/.vitepress/theme/worlds/contract.ts')
+const { avatar } = await import('../docs/.vitepress/theme/samples.ts')
 
 const DAY = 86_400_000
 const MOVED = Date.parse('2026-09-30T19:00:00Z')
@@ -36,6 +37,22 @@ for (const [name, pack] of Object.entries(PACKS)) {
   const { scene, role } = world
   const now = Date.parse(pack.canonicalNow)
   const verbs = { ...BASE_VERBS, ...pack.verbs }
+
+  test(`${name}: the samples derive the avatar core derives`, () => {
+    let checked = 0
+    for (const node of Object.values(pack.payloads)) {
+      for (const role of ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']) {
+        const entity = node[role]
+        if (!entity || entity.media.icon) continue
+        const key = entity.type === 'storyfeed.party' && typeof entity.data?.key === 'string' ? entity.data.key : entity.id
+        const derived = avatar(entity.type, key, entity.label)
+        assert.equal(derived.initials, entity.media.initials, `${node.id}.${role}: initials`)
+        assert.equal(derived.color, entity.media.color, `${node.id}.${role}: color`)
+        checked++
+      }
+    }
+    assert.ok(checked > 0)
+  })
 
   test(`${name}: pickup progress belongs to an order and carries plain component props`, () => {
     const progress = scene.deeper.body.progress

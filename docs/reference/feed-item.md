@@ -97,7 +97,7 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 
 | Token | Displays |
 |---|---|
-| `:actor`, `:object`, … | the entity, linked when it has a `url`; on a group holding several, the list |
+| `:actor`, `:object`, … | the entity, linked when it has a `link`; on a group holding several, the list |
 | `:actors`, `:objects`, … | the sample, joined, and the rest as a number: `Ana, Ben, Cy and 2 more` |
 | `:count` | `count()` |
 | `:others` | the actors not in the sample: `2 others` |
@@ -135,17 +135,17 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 
 | Method | Returns | Payload Field |
 |---|---|---|
-| `toHtml()`, or echoing the entity in Blade | a link when it has a `url`, with its `attributes`; the escaped label otherwise | |
+| `toHtml()`, or echoing the entity in Blade | a link when it has a `link`, with its attributes; the escaped label otherwise | |
 | `toString()`, `(string)` | its label, or fallback text when absent | `label` |
 | `label()` | `?string` | `label` |
-| `url()` | `?string` | `url` |
+| `url()` | `?string` | `link.href` |
 | `type()` | `?string`: the morph alias | `type` |
 | `id()` | `?string` | `id` |
 | `role()` | `?string`: the role containing the entity | |
-| `attributes()` | `array` | `attributes` |
-| `isModal()` | `bool` | `modal` |
+| `attributes()` | `array` | `link.attributes` |
+| `isModal()` | `bool` | `link.modal` |
 | `data()` | `Fluent` | `data` |
-| `media()` | `?Fluent` with `icon`, `image`, `preview`, `url`, `files` | `media` |
+| `media()` | `?Fluent` with `icon`, `image`, `preview`, `initials`, `color`, `files`, `slots` | `media` |
 | `files()` | `Collection` | `media.files` |
 | `bodies()` | `Collection` of bodies | `body` |
 | `content()`, `mediaType()`, `attributedTo()` | `?string` | `content`, `mediaType`, `attributedTo` |

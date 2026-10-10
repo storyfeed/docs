@@ -1,7 +1,7 @@
 # Activity Content
 
 <script setup>
-import { scene, everything } from '../.vitepress/theme/world'
+import { scene, everything, avatar } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const quotedNote = { ...content.note,
@@ -26,7 +26,8 @@ const quoted = everything().findLast(node => node.object?.body?.some(body => bod
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withImage = content.photo
 const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
-  type: 'document', label: 'Signed Agreement.pdf', url: '/documents/signed-agreement', media: null,
+  type: 'document', label: 'Signed Agreement.pdf', link: { href: '/documents/signed-agreement', modal: false, attributes: [] },
+  media: avatar('document', content.photo.object.id, 'Signed Agreement.pdf'),
   body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
     name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 </script>

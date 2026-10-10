@@ -8,7 +8,7 @@ import FeedHeadline from '@storyfeed/ui/FeedHeadline.vue'
 import EntityLink from '@storyfeed/ui/EntityLink.vue'
 import FeedIcon from '@storyfeed/ui/FeedIcon.vue'
 import { useRelativeTime } from '@storyfeed/ui/useRelativeTime'
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { scene, liveOf, avatar } from '../.vitepress/theme/world'
 
 const one = scene.order
 const time = useRelativeTime(computed(() => one.published_at))
@@ -17,7 +17,7 @@ const grouped = liveOf(scene.cookbook.grouped.actors)[0]
 const unnamed = { ...grouped, headline_template: null, headline: null }
 const complete = scene.basics.feedFile.completed
 const degraded = { ...scene.order, actor: null,
-  object: { ...scene.order.object, label: null, url: null } }
+  object: { ...scene.order.object, label: null, link: null, media: avatar(scene.order.object.type, scene.order.object.id, null) } }
 const content = scene.basics.activityContent
 const withKeyValue = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
@@ -132,7 +132,7 @@ To render a headline in Blade, echo the value returned by the `headline` method:
 </FeedExample>
 
 The headline replaces role tokens in `headline_template` with entity labels.
-Entities with a `url` render as links with their attributes, such as `target`.
+Entities with a `link` render as links with its attributes, such as `target`.
 If the item contains a completed `headline`, that text is displayed. Other text
 is escaped.
 
@@ -439,7 +439,7 @@ types and fields, or [Custom Body Types](/deeper/body) to define your own.
 
 ### Handling Missing Values
 
-An entity's `label` and `url` may be `null`. An anonymous activity has no
+An entity's `label` and `link` may be `null`. An anonymous activity has no
 recorded actor and uses a placeholder in its headline:
 
 <FeedExample :items="[degraded]" />
