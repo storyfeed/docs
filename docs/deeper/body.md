@@ -151,26 +151,38 @@ time, define a body type with its own `upgrade()` method.
 
 ## Writing Body Types
 
+Extend `Storyfeed\FeedBody` and return the body's own fields from `body()`:
+
 ```php memo="app/Feed/Attachment.php"
 <?php
 
 namespace App\Feed;
 
-use Storyfeed\Concerns\HasPayload;
-use Storyfeed\Contracts\FeedBody;
+use Storyfeed\FeedBody;
 
-final class Attachment implements FeedBody
+class Attachment extends FeedBody
 {
-    use HasPayload;
+    protected ?int $size = null;
 
-    private function __construct(
-        private readonly ?int $size,
-        private readonly ?string $mediaType,
-    ) {}
+    protected ?string $mediaType = null;
 
-    public static function make(?int $size = null, ?string $mediaType = null): self
+    protected function __construct(?int $size = null, ?string $mediaType = null)
     {
-        return new self($size, $mediaType);
+        $this->size($size)->mediaType($mediaType);
+    }
+
+    public function size(?int $size): static
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    public function mediaType(?string $mediaType): static
+    {
+        $this->mediaType = $mediaType;
+
+        return $this;
     }
 
     public static function bodyType(): string
@@ -178,36 +190,39 @@ final class Attachment implements FeedBody
         return 'Acme/Attachment';
     }
 
-    public static function version(): int
-    {
-        return 1;
-    }
-
-    public static function upgrade(array $payload, int $from): array
-    {
-        // Missing or unrecognised values become null.
-        return [
-            'size' => is_int($payload['size'] ?? null) ? $payload['size'] : null,
-            'mediaType' => is_string($payload['mediaType'] ?? null)
-                ? $payload['mediaType']
-                : null,
-        ];
-    }
-
-    public function toPayload(): array
+    protected function body(): array
     {
         // Values only: no markup, and never another body.
         return [
-            self::KEY => self::bodyType(),
-            self::VERSION => self::version(),
-            'size' => $this->size,
+            'size' => $this->required($this->size, 'size'),
             'mediaType' => $this->mediaType,
         ];
+    }
+
+    protected static function defaults(): array
+    {
+        return ['mediaType' => null];
     }
 }
 ```
 
-`HasPayload` builds `toArray()` from `toPayload()`.
+`make()` takes the constructor's arguments, so the chain and named arguments
+build the same body:
+
+```php
+Attachment::make()->size($this->bytes)->mediaType('application/pdf');
+Attachment::make(size: $this->bytes, mediaType: 'application/pdf');
+```
+
+`FeedBody` writes the reserved keys, and leaves out any field that still holds
+its value from `defaults()`. Its `upgrade()` method puts those defaults back
+when the body is read. `required()` throws when the body is used without a
+value, naming the method that sets it. Every body also has `fallback()`,
+`maxHeight()`, `fullHeight()` and `withMeta()`.
+
+A class that cannot extend `FeedBody`, such as a data object, implements
+`Storyfeed\Contracts\FeedBody` and writes `toPayload()` itself, with the
+`HasPayload` trait for `toArray()`.
 
 <a id="names"></a>
 
@@ -225,6 +240,8 @@ Stored bodies keep this name even if you move the PHP class.
 |---|---|---|
 | `$body` | `FeedBody::KEY` | the body type's name, verbatim |
 | `$v` | `FeedBody::VERSION` | the version that wrote the body |
+| `$fallback` | `FeedBody::FALLBACK` | one line of plain text for a renderer that cannot draw the type |
+| `$meta` | `FeedBody::META` | renderer settings, such as `maxHeight` |
 
 The `$` prefix keeps them apart from your own keys.
 
@@ -232,7 +249,8 @@ The `$` prefix keeps them apart from your own keys.
 
 ### Versions and Upgrades
 
-Start `version()` at 1. Call the body's `upgrade()` method to convert older
+`version()` starts at 1. When the body's shape changes, override `version()` and
+`upgrade()`. Call the body's `upgrade()` method to convert older
 payloads for your frontend. Storyfeed preserves the stored body and version.
 
 <a id="upgrading-payload-values"></a>
