@@ -8,6 +8,8 @@ const choices = scene.cookbook.verbChoices
 const createdOrder = activity({ ...scene.order, id: 'verb-created-order', verb: 'create',
   target: null, glyph: null, headline_template: ':actor created :object' })
 const placedOrder = { ...scene.order, headline_template: ':actor placed :object at :target' }
+const clause = { ...choices.clause, verb: 'update' }
+const attachment = { ...choices.attachment, verb: 'update' }
 </script>
 
 <span id="naming-a-verb"></span>
@@ -82,7 +84,7 @@ Use roles for the things involved and data for event details:
 
 | Instead of | Record |
 | --- | --- |
-| `document.clause_add` | `add`, with the document as object and the clause key in data when the clause has no model |
+| `document.clause_add` | `update`, with the document as object and the clause key in data when the clause has no model |
 | `menu.item_publish` | `publish`, with the menu item as object and the menu as target |
 | `accept_offer` or `acceptOffer` | `accept`, with the offer as object |
 | `download_pdf` | `download`, with the document as object and the format in activity data |
@@ -91,12 +93,11 @@ Use roles for the things involved and data for event details:
 Use base-form verbs such as `place`. Use past tense in headlines:
 `:actor placed :object`.
 
-::: tip The verb doesn't have to appear in the headline
-The verb is what's recorded; the headline is how the feed phrases it.
-`Act::Begin` can read "Ana opened the poll", and `send` can read "Ana invited Ben
-to sign the contract". A headline can change at any time without changing
-anything stored.
-:::
+> [!NOTE]
+> The verb is what's recorded; the headline is how the feed phrases it.
+> `begin` can read "a user opened the poll", and `send` can read "a user
+> invited another user to sign the contract". A headline can change at any
+> time without changing anything stored.
 
 ## Choosing a Precise Verb
 
@@ -238,14 +239,15 @@ from who authorised it; see [Recording an Authoriser](/cookbook/an-authoriser-wh
 ## Changing a Part Without Its Own Model
 
 A clause stored inside a document has no model to use as a separate object.
-Record the change on the document and keep the clause key in activity data:
+The document still exists and has changed, so record `update` on the
+document and keep the clause key in activity data:
 
 ```php memo="routes/feed.php"
 use App\Models\Document;
 use Storyfeed\ActivityContext;
 use Storyfeed\Facades\Story;
 
-Story::for(Document::class)->verb('remove')
+Story::for(Document::class)->verb('update')
     ->headline(fn (ActivityContext $activity): string =>
         $activity->has('clause')
             ? ':actor removed a clause from :object'
@@ -268,7 +270,7 @@ class RecordClauseRemovalController
     {
         Storyfeed::activity()
             ->by($request->user())
-            ->action('remove', $document)
+            ->action('update', $document)
             ->data(['clause' => 'delivery-window'])
             ->publish();
 
@@ -277,11 +279,11 @@ class RecordClauseRemovalController
 }
 ```
 
-<FeedExample :items="[choices.clause]" />
+<FeedExample :items="[clause]" />
 
 Removing an attachment uses the same verb and an `attachment` key instead:
 
-<FeedExample :items="[choices.attachment]" />
+<FeedExample :items="[attachment]" />
 
 The document is the object in both cases, so its type selects the `Document`
 headline. Putting the document only in the target role would not select that
@@ -346,7 +348,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 class CreateMenuItemController
@@ -355,7 +356,10 @@ class CreateMenuItemController
     {
         $product = MenuItem::create($request->validated());
 
-        Act::Create->by($request->user())->object($product)->publish();
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('create', $product)
+            ->publish();
 
         return back();
     }
@@ -370,7 +374,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
-use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 class CreateMenuItemController
@@ -380,7 +383,7 @@ class CreateMenuItemController
         $product = MenuItem::create($request->validated());
 
         Storyfeed::record(
-            verb: Act::Create,
+            verb: 'create',
             object: $product,
             actor: $request->user(),
         );
@@ -405,7 +408,6 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 class AddMenuItemController
@@ -414,7 +416,11 @@ class AddMenuItemController
     {
         $menu->menuItems()->attach($product);
 
-        Act::Add->by($request->user())->object($product)->to($menu)->publish();
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('add', $product)
+            ->to($menu)
+            ->publish();
 
         return back();
     }
@@ -430,7 +436,6 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Storyfeed\Act;
 use Storyfeed\Facades\Storyfeed;
 
 class AddMenuItemController
@@ -440,7 +445,7 @@ class AddMenuItemController
         $menu->menuItems()->attach($product);
 
         Storyfeed::record(
-            verb: Act::Add,
+            verb: 'add',
             object: $product,
             actor: $request->user(),
             target: $menu,
