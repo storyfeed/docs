@@ -160,8 +160,9 @@ An explicit `context()` still records a place outside the object's parent chain.
 If Sally works on an Acme task, the task's parents lead to Acme's tenant.
 Sally's own parent may be her home tenant. Walking her parents would put Acme's
 activity in that tenant's feed, so **the actor's parents are never followed**.
-`involving($sally)` still finds her direct participation. The `origin`, `result`
-and `instrument` roles also contribute only their direct identities.
+`involving($sally)` still finds her direct participation. The `origin`,
+`result`, `instrument`, `location` and `generator` roles also contribute only
+their direct identities.
 
 ### Excluding Distant Relations
 

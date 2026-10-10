@@ -50,9 +50,9 @@ page's JSON.
 
 | Method | Returns |
 |---|---|
-| `actor()`, `object()`, `target()`, `context()`, `origin()`, `result()`, `instrument()` | `?Entity` |
+| `actor()`, `object()`, `target()`, `context()`, `origin()`, `result()`, `instrument()`, `location()`, `generator()` | `?Entity` |
 | `entity($role)` | `?Entity` for a role by name |
-| `actors()`, `objects()`, `targets()`, `contexts()`, `origins()`, `results()`, `instruments()` | `Collection` of `Entity` |
+| `actors()`, `objects()`, `targets()`, `contexts()`, `origins()`, `results()`, `instruments()`, `locations()`, `generators()` | `Collection` of `Entity` |
 | `entities($role)` | `Collection` of `Entity` for a role by name |
 | `distinct($role)` | `int`: how many distinct entities hold the role |
 

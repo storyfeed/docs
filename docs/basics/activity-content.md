@@ -25,6 +25,8 @@ const withKeyValue = { ...content.confirmed,
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withImage = content.photo
+// The order, featuring the shop it was placed with.
+const featuringShop = { ...scene.order, featured: 'target' }
 const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
   type: 'document', label: 'Signed Agreement.pdf', link: { href: '/documents/signed-agreement', modal: false, attributes: [] },
   media: avatar('document', content.photo.object.id, 'Signed Agreement.pdf'),
@@ -59,7 +61,8 @@ older activities too. Use activity `data` to capture values as they were at the 
 
 [Storyfeed UI](/ui/installation) draws the bodies of an activity's object
 beneath its row. Bodies on the actor, target or context stay in the payload
-for your own components.
+for your own components. To feature another role's entity instead, see
+[Featuring Another Role](#featuring-another-role).
 
 ### Text and Labelled Values
 
@@ -635,3 +638,50 @@ creates a `Prose` body.
 See [Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current
 and deferred values, or [Custom Body Types](/deeper/body) to render custom
 components and define your own body types.
+
+<a id="featuring"></a>
+
+## Featuring Another Role
+
+An activity features its object: the entity whose bodies its row shows. To
+feature another role, call a `featuring` method:
+
+```php memo="Where the order is placed: a controller, an action, a listener"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity()
+    ->by($order->customer)
+    ->action('place', $order)
+    ->to($order->shop)
+    ->featuringTarget()
+    ->publish();
+```
+
+The activity's `featured` key names the role:
+
+<FeedExample payload :items="[featuringShop]" />
+
+| Method | Features |
+|---|---|
+| `featuringObject()` | the object; the default, to undo an earlier call |
+| `featuringActor()`, `featuringTarget()`, `featuringOrigin()`, `featuringResult()`, `featuringInstrument()`, `featuringLocation()`, `featuringGenerator()` | that role's entity |
+| `withoutFeature()` | no entity: `featured` is `null`; bodies in the activity's own data remain |
+
+A context is never featured. Featuring a role the activity leaves empty throws
+`IncompleteActivity` when the activity is recorded. If the featured entity is
+missing when the feed is read, the activity still appears.
+
+To set a verb's default, call the same method in the feed file. An activity's
+own call wins:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)
+    ->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->featuringTarget();
+```
+
+Verb enums accept the same methods.

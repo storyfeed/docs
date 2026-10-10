@@ -66,6 +66,8 @@ where it is empty.
 | `origin` | `ora` | `orid` |
 | `result` | `ra` | `rid` |
 | `instrument` | `ia` | `iid` |
+| `location` | `la` | `lid` |
+| `generator` | `ga` | `gid` |
 
 See [Default Grouping Keys](/reference/configuration#default-grouping-keys) for the built-in axes.
 

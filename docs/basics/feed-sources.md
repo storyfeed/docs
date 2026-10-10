@@ -78,7 +78,7 @@ Each item is an array with these keys:
 |---|---|
 | `verb` | the verb, as a string or a verb enum (required) |
 | `published_at` | a date or date string (required) |
-| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument` | a role (see below) |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | a role (see below) |
 | `starts_at`, `ends_at` | the time range the activity describes |
 | `data` | an array, carried as the activity's `data` |
 | `body` | the object's body: a string, a body, or a list of bodies |
@@ -218,7 +218,8 @@ history, so they behave differently:
 | `sync_token` | always `null` on a paginated page |
 
 Filter a source by role instead: `actor()`, `object()`, `target()`,
-`context()`, `origin()`, `result()`, `instrument()` and their `*Type()`
+`context()`, `origin()`, `result()`, `instrument()`, `location()`,
+`generator()` and their `*Type()`
 forms all work, and `actor('Storyfeed')` matches the items whose actor is
 that party name.
 

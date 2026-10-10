@@ -108,7 +108,9 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | `grouping.policy.min_object_members` | `2` | activities required for `object` |
 
 `sample_limits` uses singular role names: `actor`, `object`, `target`,
-`context`, `origin`, `result`, and `instrument`. Each defaults to `3`.
+`context`, `origin`, `result`, `instrument`, `location`, and `generator`.
+`featured` caps the strip of members' featured entities, `sample.featured`.
+Each defaults to `3`.
 Increase a limit when your frontend displays more names:
 
 ```php memo="config/storyfeed.php"
