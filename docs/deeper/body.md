@@ -88,9 +88,8 @@ class Order extends Model implements Feedable
 
 :::
 
-The props are plain values: a title, a list of steps, the current step's label,
-and a formatted pickup time. They are stored with the body and reflect the
-values when the body was built. To display current progress whenever the
+Props are stored with the body and reflect their values when the body was
+built. To display current progress whenever the
 feed is retrieved, build the body in
 [`feedMedia()`](/deeper/resolving-bodies#using-current-values).
 
@@ -118,26 +117,42 @@ defineProps(['title', 'steps', 'current', 'pickup'])
 </template>
 ```
 
-In your body renderer, register the component under the same name used in PHP
-and pass it the body's props:
+Register the component under the same name used in PHP. The kit's
+`Storyfeed/Body/Component` renderer looks the name up and passes the component
+the body's props:
 
-```vue memo="resources/js/components/feed/ComponentBody.vue"
-<script setup>
-import Progress from '../orders/Progress.vue'
+::: code-group
 
-defineProps(['body'])
-const components = { 'Orders/Progress': Progress }
+```vue [Vue] memo="resources/js/pages/History.vue"
+<script setup lang="ts">
+import { provide } from 'vue';
+import { FEED_COMPONENTS } from '@/components/storyfeed/keys';
+import Progress from '@/components/orders/Progress.vue';
+
+provide(FEED_COMPONENTS, { 'Orders/Progress': Progress });
 </script>
-
-<template>
-    <component v-if="components[body.name]"
-        :is="components[body.name]" v-bind="body.props" />
-</template>
 ```
 
-Use this renderer for bodies whose `$body` is `Storyfeed/Body/Component`.
-Style the list as a stepper, with `[aria-current="step"]` highlighting the current step.
-Rendered with that mapping:
+```tsx [React] memo="resources/js/pages/History.tsx"
+import { FeedProvider, FeedStream } from '@/components/storyfeed';
+import Progress from '@/components/orders/Progress';
+
+<FeedProvider FEED_COMPONENTS={{ 'Orders/Progress': Progress }}>
+    <FeedStream page={feed} />
+</FeedProvider>
+```
+
+```php [Blade] memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Ui\Support\BodyComponents;
+
+app(BodyComponents::class)->register('Orders/Progress', 'orders.progress');
+```
+
+:::
+
+Blade renders `<x-orders.progress>` and passes it the props. A name
+with no registered component draws nothing. Style the list as a stepper, with
+`[aria-current="step"]` highlighting the current step:
 
 <FeedExample :items="[scene.deeper.body.progress]" />
 
@@ -245,18 +260,58 @@ Stored bodies keep this name even if you move the PHP class.
 
 The `$` prefix keeps them apart from your own keys.
 
+### Rendering Body Types
+
+Give each kit a renderer for the body type's exact name. The renderer receives
+the body and the entity that carries it:
+
+::: code-group
+
+```blade [Blade] memo="resources/views/vendor/storyfeed/components/body/acme/attachment.blade.php"
+@use('App\Feed\Attachment')
+@props(['body', 'entity' => null])
+
+@php($body = Attachment::upgrade($body, $body['$v'] ?? 1))
+
+<p>{{ $body['mediaType'] }} · {{ $body['size'] }} bytes</p>
+```
+
+```ts [Vue] memo="resources/js/app.ts"
+import { feedBodies } from '@/components/storyfeed/body';
+import Attachment from '@/components/feed/Attachment.vue';
+
+createApp(App).use(feedBodies({ 'Acme/Attachment': Attachment }));
+```
+
+```tsx [React] memo="resources/js/pages/History.tsx"
+import { FeedProvider, FeedStream } from '@/components/storyfeed';
+import Attachment from '@/components/feed/Attachment';
+
+<FeedProvider FEED_BODIES={{ 'Acme/Attachment': Attachment }}>
+    <FeedStream page={feed} />
+</FeedProvider>
+```
+
+:::
+
+Blade finds the view by the type's name, segment by segment, under
+`resources/views/vendor/storyfeed/components/body`. A Vue renderer receives
+`payload`, `entityLabel`, `entityUrl` and `entityMedia` props; a React renderer
+receives `BodyProps`. A renderer registered for one of Storyfeed's own types
+replaces the kit's. A body type with no renderer draws its `$fallback` line, or
+nothing.
+
 <a id="body-versions"></a>
 
 ### Versions and Upgrades
 
-`version()` starts at 1. When the body's shape changes, override `version()` and
-`upgrade()`. Call the body's `upgrade()` method to convert older
-payloads for your frontend. Storyfeed preserves the stored body and version.
+`version()` starts at 1. When the body's shape changes, raise `version()` and
+override `upgrade()` to convert a payload an older version wrote. Storyfeed
+stores the body as written, `$v` included, and returns it unchanged. A Blade
+view calls `upgrade()` with the stored `$v`, as above. A Vue or React renderer
+applies the same steps in TypeScript.
 
 <a id="upgrading-payload-values"></a>
-
-Bodies arrive as stored, including `$v`, so your renderer must call the
-body type's `upgrade()` method before displaying versions it supports.
 
 <a id="defining-a-body"></a>
 <a id="defining-bodies"></a>
