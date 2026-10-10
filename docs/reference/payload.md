@@ -45,7 +45,7 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 {
   // morph alias, never a class name
   "type": "delivery",
-  // string-cast
+  // string-cast; null for an entity with no model that was recorded without an id
   "id": "42",
   // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
   "label": "Delivery #1042",
@@ -123,6 +123,7 @@ A role has one of these states:
 | Empty | `null`; for the actor, this means anonymous: no actor was recorded |
 | Degraded | the model's own `type`, `label: null`, `link: null`, `tombstone: null` |
 | Tombstoned | `type: "storyfeed.tombstone"`, `link: null`, `tombstone: {…}` |
+| No model | an entity recorded as an array: its `type` and `label` as recorded, `link` from its `url`, `id` as given or `null`, and the derived avatar. Never hydrated or refreshed; without an `id` it is in no `involving()` index |
 
 When `approximate` is true, `deleted` records when `storyfeed:trickle` found
 the model missing. It is not the exact deletion time. Headlines, icons, and
@@ -264,10 +265,6 @@ A redundant activity still records what happened, but a relevant model has
 been deleted. Your renderer may display the original or missing headline.
 
 <a id="threads"></a>
-
-Quoted words belong in an entity's [`Excerpt` body](/basics/activity-content#adding-quoted-text).
-Its `from` field is `null` when no separate source attribution is set, such as
-when the headline already names the speaker.
 <span id="group-node"></span>
 
 ## Group Nodes
@@ -337,12 +334,12 @@ when the headline already names the speaker.
 |---|---|---|
 | `kind` | string | always `"group"` |
 | `id` | string | `grp_` and an opaque key; stable, and accepted by [`members()`](/basics/reading#group-members) |
-| `axis` | string | the axis that grouped the members. Render an unknown value as a generic group |
+| `axis` | string | the axis that grouped the members: a [built-in axis](/deeper/aggregation#built-in-axes) (`actors`, `actors_target`, `targets`, `object`, `repeat` or `composite`) or a [custom axis](/deeper/custom-axes)'s name. Render an unknown value as a generic group |
 | `count` | int | the true number of members |
-| `verb` | string or null | the members' verb |
+| `verb` | string | the members' verb |
 | `published_at` | string | the newest member's; the sort key |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
-| `glyph`, `glyph_intent` | string or null | as on an activity node; `null` when `verb` is |
+| `glyph`, `glyph_intent` | string or null | as on an activity node |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the role's one entity, when every member shares it; see below |
 | `featured` | string or null | the role every member features, when that role holds one entity across the group; otherwise `null` |
 | `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
@@ -359,9 +356,8 @@ role, every member shares it, its sample has one entry, and its distinct
 count is one. Otherwise it is `null`. Each plural role has a limited sample
 and a distinct count; empty roles use `[]` and `0`.
 
-Renderers may rely on the group node's structure, which is frozen from v0.19.
-Which activities group together, and when, is experimental: the server-side
-rules, thresholds and burst windows keep improving between releases.
+Which activities group together, and when, is grouping policy, not part of
+the payload contract; see [Aggregation](/deeper/aggregation).
 
 <a id="digest-rows"></a>
 
