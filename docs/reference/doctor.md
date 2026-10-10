@@ -18,7 +18,7 @@ fixing findings.
 |---|---|
 | `--list` | prints the check names `--only` accepts, without running checks or evaluating acknowledgments |
 | `--only=` | runs the named checks; repeat it for several |
-| `--json` | prints the report as JSON: `healthy`, `count`, `severity`, `acknowledged_count`, and each finding's `code`, `severity`, `message`, `subject`, `fix` and `acknowledgment` |
+| `--json` | prints the report as JSON: `healthy`, `count`, `severity`, `acknowledged_count`, each finding's `code`, `severity`, `message`, `subject`, `fix` and `acknowledgment`, and the `installed` packages |
 | `--stubs` | prints only the suggested definitions, with their `use` lines. See [Generating Missing Definitions](#generating-definitions) |
 | `--fail-on=` | `warning` exits non-zero on a warning or an error; `error` on an error alone. Without it, findings never change the exit status |
 
@@ -37,7 +37,7 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `aggregates` | groups that formed, or could form, with no group headline. See [Group Reachability](#group-reachability) | error · info |
 | `tokens` | group headlines that use a token which can differ between the group's members | warning · info |
 | `axes` | grouping axes that can hold several verbs, where a group headline names one verb or none exists | warning |
-| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments). `:actor` over activities that are all anonymous is info | error · info |
+| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`, `:location`, `:generator`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments). `:actor` over activities that are all anonymous is info | error · info |
 | `actorless` | anonymous activities whose verb has no anonymous headline | info |
 | `reflexive` | activities naming the same entity as actor and object | info |
 | `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
@@ -50,6 +50,7 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `entities` | models in a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the model record is gone. See [Entities](#entities) | error · warning · info |
 | `links` | observed entities without URLs in sampled named feeds, or feeds that cannot be inspected. See [Link Sampling](#link-sampling) | info |
 | `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
+| `media` | a body that shows one of its model's `feedMedia()` pictures by slot, on a model whose `feedMedia()` never sets that slot. See [Media Slots](#media-slots) | error · info |
 | `body` | the [body types](/deeper/body) stored, a body with no `$body` key, and a body type versioned on some records but not others | warning · info |
 | `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
 | `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key, or superseded activities for a verb without a `keepLatest()` declaration | warning · info |
@@ -58,13 +59,15 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities; error outside the `testing` environment, info within it | error · info |
 | `tables` | missing package tables. Until `feed_tombstones` exists, deleted models leave no tombstone | error |
 | `columns` | missing package columns; writes requiring them throw an exception | error |
+| `references` | app-reference columns not yet converted to strings by the `change_feed_references_to_strings` migration; on PostgreSQL, reads that join tombstones throw | error |
+| `snapshots` | an invalid `STORYFEED_SNAPSHOTS` value, or `sync` set outside the `local` and `testing` environments | error · warning |
 | `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
 | `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
 | `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
 | `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
 | `ancestors` | broken declared parent chains (`ancestors.unresolvable`), declared parents with no recorded path (`ancestors.missing`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/deeper/distant-relations#checking-parent-chains) | warning |
-| `participants` | activities `involving()` cannot find. `storyfeed:participants` backfills them | warning |
+| `participants` | activities `involving()` cannot find, and participant rows whose `published_at` no longer matches their activity (`participants.drift`), as a query builder update leaves them. `storyfeed:participants` backfills and rewrites them | warning |
 | `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
 | `claims` | composite members still held by a deleted composite. `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
 | `freshness` | nothing published for `doctor.stale_after` days | warning · info |
@@ -83,7 +86,8 @@ These checks inspect a limited set:
 | `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
 | `links` | up to 30 top-level items from each constructable named feed in its declared mode | returned entities only, including bounded group samples, children; not group totals or unsampled history |
 | `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
-| `aggregates` | groups identified by axis and hash, with at least two members: selected display groups when `grouping.curate` is true, repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
+| `media` | newest 200 snapshots with a body, and up to 10 rows per type and slot, probed under every registered feed | a slot is reported only when no probe of that type sets it; a slot set for some rows and not others is not reported |
+| `aggregates` | groups identified by axis and hash, with at least two members, as Live reads them: selected display groups when `grouping.curate` is true, plus repeat groups among activities curation has not reached; repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
 
 Other checks may bound their time window or quote a few examples without
 sampling the count. For example, `retention.unbounded` considers 30 days;
@@ -94,6 +98,15 @@ backlog. No findings means no problem was detected within those scopes.
 <a id="interpreting-findings"></a>
 
 ## Findings
+
+### Media Slots
+
+`media.unset_slot` is an error: a body names a picture slot, such as
+`Image::make($this->feedMediaIcon())` or a custom `slots.<name>`, and its model's
+`feedMedia()` sets that slot for none of the sampled rows. The body shows its
+text and no picture. Set the slot in `feedMedia()`, store the picture in the
+body, or name a slot the resolver sets. `media.opaque` is informational: the
+model's `feedMedia()` threw on every probe, so the check cannot answer.
 
 ### Grouping Hashes
 
@@ -113,7 +126,7 @@ optional keys can produce different shapes. Those differences need no repair.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `aggregates.missing` | error | a group in the aggregate sample has no headline and a registered feed may return it, or reachability is unknown; Storyfeed falls back to a safe single-activity headline, or returns no headline |
+| `aggregates.missing` | error | a group in the aggregate sample has no headline and a registered feed may return it, or reachability is unknown. Storyfeed substitutes a plural noun into the single-activity headline, which may not read correctly, or returns no headline; only a group headline is written for the group |
 | `aggregates.latent` | info | a group has no headline but is unused by registered feeds; `--stubs` generates nothing and `--fail-on=warning` ignores it |
 | `aggregates.reachability_unknown` | info | no feeds are registered, or a feed threw during inspection; all headline gaps are reported as `aggregates.missing` |
 

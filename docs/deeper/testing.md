@@ -150,6 +150,11 @@ forms the groups. A headline such as `repeat.order.place` covers only orders.
 For groups limited to one type, the assertion checks each type recorded with
 the verb.
 
+When [`storyfeed:doctor`](/deeper/diagnosing) reports a missing headline or
+icon, the finding names the assertion that guards it:
+`assertCoversRecorded()` for an activity's headline or icon, and
+`assertCoversGroups()` for a group headline.
+
 ### Explicit Coverage Matrices
 
 Choose a set of activities and group combinations explicitly:
