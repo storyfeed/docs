@@ -246,8 +246,8 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 |---|---|---|
 | `kind` | string | always `"activity"` |
 | `id` | string | the activity's stable, opaque id |
-| `verb` | string | the recorded verb |
-| `published_at` | string | ISO 8601 with microseconds |
+| `verb` | string or null | the recorded verb; `null` only on a verbless entry of a [composed feed](/basics/feed-sources#composing-a-feed) or source |
+| `published_at` | string or null | ISO 8601 with microseconds; `null` only on a [dateless entry](/basics/feed-sources#dateless-entries) of a composed feed or source |
 | `starts_at`, `ends_at` | string or null | the time range set with `startsAt()` and `endsAt()`, ISO 8601 with microseconds; either end may be `null` |
 | `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
@@ -425,7 +425,7 @@ needs a 24 by 24 pixel target at level AA.
 ### Cursors
 
 - Store cursors and return them unchanged; do not parse them.
-- Results are ordered by `published_at`, newest first.
+- Results are ordered by `published_at`, newest first, unless a composed feed or source [keeps its order](/basics/feed-sources#keeping-your-order).
 - `next_cursor: null` marks the end.
 
 <span id="sync-token"></span>

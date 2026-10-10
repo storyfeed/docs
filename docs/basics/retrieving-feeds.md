@@ -48,8 +48,8 @@ Route::get('/', function () {
 });
 ```
 
-A feed is ordered by `published_at`, newest first. Items without a date aren't
-supported yet.
+A feed is ordered by `published_at`, newest first. To show data in your own
+order, or without dates, [compose a feed](/basics/feed-sources#composing-a-feed).
 
 For three order placements, the response contains:
 
