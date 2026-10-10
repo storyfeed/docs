@@ -144,8 +144,7 @@ Route::patch('/menus/{menu}/name', function (Request $request, Menu $menu) {
 | `data` | empty | `from` and `to` names |
 
 The headline has the same words in both examples. The second composition
-keeps the menu's identity separate from its names. Change activities draw no
-body: the menu's current details would describe the menu today.
+keeps the menu's identity separate from its names.
 
 ## Inspecting Parties
 
