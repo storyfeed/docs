@@ -40,8 +40,23 @@ and restoration hooks. [Feedable Models](/basics/feedable-models) covers setup.
 
 ### Deleting Models
 
-```php memo="app/Http/Controllers/OrderController.php" at="destroy()"
-$order->delete();
+```php memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+
+class OrderController extends Controller
+{
+    public function destroy(Order $order): RedirectResponse
+    {
+        $order->delete();
+
+        return to_route('orders.index');
+    }
+}
 ```
 
 With Laravel's `SoftDeletes` trait, `delete()` soft-deletes the model and
@@ -288,9 +303,26 @@ non-Eloquent `Feedable`, pass its morph alias instead of a class.
 
 To remove a model's activities entirely, delete them before the model:
 
-```php memo="app/Http/Controllers/AccountController.php" at="destroy()"
-$user->forceDeleteFromFeed();   // every activity involving the user, permanently
-$user->forceDelete();
+```php memo="app/Http/Controllers/AccountController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class AccountController extends Controller
+{
+    public function destroy(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $user->forceDeleteFromFeed();   // every activity involving the user, permanently
+        $user->forceDelete();
+
+        return redirect('/');
+    }
+}
 ```
 
 Use `deleteFromFeed()` to soft-delete the activities. Models registered with
