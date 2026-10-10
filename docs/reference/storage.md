@@ -21,17 +21,12 @@ const repeat = liveOf(log)[0]
 
 A customer places an order:
 
-```php memo="Where the order is placed: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
+::: code-group
+<<< @/snippets/publish.php {php memo="Where the order is placed: a controller, an action, a listener"} [Fluent Syntax]
+<<< @/snippets/publish.named-arguments.php {php memo="Where the order is placed: a controller, an action, a listener"} [Named Arguments]
+:::
 
-Storyfeed::activity()
-    ->by($customer)
-    ->action('place', $order)
-    ->to($shop)
-    ->publish();
-```
-
-`publish()` stamps `published_at` and runs the verb's story middleware. The
+`publish()`, or `record()`, stamps `published_at` and runs the verb's story middleware. The
 innermost step stores the activity in one database transaction:
 
 1. **Snapshots.** Each Feedable entity's `toFeed()` output is upserted into
@@ -57,7 +52,9 @@ Storyfeed then dispatches `ActivityPublished`, after the outermost transaction
 commits. On the way back out of the middleware, the `batch` middleware adds
 the activity to the actor's current batch in a transaction of its own.
 
-### The Rows One Publish Writes
+<a id="the-rows-one-publish-writes"></a>
+
+### Rows Written per Publish
 
 For the order above, with a customer, an order and a shop, all Feedable,
 and the default axes and middleware:
@@ -106,8 +103,8 @@ newest first; they can require more than two SQL queries:
 - The **group stream** joins each published activity to its winning
   `feed_groupings` row and groups by `(bucket, hash)`. Each group's latest
   `published_at` places it in the feed. Storyfeed runs this aggregate over
-  the newest `16 × limit` activities first, then `256 × limit`, and finally
-  the whole eligible history. Each bounded attempt probes a window floor and
+  the newest `16 × limit` activities first, then `64 × limit`,
+  `256 × limit` and `1024 × limit`, and finally the whole eligible history. Each bounded attempt probes a window floor and
   runs the aggregate. It stops widening when it finds more than `limit`
   candidates (the `limit + 1` lookahead), or reaches an unbounded attempt.
   A windowed result also recounts its selected groups across eligible history.
@@ -121,7 +118,9 @@ only, Storyfeed fetches up to `grouping.children_limit` members each (25 by
 default), counts distinct entities per role, and eager-loads the members'
 snapshots. A group with one member is shown as a single activity.
 
-### From Three Orders to One Row
+<a id="from-three-orders-to-one-row"></a>
+
+### Repeat Groups
 
 The customer places three orders, minutes apart. Each order writes the rows in
 the table above. In `log()`, they are three rows:
@@ -146,7 +145,7 @@ See [Aggregation](/deeper/aggregation#built-in-axes) for the axis order and
 | Mode | Retrieves |
 |---|---|
 | `live()` | the `winner` grouping row of each activity, or `repeat` when none is stamped |
-| `log()` | atomic activities without aggregation; one main SELECT checks composite claims in `feed_groupings` with `NOT EXISTS` to suppress parent stories, plus snapshot loads |
+| `log()` | atomic activities without aggregation; one main SELECT, with a per-row probe of `feed_groupings` that leaves out composite parent stories, plus snapshot loads |
 
 ### Pagination
 
@@ -212,8 +211,8 @@ choose a different index or a scan as data and query constraints change.
 | `log()`, and the solo stream | `feed_activities (published_at, id)` |
 | `->actor()`, `->object()`, `->target()`, `->context()` | `feed_activities ({role}_type, {role}_id, published_at, id)` |
 | `->involving()` | `feed_participants (entity_type, entity_id, published_at, activity_id)` |
-| each activity's winning row in `live()` | `feed_groupings (activity_id)` |
-| a group's members | `feed_groupings (bucket, hash)` |
+| each activity's winning row in `live()` | `feed_groupings (activity_id, winner, bucket)` |
+| a group's members | `feed_groupings (bucket, hash, activity_id, winner)` |
 | the solo stream's `repeat` and `composite` checks, per activity | `feed_groupings unique (activity_id, bucket)` |
 
 Two indexes serve work other than feed retrieval. Publishing finds an actor's open
