@@ -15,6 +15,10 @@ constraints: the keys below are the ones Storyfeed joins on.
 [Storage Architecture](/reference/storage) shows which rows a publish writes and how a
 feed is retrieved from them.
 
+Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and
+`actor_id`) is a `string(36)`. On MySQL and MariaDB these columns use the
+`ascii` charset and the `ascii_bin` binary collation.
+
 ## Tables at a Glance
 
 <!-- schema:diagram -->
