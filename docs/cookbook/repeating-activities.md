@@ -129,7 +129,7 @@ Story::for(Order::class)->verb('confirm')
 ```php memo="app/Http/Controllers/OrderController.php" at="show()"
 use Storyfeed\Facades\Storyfeed;
 
-$latest = Storyfeed::feed()->involving($order)->live()->get();
+$latest = Storyfeed::feed()->involving($order)->log()->get();
 ```
 
 <FeedExample :items="latest" />
