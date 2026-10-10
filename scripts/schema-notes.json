@@ -43,7 +43,7 @@
   "feed_snapshots": {
     "id": "Primary key. Activities point here through `cached_{role}_id`.",
     "model_type": "The entity's morph alias.",
-    "model_id": "The entity's key. MySQL and MariaDB use the `ascii_bin` binary collation; SQL Server uses `Latin1_General_100_BIN2`.",
+    "model_id": "The entity's key.",
     "label": "The label from `toFeed()`.",
     "component": "Not written by Storyfeed.",
     "data": "The `data` from `toFeed()`.",

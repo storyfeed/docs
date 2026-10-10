@@ -283,7 +283,7 @@ all work, including a mix of them in one app.
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. Activities point here through `cached_{role}_id`. |
 | `model_type` | string(255) |  | The entity's morph alias. |
-| `model_id` | string(36) |  | The entity's key. MySQL and MariaDB use the `ascii_bin` binary collation; SQL Server uses `Latin1_General_100_BIN2`. |
+| `model_id` | string(36) |  | The entity's key. |
 | `label` | string(255) | nullable | The label from `toFeed()`. |
 | `component` | string(255) | nullable | Not written by Storyfeed. |
 | `data` | json | nullable | The `data` from `toFeed()`. |
