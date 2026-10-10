@@ -25,11 +25,18 @@ const props = withDefaults(
          */
         context?: boolean | number
         /**
-         * Show the payload alone, open, as the envelope a read returns: for the
-         * step that teaches the data before anything is drawn from it. Still
-         * serialised from `items`, so the drawn step below cannot disagree.
+         * Show the payload alone, open, as a route returning the read sends
+         * it: for the step that teaches the data before anything is drawn
+         * from it. Still serialised from `items`, so the drawn step below
+         * cannot disagree. `get()` returns the items as a plain array.
          */
         payload?: boolean
+        /**
+         * With `payload`, wrap the items as `cursorPaginate()` returns them:
+         * Laravel's cursor paginator JSON, the items in `data`, then the
+         * feed's `payload_version` and `sync_token`.
+         */
+        paginated?: boolean
         /** Draw the day headers a real feed has, for a whole feed rather than one row. */
         days?: boolean
         /**
@@ -39,7 +46,7 @@ const props = withDefaults(
          */
         height?: number | string
     }>(),
-    { expanded: false, label: 'Payload', context: false, payload: false, days: false },
+    { expanded: false, label: 'Payload', context: false, payload: false, paginated: false, days: false },
 )
 
 const maxHeight = computed(() => {
@@ -57,8 +64,18 @@ const copied = ref(false)
 
 const json = computed(() =>
     JSON.stringify(
-        props.payload
-            ? { payload_version: 1, items: props.items, next_cursor: 'eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ', sync_token: '01J8Z3K4Q2V9WMX7R5T0B6N1CD' }
+        props.payload && props.paginated
+            ? {
+                data: props.items,
+                path: 'https://example.com',
+                per_page: 30,
+                next_cursor: 'eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ',
+                next_page_url: 'https://example.com?cursor=eyJwIjoiMjAyNi0wOC0xNFQxNDowNTowMFoifQ',
+                prev_cursor: null,
+                prev_page_url: null,
+                payload_version: 1,
+                sync_token: '01J8Z3K4Q2V9WMX7R5T0B6N1CD',
+            }
             : props.items,
         null,
         2,

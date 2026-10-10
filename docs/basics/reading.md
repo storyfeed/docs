@@ -52,8 +52,9 @@ For three order placements, the response contains:
 
 <FeedExample payload :items="scoped" />
 
-The `get` method returns a `FeedPage`. Access its items with `$page['items']`
-using PHP array syntax. The rendered feed displays:
+The `get` method returns a Laravel collection of `Storyfeed\Support\FeedItem`
+instances, so a route that returns it responds with a JSON array of items. The
+rendered feed displays:
 
 <FeedExample :items="scoped" />
 
@@ -309,7 +310,8 @@ Without `shop`, the query returns the whole sample:
 ## Paginating Results
 
 To paginate a feed, call the `cursorPaginate` method. It returns a
-`Storyfeed\FeedPaginator` and retrieves the cursor from the current request:
+`Storyfeed\FeedPaginator`, Laravel's cursor paginator, and retrieves the cursor
+from the current request:
 
 <a id="reading-the-next-page"></a>
 
@@ -338,8 +340,8 @@ To display pagination links in Blade, call the `links` method:
 {{ $page->links() }}
 ```
 
-With a page size of two in log mode, the three placements split across two pages.
-Page one holds the newest two: Page one contains the newest two:
+With a page size of two in log mode, the three placements split across two
+pages. Page one contains the newest two:
 
 <FeedExample :items="pages[0]" />
 
@@ -347,20 +349,11 @@ Follow `$page->nextPageUrl()` to retrieve the remaining placement:
 
 <FeedExample :items="pages[1]" />
 
-| Response Field | Page One | Next Page |
-|---|---|---|
-| `items` / `data` | two newest placements | one remaining placement |
-| `next_cursor` | the opaque string from `$page->nextCursor()->encode()` | `null` |
-| `next_page_url` | URL containing that cursor | `null` |
-| `prev_cursor` / `prev_page_url` | `null` | `null` |
-| `sync_token` | feed token | same token while the feed state is unchanged |
-
 The paginator uses Laravel's simple pagination views, including any views you
 have customized in your application. Feeds paginate forward only, so the
-previous-page link is disabled. The `nextPageUrl` method returns the next
-page's URL, or `null` on the last page. The `previousPageUrl` method returns
-`null`. See [Storage Architecture](/reference/storage#pagination) for what a
-cursor holds.
+previous-page link is disabled: `previousPageUrl` returns `null`, and
+`nextPageUrl` returns `null` on the last page. See
+[Storage Architecture](/reference/storage#pagination) for what a cursor holds.
 
 ### Customizing Pagination URLs
 
@@ -383,36 +376,92 @@ $page = Storyfeed::feed()->cursorPaginate(15)->withQueryString();
 $page->appends(['filter' => 'mine'])->fragment('activity');
 ```
 
+### Simple Pagination
+
+The `simplePaginate` method returns numbered pages with no total, as Laravel's
+`simplePaginate` does. It reads the page number from the `page` query string
+parameter:
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/', function () {
+    return view('feed', [
+        'page' => Storyfeed::feed()->simplePaginate(15),
+    ]);
+});
+```
+
+New activities arrive at the top of a feed, so a numbered page shifts while a
+reader moves through it, and an item can appear on two pages. A cursor does
+not shift, so prefer `cursorPaginate`.
+
+There is no `paginate` method. A total would mean counting the whole grouped
+feed, so calling it throws an exception that says so and names
+`cursorPaginate` and `simplePaginate`.
+
 ### Returning JSON
 
-Returning the paginator from a route produces JSON with Laravel's `data`,
-`path`, `per_page`, `next_cursor`, `next_page_url`, `prev_cursor`, and
-`prev_page_url` keys. It also includes the feed's `payload_version`, `items`,
-and `sync_token` keys. The `data` and `items` arrays contain the same items;
-`prev_cursor` and `prev_page_url` are `null`.
+Returning the paginator from a route responds with Laravel's cursor paginator
+JSON: the items in `data`, then `path`, `per_page`, `next_cursor`,
+`next_page_url`, `prev_cursor`, and `prev_page_url`. Two keys follow, the way
+an API resource's `additional` method adds them: `payload_version` and
+`sync_token`.
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/feed', function () {
+    return Storyfeed::feed()->cursorPaginate(2);
+});
+```
+
+For the three placements, page one responds with:
+
+<FeedExample payload paginated :items="pages[0]" />
+
+| Key | Page One | Next Page |
+|---|---|---|
+| `data` | the two newest placements | the remaining placement |
+| `next_cursor` | an opaque string | `null` |
+| `next_page_url` | the URL containing that cursor | `null` |
+| `prev_cursor`, `prev_page_url` | `null` | `null` |
+| `payload_version` | `1` | `1` |
+| `sync_token` | the feed's token, or `null` | the same token while the feed's history is unchanged |
+
+`simplePaginate` responds with Laravel's simple paginator JSON, the items in
+`data`, followed by the same two keys.
 
 Cursor strings are opaque. Pass them back unchanged without decoding or
 constructing them. In PHP, the paginator's `nextCursor` method returns a
-Laravel cursor object; its `encode` method returns the opaque string.
+Laravel cursor object, its `encode` method returns the string, and the
+`syncToken` method returns the sync token.
 
 ### Paginating Without a Request
 
-For jobs and commands, use the `get` method. It returns a `FeedPage`, whose
-`nextCursor` method returns the opaque string for the next page:
+For jobs and commands, pass the cursor as the third argument. The paginator's
+`nextCursor` method returns the cursor for the next page, or `null` on the last
+page:
 
-```php
+```php memo="A job or a command"
 use Storyfeed\Facades\Storyfeed;
 
-$page = Storyfeed::feed()->limit(15)->get();
+$cursor = null;
 
-if ($cursor = $page->nextCursor()) {
-    $nextPage = Storyfeed::feed()->limit(15)->cursor($cursor)->get();
-}
+do {
+    $page = Storyfeed::feed()->cursorPaginate(100, cursor: $cursor);
+
+    foreach ($page as $item) {
+        // ...
+    }
+} while ($cursor = $page->nextCursor());
 ```
 
 ### Handling a Changed Feed
 
-Use these response fields for subsequent requests:
+Use these response keys for subsequent requests:
 
 | Key | Usage |
 |---|---|
@@ -422,6 +471,29 @@ Use these response fields for subsequent requests:
 Use a cursor with the same feed constraints, filters, mode, and `query`
 callbacks that produced it.
 
+<a id="group-members"></a>
+
+## Paginating a Group's Members
+
+A group node carries its newest members in `children`, up to
+`grouping.children_limit`. When `children_truncated` is `true`, pass the
+group's `id` to the `members` method to page through all of them:
+
+```php memo="routes/web.php"
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/feed/groups/{group}', function (string $group) {
+    return Storyfeed::feed()->members($group, 50);
+});
+```
+
+The `members` method returns a `FeedPaginator`, as `cursorPaginate` does, with
+the members as activity nodes, newest first. It accepts the same per-page,
+cursor name and cursor arguments. Members are read through the feed you call it
+on, with its filters and scope, so a reader never sees a member that feed would
+not show. A member whose model was deleted is still listed, as a tombstone.
+
 ## The Payload
 
 The feed payload is a JSON document containing activity and group items,
@@ -429,15 +501,15 @@ ordered newest first. See [The Payload Contract](/reference/payload) for all fie
 
 <a id="the-envelope"></a>
 
-### The Response Envelope
+### Paginated Responses
 
-A page containing one activity has this payload:
+A paginated page containing one activity has this payload:
 
-<FeedExample payload :items="[scene.order]" />
+<FeedExample payload paginated :items="[scene.order]" />
 
-Pass `next_cursor` to retrieve the next page. See
-[Retrieving Feeds](/basics/reading#pagination) for pagination and
-[Response Envelope](/reference/payload#response-envelope) for all response fields.
+The items are in `data`. Pass `next_cursor` to retrieve the next page. See
+[Paginating Results](#pagination) and
+[Response Envelope](/reference/payload#response-envelope) for all response keys.
 
 <a id="one-activity"></a>
 
@@ -470,7 +542,8 @@ This example groups three orders placed by one customer:
 <a id="digest-rows"></a>
 
 The `count` field contains the activity count. The `distinct` field counts
-entities in each role, while `sample` contains a limited selection.
+entities in each role, while `sample` contains a limited selection. `children`
+holds the newest members; [`members`](#group-members) pages through the rest.
 [Live](/basics/reading#live) combines one action within a burst. See
 [Group Items](/reference/payload#group-nodes) for the fields.
 

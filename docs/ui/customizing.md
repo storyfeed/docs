@@ -54,7 +54,7 @@ provide(FEED_LINK, Link);
 ```tsx memo="resources/js/pages/History.tsx"
 
 <FeedProvider FEED_LINK={Link} FEED_COMPONENTS={{ 'App/Message': Message }}>
-    <FeedStream items={feed.items} />
+    <FeedStream page={feed} />
 </FeedProvider>
 ```
 
@@ -68,7 +68,7 @@ Vue imports injection keys from `keys.ts`. React takes the same names as
 | `FEED_FILE_LABELLER` | `({ name, mediaType }) => string \| null` | return a label, or `null` to use the built-in MIME labels |
 | `FEED_MEDIA_OBJECT_PLACEMENT` | `'beside'` or `'below'` | `beside` shows a MediaObject’s picture beside its text; `below` stacks it. An explicit component prop wins |
 | `FEED_NOW` | millisecond timestamp | pins the clock for deterministic rendering |
-| `FEED_MEDIA` | media component | replaces pictures and tiles, for example with a lightbox |
+| `FEED_MEDIA` | media component | replaces pictures and tiles, for example with a lightbox; receives the image, href, link attributes and kit classes |
 
 Vue’s MediaObject prop is `image-placement`; React’s is `imagePlacement`.
 
@@ -84,7 +84,7 @@ The words before each role (“with”, “from”) are in `shared/messages.ts`.
 ## Child Rails and Spacing
 
 ```vue
-<FeedStream :items="feed.items" rail="actor" child-rail="activity-only"
+<FeedStream :page="feed" rail="actor" child-rail="activity-only"
     style="--sf-gutter: 2.5rem" />
 ```
 
@@ -101,34 +101,15 @@ independent rail; members omit badges.
 | `--sf-disc` | primary avatar or icon size |
 | `--sf-badge`, `--sf-badge-face` | badge sizes |
 
-Pass an `objectIcon` callback to `FeedStream` to show a linked object picture:
-
-```vue memo="resources/js/pages/History.vue"
-<script setup lang="ts">
-import FeedStream from '@/components/storyfeed/FeedStream.vue';
-import type { FeedNode } from '@/components/storyfeed/types';
-
-const objectIcon = (node: FeedNode) => node.object?.media?.icon ?? null;
-</script>
-
-<template>
-    <FeedStream :items="feed.items" :object-icon="objectIcon" />
-</template>
-```
-
-The picture uses the object’s URL and safe scalar attributes. Deleted models
-and objects without URLs remain unlinked. `FEED_MEDIA` receives the image,
-href, link attributes and kit classes.
-
 ## Blade Host Seams
 
 Blade supplies whole-feed callbacks through the `renderers` array to
-customize time, bodies, annotations, media, file labels and object icons.
+customize time, bodies, annotations, media and file labels.
 
 | Callback | Receives | Returns |
 |---|---|---|
 | `time`, `body`, `annotations` | `FeedItem` | app HTML |
-| `removed`, `objectIcon` | `FeedItem` | removal text or image array |
+| `removed` | `FeedItem` | removal text |
 | `glyph`, `avatar` | token/entity and size | app SVG or avatar HTML |
 | `fileLabel` | `{name, mediaType}` array | label or null for built-in MIME labels |
 | `form` (a body) | body array, owning entity or null | app HTML, or null for built-in rendering |
