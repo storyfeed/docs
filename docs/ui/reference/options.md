@@ -134,10 +134,10 @@ your own slot content on those utilities scales with the feed. Defaults to
 The rail's width. Defaults to 2 × the font size.
 
 ```css
-.sf-feed { --sf-gutter: 4rem; }
+.sf-feed { --sf-gutter: 5rem; }
 ```
 
-<FeedExample :items="order" rail="actor" style="--sf-gutter: 4rem" />
+<FeedExample :items="order" rail="actor" style="--sf-gutter: 5rem" />
 
 ### `--sf-gap`
 
@@ -154,30 +154,30 @@ The space between the rail and the row. Defaults to 0.75 × the font size.
 The disc's size. Defaults to 2 × the font size.
 
 ```css
-.sf-feed { --sf-disc: 1.5rem; }
+.sf-feed { --sf-disc: 2.5rem; }
 ```
 
-<FeedExample :items="order" rail="actor" style="--sf-disc: 1.5rem" />
+<FeedExample :items="order" rail="actor" style="--sf-disc: 2.5rem" />
 
 ### `--sf-badge`
 
 An icon badge's size, on the `actor` rail. Defaults to 0.875 × the font size.
 
 ```css
-.sf-feed { --sf-badge: 1.25rem; }
+.sf-feed { --sf-badge: 1rem; }
 ```
 
-<FeedExample :items="order" rail="actor" style="--sf-badge: 1.25rem" />
+<FeedExample :items="order" rail="actor" style="--sf-badge: 1rem" />
 
 ### `--sf-badge-face`
 
 An avatar badge's size, on the `activity` rail. Defaults to 1.125 × the font size.
 
 ```css
-.sf-feed { --sf-badge-face: 1.5rem; }
+.sf-feed { --sf-badge-face: 1.25rem; }
 ```
 
-<FeedExample :items="order" rail="activity" style="--sf-badge-face: 1.5rem" />
+<FeedExample :items="order" rail="activity" style="--sf-badge-face: 1.25rem" />
 
 ### `--sf-prose-max-h`
 
