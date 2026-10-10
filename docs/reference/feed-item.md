@@ -36,11 +36,12 @@ page's JSON.
 | `id()` | `?string` | `id` |
 | `verb()` | `?string` | `verb` |
 | `publishedAt()` | `?CarbonImmutable` | `published_at` |
+| `startsAt()`, `endsAt()` | `?CarbonImmutable`: the time range the activity describes | `starts_at`, `ends_at` |
 | `headline()` | `Headline` | `headline_template`, `headline` |
 | `missingHeadline()` | `?Headline`: the verb's headline when the activity is redundant | `missing_headline_template`, `missing_headline` |
 | `glyph()` | `?string` | `glyph` |
 | `intent()` | `?string` | `glyph_intent` |
-| `data()` | `Fluent` | `data` |
+| `data()` | `Fluent`, with each value read through the verb's [casts](/deeper/casting-activity-data#reading-cast-values) | `data` |
 | `tombstoned()` | `array` of role names | `tombstoned` |
 | `isRedundant()` | `bool` | `redundant` |
 | `get($key, $default = null)` | any key, with dot notation: `get('object.label')` | any |
@@ -61,6 +62,15 @@ or is empty, and `distinct('actors')` returns `1` or `0`. For a group, `actor()`
 is set only when all members share it, `actors()` returns the sample, and
 `distinct('actors')` returns the full total. Singular and plural role names
 are equivalent: `distinct('actor')` and `distinct('actors')` return the same value.
+
+The role methods cover the nine roles, not `featured`. Read the featured role
+and a group's featured strip with `get()`:
+
+```php
+$item->get('featured');          // the featured role's name, or null
+$item->get('sample.featured');   // a group's members' featured entities, as arrays
+$item->get('distinct.featured'); // how many members feature an entity
+```
 
 ### Group Methods
 
