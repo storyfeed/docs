@@ -61,22 +61,9 @@ These functions reach activities, groups and expanded children. Return `null`
 from `time` to omit the timestamp; the other metadata still renders. Nested
 providers inherit the outer options; explicit values win. See [Host Seams](/ui/customizing#host-seams).
 
-## Rails and Groups
+<a id="rails-and-groups"></a>
 
-```tsx memo="resources/js/pages/History.tsx" at="History()"
-<FeedStream page={feed} rail="actor" childRail="activity-only" />
-```
-
-`rail` accepts `actor`, `activity`, `actor-only`, `activity-only` or a structured
-`Rail`. `childRail` controls expanded members. See the [rail and group examples](/ui/vue#rails-and-groups)
-for each appearance, day headings, dividers and disclosure states.
-
-`grouped={false}` hides day headings. `dividers` maps item IDs to labels;
-`dividerStyle` accepts `dot` or `branch`. Native `details` provides group
-disclosure; groups without headlines start open. `interactive={false}` renders
-static groups, and `collapsed` sets their initial state. Static collapsed
-members remain available to print. A group shows its full member count even
-when the page holds fewer members.
+Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
 
 ## Server Rendering
 

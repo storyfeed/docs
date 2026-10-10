@@ -24,6 +24,8 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 The layout must load compiled CSS, for example with `@vite('resources/css/app.css')`.
 Attributes such as `class` land on the feed's root element.
+Timestamps render once on the server; refresh them in your own JavaScript if
+needed.
 
 ## Choosing Components
 
@@ -43,34 +45,9 @@ array. To render items you hold yourself, pass `:items="$items"` and
 `:next-cursor="$cursor"`.
 The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
-## Rails and Groups
+<a id="rails-and-groups"></a>
 
-```blade memo="resources/views/history.blade.php"
-<x-storyfeed::feed :page="$page" rail="actor" child-rail="activity-only" />
-```
-
-`rail` accepts `actor`, `activity`, `actor-only` and `activity-only`.
-The default is `actor-only`, with `activity-only` for group children.
-An explicit `child-rail` controls members independently; otherwise they
-inherit the group’s rail. Members omit badges. See the
-[rail and group examples](/ui/vue#rails-and-groups).
-
-| Option | Behaviour |
-|---|---|
-| `:grouped="false"` | hides day headings |
-| `dividers` | labels keyed by public item ID |
-| `divider-style="dot|branch"` | a dot on the rail or a branch off it |
-| `timezone` | display zone for days and timestamps |
-| `interactive`, `collapsed` | group disclosure and initial state |
-
-Native `details` works without JavaScript. By default, groups without a
-headline open; with `:interactive="false"`, every group opens. Static collapsed members remain available to print.
-Timestamps are rendered once on the server; refresh them in your own
-JavaScript if needed.
-
-The disclosure says “Show less” when open and “Show all 3” for a collapsed
-three-member group. If the response limits the children, it reports how many
-are not shown. Expanding displays the supplied children; it does not fetch more.
+Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
 
 ## Registering App Components
 

@@ -140,18 +140,76 @@ in `shared/messages.ts`. Blade reads them from the `storyfeed-ui::meta`
 translation namespace; override them in
 `lang/vendor/storyfeed-ui/{locale}/meta.php`.
 
-## Child Rails and Spacing
+<a id="child-rails-and-spacing"></a>
+
+## Rails and Groups
 
 ```vue memo="resources/js/pages/History.vue" at="template"
 <FeedStream :page="feed" rail="actor" child-rail="activity-only"
     style="--sf-gutter: 2.5rem" />
 ```
 
-React uses `childRail`; Blade uses `child-rail`.
-`actor` shows the avatar with a small icon; `activity` shows the icon with a
-small avatar.
-`actor-only` and `activity-only` omit the badge. Children can choose an
-independent rail; members omit badges.
+```tsx memo="resources/js/pages/History.tsx" at="History()"
+<FeedStream page={feed} rail="actor" childRail="activity-only" />
+```
+
+```blade memo="resources/views/history.blade.php"
+<x-storyfeed::feed :page="$page" rail="actor" child-rail="activity-only" />
+```
+
+<script setup>
+import { scene, liveOf } from '../.vitepress/theme/world'
+const groupedOrders = liveOf(scene.deeper.aggregation.orders)
+const divider = { [groupedOrders[0].id]: 'Orders' }
+</script>
+
+`rail="actor"` puts the actor’s avatar on the rail with a small verb icon;
+`rail="activity"` puts the icon first. The `-only` variants drop the badge.
+The default is `actor-only`, with `activity-only` for group members.
+Members inherit the group’s rail unless `child-rail` says otherwise, and omit
+badges. Groups with several actors show sampled avatars. Vue and React also
+accept a structured `Rail`.
+
+<FeedExample :items="[scene.order]" rail="actor">Avatar with a verb icon</FeedExample>
+<FeedExample :items="[scene.order]" rail="activity">Verb icon with an avatar</FeedExample>
+<FeedExample :items="[scene.order]" rail="actor-only">Avatar only</FeedExample>
+<FeedExample :items="[scene.order]" rail="activity-only">Verb icon only</FeedExample>
+<FeedExample :items="groupedOrders" rail="actor" child-rail="activity-only" :collapsed="false">Expanded members with their own rail</FeedExample>
+
+| Option | Behaviour |
+|---|---|
+| `rail`, `child-rail` | the rail for rows, and for expanded group members |
+| `:grouped="false"` | hides day headings |
+| `dividers` | maps item IDs to labels drawn before those items |
+| `divider-style="dot"` or `"branch"` | how the divider meets the rail: a dot on it or a branch off it |
+| `:interactive="false"` | renders groups without a disclosure control |
+| `collapsed` | chooses the initial group state; `null` opens groups without a headline |
+| `timezone` | Blade only: the display zone for days and timestamps |
+
+React spells the options in camelCase: `childRail`, `grouped={false}`,
+`dividerStyle`, `interactive={false}`.
+
+<FeedExample :items="groupedOrders" days>Day headings</FeedExample>
+<FeedExample :items="groupedOrders" :grouped="false">Without day headings</FeedExample>
+<FeedExample :items="groupedOrders" :dividers="divider" divider-style="dot">Divider on the rail</FeedExample>
+<FeedExample :items="groupedOrders" :dividers="divider" divider-style="branch">Divider branching off the rail</FeedExample>
+<FeedExample :items="groupedOrders" collapsed>Collapsed disclosure</FeedExample>
+<FeedExample :items="groupedOrders" :interactive="false">Static expanded group</FeedExample>
+<FeedExample :items="groupedOrders" :interactive="false" collapsed>Static collapsed group</FeedExample>
+
+### Group Disclosure
+
+Native `details` provides the disclosure and works without JavaScript.
+By default, groups without a headline open; with `:interactive="false"`, every
+group opens. Static collapsed members remain in the HTML for printing.
+
+The disclosure says “Show less” when open and “Show all 3” for a collapsed
+three-member group. A group shows its full member count even when the page
+holds fewer members. Expanding displays the supplied children; it does not
+fetch more. A collapsed group shows up to three member pictures; an expanded
+group hides that strip.
+
+### Rail Spacing
 
 | CSS Property | Controls |
 |---|---|
