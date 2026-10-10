@@ -141,17 +141,14 @@ A save in a console command or a scheduled task has no signed-in user. The
 activity then uses the [default actor](/deeper/parties#setting-a-default-actor),
 or has no actor.
 
-## Choosing Transitions to Record
+<span id="choosing-transitions-to-record"></span>
 
-| What Happened | Activity | Verb |
-|---|---|---|
-| created as a draft | no | |
-| saved with no status change | no | |
-| placed → confirmed | yes | `confirm` |
-| confirmed → ready | yes | `prepare` |
-| ready → completed | yes | `complete` |
+## Using One Verb per Transition
 
 Use a separate verb for each transition so each has its own headline and
 [`keepLatest()`](/cookbook/repeating-activities#keeping-the-latest-occurrence)
 can keep its latest activity. A single `status` verb with the state in `data`
 does not distinguish transitions this way.
+
+For which transitions and other events to record, see
+[Choosing Events to Record](/cookbook/choosing-what-not-to-record#choosing-events-to-record).
