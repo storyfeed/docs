@@ -134,6 +134,9 @@ Entities with a `link` render as links with its attributes, such as `target`.
 If the item contains a completed `headline`, that text is displayed. Other text
 is escaped.
 
+The headline is a sentence with links in it, so never wrap it in another link.
+See [Links in a Headline](/reference/payload#headline-links).
+
 Use the `toString` method to return plain text for a page title or notification:
 
 ```blade

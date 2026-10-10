@@ -407,6 +407,21 @@ a role token when the group has exactly one distinct entity for that role.
 Noun substitution can change the emitted template even for the same headline
 definition, so cache rendered headlines per node, not per definition.
 
+<a id="headline-links"></a>
+
+#### Links in a Headline
+
+A rendered headline is a sentence that contains entity links. Don't wrap it
+in a link to make the row tappable: an `<a>` cannot contain another `<a>`, so
+the browser closes the outer link at the first entity link and splits the
+sentence. Don't enlarge it with a `min-height` either: on a flex container
+that wraps, a minimum height moves the sentence off its line.
+
+Entity links inside the headline need no minimum target size, because
+[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+exempts a target in a sentence. A link alone on its own line is not exempt and
+needs a 24 by 24 pixel target at level AA.
+
 ## Pagination and Synchronization
 
 <span id="cursor-semantics"></span>
