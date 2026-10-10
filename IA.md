@@ -229,7 +229,9 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     composite is **created**. Prose says **Storyfeed**, never "core": a reader who
     installed one package has no "core" to picture. And say what the package
     does in plain verbs ("stores it and hands it back unchanged"), not in
-    shorthand like "core never reads it".
+    shorthand like "core never reads it". **Burst** is allowed (ruled
+    2026-10-10): it is core's own word for a run of activity between quiet
+    gaps (`bursts()`). **Digest** is never used.
 28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
     site", "when to…") live in the cookbook, not on the concept page.
 29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
