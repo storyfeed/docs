@@ -274,17 +274,32 @@ class MenuItem extends Model implements Feedable
 }
 ```
 
-```php [Named Arguments] memo="app/Models/MenuItem.php" at="toFeed()"
+```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-return FeedEntity::make(
-    label: $this->name,
-    data: [ // [!code highlight]
-        'mediaType' => $this->photo_mime,
-        'width' => $this->photo_width,
-        'height' => $this->photo_height,
-    ],
-);
+class MenuItem extends Model implements Feedable
+{
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            data: [ // [!code highlight]
+                'mediaType' => $this->photo_mime,
+                'width' => $this->photo_width,
+                'height' => $this->photo_height,
+            ],
+        );
+    }
+}
 ```
 
 :::
@@ -385,7 +400,7 @@ applied to the activity's `data`. Keys support dot notation.
 
 | Method | Returns or behaviour |
 |---|---|
-| `get($key, $default = null)` | one value, or the default, as on Laravel's `Fluent` |
+| `get($key, $default = null)` | one value, or the default, as on Laravel's `Fluent`. A key the verb [casts](/deeper/casting-activity-data#reading-cast-values) is read through its cast, and the rest of a dotted path is read from the result |
 | `all($keys = null)` | all data, or selected keys; missing selected keys have `null` values |
 | `boolean($key = null, $default = false)` | a boolean |
 | `string($key, $default = null)` | an `Illuminate\Support\Stringable` |
@@ -503,21 +518,19 @@ FeedMedia::make(url: $url, preview: $thumb, icon: $avatar);
 A slot name is letters, digits, `_` and `-`, starting with a letter. `slot()`
 throws for `icon`, `preview` and `image`, which have their own methods.
 
-### Modal Links
+<a id="modal-links"></a>
+<a id="images"></a>
+<a id="showing-image-previews"></a>
 
 See [Linking to the Model](/basics/feed-media#opening-links-in-a-modal) for URL,
-modal, and attribute examples.
-
-<a id="images"></a>
-
-### Showing Image Previews
-
-See [Showing Pictures](/basics/feed-media#showing-pictures). A picture appears
-only when a body names its slot; the entity URL is only a link destination.
+modal, and attribute examples, and [Showing Pictures](/basics/feed-media#showing-pictures)
+for previews.
 
 ### Image Slots
 
-A body shows one of the model's `feedMedia()` pictures by naming its slot.
+A picture appears only when a body names its slot; the entity URL is only a
+link destination. A body shows one of the model's `feedMedia()` pictures by
+naming its slot.
 `InteractsWithFeed` provides the methods that name one:
 
 | Method | Slot |
