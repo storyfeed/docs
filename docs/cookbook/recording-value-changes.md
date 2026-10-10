@@ -173,15 +173,9 @@ It does not search the second activity's `data` values.
 
 ### Doctor Findings
 
-With parties in use and no `Storyfeed::parties()` declaration,
-`storyfeed:doctor` reports `parties.undeclared_list` at **Info** severity.
-It also reports each party used by an activity as `parties.used`, with its
-name, key, and activity count. These findings list the recorded parties;
-they do not determine whether a name should have been activity data.
-
-The [declared-party list](/deeper/parties#declaring-party-names) guards scoped
-and verb-default actors. It does not validate explicit `by`, `to`, or
-`context` calls.
+`storyfeed:doctor` lists the parties your activities use; see its
+[`parties.*` findings](/reference/doctor#parties). They do not decide whether
+a name belongs in activity data.
 
 ## Choosing Participants and Values
 
