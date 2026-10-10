@@ -34,7 +34,7 @@ activity" button while there is a next cursor.
 | `interactive` | | `false` draws groups without a disclosure control |
 | `collapsed` | | the initial group state; see [Group State](/ui/reference/options#group-state) |
 | `dividers` | `{}` | labels keyed by item id, drawn on the rail before those items |
-| `dividerStyle` | `'dot'` | how a divider meets the rail: `dot` or `branch` |
+| `dividerStyle` | `'branch'` | how a divider meets the rail: `branch` or `dot` |
 | `empty` | `'No activity yet.'` | a React node for an empty page |
 | `className` | `''` | classes for the root element |
 | `style` | | styles for the root element, including CSS variables such as `--sf-font-size` |
