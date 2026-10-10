@@ -29,36 +29,66 @@ Story::for(Photo::class)->verb('publish')
 ```
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/ApprovePhotoController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Photo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity() // the contributor's activity
-    ->by($photo->user)
-    ->action('publish', $photo)
-    ->to($photo->menuItem)
-    ->publish();
+class ApprovePhotoController
+{
+    public function __invoke(Request $request, Photo $photo): RedirectResponse
+    {
+        Storyfeed::activity() // the contributor's activity
+            ->by($photo->user)
+            ->action('publish', $photo)
+            ->to($photo->menuItem)
+            ->publish();
 
-Storyfeed::activity() // the approval; exclude its verb from displayed feeds
-    ->by($request->user())
-    ->action('approve', $photo)
-    ->publish();
+        Storyfeed::activity() // the approval; exclude its verb from displayed feeds
+            ->by($request->user())
+            ->action('approve', $photo)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/ApprovePhotoController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Photo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record( // the contributor's activity
-    verb: 'publish',
-    object: $photo,
-    actor: $photo->user,
-    target: $photo->menuItem,
-);
+class ApprovePhotoController
+{
+    public function __invoke(Request $request, Photo $photo): RedirectResponse
+    {
+        Storyfeed::record( // the contributor's activity
+            verb: 'publish',
+            object: $photo,
+            actor: $photo->user,
+            target: $photo->menuItem,
+        );
 
-Storyfeed::record( // the approval; exclude its verb from displayed feeds
-    verb: 'approve',
-    object: $photo,
-    actor: $request->user(),
-);
+        Storyfeed::record( // the approval; exclude its verb from displayed feeds
+            verb: 'approve',
+            object: $photo,
+            actor: $request->user(),
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
@@ -328,9 +358,20 @@ An `app_name` value in data does not fill the instrument role.
 To display only business records while retaining audit activities, filter by
 the object type:
 
-```php memo="routes/web.php" at="connected-app activity route"
-->instrument($app)
-->objectType(\App\Models\MenuItem::class)
+```php memo="routes/web.php"
+use App\Models\ConnectedApp;
+use App\Models\MenuItem;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+// Apply the app's authorization middleware to this route.
+Route::get('/connected-apps/{app}/activity', function (ConnectedApp $app) {
+    return Storyfeed::feed()
+        ->instrument($app)
+        ->objectType(MenuItem::class)
+        ->log()
+        ->get();
+});
 ```
 
 <FeedExample :items="[business]" />
