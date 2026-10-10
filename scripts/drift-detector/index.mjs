@@ -9,7 +9,8 @@ const git = (root, ...args) => execFileSync('git', ['-C', root, ...args], { enco
 // `briefs/` is gitignored lane material — working notes that QUOTE wrong docs
 // on purpose, so scanning them reports the defect they were written to describe.
 // `rnd/` holds local R&D proposals written as if shipped: their APIs don't exist yet.
-const excluded = /(^|\/)(node_modules|cache|dist|briefs|rnd|\.git)(\/|$)/;
+// .vitepress/llms holds the plain-text copies of the pages (scripts/llms.mjs): not sources.
+const excluded = /(^|\/)(node_modules|cache|dist|briefs|rnd|\.git|\.vitepress\/llms)(\/|$)/;
 function walk(root, dir = root) {
   return readdirSync(dir, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name, 'en')).flatMap(e => {
     const p = resolve(dir, e.name);

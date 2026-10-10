@@ -5,7 +5,7 @@
   "description": "Documentation site for storyfeed/storyfeed — docs.storyfeed.dev",
   "scripts": {
     "dev": "vitepress dev docs --port 5174",
-    "build": "node --test scripts/cast.test.mjs scripts/code-memo.test.mjs scripts/inline-code.test.mjs scripts/world.test.mjs scripts/body-links.test.mjs scripts/schema.test.mjs scripts/ui-reference.test.mjs scripts/redirects.test.mjs && node scripts/drift-guard.mjs && node scripts/ui-reference.mjs && node scripts/llms.mjs && vitepress build docs && node --test scripts/llms-links.test.mjs",
+    "build": "node --test scripts/cast.test.mjs scripts/code-memo.test.mjs scripts/inline-code.test.mjs scripts/world.test.mjs scripts/body-links.test.mjs scripts/schema.test.mjs scripts/ui-reference.test.mjs scripts/redirects.test.mjs scripts/live-drift.test.mjs && node scripts/drift-guard.mjs && node scripts/ui-reference.mjs && node scripts/llms.mjs && vitepress build docs && node --test scripts/llms-links.test.mjs",
     "preview": "vitepress preview docs --port 5175",
     "drift": "node scripts/drift-detector/index.mjs",
     "test:drift": "node --test scripts/drift-detector/drift.test.mjs",
@@ -21,6 +21,7 @@
     "test:schema": "node --test scripts/schema.test.mjs",
     "ui-reference": "node scripts/ui-reference.mjs",
     "test:ui-reference": "node --test scripts/ui-reference.test.mjs",
+    "test:live": "node --test scripts/live-drift.test.mjs",
     "test:llms": "node --test scripts/llms-links.test.mjs",
     "test:redirects": "node --test scripts/redirects.test.mjs"
   },

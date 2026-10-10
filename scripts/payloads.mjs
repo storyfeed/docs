@@ -13,7 +13,7 @@
  * `headline` (a one-off wording for one activity) and an entity's `media`
  * (resolved by an app's `feedMedia()`, which a source item has no model for).
  * Live groups for the ad-hoc subsets pages pass to `liveOf()` are still folded
- * in world.ts.
+ * in world.ts; scripts/live-drift.test.mjs checks that fold against core's Live.
  *
  *   node scripts/payloads.mjs           write the files (needs core and PHP)
  *   node scripts/payloads.mjs --check   exit 1 when a file is stale
@@ -74,23 +74,35 @@ export function payloadsFile(name) {
   return resolve(theme, 'worlds', name, 'payloads.json')
 }
 
-/** Core's payload node for every row of one pack, keyed by row id, in the order core reads them. */
-export function generate(pack) {
+/** Runs payloads/read.php on one pack's rows, with `extra` keys added to its input. */
+function read(pack, extra = {}) {
   const verbs = { ...BASE_VERBS, ...pack.verbs }
   const input = {
     verbs: Object.fromEntries(Object.entries(verbs).map(([verb, w]) => [verb, { headline: w.headline, glyph: w.glyph }])),
     intents: INTENTS,
     items: pack.rows.map(itemOf),
+    ...extra,
   }
 
-  const output = execFileSync(process.env.PHP_BINARY || 'php', [resolve(here, 'payloads/read.php'), core], {
+  return JSON.parse(execFileSync(process.env.PHP_BINARY || 'php', [resolve(here, 'payloads/read.php'), core], {
     input: JSON.stringify(input),
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
-  })
-
-  return `${JSON.stringify(JSON.parse(output), null, 2)}\n`
+  }))
 }
+
+/** Core's payload node for every row of one pack, keyed by row id, in the order core reads them. */
+export function generate(pack) {
+  return `${JSON.stringify(read(pack), null, 2)}\n`
+}
+
+/** Core's Live page for each named subset of one pack's rows: {name: [row id, …]} → {name: [node, …]}. */
+export function live(pack, subsets) {
+  return read(pack, { live: subsets })
+}
+
+/** Whether core is here to read through. */
+export const coreAvailable = () => existsSync(resolve(core, 'vendor/autoload.php'))
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (!existsSync(resolve(core, 'vendor/autoload.php'))) {
