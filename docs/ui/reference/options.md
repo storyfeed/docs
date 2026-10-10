@@ -1,5 +1,15 @@
 # Pages, Rails and Styles
 
+<script setup>
+import { scene, liveOf } from '../../.vitepress/theme/world'
+const order = [scene.order]
+const anonymous = [scene.cookbook.actorless.anonymous]
+const crowd = liveOf(scene.cookbook.grouped.actors).slice(0, 1)
+const orders = liveOf(scene.deeper.aggregation.orders)
+const terminal = [scene.basics.activityContent.terminal]
+const labelled = { [scene.order.id]: 'Orders' }
+</script>
+
 The values all three kits share: the page shapes they read, the rails, the
 group states and the CSS variables. The attribute and prop names are on
 [Blade Components](/ui/reference/blade).
@@ -39,11 +49,26 @@ The rail is the column on the left of each row: a disc and, on it, a badge.
 | `actor-only` | the actor's avatar | none |
 | `activity-only` | the activity's icon | none |
 
+<div class="sf-variants">
+<FeedExample :items="order" rail="actor"><code>rail="actor"</code></FeedExample>
+<FeedExample :items="order" rail="activity"><code>rail="activity"</code></FeedExample>
+<FeedExample :items="order" rail="actor-only"><code>rail="actor-only"</code></FeedExample>
+<FeedExample :items="order" rail="activity-only"><code>rail="activity-only"</code></FeedExample>
+</div>
+
 Rows default to `actor-only` and expanded group members to `activity-only`.
 Members follow `child-rail` when it is set, else their group's rail, and draw
 no badge. A row without the disc's subject draws the other one, then a blank
 disc. A row with several actors draws two faces in the disc and never a face
 badge.
+
+<div class="sf-variants">
+<FeedExample :items="orders" :collapsed="false"><code>rail</code> unset</FeedExample>
+<FeedExample :items="orders" rail="actor" :collapsed="false"><code>rail="actor"</code></FeedExample>
+<FeedExample :items="orders" rail="actor" child-rail="activity-only" :collapsed="false"><code>rail="actor" child-rail="activity-only"</code></FeedExample>
+<FeedExample :items="anonymous" rail="actor"><code>rail="actor"</code>, no actor</FeedExample>
+<FeedExample :items="crowd" rail="actor" collapsed><code>rail="actor"</code>, several actors</FeedExample>
+</div>
 
 Vue and React also take a rail as `{ primary, secondary }`, each slot one of
 `actor`, `activity` or `none`, the two never the same.
@@ -58,6 +83,11 @@ Vue and React also take a rail as `{ primary, secondary }`, each slot one of
 The style applies to day headings and to the labels in `dividers`. `dividers`
 is keyed by item id: `{ "01K…": "Timeline" }`.
 
+<div class="sf-variants">
+<FeedExample :items="order" :dividers="labelled" divider-style="branch"><code>divider-style="branch"</code></FeedExample>
+<FeedExample :items="order" :dividers="labelled" divider-style="dot"><code>divider-style="dot"</code></FeedExample>
+</div>
+
 ## Group State
 
 | `interactive` | `collapsed` | Groups |
@@ -67,6 +97,13 @@ is keyed by item id: `{ "01K…": "Timeline" }`.
 | `true` | `false` | open |
 | `false` | `null` | open, with no disclosure control |
 | `false` | `true` | closed, with no disclosure control; members stay in the HTML for printing |
+
+<div class="sf-variants">
+<FeedExample :items="orders" :collapsed="true"><code>collapsed: true</code></FeedExample>
+<FeedExample :items="orders" :collapsed="false"><code>collapsed: false</code></FeedExample>
+<FeedExample :items="orders" :interactive="false"><code>interactive: false</code></FeedExample>
+<FeedExample :items="orders" :interactive="false" :collapsed="true"><code>interactive: false, collapsed: true</code></FeedExample>
+</div>
 
 A group whose node has `expanded: true` opens in every case. Expanding shows
 the members the node carries; it fetches nothing.
@@ -90,6 +127,13 @@ Set them on the feed or on any element around it.
 | `--sf-prose-max-h` | the height at which code and verbatim `Prose` scroll | 24 × the font size |
 | `--sf-code-bg` | verbatim `Prose`'s background | `#18181b` |
 | `--sf-code-fg` | verbatim `Prose`'s text | `#f4f4f5` |
+
+<div class="sf-variants">
+<FeedExample :items="order" rail="actor">Defaults</FeedExample>
+<FeedExample :items="order" rail="actor" style="--sf-font-size: 0.8125rem"><code>--sf-font-size: 0.8125rem</code></FeedExample>
+<FeedExample :items="terminal">Defaults</FeedExample>
+<FeedExample :items="terminal" style="--sf-prose-max-h: 6rem; --sf-code-bg: #1e3a5f; --sf-code-fg: #fde68a"><code>--sf-prose-max-h: 6rem</code>, <code>--sf-code-bg</code>, <code>--sf-code-fg</code></FeedExample>
+</div>
 
 Inside the feed, Tailwind's `--spacing`, `--text-xs`, `--text-sm` and
 `--text-base` follow `--sf-font-size`, so your own slot content on those

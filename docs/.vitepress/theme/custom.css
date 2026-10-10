@@ -109,35 +109,25 @@
   margin-top: 20px;
 }
 
-/* Four rails, one feed, side by side — the only way the difference between the
-   configurations is visible rather than described. Stacks below the width where
-   two wells stop being readable. */
-.vp-doc .sf-rail-cases {
+/* Variants side by side: the only way the difference between options is
+   visible rather than described. Stacks below the width where two wells stop
+   being readable. */
+.vp-doc .sf-variants {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0 24px;
-  margin: 16px 0 28px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0 28px;
 }
 
 @media (min-width: 720px) {
-  .vp-doc .sf-rail-cases {
-    grid-template-columns: 1fr 1fr;
+  .vp-doc .sf-variants {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.vp-doc .sf-rail-cases h4 {
-  margin: 8px 0 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--vp-c-text-2);
-}
-
-.vp-doc .sf-rail-cases h4 code {
-  font-size: 12px;
-}
-
-.vp-doc .sf-rail-cases .sf-feed {
-  margin-top: 8px;
+.vp-doc .sf-variants > .sf-example.sf-example {
+  margin: 0;
 }
 
 /* Day labels are feed metadata, not VitePress article section headings. */
