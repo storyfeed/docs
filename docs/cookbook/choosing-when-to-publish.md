@@ -7,70 +7,25 @@ const confirmed = scene.cookbook.transitions.confirmed
 
 Publish meaningful status changes so routine saves do not create duplicate activities.
 
+<span id="publishing-from-domain-events"></span>
 <span id="publishing-status-transitions-from-events"></span>
 
-## Publishing From Domain Events
+## Choosing a Publish Site
 
-Dispatch a domain event when an order is confirmed. Implement `PublishesToFeed`
-on that event so Storyfeed publishes the transition:
+Publish each transition from one site, so it is recorded once:
 
-```php memo="app/Events/OrderConfirmed.php"
-<?php
-
-namespace App\Events;
-
-use App\Models\Order;
-use App\Models\User;
-use Illuminate\Foundation\Events\Dispatchable;
-use Storyfeed\Contracts\PublishesToFeed;
-use Storyfeed\Facades\Storyfeed;
-use Storyfeed\PendingActivity;
-
-class OrderConfirmed implements PublishesToFeed
-{
-    use Dispatchable;
-
-    public function __construct(public Order $order, public User $staff) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        return Storyfeed::activity()
-            ->by($this->staff)
-            ->action('confirm', $this->order);
-    }
-}
-```
-
-Dispatch the event where the transition succeeds:
-
-```php memo="Where the order is confirmed: an action or service"
-use App\Events\OrderConfirmed;
-
-$order->update(['status' => 'confirmed']);
-OrderConfirmed::dispatch($order, $staff);
-```
-
-Storyfeed publishes the returned activity automatically. Define its headline:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('confirm')
-    ->headline(':actor confirmed :object');
-```
-
-<FeedExample :items="[confirmed]" />
-
-See [Publishing From Events](/deeper/events) for listeners and conditional publication.
+| Call Site | Use For |
+|---|---|
+| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/deeper/events#publishing-from-an-event) |
+| model observer | model transitions while the application has no domain event |
+| action or service class | dispatching the domain event where the transition succeeds |
 
 <a id="publishing-a-status-transition"></a>
 
 ## Publishing From an Observer
 
 Use a model observer when the application has no domain event for a
-transition. Use one publication site for each transition to avoid recording
-it twice.
+transition.
 
 Create an observer for the model whose status changes:
 
@@ -200,11 +155,3 @@ Use a separate verb for each transition so each has its own headline and
 [`keepLatest()`](/cookbook/repeating-activities#keeping-the-latest-occurrence)
 can keep its latest activity. A single `status` verb with the state in `data`
 does not distinguish transitions this way.
-
-## Choosing a Publish Site
-
-| Call Site | Use For |
-|---|---|
-| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one |
-| model observer | model transitions while the application has no domain event |
-| action or service class | dispatching the domain event where the transition succeeds |
