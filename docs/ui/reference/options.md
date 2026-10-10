@@ -6,16 +6,9 @@ group states and the CSS variables. The attribute and prop names are on
 
 ## Page Shapes
 
-`page` takes whatever a read returns. Blade takes the PHP value; Vue and
-React take its JSON.
-
-| Read | Blade receives | Vue and React receive | Next cursor |
-|---|---|---|---|
-| `get()` | a collection of `FeedItem`s | a list of nodes | none |
-| `cursorPaginate()` | a `FeedPaginator` | `{ data, next_cursor, … }` | `next_cursor` |
-| `simplePaginate()` | a `FeedSimplePaginator` | `{ data, … }` | none |
-| `members()` | a `FeedPaginator` | `{ data, next_cursor, … }` | `next_cursor` |
-| core 0.18 and earlier | a `FeedPage` | `{ items, next_cursor, sync_token, payload_version }` | `next_cursor` |
+`page` takes whatever a read returns: the collection from `get()`, or the
+paginator from `cursorPaginate()`, `simplePaginate()` or `members()`. Blade
+takes the PHP value; Vue and React take its JSON, with the nodes in `data`:
 
 ```json
 {
@@ -25,6 +18,10 @@ React take its JSON.
     "payload_version": 1
 }
 ```
+
+The next page's cursor is `next_cursor`. `get()` and `simplePaginate()`
+have none. Pages from core 0.18 and earlier, a `FeedPage` whose JSON keeps the
+nodes in `items`, still work.
 
 Pass `items` and `next-cursor` instead of `page` to draw nodes you hold
 yourself, such as pages appended after "Older activity". An explicit
