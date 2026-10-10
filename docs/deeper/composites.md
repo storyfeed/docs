@@ -173,4 +173,4 @@ php artisan storyfeed:bundle --window=30   # only batches closed in the last 30 
 
 You may run this command more than once. Creating a composite changes the
 `sync_token`, so clients must discard accumulated items and fetch the feed
-from the start. See the [sync token rule](/reference/payload#sync-token).
+from the start. See the [sync token rule](/reference/payload-contract#sync-token).

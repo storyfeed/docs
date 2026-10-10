@@ -19,7 +19,7 @@
  * Usage:
  *   npm run build
  *   npx vitepress preview docs --port 5175 &
- *   node scripts/print-pdf.mjs guide/usage-examples "05 Getting started — Usage examples"
+ *   node scripts/print-pdf.mjs guide/what-you-can-build "05 Getting started — What you can build"
  *
  * The second argument is the file name, and it carries the spine number the
  * review folder sorts by. It is passed rather than derived: the running order

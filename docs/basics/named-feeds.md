@@ -251,7 +251,7 @@ On a feed with no name:
 
 The doctor reports verbs that no restricted feed includes or excludes;
 `->unrestricted()` declares a feed that shows every verb. See
-[Feed Coverage](/reference/doctor#feed-coverage).
+[Feed Coverage](/reference/doctor-checks#feed-coverage).
 
 <a id="filtering-verbs"></a>
 
@@ -267,7 +267,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed('kitchen')->only(['place', 'note'])->get();
 ```
 
-See [Filtering by Verb](/basics/reading#filtering-by-verb) for the `only` and
+See [Filtering by Verb](/basics/retrieving-feeds#filtering-by-verb) for the `only` and
 `except` methods.
 
 <a id="feeds-and-access-control"></a>

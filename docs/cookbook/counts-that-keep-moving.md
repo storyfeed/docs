@@ -5,10 +5,10 @@ outline: false
 head:
   - - meta
     - http-equiv: refresh
-      content: '0; url=/cookbook/computed-values'
+      content: '0; url=/cookbook/computed-values-in-the-feed'
   - - link
     - rel: canonical
-      href: https://docs.storyfeed.dev/cookbook/computed-values
+      href: https://docs.storyfeed.dev/cookbook/computed-values-in-the-feed
 ---
 
 # Counts That Keep Moving
@@ -25,4 +25,4 @@ head:
 <a id="healing-recorded-counts"></a>
 <a id="handling-previously-recorded-counts"></a>
 
-See [Computed Values in the Feed](/cookbook/computed-values).
+See [Computed Values in the Feed](/cookbook/computed-values-in-the-feed).

@@ -8,6 +8,9 @@ import { uiResolve, uiSource } from '../../scripts/ui-kit.mjs'
 const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 import { createHighlighter } from 'shiki'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { REDIRECTS, redirectPage } from './redirects.ts'
 
 // Inline code's highlighter (see code_inline below), with VitePress's own
 // colour replacements so a token matches the same token in a code block.
@@ -44,6 +47,15 @@ export default defineConfig({
   // a page on docs.storyfeed.dev. Two mechanisms because one of them is a
   // convention somebody can defeat with `git add -f`.
   srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
+
+  // A page at every old URL, sending the reader on (see redirects.ts).
+  buildEnd({ outDir, srcDir }) {
+    for (const [from, to] of Object.entries(REDIRECTS)) {
+      const title = readFileSync(join(srcDir, `${to.split('#')[0]}.md`), 'utf8').match(/^# (.+)$/m)![1]
+      mkdirSync(dirname(join(outDir, from)), { recursive: true })
+      writeFileSync(join(outDir, `${from}.html`), redirectPage(to, title))
+    }
+  },
 
   markdown: {
     config(md) {
@@ -242,7 +254,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/installation' },
           { text: 'Quickstart', link: '/guide/quickstart' },
-          { text: 'What You Can Build', link: '/guide/usage-examples' },
+          { text: 'What You Can Build', link: '/guide/what-you-can-build' },
         ],
       },
       {
@@ -251,10 +263,10 @@ export default defineConfig({
         text: 'The Basics',
         items: [
           { text: 'Feedable Models', link: '/basics/feedable-models' },
-          { text: 'Recording Activities', link: '/basics/recording' },
+          { text: 'Recording Activities', link: '/basics/recording-activities' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
-          { text: 'Story Classes', link: '/basics/stories' },
-          { text: 'Activity Verbs', link: '/basics/verbs' },
+          { text: 'Story Classes', link: '/basics/story-classes' },
+          { text: 'Activity Verbs', link: '/basics/activity-verbs' },
           { text: 'Activity Content', link: '/basics/activity-content' },
           { text: 'Feed Media', link: '/basics/feed-media' },
         ],
@@ -263,7 +275,7 @@ export default defineConfig({
         // Choose and retrieve the feed before using a rendering kit.
         text: 'Retrieving and Rendering',
         items: [
-          { text: 'Retrieving Feeds', link: '/basics/reading' },
+          { text: 'Retrieving Feeds', link: '/basics/retrieving-feeds' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'Feed Sources', link: '/basics/feed-sources' },
         ],
@@ -271,16 +283,16 @@ export default defineConfig({
       {
         text: 'Storyfeed UI',
         items: [
-          { text: 'Installing the Kits', link: '/ui/installation' },
+          { text: 'Installing the Kits', link: '/ui/installing-the-kits' },
           { text: 'Blade', link: '/ui/blade' },
           { text: 'Vue', link: '/ui/vue' },
           { text: 'React', link: '/ui/react' },
-          { text: 'Customizing the Kits', link: '/ui/customizing' },
+          { text: 'Customizing the Kits', link: '/ui/customizing-the-kits' },
           { text: 'Custom Rendering', link: '/ui/custom-rendering' },
-          { text: 'Blade Components', link: '/ui/reference/blade' },
-          { text: 'Vue Components', link: '/ui/reference/vue' },
-          { text: 'React Components', link: '/ui/reference/react' },
-          { text: 'Pages, Rails and Styles', link: '/ui/reference/options' },
+          { text: 'Blade Components', link: '/ui/reference/blade-components' },
+          { text: 'Vue Components', link: '/ui/reference/vue-components' },
+          { text: 'React Components', link: '/ui/reference/react-components' },
+          { text: 'Pages, Rails and Styles', link: '/ui/reference/pages-rails-and-styles' },
         ],
       },
       {
@@ -288,16 +300,16 @@ export default defineConfig({
         // build on them: no page leans on one further down.
         text: 'Recording in Depth',
         items: [
-          { text: 'Parties & Anonymous Actors', link: '/deeper/parties' },
-          { text: 'Publishing From Events', link: '/deeper/events' },
-          { text: 'Containers & Context', link: '/deeper/context' },
+          { text: 'Parties & Anonymous Actors', link: '/deeper/parties-and-anonymous-actors' },
+          { text: 'Publishing From Events', link: '/deeper/publishing-from-events' },
+          { text: 'Containers & Context', link: '/deeper/containers-and-context' },
           { text: 'Distant Relations', link: '/deeper/distant-relations' },
           { text: 'Casting Activity Data', link: '/deeper/casting-activity-data' },
           { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
           { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
           { text: 'Story Middleware & Batching', link: '/deeper/story-middleware-and-batching' },
           { text: 'Named Stories', link: '/deeper/named-stories' },
-          { text: 'Queued Publishing', link: '/deeper/queues' },
+          { text: 'Queued Publishing', link: '/deeper/queued-publishing' },
         ],
       },
       {
@@ -305,12 +317,12 @@ export default defineConfig({
         text: 'Shaping the Feed',
         items: [
           { text: 'Aggregation', link: '/deeper/aggregation' },
-          { text: 'Live Burst Windows', link: '/deeper/grouping-periods' },
+          { text: 'Live Burst Windows', link: '/deeper/live-burst-windows' },
           { text: 'Custom Axes', link: '/deeper/custom-axes' },
           { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
           { text: 'Composites', link: '/deeper/composites' },
-          { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies' },
-          { text: 'Custom Body Types', link: '/deeper/body' },
+          { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies-when-retrieved' },
+          { text: 'Custom Body Types', link: '/deeper/custom-body-types' },
           { text: 'Localization', link: '/deeper/localization' },
           { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
         ],
@@ -320,10 +332,10 @@ export default defineConfig({
         text: 'Testing and Maintenance',
         items: [
           { text: 'Testing', link: '/deeper/testing' },
-          { text: 'Diagnosing Your Feed', link: '/deeper/diagnosing' },
+          { text: 'Diagnosing Your Feed', link: '/deeper/diagnosing-your-feed' },
           { text: 'Deleted Models', link: '/deeper/deleted-models' },
           { text: 'Retention', link: '/deeper/retention' },
-          { text: 'Healing a Feed', link: '/deeper/healing' },
+          { text: 'Healing a Feed', link: '/deeper/healing-a-feed' },
         ],
       },
       {
@@ -336,22 +348,22 @@ export default defineConfig({
         // Application recipes, in the order a reader meets the problem.
         text: 'Cookbook',
         items: [
-          { text: 'Composing a Coherent Activity', link: '/cookbook/read-the-fields-back' },
+          { text: 'Composing a Coherent Activity', link: '/cookbook/composing-a-coherent-activity' },
           { text: 'Recording Value Changes', link: '/cookbook/recording-value-changes' },
           { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
           { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
-          { text: 'Recording Deletions', link: '/cookbook/activities-about-deletions' },
+          { text: 'Recording Deletions', link: '/cookbook/recording-deletions' },
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording Signed-Link Access', link: '/cookbook/recording-signed-link-access' },
-          { text: 'Recording Email Lifecycle Events', link: '/cookbook/email-lifecycle-events' },
-          { text: 'Recording an Authoriser', link: '/cookbook/an-authoriser-who-is-not-an-actor' },
+          { text: 'Recording Email Lifecycle Events', link: '/cookbook/recording-email-lifecycle-events' },
+          { text: 'Recording an Authoriser', link: '/cookbook/recording-an-authoriser' },
           { text: 'Recording Connected App Writes', link: '/cookbook/recording-connected-app-writes' },
           { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
-          { text: 'Headlines for Grouped Activities', link: '/cookbook/grouped-headlines' },
-          { text: 'Naming Group Members From Activity Data', link: '/cookbook/naming-group-members' },
-          { text: 'Computed Values in the Feed', link: '/cookbook/computed-values' },
+          { text: 'Headlines for Grouped Activities', link: '/cookbook/headlines-for-grouped-activities' },
+          { text: 'Naming Group Members From Activity Data', link: '/cookbook/naming-group-members-from-activity-data' },
+          { text: 'Computed Values in the Feed', link: '/cookbook/computed-values-in-the-feed' },
         ],
       },
       {
@@ -360,13 +372,13 @@ export default defineConfig({
         items: [
           { text: 'Configuration', link: '/reference/configuration' },
           { text: 'Commands', link: '/reference/commands' },
-          { text: 'Doctor Checks', link: '/reference/doctor' },
-          { text: 'Feedable API', link: '/reference/feedable' },
-          { text: 'FeedItem API', link: '/reference/feed-item' },
-          { text: 'Verb Vocabulary', link: '/reference/verbs' },
-          { text: 'The Payload Contract', link: '/reference/payload' },
+          { text: 'Doctor Checks', link: '/reference/doctor-checks' },
+          { text: 'Feedable API', link: '/reference/feedable-api' },
+          { text: 'FeedItem API', link: '/reference/feed-item-api' },
+          { text: 'Verb Vocabulary', link: '/reference/verb-vocabulary' },
+          { text: 'The Payload Contract', link: '/reference/payload-contract' },
           { text: 'Schema', link: '/reference/schema' },
-          { text: 'Storage Architecture', link: '/reference/storage' },
+          { text: 'Storage Architecture', link: '/reference/storage-architecture' },
           { text: 'Glossary', link: '/reference/glossary' },
         ],
       },

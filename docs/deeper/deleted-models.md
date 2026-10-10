@@ -5,7 +5,7 @@
 Activities remain in the feed when a model is deleted. Storyfeed replaces
 the model with a tombstone, which identifies its former type and deletion
 time without keeping its details. The activity still has a headline.
-See [Choosing a Maintenance Operation](/deeper/healing#choosing-a-maintenance-operation)
+See [Choosing a Maintenance Operation](/deeper/healing-a-feed#choosing-a-maintenance-operation)
 to compare tombstones with healing and pruning.
 
 <script setup>
@@ -81,7 +81,7 @@ the tombstone contains only the model's former type and deletion time:
 | `object.tombstone.deleted` | when it was deleted |
 | `tombstoned` | the roles holding a tombstone: `["object"]` |
 
-The full shape is in [The Payload Contract](/reference/payload#tombstones).
+The full shape is in [The Payload Contract](/reference/payload-contract#tombstones).
 Tombstones are stored in [`feed_tombstones`](/reference/schema#feed-tombstones).
 
 The activity keeps the headline, icon, and intent defined for `order.place`.
@@ -159,7 +159,7 @@ orders has been deleted:
 <FeedExample :items="[mixed]" expanded />
 
 The group's tombstone keys are in
-[The Payload Contract](/reference/payload#group-nodes).
+[The Payload Contract](/reference/payload-contract#group-nodes).
 
 ## Configuring Verbs for Deleted Models
 
@@ -210,7 +210,7 @@ Story::for(Order::class)
 <FeedExample :items="[voided]" expanded />
 
 A removal verb is one whose Activity Streams type is `Delete`, `Remove`,
-`Undo` or `Reject`. A verb from Storyfeed's own [vocabulary](/reference/verbs)
+`Undo` or `Reject`. A verb from Storyfeed's own [vocabulary](/reference/verb-vocabulary)
 with one of those types counts even when it is recorded as a plain string,
 such as `delete`, `discard` or `undo`. `Story::resource()` declares its
 `delete` and `restore` verbs as removals.
@@ -333,5 +333,5 @@ Use `deleteFromFeed()` to soft-delete the activities. Models registered with
 (new \Storyfeed\Actions\ForceDeleteFromFeed)($model);
 ```
 
-[Recording Deletions](/cookbook/activities-about-deletions) helps choose
+[Recording Deletions](/cookbook/recording-deletions) helps choose
 between keeping a label, forgetting activities and removing them.

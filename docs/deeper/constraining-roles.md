@@ -106,7 +106,7 @@ a Party, or publish ->anonymously() when nobody is known.
 The exception names the verb, its role, the allowed types and the actual type.
 
 > [!NOTE]
-> [Queued activities](/deeper/queues) are checked on the worker. The Storyfeed
+> [Queued activities](/deeper/queued-publishing) are checked on the worker. The Storyfeed
 > fake also checks queued activities. An object constraint applies to every
 > member of a [composite](/deeper/composites).
 
@@ -127,7 +127,7 @@ always includes the constraints in `where`.
 php artisan storyfeed:doctor --only=role_constraints
 ```
 
-The [doctor](/reference/doctor#role-constraints) reports
+The [doctor](/reference/doctor-checks#role-constraints) reports
 `role_constraints.violated` for stored activities whose role types violate a
 constraint. Empty roles and tombstones are skipped. This warning does not
 modify or remove the activities.

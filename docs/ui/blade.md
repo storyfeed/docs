@@ -1,7 +1,7 @@
 # Blade
 
 The Blade kit renders a feed page with one component.
-Install `storyfeed/ui` and [scan its Tailwind utilities](/ui/installation#scanning-tailwind-utilities).
+Install `storyfeed/ui` and [scan its Tailwind utilities](/ui/installing-the-kits#scanning-tailwind-utilities).
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;
@@ -47,7 +47,7 @@ The `empty` slot replaces empty-page text; `footer` replaces the pager.
 
 <a id="rails-and-groups"></a>
 
-Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
+Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing-the-kits#rails-and-groups).
 
 ## Registering App Components
 
@@ -60,7 +60,7 @@ app(BodyComponents::class)->register('App/Message', 'feed.message');
 A Component body named `App/Message` renders `<x-feed.message>` with its
 `props`. A name that is not registered renders nothing.
 
-See [Host Seams](/ui/customizing#blade-host-seams).
+See [Host Seams](/ui/customizing-the-kits#blade-host-seams).
 
 ## Publishing Views
 
@@ -74,8 +74,8 @@ Unmapped tokens use `icons/activity`. Custom body `Acme/Attachment` uses
 `components/body/acme/attachment.blade.php`, receiving `$body` and `$entity`.
 
 The kit’s own strings, such as “Older activity”, are translatable through
-`lang/{locale}.json`. The [role words after the time](/ui/customizing#roles-after-the-time)
+`lang/{locale}.json`. The [role words after the time](/ui/customizing-the-kits#roles-after-the-time)
 and the date-range words (“from”, “until”) are in the `storyfeed-ui::meta`
 namespace; override them in `lang/vendor/storyfeed-ui/{locale}/meta.php`.
-[Blade Components](/ui/reference/blade) lists every component, attribute,
+[Blade Components](/ui/reference/blade-components) lists every component, attribute,
 slot and renderer.

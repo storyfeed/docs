@@ -89,7 +89,7 @@ Storyfeed merges them into your application's morph map at boot; see
 To require aliases only for Feedable models, call
 `Storyfeed::requireFeedableMorphMap()` in your service provider's `boot()` method.
 It is off by default. Enable it outside production to catch unaliased models
-when publishing; the [doctor](/reference/doctor#feedable-models) also reports them, and `storyfeed:cache` (including
+when publishing; the [doctor](/reference/doctor-checks#feedable-models) also reports them, and `storyfeed:cache` (including
 `php artisan optimize`) refuses to cache while required aliases are missing.
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
@@ -112,4 +112,4 @@ for the commands to schedule in production.
 
 ## Installing Storyfeed UI
 
-Storyfeed UI supplies Blade, Vue and React components; see [Installing the Kits](/ui/installation).
+Storyfeed UI supplies Blade, Vue and React components; see [Installing the Kits](/ui/installing-the-kits).

@@ -28,4 +28,4 @@ For a customer feed:
 
 To leave a draft out of the feed, return `null` from the event's
 `toFeedActivity()` method. See
-[Skipping Publication](/deeper/events#skipping-publication).
+[Skipping Publication](/deeper/publishing-from-events#skipping-publication).

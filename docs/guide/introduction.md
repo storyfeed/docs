@@ -112,7 +112,7 @@ The same activities can be displayed in two modes:
 ### Live
 
 Live mode is the default. It groups the same action into one row until a
-quiet gap closes the [burst](/deeper/grouping-periods). See
+quiet gap closes the [burst](/deeper/live-burst-windows). See
 [Aggregation](/deeper/aggregation#built-in-axes) for which activities share a row.
 
 <FeedExample :items="worldLive" days height="420" />

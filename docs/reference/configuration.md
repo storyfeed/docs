@@ -62,9 +62,9 @@ See [Schema](/reference/schema) for each table.
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | fallback party when no actor is resolved, such as in jobs or commands |
-| `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/deeper/parties#declaring-parties); ignored without a list. `null` enables this only in local/testing |
+| `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/deeper/parties-and-anonymous-actors#declaring-parties); ignored without a list. `null` enables this only in local/testing |
 
-See [Parties & Anonymous Actors](/deeper/parties) for named system actors and
+See [Parties & Anonymous Actors](/deeper/parties-and-anonymous-actors) for named system actors and
 activities without a recorded actor.
 
 ## Recording
@@ -81,7 +81,7 @@ activities without a recorded actor.
 | `verbs.strict` | `null` | throw on a verb with no registry entry. `null` = strict in local/testing only |
 
 Register verbs with `Storyfeed::verbs()` or a Story class. See
-[Verb Vocabulary](/reference/verbs#registering-verbs).
+[Verb Vocabulary](/reference/verb-vocabulary#registering-verbs).
 
 <a id="nested-containers"></a>
 
@@ -155,7 +155,7 @@ These keys identify shared roles within built-in Live bursts. See
 
 | Key | Default | Description |
 |---|---|---|
-| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable#context-model) loads the current model, with one query per class per page. When disabled, it returns `null` for your resolver to handle |
+| `hydration.enabled` | `true` | whether [`$context->model()`](/reference/feedable-api#context-model) loads the current model, with one query per class per page. When disabled, it returns `null` for your resolver to handle |
 
 ## Snapshots
 
@@ -165,7 +165,7 @@ These keys identify shared roles within built-in Live bursts. See
 
 [`storyfeed:install`](/reference/commands#installing-storyfeed) writes
 `STORYFEED_SNAPSHOTS=sync` to `.env`. The doctor warns when `sync` is set
-outside local and testing; see [Available Checks](/reference/doctor#available-checks).
+outside local and testing; see [Available Checks](/reference/doctor-checks#available-checks).
 
 <span id="as2-0-routes"></span>
 
@@ -192,6 +192,6 @@ outside local and testing; see [Available Checks](/reference/doctor#available-ch
 | Key | Default | Description |
 |---|---|---|
 | `doctor.stale_after` | `30` | days without new activity before the doctor reports a stale feed; `null` disables |
-| `doctor.acknowledgments` | `[]` | list of exact `code`, complete typed `subject`, and nonempty `reason` entries accepting deliberate grammar gaps. Findings stay visible with reasons but leave active counts, CI failures, and stubs; see [Acknowledgment Policy](/reference/doctor#acknowledgment-policy) |
+| `doctor.acknowledgments` | `[]` | list of exact `code`, complete typed `subject`, and nonempty `reason` entries accepting deliberate grammar gaps. Findings stay visible with reasons but leave active counts, CI failures, and stubs; see [Acknowledgment Policy](/reference/doctor-checks#acknowledgment-policy) |
 | `grammar.strict` | `null` | throw when publishing a pair with no headline. `null` = local/testing only |
 | `discovery.paths` | `null` | where `storyfeed:stories` and doctor look for feedable models, stories and `PublishesToFeed` classes; `null` = `app_path()`. Not used at runtime |

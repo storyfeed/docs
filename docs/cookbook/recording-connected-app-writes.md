@@ -20,13 +20,13 @@ the requested action. Choose roles for the fact the activity records:
 |---|---|---|---|
 | An operator commands a connected app to create a record | operator | connected app | retain the authorizer and token owner separately |
 | An app independently creates a record | connected app | a separate tool, if used | retain the authorizer and token owner separately |
-| A person approves another person's work | person who performed the work | tool used, if any | the approval record identifies the approver; see [Recording an Authoriser](/cookbook/an-authoriser-who-is-not-an-actor) |
+| A person approves another person's work | person who performed the work | tool used, if any | the approval record identifies the approver; see [Recording an Authoriser](/cookbook/recording-an-authoriser) |
 
 A token owner is not automatically the performer. Storyfeed has no built-in
 authorizer role. Store authorization in your app's audit record and copy
 relevant event-time values into activity data. A connected app with its own
 model can be [feedable](/basics/feedable-models); a service without a model can
-be a [party](/deeper/parties#using-parties-in-other-roles).
+be a [party](/deeper/parties-and-anonymous-actors#using-parties-in-other-roles).
 
 Use `create` when the record is created and `update` or `edit` when it changes.
 The transport belongs in the instrument or activity data. See

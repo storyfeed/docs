@@ -39,7 +39,7 @@ stored activities, [rehash them](/reference/commands#rehashing-groups):
 php artisan storyfeed:curate --rehash
 ```
 
-Here, `scene` groups activities in the same [context](/deeper/context), such
+Here, `scene` groups activities in the same [context](/deeper/containers-and-context), such
 as three customers asking about dishes in one shop. Use `$group->axis('scene', …)`
 inside `grouped()` to define its headline, or `$group->any(…)` to match any axis.
 

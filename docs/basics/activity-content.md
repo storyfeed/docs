@@ -872,7 +872,7 @@ The `href` is stored as written. It can become stale if a route changes or a
 signed URL expires.
 
 The label names the thing, such as a notice or an order.  See the
-[`FeedLink` reference](/reference/feedable#feedlink) for its methods and the
+[`FeedLink` reference](/reference/feedable-api#feedlink) for its methods and the
 body fields that accept it.
 
 <a id="body-height"></a>
@@ -971,8 +971,8 @@ its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
 Your renderer uses these fields to display the body. A body may also carry
 `$meta`, its renderer settings. Passing a string as a body creates a `Prose` body.
 
-See [Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current
-and deferred values, or [Custom Body Types](/deeper/body) to render custom
+See [Resolving Bodies When Retrieved](/deeper/resolving-bodies-when-retrieved) for current
+and deferred values, or [Custom Body Types](/deeper/custom-body-types) to render custom
 components and define your own body types.
 
 <a id="featuring"></a>

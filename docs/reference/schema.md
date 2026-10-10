@@ -12,7 +12,7 @@ php artisan vendor:publish --tag=storyfeed-migrations
 Set table names in [Configuration](/reference/configuration#tables-and-models).
 The migrations include indexes for feed queries. They declare no foreign key
 constraints: the keys below are the ones Storyfeed joins on.
-[Storage Architecture](/reference/storage) shows which rows a publish writes and how a
+[Storage Architecture](/reference/storage-architecture) shows which rows a publish writes and how a
 feed is retrieved from them.
 
 Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and

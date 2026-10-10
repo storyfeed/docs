@@ -44,7 +44,7 @@ Story::for(Order::class)
 <a id="publishing-a-verb"></a>
 
 The `for` method specifies the object type, and the `verb` method specifies
-the [recorded verb](/basics/recording). This headline applies to `place`
+the [recorded verb](/basics/recording-activities). This headline applies to `place`
 activities involving an order.
 
 ## Headline Templates
@@ -111,7 +111,7 @@ Story::for(Order::class)
 
 <FeedExample :items="[rushed, placed]" />
 
-The closure receives an [ActivityContext](/reference/feedable#activitycontext),
+The closure receives an [ActivityContext](/reference/feedable-api#activitycontext),
 which provides typed helpers for the activity’s data and accessors for its roles.
 It runs when Storyfeed retrieves the feed. Returned role tokens are
 rendered as entity labels and links.
@@ -212,7 +212,7 @@ Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 
 Two inline definitions of the same verb that set the same field, such as two
 headlines or two icons, throw, naming both locations. A later
-[method or invokable binding](/basics/stories#supplementing-resource-stories)
+[method or invokable binding](/basics/story-classes#supplementing-resource-stories)
 replaces the resource definition for that type and verb.
 
 ## Definition Precedence
@@ -286,4 +286,4 @@ Storyfeed serializes closure headlines into the cache. If a closure cannot be
 serialized, the command fails and reports its source location. See
 [Commands](/reference/commands#manifest).
 
-As definitions grow, move a model's verbs into a [Story class](/basics/stories).
+As definitions grow, move a model's verbs into a [Story class](/basics/story-classes).

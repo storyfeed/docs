@@ -18,7 +18,7 @@ const attachment = { ...choices.attachment, verb: 'update' }
 
 A verb is an action alone. It never names its object, before or after, with
 any separator: `accept`, not `offer.accept`, `accept_offer` or `acceptOffer`.
-A verb [never contains a dot](/basics/verbs): declaring or publishing one
+A verb [never contains a dot](/basics/activity-verbs): declaring or publishing one
 throws `Storyfeed\Exceptions\DottedVerb`. Use a
 [story name](/deeper/named-stories) for dotted lookups such as `order.place`.
 
@@ -104,7 +104,7 @@ Use base-form verbs such as `place`. Use past tense in headlines:
 ## Choosing a Precise Verb
 
 Choose the verb that states the fact: `launch` or `unveil` when that is what
-happened. The [Verb Vocabulary](/reference/verbs) is a starting point, not a limit.
+happened. The [Verb Vocabulary](/reference/verb-vocabulary) is a starting point, not a limit.
 
 For an order placement, `place` says more than `create`:
 
@@ -236,7 +236,7 @@ you do not need a verb such as `record_acceptance` or a kind field in data.
 If the decision has no model record of its own, use the action on the document: `accept`,
 `decline` or `pay`. Its feedable label or body identifies which document it is.
 For an operator recording someone else's decision, keep who acted separate
-from who authorised it; see [Recording an Authoriser](/cookbook/an-authoriser-who-is-not-an-actor).
+from who authorised it; see [Recording an Authoriser](/cookbook/recording-an-authoriser).
 
 ## Changing a Part Without Its Own Model
 
@@ -291,7 +291,7 @@ The document is the object in both cases, so its type selects the `Document`
 headline. Putting the document only in the target role would not select that
 definition. The activity stores the clause key as it was when the change
 occurred. Give the clause its own model if it needs a separate label, link or
-body. See [Activity Data](/basics/recording#adding-activity-data)
+body. See [Activity Data](/basics/recording-activities#adding-activity-data)
 and [Casting](/deeper/casting-activity-data) for retrieving typed details, and
 [Activity Content](/basics/activity-content) for displaying them.
 
@@ -302,7 +302,7 @@ document. The `repeat` axis requires only the same object type.
 ## Choosing Between Related Verbs
 
 Choose the word that describes the event in your application.
-[Verb Vocabulary](/reference/verbs) lists every built-in verb.
+[Verb Vocabulary](/reference/verb-vocabulary) lists every built-in verb.
 
 <span id="create-or-add"></span>
 <span id="delete-or-remove"></span>
@@ -468,5 +468,5 @@ collection with the target. Use `create` only when a new object is created.
 <span id="distinguishing-activities"></span>
 <span id="distinguishing-activities-with-roles-and-data"></span>
 
-See [Recording Activities](/basics/recording) for roles and `publishedAt()`,
+See [Recording Activities](/basics/recording-activities) for roles and `publishedAt()`,
 which distinguish events that share a verb.

@@ -181,4 +181,4 @@ For Inertia applications, use the [Vue](/ui/vue) or [React](/ui/react) kit.
 
 <a id="story-classes"></a>
 
-To keep a model's headlines in a class of their own, see [Story Classes](/basics/stories).
+To keep a model's headlines in a class of their own, see [Story Classes](/basics/story-classes).

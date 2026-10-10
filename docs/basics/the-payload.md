@@ -5,10 +5,10 @@ outline: false
 head:
   - - meta
     - http-equiv: refresh
-      content: '0; url=/basics/reading#the-payload'
+      content: '0; url=/basics/retrieving-feeds#the-payload'
   - - link
     - rel: canonical
-      href: https://docs.storyfeed.dev/basics/reading
+      href: https://docs.storyfeed.dev/basics/retrieving-feeds
 ---
 
 <a id="the-response-envelope"></a>
@@ -36,4 +36,4 @@ head:
 <a id="response-envelope"></a>
 <a id="activity-nodes"></a>
 
-See [The Payload in Retrieving Feeds](/basics/reading#the-payload) for the envelope, activity items, and group items.
+See [The Payload in Retrieving Feeds](/basics/retrieving-feeds#the-payload) for the envelope, activity items, and group items.

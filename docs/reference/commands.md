@@ -27,7 +27,7 @@ path. Setting `definitions` to `false` disables file creation.
 
 | Command | Description |
 |---|---|
-| `storyfeed:ui vue` or `storyfeed:ui react` | copies the chosen kit after installing `storyfeed/ui`; see [Installing the Kits](/ui/installation) for `--path`, `--diff`, `--force` and file preservation |
+| `storyfeed:ui vue` or `storyfeed:ui react` | copies the chosen kit after installing `storyfeed/ui`; see [Installing the Kits](/ui/installing-the-kits) for `--path`, `--diff`, `--force` and file preservation |
 
 ## Generating Classes
 
@@ -35,11 +35,11 @@ path. Setting `definitions` to `false` disables file creation.
 
 ### Stories
 
-`make:story` creates a [Story class](/basics/stories). Without arguments, it
+`make:story` creates a [Story class](/basics/story-classes). Without arguments, it
 prompts for the name and class structure. Passing only a name creates a class
 for one activity, constructed with its data and then published. The command
 prints the `routes/feed.php` binding for you to add. A generated resource class
-can also be bound [one method at a time](/basics/stories#basic-story-classes).
+can also be bound [one method at a time](/basics/story-classes#basic-story-classes).
 
 | Option | Effect |
 |---|---|
@@ -49,7 +49,7 @@ can also be bound [one method at a time](/basics/stories#basic-story-classes).
 | `--verb=` | the stored verb |
 | `--object=` | the object model or morph alias, or `*` for none |
 | `--axes=` | comma-separated grouping axes to pre-fill; default, every axis that applies |
-| `--from-doctor` | one class per recorded type and verb without a headline; see [Generating From Doctor Findings](/basics/stories#generating-from-doctor-findings) |
+| `--from-doctor` | one class per recorded type and verb without a headline; see [Generating From Doctor Findings](/basics/story-classes#generating-from-doctor-findings) |
 | `--force` | overwrites an existing story |
 
 ### Feeds
@@ -87,7 +87,7 @@ The `Period` column describes custom calendar axes; it does not list burst windo
 
 | Command | Description |
 |---|---|
-| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/basics/stories) |
+| `storyfeed:cache` | compiles stories registered by service providers and the feed file into a cached manifest; also runs on `php artisan optimize`. Run it again after adding a method to a [Story class](/basics/story-classes) |
 | `storyfeed:clear` | removes the cached manifest |
 
 Like `route:cache`, `storyfeed:cache` prevents the definitions file from
@@ -105,11 +105,11 @@ the merged definitions used by a cached feed.
 
 | Command | Description |
 |---|---|
-| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. See [Command Options](/reference/doctor#command-options) for its flags |
+| `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. See [Command Options](/reference/doctor-checks#command-options) for its flags |
 
-See [Diagnosing Your Feed](/deeper/diagnosing) for usage and
-[Doctor Checks](/reference/doctor) for the checks, link sampling and
-[acknowledgments](/reference/doctor#acknowledgment-policy).
+See [Diagnosing Your Feed](/deeper/diagnosing-your-feed) for usage and
+[Doctor Checks](/reference/doctor-checks) for the checks, link sampling and
+[acknowledgments](/reference/doctor-checks#acknowledgment-policy).
 
 <a id="php-artisan-about"></a>
 
@@ -162,10 +162,10 @@ Schedule::command('storyfeed:prune')->daily();
 
 <span id="maintenance"></span>
 
-See [Choosing a Maintenance Operation](/deeper/healing#choosing-a-maintenance-operation)
+See [Choosing a Maintenance Operation](/deeper/healing-a-feed#choosing-a-maintenance-operation)
 for healing, unresolved-role pruning, retention, and tombstones. To correct
 how historical activities appear, see
-[Correcting Historical Presentation](/deeper/healing#correcting-historical-presentation).
+[Correcting Historical Presentation](/deeper/healing-a-feed#correcting-historical-presentation).
 
 ### Rebuilding Snapshots
 
@@ -212,7 +212,7 @@ replay all history. Keep readers and writers paused until completion.
 Rehashing can move groups past an active cursor, leaving the next page empty.
 It changes `sync_token`, so clients must discard accumulated nodes and fetch
 from the start, even after an empty response. See the
-[Sync token rule](/reference/payload#sync-token).
+[Sync token rule](/reference/payload-contract#sync-token).
 
 ### Releasing Orphaned Composites
 
@@ -233,7 +233,7 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 | Command | Description |
 |---|---|
 | `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it |
-| `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing). `--pretend` previews; repeat `--only=` to select healers |
+| `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing-a-feed). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
 | `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; adding `--missing` fills only never-recorded paths. `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/deeper/distant-relations#declaring-a-parent-on-existing-history) |
 

@@ -12,7 +12,7 @@ recorded activities and possible groups have headlines.
 
 Call `Storyfeed::fake()` before running the code under test. This test uses
 your application's model factories and dispatches the event from
-[Publishing From Events](/deeper/events#publishing-from-an-event):
+[Publishing From Events](/deeper/publishing-from-events#publishing-from-an-event):
 
 ```php memo="tests/Feature/RecordOrderPaidTest.php"
 use App\Events\OrderPaid;
@@ -68,7 +68,7 @@ expect((string) $activity->object_id)->toBe((string) $order->getKey());
 ## Testing Queued and Event Publishing
 
 The fake captures queued activities separately. For the
-[queued controller](/deeper/queues#queueing-activities), which calls `queue()`,
+[queued controller](/deeper/queued-publishing#queueing-activities), which calls `queue()`,
 assert that the activity was queued:
 
 ```php memo="tests/Feature/QueuedOrderTest.php"
@@ -191,7 +191,7 @@ forms the groups. A headline such as `repeat.order.place` covers only orders.
 For groups limited to one type, the assertion checks each type recorded with
 the verb.
 
-When [`storyfeed:doctor`](/deeper/diagnosing) reports a missing headline or
+When [`storyfeed:doctor`](/deeper/diagnosing-your-feed) reports a missing headline or
 icon, the finding names the assertion that guards it:
 `assertCoversRecorded()` for an activity's headline or icon, and
 `assertCoversGroups()` for a group headline.
@@ -237,7 +237,7 @@ StorySurface::assertNoUnwiredSurface(except: [Shop::class]);
 
 The assertion also fails if a `Feedable` model lacks an enforced morph alias,
 the check cannot run, or no activities are recorded. It also works under `Storyfeed::fake()`.
-See [Surface](/reference/doctor#feedable-models).
+See [Surface](/reference/doctor-checks#feedable-models).
 
 ## Testing Feed Audiences
 
@@ -270,7 +270,7 @@ fails when no verbs are declared or recorded.
 ## Running Diagnostics in CI
 
 The doctor can fail a CI build on its findings. See
-[Running the Doctor in CI](/deeper/diagnosing#running-the-doctor-in-ci).
+[Running the Doctor in CI](/deeper/diagnosing-your-feed#running-the-doctor-in-ci).
 
 ## Static Analysis
 

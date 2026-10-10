@@ -16,7 +16,7 @@ Publish each transition from one site, so it is recorded once:
 
 | Call Site | Use For |
 |---|---|
-| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/deeper/events#publishing-from-an-event) |
+| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/deeper/publishing-from-events#publishing-from-an-event) |
 | model observer | model transitions while the application has no domain event |
 | action or service class | dispatching the domain event where the transition succeeds |
 
@@ -138,7 +138,7 @@ Without `by()`, Storyfeed records the signed-in user as the actor:
 <FeedExample :items="[confirmed]" />
 
 A save in a console command or a scheduled task has no signed-in user. The
-activity then uses the [default actor](/deeper/parties#setting-a-default-actor),
+activity then uses the [default actor](/deeper/parties-and-anonymous-actors#setting-a-default-actor),
 or has no actor.
 
 <span id="choosing-transitions-to-record"></span>

@@ -24,7 +24,7 @@ including when you deliberately use `Storyfeed::anonymous()` or `by(null)`.
 <span id="preserving-an-actor-in-background-work"></span>
 
 Omit `by()` to record the authenticated user; see
-[Assigning the Actor](/basics/recording#assigning-the-actor). A job started by
+[Assigning the Actor](/basics/recording-activities#assigning-the-actor). A job started by
 a console command or the scheduler has no authenticated user, so pass the user
 to the job and call `by()`; see
 [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
@@ -105,10 +105,10 @@ Story::for(Order::class)->verb('pay')
 
 <FeedExample :items="[paid]" />
 
-See [Publishing From Events](/deeper/events) for the complete webhook or
+See [Publishing From Events](/deeper/publishing-from-events) for the complete webhook or
 [Sharing an Actor](/deeper/activity-scopes#sharing-an-actor) to use one party
 throughout a job. Parties can also fill
-[other roles](/deeper/parties#using-parties-in-other-roles).
+[other roles](/deeper/parties-and-anonymous-actors#using-parties-in-other-roles).
 
 <span id="recording-without-an-actor"></span>
 
@@ -116,8 +116,8 @@ throughout a job. Parties can also fill
 
 To record no actor, such as for an order that expires unpaid, call
 `Storyfeed::anonymous()` and define a headline without `:actor`. See
-[Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities)
-and [Anonymous Headlines](/deeper/parties#anonymous-headlines).
+[Recording Anonymous Activities](/deeper/parties-and-anonymous-actors#recording-anonymous-activities)
+and [Anonymous Headlines](/deeper/parties-and-anonymous-actors#anonymous-headlines).
 
 For message delivery, bounces, spam complaints and send failures, see
-[Recording Email Lifecycle Events](/cookbook/email-lifecycle-events).
+[Recording Email Lifecycle Events](/cookbook/recording-email-lifecycle-events).

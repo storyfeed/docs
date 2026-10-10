@@ -174,7 +174,7 @@ It does not search the second activity's `data` values.
 ### Doctor Findings
 
 `storyfeed:doctor` lists the parties your activities use; see its
-[`parties.*` findings](/reference/doctor#parties). They do not decide whether
+[`parties.*` findings](/reference/doctor-checks#parties). They do not decide whether
 a name belongs in activity data.
 
 ## Choosing Participants and Values
@@ -191,8 +191,8 @@ store that value in `data` and include it through a dynamic headline.
 | Payment | the payment or order | amount and payment method |
 | Presentation change | the page or document | font and spacing settings |
 
-[Assigning Roles](/basics/recording#assigning-roles) defines the participants.
-Use [Containers & Context](/deeper/context#choosing-between-target-and-context)
+[Assigning Roles](/basics/recording-activities#assigning-roles) defines the participants.
+Use [Containers & Context](/deeper/containers-and-context#choosing-between-target-and-context)
 when the activity also needs a containing entity.
 
 For a link's intended recipient, keep the recipient identity on the issued-link

@@ -44,7 +44,7 @@ share the role you want to name. The built-in `actors` axis requires the same
 object. The `actors_target` axis requires the same target; its objects may differ.
 
 Show a small sample of names and the number remaining. The payload's
-[`sample` and `distinct`](/reference/payload#group-node) fields support that
+[`sample` and `distinct`](/reference/payload-contract#group-node) fields support that
 presentation. Use `count` for activities and `distinct` for people or objects;
 one person can act more than once.
 
@@ -97,7 +97,7 @@ objects. Activities that merely happen near each other can use ordinary
 aggregation. Neither approach replaces the member content with the headline.
 
 When members have names stored in activity data, show one or two names followed
-by the remaining count. [Naming Group Members From Activity Data](/cookbook/naming-group-members)
+by the remaining count. [Naming Group Members From Activity Data](/cookbook/naming-group-members-from-activity-data)
 shows how to limit the displayed names. Count all members, including those
 omitted from the response. A “Show all” control can display only the supplied
 members unless your application fetches the rest.
@@ -114,7 +114,7 @@ The actor and the affected order explain the event. Indexing, cache rebuilds
 and successful retries usually add no comparable information for the reader.
 [Choose what to record](/cookbook/choosing-what-not-to-record) before trying to
 hide that volume in a group. For already-recorded events, a feed's
-[`only()` or `except()`](/basics/reading#filtering-by-verb) filters can select
+[`only()` or `except()`](/basics/retrieving-feeds#filtering-by-verb) filters can select
 what its readers need.
 
 <a id="choose-the-read-mode-for-that-feed"></a>
@@ -123,7 +123,7 @@ what its readers need.
 
 Offer a grouped overview and a separate history of the same data when
 readers need both. See
-[Choosing a Read Mode](/basics/reading#choosing-a-read-mode) for `live()` and
+[Choosing a Read Mode](/basics/retrieving-feeds#choosing-a-read-mode) for `live()` and
 `log()`.
 
 [`keepLatest()`](/deeper/keeping-the-latest-activity) and

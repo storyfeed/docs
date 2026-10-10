@@ -33,7 +33,7 @@ const withKeyValue = { ...content.confirmed,
 ## Introduction
 
 Build your own Blade components to render activity headlines, bodies, groups,
-and pagination. For ready-made components, use [Storyfeed UI](/ui/installation).
+and pagination. For ready-made components, use [Storyfeed UI](/ui/installing-the-kits).
 
 <a id="using-storyfeed-ui"></a>
 <a id="installing-storyfeed-ui"></a>
@@ -74,7 +74,7 @@ its directory. See Laravel's
 ### Accessing Feed Items
 
 Iterating over a feed page returns each item as a `Storyfeed\Support\FeedItem`.
-Use its methods to access the [payload](/reference/payload):
+Use its methods to access the [payload](/reference/payload-contract):
 
 ```blade memo="resources/views/feed.blade.php"
 @foreach ($page as $item)
@@ -92,7 +92,7 @@ Use its methods to access the [payload](/reference/payload):
 
 Echo `$item->headline()` to render the headline with linked entity labels.
 Items also support array access, such as `$item['verb']`, and `toArray()`
-returns the item's payload array. See [FeedItem API](/reference/feed-item)
+returns the item's payload array. See [FeedItem API](/reference/feed-item-api)
 for all methods.
 
 ### Parts of a Row
@@ -133,7 +133,7 @@ If the item contains a completed `headline`, that text is displayed. Other text
 is escaped.
 
 The headline is a sentence with links in it, so never wrap it in another link.
-See [Links in a Headline](/reference/payload#headline-links).
+See [Links in a Headline](/reference/payload-contract#headline-links).
 
 Use the `toString` method to return plain text for a page title or notification:
 
@@ -262,7 +262,7 @@ Combine the icon, headline, and timestamp in the activity component:
 
 #### Group Rows
 
-Use the `isGroup` method to identify a [group](/basics/reading#groups).
+Use the `isGroup` method to identify a [group](/basics/retrieving-feeds#groups).
 The `children` method returns its members as feed items for the activity
 component to render. See [Aggregation](/deeper/aggregation) for grouping rules
 and headline tokens.
@@ -446,7 +446,7 @@ words. This component shows the attribution only when `from` has a value:
 </FeedExample>
 
 See [Activity Content](/basics/activity-content#available-body-types) for body
-types and fields, or [Custom Body Types](/deeper/body) to define your own.
+types and fields, or [Custom Body Types](/deeper/custom-body-types) to define your own.
 
 <a id="degraded-entities"></a>
 
@@ -516,7 +516,7 @@ the previous-page link is disabled and no links appear on the last page.
 ### Displaying the Feed
 
 Pass a paginator to the view. The `cursorPaginate` method retrieves the
-current request's cursor for [subsequent pages](/basics/reading#pagination):
+current request's cursor for [subsequent pages](/basics/retrieving-feeds#pagination):
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;

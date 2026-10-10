@@ -57,9 +57,9 @@ class name and key. It uses the first source that has a value:
 <FeedExample :items="withSnapshot" />
 
 To implement the contract's methods yourself, see
-[Implementing the Feedable Contract](/reference/feedable#implementing-the-feedable-contract).
+[Implementing the Feedable Contract](/reference/feedable-api#implementing-the-feedable-contract).
 To retrieve a model's activities, see
-[Filtering by Entity or Role](/basics/reading#filtering-by-entity-or-role).
+[Filtering by Entity or Role](/basics/retrieving-feeds#filtering-by-entity-or-role).
 
 <a id="morph-aliases"></a>
 <a id="defining-morph-aliases"></a>
@@ -206,7 +206,7 @@ The closure is optional. Storyfeed treats the registered class as Feedable:
 saves refresh snapshots, and deletion and restoration update its activities.
 Register the exact instantiated class; parent registrations do not apply to
 subclasses. Classes implementing `Feedable` cannot also be registered.
-See the [registration methods](/reference/feedable#registering-external-models)
+See the [registration methods](/reference/feedable-api#registering-external-models)
 for the optional link resolver.
 
 <a id="resolving-links-and-images"></a>
@@ -229,4 +229,4 @@ and its feed outcome.
 <a id="showing-image-previews"></a>
 <a id="modal-links"></a>
 
-For stored resolver inputs, see [Storing Snapshot Data](/reference/feedable#storing-snapshot-data).
+For stored resolver inputs, see [Storing Snapshot Data](/reference/feedable-api#storing-snapshot-data).

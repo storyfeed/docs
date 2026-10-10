@@ -3,7 +3,7 @@
 ## Introduction
 
 `Storyfeed::actor()` and `Storyfeed::context()` supply a default actor or
-[context](/deeper/context) to every activity published inside a callback.
+[context](/deeper/containers-and-context) to every activity published inside a callback.
 HTTP middleware can supply either role for a whole request.
 
 <script setup>
@@ -220,7 +220,7 @@ Route::post('/shops/{shop}/orders/{order}/place', PlaceOrderController::class)
 
 The `storyfeed.actor:System` middleware wraps the request in
 `Storyfeed::actor('System', ...)`. Declare the
-[party](/deeper/parties#declaring-parties) in your service provider.
+[party](/deeper/parties-and-anonymous-actors#declaring-parties) in your service provider.
 An explicit `->by($request->user())` takes precedence; activities without an
 explicit actor use `System`.
 
@@ -235,9 +235,9 @@ Storyfeed resolves each role from the first applicable source:
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
 | Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
 | [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
-| Verb | the [verb's actor](/basics/stories#request-based-actors) | none |
-| Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
-| Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
+| Verb | the [verb's actor](/basics/story-classes#request-based-actors) | none |
+| Resolver or user | a custom [`actor_resolver`](/deeper/parties-and-anonymous-actors#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
+| Fallback | [`parties.fallback`](/deeper/parties-and-anonymous-actors#setting-a-default-actor) | none |
 
 An actor or context set on the activity takes precedence over the corresponding
 scope. An explicit `by(null)` records no actor even inside an actor scope. A
@@ -289,5 +289,5 @@ when the job throws.
 
 <a id="request-based-actors"></a>
 
-See [Carrying Request-Based Actors Into Jobs](/basics/stories#carrying-request-based-actors-into-jobs)
+See [Carrying Request-Based Actors Into Jobs](/basics/story-classes#carrying-request-based-actors-into-jobs)
 for the actor selected by a verb during a request.

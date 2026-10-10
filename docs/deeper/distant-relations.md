@@ -152,7 +152,7 @@ The default limit is ten parent links per starting role. Set
 ends that chain; the activity remains available.
 
 Parents may be Feedable models, [registered external models](/basics/feedable-models#registering-external-models),
-or [parties](/deeper/parties). `parent(null)` ends a chain.
+or [parties](/deeper/parties-and-anonymous-actors). `parent(null)` ends a chain.
 An explicit `context()` still records a place outside the object's parent chain.
 
 ### Keeping Actor and Place Separate
@@ -295,5 +295,5 @@ php artisan storyfeed:doctor --only=ancestors
 | `ancestors.actor_only` | Record a self-acting container as the object too. Actors never supply the place path. |
 
 Ancestry is stored for filtering. It does not add breadcrumb fields to the
-activity payload. The [role filters](/basics/reading#filtering-by-entity-or-role)
+activity payload. The [role filters](/basics/retrieving-feeds#filtering-by-entity-or-role)
 continue to match their explicitly recorded roles.

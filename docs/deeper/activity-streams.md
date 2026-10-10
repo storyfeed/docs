@@ -4,10 +4,10 @@
 
 Storyfeed can serve each activity as a
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
-document, using AS2 names for every [role](/basics/recording#roles).
+document, using AS2 names for every [role](/basics/recording-activities#roles).
 
 The Activity Streams document is separate from the normal
-[feed payload](/basics/reading#the-payload).
+[feed payload](/basics/retrieving-feeds#the-payload).
 
 ## Serving Activity Documents
 
@@ -146,7 +146,7 @@ enum OrderActivity: string implements FeedVerb
 | `startTime`, `endTime` | The activity's `starts_at` and `ends_at` in UTC, each only when recorded. |
 | `duration` | The time from `startTime` to `endTime` in days and time, such as `P1DT2H`. Only when both are recorded. |
 | composite `object` | Serializes as `OrderedCollection`. |
-| entity media | [Media](/reference/payload#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. |
+| entity media | [Media](/reference/payload-contract#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. |
 
 ### Type Overrides
 

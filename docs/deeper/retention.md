@@ -119,7 +119,7 @@ from the start.
 
 Pruning also deletes stored entity labels and data that no remaining
 activity uses. The command keeps no record of what it removed. See
-[Storage Architecture](/reference/storage#costs-at-scale) for the rows each
+[Storage Architecture](/reference/storage-architecture#costs-at-scale) for the rows each
 activity stores.
 
 For short-lived state such as typing indicators, see

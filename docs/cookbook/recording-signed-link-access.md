@@ -97,10 +97,10 @@ The recipient is not a participant in the fetch solely because their link
 was used.
 
 `by(null)` suppresses the ambient actor even if the browser has a session.
-[Recording Anonymous Activities](/deeper/parties#recording-anonymous-activities) lists
+[Recording Anonymous Activities](/deeper/parties-and-anonymous-actors#recording-anonymous-activities) lists
 the anonymous APIs. A string passed to a role creates or reuses a named
 party; it does not verify identity. Keep recipient names and addresses in
-[data](/basics/recording#adding-activity-data), rather than string roles.
+[data](/basics/recording-activities#adding-activity-data), rather than string roles.
 
 ## Retrieving Fetch Evidence
 

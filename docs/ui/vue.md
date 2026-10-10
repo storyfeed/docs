@@ -35,8 +35,8 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 
 `page` takes the JSON of a page from `cursorPaginate()` or `simplePaginate()`,
 which holds the items in `data`, or the plain array `get()` returns. The copied
-kit includes its `shared/` imports. Configure [Tailwind scanning](/ui/installation#scanning-tailwind-utilities)
-and the [Typography plugin](/ui/installation#registering-the-typography-plugin) in the host app.
+kit includes its `shared/` imports. Configure [Tailwind scanning](/ui/installing-the-kits#scanning-tailwind-utilities)
+and the [Typography plugin](/ui/installing-the-kits#registering-the-typography-plugin) in the host app.
 
 ## Loading Older Activity
 
@@ -48,7 +48,7 @@ and the [Typography plugin](/ui/installation#registering-the-typography-plugin) 
 The app fetches the next page from `next_cursor` and appends its `data` to
 `items`. `loading-more` disables
 the pager while loading. Keep the cursor opaque and follow the
-[feed's sync token](/basics/reading#handling-a-changed-feed).
+[feed's sync token](/basics/retrieving-feeds#handling-a-changed-feed).
 
 ## Replacing Row Content
 
@@ -60,11 +60,11 @@ the pager while loading. Keep the cursor opaque and follow the
 
 These slots reach activities, groups and expanded children.
 Built-in bodies render from the object’s bodies and data, and the activity’s data.
-[Host seams](/ui/customizing#host-seams) supply links, app components and media.
+[Host seams](/ui/customizing-the-kits#host-seams) supply links, app components and media.
 
 <a id="rails-and-groups"></a>
 
-Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
+Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing-the-kits#rails-and-groups).
 
-[Vue Components](/ui/reference/vue) lists every component, prop, slot, event
+[Vue Components](/ui/reference/vue-components) lists every component, prop, slot, event
 and injection key.

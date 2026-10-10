@@ -78,7 +78,7 @@ Storyfeed groups activities when published. Each activity belongs to only one
 group per read mode.
 
 To keep quotes and images visible individually, see
-[Choosing What to Group](/cookbook/choosing-what-to-group#keeping-content-visible). [Storage Architecture](/reference/storage#reading-a-page)
+[Choosing What to Group](/cookbook/choosing-what-to-group#keeping-content-visible). [Storage Architecture](/reference/storage-architecture#reading-a-page)
 shows where groups are stored and how a feed retrieves them.
 
 <a id="featured-entities"></a>
@@ -107,7 +107,7 @@ together, these are the photos:
 
 ## Configuring Curation
 
-See [Choosing a Read Mode](/basics/reading#choosing-a-read-mode) for Live and Log.
+See [Choosing a Read Mode](/basics/retrieving-feeds#choosing-a-read-mode) for Live and Log.
 Curation controls which groups Live reads:
 
 | Mode | Returns |
@@ -127,7 +127,7 @@ Live selects people acting on one thing first: `actors` for the same object,
 then `actors_target` for the same target. It next selects one person acting
 across things in the same context, then actions on one object, then repeats.
 Two entities match when their type and ID match. Every built-in group
-contains one verb and one context, within a [burst window](/deeper/grouping-periods).
+contains one verb and one context, within a [burst window](/deeper/live-burst-windows).
 
 | Axis | Shared Values | What May Differ | Singular Tokens Allowed |
 |---|---|---|---|
@@ -186,7 +186,7 @@ Activities below a threshold cannot form that group. They fall back to
 axis's grouping key or newly registered axes require
 [rehashing](/reference/commands#rehashing-existing-rows).
 
-See [Live Burst Windows](/deeper/grouping-periods) to choose the quiet gap
+See [Live Burst Windows](/deeper/live-burst-windows) to choose the quiet gap
 and maximum duration shared by grouped activities.
 
 <a id="registering-a-group-headline"></a>
@@ -233,7 +233,7 @@ particular type.
 A plural token displays a few names and a count of the rest. See
 [Rendering](/ui/custom-rendering#groups) for details. `:count` is the number of
 activities in the group, not of distinct objects; see
-[the repeated-order example](/cookbook/grouped-headlines#counting-placements-of-the-same-order)
+[the repeated-order example](/cookbook/headlines-for-grouped-activities#counting-placements-of-the-same-order)
 for wording that keeps this visible.
 
 <a id="group-headline-tokens"></a>
@@ -334,7 +334,7 @@ still undercount. “Placed an order” below describes three activities as one:
 Token validation checks that roles are shared; it does not check the words
 “an order”. Write an explicit group headline, such as the
 [repeat headline](#grouping-repeats) above. If individual details matter, use
-[`log()`](/basics/reading#log) instead.
+[`log()`](/basics/retrieving-feeds#log) instead.
 
 With both headline fields absent, the count and member rows remain visible:
 

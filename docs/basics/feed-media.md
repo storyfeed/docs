@@ -369,7 +369,7 @@ The AS2 serializer emits these as `icon`, `preview`, and `image`. None is the
 entity's link.
 
 To retain image dimensions or a media type with the entity,
-[store snapshot data in `toFeed()`](/reference/feedable#storing-snapshot-data).
+[store snapshot data in `toFeed()`](/reference/feedable-api#storing-snapshot-data).
 
 ### Adding Your Own Slots
 
@@ -615,10 +615,10 @@ class Team extends Model implements Feedable
 The colour is a hex value, such as `#438d98`. Without them, Storyfeed derives
 initials from the label and a colour from the type and key. An entity with an
 `icon` gets neither. See
-[Storing Snapshot Data](/reference/feedable#storing-snapshot-data).
+[Storing Snapshot Data](/reference/feedable-api#storing-snapshot-data).
 
-See the [Feedable API](/reference/feedable#feedmedia) for the complete method list.
+See the [Feedable API](/reference/feedable-api#feedmedia) for the complete method list.
 
 For bodies built from current model values, see
-[Resolving Bodies When Retrieved](/deeper/resolving-bodies). Link and image
+[Resolving Bodies When Retrieved](/deeper/resolving-bodies-when-retrieved). Link and image
 resolvers can share the same `FeedMedia` with those bodies.

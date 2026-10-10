@@ -1,0 +1,480 @@
+# Doctor Checks
+
+## Introduction
+
+See [Diagnosing Your Feed](/deeper/diagnosing-your-feed) for running the doctor and
+fixing findings.
+
+<a id="running-the-doctor"></a>
+<a id="selecting-checks"></a>
+<a id="json-output"></a>
+<a id="exit-status"></a>
+<a id="running-in-ci"></a>
+<a id="continuous-integration"></a>
+
+## Command Options
+
+| Option | Effect |
+|---|---|
+| `--list` | prints the check names `--only` accepts, without running checks or evaluating acknowledgments |
+| `--only=` | runs the named checks; repeat it for several |
+| `--json` | prints the report as JSON: `healthy`, `count`, `severity`, `acknowledged_count`, each finding's `code`, `severity`, `message`, `subject`, `fix` and `acknowledgment`, and the `installed` packages |
+| `--stubs` | prints only the suggested definitions, with their `use` lines. See [Generating Missing Definitions](#generating-definitions) |
+| `--fail-on=` | `warning` exits non-zero on a warning or an error; `error` on an error alone. Without it, findings never change the exit status |
+
+`--only` omits entire checks; `--fail-on` changes the failure threshold for
+all findings of that severity. Neither option marks one finding as accepted.
+Acknowledged findings remain visible with their reasons but are excluded
+from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#acknowledgment-policy).
+
+<span id="checks"></span>
+
+## Available Checks
+
+| Check | Finds | Severity |
+|---|---|---|
+| `grammar` | recorded type-and-verb pairs with no headline or no icon, verbs with no Activity Streams 2.0 type, and intransitive verbs recorded with an object | error · warning · info |
+| `aggregates` | groups that formed, or could form, with no group headline. See [Group Reachability](#group-reachability) | error · info |
+| `tokens` | group headlines that use a token which can differ between the group's members | warning · info |
+| `axes` | grouping axes that can hold several verbs, where a group headline names one verb or none exists | warning |
+| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`, `:location`, `:generator`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments). `:actor` over activities that are all anonymous is info | error · info |
+| `actorless` | anonymous activities whose verb has no anonymous headline | info |
+| `reflexive` | activities naming the same entity as actor and object | info |
+| `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
+| `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
+| `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
+| `removals` | verbs named like removals (`cancel`, `trash`) whose activities are treated as being about the object. See [Deleted Models](#deleted-models) | info |
+| `labels` | `Feedable` models whose label is guessed. See [Deleted Models](#deleted-models) | info |
+| `inherited` | `Feedable` subclasses deleted through a parent that is not `Feedable`. See [Deleted Models](#deleted-models) | info |
+| `surface` | `Feedable` models without recorded activities, and ones the enforced morph map cannot name. See [Surface](#surface) | warning · info |
+| `entities` | models in a feed role that cannot be resolved: no class, not a model, not `Feedable`, or the model record is gone. See [Entities](#entities) | error · warning · info |
+| `links` | observed entities without URLs in sampled named feeds, or feeds that cannot be inspected. See [Link Sampling](#link-sampling) | info |
+| `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
+| `media` | a body that shows one of its model's `feedMedia()` pictures by slot, on a model whose `feedMedia()` never sets that slot. See [Media Slots](#media-slots) | error · info |
+| `body` | the [body types](/deeper/custom-body-types) stored, a body with no `$body` key, and a body type versioned on some records but not others | warning · info |
+| `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
+| `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key, or superseded activities for a verb without a `keepLatest()` declaration | warning · info |
+| `retention` | activities past their verb's retention window, and frequent verbs without a retention limit. See [Retention](#retention) | warning · info |
+| `actions` | Story class methods that accept a request and threw during job dispatch, or call `request()` instead of accepting a `Request` parameter. See [Actions](#actions) | warning |
+| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities; error outside the `testing` environment, info within it | error · info |
+| `tables` | missing package tables. Until `feed_tombstones` exists, deleted models leave no tombstone | error |
+| `columns` | missing package columns; writes requiring them throw an exception | error |
+| `references` | app-reference columns not yet converted to strings by the `change_feed_references_to_strings` migration; on PostgreSQL, reads that join tombstones throw | error |
+| `snapshots` | an invalid `STORYFEED_SNAPSHOTS` value, or `sync` set outside the `local` and `testing` environments | error · warning |
+| `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
+| `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
+| `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
+| `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
+| `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
+| `ancestors` | broken declared parent chains (`ancestors.unresolvable`), declared parents with no recorded path (`ancestors.missing`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/deeper/distant-relations#checking-parent-chains) | warning |
+| `participants` | activities `involving()` cannot find, and participant rows whose `published_at` no longer matches their activity (`participants.drift`), as a query builder update leaves them. `storyfeed:participants` backfills and rewrites them | warning |
+| `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
+| `claims` | composite members still held by a deleted composite. `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
+| `freshness` | nothing published for `doctor.stale_after` days | warning · info |
+| `maintenance` | the last completed `storyfeed:curate` and `storyfeed:trickle` runs, and what they did | info |
+
+## Sampling and Scope
+
+A doctor report is a set of checks, not a complete count of affected records.
+Most checks query all applicable records or inspect registered definitions.
+These checks inspect a limited set:
+
+| Check | Scope | How to Read the Count |
+|---|---|---|
+| `body` | newest 200 activities by `published_at`, and newest 200 snapshots by `updated_at`; examines nested data maps up to four levels deep | counts body occurrences and malformed maps in sampled records, not all affected activities. One record may contain several maps. The finding states that it is sampled when either query returns 200 records |
+| `entities` → `entities.missing` | newest 50 activities with an uncached entity, per role and alias; entity IDs are then deduplicated | missing entities found in that sample. Other entity findings use their own type/role queries; a few example IDs do not imply a sample total |
+| `hydration` → `hydration.page` | newest 30 activities | query cost for the classes on that representative page, not every possible feed page |
+| `links` | up to 30 top-level items from each constructable named feed in its declared mode | returned entities only, including bounded group samples, children; not group totals or unsampled history |
+| `grouping` → `grouping.ungrouped` | counts all activities without grouping records, then reruns today's strategy on the newest 50 | the total ungrouped count and the sampled groupable count are different measures. The message and subject report both |
+| `media` | newest 200 snapshots with a body, and up to 10 rows per type and slot, probed under every registered feed | a slot is reported only when no probe of that type sets it; a slot set for some rows and not others is not reported |
+| `aggregates` | groups identified by axis and hash, with at least two members, as Live reads them: selected display groups when `grouping.curate` is true, plus repeat groups among activities curation has not reached; repeat groups regardless of selection when false | headline gaps among those groups, not all groups a query can return. See [Group Reachability](#group-reachability) |
+
+Other checks may bound their time window or quote a few examples without
+sampling the count. For example, `retention.unbounded` considers 30 days;
+`freshness` uses `doctor.stale_after`; maintenance findings describe recorded
+maintenance runs. Read each finding's scope before treating its count as a
+backlog. No findings means no problem was detected within those scopes.
+
+<a id="interpreting-findings"></a>
+
+## Findings
+
+### Media Slots
+
+`media.unset_slot` is an error: a body names a picture slot, such as
+`Image::make($this->feedMediaIcon())` or a custom `slots.<name>`, and its model's
+`feedMedia()` sets that slot for none of the sampled rows. The body shows its
+text and no picture. Set the slot in `feedMedia()`, store the picture in the
+body, or name a slot the resolver sets. `media.opaque` is informational: the
+model's `feedMedia()` threw on every probe, so the check cannot answer.
+
+### Grouping Hashes
+
+`hashes.truncated` warns when a grouping hash reaches or exceeds 255 characters.
+Shorten the strategy's output, for example by hashing long key parts, then
+[rehash stored activities](/reference/commands#rehashing-existing-rows).
+Truncated hashes can group unrelated activities together.
+
+### Snapshot Shapes
+
+`shapes.mixed` warns about missing or mixed snapshot fingerprints. Run
+`storyfeed:trickle` to compare snapshots with their models and refresh stale
+ones. If a later run changes nothing, remaining differences are informational:
+optional keys can produce different shapes. Those differences need no repair.
+
+### Group Reachability
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `aggregates.missing` | error | a group in the aggregate sample has no headline and a registered feed may return it, or reachability is unknown. Storyfeed substitutes a plural noun into the single-activity headline, which may not read correctly, or returns no headline; only a group headline is written for the group |
+| `aggregates.latent` | info | a group has no headline but is unused by registered feeds; `--stubs` generates nothing and `--fail-on=warning` ignores it |
+| `aggregates.reachability_unknown` | info | no feeds are registered, or a feed threw during inspection; all headline gaps are reported as `aggregates.missing` |
+
+Register feeds so the check can inspect their declared read modes and verb
+filters. It does not execute every call-site query. A call site can override a
+feed's mode, and a custom query can narrow it beyond what the doctor sees.
+Custom `query()` callbacks follow Laravel's query-builder model: they can
+express nested conditions, subqueries, and application-specific scopes. The
+doctor does not infer that a group is unreachable from those callbacks or
+from an empty sampled page. Use an exact acknowledgment when every surface
+deliberately excludes the reported group, as shown below.
+
+| Declared Read Mode | Doctor Reachability |
+|---|---|
+| `log()` | no group axes |
+| `live()` | every registered axis when `grouping.curate` is true; repeat only when false |
+
+When `grouping.curate` is false, the aggregate check samples repeat groups
+with at least two members, whether or not they are selected for display
+(`winner = true`). Historical selections on other axes are excluded.
+
+When `grouping.curate` is true, the check samples only groups selected for
+display (`winner = true`). It can miss repeat groups returned by the fallback
+for activities without a selected group. A clean aggregate report does not
+prove that every visible group has a headline. Check a representative feed
+payload and its headline definitions directly. These are coverage limits,
+not reasons to run `storyfeed:curate` or change the feed mode solely to clear
+a report.
+
+<a id="handling-deliberate-gaps"></a>
+
+The doctor reports `aggregates.latent` based on registered feed modes and verb
+filters. To accept a deliberate `aggregates.missing` finding with a written
+reason, use the exact subject in [Acknowledgment Policy](#acknowledgment-policy).
+
+### Acknowledgment Policy
+
+`storyfeed.doctor.acknowledgments` defaults to `[]`. Each list entry must
+contain exactly `code`, `subject`, and a nonempty string `reason`. Copy the
+complete subject from doctor JSON; key order does not matter, but values and
+their types must match exactly.
+
+| Supported Code | Complete Subject |
+|---|---|
+| `grammar.missing` | `type` (string or `null`), `verb` (string) |
+| `grammar.icon_missing` | `type` (string or `null`), `verb` (string) |
+| `aggregates.missing` | `axis`, `verb`, `key` (strings), `read_by` (string or `null`) |
+| `axes.verbless_no_grammar` | `axis` (string) |
+
+There are no wildcard patterns, partial subjects, or code-only entries.
+Runner failures and schema findings cannot be accepted. The policy changes
+diagnostic accounting only; it does not change publishing or rendered payloads.
+
+Accepted findings retain their severity, message, subject, and raw fix.
+`Report::all()` and `withCode()` still include them; `acknowledged()` selects
+them. `problems()`, `count()`, `isHealthy()`, `severity()`, and `fixes()` exclude
+them, so they neither fail CI nor generate stubs. A fix shared with an active
+finding remains available. Text and JSON show the written reason; JSON also
+includes `acknowledged_count`.
+
+#### Custom Query Exclusions
+
+For example, a `portal` feed may exclude clause rewrites from repeat groups
+in its custom query while rendering them on the object axis. The doctor can
+still report `aggregates.missing` for `repeat.agreement.rewrite`, because the
+declared Live mode and verb filter admit that pair. First verify that no
+surface can return the group, then inspect its complete subject:
+
+```sh
+php artisan storyfeed:doctor --only=aggregates --json
+```
+
+If the finding's subject is exactly the example below, add this entry to
+the `doctor.acknowledgments` list in `config/storyfeed.php`:
+
+```php memo="config/storyfeed.php" at="doctor.acknowledgments"
+[
+    'code' => 'aggregates.missing',
+    'subject' => [
+        'axis' => 'repeat',
+        'verb' => 'rewrite',
+        'key' => 'repeat.agreement.rewrite',
+        'read_by' => 'portal',
+    ],
+    'reason' => 'The portal custom query excludes rewrite repeat groups; rewrites render on the object axis.',
+],
+```
+
+Copy your own subject rather than adapting only the key: `read_by` must match
+the complete comma-separated reader string, or `null`, from the finding.
+Rebuild the configuration cache if your deployment uses one, then rerun
+`php artisan storyfeed:doctor --fail-on=error`. The accepted finding stays
+visible with its reason and no longer fails the command or generates stubs.
+Other missing headlines still fail. If a reader is added or removed, the
+subject no longer matches: review the exclusion again before updating the
+acknowledgment. Changes within an existing custom query are opaque to the
+doctor, so revisit the reason whenever that query changes.
+
+| Policy Finding | Severity | Meaning |
+|---|---|---|
+| `doctor.acknowledgment_invalid` | error | malformed policy, unsupported code, missing or extra fields, wrong subject types, blank reason, or duplicate identity. Invalid entries accept nothing; neither duplicate applies. Valid unrelated entries can still apply |
+| `doctor.acknowledgment_stale` | warning | an acknowledgment for `axes.verbless_no_grammar` no longer matches after the selected registry check completed successfully; review or remove it |
+| `doctor.acknowledgment_unobserved` | info | a grammar or aggregate acknowledgment was not observed after its selected check completed successfully; the gap may be resolved or absent from this run's traffic or clusters |
+
+Excluded, unregistered, or failed checks do not apply acknowledgments or
+declare entries stale or unobserved. Policy validation still runs for
+`--only`; `--list` only lists names. A stale warning fails `--fail-on=warning`,
+while an invalid policy fails either failure threshold. Neither changes the
+default exit status of `0`.
+
+### Link Sampling
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `links.missing` | info | all inspected entities of a type and role had null URLs in one named feed's sampled page; unlinked entities are legitimate |
+| `links.uninspectable` | info | a registered feed could not be read, or recorded traffic exists but no registered named feed could be inspected |
+
+The doctor builds each actual named feed in its declared mode and reads up to
+30 top-level items. A subject-required feed or a read failure produces
+`links.uninspectable`; no unscoped substitute is read. With no recorded
+activities, the check returns no findings.
+
+Only observed, resolvable `Feedable` model entities are counted; tombstones
+are excluded. Within each top-level item, repeated appearances of the same
+role/type/entity ID count once, retaining any non-null URL. Group samples,
+children are bounded returned entities, not group totals.
+One observed URL prevents `links.missing` for that role/type in that feed.
+
+The `links.missing` subject contains `feed`, `role`, `type`, `sampled`, `items`,
+and `sample_limit` (`30`). `sampled` counts inspected entities, while `items`
+counts returned top-level items. A per-feed `links.uninspectable` subject
+contains `feed`, `source`, and `exception`; if none is inspectable, the
+summary has `feed: null`, `inspectable_feeds: 0`, and `sample_limit: 30`.
+
+These findings cannot prove that a type never resolves a URL or describe
+unsampled history. Links may differ under another named feed. They generate
+no fix and do not count as CI problems.
+
+### Definitions
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `verbs.dotted` | warning | a stored verb contains a dot. Reports the verb and activity count; the rows remain readable. Use the action alone as the verb, keep the type as the object, and use [story names](/deeper/named-stories) for dotted lookups |
+| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verb-vocabulary#registering-verbs) |
+| `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
+| `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
+
+### Feed Coverage
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `feeds.unclassified` | warning | no restricted feed explicitly includes or excludes the verb |
+| `feeds.unrestricted` | info | only a feed declared [`unrestricted()`](#declaring-an-unrestricted-feed) includes the verb; reported on every run |
+| `feeds.unknown_verb` | warning; info until the app registers its own verbs | a feed names a verb that is neither registered nor recorded; a typo in `only()` excludes the intended verb |
+| `feeds.none_restricted` | info | feeds are registered but none filters verbs |
+| `feeds.preset_failed` | warning | a feed threw during inspection, leaving its verb rules unchecked; this includes `define()` methods that access constructor values |
+
+The check includes registered and recorded verbs. Feeds without `only()`,
+`except()`, or `verb()` classify none. If your application never calls
+`Storyfeed::feeds()`, the check reports no findings. Findings for a named feed
+include its declaration's file and line.
+
+#### Declaring an Unrestricted Feed
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Facades\Storyfeed;
+use Storyfeed\FeedBuilder;
+
+Storyfeed::feeds([
+    'portal' => fn (FeedBuilder $feed) => $feed->unrestricted()->live(),
+]);
+```
+
+Call `unrestricted()` to declare that a feed includes every verb. This does
+not change the query, and callers may still filter it. Verbs covered only by
+that feed produce `feeds.unrestricted` (info) instead of `feeds.unclassified`
+(warning). An unrestricted declaration cannot also use filters, including `verb()`.
+
+### Parties
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `parties.ignored` | warning | an actor named a party that [`Storyfeed::parties()`](/deeper/parties-and-anonymous-actors#declaring-parties) does not declare, so the activity kept its usual actor. Declare the name if it is real |
+| `parties.undeclared_actor` | warning | a verb's `->actor()` names an undeclared party: it throws in `local` and `testing` and is ignored elsewhere |
+| `parties.undeclared_list` | info | parties are in use and no list is declared, so any name becomes one |
+| `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
+| `parties.used` | info | a party, and how many activities it has |
+
+### Deleted Models
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `removals.unclassified` | info | a recorded verb is named like a removal, but its activities are treated as being about their object, so they become [redundant](/deeper/deleted-models#redundant-roles) when the object is deleted. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
+| `labels.guessed` | info | the listed models' labels are guessed. Acceptable when the inferred label is suitable; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable-api#models-you-don-t-own) |
+| `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events are not dispatched. Reports whether its tombstone is written at the delete (a class in the morph map, or registered with `Storyfeed::feedable()`) or waits for `storyfeed:trickle`. An update through the parent waits for the trickle either way |
+
+A model's label is also what its tombstone keeps under `keepLabel()`.
+[Deleted Models](/deeper/deleted-models) covers both.
+
+<a id="surface"></a>
+
+### Feedable Models
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `surface.unwired` | warning | a `Feedable` model has never appeared on an activity, and no headline names its type. Something should publish about it, or the `Feedable` is left over |
+| `surface.unaliased` | warning | a `Feedable` model lacks a required alias. Laravel-wide enforcement throws `ClassMorphViolationException`; Storyfeed-only enforcement throws `FeedableMorphMapViolation` |
+| `surface.unassessable` | info | no activities are recorded, so `surface.unwired` cannot be judged |
+| `surface.publisher` | info | a class that publishes to the feed |
+
+`surface.unaliased` includes a parent's alias when it finds one. With
+Laravel-wide morph-map enforcement, the diagnostic explains
+`ClassMorphViolationException`:
+
+```txt
+[App\Models\PriorityOrder] implements Feedable, but the morph map is enforced
+and has no alias for it, so publishing anything that names it throws
+ClassMorphViolationException. It extends [App\Models\Order], stored as `order`:
+return `order` from its getMorphClass() if it should appear as that, or give it
+an alias of its own in Relation::enforceMorphMap().
+```
+
+To appear in the feed as its parent, return the parent's alias:
+
+```php memo="app/Models/PriorityOrder.php"
+<?php
+
+namespace App\Models;
+
+class PriorityOrder extends Order
+{
+    public function getMorphClass(): string
+    {
+        return 'order';
+    }
+}
+```
+
+To give the subclass its own type, register its alias. With Laravel-wide
+enforcement, add it to `Relation::enforceMorphMap()`.
+
+With `Storyfeed::requireFeedableMorphMap()`, the exception is
+`FeedableMorphMapViolation`. Add the alias through `Relation::morphMap()`;
+you do not need to enable Laravel-wide enforcement:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\Models\PriorityOrder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+Relation::morphMap(['priority-order' => PriorityOrder::class]);
+```
+
+A model without an aliased parent needs its own alias in either mode.
+
+### Entities
+
+Findings include the role, alias, class, affected activity count, and example
+activity IDs.
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `entities.auth_model` | warning | the authentication model does not implement `Feedable`, so every activity published during a request has an actor with no label or link. Skipped when `actor_resolver` is set |
+| `entities.unresolvable` | error | the alias resolves to no class: no morph map entry, and no class by that name |
+| `entities.not_model` | error | the alias resolves to a class that is not an Eloquent model |
+| `entities.unfeedable` | error | the alias resolves to a model without `Feedable`. Implement `Feedable`, then run `storyfeed:trickle` |
+| `entities.missing` | warning | the model is `Feedable`, but the row is gone or hidden by a global scope. Checked on the 50 most recent affected activities per role and alias. `storyfeed:trickle` first attempts to tombstone missing entities and repoint their activities. `--prune` removes activities only when roles remain unresolved afterward |
+| `entities.opaque` | info | the model's table could not be queried |
+
+Tombstone discovery checks without global scopes, so a live row hidden by a
+scope is not treated as deleted. Explicit `forgetWhenMissing` rules are a
+separate deletion policy; see [Deleted Models](/deeper/deleted-models).
+
+Affected entities display without labels or links. Existing entities whose
+labels are not cached yet are reported by `backlog`.
+
+### Hydration
+
+The hydration check reports models loaded by `feedMedia()` and the additional
+queries required per page.
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `hydration.model` | info | a class loads its model in `feedMedia()` for the listed feeds, adding one query per class per page; also reports when `hydration.enabled` is off and the call returns `null` |
+| `hydration.page` | info | distinct model classes loaded for the 30 most recent activities, and the resulting query count |
+| `hydration.opaque` | info | `feedMedia()` threw, so model loading could not be checked |
+
+### Role Constraints
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `role_constraints.violated` | warning | stored activities have role types outside the [declared constraints](/deeper/constraining-roles). Empty roles and deleted models are skipped. The activities stay in the feed |
+
+### Retention
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `retention.backlog` | warning | activities are over a day past their [retention period](/deeper/retention); preview with `storyfeed:prune --pretend` before deleting them. Often caused by changed retention or an unscheduled pruning command |
+| `retention.unbounded` | info | a verb recorded at least 10,000 times in 30 days has no retention limit; excludes verbs declaring `keepForever()` |
+
+### Actions
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/basics/story-classes#using-the-request) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
+| `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade instead of taking `Illuminate\Http\Request $request`. It accesses the request only when stories are compiled, never when an activity publishes. Take the `Request` as a parameter |
+
+### Grouping
+
+| Finding | Severity | Meaning |
+|---|---|---|
+| `grouping.ungrouped` | warning | activities have no grouping records and can only appear individually; run `storyfeed:curate --rehash` |
+| `grouping.uncurated` | warning | activities have eligible groups, but no group has been selected for display, so the query returns repeat groups. Skipped when `grouping.curate` is false |
+
+`grouping.uncurated` is skipped when `grouping.curate` is false;
+`grouping.ungrouped` still runs. `grouping.uncurated` counts all eligible
+activities awaiting group selection, excluding composites.
+The finding separates activities within the scheduled command's time window
+from older activities that require `storyfeed:curate` without a time limit.
+
+<span id="generating-definitions"></span>
+
+## Generating Missing Definitions
+
+Use `--stubs` to generate definitions suggested by findings: headlines, icons,
+anonymous headlines, group headlines, and `keepLatest()` declarations.
+
+| Stub | Condition |
+|---|---|
+| uncommented | the doctor can generate a past-tense headline using tokens shared by every activity |
+| commented out with an explanation | the definition needs your input: an icon, an uncertain past tense such as `ship`, a key covering all verbs, or a group containing several verbs. The finding remains until you complete it |
+| absent | `roles` findings require rewriting a headline; `aggregates.latent` headlines are unused by registered feeds |
+
+Headlines for groups of one type are declared on that type. Groups containing
+several types use verb-level headlines without a type-specific noun. For one
+user placing three orders and several users ordering for the same customer:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::verb('place')->grouped(fn (GroupBuilder $group) => $group->actors(':actors placed :objects'));
+Story::for(Order::class)->verb('place')->grouped(fn (GroupBuilder $group) => $group->repeat(':actor placed :objects'));
+```
+
+The `actors` stub contains two lists. Rewrite it to use one before adding it,
+as described in [Aggregation](/deeper/aggregation#plural-lists-in-headlines).
+
+Output omits headings and counts so it can be piped. `// Nothing to author`
+means no definitions can be generated, even if findings exist. With `--json`,
+each fix's `definition` contains the same generated line.

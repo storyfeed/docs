@@ -40,8 +40,8 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 which holds the items in `data`, or the plain array `get()` returns.
 It works with Inertia’s React adapter and Laravel’s React starter kit.
 The copied `shared/` directory makes the imports self-contained. Configure
-[Tailwind scanning](/ui/installation#scanning-tailwind-utilities) and the
-[Typography plugin](/ui/installation#registering-the-typography-plugin).
+[Tailwind scanning](/ui/installing-the-kits#scanning-tailwind-utilities) and the
+[Typography plugin](/ui/installing-the-kits#registering-the-typography-plugin).
 
 ## Loading Older Activity
 
@@ -52,7 +52,7 @@ The copied `shared/` directory makes the imports self-contained. Configure
 
 The app fetches the next page from `next_cursor` and appends its `data` to
 `items`. `loadingMore` disables the pager.
-Follow the [feed's sync token](/basics/reading#handling-a-changed-feed).
+Follow the [feed's sync token](/basics/retrieving-feeds#handling-a-changed-feed).
 `empty` accepts a React node for an empty page.
 
 ## Replacing Row Content
@@ -65,11 +65,11 @@ Follow the [feed's sync token](/basics/reading#handling-a-changed-feed).
 
 These functions reach activities, groups and expanded children. Return `null`
 from `time` to omit the timestamp; the other metadata still renders. Nested
-providers inherit the outer options; explicit values win. See [Host Seams](/ui/customizing#host-seams).
+providers inherit the outer options; explicit values win. See [Host Seams](/ui/customizing-the-kits#host-seams).
 
 <a id="rails-and-groups"></a>
 
-Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing#rails-and-groups).
+Rails, day headings, dividers and group disclosure are set in [Customizing the Kits](/ui/customizing-the-kits#rails-and-groups).
 
 ## Server Rendering
 
@@ -78,5 +78,5 @@ After mounting, labels use the browser's locale and calendar timezone.
 `FEED_NOW` pins the clock in milliseconds; otherwise relative labels refresh
 according to age.
 
-[React Components](/ui/reference/react) lists every component, prop, render
+[React Components](/ui/reference/react-components) lists every component, prop, render
 prop and provider option.

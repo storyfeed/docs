@@ -266,7 +266,7 @@ class UseServiceActor
 Call `hasActor()` before supplying an actor; it also returns `true` for explicit
 anonymity. Call `has('context')` before supplying context. These checks preserve
 [actor and context precedence](/deeper/activity-scopes#role-precedence).
-Declare party names in the [party list](/deeper/parties#declaring-parties),
+Declare party names in the [party list](/deeper/parties-and-anonymous-actors#declaring-parties),
 because the `by` method does not check that list.
 
 <a id="resolving-role-precedence"></a>
