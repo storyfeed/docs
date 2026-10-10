@@ -23,27 +23,67 @@ Record the context when publishing. Storyfeed does not fill roles later, so a
 context filter can only find activities recorded with that context.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemQuestionController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('ask', $note)
-    ->on($dish)           // target: what the question is about
-    ->context($shop)      // context: the shop the dish belongs to
-    ->publish();
+class MenuItemQuestionController extends Controller
+{
+    public function store(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $note = $menuItem->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validate(['body' => 'required|string'])['body'],
+        ]);
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('ask', $note)
+            ->on($menuItem)              // target: what the question is about
+            ->context($menuItem->shop)   // context: the shop the dish belongs to
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemQuestionController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'ask',
-    object: $note,
-    actor: $request->user(),
-    target: $dish,        // what the question is about
-    context: $shop,       // the shop the dish belongs to
-);
+class MenuItemQuestionController extends Controller
+{
+    public function store(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $note = $menuItem->notes()->create([
+            'user_id' => $request->user()->id,
+            'body' => $request->validate(['body' => 'required|string'])['body'],
+        ]);
+
+        Storyfeed::record(
+            verb: 'ask',
+            object: $note,
+            actor: $request->user(),
+            target: $menuItem,           // what the question is about
+            context: $menuItem->shop,    // the shop the dish belongs to
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
@@ -66,26 +106,8 @@ container itself, the `target` role is enough, and `involving($shop)` already
 finds the activity:
 
 ::: code-group
-```php [Fluent Syntax]
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('place', $order)
-    ->to($shop)
-    ->publish();
-```
-
-```php [Named Arguments]
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(
-    verb: 'place',
-    object: $order,
-    actor: $request->user(),
-    target: $shop,
-);
-```
+<<< @/snippets/publish-from-controller.php {php memo="app/Http/Controllers/OrderController.php"} [Fluent Syntax]
+<<< @/snippets/publish-from-controller.named-arguments.php {php memo="app/Http/Controllers/OrderController.php"} [Named Arguments]
 :::
 
 <FeedExample :items="[scene.order]" />
