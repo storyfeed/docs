@@ -32,6 +32,13 @@ $scene = Axis::make('scene')
 Storyfeed::axes([$scene]);
 ```
 
+Activities published from now on are grouped on the new axis. To apply it to
+stored activities, [rehash them](/reference/commands#rehashing-groups):
+
+```bash
+php artisan storyfeed:curate --rehash
+```
+
 Here, `scene` groups activities in the same [context](/deeper/context), such
 as three customers asking about dishes in one shop. Use `$group->axis('scene', …)`
 inside `grouped()` to define its headline, or `$group->any(…)` to match any axis.
@@ -75,7 +82,17 @@ Built-in axes assign their keys to persisted bursts. Custom axes may add `v`
 to group by verb and `d` to group by calendar period (a day by default).
 A singular token such as `:context` requires both of that role's fields in the
 key. Without `v`, the group may contain several verbs, so define its headline
-on a key without a verb (`scene.*` or `*.*`).
+on `Story::fallback()`, which applies to every verb:
+
+```php memo="routes/feed.php"
+use Storyfeed\Facades\Story;
+use Storyfeed\Grouping\GroupBuilder;
+
+Story::fallback()->grouped(fn (GroupBuilder $group): GroupBuilder => $group
+    ->axis('visits', ':actors were busy in :context'));
+```
+
+Here, `visits` is an axis registered with the key `ca!:cid!:d`.
 
 <a id="choosing-a-calendar-period"></a>
 <a id="available-periods"></a>
