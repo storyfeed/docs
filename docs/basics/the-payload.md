@@ -1,6 +1,14 @@
 ---
 title: The Payload
+sidebar: false
 outline: false
+head:
+  - - meta
+    - http-equiv: refresh
+      content: '0; url=/basics/reading#the-payload'
+  - - link
+    - rel: canonical
+      href: https://docs.storyfeed.dev/basics/reading
 ---
 
 <a id="the-response-envelope"></a>
