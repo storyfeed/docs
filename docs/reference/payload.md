@@ -17,7 +17,7 @@ Payload v1 describes each feed node for rendering without domain-specific knowle
 }
 ```
 
-Empty PHP maps such as `data` and `attributes` serialize as `[]`; populated
+Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
 
 <span id="entity-object"></span>
@@ -35,15 +35,17 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
   // snapshot label, or the resolver's; null ⇒ degraded (no snapshot yet)
   "label": "Delivery #1042",
   // resolved at read time; null ⇒ not linkable
-  "url": "https://…/deliveries/1042",
-  // link attributes, e.g. {"target": "_blank"}
-  "attributes": {},
-  // hint: open as a modal
-  "modal": false,
+  "link": {
+    "href": "https://…/deliveries/1042",
+    // hint: open as a modal
+    "modal": false,
+    // link attributes, e.g. {"target": "_blank"}
+    "attributes": []
+  },
   // snapshot data
-  "data": {},
-  // live image slots and optional attachment
-  "media": null,
+  "data": [],
+  // picture slots, files and the avatar; never null
+  "media": { /* see Media */ },
   // a list of bodies, or null when there are none
   "body": null,
   // null, or what a deleted entity left behind
@@ -52,7 +54,7 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
 ```
 
 The static `Feedable::feedMedia(FeedContext): ?FeedMedia` resolver supplies
-`url`, `attributes`, `modal`, and `media` when the feed is retrieved. It receives
+`link` and `media` when the feed is retrieved. It receives
 the snapshot, which supplies `type`, `id`, `data`, and `label`; the resolver
 may override `label`. The `body` list contains stored bodies followed by
 resolved bodies, each identifying its type with `$body`.
@@ -63,8 +65,8 @@ See [Activity Content](/basics/activity-content#built-in-body-types) and
 and `attributedTo` (the author’s IRI). These snapshot keys appear only when
 non-null; an empty `content` string is preserved.
 
-Party nodes may carry an external home in the same `url` field in any role.
-Without an external home, `url` is `null`. See
+Party nodes may carry an external home in the same `link` field in any role.
+Without an external home, `link` is `null`. See
 [Linking a Party](/deeper/parties#linking-a-party).
 
 <span id="tombstoned-entities"></span>
@@ -83,11 +85,10 @@ See [Deleted Models](/deeper/deleted-models) for the lifecycle.
   // null, unless the model kept its label
   "label": null,
   // always null
-  "url": null,
-  "attributes": {},
-  "modal": false,
-  "data": {},
-  "media": null,
+  "link": null,
+  "data": [],
+  // the avatar on a neutral grey
+  "media": { "icon": null, "image": null, "preview": null, "initials": "?", "color": "#6b7280", "files": [], "slots": [] },
   "body": null,
   "tombstone": {
     // the deleted model's morph alias
@@ -105,8 +106,8 @@ A role has one of these states:
 | State | Shape |
 |---|---|
 | Empty | `null`; for the actor, this means anonymous: no actor was recorded |
-| Degraded | the model's own `type`, `label: null`, `url: null`, `tombstone: null` |
-| Tombstoned | `type: "storyfeed.tombstone"`, `url: null`, `tombstone: {…}` |
+| Degraded | the model's own `type`, `label: null`, `link: null`, `tombstone: null` |
+| Tombstoned | `type: "storyfeed.tombstone"`, `link: null`, `tombstone: {…}` |
 
 When `approximate` is true, `deleted` records when `storyfeed:trickle` found
 the model missing. It is not the exact deletion time. Headlines, icons, and
@@ -120,9 +121,6 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
 "media": {
   // small, representational, ~32×32, 1:1: an avatar, a logo
   "icon": null,
-  // the avatar's text and disc colour, for an entity without an icon image
-  "initials": null,
-  "color": null,
   // a larger visual representation of a NON-image resource
   "image": null,
   // a preview of the resource: the dense-feed thumbnail
@@ -135,32 +133,33 @@ intents use `formerType`, so `order.place` still applies to a deleted order.
     // optional alt text; null is preserved
     "alt": null
   },
-  // the resource itself is an image; describes what `entity.url` points at
-  "url": {
-    // always equal to `entity.url`
-    "src": "https://…/photos/88/full.jpg",
-    "mediaType": "image/jpeg",
-    "width": 4032,
-    "height": 3024,
-    "alt": "Pad thai, table 4"
-  },
-  "files": []
+  // the avatar's text and disc colour, for an entity without an icon
+  "initials": "PT",
+  "color": "#0f766e",
+  "files": [],
+  // custom slots by name, from FeedMedia::slot()
+  "slots": []
 }
 ```
 
 | Value | Meaning |
 |---|---|
-| `media: null` | the entity has no media; the common case |
-| `media: {…}` | all four image keys present, each an image object or `null`, plus `initials` and `color` (each a string or `null`) and `files` (an empty list when none) |
-| `media.initials`, `media.color` | the avatar's text and its disc colour as lowercase `#rrggbb`; a renderer prefers `icon` |
-| `media.url !== null` | `entity.url` identifies an image |
+| `icon`, `image`, `preview` | an image object, or `null` |
+| `initials`, `color` | the avatar's text and its disc colour as lowercase `#rrggbb`; set whenever `icon` is `null` |
+| `files` | a list of resources; an empty list when none |
+| `slots` | a map of custom slots, each an image object or a resource; empty when there are none |
 | `width`, `height` | dimensions for reserving display space before loading; `null` when unknown, never `0` |
 
-`entity.url` remains a string. If it represents an image, `media.url` contains
-the same location with `mediaType`, `width`, and `height`. The four media keys
-use Activity Streams 2.0 definitions: for a photo, `url` identifies the full
-image and `preview` its thumbnail. Group `sample` entities use the same media
-structure.
+Every entity has an avatar. When `feedMedia()` declares no icon, Storyfeed
+fills in what it left undeclared: `initials` from the label (the first letter
+of the first and last words, uppercase) and a `color` from the entity's type
+and id, so the same entity gets the same tile on every page. A party's colour
+follows its key. A tombstone, and an entity with no label, take `#6b7280`;
+with no label the initials are `?`. Declared values win.
+
+The three image keys use Activity Streams 2.0 definitions: for a photo,
+`preview` is its thumbnail. A picture appears only where a body names its
+slot. Group `sample` entities use the same media structure.
 
 `files` is a list of resources carrying `type`, `href`, `mediaType`,
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
@@ -179,10 +178,10 @@ Nodes do not identify their source feed, so include the feed name in payload cac
 ### Degraded Entities
 
 Entities without snapshots remain in the payload with `label: null`,
-`url: null`, and `media: null`; their resolver is not called.
+`link: null`, and a `?` avatar; their resolver is not called.
 [`storyfeed:trickle`](/reference/commands#scheduled) creates missing snapshots.
 If `feedMedia()` throws, Storyfeed reports the exception and returns
-`url: null` and `media: null`.
+`link: null` and the derived avatar.
 
 <span id="activity-node"></span>
 
@@ -195,6 +194,9 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
   "published_at": "1985-07-04T14:03:22.000000Z",
+  // the time range the activity describes, or null
+  "starts_at": null,
+  "ends_at": null,
   "headline_template": ":actor confirmed :object for :target",
   // pre-rendered fallback; see below
   "headline": null,
@@ -208,7 +210,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "origin": { /* entity or null */ },
   "result": { /* entity or null */ },
   "instrument": { /* entity or null */ },
-  "data": {},
+  "data": null,
   // the roles holding a tombstone, in role order
   "tombstoned": [],
   // one of them is a role the verb is about
@@ -226,6 +228,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `id` | string | the activity's stable, opaque id |
 | `verb` | string | the recorded verb |
 | `published_at` | string | ISO 8601 with microseconds |
+| `starts_at`, `ends_at` | string or null | the time range set with `startsAt()` and `endsAt()`, ISO 8601 with microseconds; either end may be `null` |
 | `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
 | `glyph` | string or null | the icon token; see [Icons](#glyphs) |

@@ -3,7 +3,7 @@
 <script setup>
 import { scene, role } from '../.vitepress/theme/world'
 
-const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, url: null } }]
+const withSnapshot = [{ ...scene.order, object: { ...scene.order.object, link: null } }]
 const withLink = [scene.order]
 </script>
 

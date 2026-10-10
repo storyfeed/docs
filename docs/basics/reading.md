@@ -452,7 +452,7 @@ The following item represents a customer placing an order:
 <a id="parties-and-missing-actors"></a>
 
 Each role contains an entity with fields such as `type`, `id`, `label`, and
-`url`. See [Entities](/reference/payload#entities) for the complete structure.
+`link`. See [Entities](/reference/payload#entities) for the complete structure.
 An empty role is `null`.
 
 <a id="group-nodes"></a>

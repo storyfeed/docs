@@ -1,17 +1,17 @@
 # Feed Media
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { scene, avatar } from '../.vitepress/theme/world'
 const photo = scene.basics.activityContent.photo
-const linked = { ...photo, object: { ...photo.object, modal: true, body: null } }
+const linked = { ...photo, object: { ...photo.object, link: { ...photo.object.link, modal: true }, body: null } }
 const file = { ...photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...photo.object, type: 'document', label: 'Signed Agreement.pdf',
-  url: '/documents/signed-agreement', media: null,
+  link: { href: '/documents/signed-agreement', modal: false, attributes: [] }, media: avatar('document', photo.object.id, 'Signed Agreement.pdf'),
   body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'Signed Agreement.pdf', size: 48213, mediaType: 'application/pdf' }] } }
 const actor = { ...scene.order, actor: { ...photo.object, body: null,
   media: { ...photo.object.media, icon: photo.object.media.preview } } }
 const team = scene.otherApps.team.target
 const lettered = { ...scene.otherApps.task, actor: { ...team, body: null, data: { ...team.data, initials: 'ST', color: '#438d98' },
-  media: { icon: null, image: null, preview: null, url: null, initials: 'ST', color: '#438d98', files: [] } } }
+  media: { icon: null, image: null, preview: null, initials: 'ST', color: '#438d98', files: [], slots: [] } } }
 </script>
 
 ## Introduction

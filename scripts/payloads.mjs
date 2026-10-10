@@ -48,13 +48,13 @@ const { BASE_VERBS } = await import(`${theme}/world.ts`)
 const { INTENTS } = await import(`${theme}/samples.ts`)
 const { PACKS } = await import(`${theme}/worlds/index.ts`)
 
-const ROLES = ['actor', 'object', 'target', 'context', 'instrument']
+const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']
 
 /** A payload entity as an array-source entity: the keys a source item takes. */
 function entityOf(entity) {
   if (!entity) return null
   const item = { type: entity.type, id: String(entity.id), label: entity.label }
-  if (entity.url) item.url = entity.url
+  if (entity.link?.href) item.url = entity.link.href
   if (entity.data && Object.keys(entity.data).length) item.data = entity.data
   if (entity.body) item.body = entity.body
   return item

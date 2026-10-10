@@ -238,6 +238,14 @@ removing or changing an alias leaves affected roles unresolved.
 | `cached_instrument_id` | unsigned bigint | nullable | The instrument's row in `feed_snapshots`. |
 | `starts_at` | timestamp(6) | nullable | When what the activity describes began, set with `startsAt()`. Null when the range has no start. |
 | `ends_at` | timestamp(6) | nullable | When what the activity describes ended, set with `endsAt()`. Null when the range has no end. |
+| `entities` | json | nullable | Roles filled by an entity with no model behind it, stored inline with the activity: label, url, data and body by role. Null when every role has a model. |
+| `location_type` | string(255) | nullable | The location's morph alias. |
+| `location_id` | string(36) | nullable | The location's key. |
+| `cached_location_id` | unsigned bigint | nullable | The location's row in `feed_snapshots`. |
+| `generator_type` | string(255) | nullable | The generator's morph alias. |
+| `generator_id` | string(36) | nullable | The generator's key. |
+| `cached_generator_id` | unsigned bigint | nullable | The generator's row in `feed_snapshots`. |
+| `featured` | string(16) | nullable, default `'object'` | The role whose entity the row draws as its body, set with `featuring…()`. Null draws none. |
 
 | Index | Columns |
 |---|---|
@@ -253,6 +261,8 @@ removing or changing an alias leaves affected roles unresolved.
 | index | `origin_type`, `origin_id` |
 | index | `result_type`, `result_id` |
 | index | `instrument_type`, `instrument_id` |
+| index | `location_type`, `location_id` |
+| index | `generator_type`, `generator_id` |
 <!-- /schema -->
 
 ### `feed_snapshots`

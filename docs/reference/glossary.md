@@ -76,7 +76,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **icon image** | A model's picture in `entity.media.icon`, such as an avatar or logo. See [Image Slots](/reference/feedable#image-slots). |
 | **[body](/basics/activity-content#adding-entity-bodies)** | Typed content beneath a headline, such as an excerpt or list. Its kind is its **body type**. |
 | **[excerpt](/basics/activity-content#adding-quoted-text)** | A body containing quoted words, optional source attribution, and a flag indicating whether the text is partial. It belongs to the entity snapshot. |
-| **degraded** | An entity with no snapshot yet, returned with `label: null` and `url: null`. Its activity still appears. See [Handling Missing Values](/basics/rendering#degraded-entities). |
+| **degraded** | An entity with no snapshot yet, returned with `label: null` and `link: null`. Its activity still appears. See [Handling Missing Values](/basics/rendering#degraded-entities). |
 | **redundant** | An activity with a tombstone in a role selected by its verb for redundancy checks. It still records what happened. See [Redundant Roles](/deeper/deleted-models#roles-that-determine-redundancy). |
 
 <span id="storage-maintenance"></span>

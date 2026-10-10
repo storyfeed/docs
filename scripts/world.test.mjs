@@ -23,6 +23,7 @@ registerHooks({
 const { worldOf, BASE_VERBS, liveOf } = await import('../docs/.vitepress/theme/world.ts')
 const { PACKS } = await import('../docs/.vitepress/theme/worlds/index.ts')
 const { APP_KINDS } = await import('../docs/.vitepress/theme/worlds/contract.ts')
+const { avatar } = await import('../docs/.vitepress/theme/samples.ts')
 
 const DAY = 86_400_000
 const MOVED = Date.parse('2026-09-30T19:00:00Z')
@@ -36,6 +37,22 @@ for (const [name, pack] of Object.entries(PACKS)) {
   const { scene, role } = world
   const now = Date.parse(pack.canonicalNow)
   const verbs = { ...BASE_VERBS, ...pack.verbs }
+
+  test(`${name}: the samples derive the avatar core derives`, () => {
+    let checked = 0
+    for (const node of Object.values(pack.payloads)) {
+      for (const role of ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']) {
+        const entity = node[role]
+        if (!entity || entity.media.icon) continue
+        const key = entity.type === 'storyfeed.party' && typeof entity.data?.key === 'string' ? entity.data.key : entity.id
+        const derived = avatar(entity.type, key, entity.label)
+        assert.equal(derived.initials, entity.media.initials, `${node.id}.${role}: initials`)
+        assert.equal(derived.color, entity.media.color, `${node.id}.${role}: color`)
+        checked++
+      }
+    }
+    assert.ok(checked > 0)
+  })
 
   test(`${name}: pickup progress belongs to an order and carries plain component props`, () => {
     const progress = scene.deeper.body.progress
@@ -304,16 +321,16 @@ for (const [name, pack] of Object.entries(PACKS)) {
     assert.ok(list.items.some(item => typeof item === 'string'))
     assert.ok(list.items.some(item => typeof item === 'object' && item.href))
     assert.ok(list.totalItems > list.items.length)
-    assert.equal(list.more.href, content.itemList.object.url)
+    assert.equal(list.more.href, content.itemList.object.link.href)
     assert.ok(list.more.href)
     assert.equal(list.more.label, content.itemList.object.label)
     const notice = content.notice.object.body[0]
     const linkedNotice = content.linkedNotice.object.body[0]
     for (const body of [notice, linkedNotice]) assert.equal(body.$body, 'Storyfeed/Body/MediaObject')
     assert.equal(notice.subject.label, content.notice.object.label)
-    assert.equal(notice.subject.href, content.notice.object.url)
-    assert.ok(content.notice.object.url)
-    assert.ok(linkedNotice.subject.href && linkedNotice.subject.href !== content.linkedNotice.object.url)
+    assert.equal(notice.subject.href, content.notice.object.link.href)
+    assert.ok(content.notice.object.link.href)
+    assert.ok(linkedNotice.subject.href && linkedNotice.subject.href !== content.linkedNotice.object.link.href)
     assert.equal(content.note.verb, 'post')
     assert.equal(content.note.object.type, 'note')
     assert.ok(same(content.note.target, scene.order.object))
@@ -326,7 +343,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
     // The order carries no body: Activity Content builds its Prose on its own example.
     assert.ok(!content.ready.object.body?.length, 'the shared order has no body')
     assert.ok(content.photo.object.media?.preview?.src)
-    assert.ok(content.photo.object.url)
+    assert.ok(content.photo.object.link.href)
     assert.ok(same(content.photo.target, role.product))
     assert.ok(same(content.product.object, role.product))
     assert.ok(content.product.object.body.some(body => body.$body === 'Storyfeed/Body/KeyValue' && body.title === role.product.label))

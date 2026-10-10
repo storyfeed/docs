@@ -61,7 +61,7 @@ the tombstone contains only the model's former type and deletion time:
 
 | Key | Value |
 |---|---|
-| `object.type` | `storyfeed.tombstone`, with `url: null` and `label: null` |
+| `object.type` | `storyfeed.tombstone`, with `link: null` and `label: null` |
 | `object.tombstone.formerType` | the deleted model's morph alias: `order` |
 | `object.tombstone.deleted` | when it was deleted |
 | `tombstoned` | the roles holding a tombstone: `["object"]` |

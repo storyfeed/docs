@@ -11,6 +11,50 @@
  * worlds/); this file only knows the payload's shapes.
  */
 
+/**
+ * Core's avatar palette (`Support\Avatar::PALETTE`), in its order: an entity
+ * with no `icon` gets initials from its label on the colour its type and key
+ * hash to, so a sample shows the tile the payload would carry.
+ */
+const PALETTE = [
+  '#c2410c', '#b45309', '#4d7c0f', '#15803d', '#0f766e', '#0e7490',
+  '#1d4ed8', '#4338ca', '#7e22ce', '#a21caf', '#be123c', '#9f1239',
+]
+const NEUTRAL = '#6b7280'
+
+/** PHP's `crc32()`, over the string's UTF-8 bytes. */
+function crc32(text: string) {
+  let crc = ~0
+  for (const byte of new TextEncoder().encode(text)) {
+    crc ^= byte
+    for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1))
+  }
+  return ~crc >>> 0
+}
+
+/** `Avatar::initials()`: the first letter of the first word and of the last, uppercase. */
+export function initials(label: string | null) {
+  const words = (label ?? '').trim().split(/\s+/u).filter((word) => /[\p{L}\p{N}]/u.test(word))
+  if (words.length === 0) return '?'
+  const first = (word: string) => word.match(/[\p{L}\p{N}]/u)![0]
+  return (first(words[0]) + (words.length > 1 ? first(words[words.length - 1]) : '')).toUpperCase()
+}
+
+/** `Avatar::fill()`: the declared media, with the avatar filled in when there is no icon. */
+export function avatar(type: string, id: string | null, label: string | null, declared: Record<string, any> | null = null) {
+  const media: Record<string, any> = {
+    icon: null, image: null, preview: null, initials: null, color: null, files: [], slots: [],
+    ...declared,
+  }
+  if (media.icon !== null) return media
+  const text = (label ?? '').trim()
+  media.initials ??= initials(text)
+  media.color ??= type === 'storyfeed.tombstone' || text === ''
+    ? NEUTRAL
+    : PALETTE[crc32(`${type}\0${id ?? text}`) % PALETTE.length]
+  return media
+}
+
 /** The entity shape from the payload contract, in full — never a subset. */
 export function entity(
   type: string,
@@ -19,24 +63,25 @@ export function entity(
   url: string | null,
   over: Record<string, any> = {},
 ) {
+  const { media, ...rest } = over
+  // Core hashes a party's colour by its key, not its row id.
+  const key = type === 'storyfeed.party' && typeof rest.data?.key === 'string' ? rest.data.key : id
   return {
     type,
     id,
     label,
-    url,
-    attributes: {},
-    modal: false,
-    data: {},
-    media: null,
+    link: url === null ? null : { href: url, modal: false, attributes: [] },
+    data: [],
+    media: avatar(type, key, label, media ?? null),
     body: null,
     tombstone: null,
-    ...over,
+    ...rest,
   }
 }
 
 export const user = (id: string, label: string) => entity('user', id, label, `/users/${id}`)
 /**
- * A note has no page of its own, so its url is null and its label is its text.
+ * A note has no page of its own, so its link is null and its label is its text.
  * Its preview is a `Storyfeed/Body/Component` body: the app's own `Note`
  * component, by name, with its props.
  */
@@ -47,7 +92,7 @@ export const note = (id: string, body: string) =>
 
 /**
  * What a deleted entity leaves behind: `type` is `storyfeed.tombstone`, the
- * id is the tombstone's own, and `url` is null. The label is null unless the
+ * id is the tombstone's own, and `link` is null. The label is null unless the
  * model kept it (`keepLabel()`).
  */
 export function tombstone(
@@ -61,7 +106,7 @@ export function tombstone(
   })
 }
 
-const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
+const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']
 
 const isTombstone = (entity: any) => entity?.type === 'storyfeed.tombstone'
 
@@ -123,6 +168,8 @@ export function activity(over: Record<string, any>) {
     id: over.id,
     verb: over.verb,
     published_at: over.published_at,
+    starts_at: over.starts_at ?? null,
+    ends_at: over.ends_at ?? null,
     headline_template: over.headline_template,
     headline: null,
     glyph: over.glyph ?? null,
@@ -138,7 +185,12 @@ export function activity(over: Record<string, any>) {
     origin: over.origin ?? null,
     result: over.result ?? null,
     instrument: over.instrument ?? null,
-    data: over.data ?? {},
+    location: over.location ?? null,
+    generator: over.generator ?? null,
+    // The role whose entity the row draws as its body: the object unless the
+    // activity says otherwise, and null for none.
+    featured: over.featured === undefined ? 'object' : over.featured,
+    data: over.data ?? null,
     ...tombstoneFacts(over),
   }
 }
@@ -171,21 +223,28 @@ function tombstoneFacts(over: Record<string, any>) {
 
 /**
  * A group node with the singular roles pinned by its axis, plus samples and
- * distinct counts for all roles.
+ * distinct counts for all roles, and the strip of its members' featured
+ * entities.
  */
 export function group(over: Record<string, any>) {
-  // Core's NodePresenter::groupNode(), key for key and in its order: seven
-  // singular role keys, then a sample list and a distinct total for all seven.
-  const roles = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument']
+  // Core's NodePresenter::groupNode(), key for key and in its order: nine
+  // singular role keys, the featured role, then a sample list and a distinct
+  // total for all nine and for the strip.
   const sample: Record<string, any[]> = {}
   const distinct: Record<string, number> = {}
   const singulars: Record<string, any> = {}
 
-  for (const role of roles) {
+  for (const role of ROLES) {
     const key = `${role}s`
     sample[key] = over[key] ?? []
     distinct[key] = Math.max(over.distinct?.[key] ?? 0, sample[key].length)
   }
+
+  // One tile per member, newest first: the entity each member features.
+  const children: any[] = over.children ?? []
+  const featuring = children.filter((child) => child.featured && child[child.featured])
+  sample.featured = over.featured_sample ?? featuring.slice(0, 3).map((child) => child[child.featured])
+  distinct.featured = Math.max(over.distinct?.featured ?? 0, featuring.length, sample.featured.length)
 
   // NodePresenter uses the axis's pinned roles, independently of its headline.
   const pins: Record<string, string[]> = {
@@ -193,11 +252,17 @@ export function group(over: Record<string, any>) {
     object: ['actor', 'object', 'target', 'context'], composite: ['actor', 'target', 'context'],
     scene: ['context'],
   }
-  for (const role of roles) {
+  for (const role of ROLES) {
     const key = `${role}s`
     const pinned = (pins[over.axis] ?? []).includes(role)
     singulars[role] = pinned && sample[key].length === 1 && distinct[key] === 1 ? sample[key][0] : null
   }
+
+  // The group features a role only when every member features it and the
+  // axis pins it to one entity; otherwise a renderer draws the strip.
+  const roles = new Set(children.map((child) => (child.featured && child[child.featured] ? child.featured : null)))
+  const common = roles.size === 1 && children.length === over.count ? [...roles][0] : null
+  const featured = common !== null && singulars[common] ? common : null
 
   return {
     kind: 'group',
@@ -212,10 +277,11 @@ export function group(over: Record<string, any>) {
     glyph_intent:
       over.glyph_intent ?? resolveIntent(over.objects?.[0]?.type ?? null, over.verb),
     ...singulars,
+    featured,
     sample,
     distinct,
-    children: over.children ?? [],
-    children_truncated: over.children_truncated ?? over.count > (over.children?.length ?? 0),
+    children,
+    children_truncated: over.children_truncated ?? over.count > children.length,
     ...groupTombstoneFacts(over, sample, distinct),
   }
 }
@@ -227,6 +293,7 @@ function groupTombstoneFacts(over: Record<string, any>, sample: Record<string, a
     const key = `${role}s`
     counts[key] = over.distinct_tombstoned?.[key] ?? sample[key].filter(isTombstone).length
   }
+  counts.featured = over.distinct_tombstoned?.featured ?? sample.featured.filter(isTombstone).length
 
   const tombstoned = ROLES.filter((role) => counts[`${role}s`] > 0)
   const children: any[] = over.children ?? []
