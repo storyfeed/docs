@@ -25,6 +25,20 @@ const withKeyValue = { ...content.confirmed,
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
 const withExcerpt = { ...quoted, object: { ...quoted.object, type: 'article' } }
 const withImage = content.photo
+const picture = content.photo.object.media.preview
+const withStoredImage = { ...content.photo, object: { ...content.photo.object, body: [{
+  $body: 'Storyfeed/Body/Image', $v: 3, src: picture.src, width: picture.width, height: picture.height,
+  alt: content.photo.object.body[0].alt, caption: content.photo.object.body[0].caption }] } }
+const lineNames = content.itemList.object.body[0].items
+  .map(item => (typeof item === 'string' ? item : item.label).replace(/^an? /, ''))
+  .map(name => name[0].toUpperCase() + name.slice(1))
+const withTable = { ...content.itemList, object: { ...content.itemList.object, body: [{
+  $body: 'Storyfeed/Body/Table', $v: 1, title: null, headers: ['Item', 'Qty', 'Price'],
+  rows: [[lineNames[0], 2, '$3.00'], [lineNames[1], 1, '$1.75'], [lineNames[2], 2, '$4.00']],
+  footer: [['Total', null, '$8.75']] }] } }
+const withCallToAction = { ...content.notice, object: { ...content.notice.object, body: [{
+  $body: 'Storyfeed/Body/CallToAction', $v: 1, $fallback: 'Read the notice', subject: null, content: content.notice.object.body[0].content,
+  action: { label: 'Read the notice', link: { href: null, modal: false, attributes: [] } } }] } }
 // The order, featuring the shop it was placed with.
 const featuringShop = { ...scene.order, featured: 'target' }
 const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
@@ -318,9 +332,52 @@ and marks the text as complete:
 
 ### Adding an Image
 
-Use an `Image` body to show a photograph with a caption. The body names a
-`feedMedia` slot; it never stores the picture's URL. `withPreview()` selects
-the preview slot, which is also the default:
+Use an `Image` body to show a photograph with a caption. Pass the picture's
+URL to `make`:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\Image;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label($this->name)
+    ->body(
+        Image::make($this->url)
+            ->width($this->width)
+            ->height($this->height)
+            ->alt($this->description)
+            ->caption($this->subject)
+    );
+```
+
+```php [Named Arguments] memo="app/Models/Photo.php" at="toFeed()"
+use Storyfeed\Body\Image;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make(
+    label: $this->name,
+    body: Image::make(
+        image: $this->url,
+        width: $this->width,
+        height: $this->height,
+        alt: $this->description,
+        caption: $this->subject,
+    ),
+);
+```
+
+:::
+
+<FeedExample :items="[withStoredImage]" />
+
+The body stores the URL, so it keeps showing that address. You may also pass a
+`FeedImage`, whose `alt`, `width` and `height` become the body's.
+
+For a URL that changes, such as a signed link, pass one of the model's
+`feedMedia()` pictures instead. The body stores the slot's name, and the
+picture is resolved each time the feed is read:
 
 ```php memo="app/Models/Photo.php" at="toFeed()"
 use Storyfeed\Body\Image;
@@ -329,19 +386,19 @@ use Storyfeed\FeedEntity;
 return FeedEntity::make()
     ->label($this->name)
     ->body(
-        Image::make()
-            ->caption($this->subject)
+        Image::make($this->feedMediaPreview())
             ->alt($this->description)
-            ->withPreview()
+            ->caption($this->subject)
     );
 ```
 
 <FeedExample :items="[withImage]" />
 
-Use `withImage()` for the image slot or `withIcon()` for the icon slot.
-The renderer uses `alt`, then the caption, then an empty alt attribute. An empty
-slot draws nothing, including the caption. See [Feed Media](/basics/feed-media#showing-pictures)
-for the resolver that supplies the picture.
+Use `feedMediaImage()` for the image slot or `feedMediaIcon()` for the icon
+slot. The renderer uses `alt`, then the caption, then an empty alt attribute.
+An empty slot draws nothing, including the caption. See
+[Feed Media](/basics/feed-media#showing-pictures) for the resolver that
+supplies the picture.
 
 <a id="file-attachment"></a>
 
@@ -455,6 +512,62 @@ FeedEntity::make(
 A list can also preserve a short arrangement of items:
 
 <FeedExample :items="[content.alphabet]" />
+
+<a id="tables"></a>
+
+### Adding a Table
+
+Use `Table` for rows and columns. Its arguments follow Artisan's
+`$this->table($headers, $rows)`:
+
+::: code-group
+
+```php [Fluent Syntax]
+use App\Models\OrderLine;
+use Illuminate\Support\Number;
+use Storyfeed\Body\Table;
+use Storyfeed\FeedEntity;
+
+FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(
+        Table::make()
+            ->headers(['Item', 'Qty', 'Price'])
+            ->rows($this->lines->map(fn (OrderLine $line) => [
+                $line->item->name,
+                $line->quantity,
+                Number::currency($line->total),
+            ]))
+            ->footer(['Total', null, Number::currency($this->total)]),
+    );
+```
+
+```php [Named Arguments]
+use App\Models\OrderLine;
+use Illuminate\Support\Number;
+use Storyfeed\Body\Table;
+use Storyfeed\FeedEntity;
+
+FeedEntity::make(
+    label: "Order #{$this->reference}",
+    body: Table::make(
+        headers: ['Item', 'Qty', 'Price'],
+        rows: $this->lines->map(fn (OrderLine $line) => [
+            $line->item->name,
+            $line->quantity,
+            Number::currency($line->total),
+        ]),
+    )->footer(['Total', null, Number::currency($this->total)]),
+);
+```
+
+:::
+
+<FeedExample :items="[withTable]" />
+
+A cell is a string, a number, `null` for an empty cell, or a `FeedLink`.
+Format amounts before adding them. `footer` appends a row beneath the others,
+such as a subtotal or a total, and `title` adds a line above the table.
 
 ### Adding Multiple Bodies
 
@@ -603,10 +716,56 @@ FeedEntity::make(
 The body title links to the visitor guide, while the headline links to the
 notice. A plain-string `subject` displays a title without a link.
 
+<a id="call-to-action"></a>
+
+### Adding a Call to Action
+
+Use `CallToAction` for a sentence or two and one action. The action's text says
+what to do, and `FeedLink::toEntity()` sends it to the entity the body belongs
+to:
+
+::: code-group
+
+```php [Fluent Syntax]
+use Storyfeed\Body\CallToAction;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make()
+    ->label($this->title)
+    ->body(
+        CallToAction::make()
+            ->content($this->description)
+            ->action('Read the notice', FeedLink::toEntity()),
+    );
+```
+
+```php [Named Arguments]
+use Storyfeed\Body\CallToAction;
+use Storyfeed\FeedEntity;
+use Storyfeed\FeedLink;
+
+FeedEntity::make(
+    label: $this->title,
+    body: CallToAction::make(
+        content: $this->description,
+    )->action('Read the notice', FeedLink::toEntity()),
+);
+```
+
+:::
+
+<FeedExample :items="[withCallToAction]" />
+
+`subject` adds a short heading. The action is required, and a string in place
+of the `FeedLink` is a plain link.
+
 ### Links in Bodies
 
 A `FeedLink` contains a label and an `href`. Pass the destination URL as the
 second argument to `FeedLink::make`, or set it with the `href` method.
+`FeedLink::toEntity()` stores no URL: the renderer links it to the entity's own
+link each time the feed is read.
 
 The `href` is stored as written. It can become stale if a route changes or a
 signed URL expires.
@@ -614,6 +773,33 @@ signed URL expires.
 The label names the thing, such as a notice or an order.  See the
 [`FeedLink` reference](/reference/feedable#feedlink) for its methods and the
 body fields that accept it.
+
+<a id="body-height"></a>
+
+### Setting a Body's Height
+
+A body may tell the renderer how tall to draw it. `maxHeight` takes a CSS
+length, and `fullHeight` shows the whole body:
+
+```php memo="app/Models/Order.php" at="toFeed()"
+use Storyfeed\Body\Prose;
+use Storyfeed\Body\Table;
+use Storyfeed\FeedEntity;
+
+return FeedEntity::make()
+    ->label("Order #{$this->reference}")
+    ->body(
+        Prose::markdown($this->notes)->fullHeight(),
+        Table::make(['Item', 'Qty'], $this->summary)->maxHeight('16rem'),
+    );
+```
+
+Both write the body's `$meta.maxHeight`. Add your own renderer settings with
+`withMeta`, using a dotted key such as `acme.layout`:
+
+```php
+Prose::markdown($this->notes)->withMeta(['acme.layout' => 'wide']);
+```
 
 <a id="built-in-body-types"></a>
 
@@ -623,17 +809,19 @@ body fields that accept it.
 |---|---|---|
 | `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` |
 | `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` |
-| `Image` | a picture and caption | `caption`, `alt`, `width`, `height`, `image` (slot name) |
+| `Image` | a picture and caption | `src`, `mediaType`, `caption`, `alt`, `width`, `height`, `image` (slot name) |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` |
 | `ItemList` | named items with optional links | `title`, `items[]`, `ordered`, `totalItems`, `more` |
 | `MediaObject` | a title, text, image, and files | `subject`, `content`, `image`, `files`, `footnote` |
+| `Table` | rows and columns | `title`, `headers`, `rows`, `footer` |
+| `CallToAction` | a heading, text, and one action | `subject`, `content`, `action` of `label`, `link` |
 | `Component` | a custom component name and props | `name`, `props` |
 
 These classes use the `Storyfeed\Body` namespace. Each body's payload includes
 its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
-Your renderer uses these fields to display the body. Passing a string as a body
-creates a `Prose` body.
+Your renderer uses these fields to display the body. A body may also carry
+`$meta`, its renderer settings. Passing a string as a body creates a `Prose` body.
 
 See [Resolving Bodies When Retrieved](/deeper/resolving-bodies) for current
 and deferred values, or [Custom Body Types](/deeper/body) to render custom
