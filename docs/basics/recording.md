@@ -76,7 +76,7 @@ Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store(), after creating $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -88,7 +88,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store(), after creating $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
@@ -242,7 +242,7 @@ The actor is the user or model that performed the activity. You may specify
 the actor using the `by` method:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store(), after creating $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::activity()
@@ -252,7 +252,7 @@ Storyfeed::activity()
     ->publish();
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store(), after creating $order"
 use Storyfeed\Facades\Storyfeed;
 
 Storyfeed::record(
@@ -281,33 +281,63 @@ Use the `data` method to store arbitrary values on an activity. Storyfeed
 returns them in the activity’s `data` field:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/MenuItemPriceController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-$from = $menuItem->price;
+class MenuItemPriceController extends Controller
+{
+    public function update(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $from = $menuItem->price;
 
-$menuItem->update(['price' => $request->integer('price')]);
+        $menuItem->update(['price' => $request->integer('price')]);
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('reprice', $menuItem)
-    ->data(['from' => $from, 'to' => $menuItem->price])
-    ->publish();
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('reprice', $menuItem)
+            ->data(['from' => $from, 'to' => $menuItem->price])
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/MenuItemPriceController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MenuItem;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-$from = $menuItem->price;
+class MenuItemPriceController extends Controller
+{
+    public function update(Request $request, MenuItem $menuItem): RedirectResponse
+    {
+        $from = $menuItem->price;
 
-$menuItem->update(['price' => $request->integer('price')]);
+        $menuItem->update(['price' => $request->integer('price')]);
 
-Storyfeed::record(
-    verb: 'reprice',
-    object: $menuItem,
-    actor: $request->user(),
-    data: ['from' => $from, 'to' => $menuItem->price],
-);
+        Storyfeed::record(
+            verb: 'reprice',
+            object: $menuItem,
+            actor: $request->user(),
+            data: ['from' => $from, 'to' => $menuItem->price],
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
@@ -333,34 +363,64 @@ To set an earlier publication time, such as when importing records, call the
 `publishedAt` method:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Console/Commands/ImportPriceHistory.php"
+<?php
+
+namespace App\Console\Commands;
+
 use App\Models\MenuItem;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Storyfeed\Facades\Storyfeed;
 
-foreach ($rows as $row) {
-    Storyfeed::activity()
-        ->by(User::findOrFail($row['user_id']))
-        ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
-        ->data(['from' => $row['from'], 'to' => $row['to']])
-        ->publishedAt($row['changed_at'])
-        ->publish();
+class ImportPriceHistory extends Command
+{
+    protected $signature = 'menu:import-prices {file}';
+
+    public function handle(): void
+    {
+        $rows = json_decode(file_get_contents($this->argument('file')), true);
+
+        foreach ($rows as $row) {
+            Storyfeed::activity()
+                ->by(User::findOrFail($row['user_id']))
+                ->action('reprice', MenuItem::findOrFail($row['menu_item_id']))
+                ->data(['from' => $row['from'], 'to' => $row['to']])
+                ->publishedAt($row['changed_at'])
+                ->publish();
+        }
+    }
 }
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Console/Commands/ImportPriceHistory.php"
+<?php
+
+namespace App\Console\Commands;
+
 use App\Models\MenuItem;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Storyfeed\Facades\Storyfeed;
 
-foreach ($rows as $row) {
-    Storyfeed::record(
-        verb: 'reprice',
-        object: MenuItem::findOrFail($row['menu_item_id']),
-        actor: User::findOrFail($row['user_id']),
-        data: ['from' => $row['from'], 'to' => $row['to']],
-        publishedAt: $row['changed_at'],
-    );
+class ImportPriceHistory extends Command
+{
+    protected $signature = 'menu:import-prices {file}';
+
+    public function handle(): void
+    {
+        $rows = json_decode(file_get_contents($this->argument('file')), true);
+
+        foreach ($rows as $row) {
+            Storyfeed::record(
+                verb: 'reprice',
+                object: MenuItem::findOrFail($row['menu_item_id']),
+                actor: User::findOrFail($row['user_id']),
+                data: ['from' => $row['from'], 'to' => $row['to']],
+                publishedAt: $row['changed_at'],
+            );
+        }
+    }
 }
 ```
 :::
@@ -468,24 +528,66 @@ Story::verb('upload')->headline(':actor uploaded :object');
 Then publish the photos:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/PhotoController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->verb('upload')
-    ->objects($photos)
-    ->publish();
+class PhotoController extends Controller
+{
+    public function store(Request $request): RedirectResponse
+    {
+        $photos = collect($request->file('photos'))->map(
+            fn (UploadedFile $file) => $request->user()->photos()->create([
+                'path' => $file->store('photos'),
+            ]),
+        );
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->verb('upload')
+            ->objects($photos)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/PhotoController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'upload',
-    objects: $photos,
-    actor: $request->user(),
-);
+class PhotoController extends Controller
+{
+    public function store(Request $request): RedirectResponse
+    {
+        $photos = collect($request->file('photos'))->map(
+            fn (UploadedFile $file) => $request->user()->photos()->create([
+                'path' => $file->store('photos'),
+            ]),
+        );
+
+        Storyfeed::record(
+            verb: 'upload',
+            objects: $photos,
+            actor: $request->user(),
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
