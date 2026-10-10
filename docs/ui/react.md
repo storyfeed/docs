@@ -6,13 +6,9 @@ Copy it into your app, wrap the feed in `FeedProvider`, and pass a feed page to
 
 ```bash
 php artisan storyfeed:ui react
-npm install react@^19 react-dom@^19 lucide-react markdown-it sanitize-html
-npm install -D @types/markdown-it @types/sanitize-html
+npm install react@^19 react-dom@^19 lucide-react micromark micromark-extension-gfm-autolink-literal micromark-extension-gfm-strikethrough micromark-extension-gfm-table micromark-extension-gfm-task-list-item sanitize-html
+npm install -D @types/react @types/react-dom @types/sanitize-html @tailwindcss/typography
 ```
-
-Laravel's [React starter kit](https://github.com/laravel/react-starter-kit/blob/main/package.json)
-already includes React and its types. In another app, also install
-`@types/react` and `@types/react-dom` as development dependencies.
 
 ```tsx memo="resources/js/pages/History.tsx"
 import { Link } from '@inertiajs/react';
@@ -38,11 +34,12 @@ import { scene, liveOf } from '../.vitepress/theme/world'
 which holds the items in `data`, or the plain array `get()` returns.
 It works with Inertia’s React adapter and Laravel’s React starter kit.
 The copied `shared/` directory makes the imports self-contained. Configure
-[Tailwind scanning and tokens](/ui/installation#scanning-tailwind-utilities).
+[Tailwind scanning](/ui/installation#scanning-tailwind-utilities) and the
+[Typography plugin](/ui/installation#registering-the-typography-plugin).
 
 ## Loading Older Activity
 
-```tsx
+```tsx memo="resources/js/pages/History.tsx" at="History()"
 <FeedStream items={items} nextCursor={nextCursor}
     loadingMore={loading} onLoadMore={loadOlder} />
 ```
@@ -66,7 +63,7 @@ providers inherit the outer options; explicit values win. See [Host Seams](/ui/c
 
 ## Rails and Groups
 
-```tsx
+```tsx memo="resources/js/pages/History.tsx" at="History()"
 <FeedStream page={feed} rail="actor" childRail="activity-only" />
 ```
 

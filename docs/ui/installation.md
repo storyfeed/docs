@@ -59,5 +59,21 @@ For Blade, scan the package's views:
 @source "../../vendor/storyfeed/ui/resources/views";
 ```
 
+## Registering the Typography Plugin
+
+All three kits render `Prose`, `ItemList` and `Table` bodies inside the
+[Typography plugin](https://github.com/tailwindlabs/tailwindcss-typography)'s
+`prose` class. Install the plugin:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Then register it:
+
+```css memo="resources/css/app.css"
+@plugin "@tailwindcss/typography";
+```
+
 Compile with `npm run build` and load the compiled CSS in your layout.
-The kits need no separate stylesheet or Typography plugin.
+The kits need no separate stylesheet.

@@ -5,7 +5,8 @@ Copy it into your app and pass a feed page to `FeedStream`.
 
 ```bash
 php artisan storyfeed:ui vue
-npm install lucide-vue-next markdown-it sanitize-html
+npm install lucide-vue-next micromark micromark-extension-gfm-autolink-literal micromark-extension-gfm-strikethrough micromark-extension-gfm-table micromark-extension-gfm-task-list-item sanitize-html
+npm install -D @tailwindcss/typography
 ```
 
 ```vue memo="resources/js/pages/History.vue"
@@ -31,12 +32,12 @@ const divider = { [groupedOrders[0].id]: 'Orders' }
 
 `page` takes the JSON of a page from `cursorPaginate()` or `simplePaginate()`,
 which holds the items in `data`, or the plain array `get()` returns. The copied
-kit includes its `shared/` imports. Configure [Tailwind scanning
-and tokens](/ui/installation#scanning-tailwind-utilities) in the host app.
+kit includes its `shared/` imports. Configure [Tailwind scanning](/ui/installation#scanning-tailwind-utilities)
+and the [Typography plugin](/ui/installation#registering-the-typography-plugin) in the host app.
 
 ## Loading Older Activity
 
-```vue
+```vue memo="resources/js/pages/History.vue" at="template"
 <FeedStream :items="items" :next-cursor="nextCursor"
     :loading-more="loading" @load-more="loadOlder" />
 ```
@@ -52,7 +53,7 @@ the pager while loading. Keep the cursor opaque and follow the
 |---|---|---|
 | `#body` | `{ node }` | body content |
 | `#annotations` | `{ node }` | app annotations |
-| `#time` | `{ node }` | timestamp content |
+| `#time` | `{ node, label }` | timestamp content |
 
 These slots reach activities, groups and expanded children.
 Built-in bodies render from the object’s bodies and data, and the activity’s data.
@@ -60,7 +61,7 @@ Built-in bodies render from the object’s bodies and data, and the activity’s
 
 ## Rails and Groups
 
-```vue
+```vue memo="resources/js/pages/History.vue" at="template"
 <FeedStream :page="feed" rail="actor" child-rail="activity-only" />
 ```
 
