@@ -6,20 +6,18 @@ import { scene, everything, avatar } from '../.vitepress/theme/world'
 const content = scene.basics.activityContent
 const quotedNote = { ...content.note,
   object: { ...content.note.object, label: 'Order note', body: [{
-    $body: 'Storyfeed/Body/Excerpt', $v: 1, text: content.note.object.label,
-    from: null, truncated: false,
+    $body: 'Storyfeed/Body/Excerpt', $v: 2, text: content.note.object.label, truncated: false,
   }] } }
 const withProse = { ...content.ready,
-  object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 1,
-    content: 'A spoon with the order, please.', mediaType: 'text/plain', verbatim: false,
-    title: `${content.ready.object.label} instructions` }] } }
+  object: { ...content.ready.object, body: [{ $body: 'Storyfeed/Body/Prose', $v: 2,
+    content: 'A spoon with the order, please.', title: `${content.ready.object.label} instructions` }] } }
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 3,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
-    { key: 'Items', value: '1', verbatim: false, placeholder: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
-    { key: 'Table', value: null, verbatim: false, placeholder: 'not seated' },
+    { key: 'Pickup', value: '12:10 pm' },
+    { key: 'Items', value: 1 },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true },
+    { key: 'Table', value: null, placeholder: 'not seated' },
   ] }] } }
 // The pack's own passage from a source: the oldest row whose object quotes one.
 const quoted = everything().findLast(node => node.object?.body?.some(body => body.$body === 'Storyfeed/Body/Excerpt'))
@@ -33,18 +31,18 @@ const lineNames = content.itemList.object.body[0].items
   .map(item => (typeof item === 'string' ? item : item.label).replace(/^an? /, ''))
   .map(name => name[0].toUpperCase() + name.slice(1))
 const withTable = { ...content.itemList, object: { ...content.itemList.object, body: [{
-  $body: 'Storyfeed/Body/Table', $v: 1, title: null, headers: ['Item', 'Qty', 'Price'],
+  $body: 'Storyfeed/Body/Table', $v: 1, headers: ['Item', 'Qty', 'Price'],
   rows: [[lineNames[0], 2, '$3.00'], [lineNames[1], 1, '$1.75'], [lineNames[2], 2, '$4.00']],
   footer: [['Total', null, '$8.75']] }] } }
 const withCallToAction = { ...content.notice, object: { ...content.notice.object, body: [{
-  $body: 'Storyfeed/Body/CallToAction', $v: 1, $fallback: 'Read the notice', subject: null, content: content.notice.object.body[0].content,
+  $body: 'Storyfeed/Body/CallToAction', $v: 1, $fallback: 'Read the notice', content: content.notice.object.body[0].content,
   action: { label: 'Read the notice', link: { href: null, modal: false, attributes: [] } } }] } }
 // The order, featuring the shop it was placed with.
 const featuringShop = { ...scene.order, featured: 'target' }
 const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
   type: 'document', label: 'Signed Agreement.pdf', link: { href: '/documents/signed-agreement', modal: false, attributes: [] },
   media: avatar('document', content.photo.object.id, 'Signed Agreement.pdf'),
-  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1,
+  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2,
     name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 </script>
 

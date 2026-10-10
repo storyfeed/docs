@@ -12,7 +12,7 @@ const charted = { ...photo, target: null, object: { ...target,
   body: [{ $body: 'Storyfeed/Body/Image', $v: 3, image: 'slots.sparkline' }] } }
 const file = { ...photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...photo.object, type: 'document', label: 'Signed Agreement.pdf',
   link: { href: '/documents/signed-agreement', modal: false, attributes: [] }, media: avatar('document', photo.object.id, 'Signed Agreement.pdf'),
-  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 1, name: 'Signed Agreement.pdf', size: 48213, mediaType: 'application/pdf' }] } }
+  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2, size: 48213, mediaType: 'application/pdf' }] } }
 const actor = { ...scene.order, actor: { ...photo.object, body: null,
   media: { ...photo.object.media, icon: photo.object.media.preview } } }
 const team = scene.otherApps.team.target

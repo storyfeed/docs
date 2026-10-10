@@ -20,12 +20,12 @@ const degraded = { ...scene.order, actor: null,
   object: { ...scene.order.object, label: null, link: null, media: avatar(scene.order.object.type, scene.order.object.id, null) } }
 const content = scene.basics.activityContent
 const withKeyValue = { ...content.confirmed,
-  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 2,
+  object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 3,
     title: content.confirmed.object.label, items: [
-    { key: 'Pickup', value: '12:10 pm', verbatim: false, placeholder: null },
-    { key: 'Items', value: '1', verbatim: false, placeholder: null },
-    { key: 'Reference', value: content.confirmed.object.id, verbatim: true, placeholder: null },
-    { key: 'Table', value: null, verbatim: false, placeholder: 'not seated' },
+    { key: 'Pickup', value: '12:10 pm' },
+    { key: 'Items', value: 1 },
+    { key: 'Reference', value: content.confirmed.object.id, verbatim: true },
+    { key: 'Table', value: null, placeholder: 'not seated' },
   ] }] } }
 </script>
 
