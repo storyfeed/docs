@@ -49,28 +49,62 @@ Story::for(Order::class)
 The activity was recorded with plain data:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Shop;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity('place', $order)
-    ->data([
-        'channel' => $order->channel,
-        'promised_at' => $order->promised_at,
-    ])
-    ->publish();
+class OrderController extends Controller
+{
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
+    {
+        $order = $shop->orders()->create($request->validated());
+
+        Storyfeed::activity('place', $order)
+            ->data([
+                'channel' => $order->channel,
+                'promised_at' => $order->promised_at,
+            ])
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PlaceOrderRequest;
+use App\Models\Shop;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'place',
-    object: $order,
-    data: [
-        'channel' => $order->channel,
-        'promised_at' => $order->promised_at,
-    ],
-);
+class OrderController extends Controller
+{
+    public function store(PlaceOrderRequest $request, Shop $shop): RedirectResponse
+    {
+        $order = $shop->orders()->create($request->validated());
+
+        Storyfeed::record(
+            verb: 'place',
+            object: $order,
+            data: [
+                'channel' => $order->channel,
+                'promised_at' => $order->promised_at,
+            ],
+        );
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 :::
 
@@ -102,7 +136,7 @@ On an `ActivityContext`, only `get` reads through a cast. `all` and the typed he
 `string`, `enum` and `date`, read the recorded value, as a model's
 `getAttributes` method does:
 
-```php
+```php memo="routes/feed.php" at="a headline closure"
 $activity->get('channel');                   // Channel::Phone
 $activity->all()['channel'];                 // 'phone'
 $activity->enum('channel', Channel::class);  // Channel::Phone
@@ -193,24 +227,56 @@ recorded as its `toArray` result, and one that implements `JsonSerializable`
 as its JSON:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php" at="store()"
+```php [Fluent Syntax] memo="app/Http/Controllers/ShipOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
 use App\ValueObjects\Address;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity('ship', $order)
-    ->data(['address' => Address::fromOrder($order)])
-    ->publish();
+class ShipOrderController extends Controller
+{
+    public function __invoke(Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'shipped']);
+
+        Storyfeed::activity('ship', $order)
+            ->data(['address' => Address::fromOrder($order)])
+            ->publish();
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 
-```php [Named Arguments] memo="app/Http/Controllers/OrderController.php" at="store()"
+```php [Named Arguments] memo="app/Http/Controllers/ShipOrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
 use App\ValueObjects\Address;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'ship',
-    object: $order,
-    data: ['address' => Address::fromOrder($order)],
-);
+class ShipOrderController extends Controller
+{
+    public function __invoke(Order $order): RedirectResponse
+    {
+        $order->update(['status' => 'shipped']);
+
+        Storyfeed::record(
+            verb: 'ship',
+            object: $order,
+            data: ['address' => Address::fromOrder($order)],
+        );
+
+        return to_route('orders.show', $order);
+    }
+}
 ```
 :::
 
@@ -223,10 +289,13 @@ serializable.
 > properties only. Private and protected properties are dropped without an
 > error, and the cast later builds an incomplete object.
 
-A whole data array can be one object as well: `->data(new OrderPlacedData(...))`
-records its `toArray` result.
+The whole data argument can be one `Arrayable` object as well:
+`->data(new OrderPlacedData(...))` records its `toArray` result. `record()`
+takes an array for `data:`.
 
-## Older Activities
+<a id="older-activities"></a>
+
+## Handling Unreadable Values
 
 Casts apply to every activity of the verb, including ones recorded before the
 cast was declared. When a cast cannot read a recorded value, such as an enum
@@ -235,7 +304,7 @@ returns the recorded value, so the activity still appears in the feed.
 
 Check for the type you expect before relying on it:
 
-```php
+```php memo="routes/feed.php" at="a headline closure"
 $channel = $activity->get('channel');
 
 $channel instanceof Channel ? $channel->label() : 'an unknown channel';
