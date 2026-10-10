@@ -10,7 +10,7 @@ Artisan commands install, inspect and maintain the feed.
 
 | Command | Description |
 |---|---|
-| `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, and offers to run the migrations. `--without-migrations` publishes none |
+| `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, adds `STORYFEED_SNAPSHOTS=sync` to `.env` (commented out in `.env.example`; see [Snapshots](/reference/configuration#snapshots)), and offers to run the migrations. `--without-migrations` publishes none |
 
 ```bash
 # never overwrites an existing routes/feed.php
@@ -63,8 +63,8 @@ can also be bound [one method at a time](/basics/stories#basic-story-classes).
 | Command | Description |
 |---|---|
 | `storyfeed:list` | lists authored definitions, including provider declarations: type, verb, name, action, headlines, icon, intent, group headlines, calendar period for custom axes, keep-latest policy, override status and source location |
-| `storyfeed:verbs` | lists registered verbs, their AS2 types, and whether each has a headline (the `Grammar` column) and an icon. `--used` compares against recorded verbs. Registered means declared with `Storyfeed::verbs()` or by a story class; see [Verbs](/reference/configuration#verbs) |
-| `storyfeed:stories` | lists publishers and models that could publish but have no recorded activities. `--gaps` shows only rows needing attention, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
+| `storyfeed:verbs` | lists every verb, the shipped defaults included, in the columns `Verb`, `AS2.0 type`, `Headline`, `Icon` and `Source`. `Headline` and `Icon` name the registered keys that cover the verb, such as `order.place, *.place`, or `—`. `Source` is `registered` for a verb declared with `Storyfeed::verbs()` or by a story class, and `default` for a shipped one; see [Verbs](/reference/configuration#verbs). `--used` compares against recorded verbs |
+| `storyfeed:stories` | lists everything that publishes to the feed, and the models that could but don't, with each row's headline and icon coverage, group headlines, last recorded time and status (`ok`, `gap`, `dead`, `unauthored` or `unwired`). `--gaps` shows only rows that are not `ok`, `--json`, `--since=` sets the days after which a Story is considered inactive (default 30) |
 
 ### Listing Options
 
@@ -115,7 +115,9 @@ Link findings describe sampled named-feed pages and are informational.
 in text and JSON with their written reasons, but do not fail `--fail-on` or
 generate `--stubs`. `--list` lists names without executing checks or policy.
 
-### `php artisan about`
+<a id="php-artisan-about"></a>
+
+### Inspecting Storyfeed With About
 
 Laravel's `about` command has a Storyfeed section:
 
@@ -130,6 +132,7 @@ php artisan about --only=storyfeed
 | Verbs | how many are declared, and how many ship as defaults |
 | Object types, Stories, Feeds | how many are registered |
 | Recording | whether recording is on |
+| Snapshots | the [snapshot compile mode](/reference/configuration#snapshots), `cached` or `sync` |
 | Curate, Trickle and Close-batches schedules | whether `storyfeed:curate`, `storyfeed:trickle` and `storyfeed:close-batches` are scheduled |
 | Doctor | what the `tables`, `recording` and `manifest` checks report; `storyfeed:doctor` runs them all |
 
