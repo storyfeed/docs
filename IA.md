@@ -498,8 +498,7 @@ title changes. Moved sections on Feedable API, Aggregation and The Feed File
 retain their anchors and link to their canonical homes. Do not add tutorials
 to these compatibility sections.
 
-`guide/upgrading-0.13.md` is an existing unlisted source page, outside the teaching
-spine. `docs/rnd/**` is local research and excluded from production; `docs/briefs/**`
+`docs/rnd/**` is local research and excluded from production; `docs/briefs/**`
 is internal and excluded from every build.
 
 ## Pending coverage
@@ -510,9 +509,8 @@ Content, payload coverage within Retrieving Feeds, a separate Custom Axes page,
 and package overrides within Package Integration. Choosing When to Publish
 leads with domain events. The sidebar lists written pages only.
 
-No unwritten page is scheduled in the sidebar. The existing unlisted
-`guide/upgrading-0.13.md` remains outside this structural pass; release-by-release
-teaching is excluded by rule 25. Future gaps need a specific owner-approved brief.
+No unwritten page is scheduled in the sidebar. Release-by-release teaching is
+excluded by rule 25. Future gaps need a specific owner-approved brief.
 `FeedBuilder::declaredMode()` is internal tooling and is not public coverage.
 
 ## Notes
