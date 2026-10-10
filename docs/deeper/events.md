@@ -4,6 +4,12 @@
 import { scene } from '../.vitepress/theme/world'
 </script>
 
+## Introduction
+
+An event class can publish an activity whenever your application dispatches
+it. Your listeners can also react when Storyfeed publishes or deletes an
+activity.
+
 ## Publishing From an Event
 
 A controller dispatches an event:
@@ -71,7 +77,7 @@ When an event implementing `PublishesToFeed` is dispatched, Storyfeed calls its
 
 Return `null` to skip publishing for this event:
 
-```php memo="app/Events/OrderPaid.php"
+```php memo="app/Events/OrderPaid.php" at="toFeedActivity()"
 public function toFeedActivity(): ?PendingActivity
 {
     if ($this->order->isTest()) {
@@ -101,12 +107,24 @@ Storyfeed dispatches an event when an activity is published or deleted:
 | `Storyfeed\Events\ActivityPublished` | `$event->activity`: the published activity's values |
 | `Storyfeed\Events\ActivityDeleted` | `$event->activity`: the deleted activity's values |
 
-The `$event->activity` value is an immutable copy of the activity, not an
-Eloquent model. Both events are dispatched after the outermost transaction
-commits. A rollback dispatches neither event.
+`$event->activity` is a `Storyfeed\Events\Snapshots\ActivitySnapshot`: a
+read-only copy of the activity, not an Eloquent model. Both events are
+dispatched after the outermost transaction commits. A rollback dispatches
+neither event.
 
-Every non-null role ID in `$event->activity` is a string, including integer
-model keys: compare with `'1'`, not `1`. Null role IDs remain `null`.
+| Property | Holds |
+|---|---|
+| `id` | the activity's database ID |
+| `uid` | the activity's ULID |
+| `verb` | the verb |
+| `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | each role as an array of `type`, `id`, `label`, `data`, `content`, `mediaType` and `attributedTo`, or `null` when the role is empty |
+| `data` | the activity's data |
+| `published_at` | the publication time as an ISO 8601 string, or `null` |
+| `deleted_at` | the deletion time as an ISO 8601 string, or `null` |
+| `forceDeleted` | whether the activity was permanently deleted |
+
+Every non-null role `id` is a string, including integer model keys: compare
+with `'1'`, not `1`.
 
 A listener for these events can implement `ShouldQueue`. `Storyfeed::fake()`
 does not dispatch them, so use `Queue::fake()` alone when asserting that a
