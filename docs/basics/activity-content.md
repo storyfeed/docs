@@ -37,6 +37,11 @@ const withTable = { ...content.itemList, object: { ...content.itemList.object, b
 const withCallToAction = { ...content.notice, object: { ...content.notice.object, body: [{
   $body: 'Storyfeed/Body/CallToAction', $v: 1, $fallback: 'Read the notice', content: content.notice.object.body[0].content,
   action: { label: 'Read the notice', link: { href: null, modal: false, attributes: [] } } }] } }
+// A menu item with a description and the station that makes it.
+const withBodies = { ...content.product, object: { ...content.product.object, body: [
+  { $body: 'Storyfeed/Body/Prose', $v: 2, content: 'Two scoops with warm sauce.' },
+  { $body: 'Storyfeed/Body/KeyValue', $v: 3, items: [{ key: 'Station', value: 'Fountain' }] },
+] } }
 // The order's pickup time, with a plain-text line for a renderer without KeyValue.
 const withFallback = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 3,
@@ -150,7 +155,7 @@ Use `KeyValue` for labelled values:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\KeyValue;
 use Storyfeed\FeedEntity;
 
@@ -166,7 +171,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 use Storyfeed\Body\KeyValue;
 use Storyfeed\FeedEntity;
 
@@ -196,10 +201,10 @@ such as a reference number.
 
 ### Formatted Text and Raw Output
 
-For code or raw output, create the body with `Prose::verbatim`. It keeps the
-source characters and line breaks, and long output scrolls within the body:
+For code or raw output, create the body with `Prose::verbatim`. The body
+stores the text exactly as given, with `verbatim` set to `true`:
 
-```php
+```php memo="app/Models/FieldRecord.php" at="toFeed()"
 use Storyfeed\Body\Prose;
 
 Prose::verbatim($this->output, title: $this->name);
@@ -210,7 +215,7 @@ Prose::verbatim($this->output, title: $this->name);
 To name the code's language, use `Prose::code` with a media type, such as
 `text/x-php` or `application/json`:
 
-```php
+```php memo="A model's toFeed() method"
 use Storyfeed\Body\Prose;
 
 Prose::code($this->source, 'text/x-php', title: $this->path);
@@ -219,9 +224,9 @@ Prose::code($this->source, 'text/x-php', title: $this->path);
 The body stores the media type with the source, as verbatim text.
 
 For formatted text, use `Prose::markdown` or `Prose::html`. Storyfeed stores
-the source, and the renderer converts and sanitizes it:
+the source as written, with `text/markdown` or `text/html` as its media type:
 
-```php
+```php memo="app/Models/FieldRecord.php" at="toFeed()"
 use Storyfeed\Body\Prose;
 
 Prose::markdown($this->notes, title: $this->title);
@@ -240,35 +245,59 @@ Leave out `from` when the headline already says who said it; add it when the pas
 Define the body on the quoted model in `toFeed()`:
 
 ::: code-group
-```php [Fluent Syntax] memo="app/Models/Note.php" at="toFeed()"
+```php [Fluent Syntax] memo="app/Models/Note.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-public function toFeed(): FeedEntity
+class Note extends Model implements Feedable
 {
-    return FeedEntity::make()
-        ->label('Order note')
-        ->body(
-            Excerpt::make()
-                ->text($this->body)
-                ->truncated(false),
-        );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label('Order note')
+            ->body(
+                Excerpt::make()
+                    ->text($this->body)
+                    ->truncated(false),
+            );
+    }
 }
 ```
 
-```php [Named Arguments] memo="app/Models/Note.php" at="toFeed()"
+```php [Named Arguments] memo="app/Models/Note.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\Excerpt;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedEntity;
 
-public function toFeed(): FeedEntity
+class Note extends Model implements Feedable
 {
-    return FeedEntity::make(
-        label: 'Order note',
-        body: Excerpt::make(
-            text: $this->body,
-            truncated: false,
-        ),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: 'Order note',
+            body: Excerpt::make(
+                text: $this->body,
+                truncated: false,
+            ),
+        );
+    }
 }
 ```
 :::
@@ -280,23 +309,72 @@ names the note's author, so the quotation needs no separate attribution:
 
 Record the note as the activity's object and the order as its target:
 
-```php
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderNoteController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Facades\Storyfeed;
 
-$note = $order->notes()->create($request->validated());
+class OrderNoteController extends Controller
+{
+    public function store(Request $request, Order $order): RedirectResponse
+    {
+        $note = $order->notes()->create(
+            $request->validate(['body' => ['required', 'string']]),
+        );
 
-Storyfeed::activity()
-    ->by($request->user())
-    ->action('post', $note)
-    ->to($order)
-    ->publish();
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('post', $note)
+            ->to($order)
+            ->publish();
+
+        return back();
+    }
+}
 ```
+
+```php [Named Arguments] memo="app/Http/Controllers/OrderNoteController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Storyfeed\Facades\Storyfeed;
+
+class OrderNoteController extends Controller
+{
+    public function store(Request $request, Order $order): RedirectResponse
+    {
+        $note = $order->notes()->create(
+            $request->validate(['body' => ['required', 'string']]),
+        );
+
+        Storyfeed::record(
+            verb: 'post',
+            object: $note,
+            actor: $request->user(),
+            target: $order,
+        );
+
+        return back();
+    }
+}
+```
+:::
 
 <a id="passages-from-a-source"></a>
 
 <a id="quoting-a-source"></a>
 
-**When the headline does not name the source.**
+#### Attributing a Source
 
 Use `Excerpt` to quote someone else's words, such as a person interviewed for a
 story. Here the headline names the article, and `from` names the source of
@@ -304,7 +382,7 @@ the quoted passage:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Article.php" at="toFeed()"
 use Storyfeed\Body\Excerpt;
 use Storyfeed\FeedEntity;
 
@@ -317,7 +395,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Article.php" at="toFeed()"
 use Storyfeed\Body\Excerpt;
 use Storyfeed\FeedEntity;
 
@@ -340,6 +418,38 @@ paragraph, use `Prose` instead.
 
 A record of an answer taken down word for word quotes the person who gave it,
 and marks the text as complete:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Models/FieldRecord.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+FeedEntity::make()
+    ->label($this->title)
+    ->body(
+        Excerpt::make()
+            ->text($this->answer)
+            ->from($this->answered_by)
+            ->truncated(false),
+    );
+```
+
+```php [Named Arguments] memo="app/Models/FieldRecord.php" at="toFeed()"
+use Storyfeed\Body\Excerpt;
+use Storyfeed\FeedEntity;
+
+FeedEntity::make(
+    label: $this->title,
+    body: Excerpt::make(
+        text: $this->answer,
+        from: $this->answered_by,
+        truncated: false,
+    ),
+);
+```
+
+:::
 
 <FeedExample :items="[content.planck]" />
 
@@ -408,8 +518,7 @@ return FeedEntity::make()
 <FeedExample :items="[withImage]" />
 
 Use `feedMediaImage()` for the image slot or `feedMediaIcon()` for the icon
-slot. The renderer uses `alt`, then the caption, then an empty alt attribute.
-An empty slot draws nothing, including the caption. See
+slot. See
 [Feed Media](/basics/feed-media#showing-pictures) for the resolver that
 supplies the picture.
 
@@ -465,7 +574,7 @@ Use `ItemList` for an order's items. Each item may be a plain string or a
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 use App\Models\OrderLine;
 use Storyfeed\Body\ItemList;
 use Storyfeed\FeedEntity;
@@ -490,7 +599,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 use App\Models\OrderLine;
 use Storyfeed\Body\ItemList;
 use Storyfeed\FeedEntity;
@@ -522,10 +631,6 @@ FeedEntity::make(
 `totalItems` records the full count and `more` links to the rest. Use
 `ItemList::ordered()` when the sequence of the items matters.
 
-A list can also preserve a short arrangement of items:
-
-<FeedExample :items="[content.alphabet]" />
-
 <a id="tables"></a>
 
 ### Adding a Table
@@ -535,7 +640,7 @@ Use `Table` for rows and columns. Its arguments follow Artisan's
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Order.php" at="toFeed()"
 use App\Models\OrderLine;
 use Illuminate\Support\Number;
 use Storyfeed\Body\Table;
@@ -555,7 +660,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Order.php" at="toFeed()"
 use App\Models\OrderLine;
 use Illuminate\Support\Number;
 use Storyfeed\Body\Table;
@@ -649,6 +754,8 @@ class MenuItem extends Model implements Feedable
 
 :::
 
+<FeedExample :items="[withBodies]" />
+
 ### Linking a Title
 
 Use `MediaObject` for a notice with a title and a short description. Pass a
@@ -656,7 +763,7 @@ Use `MediaObject` for a notice with a title and a short description. Pass a
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\MediaObject;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -670,7 +777,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\MediaObject;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -694,7 +801,7 @@ To link to another page, pass that page's title and URL:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\MediaObject;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -708,7 +815,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\MediaObject;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -726,8 +833,7 @@ FeedEntity::make(
 
 <FeedExample :items="[content.linkedNotice]" />
 
-The body title links to the visitor guide, while the headline links to the
-notice. A plain-string `subject` displays a title without a link.
+A plain-string `subject` stores a title without a link.
 
 <a id="call-to-action"></a>
 
@@ -739,7 +845,7 @@ to:
 
 ::: code-group
 
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\CallToAction;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -753,7 +859,7 @@ FeedEntity::make()
     );
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Models/Notice.php" at="toFeed()"
 use Storyfeed\Body\CallToAction;
 use Storyfeed\FeedEntity;
 use Storyfeed\FeedLink;
@@ -810,7 +916,9 @@ return FeedEntity::make()
 Both write the body's `$meta.maxHeight`. Add your own renderer settings with
 `withMeta`, using a dotted key such as `acme.layout`:
 
-```php
+```php memo="app/Models/Order.php" at="toFeed()"
+use Storyfeed\Body\Prose;
+
 Prose::markdown($this->notes)->withMeta(['acme.layout' => 'wide']);
 ```
 
