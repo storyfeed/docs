@@ -78,23 +78,23 @@ Story::for(Order::class)->verb('place')
 
 ## Registering Middleware
 
-### Aliases
+<a id="aliases"></a>
+<a id="groups"></a>
 
-Register aliases and named groups in a service provider:
+Register aliases and named groups in a service provider, because cached
+stories do not load `routes/feed.php`:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use App\StoryMiddleware\MarkReviewed;
 use Storyfeed\Facades\Story;
 
-// Register here: cached stories do not load routes/feed.php.
 Story::aliasMiddleware('reviewed', MarkReviewed::class);
 Story::middlewareGroup('review', ['reviewed']);
 ```
 
-### Groups
-
-The `middlewareGroup` method registers a list of middleware under one name.
-The `review` group contains the `reviewed` alias; either may be assigned to a story.
+`aliasMiddleware` gives a class a short name. `middlewareGroup` registers a
+list of middleware under one name: the `review` group contains the `reviewed`
+alias, and either may be assigned to a story.
 
 ## Assigning Middleware to Stories
 
@@ -129,21 +129,26 @@ Story::middleware('review')->group(function () {
 });
 ```
 
+The `place` activity receives the review data; `complete` skips that middleware:
+
 <FeedExample :items="[marked]" expanded />
 
 ### Execution Order
 
-The `place` activity receives the review data; `complete` skips that middleware.
 The built-in `default` group runs first, followed by enclosing groups and the
 verb's middleware. Identical resolved middleware strings run once. The
-`default` group contains `batch`; redefine it to configure middleware for every
-verb:
+`default` group contains `batch`. To run middleware for every verb, push it
+onto the `default` group:
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
 use Storyfeed\Facades\Story;
 
-Story::middlewareGroup('default', ['batch', 'reviewed']);
+Story::pushMiddlewareToGroup('default', 'reviewed');
 ```
+
+`prependMiddlewareToGroup` adds middleware to the start of a group instead.
+Neither adds middleware a group already contains. To replace the whole group,
+redefine it with `Story::middlewareGroup('default', [...])`.
 
 A queued activity runs its story middleware on the worker.
 
@@ -224,6 +229,10 @@ When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed` after
 the outermost transaction commits. The event's `$event->batch` contains an
 immutable copy of the closed batch and its activities. Register a listener to
 handle the completed batch.
+
+A batch whose window has elapsed closes at the actor's next publish. To
+dispatch `BatchClosed` promptly, schedule
+[`storyfeed:close-batches`](/reference/commands#scheduling-maintenance).
 
 The batch's `actor_id` and every role ID in its activities are strings when
 non-null: compare with `'1'`, not `1`. Null role IDs remain `null`.
