@@ -330,6 +330,25 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 | index | `bucket`, `hash`, `activity_id`, `winner` |
 <!-- /schema -->
 
+<span id="live-burst-boundaries"></span>
+
+### `feed_grouping_bursts`
+
+Stores the latest burst window and publishing lock for each logical axis key.
+Closed memberships remain in `feed_groupings`.
+
+<!-- schema:feed_grouping_bursts -->
+| Column | Type | Attributes | Purpose |
+|---|---|---|---|
+| `key` | char(64) | PK | SHA-256 logical axis key; also serializes publishers on the same key. |
+| `hash` | string(200) | nullable | The current burst membership hash. |
+| `opened_at` | datetime(6) | nullable | Publication time of the first activity in the current burst. |
+| `last_activity_at` | datetime(6) | nullable | Publication time of the latest activity in the current burst. |
+| `within_seconds` | unsigned int | nullable | Quiet gap used for the current burst. |
+| `ceiling_seconds` | unsigned int | nullable | Maximum duration used for the current burst. |
+| `locked_at` | timestamp | nullable | When a publisher last locked this key. |
+<!-- /schema -->
+
 ### `feed_batches`
 
 Stores an actor's activities as batches, open until the configured window
@@ -486,20 +505,3 @@ Stores Storyfeed metadata, including the sync token.
 .er .ah { fill: var(--vp-c-text-2); }
 .er .el { fill: var(--vp-c-text-2); font-size: 12px; font-style: italic; }
 </style>
-
-## Live Burst Boundaries
-
-`feed_grouping_bursts` holds the latest window and publishing lock for each
-logical axis key. Closed memberships remain in `feed_groupings`.
-
-<!-- schema:feed_grouping_bursts -->
-| Column | Type | Attributes | Purpose |
-|---|---|---|---|
-| `key` | char(64) | PK | SHA-256 logical axis key; also serializes publishers on the same key. |
-| `hash` | string(200) | nullable | The current burst membership hash. |
-| `opened_at` | datetime(6) | nullable | Publication time of the first activity in the current burst. |
-| `last_activity_at` | datetime(6) | nullable | Publication time of the latest activity in the current burst. |
-| `within_seconds` | unsigned int | nullable | Quiet gap used for the current burst. |
-| `ceiling_seconds` | unsigned int | nullable | Maximum duration used for the current burst. |
-| `locked_at` | timestamp | nullable | When a publisher last locked this key. |
-<!-- /schema -->
