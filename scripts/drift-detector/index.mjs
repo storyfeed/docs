@@ -39,7 +39,7 @@ export function documents(root, ref) {
 const hints = { toFeedLink: 'feedMedia', FeedLink: 'FeedMedia', Noun: 'FeedNoun', 'Noun::phrase': 'FeedNoun::of / FeedNoun::trans' };
 const short = n => n.split('\\').at(-1);
 function regions(text) {
-  let fence = null, blockComment = false;
+  let fence = null, blockComment = false, block = 0;
   function mask(source) {
     let code = '', literalCode = '';
     for (let i = 0; i < source.length;) {
@@ -59,10 +59,57 @@ function regions(text) {
   }
   return text.split('\n').map((line, i) => {
     const match = line.match(/^\s*(`{3,}|~{3,})(\w*)/);
-    if (match) { if (!fence) fence = { marker: match[1][0], lang: match[2] }; else if (match[1][0] === fence.marker) fence = null; blockComment = false; return { line: i+1, code: '', literalCode: '' }; }
+    if (match) { if (!fence) fence = { marker: match[1][0], lang: match[2] }; else if (match[1][0] === fence.marker) fence = null; blockComment = false; block++; return { line: i+1, block, code: '', literalCode: '' }; }
     const source = fence ? (['php', 'blade', ''].includes(fence.lang) ? line : '') : [...line.matchAll(/(`+)(.*?)\1/g)].map(m => m[2]).join(' ');
-    return { line: i+1, ...mask(source) };
+    // A fence is one expression space; each prose line is its own.
+    return { line: i+1, block: fence ? block : `line ${i+1}`, ...mask(source) };
   });
+}
+// Framework traits whose members are known, so a class using them stays closed.
+const frameworkTraits = { 'Illuminate\\Support\\Traits\\Conditionable': ['when', 'unless'], 'Illuminate\\Support\\Traits\\Tappable': ['tap'] };
+// Every public method a class has, own, inherited and from traits, with its
+// signature and declaring class, and whether that list is complete: an unknown
+// parent or trait, or __call, leaves it open.
+export function members(api, name, seen = new Set()) {
+  const cls = api.classes[name];
+  if (!cls || seen.has(name)) return { methods: new Map(), closed: false };
+  seen.add(name);
+  const methods = new Map();
+  let closed = !cls.methods.includes('__call');
+  for (const parent of cls.parents ?? []) {
+    if (frameworkTraits[parent]) { for (const m of frameworkTraits[parent]) methods.set(m, { owner: parent }); continue; }
+    if (!api.classes[parent]) { closed = false; continue; }
+    const inherited = members(api, parent, seen);
+    closed &&= inherited.closed;
+    for (const [m, info] of inherited.methods) methods.set(m, info);
+  }
+  if (!cls.parents) closed = !cls.open;
+  for (const m of cls.methods) methods.set(m, { owner: name, ...(cls.signatures?.[m] ?? {}) });
+  return { methods, closed };
+}
+// The text between the `(` at `open` and its partner, and the partner's index.
+function argumentsAt(code, open) {
+  let depth = 0;
+  for (let i = open; i < code.length; i++) {
+    if ('([{'.includes(code[i])) depth++;
+    else if (')]}'.includes(code[i]) && --depth === 0) return { text: code.slice(open + 1, i), end: i };
+  }
+  return null;
+}
+// Named arguments at the top level of an argument list: `url: $url` → url.
+function namedArguments(text) {
+  const names = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i <= text.length; i++) {
+    if (i < text.length && '([{'.includes(text[i])) depth++;
+    else if (i < text.length && ')]}'.includes(text[i])) depth--;
+    else if (i === text.length || (text[i] === ',' && depth === 0)) {
+      const m = text.slice(start, i).match(/^\s*([a-zA-Z_]\w*)\s*:(?!:)/);
+      if (m) names.push(m[1]);
+      start = i + 1;
+    }
+  }
+  return names;
 }
 export function analyze(api, docs) {
   const stale = [], unresolved = [], mentions = new Set();
@@ -109,6 +156,34 @@ export function analyze(api, docs) {
       if (cls.methods.includes(member) || cls.properties.includes(member.replace(/^\$/, ''))) { mentions.add(`${resolved}::${member}`); return; }
       if (cls.open || member.toUpperCase() === member) add(unresolved, line, id, 'Inherited, trait, dynamic member, or constant requires receiver resolution');
       else add(stale, line, id, `No public member on ${resolved}`);
+    }
+    // Follow fluent chains from a static call on a core class:
+    // `FeedMedia::make()->url($u)->modal()` is FeedMedia all the way, so a
+    // method or named argument the class no longer has is provably stale.
+    const blocks = new Map();
+    for (const r of rs) { if (!blocks.has(r.block)) blocks.set(r.block, []); blocks.get(r.block).push(r); }
+    for (const lines of blocks.values()) {
+      const code = lines.map(r => r.code).join('\n');
+      const lineAt = index => lines[code.slice(0, index).split('\n').length - 1].line;
+      for (const m of code.matchAll(/(?<![\w\\$>])\\?([A-Z][\w\\]*)::(\w+)\s*\(/g)) {
+        let current = resolveName(m[1], aliases, locals);
+        if (!current || !api.classes[current]) continue;
+        let method = m[2], at = m.index + m[0].length - 1, via = `${short(current)}::${method}`;
+        while (true) {
+          const { methods, closed } = members(api, current);
+          const info = methods.get(method);
+          if (!info) { if (closed && method !== m[2]) add(stale, lineAt(at), `${short(current)}::${method}`, `No public method ${method}() on ${current}, reached through ${via}()`); break; }
+          const args = argumentsAt(code, at);
+          if (!args) break;
+          let params = info.variadic && method === 'make' ? api.classes[current].signatures?.__construct?.params ?? null : info.variadic ? null : info.params;
+          if (info.variadic && method === 'make' && api.classes[current].signatures?.__construct?.variadic) params = null;
+          if (params) for (const name of namedArguments(args.text)) if (!params.includes(name)) add(stale, lineAt(at), `${short(current)}::${method}(${name}:)`, `${current}::${method}() has no parameter $${name}`);
+          const returns = info.returns === 'static' ? current : info.returns === 'self' ? info.owner : resolveName(info.returns ?? '', new Map(), new Set());
+          const next = code.slice(args.end + 1).match(/^\s*->\s*(\w+)\s*\(/);
+          if (!next || !returns || !api.classes[returns]) break;
+          current = returns; method = next[1]; at = args.end + 1 + next[0].length - 1; via += `()->${method}`;
+        }
+      }
     }
     for (const {line, code, literalCode} of rs) {
       if (/\buse\s+[^;]*\{/.test(code)) { add(unresolved, line, code.trim(), 'Grouped imports require binding expansion'); continue; }

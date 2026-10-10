@@ -33,6 +33,14 @@ and literal nested config keys. Comments/private methods are not surface.
 Inherited, trait and magic dispatch are explicitly open surfaces: an absent
 member there is UNRESOLVED, not STALE. A method on a closed, known class can be
 proven absent. Unknown `->` receivers are never evidence of a removed member.
+A fluent chain that starts with a static call on a core class is followed
+while each method's declared return type is `static`, `self` or a core class,
+through its parents and core traits (`Conditionable` and `Tappable` are known):
+`FeedMedia::make()->url($u)->modal()` is STALE once `FeedMedia` loses `modal()`.
+Named arguments are checked against the method's parameters, or the
+constructor's for a variadic `make()`. A chain stops at any other return type,
+and a class with an unknown parent or trait, or `__call`, is never proven
+missing a method.
 
 Markdown extraction covers PHP, Blade and unlabeled fences, plus inline code;
 other fences, prose, PHP comments and string contents are not class references.

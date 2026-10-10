@@ -104,7 +104,7 @@ for (const [kind, declaration, methods, properties] of [
     const files = { [`src/${name}.php`]: `<?php namespace Storyfeed; ${declaration}` };
     const s = JSON.parse(execFileSync(process.env.PHP_BINARY || 'php', [resolve(here, 'surface.php')], { input: JSON.stringify(files), encoding: 'utf8' }));
     assert.deepEqual(Object.keys(s.classes), [`Storyfeed\\${name}`]);
-    assert.deepEqual(s.classes[`Storyfeed\\${name}`], { methods, properties, open: false });
+    assert.deepEqual(s.classes[`Storyfeed\\${name}`], { methods, properties, open: false, parents: [], signatures: [] });
     const enumApi = { ...api, classes: s.classes, removed: [] };
     const cases = properties.filter(member => !['name', 'value'].includes(member));
     const code = `use Storyfeed\\${name};\n`
@@ -172,4 +172,15 @@ test('Storyfeed UI classes are separate-package references while missing core cl
   assert.ok(r.unresolved.some(f => f.identifier.includes('BodyComponents') && f.reason.includes('separate')));
   assert.ok(r.stale.some(f => f.identifier.includes('MissingCoreClass')));
   assert.ok(!r.stale.some(f => f.identifier.includes('BodyComponents')));
+});
+test('real main regression, pinned before the correction: methods removed from a fluent chain', () => {
+  const r = analyze(api, documents(root, 'c7eba8f'));
+  const ids = r.stale.map(s => `${s.file}:${s.identifier}`);
+  for (const id of ['docs/basics/feed-media.md:FeedMedia::modal', 'docs/basics/feed-media.md:Image::withPreview', 'docs/basics/activity-content.md:Image::withPreview', 'docs/reference/feedable.md:FeedMedia::attributes', 'docs/reference/feedable.md:FeedMedia::make(modal:)', 'docs/reference/feedable.md:FeedMedia::make(attributes:)']) assert.ok(ids.includes(id), id);
+});
+test('a chain is followed through static and self returns, inherited methods and traits', () => {
+  const ok = scan(php('use Storyfeed\\FeedMedia;\nuse Storyfeed\\FeedLink;\nuse Storyfeed\\Body\\Image;\nuse Storyfeed\\Body\\Table;\nuse Storyfeed\\Facades\\Storyfeed;\nFeedMedia::make(url: $u)\n    ->link(FeedLink::to($u)->modal()->attributes(["a" => 1]))\n    ->when($x, fn ($m) => $m)\n    ->preview($t);\nImage::make(image: $u, caption: "c")->alt("a")->fullHeight()->tap(fn () => null);\nTable::make(headers: [], rows: [])->footer([]);\nStoryfeed::activity()->by($u)->nothingKnown();\nFeedMedia::make()->media()->anything();'));
+  assert.deepEqual(ok.stale, []);
+  const bad = scan(php('use Storyfeed\\FeedMedia;\nuse Storyfeed\\Body\\Image;\nuse Storyfeed\\Body\\Table;\nImage::make()\n    ->caption("c")\n    ->withIcon();\nTable::make(columns: []);\nFeedMedia::make()->url($u)->modal();'));
+  assert.deepEqual(bad.stale.map(s => `${s.line}:${s.identifier}`), ['7:Image::withIcon', '8:Table::make(columns:)', '9:FeedMedia::modal']);
 });
