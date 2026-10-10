@@ -26,20 +26,57 @@ Story::for(Order::class)->verb('save')
 Publish as usual. The declaration applies wherever you publish this verb:
 
 ::: code-group
-```php [Fluent Syntax]
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UpdateOrderRequest;
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::activity()->by($request->user())->action('save', $order)->publish();
+class OrderController extends Controller
+{
+    public function update(UpdateOrderRequest $request, Order $order): RedirectResponse
+    {
+        $order->update($request->validated());
+
+        Storyfeed::activity()
+            ->by($request->user())
+            ->action('save', $order)
+            ->publish();
+
+        return back();
+    }
+}
 ```
 
-```php [Named Arguments]
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UpdateOrderRequest;
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Storyfeed\Facades\Storyfeed;
 
-Storyfeed::record(
-    verb: 'save',
-    object: $order,
-    actor: $request->user(),
-);
+class OrderController extends Controller
+{
+    public function update(UpdateOrderRequest $request, Order $order): RedirectResponse
+    {
+        $order->update($request->validated());
+
+        Storyfeed::record(
+            verb: 'save',
+            object: $order,
+            actor: $request->user(),
+        );
+
+        return back();
+    }
+}
 ```
 :::
 
