@@ -259,7 +259,7 @@ Standalone row components also accept
 body, time and annotations slots. The standalone file component accepts
 `labeller`; `<x-storyfeed::body>` accepts `file-labeller`.
 
-The [package README](https://github.com/storyfeed/ui/blob/main/README.md),
-[Vue README](https://github.com/storyfeed/ui/blob/main/resources/js/vue/README.md)
-and [React README](https://github.com/storyfeed/ui/blob/main/resources/js/react/README.md)
-contain the full rendering contracts.
+[Blade Components](/ui/reference/blade), [Vue Components](/ui/reference/vue),
+[React Components](/ui/reference/react) and
+[Pages, Rails and Styles](/ui/reference/options) list every component and
+option.
