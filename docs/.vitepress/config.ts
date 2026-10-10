@@ -137,7 +137,14 @@ export default defineConfig({
         if (attrs && (line[1]?.content !== 'a' || line.at(-1)?.content !== '>')) {
           throw new Error(`Inline attrs did not highlight as attributes: ${token.content}`)
         }
-        const spans = kept.filter((t) => t.content.trim() !== '' || t !== kept[0]).map((t) => {
+        // A space between attributes rides on the token before it: Vue drops
+        // a whitespace-only span's text when the page compiles the template.
+        const merged = kept.reduce((all, t) => {
+          if (t.content.trim() !== '') all.push({ ...t })
+          else if (all.length) all.at(-1)!.content += t.content
+          return all
+        }, [] as typeof kept)
+        const spans = merged.map((t) => {
           const style = Object.entries(t.htmlStyle ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
           return `<span style="${style}">${md.utils.escapeHtml(t.content)}</span>`
         })
