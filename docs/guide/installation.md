@@ -34,7 +34,10 @@ The installer publishes the configuration and migrations and creates `routes/fee
 php artisan storyfeed:install
 ```
 
-It leaves an existing feed file untouched. In an interactive terminal, it offers to run the migrations.
+It also adds `STORYFEED_SNAPSHOTS=sync` to `.env`, and a commented line to
+`.env.example`, so changes to a model's `toFeed()` method show on the next
+reload. It leaves an existing feed file untouched. In an interactive terminal,
+it offers to run the migrations.
 
 <a id="migrations"></a>
 
@@ -79,10 +82,14 @@ Relation::enforceMorphMap([
 in your application. Choose whether to enforce this requirement for your application.
 Keep aliases used by existing activities in the map.
 
+You may also list aliases in the `morph_map` option of `config/storyfeed.php`.
+Storyfeed merges them into your application's morph map at boot; see
+[Configuration](/reference/configuration#identity).
+
 To require aliases only for Feedable models, call
 `Storyfeed::requireFeedableMorphMap()` in your service provider's `boot()` method.
 It is off by default. Enable it outside production to catch unaliased models
-when publishing; the doctor also reports them, and `storyfeed:cache` (including
+when publishing; the [doctor](/reference/doctor#feedable-models) also reports them, and `storyfeed:cache` (including
 `php artisan optimize`) refuses to cache while required aliases are missing.
 
 ```php memo="app/Providers/AppServiceProvider.php" at="boot()"
