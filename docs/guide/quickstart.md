@@ -133,9 +133,17 @@ Install the Blade kit:
 composer require storyfeed/ui
 ```
 
-Register its Tailwind CSS v4 utilities:
+Install the Tailwind CSS Typography plugin, which the kit uses for formatted
+text:
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+Register the plugin and the kit's Tailwind CSS v4 utilities:
 
 ```css memo="resources/css/app.css"
+@plugin "@tailwindcss/typography";
 @source "../../vendor/storyfeed/ui/resources/views";
 ```
 
@@ -171,28 +179,6 @@ Compile the CSS with `npm run build`. The feed displays the order placement:
 
 For Inertia applications, use the [Vue](/ui/vue) or [React](/ui/react) kit.
 
-## Story Classes
+<a id="story-classes"></a>
 
-```php memo="app/Stories/OrderStory.php"
-<?php
-
-namespace App\Stories;
-
-class OrderStory
-{
-    public function place(): string
-    {
-        return ':actor placed :object with :target';
-    }
-}
-```
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderStory;
-use Storyfeed\Facades\Story;
-
-Story::resource(Order::class, OrderStory::class);
-```
-
-See [Story Classes](/basics/stories).
+To keep a model's headlines in a class of their own, see [Story Classes](/basics/stories).
