@@ -60,7 +60,10 @@ import Message from '@/components/feed/Message';
 
 export default function History({ feed }: { feed: FeedPagePayload }) {
     return (
-        <FeedProvider FEED_LINK={Link} FEED_COMPONENTS={{ 'App/Message': Message }}>
+        <FeedProvider
+            FEED_LINK={Link}
+            FEED_COMPONENTS={{ 'App/Message': Message }}
+        >
             <FeedStream page={feed} />
         </FeedProvider>
     );
@@ -250,7 +253,10 @@ customize time, bodies, annotations, media and file labels.
 
 ```blade memo="resources/views/history.blade.php"
 <x-storyfeed::feed :page="$page" :renderers="[
-    'fileLabel' => fn (array $file) => $file['mediaType'] === 'application/vnd.apple.keynote' ? 'Keynote' : null,
+    'fileLabel' => fn (array $file) => match ($file['mediaType']) {
+        'application/vnd.apple.keynote' => 'Keynote',
+        default => null,
+    },
 ]" />
 ```
 

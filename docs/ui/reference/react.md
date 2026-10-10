@@ -53,7 +53,9 @@ The render props reach activities, groups and expanded group members.
     nextCursor={nextCursor}
     loadingMore={loading}
     onLoadMore={loadOlder}
-    time={({ node, label }) => <Link href={`/activity/${node.id}`}>{label}</Link>}
+    time={({ node, label }) => (
+        <Link href={`/activity/${node.id}`}>{label}</Link>
+    )}
 />
 ```
 

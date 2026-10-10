@@ -306,7 +306,10 @@ To render the sample as images, get the role's entities and total count:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 @foreach ($group->actors() as $actor)
-    <img src="{{ $actor->media()?->get('icon.src') }}" alt="{{ $actor->label() }}">
+    <img
+        src="{{ $actor->media()?->get('icon.src') }}"
+        alt="{{ $actor->label() }}"
+    >
 @endforeach
 
 @if ($group->distinct('actors') > $group->actors()->count())
@@ -325,7 +328,9 @@ string does not use this null-field fallback.
 To style the fallback headline separately, add a class to it:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
-<div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
+<div @class(['muted' => $group->headline()->isFallback()])>
+    {{ $group->headline() }}
+</div>
 ```
 
 <FeedExample :items="[unnamed]" />
@@ -421,7 +426,9 @@ words. This component shows the attribution only when `from` has a value:
 @props(['body'])
 
 <figure {{ $attributes }}>
-    <blockquote>{{ $body['text'] }}@if ($body['truncated'])…@endif</blockquote>
+    <blockquote>
+        {{ $body['text'] }}@if ($body['truncated'])…@endif
+    </blockquote>
 
     @if ($body['from'])
         <figcaption>{{ $body['from'] }}</figcaption>

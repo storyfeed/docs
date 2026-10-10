@@ -6,8 +6,14 @@ Copy it into your app, wrap the feed in `FeedProvider`, and pass a feed page to
 
 ```bash
 php artisan storyfeed:ui react
-npm install react@^19 react-dom@^19 lucide-react micromark micromark-extension-gfm-autolink-literal micromark-extension-gfm-strikethrough micromark-extension-gfm-table micromark-extension-gfm-task-list-item sanitize-html
-npm install -D @types/react @types/react-dom @types/sanitize-html @tailwindcss/typography
+npm install react@^19 react-dom@^19 lucide-react micromark \
+    micromark-extension-gfm-autolink-literal \
+    micromark-extension-gfm-strikethrough \
+    micromark-extension-gfm-table \
+    micromark-extension-gfm-task-list-item \
+    sanitize-html
+npm install -D @types/react @types/react-dom @types/sanitize-html \
+    @tailwindcss/typography
 ```
 
 ```tsx memo="resources/js/pages/History.tsx"

@@ -5,7 +5,12 @@ Copy it into your app and pass a feed page to `FeedStream`.
 
 ```bash
 php artisan storyfeed:ui vue
-npm install lucide-vue-next micromark micromark-extension-gfm-autolink-literal micromark-extension-gfm-strikethrough micromark-extension-gfm-table micromark-extension-gfm-task-list-item sanitize-html
+npm install lucide-vue-next micromark \
+    micromark-extension-gfm-autolink-literal \
+    micromark-extension-gfm-strikethrough \
+    micromark-extension-gfm-table \
+    micromark-extension-gfm-task-list-item \
+    sanitize-html
 npm install -D @tailwindcss/typography
 ```
 

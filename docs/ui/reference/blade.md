@@ -302,7 +302,10 @@ every row and every group member.
 ```blade
 <x-storyfeed::feed :page="$page" :renderers="[
     'time' => fn ($item) => view('feed.time', ['item' => $item])->render(),
-    'fileLabel' => fn (array $file) => $file['mediaType'] === 'application/vnd.apple.keynote' ? 'Keynote' : null,
+    'fileLabel' => fn (array $file) => match ($file['mediaType']) {
+        'application/vnd.apple.keynote' => 'Keynote',
+        default => null,
+    },
 ]" />
 ```
 
