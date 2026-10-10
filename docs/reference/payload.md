@@ -95,9 +95,7 @@ See [Deleted Models](/deeper/deleted-models) for the lifecycle.
     // ISO 8601, or null when unknown
     "deleted": "1985-07-04T12:00:00.000000Z",
     // true when the trickle found the deletion
-    "approximate": false,
-    // reserved; always null
-    "removedBy": null
+    "approximate": false
   }
 }
 ```

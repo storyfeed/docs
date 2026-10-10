@@ -57,7 +57,7 @@ export function tombstone(
   over: { label?: string | null; approximate?: boolean } = {},
 ) {
   return entity('storyfeed.tombstone', id, over.label ?? null as any, null, {
-    tombstone: { formerType, deleted, approximate: over.approximate ?? false, removedBy: null },
+    tombstone: { formerType, deleted, approximate: over.approximate ?? false },
   })
 }
 
