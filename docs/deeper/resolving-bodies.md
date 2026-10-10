@@ -14,32 +14,68 @@ Return a body from `feedMedia()` to use the model's current values:
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+class MenuItem extends Model implements Feedable
 {
-    return FeedMedia::make()
-        ->body(
-            KeyValue::make()
-                ->items('Portions left', $context->model()?->portions_left),
-        );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()->label($this->name);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()
+            ->body(
+                KeyValue::make()
+                    ->items('Portions left', $context->model()?->portions_left),
+            );
+    }
 }
 ```
 
 ```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+class MenuItem extends Model implements Feedable
 {
-    return FeedMedia::make(
-        body: KeyValue::make(
-            items: ['Portions left' => $context->model()?->portions_left],
-        ),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(label: $this->name);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            body: KeyValue::make(
+                items: ['Portions left' => $context->model()?->portions_left],
+            ),
+        );
+    }
 }
 ```
 
@@ -72,40 +108,82 @@ building the body until the payload needs it:
 ::: code-group
 
 ```php [Fluent Syntax] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+class MenuItem extends Model implements Feedable
 {
-    return FeedMedia::make()->body(
-        fn (): KeyValue => KeyValue::make()
-            ->items('Portions left', $context->model()?->portions_left),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()->label($this->name);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make()->body(
+            fn (): KeyValue => KeyValue::make()
+                ->items('Portions left', $context->model()?->portions_left),
+        );
+    }
 }
 ```
 
 ```php [Named Arguments] memo="app/Models/MenuItem.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 use Storyfeed\Body\KeyValue;
+use Storyfeed\Concerns\InteractsWithFeed;
+use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 
-public static function feedMedia(FeedContext $context): ?FeedMedia
+class MenuItem extends Model implements Feedable
 {
-    return FeedMedia::make(
-        body: fn (): KeyValue => KeyValue::make(
-            items: ['Portions left' => $context->model()?->portions_left],
-        ),
-    );
+    use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(label: $this->name);
+    }
+
+    public static function feedMedia(FeedContext $context): ?FeedMedia
+    {
+        return FeedMedia::make(
+            body: fn (): KeyValue => KeyValue::make(
+                items: ['Portions left' => $context->model()?->portions_left],
+            ),
+        );
+    }
 }
 ```
 
 :::
 
-Loading models takes one query per model class on the page. If the resolver
-throws, Storyfeed reports the error once per class and omits that body. The
-activity keeps its label, link, and other bodies. Use a closure when the body
-needs current model data; bodies built from the snapshot can be passed directly.
+Loading models takes one query per model class on the page. Use a closure
+when the body needs current model data; bodies built from the snapshot can be
+passed directly.
+
+Storyfeed reports a thrown exception once per model class:
+
+| What Throws | What the Entity Loses |
+|---|---|
+| a deferred body closure | that body only; the entity keeps its label, link and other bodies |
+| `feedMedia()` itself | everything `feedMedia()` returns: its bodies, links and pictures |
 
 <a id="data-available-to-resolvers"></a>
 
@@ -115,8 +193,12 @@ The resolver runs for every entity on the page. Use `$context->data()` for
 the snapshot or `$context->model()` for the current model. The latter loads
 all models of that class on the page together. Pass relations to
 `$context->model(with: […])` to load them together too. A query such as
-`$model->orders()->count()` runs once per entity, so use a counter column on
-the model to avoid repeated queries.
+`$model->orders()->count()` runs once per entity. Pass `withCount:` instead to
+count for every model of the class in one query:
+
+```php memo="app/Models/MenuItem.php" at="feedMedia()"
+$orders = $context->model(withCount: ['orders'])?->orders_count;
+```
 
 See [Activity Content](/basics/activity-content#adding-entity-bodies) for stored
 bodies and [Feed Media](/basics/feed-media) for links, files, pictures and avatars.
