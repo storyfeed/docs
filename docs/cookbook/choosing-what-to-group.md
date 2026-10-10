@@ -121,14 +121,10 @@ what its readers need.
 
 ## Choosing the Read Mode
 
-Use `live()` for a grouped overview and `log()` where every event needs its
-own row. You can offer separate overview and history views of the same data.
-`log()` applies to the whole query.
-
-Every activity is eligible for grouping. Without `grouped()`, a group uses a
-[fallback headline](/deeper/aggregation#fallback-headlines). Setting
-`grouping.curate` to `false` still permits repeat groups. See
-[Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode).
+Offer a grouped overview and a separate history of the same data when
+readers need both. See
+[Choosing a Read Mode](/basics/reading#choosing-a-read-mode) for `live()` and
+`log()`.
 
 [`keepLatest()`](/deeper/keeping-the-latest-activity) and
 [retention](/deeper/retention) change which events remain available. Use them
