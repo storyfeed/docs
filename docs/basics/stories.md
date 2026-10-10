@@ -13,6 +13,31 @@ const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row
   verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
 </script>
 
+<a id="generating-a-story-class"></a>
+
+## Generating Story Classes
+
+```bash
+php artisan make:story
+```
+
+The command asks for the class name, then **What will this story describe?**
+
+| Choice | Laravel Analogy | What the Class Contains |
+|---|---|---|
+| One activity, published with its data | like an event | constructor data and `toFeedActivity()` |
+| Every activity for one model | like a resource controller | one declaration method per verb |
+| A single verb | like a single action controller | that verb's headlines in their own class |
+
+Each choice prints the `routes/feed.php` line to add. See
+[Commands](/reference/commands#stories) for all options.
+
+<a id="generator-options"></a>
+
+<a id="spelling-the-past-tense"></a>
+
+Select and uncomment a generated headline before compiling the definitions.
+
 ## Writing Story Classes
 
 ### Basic Story Classes
@@ -207,7 +232,7 @@ Keep a verb's method while stored activities still use it. Storyfeed resolves
 headlines from the current definitions when retrieving the feed, so removing
 the method leaves those activities without a headline:
 
-```php memo="app/Stories/OrderStory.php"
+```php memo="app/Stories/OrderStory.php" at="print()"
 // Nothing publishes `print` any more; old rows still read.
 public function print(): string
 {
@@ -307,7 +332,7 @@ injection rules.
 
 ### Request-Based Actors
 
-```php memo="app/Stories/OrderStory.php" at="Add this method and the Request import"
+```php memo="app/Stories/OrderStory.php" at="confirmPayment()"
 use Illuminate\Http\Request;
 use Storyfeed\Stories\Verb;
 
@@ -359,6 +384,7 @@ HTTP request. For callback and request scopes, see
 
 <a id="one-activity-published-with-its-data"></a>
 
+<a id="publishing-an-activity"></a>
 <a id="publishing-story-classes"></a>
 
 ## Publishing From a Story Class
@@ -567,33 +593,6 @@ The same restriction applies to all definition methods:
 | `bursts()` | its [burst window](/deeper/grouping-periods) |
 | `period()` | the calendar period for custom axes whose keys include `d` |
 | `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
-
-<a id="publishing-an-activity"></a>
-
-<a id="generating-a-story-class"></a>
-
-## Generating Story Classes
-
-```bash
-php artisan make:story
-```
-
-The command asks for the class name, then **What will this story describe?**
-
-| Choice | Laravel Analogy | What the Class Contains |
-|---|---|---|
-| One activity, published with its data | like an event | constructor data and `toFeedActivity()` |
-| Every activity for one model | like a resource controller | one declaration method per verb |
-| A single verb | like a single action controller | that verb's headlines in their own class |
-
-Each choice prints the `routes/feed.php` line to add. See
-[Commands](/reference/commands#stories) for all options.
-
-<a id="generator-options"></a>
-
-<a id="spelling-the-past-tense"></a>
-
-Select and uncomment a generated headline before compiling the definitions.
 
 <a id="generating-from-doctor-findings"></a>
 
