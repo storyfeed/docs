@@ -40,9 +40,6 @@ and pagination. For ready-made components, use [Storyfeed UI](/ui/installation).
 <a id="customizing-the-views"></a>
 <a id="customizing-the-styles"></a>
 
-Storyfeed UI owns [installation](/ui/installation), [Blade usage and published views](/ui/blade),
-and [kit customization](/ui/customizing).
-
 <a id="building-your-own"></a>
 
 ## Building Your Own Components
@@ -119,7 +116,7 @@ Omit elements whose corresponding fields are empty.
 
 To render a headline in Blade, echo the value returned by the `headline` method:
 
-```blade
+```blade memo="resources/views/components/feed/activity.blade.php"
 {{ $activity->headline() }}
 ```
 
@@ -139,7 +136,7 @@ See [Links in a Headline](/reference/payload#headline-links).
 
 Use the `toString` method to return plain text for a page title or notification:
 
-```blade
+```blade memo="A view that shows one activity"
 <title>{{ $activity->headline()->toString() }}</title>
 ```
 
@@ -150,7 +147,7 @@ Use the `toString` method to return plain text for a page title or notification:
 Each role method returns a `Storyfeed\Support\Entity`, or `null` for an empty
 role. Echo the entity to display its label, linked when it has a URL:
 
-```blade
+```blade memo="resources/views/components/feed/activity.blade.php"
 {{ $activity->object() }}
 ```
 
@@ -165,7 +162,7 @@ Use the `label`, `url`, and `type` methods to access individual values.
 To customize entity markup, pass a closure to the `toHtml` method. It receives
 each `Entity` and returns HTML. Escape values included in that HTML:
 
-```blade
+```blade memo="resources/views/components/feed/activity.blade.php"
 @use('Storyfeed\Support\Entity')
 
 {!! $activity->headline()->toHtml(fn (Entity $entity) => '<strong>'.$entity->toHtml().'</strong>') !!}
@@ -294,7 +291,7 @@ displays the group's activity count.
 
 To render the sample as images, get the role's entities and total count:
 
-```blade
+```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 @foreach ($group->actors() as $actor)
     <img src="{{ $actor->media()?->get('icon.src') }}" alt="{{ $actor->label() }}">
 @endforeach
@@ -312,8 +309,7 @@ returns a `Headline` value: `isFallback()` is `true`, and `toString()` returns
 the translated count, such as “3 activities”. An explicitly returned empty
 string does not use this null-field fallback.
 
-The custom component above opens its supplied members through the conditional
-`open` attribute. You can style its fallback headline separately:
+To style the fallback headline separately, add a class to it:
 
 ```blade memo="resources/views/components/feed/group.blade.php" at="<article>"
 <div @class(['muted' => $group->headline()->isFallback()])>{{ $group->headline() }}</div>
@@ -325,23 +321,16 @@ See [Fallback Headlines](/deeper/aggregation#fallback-headlines).
 
 <a id="digest-rows"></a>
 
-See [Live](/basics/reading#live) for one-action groups.
-
 <a id="activity-data-and-bodies"></a>
 
 ### Rendering Content
 
 <a id="activity-data"></a>
 
-#### Quoted Text
-
-Render quoted words as an [`Excerpt` body](/basics/activity-content#adding-quoted-text).
-The body component and Excerpt component below handle its text and optional
-attribution. Show the attribution when `from` has a value; leave it out when
-the headline already names the source.
-
 The `data` method returns values stored with the activity. Choose which values
 to display.
+
+<a id="quoted-text"></a>
 
 #### Bodies
 
@@ -411,6 +400,9 @@ the placeholder when a value is null, or an empty string when both are null:
     </dl>
   </template>
 </FeedExample>
+
+An [`Excerpt` body](/basics/activity-content#adding-quoted-text) holds quoted
+words. This component shows the attribution only when `from` has a value:
 
 ```blade memo="resources/views/components/feed/body/excerpt.blade.php"
 @props(['body'])
