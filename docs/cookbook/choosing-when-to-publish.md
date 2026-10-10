@@ -146,7 +146,7 @@ or has no actor.
 ## Using One Verb per Transition
 
 Use a separate verb for each transition so each has its own headline and
-[`keepLatest()`](/cookbook/repeating-activities#keeping-the-latest-occurrence)
+[`keepLatest()`](/deeper/keeping-the-latest-activity#replacing-earlier-activities)
 can keep its latest activity. A single `status` verb with the state in `data`
 does not distinguish transitions this way.
 

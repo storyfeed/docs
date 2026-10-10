@@ -28,118 +28,22 @@ whether to keep every activity or the latest for each verb:
 
 ### Keeping Every Occurrence
 
-To keep the full timeline, publish the transition's verb in the controller
-on each request:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/OrderTransitionController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderTransitionController extends Controller
-{
-    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)
-    //     ->whereIn('verb', ['place', 'confirm'])
-    public function __invoke(
-        Request $request,
-        Order $order,
-        string $verb,
-    ): RedirectResponse {
-        $order->update(['status' => $verb]);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action($verb, $order)
-            ->to($verb === 'place' ? $order->shop : null)
-            ->publish();
-
-        return back();
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/OrderTransitionController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class OrderTransitionController extends Controller
-{
-    // Route::post('orders/{order}/{verb}', OrderTransitionController::class)
-    //     ->whereIn('verb', ['place', 'confirm'])
-    public function __invoke(
-        Request $request,
-        Order $order,
-        string $verb,
-    ): RedirectResponse {
-        $order->update(['status' => $verb]);
-
-        Storyfeed::record(
-            verb: $verb,
-            object: $order,
-            actor: $request->user(),
-            target: $verb === 'place' ? $order->shop : null,
-        );
-
-        return back();
-    }
-}
-```
-:::
-
-Retrieve the order's timeline in log mode:
-
-```php memo="app/Http/Controllers/OrderController.php" at="show()"
-use Storyfeed\Facades\Storyfeed;
-
-$timeline = Storyfeed::feed()->involving($order)->log()->get();
-```
+Publish the verb on each request, with no policy on its definition. The
+order's log keeps every placement:
 
 <FeedExample :items="timeline" />
 
 ### Keeping the Latest Occurrence
 
-Call `keepLatest()` on each verb to replace its earlier activities. The
-controller publishes as before; then retrieve the feed:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->keepLatest(); // removes earlier placements from every feed
-
-Story::for(Order::class)->verb('confirm')
-    ->headline(':actor confirmed :object')
-    ->keepLatest();
-```
-
-```php memo="app/Http/Controllers/OrderController.php" at="show()"
-use Storyfeed\Facades\Storyfeed;
-
-$latest = Storyfeed::feed()->involving($order)->log()->get();
-```
+Call `keepLatest()` on each verb's definition. The order's log keeps the
+latest activity for each verb:
 
 <FeedExample :items="latest" />
-
-For this order, the feed keeps the latest activity for each verb.
 
 Replaced activities disappear from every feed, including `log()`. Keep every
 activity if any page needs the full timeline.
 
 <a id="matching-activities"></a>
 
-See [Keeping the Latest Activity](/deeper/keeping-the-latest-activity) for
-matching roles and time limits.
+See [Keeping the Latest Activity](/deeper/keeping-the-latest-activity#replacing-earlier-activities)
+for the declaration, matching roles and time limits.
