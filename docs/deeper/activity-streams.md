@@ -4,10 +4,10 @@
 
 Storyfeed can serve each activity as a
 [W3C Activity Streams 2.0](https://www.w3.org/TR/activitystreams-core/) JSON-LD
-document, using AS2 names for all seven [roles](/basics/recording#roles).
+document, using AS2 names for every [role](/basics/recording#roles).
 
 The Activity Streams document is separate from the normal
-[feed payload](/basics/the-payload).
+[feed payload](/basics/reading#the-payload).
 
 ## Serving Activity Documents
 
@@ -31,6 +31,10 @@ Enable the read-only route in `config/storyfeed.php`:
 
 Add authentication or throttling to `middleware`.
 
+The route responds with `application/activity+json`. A request whose `Accept`
+header allows none of `application/activity+json`, `application/ld+json`,
+`application/json` or `*/*` receives a 406 response.
+
 > [!WARNING]
 > The prefix is part of every activity's ID. Choose it before sharing
 > documents, since changing it changes all their IDs.
@@ -43,19 +47,39 @@ Use `CollectionSerializer::collection()` to convert cursor-paginated
 activities into an `OrderedCollection` or an `OrderedCollectionPage` with a
 `next` link. Your application selects the activities and serves the route:
 
-```php memo="A controller that serves the collection"
+```php memo="app/Http/Controllers/ShopActivityController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Shop;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Storyfeed\Models\Activity;
 use Storyfeed\Serialization\CollectionSerializer;
 
-$page = Activity::query()
-    ->published()
-    ->involving($project) // without a scope, this is every activity
-    ->orderBy('published_at', 'desc')
-    ->orderBy('id', 'desc')
-    ->cursorPaginate(20);
+class ShopActivityController extends Controller
+{
+    public function __invoke(Request $request, Shop $shop, CollectionSerializer $serializer): JsonResponse
+    {
+        $page = Activity::query()
+            ->published()
+            ->involving($shop) // without a scope, this is every activity
+            ->orderBy('published_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->cursorPaginate(20);
 
-$document = app(CollectionSerializer::class)
-    ->collection($page, route('projects.activity', $project), $request->query('cursor'));
+        $document = $serializer->collection(
+            $page,
+            route('shops.activity', $shop),
+            $request->query('cursor'),
+        );
+
+        return response()
+            ->json($document, options: JSON_UNESCAPED_SLASHES)
+            ->header('Content-Type', 'application/activity+json');
+    }
+}
 ```
 
 Pass the collection's absolute URL as the second argument and the incoming
@@ -116,23 +140,85 @@ enum OrderActivity: string implements FeedVerb
 
 | Field | Effect |
 |---|---|
-| `type` and deletion rules | The mapping sets the document's type. `Delete`, `Remove`, `Undo` and `Reject` have no constitutive roles by default; other types use the object. Explicit rules can override this; see [Deleted Models](/deeper/deleted-models). |
-| `sf:verb` | Without an app or built-in AS2 mapping, the type is `Activity` and `sf:verb` holds the verb. The JSON-LD context, `https://ns.storyfeed.dev`, defines it. Intransitive types also fall back to `Activity` when an object is present. |
+| `type` and deletion rules | The mapping sets the document's type. Without an app or built-in AS2 mapping, the type is `Activity`. Intransitive types also fall back to `Activity` when an object is present. `Delete`, `Remove`, `Undo` and `Reject` have no constitutive roles by default; other types use the object. Explicit rules can override this; see [Deleted Models](/deeper/deleted-models). |
+| `sf:verb` | Always holds the verb. The JSON-LD context, `https://ns.storyfeed.dev`, defines it. |
+| `summary` | The activity's headline as one HTML-escaped sentence. Omitted when the verb has no headline. |
+| `startTime`, `endTime` | The activity's `starts_at` and `ends_at` in UTC, each only when recorded. |
+| `duration` | The time from `startTime` to `endTime` in days and time, such as `P1DT2H`. Only when both are recorded. |
 | composite `object` | Serializes as `OrderedCollection`. |
 | entity media | [Media](/reference/payload#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. |
 
 ### Type Overrides
 
-On a Story class, import `Storyfeed\ActivityStreams\ActivityType` and set `$type`:
+On a Story class, set `$type`:
 
 ```php memo="app/Stories/OrderWasPlaced.php"
-public ActivityType|string|null $type = ActivityType::Create;
+<?php
+
+namespace App\Stories;
+
+use App\Models\Order;
+use App\Models\User;
+use Storyfeed\ActivityStreams\ActivityType;
+use Storyfeed\PendingActivity;
+use Storyfeed\Stories\Story;
+
+class OrderWasPlaced extends Story
+{
+    public ActivityType|string|null $type = ActivityType::Create;
+
+    public function __construct(
+        public Order $order,
+        public User $customer,
+    ) {}
+
+    public function toFeedActivity(): ?PendingActivity
+    {
+        return $this->activity($this->order)
+            ->by($this->customer)
+            ->to($this->order->shop);
+    }
+
+    public function headline(): string
+    {
+        return ':actor placed :object with :target';
+    }
+}
 ```
 
-On a model, implement `Storyfeed\Contracts\HasActivityStreamsType`.
+### Entity Object Types
+
+A model declares the AS2 object type its entities serialize as by
+implementing `Storyfeed\Contracts\HasActivityStreamsType`:
+
+```php memo="app/Models/Shop.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Storyfeed\ActivityStreams\ObjectType;
+use Storyfeed\Contracts\HasActivityStreamsType;
+
+class Shop extends Model implements HasActivityStreamsType
+{
+    public static function activityStreamsType(): ObjectType|string
+    {
+        return ObjectType::Organization;
+    }
+}
+```
 
 ## Reading Activity Documents
 
-`Storyfeed\Serialization\Reader::activity()` parses a Storyfeed document,
-preserving its `uid`, verb, `type`, roles, and `published_at` to the whole
-second. Other document properties are not returned.
+The `Reader` parses a Storyfeed document back into activity attributes:
+
+```php memo="Where you read a document: a controller, a job, a test"
+use Storyfeed\Serialization\Reader;
+
+$attributes = app(Reader::class)->activity($document);
+```
+
+It returns the `uid`, verb, `type` and roles, and `published_at`, `starts_at`
+and `ends_at` to the whole second. A role the document lacks is `null`. Other
+document properties, such as `summary`, are not returned.
