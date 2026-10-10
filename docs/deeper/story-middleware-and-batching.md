@@ -265,28 +265,15 @@ class UseServiceActor
 
 Call `hasActor()` before supplying an actor; it also returns `true` for explicit
 anonymity. Call `has('context')` before supplying context. These checks preserve
-[actor and context precedence](#resolving-role-precedence).
+[actor and context precedence](/deeper/activity-scopes#role-precedence).
 Declare party names in the [party list](/deeper/parties#declaring-parties),
 because the `by` method does not check that list.
 
-## Resolving Role Precedence
+<a id="resolving-role-precedence"></a>
 
-Storyfeed resolves each role from the first applicable source:
-
-| Priority | Actor | Context |
-|---|---|---|
-| Call site | `->by($user)` or explicit anonymity | `->context($model)` |
-| Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
-| [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
-| Verb | the [verb's actor](/basics/stories#request-based-actors) | none |
-| Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
-| Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
-
-A custom resolver replaces the authenticated user as a source. If it returns
-`null`, the fallback party applies. Explicit anonymity records no actor.
-Without a resolved actor, the activity is anonymous and cannot join a
-[batch](/deeper/story-middleware-and-batching#batch-windows). If no context is
-supplied, that role remains empty.
+A role supplied by story middleware gives way to the call site and any scope;
+see [Role Precedence](/deeper/activity-scopes#role-precedence) for the full
+order.
 
 <a id="caching-closure-middleware"></a>
 <a id="inspecting-middleware"></a>

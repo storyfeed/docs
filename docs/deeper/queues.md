@@ -210,7 +210,7 @@ declaration. Models must still be restored when you use `snapshotNow()`.
 By default, a queued activity uses the user authenticated when it was queued
 and any `Storyfeed::actor()` or `Storyfeed::context()` scope active then.
 See [Carrying Roles Into Queued Jobs](/deeper/activity-scopes#passing-scopes-to-queued-jobs)
-for inherited scopes and [Role Precedence](/deeper/story-middleware-and-batching#resolving-role-precedence)
+for inherited scopes and [Role Precedence](/deeper/activity-scopes#role-precedence)
 for the full order.
 
 <a id="publishing-from-your-own-job"></a>

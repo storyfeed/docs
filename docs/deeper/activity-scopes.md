@@ -228,13 +228,26 @@ explicit actor use `System`.
 
 ## Role Precedence
 
-An actor or context set on the activity takes precedence over the corresponding
-scope. An explicit `by(null)` records no actor even inside an actor scope.
-Without an explicit value, the activity uses the scoped role; a nested scope
-applies only for its callback.
+Storyfeed resolves each role from the first applicable source:
 
-See [Resolving Role Precedence](/deeper/story-middleware-and-batching#resolving-role-precedence)
-for the full order, including middleware, verb actors, and default resolvers.
+| Priority | Actor | Context |
+|---|---|---|
+| Call site | `->by($user)` or explicit anonymity | `->context($model)` |
+| Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
+| [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
+| Verb | the [verb's actor](/basics/stories#request-based-actors) | none |
+| Resolver or user | a custom [`actor_resolver`](/deeper/parties#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
+| Fallback | [`parties.fallback`](/deeper/parties#setting-a-default-actor) | none |
+
+An actor or context set on the activity takes precedence over the corresponding
+scope. An explicit `by(null)` records no actor even inside an actor scope. A
+nested scope applies only for its callback.
+
+A custom resolver replaces the authenticated user as a source. If it returns
+`null`, the fallback party applies. Explicit anonymity records no actor.
+Without a resolved actor, the activity is anonymous and cannot join a
+[batch](/deeper/story-middleware-and-batching#batch-windows). If no context is
+supplied, that role remains empty.
 
 <a id="passing-scopes-to-queued-jobs"></a>
 

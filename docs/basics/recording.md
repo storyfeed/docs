@@ -269,7 +269,7 @@ Storyfeed::record(
 With the default configuration and no scoped or verb-specific actor, omitting
 `by` records the authenticated user, or no actor when nobody is signed in.
 Other sources can supply the actor; see
-[Role Precedence](/deeper/story-middleware-and-batching#resolving-role-precedence).
+[Role Precedence](/deeper/activity-scopes#role-precedence).
 
 Use `by(null)` to bypass default actor selection explicitly. An
 [anonymous activity](/deeper/parties#recording-anonymous-activities) has no
