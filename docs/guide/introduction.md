@@ -37,9 +37,6 @@ An activity records an action and the entities involved. Each entity has a role:
 The **actor** is who did it. The **verb** is what happened. The **object** is
 what it was done to, and the **target** is what it was aimed at.
 
-> **{{ role.customer.label }}** *(actor)* **placed** *(verb)* **{{ scene.order.object.label }}** *(object)*
-> with **{{ role.shop.label }}** *(target)*
-
 <a id="different-ways-to-render-the-same-activity"></a>
 
 ### Different Headlines for the Same Activity
@@ -69,8 +66,9 @@ A new order, **{{ scene.order.object.label }}** *(object)*, **came in** *(headli
 <a id="other-examples"></a>
 
 <a id="activities-in-other-apps"></a>
+<a id="examples-from-other-apps"></a>
 
-### Examples From Other Apps
+### Roles in Other Domains
 
 <FeedExample :items="[scene.otherApps.task]">
 
