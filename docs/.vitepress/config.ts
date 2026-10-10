@@ -227,6 +227,8 @@ export default defineConfig({
           { text: 'React', link: '/ui/react' },
           { text: 'Customizing the Kits', link: '/ui/customizing' },
           { text: 'Custom Rendering', link: '/ui/custom-rendering' },
+          { text: 'Blade Components', link: '/ui/reference/blade' },
+          { text: 'Pages, Rails and Styles', link: '/ui/reference/options' },
         ],
       },
       {
