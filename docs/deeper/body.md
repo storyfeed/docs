@@ -224,7 +224,9 @@ class Attachment extends FeedBody
 `make()` takes the constructor's arguments, so the chain and named arguments
 build the same body:
 
-```php
+```php memo="A model's toFeed() method"
+use App\Feed\Attachment;
+
 Attachment::make()->size($this->bytes)->mediaType('application/pdf');
 Attachment::make(size: $this->bytes, mediaType: 'application/pdf');
 ```
