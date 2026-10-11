@@ -298,8 +298,8 @@ import Attachment from '@/components/feed/Attachment';
 
 Blade finds the view by the type's name, segment by segment, under
 `resources/views/vendor/storyfeed/components/body`. A Vue renderer receives
-`payload`, `entityLabel`, `entityUrl` and `entityMedia` props; a React renderer
-receives `BodyProps`. A renderer registered for one of Storyfeed's own types
+`payload`, `entityLabel`, `entityUrl`, `entityLink` and `entityMedia` props; a
+React renderer receives `BodyProps`. A renderer registered for one of Storyfeed's own types
 replaces the kit's. A body type with no renderer draws its `$fallback` line, or
 nothing.
 
