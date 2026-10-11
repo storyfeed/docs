@@ -34,7 +34,7 @@ interface Feedable
 
 | Method | Runs At | Returns |
 |---|---|---|
-| `toFeed()` | publication and every model save | snapshot labels, data, and bodies |
+| `toFeed()` | publication and every model save; each read of a [composed feed](/basics/composing-feeds#composing-from-feedable-models) | snapshot labels, data, and bodies |
 | `feedMedia()` | feed retrieval, called statically with snapshot data | current links and media |
 
 `InteractsWithFeed` implements both methods. You may use its defaults or
