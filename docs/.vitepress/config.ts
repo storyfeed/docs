@@ -280,6 +280,7 @@ export default defineConfig({
         text: 'Retrieving and Rendering',
         items: [
           { text: 'Retrieving Feeds', link: '/basics/retrieving-feeds' },
+          { text: 'Composing Feeds', link: '/basics/composing-feeds' },
           { text: 'Named Feeds', link: '/basics/named-feeds' },
           { text: 'Feed Sources', link: '/basics/feed-sources' },
         ],

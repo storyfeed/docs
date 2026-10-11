@@ -180,7 +180,7 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 #### Timestamps
 
 The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance,
-or `null` for a [dateless entry](/basics/feed-sources#dateless-entries):
+or `null` for a [dateless entry](/basics/composing-feeds#dateless-entries):
 
 ```blade memo="resources/views/components/feed/time.blade.php"
 @props(['at'])
