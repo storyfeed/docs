@@ -7,9 +7,9 @@ Set retention per verb to control how long activities remain in the feed.
 no remaining activity uses.
 
 <script setup>
-import { scene, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
+import { scene, live, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
 const views = scene.deeper.retention.views
-const before = liveOf(views)[0]
+const before = live('deeper.retention.views')[0]
 const after = liveOf(views.filter(row => Date.parse(row.published_at) >= WORLD_ANCHOR - 60 * 60 * 1000))[0]
 </script>
 

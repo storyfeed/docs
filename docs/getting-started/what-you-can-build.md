@@ -1,7 +1,7 @@
 # What You Can Build
 
 <script setup>
-import { scene, everything, logOf, liveOf } from '../.vitepress/theme/world'
+import { scene, logOf, live } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const withKeyValue = { ...content.confirmed,
@@ -14,8 +14,8 @@ const withKeyValue = { ...content.confirmed,
 
 const paidByWebhook = logOf([scene.cookbook.actorless.paid])
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)
-const live = liveOf(everything())
-const progress = ['j84', 'a-confirm', 'a-ready'].map((id) => everything().find((node) => node.id === id))
+const wholeWorld = live('everything')
+const progress = scene.progress
 </script>
 
 <a id="one-activity"></a>
@@ -161,4 +161,4 @@ Route::get('/activity', function () {
 });
 ```
 
-<FeedExample :items="live" days height="420" />
+<FeedExample :items="wholeWorld" days height="420" />

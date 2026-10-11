@@ -14,7 +14,7 @@ import { PACKS } from './worlds'
  * Pages speak in ROLES and SCENES (worlds/contract.ts):
  *
  *   {{ role.customer.label }} · <FeedExample :items="[scene.order]" />
- *   <FeedExample :items="liveOf(scene.glance)" days />
+ *   <FeedExample :items="live('glance')" days />
  *
  * and never name a pack's people or pick its rows by id, so swapping the pack
  * swaps every example on the site.
@@ -68,8 +68,8 @@ export const BASE_VERBS: Record<string, VerbWording> = {
   approve:  { glyph: 'circle-check', headline: ':actor approved :object' },
   star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :objects' },
   complete: { glyph: 'square-check', headline: ':actor completed :object on :target',
-              repeat: ':actor completed :count tasks on :target', composite: ':actor completed :count tasks on :target' },
-  delete:   { glyph: 'circle-x', headline: ':actor deleted :object' },
+              repeat: ':actor completed :count tasks on :target', composite: ':actor completed :count tasks' },
+  delete:   { glyph: 'circle-x', headline: ':actor deleted :object from :target' },
   upload:   { glyph: 'image', headline: ':actor uploaded :object to :target', repeat: ':actor uploaded :count photos to :target' },
 }
 
@@ -140,7 +140,11 @@ const AXES: { axis: Axis; key: (r: any) => string | null; eligible: (members: an
     eligible: () => true },
 ]
 
-/** Chronological sample data, using core's 15-minute gap and four-hour ceiling. */
+/**
+ * Live, folded here, for the rows a page still picks by hand: core's 15-minute
+ * gap and four-hour ceiling. A named scene reads core's own Live with
+ * `live()`; this goes once every example is a named scene (storyfeed/docs#41).
+ */
 export function liveOf(rows: any[], verbs = VERBS, within = 15 * 60_000, ceiling = 4 * 3_600_000) {
   const chronological = [...rows].sort((a, b) => a.published_at.localeCompare(b.published_at) || String(a.id).localeCompare(String(b.id)))
   const clusters = AXES.map(({ key }) => {
@@ -208,6 +212,35 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     }
   }
 
+  // A node core read in Live, moved onto the anchor as nodeOf() moves a row's;
+  // a group's members are rows, so each takes its row's own headline too.
+  const shift = (at: string) => micro(Date.parse(at) + (anchor - canonicalNow))
+  const reanchored = (node: any): any => node.kind === 'group'
+    ? { ...node, published_at: shift(node.published_at), children: node.children.map(reanchored) }
+    : { ...node, published_at: shift(node.published_at), headline_template: byId.get(node.id)?.headline ?? node.headline_template }
+
+  /**
+   * A named scene as core's Live reads it (`npm run payloads`), by its path
+   * under `scene` (`'busyPlace'`, `'deeper.aggregation.orders'`) or
+   * `'everything'`. Read when a page asks, so a scene added to the pack can be
+   * generated before anything reads it.
+   */
+  const live = (path: string) => {
+    const nodes = p.generated.live[path === 'everything' ? path : `scene.${path}`]
+    if (!nodes) throw new Error(`Pack "${p.name}" has no Live read of "${path}". Run \`npm run payloads\`.`)
+    return nodes.map(reanchored)
+  }
+
+  /** The rows a page would build by hand, recorded for real by core. */
+  const variants = {
+    /** `scene.cookbook.deletion` told with `delete`, its object deleted after: Log, with the tombstone. */
+    get deletion() { return reanchored(p.generated.variants.deletion) },
+    /** `scene.deeper.composites.tasks` published as one composite activity, in Live and in Log. */
+    get composite() {
+      return { live: p.generated.variants.composite.live.map(reanchored), log: p.generated.variants.composite.log.map(reanchored) }
+    },
+  }
+
   const one = (id: string) => {
     const r = byId.get(id)
     if (!r) throw new Error(`Pack "${p.name}" has no row "${id}"`)
@@ -235,6 +268,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
       deletion: one(s.cookbook.deletion),
       discussion: one(s.cookbook.discussion),
       grouped: { repeat: many(s.cookbook.grouped.repeat), actors: many(s.cookbook.grouped.actors) },
+      placements: many(s.cookbook.placements),
     },
     deeper: {
       body: { progress: one(deeper.body.progress) },
@@ -261,6 +295,10 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     repeats: s.repeats.map(many),
     /** One row from long ago. */
     distant: one(s.distant),
+    /** One order's progress: placed, confirmed, ready. */
+    progress: many(s.progress),
+    /** One row with each glyph intent the docs register: `success`, then `pending`. */
+    intents: many(s.intents),
     /** Jasper's rows. */
     cameo: many(s.cameo),
     /** The short, wide feed: every scene above that belongs in one, and the rows around them. Newest first. */
@@ -293,7 +331,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const everything = () => inCoreOrder(p.rows.filter((r) => localMs(r.at) <= canonicalNow).map(nodeOf))
 
   return {
-    pack: p, anchor, scene, role: p.roles, everything, nodeOf,
+    pack: p, anchor, scene, role: p.roles, everything, nodeOf, live, variants,
     liveOf: (rows: any[]) => liveOf(rows, verbs),
   }
 }
@@ -306,6 +344,10 @@ export const scene = active.scene
 export const role = active.role
 /** The whole pack, for the long feeds later in the docs. */
 export const everything = active.everything
+/** A named scene as core's Live reads it: `live('deeper.aggregation.orders')`. */
+export const live = active.live
+/** The rows a page would build by hand, recorded for real: `variants.deletion`, `variants.composite`. */
+export const variants = active.variants
 
 
 /**

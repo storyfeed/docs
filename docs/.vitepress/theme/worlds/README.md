@@ -107,8 +107,15 @@ files beside the pack: `payloads.json`, every row's Log node, and
 composite. A row's own `headline` is laid over core's node in world.ts. Edit a
 row, then run `npm run payloads` with `STORYFEED_CORE` pointing at a
 storyfeed/storyfeed checkout; the drift guard fails the build when either file
-is stale, and CI regenerates both against core's main. `liveOf()` still folds
-Live groups for the subsets a page passes it, checked against `scenes.json`.
+is stale, and CI regenerates both against core's main.
+
+A page reads a named scene's Live with `live('<path under scene>')`, such as
+`live('deeper.aggregation.orders')`, or `live('everything')`, and the real
+deletion and composite with `variants.deletion` and `variants.composite`. Any
+list of two or more rows under `scene` is read in Live, so a new scene needs
+only its row ids and `npm run payloads`. `liveOf()` still folds Live groups
+for the subsets a page builds by hand, checked against `scenes.json`, until
+every example is a named scene.
 
 ## The anchor
 

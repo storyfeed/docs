@@ -1,6 +1,7 @@
 import { entity, user, note } from '../../samples'
 import { row, type Row, type VerbWording, type WorldPack } from '../contract'
 import payloads from './payloads.json' with { type: 'json' }
+import generated from './scenes.json' with { type: 'json' }
 import { CAST, VENUES, FARE, HOLDINGS, TASKS, TICKETS, WORLD_NOTES, SERVICES, APP_CONTENT,
   DOCUMENT_WORKFLOW, DELEGATED_WRITES, EMAIL_LIFECYCLE, TASK_NOTES, TICKET_REPORTS, PULL_TITLES, DOCUMENT_FILES, ENTITY_CONTENT, PICKUP_PROGRESS, RECORD_TITLES, RECORD_TEXT } from './manifest'
 
@@ -286,9 +287,9 @@ const menuPhoto = entity('photo', '3201', APP_CONTENT.photo, '/photos/3201', { m
 /** This pack's own verbs. The rest (place, ask, pay, merge…) are the engine's. */
 const VERBS: Record<string, VerbWording> = {
   announce: { glyph: 'megaphone', headline: ':actor published :object' },
-  add: { glyph: 'ice-cream-cone', headline: ':actor added a menu item, :object' },
+  add: { glyph: 'ice-cream-cone', headline: ':actor added a menu item, :object', repeat: ':actor added :count menu items' },
   reprice: { glyph: 'tag', headline: ':actor changed the price of :object' },
-  remove: { glyph: 'circle-x', headline: ':actor removed :object from :target' },
+  remove: { glyph: 'circle-x', headline: ':actor removed :object from :target', object: ':actor removed :count parts from :object' },
   expire: { glyph: 'circle-x', headline: ':object expired at :target' },
   reply: { glyph: 'message-circle', headline: ':actor replied about :object' },
   // The billing app records both orders and invoices.
@@ -738,6 +739,7 @@ export default {
   name: 'stranger-things',
   canonicalNow: '1985-07-04T19:00:00Z',
   payloads,
+  generated,
   sources: SOURCES,
   verbs: VERBS,
   rows: ROWS,
@@ -764,6 +766,7 @@ export default {
       deletion: 'cookbook-removed',
       discussion: 'cookbook-reply',
       grouped: { repeat: ['cookbook-repeat1', 'cookbook-repeat2', 'cookbook-repeat3'], actors: ['cookbook-crowd1', 'cookbook-crowd2', 'cookbook-crowd3'] },
+      placements: ['j84', 'cookbook-replaced'],
     },
     deeper: {
       body: { progress: 'deeper-pickup-progress' },
@@ -784,6 +787,8 @@ export default {
     busyPlace: ['k33', 'k34', 'k38'],
     repeats: [['j36', 'j37'], ['k41a', 'k41b', 'k41c'], ['k36a', 'k36b', 'k36c'], ['k22', 'k22a', 'k22b']],
     distant: 'w10',
+    progress: ['j84', 'a-confirm', 'a-ready'],
+    intents: ['deeper-paid', 'a-item-list'],
     cameo: ['k35'],
     around: ['k42', 'k31', 'k09', 'j42', 'j31'],
     guide: {

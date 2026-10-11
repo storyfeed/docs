@@ -3168,6 +3168,228 @@
         }
       }
     ],
+    "scene.cookbook.placements": [
+      {
+        "kind": "activity",
+        "id": "cookbook-replaced",
+        "verb": "place",
+        "published_at": "1985-07-02T12:30:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor placed :object with :target",
+        "headline": null,
+        "glyph": "shopping-bag",
+        "glyph_intent": "pending",
+        "actor": {
+          "type": "user",
+          "id": "113",
+          "label": "Erica Sinclair",
+          "link": {
+            "href": "/users/113",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/scout.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1035",
+          "label": "Order #1035",
+          "link": {
+            "href": "/orders/1035",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      },
+      {
+        "kind": "activity",
+        "id": "j84",
+        "verb": "place",
+        "published_at": "1985-07-02T12:00:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor placed :object with :target",
+        "headline": null,
+        "glyph": "shopping-bag",
+        "glyph_intent": "pending",
+        "actor": {
+          "type": "user",
+          "id": "113",
+          "label": "Erica Sinclair",
+          "link": {
+            "href": "/users/113",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/scout.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1035",
+          "label": "Order #1035",
+          "link": {
+            "href": "/orders/1035",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      }
+    ],
     "scene.deeper.aggregation.orders": [
       {
         "kind": "group",
@@ -4727,7 +4949,7 @@
         "count": 2,
         "verb": "add",
         "published_at": "1985-07-04T16:01:00.000000Z",
-        "headline_template": ":actor added a menu item, items",
+        "headline_template": ":actor added :count menu items",
         "headline": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
@@ -10906,6 +11128,567 @@
           "generators": 0,
           "featured": 0
         }
+      }
+    ],
+    "scene.progress": [
+      {
+        "kind": "activity",
+        "id": "a-ready",
+        "verb": "ready",
+        "published_at": "1985-07-02T12:06:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor marked :object ready",
+        "headline": null,
+        "glyph": "circle-check",
+        "glyph_intent": null,
+        "actor": {
+          "type": "user",
+          "id": "101",
+          "label": "Steve Harrington",
+          "link": {
+            "href": "/users/101",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/scooper.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1035",
+          "label": "Order #1035",
+          "link": {
+            "href": "/orders/1035",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      },
+      {
+        "kind": "activity",
+        "id": "a-confirm",
+        "verb": "confirm",
+        "published_at": "1985-07-02T12:03:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor confirmed :object",
+        "headline": null,
+        "glyph": "circle-check",
+        "glyph_intent": null,
+        "actor": {
+          "type": "user",
+          "id": "101",
+          "label": "Steve Harrington",
+          "link": {
+            "href": "/users/101",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/scooper.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1035",
+          "label": "Order #1035",
+          "link": {
+            "href": "/orders/1035",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      },
+      {
+        "kind": "activity",
+        "id": "j84",
+        "verb": "place",
+        "published_at": "1985-07-02T12:00:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor placed :object with :target",
+        "headline": null,
+        "glyph": "shopping-bag",
+        "glyph_intent": "pending",
+        "actor": {
+          "type": "user",
+          "id": "113",
+          "label": "Erica Sinclair",
+          "link": {
+            "href": "/users/113",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/scout.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1035",
+          "label": "Order #1035",
+          "link": {
+            "href": "/orders/1035",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      }
+    ],
+    "scene.intents": [
+      {
+        "kind": "activity",
+        "id": "a-item-list",
+        "verb": "place",
+        "published_at": "1985-07-04T18:00:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor placed :object with :target",
+        "headline": null,
+        "glyph": "shopping-bag",
+        "glyph_intent": "pending",
+        "actor": {
+          "type": "user",
+          "id": "115",
+          "label": "Karen Wheeler",
+          "link": {
+            "href": "/users/115",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": {
+              "src": "/media/worlds/stranger-things/avatars/poolside.jpg",
+              "mediaType": "image/jpeg",
+              "width": 256,
+              "height": 256,
+              "alt": null
+            },
+            "image": null,
+            "preview": null,
+            "initials": null,
+            "color": null,
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "1042",
+          "label": "Order #1042",
+          "link": {
+            "href": "/orders/1042",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O1",
+            "color": "#4d7c0f",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/ItemList",
+              "$v": 3,
+              "title": "Order #1042 items",
+              "items": [
+                {
+                  "label": "a hot dog",
+                  "href": "/menu/hot-dog",
+                  "modal": false,
+                  "attributes": []
+                },
+                {
+                  "label": "a corn dog",
+                  "href": "/menu/corn-dog",
+                  "modal": false,
+                  "attributes": []
+                },
+                "a pretzel"
+              ],
+              "totalItems": 5,
+              "more": {
+                "label": "Order #1042",
+                "href": "/orders/1042",
+                "modal": false,
+                "attributes": []
+              }
+            }
+          ],
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "106",
+          "label": "the Fun Fair",
+          "link": {
+            "href": "/venues/fair",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "TF",
+            "color": "#0f766e",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
+      },
+      {
+        "kind": "activity",
+        "id": "deeper-paid",
+        "verb": "pay",
+        "published_at": "1985-07-02T12:34:00.000000Z",
+        "starts_at": null,
+        "ends_at": null,
+        "headline_template": ":actor marked :object paid",
+        "headline": null,
+        "glyph": "receipt",
+        "glyph_intent": "success",
+        "actor": {
+          "type": "storyfeed.party",
+          "id": "1",
+          "label": "Stripe",
+          "link": null,
+          "data": {
+            "key": "stripe",
+            "type": "Service"
+          },
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "S",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "object": {
+          "type": "order",
+          "id": "2031",
+          "label": "Order #2031",
+          "link": {
+            "href": "/orders/2031",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": null,
+            "initials": "O2",
+            "color": "#0e7490",
+            "files": [],
+            "slots": []
+          },
+          "body": null,
+          "tombstone": null
+        },
+        "target": {
+          "type": "venue",
+          "id": "101",
+          "label": "Scoops Ahoy",
+          "link": {
+            "href": "/venues/scoops",
+            "modal": false,
+            "attributes": []
+          },
+          "data": [],
+          "media": {
+            "icon": null,
+            "image": null,
+            "preview": {
+              "src": "/media/worlds/stranger-things/parlour.jpg",
+              "mediaType": "image/jpeg",
+              "width": 960,
+              "height": 720,
+              "alt": "An ice cream counter"
+            },
+            "initials": "SA",
+            "color": "#9f1239",
+            "files": [],
+            "slots": []
+          },
+          "body": [
+            {
+              "$body": "Storyfeed/Body/Image",
+              "$v": 3,
+              "alt": "Scoops Ahoy",
+              "caption": "Scoops Ahoy",
+              "image": "preview"
+            }
+          ],
+          "tombstone": null
+        },
+        "context": null,
+        "origin": null,
+        "result": null,
+        "instrument": null,
+        "location": null,
+        "generator": null,
+        "featured": "object",
+        "data": null,
+        "tombstoned": [],
+        "redundant": false,
+        "missing_headline_template": null,
+        "missing_headline": null
       }
     ],
     "scene.glance": [
@@ -22261,7 +23044,7 @@
         "count": 2,
         "verb": "remove",
         "published_at": "1985-07-04T18:00:00.000000Z",
-        "headline_template": ":actor removed :object from :target",
+        "headline_template": ":actor removed :count parts from :object",
         "headline": null,
         "glyph": "circle-x",
         "glyph_intent": null,
@@ -23801,7 +24584,7 @@
         "count": 2,
         "verb": "add",
         "published_at": "1985-07-04T16:01:00.000000Z",
-        "headline_template": ":actor added a menu item, items",
+        "headline_template": ":actor added :count menu items",
         "headline": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
@@ -46459,7 +47242,7 @@
       "published_at": "1985-07-03T10:00:00.000000Z",
       "starts_at": null,
       "ends_at": null,
-      "headline_template": ":actor deleted :object",
+      "headline_template": ":actor deleted :object from :target",
       "headline": null,
       "glyph": "circle-x",
       "glyph_intent": null,
@@ -46573,7 +47356,7 @@
           "count": 2,
           "verb": "complete",
           "published_at": "1985-07-01T14:00:00.000000Z",
-          "headline_template": ":actor completed :count tasks on :target",
+          "headline_template": ":actor completed :count tasks",
           "headline": null,
           "glyph": "square-check",
           "glyph_intent": null,

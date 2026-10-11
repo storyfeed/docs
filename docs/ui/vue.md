@@ -28,10 +28,10 @@ defineProps<{ feed: FeedPagePayload }>();
 ```
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { live } from '../.vitepress/theme/world'
 </script>
 
-<FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
+<FeedExample :items="live('deeper.aggregation.orders')" />
 
 `page` takes the JSON of a page from `cursorPaginate()` or `simplePaginate()`,
 which holds the items in `data`, or the plain array `get()` returns. The copied

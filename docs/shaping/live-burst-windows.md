@@ -4,8 +4,7 @@ Live combines the same action while activity continues. A quiet gap or a
 maximum duration closes the row; the next activity starts another burst.
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
-const rows = scene.deeper.aggregation.orders
+import { live } from '../.vitepress/theme/world'
 </script>
 
 <a id="grouping-a-verb-by-week"></a>
@@ -21,7 +20,7 @@ Story::verb('place')->bursts(within: '10 minutes', ceiling: '1 hour');
 
 Orders placed minutes apart share one row:
 
-<FeedExample :items="liveOf(rows)" />
+<FeedExample :items="live('deeper.aggregation.orders')" />
 
 | Setting | Default | Closes a Burst When |
 |---|---|---|

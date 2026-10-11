@@ -1,7 +1,7 @@
 # Composing Feeds
 
 <script setup>
-import { WORLD_ANCHOR, activity, entity, everything } from '../.vitepress/theme/world'
+import { WORLD_ANCHOR, activity, entity, everything, scene } from '../.vitepress/theme/world'
 
 const day = 86_400_000
 const at = (days, hours = 0) => new Date(WORLD_ANCHOR - days * day - hours * 3_600_000).toISOString().replace(/\.(\d{3})Z$/, '.$1000Z')
@@ -38,7 +38,7 @@ const talks = [
   talk('assembly', 'the Hawkins High assembly', -20),
 ]
 
-const progress = ['j84', 'a-confirm', 'a-ready'].map((id) => everything().find((node) => node.id === id))
+const progress = scene.progress
 </script>
 
 ## Introduction

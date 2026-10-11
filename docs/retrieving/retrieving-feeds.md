@@ -3,16 +3,16 @@
 # Retrieving Feeds
 
 <script setup>
-import { scene, everything, WORLD_ANCHOR, logOf, liveOf } from '../.vitepress/theme/world'
+import { scene, everything, WORLD_ANCHOR, logOf, liveOf, live } from '../.vitepress/theme/world'
 
 // One week, ending at the shared clock. The same rows drive both modes.
 // Parties and anonymous activities come later in the docs, so only people act here.
 const rows = everything()
   .filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
   .filter(node => node.actor && node.actor.type !== 'storyfeed.party')
-const log = logOf(rows)
-const live = liveOf(rows)
-const scoped = liveOf(scene.guide.usageExamples.repeatOrders)
+const weekLog = logOf(rows)
+const weekLive = liveOf(rows)
+const scoped = live('guide.usageExamples.repeatOrders')
 const repeated = scoped[0]
 const filterRows = logOf([
   ...scene.cookbook.transitions.timeline,
@@ -97,7 +97,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed()->live()->get();
 ```
 
-<FeedExample :items="live" days height="520" />
+<FeedExample :items="weekLive" days height="520" />
 
 See [Choosing What to Group](/cookbook/choosing-what-to-group) when deciding
 which events belong in an overview and which need individual rows.
@@ -112,7 +112,7 @@ use Storyfeed\Facades\Storyfeed;
 Storyfeed::feed()->log()->get();
 ```
 
-<FeedExample :items="log" days height="520" />
+<FeedExample :items="weekLog" days height="520" />
 
 Both modes return the same payload shape.
 

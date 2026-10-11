@@ -6,7 +6,7 @@ wording that counts what actually happened.
 
 <script setup>
 import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
-const placements = logOf(scene.cookbook.transitions.timeline.filter(row => row.verb === 'place'))
+const placements = logOf(scene.cookbook.placements)
 const grouped = liveOf(placements, {
   ...VERBS,
   place: { ...VERBS.place, object: ':actor placed :object :count times',

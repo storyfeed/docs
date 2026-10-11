@@ -14,7 +14,7 @@ activities into a batch; see [Batching Activities](/shaping/batching-activities)
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-const placed = { ...scene.order, data: null, glyph_intent: null }
+const placed = scene.order
 const marked = { ...placed, data: { reviewed: true } }
 </script>
 

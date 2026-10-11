@@ -107,6 +107,8 @@ export type SceneIds = {
     deletion: string
     discussion: string
     grouped: { repeat: string[]; actors: string[] }
+    /** The transitions timeline's placements only. */
+    placements: string[]
   }
   deeper: DeeperSceneIds
   /** `role.customer` places an order (`place`) with `role.shop`: the standard example. */
@@ -121,6 +123,10 @@ export type SceneIds = {
   repeats: string[][]
   /** One row from long before now (30 days or more). */
   distant: string
+  /** One order's progress: placed, confirmed, ready. */
+  progress: string[]
+  /** One row with each glyph intent the docs register: `success`, then `pending`. */
+  intents: string[]
   /** Jasper's rows (flagged `cameo`). */
   cameo: string[]
   /**
@@ -158,4 +164,13 @@ export type WorldPack = {
   scenes: SceneIds
   /** Core's payload node for every row, keyed by row id, in core's Log order: `npm run payloads` writes it. */
   payloads: Record<string, any>
+  /**
+   * Core's reads of the scenes, `npm run payloads` writes it: each named scene
+   * in Live by its path (`scene.busyPlace`, `everything`), and the rows a page
+   * would otherwise build by hand, recorded for real.
+   */
+  generated: {
+    live: Record<string, any[]>
+    variants: { deletion: any; composite: { live: any[]; log: any[] } }
+  }
 }

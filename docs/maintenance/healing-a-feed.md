@@ -56,15 +56,14 @@ use Storyfeed\Facades\Story;
 
 Story::for(Order::class)
     ->verb('place')
-    ->headline(':actor placed :object[ at :target]');
+    ->headline(':actor placed :object[ with :target]');
 ```
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-const corrected = { ...scene.order, headline_template: ':actor placed :object at :target' }
 </script>
 
-<FeedExample :items="[corrected]" />
+<FeedExample :items="[scene.order]" />
 
 Storyfeed resolves the headline when it retrieves the feed. The new definition
 applies to existing activities with that object type and verb. Use a

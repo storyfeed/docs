@@ -4,10 +4,10 @@ Group activities when the reader needs an overview of who acted and where.
 Keep separate rows when each event's words, time or recorded details matter.
 
 <script setup>
-import { scene, liveOf, logOf } from '../.vitepress/theme/world'
-const signals = liveOf(scene.busyPlace)
+import { scene, live, logOf } from '../.vitepress/theme/world'
+const signals = live('busyPlace')
 const content = logOf([scene.basics.activityContent.notice, scene.basics.activityContent.linkedNotice])
-const bulk = liveOf(scene.guide.usageExamples.photos)
+const bulk = live('guide.usageExamples.photos')
 const system = scene.cookbook.actorless.paid
 const views = logOf(scene.deeper.retention.views)
 </script>

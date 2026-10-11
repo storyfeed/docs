@@ -8,7 +8,7 @@ definition in `routes/feed.php`.
 
 <script setup>
 import { scene, activity } from '../.vitepress/theme/world'
-const placed = { ...scene.order, data: null, glyph_intent: null }
+const placed = scene.order
 </script>
 
 <a id="generating-a-story-class"></a>

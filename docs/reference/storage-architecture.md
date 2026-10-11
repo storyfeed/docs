@@ -12,9 +12,9 @@ One publish writes these rows; one page of the feed reads them back. [Schema](/r
 column.
 
 <script setup>
-import { scene, logOf, liveOf } from '../.vitepress/theme/world'
+import { scene, logOf, live } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
-const repeat = liveOf(log)[0]
+const repeat = live('deeper.aggregation.orders')[0]
 </script>
 
 ## Writing an Activity

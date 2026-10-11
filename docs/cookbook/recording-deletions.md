@@ -1,14 +1,9 @@
 # Recording Deletions
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
-import { activity, tombstone } from '../.vitepress/theme/samples'
+import { variants } from '../.vitepress/theme/world'
 
-const source = scene.cookbook.deletion
-const deleted = activity({ ...source, verb: 'delete',
-  headline_template: ':actor deleted :object from :target',
-  object: tombstone(source.object.type, source.object.id, source.published_at),
-})
+const deleted = variants.deletion
 </script>
 
 Publish a `delete` activity before deleting its model. The activity remains,

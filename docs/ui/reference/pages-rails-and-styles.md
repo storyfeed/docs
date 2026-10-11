@@ -1,11 +1,11 @@
 # Pages, Rails and Styles
 
 <script setup>
-import { scene, liveOf } from '../../.vitepress/theme/world'
+import { scene, live } from '../../.vitepress/theme/world'
 const order = [scene.order]
 const anonymous = [scene.cookbook.actorless.anonymous]
-const crowd = liveOf(scene.cookbook.grouped.actors).slice(0, 1)
-const orders = liveOf(scene.deeper.aggregation.orders)
+const crowd = live('cookbook.grouped.actors').slice(0, 1)
+const orders = live('deeper.aggregation.orders')
 const terminal = [scene.basics.activityContent.terminal]
 const labelled = { [scene.order.id]: 'Orders' }
 </script>

@@ -3,13 +3,9 @@
 ## Introduction
 
 <script setup>
-import { scene, group } from '../.vitepress/theme/world'
-const children = scene.deeper.composites.tasks
-// A hypothetical single publish of the catalogue's task objects.
-const authored = group({ id: 'composite-tasks', verb: 'complete', axis: 'composite', count: children.length,
-  glyph: children[0].glyph, published_at: children[1].published_at,
-  headline_template: ':actor completed :count tasks', actors: [children[0].actor],
-  objects: children.map(row => row.object), distinct: { actors: 1, objects: children.length } })
+import { variants } from '../.vitepress/theme/world'
+// The catalogue's two tasks, completed in one publish, read in Live.
+const [authored] = variants.composite.live
 </script>
 
 A composite is one activity whose object is a **collection**, such as several

@@ -8,17 +8,16 @@ from one customer appear as one row. See
 helps the reader.
 
 <script setup>
-import { scene, logOf, liveOf, VERBS } from '../.vitepress/theme/world'
+import { scene, logOf, live, liveOf, VERBS } from '../.vitepress/theme/world'
 const log = logOf(scene.deeper.aggregation.orders)
 const repeat = liveOf(log, { ...VERBS, place: { ...VERBS.place, repeat: ':actor made :count order placements with :target' } })[0]
 const customers = logOf(scene.deeper.aggregation.customers)
-const actors = liveOf(customers)[0]
+const actors = live('deeper.aggregation.customers')[0]
 const nounFallback = { ...repeat, headline_template: ':actor placed orders with :target', headline: null }
 const singularFallback = { ...repeat, headline_template: ':actor placed an order with :target', headline: null }
 const unnamedGroup = { ...repeat, headline_template: null, headline: null }
-const menuRows = scene.deeper.aggregation.menu
-const menuGroup = { ...liveOf(menuRows)[0], headline_template: ':actor put dishes on the menu' }
-const photoGroup = liveOf(scene.guide.usageExamples.photos)[0]
+const menuGroup = { ...live('deeper.aggregation.menu')[0], headline_template: ':actor put dishes on the menu' }
+const photoGroup = live('guide.usageExamples.photos')[0]
 </script>
 
 ## Grouping Activities

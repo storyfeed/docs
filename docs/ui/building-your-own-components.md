@@ -8,15 +8,15 @@ import FeedHeadline from '@storyfeed/ui/FeedHeadline.vue'
 import EntityLink from '@storyfeed/ui/EntityLink.vue'
 import FeedIcon from '@storyfeed/ui/FeedIcon.vue'
 import { useRelativeTime } from '@storyfeed/ui/useRelativeTime'
-import { scene, liveOf, avatar, everything } from '../.vitepress/theme/world'
+import { scene, live, avatar } from '../.vitepress/theme/world'
 
 const one = scene.order
 const time = useRelativeTime(computed(() => one.published_at))
-const grouped = liveOf(scene.cookbook.grouped.actors)[0]
+const grouped = live('cookbook.grouped.actors')[0]
 // Remove presentation fields to show the renderer's fallback, keeping real members.
 const unnamed = { ...grouped, headline_template: null, headline: null }
 const complete = scene.basics.feedFile.completed
-const intents = ['success', 'pending'].map((intent) => everything().find((item) => item.glyph_intent === intent))
+const intents = scene.intents
 const degraded = { ...scene.order, actor: null,
   object: { ...scene.order.object, label: null, link: null, media: avatar(scene.order.object.type, scene.order.object.id, null) } }
 const content = scene.basics.activityContent

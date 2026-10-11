@@ -10,7 +10,7 @@ documents.
 // widgets below are the demo app's real renderer reading a real payload rather
 // than a diagram of one. Every example is a scene from the site's world pack,
 // and every name in the prose is a role, so the page reads the same in any pack.
-import { scene, role, logOf, liveOf } from '../.vitepress/theme/world'
+import { scene, role, logOf, live } from '../.vitepress/theme/world'
 
 // One fact, three headlines: the verb stays `place`; only the wording moves.
 const sameFact = [
@@ -19,11 +19,10 @@ const sameFact = [
   ':target received :object from :actor',
 ].map((headline_template, i) => ({ ...scene.order, id: `h${i}`, headline_template }))
 
-// A short, wide feed: a few days across many apps, and one row from long ago.
-// The three feeds below are COMPUTED from these rows, so a group's count is
-// always the rows it stands for. The long feeds are later in the docs.
+// A short, wide feed: a few days across many apps, and one row from long ago,
+// in Log and as core's Live reads it. The long feeds are later in the docs.
 const worldLog = logOf(scene.glance)
-const worldLive = liveOf(scene.glance)
+const worldLive = live('glance')
 </script>
 
 <a id="what-is-an-activity"></a>

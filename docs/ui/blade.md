@@ -18,10 +18,10 @@ Route::get('/history', fn () => view('history', [
 ```
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
+import { live } from '../.vitepress/theme/world'
 </script>
 
-<FeedExample :items="liveOf(scene.deeper.aggregation.orders)" />
+<FeedExample :items="live('deeper.aggregation.orders')" />
 
 The layout must load compiled CSS, for example with `@vite('resources/css/app.css')`.
 Attributes such as `class` land on the feed's root element.

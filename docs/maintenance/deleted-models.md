@@ -13,7 +13,7 @@ Tombstones apply to recorded activities. A
 it is read.
 
 <script setup>
-import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
+import { scene, role, activity, group, tombstone, live, WORLD_ANCHOR } from '../.vitepress/theme/world'
 // Hypothetical deletion states of the same catalogue entities.
 const deleted = new Date(WORLD_ANCHOR - 60 * 60 * 1000).toISOString()
 const removedOrder = tombstone(scene.order.object.type, scene.order.object.id, deleted)
@@ -32,7 +32,7 @@ const readsGone = activity({ ...scene.order, object: removedOrder,
 const members = scene.deeper.aggregation.orders
 const children = members.map((row, i) => i === 0
   ? activity({ ...row, object: tombstone(row.object.type, row.object.id, deleted) }) : row)
-const mixed = group({ ...liveOf(members)[0], objects: children.map(row => row.object), children })
+const mixed = group({ ...live('deeper.aggregation.orders')[0], objects: children.map(row => row.object), children })
 </script>
 
 Use `InteractsWithFeed` on an Eloquent `Feedable` model to attach the deletion

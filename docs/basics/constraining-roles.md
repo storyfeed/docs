@@ -8,7 +8,7 @@ Use a constraint to reject that type before storing the activity.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-const placed = { ...scene.order, data: null, glyph_intent: null }
+const placed = scene.order
 </script>
 
 <a id="publishing-an-activity"></a>

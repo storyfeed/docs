@@ -11,7 +11,7 @@ const timeline = logOf(scene.cookbook.transitions.timeline)
 // keepLatest removes the earlier placement before a reader groups the rows.
 const latest = timeline.filter((row, index) => timeline.findIndex((other) =>
   other.verb === row.verb && other.object.id === row.object.id) === index)
-const [earlier, saved, otherActor] = scene.deeper.keepingLatest.saves.map(row => ({ ...row, data: null, glyph: null }))
+const [earlier, saved, otherActor] = scene.deeper.keepingLatest.saves
 </script>
 
 <a id="declaring-the-policy"></a>

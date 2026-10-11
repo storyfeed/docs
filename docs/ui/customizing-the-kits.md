@@ -161,8 +161,8 @@ translation namespace; override them in
 ```
 
 <script setup>
-import { scene, liveOf } from '../.vitepress/theme/world'
-const groupedOrders = liveOf(scene.deeper.aggregation.orders)
+import { live } from '../.vitepress/theme/world'
+const groupedOrders = live('deeper.aggregation.orders')
 </script>
 
 The rail is the column of avatars and icons beside each row; `child-rail`

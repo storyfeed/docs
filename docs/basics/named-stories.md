@@ -10,7 +10,7 @@ names in your code.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-const placed = { ...scene.order, data: null, glyph_intent: null }
+const placed = scene.order
 </script>
 
 <a id="naming-a-story"></a>

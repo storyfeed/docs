@@ -7,7 +7,7 @@
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
-const placed = { ...scene.order, data: null, glyph_intent: null }
+const placed = scene.order
 </script>
 
 Configure a [Laravel queue worker](https://laravel.com/docs/13.x/queues#running-the-queue-worker)
