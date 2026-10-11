@@ -307,6 +307,7 @@ export default defineConfig({
         items: [
           { text: 'Parties & Anonymous Actors', link: '/deeper/parties-and-anonymous-actors' },
           { text: 'Publishing From Events', link: '/deeper/publishing-from-events' },
+          { text: 'Publishing Story Classes', link: '/deeper/publishing-story-classes' },
           { text: 'Containers & Context', link: '/deeper/containers-and-context' },
           { text: 'Distant Relations', link: '/deeper/distant-relations' },
           { text: 'Casting Activity Data', link: '/deeper/casting-activity-data' },

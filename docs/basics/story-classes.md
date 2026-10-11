@@ -9,8 +9,6 @@ definition in `routes/feed.php`.
 <script setup>
 import { scene, activity } from '../.vitepress/theme/world'
 const placed = { ...scene.order, data: null, glyph_intent: null }
-const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay'),
-  verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
 </script>
 
 <a id="generating-a-story-class"></a>
@@ -328,271 +326,31 @@ dependencies on a verb method to receive them, including `Illuminate\Http\Reques
 Explicit method bindings, invokable classes, and resource methods use the same
 injection rules.
 
-<a id="using-the-request"></a>
-
-### Request-Based Actors
-
-```php memo="app/Stories/OrderStory.php" at="confirmPayment()"
-use Illuminate\Http\Request;
-use Storyfeed\Stories\Verb;
-
-public function confirmPayment(Verb $verb, Request $request): Verb
-{
-    return $verb
-        ->headline(':actor confirmed payment for :object')
-        ->icon('credit-card')
-        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
-}
-```
-
-The same webhook can choose between two [declared parties](/deeper/parties-and-anonymous-actors#declaring-parties).
-Its controller publishes `confirm_payment` without naming an actor:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity('confirm_payment', $order)->publish();
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::record(verb: 'confirm_payment', object: $order);
-```
-:::
-
-<a id="tab-437"></a>
-<a id="tab-438"></a>
-
-For a request without the signature header:
-
-<FeedExample :items="[paid]" />
-
-The verb's actor applies when no actor is assigned explicitly or through a
-`Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
-headlines, icons, intents, grouping, and other settings must remain consistent.
-A request-dependent headline throws an exception when `grammar.strict` is
-enabled, as it is by default in local and testing environments.
-
-#### Carrying Request-Based Actors Into Jobs
-
-Jobs dispatched during a request carry the actor selected by the request-based
-verb actor. The worker retains that selection without needing the original
-HTTP request. For callback and request scopes, see
-[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
-
-<a id="one-activity-published-with-its-data"></a>
-
-<a id="publishing-an-activity"></a>
-<a id="publishing-story-classes"></a>
-
-## Publishing From a Story Class
-
-### Defining the Activity
-
-```shell
-php artisan make:story OrderWasPlaced --verb=place --object=Order
-```
-
-```php memo="app/Stories/OrderWasPlaced.php"
-<?php
-
-namespace App\Stories;
-
-use App\Models\Order;
-use App\Models\User;
-use Storyfeed\PendingActivity;
-use Storyfeed\Stories\Story;
-
-class OrderWasPlaced extends Story
-{
-    public function __construct(
-        public Order $order,
-        public User $customer,
-    ) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        return $this->activity($this->order)
-            ->by($this->customer)
-            ->to($this->order->shop);
-    }
-
-    public function headline(): string
-    {
-        // Presentation methods cannot read constructor data.
-        return ':actor placed :object with :target';
-    }
-
-    public function icon(): ?string
-    {
-        return 'shopping-bag';
-    }
-}
-```
-
-<FeedExample :items="[placed]" />
-
-The `toFeedActivity` method builds the activity. The inherited `activity`
-method sets the verb registered for this class. Return `null` to skip publishing.
-
-An [event implementing `PublishesToFeed`](/deeper/publishing-from-events#publishing-from-an-event)
-uses the same `toFeedActivity` method and publishes when dispatched. A Story
-can be published independently, like a notification, so use it when the
-activity has no corresponding application event.
-
-### Declaring Casts on a Story Class
-
-A Story class declares its casts in a `casts` method, as a model does. This
-alternative order-placement class records a channel and promised time:
-
-```php memo="app/Stories/OrderPlaced.php"
-<?php
-
-namespace App\Stories;
-
-use App\Enums\Channel;
-use App\Models\Order;
-use Storyfeed\PendingActivity;
-use Storyfeed\Stories\Story;
-
-class OrderPlaced extends Story
-{
-    public string|array|null $objectType = Order::class;
-
-    public function __construct(public Order $order) {}
-
-    public function toFeedActivity(): ?PendingActivity
-    {
-        return $this->activity($this->order)->data([
-            'channel' => $this->order->channel,
-            'promised_at' => $this->order->promised_at,
-        ]);
-    }
-
-    public function headline(): string
-    {
-        return ':actor placed :object';
-    }
-
-    public function casts(): array // [!code highlight]
-    {
-        return [
-            'channel' => Channel::class,
-            'promised_at' => 'immutable_datetime',
-        ];
-    }
-}
-```
-
-To use this class instead of `OrderWasPlaced`, bind it to the order's verb:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderPlaced;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place', OrderPlaced::class);
-```
-
-### Registering the Story
-
-Register the class for its object type and verb in the feed file:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use App\Stories\OrderWasPlaced;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place', OrderWasPlaced::class);
-```
-
-### Publishing the Story
-
-Construct the Story with its data and publish it:
-
-```php memo="Where the order is placed: a controller, an action, a listener"
-use App\Stories\OrderWasPlaced;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::publish(new OrderWasPlaced($order, $request->user()));
-```
-
-<FeedExample :items="[placed]" />
-
-`Storyfeed::publish()` returns the activity, or `null` when `toFeedActivity()`
-returns `null` or the Story is queued.
-
-<a id="queueing-a-story-class"></a>
-
-### Queueing Stories
-
-Implement `ShouldQueue` and use `Queueable`, as a queued notification does:
-
-```php memo="app/Stories/OrderWasPlaced.php"
-<?php
-
-namespace App\Stories;
-
-use App\Models\Order;
-use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Storyfeed\PendingActivity;
-use Storyfeed\Stories\Story;
-
-class OrderWasPlaced extends Story implements ShouldQueue // [!code highlight]
-{
-    use Queueable;
-
-    // ...
-}
-```
-
-The `Storyfeed::publish` method queues a Story that implements `ShouldQueue`. Use the `Queueable`
-trait's methods to select the connection and queue:
-
-```php memo="app/Http/Controllers/PlaceOrderController.php" at="__invoke()"
-use App\Stories\OrderWasPlaced;
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::publish(
-    (new OrderWasPlaced($order, $request->user()))->onQueue('feed'),
-);
-```
-
-After the worker calls `toFeedActivity()` and publishes its result:
-
-<FeedExample :items="[placed]" />
-
-Queued publishing returns `null`. Use `Storyfeed::publishNow()` to publish
-synchronously, as you would use `sendNow()` for a notification. Model properties
-are serialized by their identifiers. The publication time is captured when
-`Storyfeed::publish()` is called, unless `toFeedActivity()` sets it explicitly.
-
-A queued Story may implement `ShouldBeUnique` and define a `uniqueId` method.
-Its `middleware` method declares
-[story middleware](/deeper/story-middleware-and-batching), while the `Queueable`
-trait's `through` method sets job middleware. See [Queued Publishing](/deeper/queued-publishing)
-for connections, transactions, and missing models.
-
-### Presentation Methods
-
-Storyfeed calls `headline` and `icon` without running the constructor, so these
-methods cannot use constructor data. Use that data in `toFeedActivity` instead.
-The same restriction applies to all definition methods:
-
-| Method | Declares |
-|---|---|
-| `intent()` | the [icon's intent](/basics/the-feed-file#icons-and-intents) |
-| `groups()` | [group headlines](/deeper/aggregation) |
-| `missing()` | the [roles that make it redundant](/deeper/deleted-models#redundant-roles) once deleted |
-| `keepFor()`, `keepForever()` | its [retention](/deeper/retention) |
-| `keepLatest()` | [keeping the latest activity](/deeper/keeping-the-latest-activity) |
-| `bursts()` | its [burst window](/deeper/live-burst-windows) |
-| `period()` | the calendar period for custom axes whose keys include `d` |
-| `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
+<span id="using-the-request"></span>
+<span id="request-based-actors"></span>
+<span id="carrying-request-based-actors-into-jobs"></span>
+<span id="tab-437"></span>
+<span id="tab-438"></span>
+
+A verb method can choose its actor from the request. See
+[Request-Based Actors](/deeper/activity-scopes#request-based-actors).
+
+## Publishing Story Classes
+
+<span id="one-activity-published-with-its-data"></span>
+<span id="publishing-an-activity"></span>
+<span id="publishing-story-classes"></span>
+<span id="publishing-from-a-story-class"></span>
+<span id="defining-the-activity"></span>
+<span id="declaring-casts-on-a-story-class"></span>
+<span id="registering-the-story"></span>
+<span id="publishing-the-story"></span>
+<span id="queueing-a-story-class"></span>
+<span id="queueing-stories"></span>
+<span id="presentation-methods"></span>
+
+A Story class can also build one activity with its data and publish it, as a
+notification is sent. See [Publishing Story Classes](/deeper/publishing-story-classes).
 
 <a id="generating-from-doctor-findings"></a>
 
@@ -611,8 +369,6 @@ commands for the possible spellings. Run the command with the correct spelling.
 
 ## Listing and Caching Stories
 
-New resource methods become available when definitions are compiled again.
-If definitions are cached, run `storyfeed:cache` to include the new verbs.
-Use `storyfeed:list` to inspect them; see
+New resource methods appear once definitions compile again: see
 [Listing Definitions](/basics/the-feed-file#listing-definitions) and
 [Caching Definitions](/basics/the-feed-file#caching-definitions).

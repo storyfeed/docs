@@ -138,7 +138,7 @@ activity to the queue.
 ## Queueing Story Classes
 
 A Story class that implements `ShouldQueue` queues when published. It may also
-implement `ShouldBeUnique`. See [Queueing Stories](/basics/story-classes#queueing-stories)
+implement `ShouldBeUnique`. See [Queueing Stories](/deeper/publishing-story-classes#queueing-stories)
 for an example. The transaction and missing-model settings below also apply.
 
 <a id="waiting-for-a-transaction"></a>
@@ -193,7 +193,7 @@ Story::for(Order::class)->verb('place', OrderWasPlaced::class)
 If a model is deleted before the worker restores it, the job fails with
 `ModelNotFoundException`. This declaration discards the job without recording
 an activity. Replace the class binding from
-[Story Classes](/basics/story-classes#registering-the-story) with this one.
+[Story Classes](/deeper/publishing-story-classes#registering-the-story) with this one.
 
 You may also call `deleteWhenMissingModels()` on the builder. A Story class
 can set `public bool $deleteWhenMissingModels = true`, which overrides the

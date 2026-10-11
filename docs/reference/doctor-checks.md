@@ -434,7 +434,7 @@ queries required per page.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/basics/story-classes#using-the-request) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
+| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/activity-scopes#request-based-actors) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade instead of taking `Illuminate\Http\Request $request`. It accesses the request only when stories are compiled, never when an activity publishes. Take the `Request` as a parameter |
 
 ### Grouping

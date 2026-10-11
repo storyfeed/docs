@@ -10,6 +10,8 @@ HTTP middleware can supply either role for a whole request.
 import { activity, scene, role } from '../.vitepress/theme/world'
 const scoped = { ...activity({ ...scene.order, target: null, context: role.shop,
   headline_template: ':actor placed :object in :context' }), data: null, glyph_intent: null }
+const paid = activity({ ...scene.deeper.latestPerObject.timeline.find(row => row.verb === 'pay'),
+  verb: 'confirm_payment', headline_template: ':actor confirmed payment for :object', data: null })
 </script>
 
 <a id="setting-context-on-an-activity"></a>
@@ -225,6 +227,53 @@ The `storyfeed.actor:System` middleware wraps the request in
 An explicit `->by($request->user())` takes precedence; activities without an
 explicit actor use `System`.
 
+<span id="using-the-request"></span>
+
+### Request-Based Actors
+
+A [Story class](/basics/story-classes) verb method can choose the actor from
+the request:
+
+```php memo="app/Stories/OrderStory.php" at="confirmPayment()"
+use Illuminate\Http\Request;
+use Storyfeed\Stories\Verb;
+
+public function confirmPayment(Verb $verb, Request $request): Verb
+{
+    return $verb
+        ->headline(':actor confirmed payment for :object')
+        ->icon('credit-card')
+        ->actor($request->hasHeader('Paddle-Signature') ? 'Paddle' : 'Stripe');
+}
+```
+
+The same webhook can choose between two [declared parties](/deeper/parties-and-anonymous-actors#declaring-parties).
+Its controller publishes `confirm_payment` without naming an actor:
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::activity('confirm_payment', $order)->publish();
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/PaymentWebhookController.php" at="__invoke(), after loading $order"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(verb: 'confirm_payment', object: $order);
+```
+:::
+
+For a request without the signature header:
+
+<FeedExample :items="[paid]" />
+
+The verb's actor applies when no actor is assigned explicitly or through a
+`Storyfeed::actor()` scope. Only the `actor` setting may depend on the request;
+headlines, icons, intents, grouping, and other settings must remain consistent.
+A request-dependent headline throws an exception when `grammar.strict` is
+enabled, as it is by default in local and testing environments.
+
 <a id="actor-and-context-precedence"></a>
 
 ## Role Precedence
@@ -236,7 +285,7 @@ Storyfeed resolves each role from the first applicable source:
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
 | Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
 | [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
-| Verb | the [verb's actor](/basics/story-classes#request-based-actors) | none |
+| Verb | the [verb's actor](#request-based-actors) | none |
 | Resolver or user | a custom [`actor_resolver`](/deeper/parties-and-anonymous-actors#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
 | Fallback | [`parties.fallback`](/deeper/parties-and-anonymous-actors#setting-a-default-actor) | none |
 
@@ -288,7 +337,10 @@ Jobs dispatched inside `Storyfeed::context()` run inside that context on the
 worker, and jobs they dispatch inherit it. The scope ends with the job, even
 when the job throws.
 
-<a id="request-based-actors"></a>
+<span id="carrying-request-based-actors-into-jobs"></span>
 
-See [Carrying Request-Based Actors Into Jobs](/basics/story-classes#carrying-request-based-actors-into-jobs)
-for the actor selected by a verb during a request.
+### Carrying Request-Based Actors
+
+Jobs dispatched during a request carry the actor selected by the request-based
+verb actor. The worker retains that selection without needing the original
+HTTP request.
