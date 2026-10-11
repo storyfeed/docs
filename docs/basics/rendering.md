@@ -1,20 +1,20 @@
 ---
-title: Custom Rendering
+title: Building Your Own Components
 sidebar: false
 outline: false
 head:
   - - script
     - {}
-    - "location.replace('/ui/custom-rendering' + location.hash)"
+    - "location.replace('/ui/building-your-own-components' + location.hash)"
   - - meta
     - http-equiv: refresh
-      content: '0; url=/ui/custom-rendering'
+      content: '0; url=/ui/building-your-own-components'
   - - link
     - rel: canonical
-      href: https://docs.storyfeed.dev/ui/custom-rendering
+      href: https://docs.storyfeed.dev/ui/building-your-own-components
 ---
 
-# Custom Rendering
+# Building Your Own Components
 
 <a id="rendering"></a>
 <a id="introduction"></a>
@@ -55,4 +55,4 @@ head:
 <a id="verifying-your-renderer"></a>
 <a id="rendering-with-vue"></a>
 
-See [Custom Rendering](/ui/custom-rendering).
+See [Building Your Own Components](/ui/building-your-own-components).

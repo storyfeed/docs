@@ -154,7 +154,7 @@ Story::for(Order::class)
 
 <FeedExample :items="[completeWithIntent]" expanded />
 
-See [Rendering](/ui/custom-rendering#glyphs-and-intents) to display the icon and
+See [Building Your Own Components](/ui/building-your-own-components#glyphs-and-intents) to display the icon and
 apply its intent.
 
 <a id="several-verbs-on-one-model"></a>

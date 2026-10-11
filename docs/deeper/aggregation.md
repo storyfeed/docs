@@ -232,7 +232,7 @@ particular type.
 | `:generator` | `:generators` | the app or agent that produced the activity |
 
 A plural token displays a few names and a count of the rest. See
-[Rendering](/ui/custom-rendering#groups) for details. `:count` is the number of
+[Building Your Own Components](/ui/building-your-own-components#groups) for details. `:count` is the number of
 activities in the group, not of distinct objects; see
 [the repeated-order example](/cookbook/headlines-for-grouped-activities#counting-placements-of-the-same-order)
 for wording that keeps this visible.
@@ -285,7 +285,7 @@ When no group headline is defined, Storyfeed uses the single-activity headline
 if its roles can be represented for the group. A role
 that differs across the group becomes a plain noun, such as "dishes", when the
 axis pins its type, as `repeat` pins the object type. Otherwise both
-`headline_template` and `headline` are `null`. See [Groups Without Headlines](/ui/custom-rendering#groups-without-headlines) for rendering the count.
+`headline_template` and `headline` are `null`. See [Groups Without Headlines](/ui/building-your-own-components#groups-without-headlines) for rendering the count.
 Single-activity headline closures cannot supply this fallback because they
 access one member's data rather than the whole group.
 
@@ -341,7 +341,7 @@ With both headline fields absent, the count and member rows remain visible:
 
 <FeedExample :items="[unnamedGroup]" />
 
-See [Groups Without Headlines](/ui/custom-rendering#groups-without-headlines) to
+See [Groups Without Headlines](/ui/building-your-own-components#groups-without-headlines) to
 render this payload.
 
 <a id="custom-axes"></a>

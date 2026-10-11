@@ -293,7 +293,7 @@ export default defineConfig({
           { text: 'Vue', link: '/ui/vue' },
           { text: 'React', link: '/ui/react' },
           { text: 'Customizing the Kits', link: '/ui/customizing-the-kits' },
-          { text: 'Custom Rendering', link: '/ui/custom-rendering' },
+          { text: 'Building Your Own Components', link: '/ui/building-your-own-components' },
           { text: 'Blade Components', link: '/ui/reference/blade-components' },
           { text: 'Vue Components', link: '/ui/reference/vue-components' },
           { text: 'React Components', link: '/ui/reference/react-components' },

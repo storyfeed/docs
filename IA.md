@@ -410,7 +410,7 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Vue — `ui/vue`
 - ✅ React — `ui/react`
 - ✅ Customizing the Kits — `ui/customizing-the-kits`
-- ✅ Custom Rendering — `ui/custom-rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
+- ✅ Building Your Own Components — `ui/building-your-own-components`: custom Blade components; kit installation and usage live in Storyfeed UI
 - ✅ Blade Components — `ui/reference/blade-components`: every component, attribute, slot and renderer
 - ✅ Vue Components — `ui/reference/vue-components`: every component, prop, slot, event and injection key
 - ✅ React Components — `ui/reference/react-components`: every component, prop, render prop and provider option
@@ -501,7 +501,7 @@ These files retain old URLs or anchors and point readers to the canonical page:
 | `reference/compatibility.md` | `guide/installation#requirements` |
 | `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values-in-the-feed` |
 | `basics/the-payload.md` | `basics/retrieving-feeds#the-payload` |
-| `basics/rendering.md` | `ui/custom-rendering`, keeping the anchor in the URL |
+| `basics/rendering.md` | `ui/building-your-own-components`, keeping the anchor in the URL |
 
 Every page's URL follows its title. Each old URL is listed in
 `docs/.vitepress/redirects.ts`, which writes a page there that sends the reader
@@ -540,7 +540,7 @@ excluded by rule 25. Future gaps need a specific owner-approved brief.
   `storyfeed/storyfeed`. Installation keeps one pointer to Installing the Kits.
   Quickstart may install `storyfeed/ui` and ends with a rendered Blade feed.
   Storyfeed UI owns installation, Blade/Vue/React usage, published views and
-  kit customization. Custom Rendering teaches application-owned components.
+  kit customization. Building Your Own Components teaches application-owned components.
   Other core pages link to those homes instead of repeating their setup.
 - **The shared rendering callout describes the payload boundary.** The
   `::: headless` container has one message in `config.ts`:

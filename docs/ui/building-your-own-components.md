@@ -1,6 +1,6 @@
 <a id="rendering"></a>
 
-# Custom Rendering
+# Building Your Own Components
 
 <script setup>
 import { computed } from 'vue'

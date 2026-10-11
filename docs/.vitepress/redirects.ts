@@ -39,6 +39,9 @@ export const REDIRECTS: Record<string, string> = {
   '/reference/payload': '/reference/payload-contract',
   '/reference/storage': '/reference/storage-architecture',
 
+  // 2026-10-11: Custom Rendering renamed.
+  '/ui/custom-rendering': '/ui/building-your-own-components',
+
   // Earlier moves.
   '/basics/headlines': '/basics/the-feed-file',
   '/deeper/details': '/deeper/custom-body-types',
