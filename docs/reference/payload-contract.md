@@ -254,7 +254,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `glyph` | string or null | the icon token; see [Icons](#glyphs) |
 | `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the [entity](#entities) in each role |
-| `featured` | string or null | the role whose entity the row shows: `"object"` unless the activity [features another role](/basics/activity-content#featuring-another-role); `null` for none |
+| `featured` | string or null | the role whose entity the row shows: `"object"` unless the activity [features another role](/basics/recording-activities#featuring-another-role); `null` for none |
 | `data` | map or null | what the recording call passed to `data()` |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |

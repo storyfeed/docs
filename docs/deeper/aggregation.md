@@ -87,7 +87,7 @@ shows where groups are stored and how a feed retrieves them.
 ### Members' Featured Entities
 
 Each activity features one role's entity, its object unless the activity says
-otherwise; see [Featuring Another Role](/basics/activity-content#featuring-another-role).
+otherwise; see [Featuring Another Role](/basics/recording-activities#featuring-another-role).
 A group lists the entity each member features in `sample.featured`, newest
 first, one entry per member, so an entity can repeat. For photos uploaded
 together, these are the photos:

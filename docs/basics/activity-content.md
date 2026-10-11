@@ -45,8 +45,6 @@ const withBodies = { ...content.product, object: { ...content.product.object, bo
 const withFallback = { ...content.confirmed,
   object: { ...content.confirmed.object, body: [{ $body: 'Storyfeed/Body/KeyValue', $v: 3,
     $fallback: 'Pickup at 12:10 pm', items: [{ key: 'Pickup', value: '12:10 pm' }] }] } }
-// The order, featuring the shop it was placed with.
-const featuringShop = { ...scene.order, featured: 'target' }
 </script>
 
 ## Introduction
@@ -79,7 +77,7 @@ A [composed feed](/basics/composing-feeds#composing-from-feedable-models) reads
 Every entity in the payload carries its own bodies, in any role. An
 activity's `featured` key names the role it features, the object by default.
 To feature another role's entity, see
-[Featuring Another Role](#featuring-another-role).
+[Featuring Another Role](/basics/recording-activities#featuring-another-role).
 
 ### Text and Labelled Values
 
@@ -939,48 +937,7 @@ components and define your own body types.
 
 <a id="featuring"></a>
 
-## Featuring Another Role
+<span id="featuring-another-role"></span>
 
-An activity features its object by default. To feature another role, call a
-`featuring` method:
-
-```php memo="Where the order is placed: a controller, an action, a listener"
-use Storyfeed\Facades\Storyfeed;
-
-Storyfeed::activity()
-    ->by($order->customer)
-    ->action('place', $order)
-    ->to($order->shop)
-    ->featuringTarget()
-    ->publish();
-```
-
-The activity's `featured` key names the role:
-
-<FeedExample payload :items="[featuringShop]" />
-
-| Method | Features |
-|---|---|
-| `featuringObject()` | the object; the default, to undo an earlier call |
-| `featuringActor()`, `featuringTarget()`, `featuringOrigin()`, `featuringResult()`, `featuringInstrument()`, `featuringLocation()`, `featuringGenerator()` | that role's entity |
-| `withoutFeature()` | no entity: `featured` is `null`; bodies in the activity's own data remain |
-
-A context is never featured. Featuring a role other than the object that the
-activity leaves empty throws `IncompleteActivity` when the activity is
-recorded. If the featured entity is missing when the feed is read, the
-activity still appears.
-
-To set a verb's default, call the same method in the feed file. An activity's
-own call wins:
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)
-    ->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->featuringTarget();
-```
-
-Verb enums accept the same methods.
+To feature a role other than the object, see
+[Featuring Another Role](/basics/recording-activities#featuring-another-role).
