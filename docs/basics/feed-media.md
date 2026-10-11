@@ -183,10 +183,10 @@ destination. `url($href)` is the short form of `link(FeedLink::to($href))`.
 
 ## Linking Files
 
-A `Document` model describes its PDF with a
-[`FileAttachment` body](/basics/activity-content#attaching-a-file) in
-`toFeed()`. Use `files()` in `feedMedia()` to supply the link that opens the
-document and the file to download:
+A `Document` model describes its PDF with a `FileAttachment` body in
+`toFeed()`. The body stores the file's name, size and media type. Use
+`files()` in `feedMedia()` to supply the link that opens the document and the
+file to download:
 
 ::: code-group
 
@@ -196,15 +196,29 @@ document and the file to download:
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\FileAttachment;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 use Storyfeed\FeedResource;
 
 class Document extends Model implements Feedable
 {
     use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make()
+            ->label($this->name)
+            ->body(
+                FileAttachment::make()
+                    ->size($this->bytes)
+                    ->mediaType('application/pdf')
+                    ->name($this->name)
+            );
+    }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
@@ -226,15 +240,29 @@ class Document extends Model implements Feedable
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Storyfeed\Body\FileAttachment;
 use Storyfeed\Concerns\InteractsWithFeed;
 use Storyfeed\Contracts\Feedable;
 use Storyfeed\FeedContext;
+use Storyfeed\FeedEntity;
 use Storyfeed\FeedMedia;
 use Storyfeed\FeedResource;
 
 class Document extends Model implements Feedable
 {
     use InteractsWithFeed;
+
+    public function toFeed(): FeedEntity
+    {
+        return FeedEntity::make(
+            label: $this->name,
+            body: FileAttachment::make(
+                size: $this->bytes,
+                mediaType: 'application/pdf',
+                name: $this->name,
+            ),
+        );
+    }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {

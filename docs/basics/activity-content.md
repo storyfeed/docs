@@ -1,7 +1,7 @@
 # Activity Content
 
 <script setup>
-import { scene, everything, avatar } from '../.vitepress/theme/world'
+import { scene, everything } from '../.vitepress/theme/world'
 
 const content = scene.basics.activityContent
 const quotedNote = { ...content.note,
@@ -47,11 +47,6 @@ const withFallback = { ...content.confirmed,
     $fallback: 'Pickup at 12:10 pm', items: [{ key: 'Pickup', value: '12:10 pm' }] }] } }
 // The order, featuring the shop it was placed with.
 const featuringShop = { ...scene.order, featured: 'target' }
-const withFile = { ...content.photo, verb: 'upload', headline_template: ':actor uploaded :object', headline: null, target: null, object: { ...content.photo.object,
-  type: 'document', label: 'Signed Agreement.pdf', link: { href: '/documents/signed-agreement', modal: false, attributes: [] },
-  media: avatar('document', content.photo.object.id, 'Signed Agreement.pdf'),
-  body: [{ $body: 'Storyfeed/Body/FileAttachment', $v: 2,
-    name: 'Signed Agreement.pdf', size: 137767, mediaType: 'application/pdf' }] } }
 </script>
 
 ## Introduction
@@ -507,45 +502,9 @@ time the feed is read.
 
 ### Attaching a File
 
-Use `FileAttachment` in a `Document` model's `toFeed` method to describe a PDF, such as a signed agreement:
-
-::: code-group
-
-```php [Fluent Syntax] memo="app/Models/Document.php" at="toFeed()"
-use Storyfeed\Body\FileAttachment;
-use Storyfeed\FeedEntity;
-
-return FeedEntity::make()
-    ->label($this->name)
-    ->body(
-        FileAttachment::make()
-            ->size($this->bytes)
-            ->mediaType('application/pdf')
-            ->name($this->name)
-    );
-```
-
-```php [Named Arguments] memo="app/Models/Document.php" at="toFeed()"
-use Storyfeed\Body\FileAttachment;
-use Storyfeed\FeedEntity;
-
-return FeedEntity::make(
-    label: $this->name,
-    body: FileAttachment::make(
-        size: $this->bytes,
-        mediaType: 'application/pdf',
-        name: $this->name,
-    ),
-);
-```
-
-:::
-
-<FeedExample :items="[withFile]" />
-
-The `FileAttachment` body stores file details. The link to open the document
-and the download itself come from the model's resolver; see
-[Linking Files](/basics/feed-media#linking-files).
+A `FileAttachment` body describes a file, such as a signed agreement's PDF:
+its name, size and media type. [Linking Files](/basics/feed-media#linking-files)
+shows a `Document` model that attaches one and links the download.
 
 <a id="lists-of-items"></a>
 
