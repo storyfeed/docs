@@ -73,6 +73,8 @@ A **body** contains an entity's structured content. Define it in the model's
 the entity appears. With `InteractsWithFeed`, saving the model refreshes its
 shared snapshot while recording is enabled. That can change the body shown on
 older activities too. Use activity `data` to capture values as they were at the event.
+A [composed feed](/basics/composing-feeds#composing-from-feedable-models) reads
+`toFeed()` each time it is read instead.
 
 Every entity in the payload carries its own bodies, in any role. An
 activity's `featured` key names the role it features, the object by default.

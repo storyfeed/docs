@@ -75,7 +75,8 @@ contain reservations, so its headline belongs on the verb alone and must not
 name a type.
 
 Storyfeed groups activities when published. Each activity belongs to only one
-group per read mode.
+group per read mode. A [composed feed](/basics/composing-feeds#grouping-a-composed-feed)
+reads as Log; with `live()`, it groups its dated entries that have a verb.
 
 To keep quotes and images visible individually, see
 [Choosing What to Group](/cookbook/choosing-what-to-group#keeping-content-visible). [Storage Architecture](/reference/storage-architecture#reading-a-page)

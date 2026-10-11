@@ -265,6 +265,27 @@ without `Storyfeed::fake()`. A verb removed inside a `query()` callback is not
 visible to them; assert that over the feed's payload. `assertAllowsOnly()`
 fails when no verbs are declared or recorded.
 
+## Testing a Composed Feed
+
+A [composed feed](/basics/composing-feeds) records nothing, so
+`Storyfeed::fake()` captures none of it. Assert on what the feed reads:
+
+```php memo="tests/Feature/OrderProgressTest.php"
+use App\Models\Order;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
+it('shows the order\'s progress', function () {
+    $order = Order::factory()->ready()->create();
+
+    $this->get(route('orders.show', $order))
+        ->assertViewHas('progress', fn ($progress) => $progress->pluck('verb')->all() === [
+            'place', 'confirm', 'ready',
+        ]);
+});
+```
+
 <a id="diagnostics-in-ci"></a>
 
 ## Running Diagnostics in CI

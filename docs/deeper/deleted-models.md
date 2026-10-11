@@ -8,6 +8,10 @@ time without keeping its details. The activity still has a headline.
 See [Choosing a Maintenance Operation](/deeper/healing-a-feed#choosing-a-maintenance-operation)
 to compare tombstones with healing and pruning.
 
+Tombstones apply to recorded activities. A
+[composed feed](/basics/composing-feeds) names only the models you pass it when
+it is read.
+
 <script setup>
 import { scene, role, activity, group, tombstone, liveOf, WORLD_ANCHOR } from '../.vitepress/theme/world'
 // Hypothetical deletion states of the same catalogue entities.

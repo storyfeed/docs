@@ -7,7 +7,8 @@ Storyfeed can serve each activity as a
 document, using AS2 names for every [role](/basics/recording-activities#roles).
 
 The Activity Streams document is separate from the normal
-[feed payload](/basics/retrieving-feeds#the-payload).
+[feed payload](/basics/retrieving-feeds#the-payload). It serves recorded
+activities only, not a [composed feed](/basics/composing-feeds).
 
 ## Serving Activity Documents
 
