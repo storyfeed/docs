@@ -68,7 +68,8 @@ export const BASE_VERBS: Record<string, VerbWording> = {
   approve:  { glyph: 'circle-check', headline: ':actor approved :object' },
   star:     { glyph: 'star', headline: ':actor starred :object', actors: ':actors starred :objects' },
   complete: { glyph: 'square-check', headline: ':actor completed :object on :target',
-              repeat: ':actor completed :count tasks on :target' },
+              repeat: ':actor completed :count tasks on :target', composite: ':actor completed :count tasks on :target' },
+  delete:   { glyph: 'circle-x', headline: ':actor deleted :object' },
   upload:   { glyph: 'image', headline: ':actor uploaded :object to :target', repeat: ':actor uploaded :count photos to :target' },
 }
 

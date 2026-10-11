@@ -20,6 +20,8 @@ export type VerbWording = {
   /** One person acting on one object again: core's `object` axis. */
   object?: string
   actors_target?: string
+  /** Several objects recorded as one activity (`objects()`): core's `composite` axis. */
+  composite?: string
 }
 
 /** One dated activity in a pack. */

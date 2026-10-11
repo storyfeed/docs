@@ -84,7 +84,7 @@ and supplies it in every pack. It never reaches into one pack.
      Mark anything unsettled with `uncertain`.
    - `verbs`: the pack's own verbs, and its own wording for the engine's
      (`BASE_VERBS` in world.ts). Every row's verb needs wording. `repeat`, `actors`,
-     `actors_target`, `targets` and `object` are group headlines. Singular roles
+     `actors_target`, `targets`, `object` and `composite` are group headlines. Singular roles
      follow each axis's shared identities, including context. Grouping never waits on
      wording: a group without one arrives unnamed and opens on its members.
    - `roles` and `scenes`: see the tables above. Scenes name row ids.
