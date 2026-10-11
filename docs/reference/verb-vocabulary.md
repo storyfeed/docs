@@ -14,37 +14,39 @@ Verbs are free-form strings, so you may use your own names, enum cases, or both.
 
 The verbs below are grouped by Activity Streams type. Case names start
 with a capital letter: `Act::TentativelyAccept` stores `tentativelyAccept`.
+The last column lists the 29 verbs Storyfeed registers without a
+`Storyfeed::verbs()` call.
 
-| Activity type | Verbs |
-| --- | --- |
-| `Create` | `create`, `upload`, `draft` |
-| `Update` | `update`, `rename`, `amend`, `correct`, `supersede`, `complete`, `confirm`, `cancel`, `begin`, `end`, `pause`, `resume`, `extend`, `shorten`, `enable`, `disable` |
-| `Delete` | `delete`, `discard` |
-| `Undo` | `undo`, `restore`, `reinstate`, `revert`, `void`, `withdraw` |
-| `Add` | `add`, `attach`, `apply`, `record` |
-| `Remove` | `remove`, `retire`, `archive`, `release`, `detach` |
-| `Join` | `join`, `pair` |
-| `Leave` | `leave` |
-| `Offer` | `offer`, `send`, `propose`, `request` |
-| `Invite` | `invite` |
-| `Accept` | `accept`, `agree` |
-| `Reject` | `reject`, `decline` |
-| `TentativeAccept` | `tentativelyAccept` |
-| `TentativeReject` | `tentativelyReject` |
-| `View` | `view`, `open` |
-| `Read` | `read`, `download` |
-| `Listen` | `listen` |
-| `Announce` | `announce`, `remind` |
-| `Question` | `ask` |
-| `Flag` | `flag` |
-| `Like` | `like` |
-| `Dislike` | `dislike` |
-| `Follow` | `follow` |
-| `Ignore` | `ignore` |
-| `Block` | `block` |
-| `Arrive` | `arrive` |
-| `Travel` | `travel` |
-| `Move` | `move` |
+| Activity type | `Act` verbs | Registered by default |
+| --- | --- | --- |
+| `Create` | `create`, `upload`, `draft` | `create` |
+| `Update` | `update`, `rename`, `amend`, `correct`, `supersede`, `complete`, `confirm`, `cancel`, `begin`, `end`, `pause`, `resume`, `extend`, `shorten`, `enable`, `disable` | `update` |
+| `Delete` | `delete`, `discard` | `delete` |
+| `Undo` | `undo`, `restore`, `reinstate`, `revert`, `void`, `withdraw` | `undo` |
+| `Add` | `add`, `attach`, `apply`, `record` | `add` |
+| `Remove` | `remove`, `retire`, `archive`, `release`, `detach` | `remove` |
+| `Join` | `join`, `pair` | `join` |
+| `Leave` | `leave` | `leave` |
+| `Offer` | `offer`, `send`, `propose`, `request` | `offer` |
+| `Invite` | `invite` | `invite` |
+| `Accept` | `accept`, `agree` | `accept` |
+| `Reject` | `reject`, `decline` | `reject` |
+| `TentativeAccept` | `tentativelyAccept` | `tentativeAccept` |
+| `TentativeReject` | `tentativelyReject` | `tentativeReject` |
+| `View` | `view`, `open` | `view` |
+| `Read` | `read`, `download` | `read` |
+| `Listen` | `listen` | `listen` |
+| `Announce` | `announce`, `remind` | `announce`, `share` |
+| `Question` | `ask` | `question` |
+| `Flag` | `flag` | `flag` |
+| `Like` | `like` | `like` |
+| `Dislike` | `dislike` | `dislike` |
+| `Follow` | `follow` | `follow` |
+| `Ignore` | `ignore` | `ignore` |
+| `Block` | `block` | `block` |
+| `Arrive` | `arrive` | `arrive` |
+| `Travel` | `travel` | `travel` |
+| `Move` | `move` | `move` |
 
 All verbs use present tense, such as `send`. The enum covers all 28 Activity
 Streams activity types.
@@ -160,38 +162,8 @@ case:
 
 ## Unregistered Verbs
 
-Storyfeed registers these 29 verbs without a `Storyfeed::verbs()` call:
-
-| Activity type | Verbs |
-| --- | --- |
-| `Accept` | `accept` |
-| `Add` | `add` |
-| `Announce` | `announce`, `share` |
-| `Arrive` | `arrive` |
-| `Block` | `block` |
-| `Create` | `create` |
-| `Delete` | `delete` |
-| `Dislike` | `dislike` |
-| `Flag` | `flag` |
-| `Follow` | `follow` |
-| `Ignore` | `ignore` |
-| `Invite` | `invite` |
-| `Join` | `join` |
-| `Leave` | `leave` |
-| `Like` | `like` |
-| `Listen` | `listen` |
-| `Move` | `move` |
-| `Offer` | `offer` |
-| `Question` | `question` |
-| `Read` | `read` |
-| `Reject` | `reject` |
-| `Remove` | `remove` |
-| `TentativeAccept` | `tentativeAccept` |
-| `TentativeReject` | `tentativeReject` |
-| `Travel` | `travel` |
-| `Undo` | `undo` |
-| `Update` | `update` |
-| `View` | `view` |
+Storyfeed registers the 29 verbs in the last column of
+[Available Verbs](#available-verbs) without a `Storyfeed::verbs()` call.
 
 Publishing any other verb before it is registered depends on
 [`verbs.strict`](/reference/configuration#verbs):
