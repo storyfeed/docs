@@ -8,8 +8,8 @@ const choices = scene.cookbook.verbChoices
 const createdOrder = activity({ ...scene.order, id: 'verb-created-order', verb: 'create',
   target: null, glyph: null, headline_template: ':actor created :object' })
 const placedOrder = { ...scene.order, headline_template: ':actor placed :object at :target' }
-const clause = { ...choices.clause, verb: 'update' }
-const attachment = { ...choices.attachment, verb: 'update' }
+const clause = { ...choices.clause, verb: 'update', headline_template: ':actor changed a clause in :object' }
+const attachment = { ...choices.attachment, verb: 'update', headline_template: ':actor changed an attachment on :object' }
 </script>
 
 <span id="naming-a-verb"></span>
@@ -252,8 +252,8 @@ use Storyfeed\Facades\Story;
 Story::for(Document::class)->verb('update')
     ->headline(fn (ActivityContext $activity): string =>
         $activity->has('clause')
-            ? ':actor removed a clause from :object'
-            : ':actor removed an attachment from :object');
+            ? ':actor changed a clause in :object'
+            : ':actor changed an attachment on :object');
 ```
 
 ```php memo="app/Http/Controllers/RecordClauseRemovalController.php"
@@ -339,125 +339,11 @@ Story::for(MenuItem::class)->verb('create')->headline(':actor created :object');
 Story::for(MenuItem::class)->verb('add')->headline(':actor added :object to :target');
 ```
 
-Use `create` for a new menu item:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/CreateMenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class CreateMenuItemController
-{
-    public function __invoke(StoreMenuItemRequest $request): RedirectResponse
-    {
-        $product = MenuItem::create($request->validated());
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('create', $product)
-            ->publish();
-
-        return back();
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/CreateMenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreMenuItemRequest;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Storyfeed\Facades\Storyfeed;
-
-class CreateMenuItemController
-{
-    public function __invoke(StoreMenuItemRequest $request): RedirectResponse
-    {
-        $product = MenuItem::create($request->validated());
-
-        Storyfeed::record(
-            verb: 'create',
-            object: $product,
-            actor: $request->user(),
-        );
-
-        return back();
-    }
-}
-```
-:::
+A new menu item is created:
 
 <FeedExample :items="[choices.create]" />
 
-Use `add` when putting an existing menu item on a menu:
-
-::: code-group
-```php [Fluent Syntax] memo="app/Http/Controllers/AddMenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class AddMenuItemController
-{
-    public function __invoke(Request $request, Menu $menu, MenuItem $product): RedirectResponse
-    {
-        $menu->menuItems()->attach($product);
-
-        Storyfeed::activity()
-            ->by($request->user())
-            ->action('add', $product)
-            ->to($menu)
-            ->publish();
-
-        return back();
-    }
-}
-```
-
-```php [Named Arguments] memo="app/Http/Controllers/AddMenuItemController.php"
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Menu;
-use App\Models\MenuItem;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Storyfeed\Facades\Storyfeed;
-
-class AddMenuItemController
-{
-    public function __invoke(Request $request, Menu $menu, MenuItem $product): RedirectResponse
-    {
-        $menu->menuItems()->attach($product);
-
-        Storyfeed::record(
-            verb: 'add',
-            object: $product,
-            actor: $request->user(),
-            target: $menu,
-        );
-
-        return back();
-    }
-}
-```
-:::
+An existing menu item is added to a menu, its target:
 
 <FeedExample :items="[choices.add]" />
 
