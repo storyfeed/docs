@@ -176,18 +176,6 @@ export function liveOf(rows: any[], verbs = VERBS, within = 15 * 60_000, ceiling
 
 // ── Rows as payload nodes ────────────────────────────────────────────────────
 
-/** Media that declares a picture or a file, which core's array source cannot carry. */
-const hasPicture = (media: any) => Boolean(media && (media.icon || media.image || media.preview
-  || media.files?.length || Object.keys(media.slots ?? {}).length))
-
-/** Core's media with the declared pictures laid over it. A declared icon replaces the avatar, as in core. */
-const PICTURES = ['icon', 'image', 'preview', 'files', 'slots']
-const withPictures = (media: any, declared: any) => ({
-  ...media,
-  ...(declared.icon ? { initials: null, color: null } : {}),
-  ...Object.fromEntries(PICTURES.filter((key) => key in declared).map((key) => [key, declared[key]])),
-})
-
 const micro = (ms: number) => new Date(ms).toISOString().replace(/\.(\d{3})Z$/, '.$1000Z')
 const localMs = (at: string) => Date.parse(`${at.replace(' ', 'T')}:00Z`)
 
@@ -200,8 +188,6 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const canonicalNow = Date.parse(p.canonicalNow)
   const byId = new Map(p.rows.map((r) => [r.id, r]))
 
-  const ROLES = ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']
-
   // Every row's node is core's, read through its array source by
   // `npm run payloads` (scripts/payloads.mjs), and moved onto the anchor.
   const order = new Map(Object.keys(p.payloads).map((id, i) => [id, i]))
@@ -212,18 +198,12 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
     const node = p.payloads[r.id]
     if (!node) throw new Error(`Row "${r.id}": no payload from core. Run \`npm run payloads\`.`)
 
-    // Laid over core's node: what a source item has no key for. A row's own
-    // headline is one activity's wording, and an entity's pictures are what
-    // an app's feedMedia() resolves from a model the sample does not have.
-    const media = Object.fromEntries(ROLES
-      .filter((role) => node[role] && hasPicture((r as any)[role]?.media))
-      .map((role) => [role, { ...node[role], media: withPictures(node[role].media, (r as any)[role].media) }]))
-
+    // Laid over core's node: a row's own headline, one activity's wording,
+    // which a source item has no key for. Entities' pictures come from core.
     return {
       ...node,
       published_at: micro(Date.parse(node.published_at) + (anchor - canonicalNow)),
       headline_template: r.headline ?? node.headline_template,
-      ...media,
     }
   }
 

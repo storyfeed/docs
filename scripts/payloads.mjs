@@ -8,10 +8,10 @@
  * `docs/.vitepress/theme/worlds/<pack>/payloads.json`, keyed by row id.
  * world.ts builds every scene, and `everything`, from those nodes.
  *
- * Two things a row carries that the array source has no key for are laid
- * over the generated nodes by world.ts, not written here: a row's own
- * `headline` (a one-off wording for one activity) and an entity's `media`
- * (resolved by an app's `feedMedia()`, which a source item has no model for).
+ * An entity's pictures go to core as its `media`, so core builds each node's
+ * media and avatar itself. One thing a row carries that the array source has
+ * no key for is laid over the generated nodes by world.ts, not written here:
+ * a row's own `headline` (a one-off wording for one activity).
  * Live groups for the ad-hoc subsets pages pass to `liveOf()` are still folded
  * in world.ts; scripts/live-drift.test.mjs checks that fold against core's Live.
  *
@@ -57,6 +57,9 @@ function entityOf(entity) {
   if (entity.link?.href) item.url = entity.link.href
   if (entity.data && Object.keys(entity.data).length) item.data = entity.data
   if (entity.body) item.body = entity.body
+  const media = Object.fromEntries(['icon', 'image', 'preview']
+    .filter((slot) => entity.media?.[slot]).map((slot) => [slot, entity.media[slot]]))
+  if (Object.keys(media).length) item.media = media
   return item
 }
 
