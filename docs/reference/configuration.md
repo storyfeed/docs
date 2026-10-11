@@ -99,7 +99,7 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | `grouping.default` | `'live'` | default read mode: `'log'` for individual activities, `'live'` for one-action bursts |
 | `grouping.bursts.within` | `'15 minutes'` | quiet gap that closes a Live burst |
 | `grouping.bursts.ceiling` | `'4 hours'` | maximum duration from the burst's start |
-| `grouping.burst_retention_days` | `7` | days a closed burst window stays open to late arrivals, such as imports; `storyfeed:prune --bursts` is scheduled daily to remove older windows. `null` keeps every window and schedules nothing |
+| `grouping.burst_retention_days` | `7` | days a closed burst window stays open to late arrivals, such as imports; older windows are swept by the [scheduled](/reference/commands#scheduling-maintenance) `storyfeed:prune --bursts`. `null` keeps every window |
 | `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats and composites |
 | `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
@@ -182,7 +182,7 @@ outside local and testing; see [Available Checks](/reference/doctor-checks#avail
 
 | Key | Default | Description |
 |---|---|---|
-| `curate.schedule` | `true` | run [`storyfeed:curate`](/reference/commands#other-maintenance-commands) hourly to choose groups for recent activities; requires Laravel's scheduler |
+| `curate.schedule` | `true` | [schedule](/reference/commands#scheduling-maintenance) `storyfeed:curate` to choose groups for recent activities |
 | `curate.window` | `2` | days included in scheduled grouping; raise this to cover any longer burst ceiling. Custom calendar axes widen it for their verbs. `null` or `0` includes all activities |
 | `prune.after_days` | `null` | default [retention period](/deeper/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
 | `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |

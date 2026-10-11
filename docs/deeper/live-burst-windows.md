@@ -56,6 +56,11 @@ value, so pass both when your defaults differ. A type-and-verb declaration
 takes precedence over a verb-only declaration.
 Windows must be positive intervals of at least one second.
 
+A closed window is kept for `grouping.burst_retention_days`, 7 by default, so
+a late activity such as an import can still join it. Older windows are swept
+by the [scheduled](/reference/commands#scheduling-maintenance)
+`storyfeed:prune --bursts`.
+
 See [Custom Axes](/deeper/custom-axes#calendar-periods) for calendar-based grouping.
 Batch windows independently determine when a batch closes; see
 [Batching Activities](/deeper/batching-activities#batch-windows).

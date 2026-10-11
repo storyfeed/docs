@@ -99,6 +99,9 @@ Schedule::command('storyfeed:prune')->daily();
 ```
 
 Each run permanently deletes the `view` activities older than 30 days. Other verbs follow their own declarations or default retention.
+A run also sweeps closed [burst windows](/deeper/live-burst-windows#setting-default-windows),
+which Storyfeed already [schedules](/reference/commands#scheduling-maintenance)
+daily on its own.
 
 <a id="pruned-activities-and-entities"></a>
 

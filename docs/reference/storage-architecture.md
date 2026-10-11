@@ -164,11 +164,11 @@ rules:
 |---|---|
 | a snapshot | the model is saved, the model appears in a publish, `storyfeed:trickle` finds it stale, `storyfeed:rebuild` runs, or `php artisan optimize` invokes `storyfeed:cache-snapshots` for a bounded recent refresh (skipped when the database is unavailable) |
 | a stale snapshot | `toFeed()` changes shape: each snapshot stores a `shape` fingerprint, and the trickle refreshes rows whose fingerprint differs |
-| `winner` | an activity is published into the group, or deleted from it; scheduled `storyfeed:curate` runs hourly, with a configurable lookback |
+| `winner` | an activity is published into the group, or deleted from it; the [scheduled](/reference/commands#scheduling-maintenance) `storyfeed:curate`, with a configurable lookback |
 | `hash` | `storyfeed:curate --rehash` |
 | role columns, snapshots, participants, groupings | a model is deleted: its activities are repointed to a tombstone, in chunks of 500 |
 | a batch's `closed_at` | the actor's next publish arrives after `closes_at`, or `storyfeed:close-batches` runs |
-| `feed_grouping_bursts` | closed burst windows older than [`grouping.burst_retention_days`](/reference/configuration#grouping) are deleted by `storyfeed:prune --bursts`, scheduled daily |
+| `feed_grouping_bursts` | closed burst windows older than [`grouping.burst_retention_days`](/reference/configuration#grouping) are deleted by the [scheduled](/reference/commands#scheduling-maintenance) `storyfeed:prune --bursts` |
 
 Scheduled curation defaults to the last two days (`storyfeed.curate.window`).
 Raise it to cover a burst ceiling longer than that window. Custom calendar
