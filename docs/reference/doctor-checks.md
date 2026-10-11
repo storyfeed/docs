@@ -27,20 +27,24 @@ all findings of that severity. Neither option marks one finding as accepted.
 Acknowledged findings remain visible with their reasons but are excluded
 from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#acknowledgment-policy).
 
+A check that throws is reported as `doctor.check_failed`, an error, and the
+other checks still run. An `--only=` name that matches no check is
+`doctor.unknown_check`, also an error.
+
 <span id="checks"></span>
 
 ## Available Checks
 
 | Check | Finds | Severity |
 |---|---|---|
-| `grammar` | recorded type-and-verb pairs with no headline or no icon, verbs with no Activity Streams 2.0 type, and intransitive verbs recorded with an object | error · warning · info |
+| `grammar` | recorded type-and-verb pairs with no headline or no icon, verbs with no Activity Streams 2.0 type, and intransitive verbs recorded with an object (`grammar.missing`, `grammar.icon_missing`, `grammar.unmapped_verb`, `grammar.intransitive_with_object`) | error · warning · info |
 | `aggregates` | groups that formed, or could form, with no group headline. See [Group Reachability](#group-reachability) | error · info |
-| `tokens` | group headlines that use a token which can differ between the group's members | warning · info |
-| `axes` | grouping axes that can hold several verbs, where a group headline names one verb or none exists | warning |
-| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`, `:location`, `:generator`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments). `:actor` over activities that are all anonymous is info | error · info |
-| `actorless` | anonymous activities whose verb has no anonymous headline | info |
-| `reflexive` | activities naming the same entity as actor and object | info |
-| `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. See [Definitions](#definitions) | warning · info |
+| `tokens` | group headlines that use a token which can differ between the group's members (`tokens.unpinned`), or name an axis that is not registered (`tokens.unregistered_axis`) | warning · info |
+| `axes` | grouping axes that can hold several verbs, where no verb-agnostic group headline exists (`axes.verbless_no_grammar`) or a group headline names one verb (`axes.verbless_per_verb_grammar`) | warning |
+| `roles` | headlines that name a role (`:object`, `:target`, `:context`, `:origin`, `:result`, `:instrument`, `:location`, `:generator`) none of their activities carry, so the headline reader shows an [empty-role placeholder](/basics/the-feed-file#optional-segments) (`roles.never_carried`). `:actor` over activities that are all anonymous is info (`roles.always_anonymous`) | error · info |
+| `actorless` | anonymous activities whose verb has no anonymous headline (`actorless.missing`) | info |
+| `reflexive` | activities naming the same entity as actor and object (`reflexive.actor_object`) | info |
+| `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. `verbs.skipped` when there is no activities table. See [Definitions](#definitions) | warning · info |
 | `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
 | `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
 | `removals` | verbs named like removals (`cancel`, `trash`) whose activities are treated as being about the object. See [Deleted Models](#deleted-models) | info |
@@ -51,27 +55,27 @@ from active counts, `--fail-on`, and `--stubs`. See [Acknowledgment Policy](#ack
 | `links` | observed entities without URLs in sampled named feeds, or feeds that cannot be inspected. See [Link Sampling](#link-sampling) | info |
 | `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
 | `media` | a body that shows one of its model's `feedMedia()` pictures by slot, on a model whose `feedMedia()` never sets that slot. See [Media Slots](#media-slots) | error · info |
-| `body` | the [body types](/deeper/custom-body-types) stored, a body with no `$body` key, and a body type versioned on some records but not others | warning · info |
+| `body` | the [body types](/deeper/custom-body-types) stored (`body.type`, `body.unversioned`), a body with no `$body` key or a `$body` that is not a string (`body.untokenized`, `body.malformed_token`), and a body type versioned on some records but not others (`body.version_ambiguous`) | warning · info |
 | `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
-| `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key, or superseded activities for a verb without a `keepLatest()` declaration | warning · info |
+| `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key (`keep_latest.split`), or superseded activities for a verb without a `keepLatest()` declaration (`keep_latest.undeclared`) | warning · info |
 | `retention` | activities past their verb's retention window, and frequent verbs without a retention limit. See [Retention](#retention) | warning · info |
 | `actions` | Story class methods that accept a request and threw during job dispatch, or call `request()` instead of accepting a `Request` parameter. See [Actions](#actions) | warning |
-| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities; error outside the `testing` environment, info within it | error · info |
-| `tables` | missing package tables. Until `feed_tombstones` exists, deleted models leave no tombstone | error |
-| `columns` | missing package columns; writes requiring them throw an exception | error |
-| `references` | app-reference columns not yet converted to strings by the `change_feed_references_to_strings` migration; on PostgreSQL, reads that join tombstones throw | error |
-| `snapshots` | an invalid `STORYFEED_SNAPSHOTS` value, or `sync` set outside the `local` and `testing` environments | error · warning |
-| `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions, or definitions that no longer compile while the cache keeps serving them | error |
-| `backlog` | activities whose entities have no label or link yet. Schedule `storyfeed:trickle` | warning |
+| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities (`recording.disabled`); error outside the `testing` environment, info within it | error · info |
+| `tables` | missing package tables (`tables.missing`). Until `feed_tombstones` exists, deleted models leave no tombstone | error |
+| `columns` | missing package columns (`columns.missing`); writes requiring them throw an exception | error |
+| `references` | app-reference columns not yet converted to strings by the `change_feed_references_to_strings` migration (`references.shape`); on PostgreSQL, reads that join tombstones throw | error |
+| `snapshots` | an invalid `STORYFEED_SNAPSHOTS` value (`snapshots.mode`, an error), or `sync` set outside the `local` and `testing` environments (`snapshots.sync`) | error · warning |
+| `manifest` | a [cached story manifest](/reference/commands#caching-definitions) older than your definitions (`manifest.stale`), or definitions that no longer compile while the cache keeps serving them (`manifest.uncompilable`) | error |
+| `backlog` | activities whose entities have no label or link yet (`backlog.uncached`). Schedule `storyfeed:trickle` | warning |
 | `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
 | `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
 | `ancestors` | broken declared parent chains (`ancestors.unresolvable`), declared parents with no recorded path (`ancestors.missing`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/deeper/distant-relations#checking-parent-chains) | warning |
-| `participants` | activities `involving()` cannot find, and participant rows whose `published_at` no longer matches their activity (`participants.drift`), as a query builder update leaves them. `storyfeed:participants` backfills and rewrites them | warning |
-| `dangling` | records left behind when activities were deleted by a query. They change nothing a feed shows | info |
-| `claims` | composite members still held by a deleted composite. `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
-| `freshness` | nothing published for `doctor.stale_after` days | warning · info |
-| `maintenance` | the last completed `storyfeed:curate` and `storyfeed:trickle` runs, and what they did | info |
+| `participants` | activities `involving()` cannot find (`participants.unindexed`), and participant rows whose `published_at` no longer matches their activity (`participants.drift`), as a query builder update leaves them. `storyfeed:participants` backfills and rewrites them | warning |
+| `dangling` | grouping and participant rows left behind when activities were deleted by a query (`dangling.groupings`, `dangling.participants`). They change nothing a feed shows | info |
+| `claims` | composite members still held by a deleted composite (`claims.parent_gone`). `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
+| `freshness` | nothing published for `doctor.stale_after` days (`freshness.stale`), or nothing published yet (`freshness.empty`, info) | warning · info |
+| `maintenance` | the last completed `storyfeed:curate` and `storyfeed:trickle` runs, and what they did (`maintenance.curate`, `maintenance.trickle`), or none retained (`maintenance.empty`) | info |
 
 ## Sampling and Scope
 
@@ -270,7 +274,7 @@ no fix and do not count as CI problems.
 | Finding | Severity | Meaning |
 |---|---|---|
 | `verbs.dotted` | warning | a stored verb contains a dot. Reports the verb and activity count; the rows remain readable. Use the action alone as the verb, keep the type as the object, and use [story names](/deeper/named-stories) for dotted lookups |
-| `verbs.undeclared` | warning | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verb-vocabulary#registering-verbs) |
+| `verbs.undeclared` | warning; info until the app registers its own verbs | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verb-vocabulary#registering-verbs) |
 | `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
 | `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
 
