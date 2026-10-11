@@ -129,7 +129,8 @@ Story::middleware('batch:5 minutes')->as('billing.')->for(Order::class)
 
 This alternative names the story `billing.place` and sets a five-minute batch
 window. As with `Route::middleware()->as()->group()`, you may chain `for`,
-`middleware`, `withoutMiddleware`, `as` / `name`, and role constraints in any order.
+[`middleware`](/deeper/story-middleware), `withoutMiddleware`, `as` / `name`, and role
+constraints in any order.
 
 For one declaration, omit `group()`:
 
