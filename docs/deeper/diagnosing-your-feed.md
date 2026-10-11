@@ -20,7 +20,7 @@ For an order-placement activity recorded with strict grammar disabled and no
 headline definition, the report shows:
 
 ```txt
-Snapshots compile: sync (STORYFEED_SNAPSHOTS)
+Snapshots compile: cached (STORYFEED_SNAPSHOTS)
 Installed: storyfeed/storyfeed dev-main@8b55f7b
 No headline resolves for `order.place` — headlines will be null. Guard it in a test with `HeadlineCoverage::assertCoversRecorded()`.
 No icon resolves for `order.place`. Guard it in a test with `HeadlineCoverage::assertCoversRecorded()`.
@@ -69,8 +69,8 @@ php artisan storyfeed:doctor --json
 {
     "healthy": false,
     "count": 2,
-    "severity": "error",
     "acknowledged_count": 0,
+    "severity": "error",
     "findings": [
         {
             "code": "grammar.missing",
@@ -80,7 +80,6 @@ php artisan storyfeed:doctor --json
                 "type": "order",
                 "verb": "place"
             },
-            "acknowledgment": null,
             "fix": {
                 "registry": "grammar",
                 "key": "order.place",
@@ -88,7 +87,8 @@ php artisan storyfeed:doctor --json
                 "snippet": "Story::for(Order::class)->verb('place')->headline(':actor placed :object');",
                 "definition": "Story::for(Order::class)->verb('place')->headline(':actor placed :object');",
                 "guard": "Storyfeed\\Testing\\HeadlineCoverage::assertCoversRecorded()"
-            }
+            },
+            "acknowledgment": null
         }
     ],
     "installed": {
