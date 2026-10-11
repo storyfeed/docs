@@ -99,8 +99,9 @@ aggregation. Neither approach replaces the member content with the headline.
 When members have names stored in activity data, show one or two names followed
 by the remaining count. [Naming Group Members From Activity Data](/cookbook/naming-group-members-from-activity-data)
 shows how to limit the displayed names. Count all members, including those
-omitted from the response. A “Show all” control can display only the supplied
-members unless your application fetches the rest.
+omitted from the response. A group node nests at most `grouping.children_limit`
+members; a “Show all” control fetches the rest with
+[`members()`](/basics/retrieving-feeds#paginating-a-group-s-members).
 
 <a id="show-system-outcomes-not-every-step"></a>
 
