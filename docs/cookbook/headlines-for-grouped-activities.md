@@ -20,7 +20,7 @@ const grouped = liveOf(placements, {
 ## Counting Repeated Activities
 
 Suppose a customer places an order, then places it again after an amendment.
-[Keep both occurrences](/cookbook/repeating-activities#keeping-every-occurrence)
+[Keep both occurrences](/deeper/keeping-the-latest-activity#keeping-every-occurrence)
 so the feed can explain what happened. These are two `place` activities about
 one order:
 

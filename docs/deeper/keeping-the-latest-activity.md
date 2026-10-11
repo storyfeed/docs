@@ -6,7 +6,11 @@
 earlier ones, including from `log()`.
 
 <script setup>
-import { scene } from '../.vitepress/theme/world'
+import { scene, logOf } from '../.vitepress/theme/world'
+const timeline = logOf(scene.cookbook.transitions.timeline)
+// keepLatest removes the earlier placement before a reader groups the rows.
+const latest = timeline.filter((row, index) => timeline.findIndex((other) =>
+  other.verb === row.verb && other.object.id === row.object.id) === index)
 const [earlier, saved, otherActor] = scene.deeper.keepingLatest.saves.map(row => ({ ...row, data: null, glyph: null }))
 </script>
 
@@ -85,6 +89,36 @@ After several saves of the same order, the feed contains only the latest:
 <FeedExample :items="[saved]" />
 
 Activities for other objects and verbs remain.
+
+<span id="choosing-a-storage-policy"></span>
+<span id="choosing-which-occurrences-to-keep"></span>
+<span id="keeping-every-occurrence-or-the-latest"></span>
+
+## Choosing Every Occurrence or the Latest
+
+Suppose an order is placed, confirmed, amended, and placed again:
+
+| Request | Every Occurrence | `keepLatest()` |
+|---|---|---|
+| first placement | append `placed` | replace `placed` |
+| confirmation | append `confirmed` | replace `confirmed` |
+| placed again after an amendment | append another `placed` | replace the earlier `placed` |
+| visible rows afterward | first placement, confirmation, second placement | confirmation, second placement |
+
+<span id="keeping-every-occurrence"></span>
+
+Without a policy, the order's log keeps every placement:
+
+<FeedExample :items="timeline" />
+
+<span id="keeping-the-latest-occurrence"></span>
+
+With `keepLatest()` on each verb, it keeps the latest activity for each verb:
+
+<FeedExample :items="latest" />
+
+Replaced activities disappear from every feed. Keep every activity if any
+page needs the full timeline.
 
 <a id="keeping-the-latest-per-actor"></a>
 

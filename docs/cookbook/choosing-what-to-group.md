@@ -113,7 +113,7 @@ A recorded payment can be useful even when a service is the actor:
 
 The actor and the affected order explain the event. Indexing, cache rebuilds
 and successful retries usually add no comparable information for the reader.
-[Choose what to record](/cookbook/choosing-what-not-to-record) before trying to
+[Choose what to record](/cookbook/choosing-when-to-publish#choosing-events-to-record) before trying to
 hide that volume in a group. For already-recorded events, a feed's
 [`only()` or `except()`](/basics/retrieving-feeds#filtering-by-verb) filters can select
 what its readers need.

@@ -195,6 +195,6 @@ store that value in `data` and include it through a dynamic headline.
 Use [Containers & Context](/deeper/containers-and-context#choosing-between-target-and-context)
 when the activity also needs a containing entity.
 
-For a link's intended recipient, keep the recipient identity on the issued-link
-record or in data. [Recording Signed-Link Access](/cookbook/recording-signed-link-access)
-shows how to retrieve those events without assigning the recipient as actor.
+For a link's intended recipient, see
+[A Link Sent to Someone](/cookbook/activities-without-an-actor#a-link-sent-to-someone),
+which records the fetch without assigning the recipient as actor.

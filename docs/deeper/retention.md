@@ -127,4 +127,4 @@ activity uses. The command keeps no record of what it removed. See
 activity stores.
 
 For short-lived state such as typing indicators, see
-[Choosing What Not to Record](/cookbook/choosing-what-not-to-record).
+[Choosing Events to Record](/cookbook/choosing-when-to-publish#choosing-events-to-record).

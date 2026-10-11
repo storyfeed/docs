@@ -42,6 +42,9 @@ export const REDIRECTS: Record<string, string> = {
   // 2026-10-11: Custom Rendering renamed.
   '/ui/custom-rendering': '/ui/building-your-own-components',
   '/deeper/story-middleware-and-batching': '/deeper/story-middleware',
+  '/cookbook/choosing-what-not-to-record': '/cookbook/choosing-when-to-publish#choosing-events-to-record',
+  '/cookbook/recording-signed-link-access': '/cookbook/activities-without-an-actor#a-link-sent-to-someone',
+  '/cookbook/repeating-activities': '/deeper/keeping-the-latest-activity#choosing-every-occurrence-or-the-latest',
 
   // Earlier moves.
   '/basics/headlines': '/basics/the-feed-file',

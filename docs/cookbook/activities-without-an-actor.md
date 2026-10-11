@@ -2,6 +2,7 @@
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
+import { linkFetch } from '../.vitepress/theme/recipes/signed-links'
 const { paid } = scene.cookbook.actorless
 </script>
 
@@ -18,16 +19,11 @@ including when you deliberately use `Storyfeed::anonymous()` or `by(null)`.
 | a user places an order | the user | `:actor placed :object with :target` |
 | a job, command, or integration marks an order paid | a named party | `:actor marked :object paid` |
 | an order expires without a recorded actor | none | `:object expired at :target` |
+| someone fetches a link sent to a customer | none; the customer is the target | `:object was fetched through the link sent to :target` |
 
 <span id="the-default-actor"></span>
 <span id="recording-the-authenticated-user"></span>
 <span id="preserving-an-actor-in-background-work"></span>
-
-Omit `by()` to record the authenticated user; see
-[Assigning the Actor](/basics/recording-activities#assigning-the-actor). A job started by
-a console command or the scheduler has no authenticated user, so pass the user
-to the job and call `by()`; see
-[Carrying Roles Into Queued Jobs](/deeper/activity-scopes#carrying-roles-into-queued-jobs).
 
 ## Recording a System Actor
 
@@ -105,19 +101,60 @@ Story::for(Order::class)->verb('pay')
 
 <FeedExample :items="[paid]" />
 
-See [Publishing From Events](/deeper/publishing-from-events) for the complete webhook or
-[Sharing an Actor](/deeper/activity-scopes#sharing-an-actor) to use one party
-throughout a job. Parties can also fill
-[other roles](/deeper/parties-and-anonymous-actors#using-parties-in-other-roles).
-
 <span id="recording-without-an-actor"></span>
 
 ## Recording No Actor
 
 To record no actor, such as for an order that expires unpaid, call
 `Storyfeed::anonymous()` and define a headline without `:actor`. See
-[Recording Anonymous Activities](/deeper/parties-and-anonymous-actors#recording-anonymous-activities)
-and [Anonymous Headlines](/deeper/parties-and-anonymous-actors#anonymous-headlines).
+[Recording Anonymous Activities](/deeper/parties-and-anonymous-actors#recording-anonymous-activities).
 
-For message delivery, bounces, spam complaints and send failures, see
-[Recording Email Lifecycle Events](/cookbook/recording-email-lifecycle-events).
+<span id="recording-an-unverified-fetch"></span>
+<span id="retrieving-fetch-evidence"></span>
+<span id="finding-a-recipient-s-link-access"></span>
+<span id="recording-an-authenticated-performer"></span>
+
+## A Link Sent to Someone
+
+A signed link proves which link was used, not who used it: a forwarded link or
+a mail scanner fetches it too. Record the fetch with no actor, and the intended
+recipient as the target:
+
+```php memo="routes/feed.php"
+use App\Models\Document;
+use Storyfeed\Facades\Story;
+
+Story::for(Document::class)->verb('fetch')
+    ->headline(':actor fetched :object')
+    ->anonymousHeadline(':object was fetched through the link sent to :target');
+```
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/DocumentLinkController.php" at="__invoke()"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::anonymous()
+    ->action('fetch', $document)
+    ->to($recipient)
+    ->data(['prefetch' => $request->header('Purpose') === 'prefetch'])
+    ->publish();
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/DocumentLinkController.php" at="__invoke()"
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::record(
+    verb: 'fetch',
+    object: $document,
+    target: $recipient,
+    anonymous: true,
+    data: ['prefetch' => $request->header('Purpose') === 'prefetch'],
+);
+```
+:::
+
+<FeedExample :items="[linkFetch]" />
+
+`Storyfeed::feed()->involving($recipient)` lists the fetches through their
+links. A `Purpose: prefetch` header hints that software fetched the link, so it
+is stored as data, never as the actor.
