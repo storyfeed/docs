@@ -152,7 +152,7 @@ $feed = Storyfeed::compose()
     ->get();
 ```
 
-A feed kept in order never groups, so calling `live` on it throws an
+A feed kept in order never groups, so reading it with `live` throws an
 `InvalidArgumentException`.
 
 ### Dateless Entries
@@ -320,7 +320,8 @@ Story::for('release')
 
 The feed applies its headlines, bodies, Live and Log modes, `only()` and
 `except()`, role filters, limits and cursors to these items, as it does to
-stored activities.
+stored activities. Unlike a composed feed, a source hides items dated in the
+future, as the database hides scheduled activities.
 
 To keep the items in the order given, pass `inOrder: true`:
 
@@ -467,7 +468,7 @@ class GitHubSource implements FeedSource
                 actor: $release['author']['login'],
                 object: [
                     'type' => 'release',
-                    'label' => $release['name'],
+                    'label' => $release['name'] ?: $release['tag_name'],
                     'url' => $release['html_url'],
                 ],
                 body: $release['body'],
