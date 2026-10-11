@@ -94,6 +94,7 @@ Choose when a value is decided:
 |---|---|---|
 | `->data(…)` on the activity | when the activity is published | frozen at publication |
 | `->body(…)` on `FeedEntity` in `toFeed()` | whenever the model is saved | stored and updated with the model |
+| `->body(…)` on `FeedEntity` in `toFeed()`, in a [composed feed](/basics/composing-feeds#composing-from-feedable-models) | whenever the feed is retrieved | built from current values and never stored |
 | `->body(…)` on `FeedMedia` in `feedMedia()` | whenever the feed is retrieved | built from current values and never stored |
 
 See [Computed Values in the Feed](/cookbook/computed-values-in-the-feed) for a count computed on retrieval.

@@ -128,6 +128,8 @@ label and values, shared by every activity the model appears in.
 `InteractsWithFeed` refreshes the snapshot on model saves while
 recording is enabled. Changes to its snapshot values can therefore appear
 on older activities too. Activity `data` preserves the values recorded for that event.
+A [composed feed](/basics/composing-feeds#composing-from-feedable-models)
+reads `toFeed()` each time it is read instead.
 
 <a id="describing-the-snapshot"></a>
 

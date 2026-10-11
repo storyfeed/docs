@@ -82,6 +82,8 @@ class Photo extends Model implements Feedable
 The method receives a `FeedContext` with the snapshot's label, route key and
 data, and returns a `FeedMedia` or `null`. Resolving URLs here lets a route or
 thumbnail change without rewriting stored picture bodies.
+A [composed feed](/basics/composing-feeds#composing-from-feedable-models)
+calls `feedMedia()` too, each time it is read.
 
 ### Using a Closure
 

@@ -19,6 +19,7 @@ Publish each transition from one site, so it is recorded once:
 | domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/deeper/publishing-from-events#publishing-from-an-event) |
 | model observer | model transitions while the application has no domain event |
 | action or service class | dispatching the domain event where the transition succeeds |
+| none: [compose it](/basics/composing-feeds#showing-a-record-s-progress) when read | a record's own page, from timestamps it already stores; nothing reaches other feeds |
 
 <a id="publishing-a-status-transition"></a>
 
