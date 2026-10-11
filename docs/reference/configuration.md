@@ -24,7 +24,7 @@ After editing cached definitions, run `storyfeed:cache` again.
 
 | Key | Default | Description |
 |---|---|---|
-| `sources.<name>` | `['database' => ['driver' => 'database']]` | named [feed sources](/basics/feed-sources), each with a `driver`: `database`, `array` (reading its `items`), or one registered with `Storyfeed::extend()`. A feed reads the database unless it calls `source()` |
+| `sources.<name>` | `['database' => ['driver' => 'database']]` | named [feed sources](/basics/feed-sources), each with a `driver`: `database`, `array` (reading its `items`, newest first unless `in_order` is `true`), or one registered with `Storyfeed::extend()`. A feed reads the database unless it calls `source()` |
 
 <span id="tables-models"></span>
 
@@ -99,7 +99,8 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | `grouping.default` | `'live'` | default read mode: `'log'` for individual activities, `'live'` for one-action bursts |
 | `grouping.bursts.within` | `'15 minutes'` | quiet gap that closes a Live burst |
 | `grouping.bursts.ceiling` | `'4 hours'` | maximum duration from the burst's start |
-| `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats |
+| `grouping.burst_retention_days` | `7` | days a closed burst window stays open to late arrivals, such as imports; `storyfeed:prune --bursts` is scheduled daily to remove older windows. `null` keeps every window and schedules nothing |
+| `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats and composites |
 | `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
 | `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` and `actors_target` axes |
