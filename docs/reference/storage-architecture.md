@@ -168,6 +168,7 @@ rules:
 | `hash` | `storyfeed:curate --rehash` |
 | role columns, snapshots, participants, groupings | a model is deleted: its activities are repointed to a tombstone, in chunks of 500 |
 | a batch's `closed_at` | the actor's next publish arrives after `closes_at`, or `storyfeed:close-batches` runs |
+| `feed_grouping_bursts` | closed burst windows older than [`grouping.burst_retention_days`](/reference/configuration#grouping) are deleted by `storyfeed:prune --bursts`, scheduled daily |
 
 Scheduled curation defaults to the last two days (`storyfeed.curate.window`).
 Raise it to cover a burst ceiling longer than that window. Custom calendar
@@ -184,7 +185,7 @@ one:
 
 | Change | When |
 |---|---|
-| `storyfeed:bundle`, `storyfeed:curate --rehash`, `storyfeed:heal` | each run that rewrites history |
+| `storyfeed:bundle`, `storyfeed:curate --rehash`, `storyfeed:curate --rebuild-bursts`, `storyfeed:participants --ancestors`, `storyfeed:heal` | each run that rewrites history |
 | deleting or restoring a model | when any activity is repointed |
 | releasing a composite | when a composite is released |
 | pruning or purging | when a group loses members |
