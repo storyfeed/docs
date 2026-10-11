@@ -353,7 +353,8 @@ class Photo extends Model implements Feedable
 The caption belongs to the body. The body stores the slot's name, and the
 picture is resolved each time the feed is read, so a changed thumbnail shows
 on every row. `Image::make()` with no picture names the `preview` slot.
-`MediaObject::image()` accepts the same values for a picture alongside its text.
+`MediaObject::image()` accepts a slot too, or a `FeedImage`, for a picture
+alongside its text.
 
 The three slots retain their Activity Streams 2.0 names:
 
