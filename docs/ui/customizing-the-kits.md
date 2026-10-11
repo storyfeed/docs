@@ -184,7 +184,7 @@ accept a structured `Rail`.
 | `rail`, `child-rail` | the rail for rows, and for expanded group members |
 | `:grouped="false"` | hides day headings |
 | `dividers` | maps item IDs to labels drawn before those items |
-| `divider-style="dot"` or `"branch"` | how the divider meets the rail: a dot on it or a branch off it |
+| `divider-style="dot"` or `"branch"` | how day headings and dividers meet the rail: a dot on it or a branch off it; `branch` is the default |
 | `:interactive="false"` | renders groups without a disclosure control |
 | `collapsed` | chooses the initial group state; `null` opens groups without a headline |
 | `timezone` | Blade only: the display zone for days and timestamps |
@@ -209,8 +209,9 @@ group opens. Static collapsed members remain in the HTML for printing.
 The disclosure says “Show less” when open and “Show all 3” for a collapsed
 three-member group. A group shows its full member count even when the page
 holds fewer members. Expanding displays the supplied children; it does not
-fetch more. A collapsed group shows up to three member pictures; an expanded
-group hides that strip.
+fetch more. A collapsed group shows a strip of up to four member tiles, or
+three and a “+N” tile: a member's picture when its row draws one, else its
+featured entity's name. Expanding the group hides the strip.
 
 ### Rail Spacing
 
