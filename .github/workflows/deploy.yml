@@ -3,6 +3,12 @@ name: Deploy docs
 on:
   push:
     branches: [main]
+  # Core's main changes without a push here: a nightly build regenerates the
+  # world against it, and `core-main` lets core ask for one.
+  schedule:
+    - cron: '17 4 * * *'
+  repository_dispatch:
+    types: [core-main]
   workflow_dispatch: {}
 
 # One in-flight deploy at a time; a newer push supersedes a queued one but
@@ -24,6 +30,11 @@ jobs:
         working-directory: storyfeed-docs
     env:
       STORYFEED_UI_PATH: ../storyfeed-ui/resources/js/vue
+      # With core here, the build's drift guard checks the pages against core's
+      # classes and migrations, and regenerates the world's feeds through core's
+      # docs generator (scripts/payloads.mjs): a committed file that differs
+      # from core's main fails the build.
+      STORYFEED_CORE: ${{ github.workspace }}/storyfeed
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +47,21 @@ jobs:
         with:
           repository: storyfeed/ui
           path: storyfeed-ui
+
+      - uses: actions/checkout@v4
+        with:
+          repository: storyfeed/storyfeed
+          path: storyfeed
+          # The drift detector reads core's history for deleted classes.
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - run: composer install --no-interaction --no-progress --prefer-dist
+        working-directory: storyfeed
 
       - uses: actions/setup-node@v4
         with:

@@ -32,6 +32,17 @@ are provided through `FEED_COMPONENTS`. `tailwind.css` maps starter-kit tokens
 to the light/dark VitePress palette, omits preflight, and scopes utilities to
 article content.
 
+The feed examples' payloads are core's own output. `npm run payloads` runs
+core's docs generator (`workbench/docs/generate.php` in `storyfeed/storyfeed`),
+which records the world through real models and writes `payloads.json` and
+`scenes.json` beside each world pack (`docs/.vitepress/theme/worlds/`). Both
+files are committed, so `dev` and `build` need no PHP. To regenerate, point
+`STORYFEED_CORE` at a core checkout with its Composer dependencies installed
+and run `npm run payloads`. Wherever core is
+present, `build` fails when either file is stale; the deploy checks out core's
+main, so a core change the committed files miss fails the deploy, nightly and
+on every push.
+
 Port 5174 is deliberate: 5173 belongs to the Laravel apps in this project, and
 two Vite dev servers fighting over one port is a confusing five minutes.
 
