@@ -339,7 +339,7 @@ should not write data or query the database except through `model()`.
 | `$context->routeKey()` | the entity's route key, as `getRouteKey()` returned it when the snapshot was written; `key()` when no route key is stored |
 | `$context->label()` | the cached label |
 | `$context->data()` | the `data` array the snapshot holds |
-| `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key returns `null`, or as the second argument |
+| `$context->data('mediaType')` | one value from it, by dot path (`'photo.width'`); a missing key returns `null`, or the default passed as the second argument |
 | `$context->feed()` | the registered name of the feed being retrieved, or `null` on an ad-hoc feed and in the Activity Streams serializer |
 | `$context->model()` | the current model, or `null` |
 
