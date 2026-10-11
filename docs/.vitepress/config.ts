@@ -357,6 +357,7 @@ export default defineConfig({
           { text: 'Recording Value Changes', link: '/cookbook/recording-value-changes' },
           { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
           { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
+          { text: 'Choosing to Record or Compose', link: '/cookbook/choosing-to-record-or-compose' },
           { text: 'Choosing What Not to Record', link: '/cookbook/choosing-what-not-to-record' },
           { text: 'Repeating Activities', link: '/cookbook/repeating-activities' },
           { text: 'Recording Deletions', link: '/cookbook/recording-deletions' },
