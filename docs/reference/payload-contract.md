@@ -4,6 +4,10 @@
 
 Payload v1 describes each feed node for rendering without domain-specific knowledge.
 
+Payload v1 only grows: a later release may add keys, add values to open
+strings such as `axis`, or fill a key that is `null` today. Ignore keys you
+don't recognise, and skip a node whose `kind` you don't recognise.
+
 <span id="envelope"></span>
 
 ## Response Envelope
@@ -20,7 +24,7 @@ with two keys after Laravel's own:
   // opaque string, or null at the end of the feed
   "next_cursor": "eyJ...",
   "next_page_url": "https://example.com/feed?cursor=eyJ...",
-  // always null: a feed pages forward only
+  // null until backward paging is supported
   "prev_cursor": null,
   "prev_page_url": null,
   "payload_version": 1,
@@ -191,6 +195,9 @@ that is absent from the customer feed.
 
 Nodes do not identify their source feed, so include the feed name in payload cache keys.
 
+The context carries the feed, never the reader. Resolving never consults
+`auth()`, so every reader of a feed gets the same payload.
+
 ### Degraded Entities
 
 Entities without snapshots remain in the payload with `label: null`,
@@ -355,6 +362,9 @@ A singular role contains an entity only when the grouping rule uses that
 role, every member shares it, its sample has one entry, and its distinct
 count is one. Otherwise it is `null`. Each plural role has a limited sample
 and a distinct count; empty roles use `[]` and `0`.
+
+When a feed is filtered or scoped, `count`, `distinct`, `sample` and
+`children` describe only the members inside it.
 
 Which activities group together, and when, is grouping policy, not part of
 the payload contract; see [Aggregation](/shaping/aggregation).
