@@ -29,13 +29,13 @@ const list = (items, more) => ({ $body: 'Storyfeed/Body/ItemList', $v: 1, items,
 
 test('MediaObject preserves a matching title and resolves null-href subject and footnote links', async () => {
   const html = await render([media({ label: 'Notice', href: null }, { label: 'Details', href: null })])
-  assert.match(html, /href="\/notices\/1">Notice<\/a>/)
-  assert.match(html, /href="\/notices\/1">Details<\/a>/)
+  assert.match(html, /href="\/notices\/1"[^>]*>Notice<\/a>/)
+  assert.match(html, /href="\/notices\/1"[^>]*>Details<\/a>/)
 })
 
 test('MediaObject keeps explicit destinations and leaves strings and missing destinations unlinked', async () => {
   const html = await render([media({ label: 'Guide', href: '/guide' }, 'Credit')])
-  assert.match(html, /href="\/guide">Guide<\/a>/)
+  assert.match(html, /href="\/guide"[^>]*>Guide<\/a>/)
   assert.doesNotMatch(html, /<a[^>]*>Credit<\/a>/)
   const plain = await render([media('Notice', { label: 'Credit', href: null })], null)
   assert.match(plain, /sf-media-object__subject[^>]*>Notice/)
