@@ -141,14 +141,16 @@ The section works without a database and supports `--json`.
 The feed works without a scheduler. When
 [Laravel's scheduler](https://laravel.com/docs/13.x/scheduling#running-the-scheduler)
 runs, Storyfeed schedules `storyfeed:curate` hourly unless
-[`curate.schedule`](/reference/configuration#maintenance) is `false`.
+[`curate.schedule`](/reference/configuration#maintenance) is `false`, and
+`storyfeed:prune --bursts` daily unless
+[`grouping.burst_retention_days`](/reference/configuration#grouping) is `null`.
 Schedule other maintenance commands in your application:
 
 | Command | Description | Suggested |
 |---|---|---|
 | `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` soft-deletes activities with an uncached role that cannot resolve | every minute |
 | `storyfeed:close-batches` | closes batches whose window has elapsed, dispatches `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
-| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing | daily, if a verb declares a window or `prune.after_days` is set |
+| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing. `--bursts` only removes closed burst windows older than `grouping.burst_retention_days`, and deletes no activities | daily, if a verb declares a window or `prune.after_days` is set |
 
 ```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
