@@ -124,6 +124,8 @@ neither event.
 | `deleted_at` | the deletion time as an ISO 8601 string, or `null` |
 | `forceDeleted` | whether the activity was permanently deleted |
 
+<span id="role-ids-are-strings"></span>
+
 Every non-null role `id` is a string, including integer model keys: compare
 with `'1'`, not `1`.
 

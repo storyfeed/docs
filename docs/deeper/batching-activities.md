@@ -80,5 +80,5 @@ A batch whose window has elapsed closes at the actor's next publish. To
 dispatch `BatchClosed` promptly, schedule
 [`storyfeed:close-batches`](/reference/commands#scheduling-maintenance).
 
-The batch's `actor_id` and every role ID in its activities are strings when
-non-null: compare with `'1'`, not `1`. Null role IDs remain `null`.
+The batch's `actor_id` and its activities' role IDs are strings, as in
+[the events' activities](/deeper/publishing-from-events#role-ids-are-strings).
