@@ -113,7 +113,7 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 | Method | Returns |
 |---|---|
 | `toHtml()`, or echoing the headline in Blade | the headline as HTML: entity labels linked, text escaped |
-| `toHtml(fn (Entity $entity) => …)` | the headline, with each entity rendered by the closure |
+| `toHtml(fn (Entity $entity) => …)` | the headline, with each entity rendered by the closure, including an empty role as `Entity::absent($role)` |
 | `toString()`, `(string)` | the headline as plain text |
 | `template()` | `?string`: `headline_template` |
 | `isFallback()` | `bool`: the item has no headline and uses Storyfeed's fallback text |
@@ -177,10 +177,17 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 | `content()`, `mediaType()`, `attributedTo()` | `?string` | `content`, `mediaType`, `attributedTo` |
 | `isDegraded()` | `bool`: no label yet, and not deleted | `label`, `tombstone` |
 | `isTombstone()` | `bool`: the model was deleted | `tombstone` |
+| `isAbsent()` | `bool`: the role is empty, as an anonymous actor's is; it reads as its fallback text | |
 | `formerType()` | `?string`: the deleted model's morph alias | `tombstone.formerType` |
 | `deletedAt()` | `?CarbonImmutable` | `tombstone.deleted` |
 
 `Entity` also supports array access: `$entity['label']` or `get('media.preview.src')`.
+
+Echoing an entity in Blade writes the whole link. Inside a link of your own,
+echo `$entity->label()` instead, so the links don't nest.
+
+`Entity::absent($role)` creates an entity for an empty role. It has no type,
+label or link, `isAbsent()` is `true`, and `isDegraded()` is `false`.
 
 ## Translation Lines
 

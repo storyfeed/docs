@@ -69,6 +69,42 @@ Story::for(Order::class)->verb('place')
 The activity remains in the feed without affecting the actor's open batch.
 The `unbatched` method removes batch middleware, including inherited windows.
 
+## Batch Metadata
+
+Pass your own metadata to the batch the activity joins with the `meta` method:
+
+::: code-group
+
+```php [Fluent Syntax] memo="app/Http/Controllers/OrderController.php"
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('place', $order)
+    ->to($shop)
+    ->meta(['channel' => 'kiosk'])
+    ->publish();
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/OrderController.php"
+Storyfeed::record(
+    verb: 'place',
+    object: $order,
+    actor: $request->user(),
+    target: $shop,
+    meta: ['channel' => 'kiosk'],
+);
+```
+
+:::
+
+Verb enums take `meta` the same way. Each activity's keys are written over the
+batch's earlier ones, so later activities in the batch can add to it. An
+activity that joins no batch, such as an anonymous or `unbatched` one, drops
+its metadata. A queued activity writes it on the worker.
+
+The metadata is stored in `feed_batches.meta`, and `BatchClosed` listeners
+receive it as `$event->batch->meta`. Top-level keys starting with `storyfeed.`
+are reserved for Storyfeed and throw an exception.
+
 ## Listening for Closed Batches
 
 When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed` after

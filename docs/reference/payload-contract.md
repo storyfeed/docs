@@ -9,7 +9,7 @@ Payload v1 describes each feed node for rendering without domain-specific knowle
 ## Response Envelope
 
 `get()` returns a collection whose JSON is a plain array of nodes, newest
-first. `cursorPaginate()` and `members()` return Laravel's cursor paginator,
+first ([Ordering](#ordering)). `cursorPaginate()` and `members()` return Laravel's cursor paginator,
 with two keys after Laravel's own:
 
 ```jsonc
@@ -420,12 +420,26 @@ needs a 24 by 24 pixel target at level AA.
 
 ## Pagination and Synchronization
 
+### Ordering
+
+Nodes are ordered by:
+
+1. `published_at`, descending; a group's is its newest member's;
+2. groups before activities;
+3. id, descending; a group's is its highest member id;
+4. grouping axis and hash.
+
+Live and Log read activities published at the same instant in the same order,
+on stored feeds and sources alike. The order rests on ids, so a cursor keeps
+its place across `storyfeed:curate --rehash`. To merge nodes with rows of your
+own, sort them the same way.
+
 <span id="cursor-semantics"></span>
 
 ### Cursors
 
 - Store cursors and return them unchanged; do not parse them.
-- Results are ordered by `published_at`, newest first, with [dateless entries](/retrieving/composing-feeds#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/retrieving/composing-feeds#keeping-your-order).
+- Results are ordered by `published_at`, newest first (see [Ordering](#ordering)), with [dateless entries](/retrieving/composing-feeds#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/retrieving/composing-feeds#keeping-your-order).
 - `next_cursor: null` marks the end.
 
 <span id="sync-token"></span>

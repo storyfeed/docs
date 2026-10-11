@@ -153,6 +153,25 @@ class MenuItem extends Model implements Feedable
 
 The tombstone keeps the label and removes the link.
 
+<a id="tombstone-metadata"></a>
+
+### Tombstone Metadata
+
+To keep your own metadata about a deletion, call `meta` on the tombstone:
+
+```php memo="app/Models/MenuItem.php"
+$this->feedEntity()
+    ->label("{$this->code} {$this->name}")
+    ->tombstone(fn (PendingTombstone $tombstone) => $tombstone
+        ->keepLabel()
+        ->meta(['reason' => 'seasonal']));
+```
+
+The metadata is stored in `feed_tombstones.meta`. A force delete after a soft
+delete adds to what the soft delete wrote. [Bulk deletions](#handling-bulk-deletions)
+write none, since they have no model instance. Top-level keys starting with
+`storyfeed.` are reserved for Storyfeed and throw an exception.
+
 <a id="groups-with-deleted-models"></a>
 
 ### Grouped Entities
@@ -330,11 +349,13 @@ class AccountController extends Controller
 ```
 
 Use `deleteFromFeed()` to soft-delete the activities. Models registered with
-`Storyfeed::feedable()` have neither method; call the actions directly:
+`Storyfeed::feedable()` have neither method; pass them to the facade:
 
 ```php
-(new \Storyfeed\Actions\DeleteFromFeed)($model);
-(new \Storyfeed\Actions\ForceDeleteFromFeed)($model);
+use Storyfeed\Facades\Storyfeed;
+
+Storyfeed::deleteFromFeed($model);
+Storyfeed::forceDeleteFromFeed($model);
 ```
 
 [Recording Deletions](/cookbook/recording-deletions) helps choose

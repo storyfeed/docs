@@ -51,6 +51,9 @@ php artisan migrate
 
 The [Schema](/reference/schema) describes the tables. For manual publication or an installation without migrations, see [Commands](/reference/commands).
 
+An app that only composes feeds from its own data can run without the tables;
+see [Running Without Tables](/retrieving/composing-feeds#running-without-tables).
+
 <a id="morph-aliases"></a>
 
 ## Defining Morph Aliases

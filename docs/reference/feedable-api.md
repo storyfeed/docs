@@ -358,6 +358,11 @@ $document = $context->model(with: ['project'], withTrashed: true);
 `null` for missing or soft-deleted models, or when `storyfeed.hydration.enabled`
 is `false`. Handle `null` in your resolver.
 
+On a [composed feed](/retrieving/composing-feeds) or a
+[feed source](/retrieving/feed-sources), `model()` returns the instance the
+entry was given, saved or not, with no query. `with` and `withCount` load onto
+it, one query per relation for the page.
+
 | Argument | Effect |
 |---|---|
 | `with: ['project']` | eager loads the relation for all loaded models; nested access without it is an N+1 |

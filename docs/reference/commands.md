@@ -10,7 +10,7 @@ Artisan commands install, inspect and maintain the feed.
 
 | Command | Description |
 |---|---|
-| `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, adds `STORYFEED_SNAPSHOTS=sync` to `.env` (commented out in `.env.example`; see [Snapshots](/reference/configuration#snapshots)), and offers to run the migrations. `--without-migrations` publishes none |
+| `storyfeed:install` | publishes `config/storyfeed.php` and the migrations, creates `routes/feed.php` from a stub, adds `STORYFEED_SNAPSHOTS=sync` to `.env` (commented out in `.env.example`; see [Snapshots](/reference/configuration#snapshots)), and offers to run the migrations. `--without-migrations` publishes none. `--without-storage` publishes the configuration and creates `routes/feed.php` only, for an app [running without tables](/retrieving/composing-feeds#running-without-tables) |
 
 ```bash
 # never overwrites an existing routes/feed.php
@@ -234,7 +234,7 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 
 | Command | Description |
 |---|---|
-| `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it |
+| `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it. When `grouping.curate` is `false` it does nothing and says so; `--release` still releases orphaned composites |
 | `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/maintenance/healing-a-feed). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
 | `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; adding `--missing` fills only never-recorded paths. `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/recording/distant-relations#declaring-a-parent-on-existing-history) |

@@ -15,7 +15,6 @@ const club = party('Hawkins Middle AV Club', 'hawkins-middle-av-club')
 const project = (slug, name, tagline, photo) => entry(`project-${slug}`, {
   headline_template: `:object, ${tagline}`, actor: club,
   object: entity('project', slug, name, `/projects/${slug}`, {
-    data: { photo },
     media: { image: { src: `/media/worlds/stranger-things/${photo}.jpg`, mediaType: null, width: null, height: null, alt: name } },
     body: [{ $body: 'Storyfeed/Body/MediaObject', $v: 5, subject: name, content: tagline, image: 'image' }],
   }),
@@ -162,10 +161,6 @@ keeps its own headline. Call `live` to group its dated entries with the same
 axes and burst windows as stored activities. A dateless or verbless entry is
 never grouped.
 
-<span id="running-without-tables"></span>
-
-A composed feed doesn't read the activity tables.
-
 <span id="showcasing-projects"></span>
 
 ## Composing From Feedable Models
@@ -197,21 +192,18 @@ class Project extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make(
-            label: $this->name,
-            data: ['photo' => $this->photo],
-        );
+        return FeedEntity::make(label: $this->name);
     }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
+        $project = $context->model();
+
         return FeedMedia::make()
             ->url(route('projects.show', $context->routeKey()))
-            ->image(
-                FeedImage::make()
-                    ->src(asset("media/{$context->data('photo')}.jpg"))
-                    ->alt($context->label())
-            );
+            ->image($project ? FeedImage::make()
+                ->src(asset("media/{$project->photo}.jpg"))
+                ->alt($project->name) : null);
     }
 }
 ```
@@ -235,20 +227,19 @@ class Project extends Model implements Feedable
 
     public function toFeed(): FeedEntity
     {
-        return FeedEntity::make(
-            label: $this->name,
-            data: ['photo' => $this->photo],
-        );
+        return FeedEntity::make(label: $this->name);
     }
 
     public static function feedMedia(FeedContext $context): ?FeedMedia
     {
+        $project = $context->model();
+
         return FeedMedia::make(
             url: route('projects.show', $context->routeKey()),
-            image: FeedImage::make(
-                src: asset("media/{$context->data('photo')}.jpg"),
-                alt: $context->label(),
-            ),
+            image: $project ? FeedImage::make(
+                src: asset("media/{$project->photo}.jpg"),
+                alt: $project->name,
+            ) : null,
         );
     }
 }
@@ -256,8 +247,8 @@ class Project extends Model implements Feedable
 
 :::
 
-`feedMedia()` reads what it needs from the entity's `data`, as here. In a
-composed feed, `$context->model()` looks the model up again in the database.
+In a composed feed, `$context->model()` returns the instance the entry was
+given, saved or not, and runs no query.
 
 A showcase has no dates. Its order is yours, such as a `position` column. The
 card's picture is the project's `image`:
@@ -386,3 +377,40 @@ Route::get('/projects', fn () => view('projects', [
 
 A composed feed can't answer `involving()`, `query()` or `members()`, which
 need stored history. See [Source Limitations](/retrieving/feed-sources#source-limitations).
+
+## Running Without Tables
+
+A composed feed reads none of Storyfeed's tables. An app that only composes
+feeds can run without them. Declare it in a service provider's `boot` method:
+
+```php memo="app/Providers/AppServiceProvider.php"
+use Storyfeed\Facades\Storyfeed;
+
+public function boot(): void
+{
+    Storyfeed::withoutStorage();
+}
+```
+
+With this declaration:
+
+- nothing is scheduled: neither `storyfeed:curate` nor `storyfeed:prune --bursts`;
+- saving, deleting or restoring a Feedable model writes nothing;
+- recording an activity throws `Storyfeed\Exceptions\StorageDisabled`, whether through
+  `Storyfeed::activity()`, the `storyfeed()` helper, a Story class or `Storyfeed::publish()`.
+
+Composed feeds, [feed sources](/retrieving/feed-sources), the feed file and the
+kits work as before. To install for this mode, pass `--without-storage`. The
+installer publishes the configuration and creates `routes/feed.php`, but
+publishes no migrations and adds nothing to `.env`:
+
+```bash
+php artisan storyfeed:install --without-storage
+```
+
+[`storyfeed:doctor`](/reference/doctor-checks) reports the mode as
+`recording.without_storage` and skips its `tables` and `maintenance` checks.
+
+Without the declaration, a Feedable model on an app with no `feed_snapshots`
+table still saves, and writes no snapshot. Recording an activity needs the
+tables.

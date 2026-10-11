@@ -354,11 +354,10 @@ Closed memberships remain in `feed_groupings`.
 Stores an actor's activities as batches, open until the configured window
 has elapsed.
 
-The `meta` column holds application metadata. Storyfeed has no dedicated
-batch-metadata setter; an application that needs it can load the configured
-batch Eloquent model and update its `meta` array directly. The model casts the
-column to an array. When the batch closes, `BatchClosed` listeners receive a
-frozen copy of this metadata in the batch snapshot's `meta` field.
+The `meta` column holds your application's metadata as free-form JSON,
+written with [`->meta([...])`](/shaping/batching-activities#batch-metadata)
+when an activity joins the batch. When the batch closes, `BatchClosed`
+listeners receive a frozen copy in the batch snapshot's `meta` field.
 
 <!-- schema:feed_batches -->
 | Column | Type | Attributes | Purpose |
@@ -372,7 +371,7 @@ frozen copy of this metadata in the batch snapshot's `meta` field.
 | `activities_count` | unsigned int | default `0` | How many activities joined the batch. |
 | `last_activity_at` | timestamp | nullable | The latest `published_at` among its activities. |
 | `closes_at` | timestamp | nullable | When the batch ends. Each activity moves it to its own `published_at` plus its verb's window, never earlier. |
-| `meta` | json | nullable | Metadata about the batch, kept without adding a column. |
+| `meta` | json | nullable | Your application's metadata about the batch. Top-level `storyfeed.` keys are reserved. |
 | `created_at` | timestamp | nullable | When the row was written. |
 | `updated_at` | timestamp | nullable | When the row last changed. |
 
@@ -451,11 +450,9 @@ Stores a tombstone for each deleted model, referenced by its activities.
 The alias is always `storyfeed.tombstone`, regardless of the morph map.
 See [Deleted Models](/maintenance/deleted-models).
 
-The `meta` column holds application metadata. Neither the public tombstone
-entry point nor `PendingTombstone` provides a metadata setter. Applications
-can update `meta` directly on the configured tombstone Eloquent model, which
-casts the column to an array. This is an application-owned model write, not
-an option on the deletion declaration.
+The `meta` column holds your application's metadata as free-form JSON,
+written with [`PendingTombstone::meta()`](/maintenance/deleted-models#tombstone-metadata)
+in the model's tombstone declaration.
 
 <!-- schema:feed_tombstones -->
 | Column | Type | Attributes | Purpose |
@@ -467,7 +464,7 @@ an option on the deletion declaration.
 | `approximate` | boolean | default `false` | True when `storyfeed:trickle` found the deletion, so `deleted_at` is when it was found. |
 | `deleted_at` | timestamp | nullable | When the model was deleted. |
 | `label` | string(255) | nullable | The label kept for the deleted model, when it keeps one. |
-| `meta` | json | nullable | Metadata about the deletion, kept without adding a column. |
+| `meta` | json | nullable | Your application's metadata about the deletion. Top-level `storyfeed.` keys are reserved. |
 | `created_at` | timestamp | nullable | When the tombstone was created. |
 | `updated_at` | timestamp | nullable | When the tombstone last changed. |
 

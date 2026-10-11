@@ -60,7 +60,7 @@ other checks still run. An `--only=` name that matches no check is
 | `keep_latest` | several active activities with the same [`keepLatest()`](/shaping/keeping-the-latest-activity) key (`keep_latest.split`), or superseded activities for a verb without a `keepLatest()` declaration (`keep_latest.undeclared`) | warning · info |
 | `retention` | activities past their verb's retention window, and frequent verbs without a retention limit. See [Retention](#retention) | warning · info |
 | `actions` | Story class methods that accept a request and threw during job dispatch, or call `request()` instead of accepting a `Request` parameter. See [Actions](#actions) | warning |
-| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities (`recording.disabled`); error outside the `testing` environment, info within it | error · info |
+| `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities (`recording.disabled`); error outside the `testing` environment, info within it. An app [running without tables](/retrieving/composing-feeds#running-without-tables) gets `recording.without_storage` instead, and the `tables` and `maintenance` checks are skipped | error · info |
 | `tables` | missing package tables (`tables.missing`). Until `feed_tombstones` exists, deleted models leave no tombstone | error |
 | `columns` | missing package columns (`columns.missing`); writes requiring them throw an exception | error |
 | `references` | app-reference columns not yet converted to strings by the `change_feed_references_to_strings` migration (`references.shape`); on PostgreSQL, reads that join tombstones throw | error |

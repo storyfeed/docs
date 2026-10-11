@@ -161,7 +161,9 @@ role. Echo the entity to display its label, linked when it has a URL:
 Use the `label`, `url`, and `type` methods to access individual values.
 
 To customize entity markup, pass a closure to the `toHtml` method. It receives
-each `Entity` and returns HTML. Escape values included in that HTML:
+each `Entity` and returns HTML. Escape values included in that HTML. An empty
+role, such as an anonymous actor, reaches the closure too, as an entity whose
+`isAbsent()` is `true` and that reads as `Someone`:
 
 ```blade memo="resources/views/components/feed/activity.blade.php"
 @use('Storyfeed\Support\Entity')
@@ -462,7 +464,7 @@ recorded actor and uses a placeholder in its headline:
 
 | Condition | Display | Check |
 |---|---|---|
-| an anonymous actor | `Someone` | `actor()` is `null` |
+| an anonymous actor | `Someone` | `actor()` is `null`; in a `toHtml` closure, `isAbsent()` |
 | a missing label | `Someone` for the actor, `Something` for another role | `isDegraded()` |
 | a [deleted model](/maintenance/deleted-models) | `a removed order`, `a former customer`, based on its former type | `isTombstone()`, `formerType()` |
 | a group without a headline | `5 activities` | `headline()->isFallback()` |

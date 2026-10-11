@@ -100,7 +100,7 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 | `grouping.bursts.within` | `'15 minutes'` | quiet gap that closes a Live burst |
 | `grouping.bursts.ceiling` | `'4 hours'` | maximum duration from the burst's start |
 | `grouping.burst_retention_days` | `7` | days a closed burst window stays open to late arrivals, such as imports; older windows are swept by the [scheduled](/reference/commands#scheduling-maintenance) `storyfeed:prune --bursts`. `null` keeps every window |
-| `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats and composites |
+| `grouping.curate` | `true` | choose which group shows each activity at publication; `false` limits `live()` to repeats and composites, and makes `storyfeed:curate` a no-op apart from `--release` |
 | `grouping.children_limit` | `25` | maximum member nodes nested in each group; `count` remains the full total |
 | `grouping.sample_limits.<role>` | `3` | distinct entities sampled per singular role on a group node; resolved whenever a page is retrieved. Invalid or missing limits use `3` |
 | `grouping.policy.min_actors` | `3` | distinct actors required for the `actors` and `actors_target` axes |

@@ -147,7 +147,7 @@ enum OrderActivity: string implements FeedVerb
 | `startTime`, `endTime` | The activity's `starts_at` and `ends_at` in UTC, each only when recorded. |
 | `duration` | The time from `startTime` to `endTime` in days and time, such as `P1DT2H`. Only when both are recorded. |
 | composite `object` | Serializes as `OrderedCollection`. |
-| entity media | [Media](/reference/payload-contract#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. |
+| entity media | [Media](/reference/payload-contract#entity-media) serialize as AS2 `Link` objects under `icon`, `image` and `preview`. During serialization, `$context->feed()` in `feedMedia()` returns `null`. An entity with no model carries its own `url` and `media` the same way; its link is the `url`, or the `id` on an actor. |
 
 ### Type Overrides
 

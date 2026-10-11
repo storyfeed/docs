@@ -48,7 +48,9 @@ Route::get('/', function () {
 });
 ```
 
-A feed is ordered by `published_at`, newest first. To show data in your own
+A feed is ordered by `published_at`, newest first. Rows published at the same
+instant read highest id first, grouped or not; see
+[Ordering](/reference/payload-contract#ordering). To show data in your own
 order, or without dates, [compose a feed](/retrieving/composing-feeds#composing-a-feed).
 
 For three order placements, the response contains:
