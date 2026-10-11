@@ -964,7 +964,8 @@ action text as the fallback. Other body types store none.
 
 A stored body leaves out each key that holds its default, which is `null`
 unless the table says otherwise. A body class's static `upgrade($payload,
-$version)` method returns the payload with every key filled in.
+$from)` method takes a stored payload and its `$v`, and returns it with every
+key filled in.
 
 These classes use the `Storyfeed\Body` namespace. Each body's payload includes
 its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
@@ -1003,9 +1004,10 @@ The activity's `featured` key names the role:
 | `featuringActor()`, `featuringTarget()`, `featuringOrigin()`, `featuringResult()`, `featuringInstrument()`, `featuringLocation()`, `featuringGenerator()` | that role's entity |
 | `withoutFeature()` | no entity: `featured` is `null`; bodies in the activity's own data remain |
 
-A context is never featured. Featuring a role the activity leaves empty throws
-`IncompleteActivity` when the activity is recorded. If the featured entity is
-missing when the feed is read, the activity still appears.
+A context is never featured. Featuring a role other than the object that the
+activity leaves empty throws `IncompleteActivity` when the activity is
+recorded. If the featured entity is missing when the feed is read, the
+activity still appears.
 
 To set a verb's default, call the same method in the feed file. An activity's
 own call wins:
