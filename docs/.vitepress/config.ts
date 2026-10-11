@@ -380,6 +380,7 @@ export default defineConfig({
           { text: 'Doctor Checks', link: '/reference/doctor-checks' },
           { text: 'Feedable API', link: '/reference/feedable-api' },
           { text: 'FeedItem API', link: '/reference/feed-item-api' },
+          { text: 'Entry API', link: '/reference/entry-api' },
           { text: 'Verb Vocabulary', link: '/reference/verb-vocabulary' },
           { text: 'The Payload Contract', link: '/reference/payload-contract' },
           { text: 'Schema', link: '/reference/schema' },
