@@ -36,6 +36,7 @@ needed.
 | `activity`, `group` | one row; group members behind a disclosure |
 | `headline` | linked headline entities |
 | `glyph`, `avatar`, `rail` | row markers |
+| `meta` | the line under a headline: time, range and unnamed roles |
 | `time`, `media`, `body` | a timestamp, picture or body |
 | `pager`, `divider`, `media-strip` | navigation and group presentation |
 
