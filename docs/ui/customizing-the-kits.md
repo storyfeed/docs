@@ -163,42 +163,22 @@ translation namespace; override them in
 <script setup>
 import { scene, liveOf } from '../.vitepress/theme/world'
 const groupedOrders = liveOf(scene.deeper.aggregation.orders)
-const divider = { [groupedOrders[0].id]: 'Orders' }
 </script>
 
-`rail="actor"` puts the actor’s avatar on the rail with a small verb icon;
-`rail="activity"` puts the icon first. The `-only` variants drop the badge.
-The default is `actor-only`, with `activity-only` for group members.
-Members inherit the group’s rail unless `child-rail` says otherwise, and omit
-badges. Groups with several actors show sampled avatars. Vue and React also
-accept a structured `Rail`.
+The rail is the column of avatars and icons beside each row; `child-rail`
+sets it for expanded group members. Day headings, `dividers` and group state
+take attributes the same way.
 
-<FeedExample :items="[scene.order]" rail="actor">Avatar with a verb icon</FeedExample>
-<FeedExample :items="[scene.order]" rail="activity">Verb icon with an avatar</FeedExample>
-<FeedExample :items="[scene.order]" rail="actor-only">Avatar only</FeedExample>
-<FeedExample :items="[scene.order]" rail="activity-only">Verb icon only</FeedExample>
-<FeedExample :items="groupedOrders" rail="actor" child-rail="activity-only" :collapsed="false">Expanded members with their own rail</FeedExample>
+<FeedExample :items="groupedOrders" rail="actor" child-rail="activity-only" :collapsed="false" />
 
-| Option | Behaviour |
-|---|---|
-| `rail`, `child-rail` | the rail for rows, and for expanded group members |
-| `:grouped="false"` | hides day headings |
-| `dividers` | maps item IDs to labels drawn before those items |
-| `divider-style="dot"` or `"branch"` | how day headings and dividers meet the rail: a dot on it or a branch off it; `branch` is the default |
-| `:interactive="false"` | renders groups without a disclosure control |
-| `collapsed` | chooses the initial group state; `null` opens groups without a headline |
-| `timezone` | Blade only: the display zone for days and timestamps |
+[Pages, Rails and Styles](/ui/reference/pages-rails-and-styles) shows every
+rail, divider style and group state. The component reference pages name each
+option in each kit.
 
-React spells the options in camelCase: `childRail`, `grouped={false}`,
-`dividerStyle`, `interactive={false}`.
+<span id="rail-spacing"></span>
 
-<FeedExample :items="groupedOrders" days>Day headings</FeedExample>
-<FeedExample :items="groupedOrders" :grouped="false">Without day headings</FeedExample>
-<FeedExample :items="groupedOrders" :dividers="divider" divider-style="dot">Divider on the rail</FeedExample>
-<FeedExample :items="groupedOrders" :dividers="divider" divider-style="branch">Divider branching off the rail</FeedExample>
-<FeedExample :items="groupedOrders" collapsed>Collapsed disclosure</FeedExample>
-<FeedExample :items="groupedOrders" :interactive="false">Static expanded group</FeedExample>
-<FeedExample :items="groupedOrders" :interactive="false" collapsed>Static collapsed group</FeedExample>
+The rail's width, its gap to the content and the disc and badge sizes are
+[CSS variables](/ui/reference/pages-rails-and-styles#css-variables).
 
 ### Group Disclosure
 
@@ -209,18 +189,11 @@ group opens. Static collapsed members remain in the HTML for printing.
 The disclosure says “Show less” when open and “Show all 3” for a collapsed
 three-member group. A group shows its full member count even when the page
 holds fewer members. Expanding displays the supplied children; it does not
-fetch more. A collapsed group shows a strip of up to four member tiles, or
-three and a “+N” tile: a member's picture when its row draws one, else its
-featured entity's name. Expanding the group hides the strip.
-
-### Rail Spacing
-
-| CSS Property | Controls |
-|---|---|
-| `--sf-gutter` | rail width |
-| `--sf-gap` | rail-to-content gap |
-| `--sf-disc` | primary avatar or icon size |
-| `--sf-badge`, `--sf-badge-face` | badge sizes |
+fetch more: to page through every member, read them with
+[`members()`](/basics/retrieving-feeds#paginating-a-group-s-members). A
+collapsed group shows a strip of up to four member tiles, or three and a “+N”
+tile: a member's picture when its row draws one, else its featured entity's
+name. Expanding the group hides the strip.
 
 ## Feed Size and Code Blocks
 
