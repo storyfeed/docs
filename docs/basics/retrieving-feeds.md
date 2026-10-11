@@ -512,20 +512,13 @@ The items are in `data`. Pass `next_cursor` to retrieve the next page. See
 [Response Envelope](/reference/payload-contract#response-envelope) for all response keys.
 
 <a id="one-activity"></a>
-
-### Activity Items {#activity-nodes}
-
-The following item represents a customer placing an order:
-
-<FeedExample expanded :items="[scene.order]" />
-
+<span id="activity-nodes"></span>
 <a id="entity-fields"></a>
 <a id="activities-by-a-payment-provider"></a>
 <a id="parties-and-missing-actors"></a>
 
-Each role contains an entity with fields such as `type`, `id`, `label`, and
-`link`. See [Entities](/reference/payload-contract#entities) for the complete structure.
-An empty role is `null`.
+Each role holds an entity with its `type`, `id`, `label` and `link`, or `null`
+when empty. See [Entities](/reference/payload-contract#entities).
 
 ### Group Items {#group-nodes}
 
@@ -539,11 +532,9 @@ This example groups three orders placed by one customer:
 <a id="activities-by-several-actors"></a>
 <a id="digest-rows"></a>
 
-The `count` field contains the activity count. The `distinct` field counts
-entities in each role, while `sample` contains a limited selection. `children`
-holds the newest members; [`members`](#group-members) pages through the rest.
-[Live](/basics/retrieving-feeds#live) combines one action within a burst. See
-[Group Items](/reference/payload-contract#group-nodes) for the fields.
+`count` is the number of activities, and `children` holds the newest;
+[`members`](#group-members) pages through the rest. See
+[Group Items](/reference/payload-contract#group-nodes) for every field.
 
 <a id="activity-content"></a>
 <a id="quoted-text"></a>
