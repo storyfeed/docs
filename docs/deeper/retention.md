@@ -80,6 +80,7 @@ php artisan storyfeed:prune --pretend
 | view | 3          |
 +------+------------+
 Would prune 3 activities, 2 snapshots and 0 tombstones. Nothing was deleted.
+Would sweep 0 closed burst windows.
 ```
 
 Preview changes after setting or shortening retention: the next pruning run
