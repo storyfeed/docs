@@ -121,9 +121,10 @@ Storyfeed::actor($request->user(), function () use ($order) {
 
 <FeedExample :items="[scoped]" expanded />
 
-The `actor` method accepts an Eloquent model or declared party name and returns
-the callback's result. Without a callback, `Storyfeed::actor($user)` returns an
-activity builder with that actor set.
+The `actor` method accepts an Eloquent model or a party name, checked against
+the [declared party names](/deeper/parties-and-anonymous-actors#declaring-party-names)
+when you declare them, and returns the callback's result. Without a callback,
+`Storyfeed::actor($user)` returns an activity builder with that actor set.
 
 ### Nested Scopes
 
