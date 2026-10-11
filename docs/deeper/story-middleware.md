@@ -1,10 +1,16 @@
-# Story Middleware & Batching
+# Story Middleware
 
 ## Introduction
 
 Use story middleware to add shared data, supply roles, or decide whether to
-publish an activity. The built-in batch middleware collects one actor's
-activities into a batch.
+publish an activity. The built-in `batch` middleware collects one actor's
+activities into a batch; see [Batching Activities](/deeper/batching-activities).
+
+<span id="batching-activities"></span>
+<span id="setting-a-batch-window"></span>
+<span id="batch-windows"></span>
+<span id="publishing-outside-a-batch"></span>
+<span id="listening-for-closed-batches"></span>
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -163,79 +169,6 @@ A middleware string may name a class, alias, or group. Append arguments after a
 colon, as in `batch:5 minutes`. A custom class receives them after `$next` in
 its `handle` method. A Story may declare middleware in `middleware(): array`,
 but that method cannot use constructor data.
-
-## Batching Activities
-
-<a id="setting-a-batch-window"></a>
-
-### Batch Windows
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag')
-    ->batched(within: '5 minutes');
-```
-
-<FeedExample :items="[placed]" />
-
-A batch collects activities by one actor until its window closes. The activity
-joins the actor's open batch without changing its headline. Storyfeed batches
-are separate from Laravel job batches created with `Bus::batch()`.
-
-The window determines how long Storyfeed waits for more activities before
-closing the batch. Each batched activity extends the closing time to its
-`published_at` plus its verb's window, if that is later. An activity before an open batch’s start or at or after its closing time
-starts a separate batch. Closed batches stay closed.
-Anonymous activities cannot join a batch because they have no recorded actor.
-Batches are stored in [`feed_batches`](/reference/schema#feed-batches).
-
-| Declaration | Batch Behaviour |
-|---|---|
-| nothing | the built-in `batch` middleware uses `grouping.batch.quiet_minutes` |
-| `batched()` | uses the configured window |
-| `batched(within: '5 minutes')` | uses a five-minute window |
-| `unbatched()` | does not join, extend, or close a batch |
-
-`within` accepts a positive interval string or a `DateInterval`.
-`storyfeed.grouping.batch.enabled = false` disables batching.
-
-The examples below are alternative declarations for `place`. Replace its
-existing declaration when trying one.
-
-### Publishing Outside a Batch
-
-```php memo="routes/feed.php"
-use App\Models\Order;
-use Storyfeed\Facades\Story;
-
-Story::for(Order::class)->verb('place')
-    ->headline(':actor placed :object with :target')
-    ->icon('shopping-bag')
-    ->unbatched();
-```
-
-<FeedExample :items="[placed]" />
-
-The activity remains in the feed without affecting the actor's open batch.
-The `unbatched` method removes batch middleware, including inherited windows.
-
-### Listening for Closed Batches
-
-When a batch closes, Storyfeed dispatches `Storyfeed\Events\BatchClosed` after
-the outermost transaction commits. The event's `$event->batch` contains an
-immutable copy of the closed batch and its activities. Register a listener to
-handle the completed batch.
-
-A batch whose window has elapsed closes at the actor's next publish. To
-dispatch `BatchClosed` promptly, schedule
-[`storyfeed:close-batches`](/reference/commands#scheduling-maintenance).
-
-The batch's `actor_id` and every role ID in its activities are strings when
-non-null: compare with `'1'`, not `1`. Null role IDs remain `null`.
 
 <a id="preserving-an-actor-or-context"></a>
 <a id="preserving-actor-and-context-values"></a>

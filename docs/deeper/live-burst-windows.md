@@ -58,7 +58,7 @@ Windows must be positive intervals of at least one second.
 
 See [Custom Axes](/deeper/custom-axes#calendar-periods) for calendar-based grouping.
 Batch windows independently determine when a batch closes; see
-[Story Middleware & Batching](/deeper/story-middleware-and-batching#batch-windows).
+[Batching Activities](/deeper/batching-activities#batch-windows).
 
 <a id="applying-a-changed-period-to-stored-activities"></a>
 <a id="applying-period-changes"></a>

@@ -41,6 +41,7 @@ export const REDIRECTS: Record<string, string> = {
 
   // 2026-10-11: Custom Rendering renamed.
   '/ui/custom-rendering': '/ui/building-your-own-components',
+  '/deeper/story-middleware-and-batching': '/deeper/story-middleware',
 
   // Earlier moves.
   '/basics/headlines': '/basics/the-feed-file',

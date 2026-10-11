@@ -166,7 +166,7 @@ Package authors can [register Story classes in a service provider](/deeper/packa
 ## Story Middleware
 
 Attach middleware to a verb binding or a group in `routes/feed.php`. See
-[Story Middleware & Batching](/deeper/story-middleware-and-batching) for
+[Story Middleware](/deeper/story-middleware) for
 registration, exclusions, and batching.
 
 <a id="every-activity-for-one-model"></a>

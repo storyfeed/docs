@@ -284,7 +284,7 @@ Storyfeed resolves each role from the first applicable source:
 |---|---|---|
 | Call site | `->by($user)` or explicit anonymity | `->context($model)` |
 | Scope | `Storyfeed::actor()` or `storyfeed.actor:{Party}`, including a scope carried into a queued job | `Storyfeed::context()` or `storyfeed.context:{param}`, including a scope carried into a queued job |
-| [Story middleware](/deeper/story-middleware-and-batching) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
+| [Story middleware](/deeper/story-middleware) | supplies an actor when `hasActor()` is false | supplies context when `has('context')` is false |
 | Verb | the [verb's actor](#request-based-actors) | none |
 | Resolver or user | a custom [`actor_resolver`](/deeper/parties-and-anonymous-actors#resolving-the-default-actor); without one, the authenticated user, or in a queued job the user authenticated at dispatch | none |
 | Fallback | [`parties.fallback`](/deeper/parties-and-anonymous-actors#setting-a-default-actor) | none |
@@ -296,7 +296,7 @@ nested scope applies only for its callback.
 A custom resolver replaces the authenticated user as a source. If it returns
 `null`, the fallback party applies. Explicit anonymity records no actor.
 Without a resolved actor, the activity is anonymous and cannot join a
-[batch](/deeper/story-middleware-and-batching#batch-windows). If no context is
+[batch](/deeper/batching-activities#batch-windows). If no context is
 supplied, that role remains empty.
 
 <a id="passing-scopes-to-queued-jobs"></a>

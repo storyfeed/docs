@@ -196,7 +196,7 @@ are serialized by their identifiers. The publication time is captured when
 
 A queued Story may implement `ShouldBeUnique` and define a `uniqueId` method.
 Its `middleware` method declares
-[story middleware](/deeper/story-middleware-and-batching), while the `Queueable`
+[story middleware](/deeper/story-middleware), while the `Queueable`
 trait's `through` method sets job middleware. See [Queued Publishing](/deeper/queued-publishing)
 for connections, transactions, and missing models.
 
@@ -215,4 +215,4 @@ The same restriction applies to all definition methods:
 | `keepLatest()` | [keeping the latest activity](/deeper/keeping-the-latest-activity) |
 | `bursts()` | its [burst window](/deeper/live-burst-windows) |
 | `period()` | the calendar period for custom axes whose keys include `d` |
-| `middleware()` | its [story middleware](/deeper/story-middleware-and-batching) |
+| `middleware()` | its [story middleware](/deeper/story-middleware) |

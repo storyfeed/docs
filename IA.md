@@ -430,7 +430,7 @@ the one obvious path and link here.
 - ✅ Casting Activity Data — `deeper/casting-activity-data`
 - ✅ Activity Scopes — `deeper/activity-scopes`
 - ✅ Constraining Roles — `deeper/constraining-roles`
-- ✅ Story Middleware & Batching — `deeper/story-middleware-and-batching`
+- ✅ Story Middleware — `deeper/story-middleware`
 - ✅ Named Stories — `deeper/named-stories`
 - ✅ Queued Publishing — `deeper/queued-publishing`
 

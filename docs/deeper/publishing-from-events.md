@@ -134,4 +134,4 @@ listener was queued.
 <a id="batch-events"></a>
 
 Storyfeed also dispatches `BatchClosed` when a batch closes. See
-[Listening for Closed Batches](/deeper/story-middleware-and-batching#listening-for-closed-batches).
+[Listening for Closed Batches](/deeper/batching-activities#listening-for-closed-batches).

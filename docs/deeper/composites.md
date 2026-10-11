@@ -154,7 +154,7 @@ Automatic bundling is enabled by default. Configure it in `config/storyfeed.php`
 
 ### Closing Batches
 
-Bundling runs when the actor's [batch](/deeper/story-middleware-and-batching#batch-windows)
+Bundling runs when the actor's [batch](/deeper/batching-activities#batch-windows)
 closes, so leave batching enabled. The batch closes on the actor's next
 publication after the window expires. Schedule
 [`storyfeed:close-batches`](/reference/commands#scheduling-maintenance) to
