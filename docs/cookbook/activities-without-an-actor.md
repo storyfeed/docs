@@ -107,7 +107,7 @@ Story::for(Order::class)->verb('pay')
 
 To record no actor, such as for an order that expires unpaid, call
 `Storyfeed::anonymous()` and define a headline without `:actor`. See
-[Recording Anonymous Activities](/deeper/parties-and-anonymous-actors#recording-anonymous-activities).
+[Recording Anonymous Activities](/recording/parties-and-anonymous-actors#recording-anonymous-activities).
 
 <span id="recording-an-unverified-fetch"></span>
 <span id="retrieving-fetch-evidence"></span>

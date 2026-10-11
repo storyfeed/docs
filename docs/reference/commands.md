@@ -56,7 +56,7 @@ can also be bound [one method at a time](/basics/story-classes#basic-story-class
 
 | Command | Description |
 |---|---|
-| `make:feed` | creates a [feed class](/basics/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class with unclassified verbs commented out; its `only([])` throws until you classify each verb with `only()` or `except()` |
+| `make:feed` | creates a [feed class](/retrieving/named-feeds#feed-classes). `--force` overwrites an existing feed. `--subject=` writes the typed constructor, `--role=` the bound role (default `context`), `--only=` and `--mode=` fill `define()`. `--from-doctor` writes one class with unclassified verbs commented out; its `only([])` throws until you classify each verb with `only()` or `except()` |
 
 ## Listing Definitions
 
@@ -107,7 +107,7 @@ the merged definitions used by a cached feed.
 |---|---|
 | `storyfeed:doctor` | audits headline, icon and AS2 type coverage, and feed health. See [Command Options](/reference/doctor-checks#command-options) for its flags |
 
-See [Diagnosing Your Feed](/deeper/diagnosing-your-feed) for usage and
+See [Diagnosing Your Feed](/maintenance/diagnosing-your-feed) for usage and
 [Doctor Checks](/reference/doctor-checks) for the checks, link sampling and
 [acknowledgments](/reference/doctor-checks#acknowledgment-policy).
 
@@ -150,7 +150,7 @@ Schedule other maintenance commands in your application:
 |---|---|---|
 | `storyfeed:trickle` | keeps entity snapshots and deletions up to date, including models deleted without a model event, such as by a query builder delete. `--limit=`; `--prune` soft-deletes activities with an uncached role that cannot resolve | every minute |
 | `storyfeed:close-batches` | closes batches whose window has elapsed, dispatches `BatchClosed`, creates composites. `--quiet-minutes=` | every 5 minutes |
-| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/deeper/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing. `--bursts` only removes closed burst windows older than `grouping.burst_retention_days`, and deletes no activities | daily, if a verb declares a window or `prune.after_days` is set |
+| `storyfeed:prune` | permanently deletes activities past their verb's [retention window](/maintenance/retention). `--days=` overrides `prune.after_days` (per-verb retention takes precedence); `--pretend` reports what a run would delete, per verb, and deletes nothing. `--bursts` only removes closed burst windows older than `grouping.burst_retention_days`, and deletes no activities | daily, if a verb declares a window or `prune.after_days` is set |
 
 ```php memo="routes/console.php"
 use Illuminate\Support\Facades\Schedule;
@@ -164,10 +164,10 @@ Schedule::command('storyfeed:prune')->daily();
 
 <span id="maintenance"></span>
 
-See [Choosing a Maintenance Operation](/deeper/healing-a-feed#choosing-a-maintenance-operation)
+See [Choosing a Maintenance Operation](/maintenance/healing-a-feed#choosing-a-maintenance-operation)
 for healing, unresolved-role pruning, retention, and tombstones. To correct
 how historical activities appear, see
-[Correcting Historical Presentation](/deeper/healing-a-feed#correcting-historical-presentation).
+[Correcting Historical Presentation](/maintenance/healing-a-feed#correcting-historical-presentation).
 
 ### Rebuilding Snapshots
 
@@ -235,9 +235,9 @@ Releasing members changes `sync_token`. Soft-deleted parents keep their members.
 | Command | Description |
 |---|---|
 | `storyfeed:curate` | chooses which group shows each activity with `live()` (backfill/repair); scheduled hourly by the package unless `curate.schedule` is `false`. `--rehash`, `--window=`, `--release`; `--rebuild-bursts --writers-paused` rebuilds all history, with `--resume` after interruption or `--restart` to replay it |
-| `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/deeper/healing-a-feed). `--pretend` previews; repeat `--only=` to select healers |
+| `storyfeed:heal` | [soft-deletes activities whose source is permanently absent](/maintenance/healing-a-feed). `--pretend` previews; repeat `--only=` to select healers |
 | `storyfeed:bundle` | combines `Bundleable` activities in closed batches into composites. `--window=` |
-| `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; adding `--missing` fills only never-recorded paths. `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/deeper/distant-relations#declaring-a-parent-on-existing-history) |
+| `storyfeed:participants` | rebuilds the index queried by `involving()`. `--missing`, `--chunk=`. `--ancestors --writers-paused` rebuilds history from current parents; adding `--missing` fills only never-recorded paths. `--resume` and `--restart` handle interrupted runs. See [Distant Relations](/recording/distant-relations#declaring-a-parent-on-existing-history) |
 
 `bundle` and `curate` can change existing groups and their `sync_token`.
 Clients that accumulate nodes must then fetch the feed again.

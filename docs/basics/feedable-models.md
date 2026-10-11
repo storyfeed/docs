@@ -51,7 +51,7 @@ class name and key. It uses the first source that has a value:
 |---|---|
 | `name` attribute | {{ role.product.label }} |
 | `title` attribute | `Spring Menu` |
-| the type's [noun](/deeper/aggregation#fallback-nouns) and key | `Ticket #42` |
+| the type's [noun](/shaping/aggregation#fallback-nouns) and key | `Ticket #42` |
 | class name and key | `Order #1042` |
 
 <FeedExample :items="withSnapshot" />
@@ -59,7 +59,7 @@ class name and key. It uses the first source that has a value:
 To implement the contract's methods yourself, see
 [Implementing the Feedable Contract](/reference/feedable-api#implementing-the-feedable-contract).
 To retrieve a model's activities, see
-[Filtering by Entity or Role](/basics/retrieving-feeds#filtering-by-entity-or-role).
+[Filtering by Entity or Role](/retrieving/retrieving-feeds#filtering-by-entity-or-role).
 
 <a id="morph-aliases"></a>
 <a id="defining-morph-aliases"></a>
@@ -121,14 +121,14 @@ class Order extends Model implements Feedable
 The `toFeed` method returns a `FeedEntity` containing the model's label.
 It may also name the closest container with `->parent($this->shop)` (or the
 named argument `parent: $this->shop`). This makes activities on the model
-retrievable through its ancestors. See [Distant Relations](/deeper/distant-relations).
+retrievable through its ancestors. See [Distant Relations](/recording/distant-relations).
 
 Storyfeed stores the entity as the model's snapshot: one saved copy of its
 label and values, shared by every activity the model appears in.
 `InteractsWithFeed` refreshes the snapshot on model saves while
 recording is enabled. Changes to its snapshot values can therefore appear
 on older activities too. Activity `data` preserves the values recorded for that event.
-A [composed feed](/basics/composing-feeds#composing-from-feedable-models)
+A [composed feed](/retrieving/composing-feeds#composing-from-feedable-models)
 reads `toFeed()` each time it is read instead.
 
 <a id="describing-the-snapshot"></a>

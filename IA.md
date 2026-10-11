@@ -375,17 +375,22 @@ Spatie package docs (one page per capability, ruthless brevity), Inertia
 
 ## The structure
 
-The sidebar in `docs/.vitepress/config.ts` is the published spine. Getting
-Started ends with a rendered Blade feed. The Basics teaches model labels,
+The sidebar in `docs/.vitepress/config.ts` is the published spine. **Each
+sidebar section is one folder, and a page's URL is its folder plus its title**:
+Getting Started is `getting-started/`, The Basics `basics/`, Retrieving and
+Rendering `retrieving/`, Storyfeed UI `ui/`, Recording in Depth `recording/`,
+Shaping the Feed `shaping/`, Testing and Maintenance `maintenance/`, Package
+Authors `packages/`, Cookbook `cookbook/` and Reference `reference/`. A page
+that moves section moves folder. Getting Started ends with a rendered Blade feed. The Basics teaches model labels,
 recording, definitions and bodies before Feed Media uses those bodies.
 Retrieval comes before the UI kits; custom rendering follows the kits.
 
 ### Getting Started
 
-- ✅ Introduction — `guide/introduction`
-- ✅ Installation — `guide/installation`
-- ✅ Quickstart — `guide/quickstart`: five steps: models, headline, publication, retrieval, then the installed Blade kit and its rendered result
-- ✅ What You Can Build — `guide/what-you-can-build`
+- ✅ Introduction — `getting-started/introduction`
+- ✅ Installation — `getting-started/installation`
+- ✅ Quickstart — `getting-started/quickstart`: five steps: models, headline, publication, retrieval, then the installed Blade kit and its rendered result
+- ✅ What You Can Build — `getting-started/what-you-can-build`
 
 ### The Basics
 
@@ -393,18 +398,18 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Recording Activities — `basics/recording-activities`
 - ✅ The Feed File — `basics/the-feed-file`
 - ✅ Story Classes — `basics/story-classes`
-- ✅ Constraining Roles — `deeper/constraining-roles`
-- ✅ Named Stories — `deeper/named-stories`
+- ✅ Constraining Roles — `basics/constraining-roles`
+- ✅ Named Stories — `basics/named-stories`
 - ✅ Activity Verbs — `basics/activity-verbs`
 - ✅ Activity Content — `basics/activity-content`: body definition, Prose and KeyValue, one Excerpt section, images, files, lists, multiple bodies, MediaObject, links and the type table
 - ✅ Feed Media — `basics/feed-media`: current links, picture slots, files and avatars; comes after Activity Content teaches bodies
 
 ### Retrieving and Rendering
 
-- ✅ Retrieving Feeds — `basics/retrieving-feeds`: retrieval, groups, Live and Log, filters, pagination and The Payload
-- ✅ Composing Feeds — `basics/composing-feeds`: compose(), entries, headlines, addMany, inOrder, dateless entries, grouping, composing from Feedable models, common composed feeds and rendering one
-- ✅ Named Feeds — `basics/named-feeds`
-- ✅ Feed Sources — `basics/feed-sources`: the array source, item keys, named sources, custom drivers and what sources cannot read
+- ✅ Retrieving Feeds — `retrieving/retrieving-feeds`: retrieval, groups, Live and Log, filters, pagination and The Payload
+- ✅ Composing Feeds — `retrieving/composing-feeds`: compose(), entries, headlines, addMany, inOrder, dateless entries, grouping, composing from Feedable models, common composed feeds and rendering one
+- ✅ Named Feeds — `retrieving/named-feeds`
+- ✅ Feed Sources — `retrieving/feed-sources`: the array source, item keys, named sources, custom drivers and what sources cannot read
 
 ### Storyfeed UI
 
@@ -426,40 +431,40 @@ the one obvious path and link here.
 
 ### Recording in Depth
 
-- ✅ Parties & Anonymous Actors — `deeper/parties-and-anonymous-actors`
-- ✅ Publishing From Events — `deeper/publishing-from-events`
-- ✅ Publishing Story Classes — `deeper/publishing-story-classes`: Story subclasses that build and publish one activity, casts, queueing and presentation methods
-- ✅ Containers & Context — `deeper/containers-and-context`
-- ✅ Distant Relations — `deeper/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
-- ✅ Casting Activity Data — `deeper/casting-activity-data`
-- ✅ Activity Scopes — `deeper/activity-scopes`
-- ✅ Story Middleware — `deeper/story-middleware`
-- ✅ Queued Publishing — `deeper/queued-publishing`
+- ✅ Parties & Anonymous Actors — `recording/parties-and-anonymous-actors`
+- ✅ Publishing From Events — `recording/publishing-from-events`
+- ✅ Publishing Story Classes — `recording/publishing-story-classes`: Story subclasses that build and publish one activity, casts, queueing and presentation methods
+- ✅ Containers & Context — `recording/containers-and-context`
+- ✅ Distant Relations — `recording/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
+- ✅ Casting Activity Data — `recording/casting-activity-data`
+- ✅ Activity Scopes — `recording/activity-scopes`
+- ✅ Story Middleware — `recording/story-middleware`
+- ✅ Queued Publishing — `recording/queued-publishing`
 
 ### Shaping the Feed
 
-- ✅ Aggregation — `deeper/aggregation`: built-in axes, thresholds, group headlines, tokens and fallback nouns; links to the read-mode guide
-- ✅ Live Burst Windows — `deeper/live-burst-windows`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
-- ✅ Batching Activities — `deeper/batching-activities`: batch windows, publishing outside a batch and BatchClosed; how a closing batch becomes a composite
-- ✅ Custom Axes — `deeper/custom-axes`: custom keys, eligibility, calendar periods and priority; default grouping keys live in Reference Configuration
-- ✅ Keeping the Latest Activity — `deeper/keeping-the-latest-activity`: keepLatest(), matching roles, time windows, and every occurrence vs the latest
-- ✅ Composites — `deeper/composites`
-- ✅ Resolving Bodies When Retrieved — `deeper/resolving-bodies-when-retrieved`
-- ✅ Custom Body Types — `deeper/custom-body-types`
-- ✅ Localization — `deeper/localization`
-- ✅ Activity Streams 2.0 — `deeper/activity-streams`
+- ✅ Aggregation — `shaping/aggregation`: built-in axes, thresholds, group headlines, tokens and fallback nouns; links to the read-mode guide
+- ✅ Live Burst Windows — `shaping/live-burst-windows`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
+- ✅ Batching Activities — `shaping/batching-activities`: batch windows, publishing outside a batch and BatchClosed; how a closing batch becomes a composite
+- ✅ Custom Axes — `shaping/custom-axes`: custom keys, eligibility, calendar periods and priority; default grouping keys live in Reference Configuration
+- ✅ Keeping the Latest Activity — `shaping/keeping-the-latest-activity`: keepLatest(), matching roles, time windows, and every occurrence vs the latest
+- ✅ Composites — `shaping/composites`
+- ✅ Resolving Bodies When Retrieved — `shaping/resolving-bodies-when-retrieved`
+- ✅ Custom Body Types — `shaping/custom-body-types`
+- ✅ Localization — `shaping/localization`
+- ✅ Activity Streams 2.0 — `shaping/activity-streams`
 
 ### Testing and Maintenance
 
-- ✅ Testing — `deeper/testing`
-- ✅ Diagnosing Your Feed — `deeper/diagnosing-your-feed`
-- ✅ Deleted Models — `deeper/deleted-models`
-- ✅ Retention — `deeper/retention`
-- ✅ Healing a Feed — `deeper/healing-a-feed`
+- ✅ Testing — `maintenance/testing`
+- ✅ Diagnosing Your Feed — `maintenance/diagnosing-your-feed`
+- ✅ Deleted Models — `maintenance/deleted-models`
+- ✅ Retention — `maintenance/retention`
+- ✅ Healing a Feed — `maintenance/healing-a-feed`
 
 ### Package Authors
 
-- ✅ Package Integration — `deeper/package-integration`: provider registration and overriding a package's stories; The Feed File keeps a pointer
+- ✅ Package Integration — `packages/package-integration`: provider registration and overriding a package's stories; The Feed File keeps a pointer
 
 ### Cookbook
 
@@ -494,14 +499,13 @@ the one obvious path and link here.
 
 ### Routes Outside the Sidebar
 
-`docs/index.md` is the home page; it points to `guide/introduction`.
+`docs/index.md` is the home page; it points to `getting-started/introduction`.
 
-Every page's URL follows its title. Each old URL is listed in
-`docs/.vitepress/redirects.ts`, which writes a page there that sends the reader
-on, keeping the anchor; `scripts/redirects.test.mjs` checks each lands in one
-hop. Moved sections on Feedable API, Aggregation and The Feed File
-retain their anchors and link to their canonical homes. Do not add tutorials
-to these compatibility sections.
+There are no redirects before v1: a moved page's old URL is gone, so every
+link to it moves with it, including links from our other repositories.
+`scripts/internal-links.test.mjs` fails the build when an internal link names a
+page that doesn't exist. Sections that move within the site keep their old
+anchors as spans on their new page.
 
 `docs/rnd/**` is local research and excluded from production; `docs/briefs/**`
 is internal and excluded from every build.

@@ -16,7 +16,7 @@ php artisan vendor:publish --tag="storyfeed-config"
 
 | Key | Default | Description |
 |---|---|---|
-| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable file loading. [Provider registrations](/deeper/package-integration#registering-stories-in-a-service-provider) remain available |
+| `definitions` | `base_path('routes/feed.php')` | path to the [feed file](/basics/the-feed-file); set `false` to disable file loading. [Provider registrations](/packages/package-integration#registering-stories-in-a-service-provider) remain available |
 
 After editing cached definitions, run `storyfeed:cache` again.
 
@@ -24,7 +24,7 @@ After editing cached definitions, run `storyfeed:cache` again.
 
 | Key | Default | Description |
 |---|---|---|
-| `sources.<name>` | `['database' => ['driver' => 'database']]` | named [feed sources](/basics/feed-sources), each with a `driver`: `database`, `array` (reading its `items`, newest first unless `in_order` is `true`), or one registered with `Storyfeed::extend()`. A feed reads the database unless it calls `source()` |
+| `sources.<name>` | `['database' => ['driver' => 'database']]` | named [feed sources](/retrieving/feed-sources), each with a `driver`: `database`, `array` (reading its `items`, newest first unless `in_order` is `true`), or one registered with `Storyfeed::extend()`. A feed reads the database unless it calls `source()` |
 
 <span id="tables-models"></span>
 
@@ -62,9 +62,9 @@ See [Schema](/reference/schema) for each table.
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | fallback party when no actor is resolved, such as in jobs or commands |
-| `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/deeper/parties-and-anonymous-actors#declaring-parties); ignored without a list. `null` enables this only in local/testing |
+| `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/recording/parties-and-anonymous-actors#declaring-parties); ignored without a list. `null` enables this only in local/testing |
 
-See [Parties & Anonymous Actors](/deeper/parties-and-anonymous-actors) for named system actors and
+See [Parties & Anonymous Actors](/recording/parties-and-anonymous-actors) for named system actors and
 activities without a recorded actor.
 
 ## Recording
@@ -72,7 +72,7 @@ activities without a recorded actor.
 | Key | Default | Description |
 |---|---|---|
 | `recording.enabled` | `env('STORYFEED_RECORDING_ENABLED', true)` | when disabled, every `publish()` returns an unsaved activity and no event is dispatched. Set it in `phpunit.xml`, and opt tests back in with `Storyfeed\Testing\RecordsStories` |
-| `keep_latest.delete` | `'soft'` | how [`keepLatest()`](/deeper/keeping-the-latest-activity#deleting-superseded-activities) deletes superseded activities. `'soft'` soft-deletes them, and [`storyfeed:prune`](/reference/commands#scheduled) removes them once they pass their retention window; `'force'` deletes them immediately. Any other value throws when publishing |
+| `keep_latest.delete` | `'soft'` | how [`keepLatest()`](/shaping/keeping-the-latest-activity#deleting-superseded-activities) deletes superseded activities. `'soft'` soft-deletes them, and [`storyfeed:prune`](/reference/commands#scheduled) removes them once they pass their retention window; `'force'` deletes them immediately. Any other value throws when publishing |
 
 ### Verbs
 
@@ -89,7 +89,7 @@ Register verbs with `Storyfeed::verbs()` or a Story class. See
 
 | Key | Default | Purpose |
 |---|---|---|
-| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context (0–255); see [Distant Relations](/deeper/distant-relations) |
+| `ancestors.max_depth` | `10` | maximum parent links followed from each object, target or context (0–255); see [Distant Relations](/recording/distant-relations) |
 
 ## Grouping
 
@@ -139,7 +139,7 @@ The built-in axes use these default keys:
 | `object` | `aa:aid:v:oa!:oid!:ta:tid:ca:cid` |
 
 These keys identify shared roles within built-in Live bursts. See
-[Custom Axes](/deeper/custom-axes#axis-keys) for field syntax and calendar keys.
+[Custom Axes](/shaping/custom-axes#axis-keys) for field syntax and calendar keys.
 
 <span id="batches-composites"></span>
 
@@ -184,7 +184,7 @@ outside local and testing; see [Available Checks](/reference/doctor-checks#avail
 |---|---|---|
 | `curate.schedule` | `true` | [schedule](/reference/commands#scheduling-maintenance) `storyfeed:curate` to choose groups for recent activities |
 | `curate.window` | `2` | days included in scheduled grouping; raise this to cover any longer burst ceiling. Custom calendar axes widen it for their verbs. `null` or `0` includes all activities |
-| `prune.after_days` | `null` | default [retention period](/deeper/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
+| `prune.after_days` | `null` | default [retention period](/maintenance/retention); `null` keeps activities. Per-verb `keepFor()` or `keepForever()` takes precedence |
 | `trickle.limit` | `200` | activities processed per [`storyfeed:trickle`](/reference/commands#scheduled) run |
 | `trickle.prune` | `false` | soft-delete activities with an unresolvable role; otherwise count them |
 

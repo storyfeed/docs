@@ -40,10 +40,10 @@ innermost step stores the activity in one database transaction:
    `uid` becomes the payload's `id`.
 3. **Groupings.** One `feed_groupings` row per axis the activity has a key
    for, written in a single insert. For built-in Live axes, the `hash` identifies a persisted
-   [burst](/deeper/live-burst-windows) of activities sharing the logical key.
+   [burst](/shaping/live-burst-windows) of activities sharing the logical key.
    Custom calendar axes include their period in the key.
 4. **Participants.** One `feed_participants` row per distinct direct entity or
-   [recorded ancestor](/deeper/distant-relations), with `published_at` copied from
+   [recorded ancestor](/recording/distant-relations), with `published_at` copied from
    the activity.
 5. **Curation.** For each group the activity joined, Storyfeed decides which
    one it appears under in `live()` and sets `winner` on that row.
@@ -135,8 +135,8 @@ the verb's `repeat` headline in `routes/feed.php`:
 
 <FeedExample :items="[repeat]" />
 
-See [Aggregation](/deeper/aggregation#built-in-axes) for the axis order and
-[thresholds](/deeper/aggregation#thresholds) used to select a group.
+See [Aggregation](/shaping/aggregation#built-in-axes) for the axis order and
+[thresholds](/shaping/aggregation#thresholds) used to select a group.
 
 <a id="read-modes"></a>
 
@@ -190,7 +190,7 @@ one:
 | releasing a composite | when a composite is released |
 | pruning or purging | when a group loses members |
 
-See [Handling a Changed Feed](/basics/retrieving-feeds#handling-a-changed-feed).
+See [Handling a Changed Feed](/retrieving/retrieving-feeds#handling-a-changed-feed).
 
 `storyfeed:cache` caches your definitions from `routes/feed.php`, not feed
 data. See [Caching Definitions](/reference/commands#caching-definitions).
@@ -224,7 +224,7 @@ The `aggregates` check in `storyfeed:doctor` uses
 The solo stream’s winner check can scan much of the stored history even when
 it returns no items. The planner may choose a different index as data changes.
 
-[Retention](/deeper/retention) removes old activities with their grouping
+[Retention](/maintenance/retention) removes old activities with their grouping
 and participant rows.
 
 <a id="comparison-with-a-single-log-table"></a>

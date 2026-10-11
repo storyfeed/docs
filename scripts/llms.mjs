@@ -27,7 +27,7 @@ const site = 'https://docs.storyfeed.dev'
 /** Sidebar order, so the export reads the way the site is meant to be read. */
 const config = readFileSync(join(docs, '.vitepress/config.ts'), 'utf8')
 const sidebar = config.slice(config.indexOf('sidebar'))
-// `index` is a meta-refresh stub to /guide/introduction, not a page. Skipping it
+// `index` is a meta-refresh stub to /getting-started/introduction, not a page. Skipping it
 // deliberately: an entry whose summary is its own frontmatter helps nobody.
 const routes = [...new Set(
   [...sidebar.matchAll(/'(\/[a-z0-9/-]+)'/g)]

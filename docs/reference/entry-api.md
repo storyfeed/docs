@@ -4,8 +4,8 @@
 
 `Storyfeed::compose()` builds a feed from entries, and a source's `items()`
 returns them. `Storyfeed\Sources\Entry` is one entry, in three forms: fluent,
-named arguments, or an array. See [Composing Feeds](/basics/composing-feeds)
-and [Feed Sources](/basics/feed-sources) for setup.
+named arguments, or an array. See [Composing Feeds](/retrieving/composing-feeds)
+and [Feed Sources](/retrieving/feed-sources) for setup.
 
 ```php memo="A controller, or wherever the feed is read"
 use Storyfeed\Facades\Storyfeed;
@@ -36,7 +36,7 @@ narrowed by `only()`, `except()`, the role filters and `limit()`. These differ:
 | `live()` | groups dated entries that have a verb; throws an `InvalidArgumentException` when read with `inOrder()` |
 | order | newest first, dateless entries last in the order added; with `inOrder()`, the order added |
 | entries dated in the future | shown |
-| `involving()`, `query()`, `members()` | throw `FeedMisconfigured`. See [Source Limitations](/basics/feed-sources#source-limitations) |
+| `involving()`, `query()`, `members()` | throw `FeedMisconfigured`. See [Source Limitations](/retrieving/feed-sources#source-limitations) |
 
 ## Entry Methods
 
@@ -127,7 +127,7 @@ yield Entry::make(
 ## Array Form
 
 `Entry::from($array)` reads an entry from an array, as an
-[array source](/basics/feed-sources#reading-an-array) does for each item:
+[array source](/retrieving/feed-sources#reading-an-array) does for each item:
 
 | Key | Matches |
 |---|---|

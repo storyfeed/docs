@@ -39,7 +39,7 @@ two Vite dev servers fighting over one port is a confusing five minutes.
 
 | | |
 |---|---|
-| `docs/` | the site source — `index.md` is the home page, `guide/` the prose |
+| `docs/` | the site source — `index.md` is the home page; one folder per sidebar section (see `IA.md`) |
 | `docs/.vitepress/config.ts` | nav, sidebar, search, sitemap |
 | `docs/.vitepress/theme/` | default theme plus brand tokens |
 | `docs/public/` | static assets served at the root (`logo.svg`, and `CNAME` if it ever moves into the repo) |

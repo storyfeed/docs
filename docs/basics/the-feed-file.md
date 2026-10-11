@@ -1,7 +1,7 @@
 # The Feed File
 
 Define activity headlines, icons, and group headlines in `routes/feed.php`.
-The [installer](/guide/installation#running-the-installer) creates this file.
+The [installer](/getting-started/installation#running-the-installer) creates this file.
 
 <script setup>
 import { scene } from '../.vitepress/theme/world'
@@ -243,12 +243,12 @@ Story::for(Order::class)->fallback()->headline(':actor updated :object');
 <a id="roles-that-determine-redundancy"></a>
 <a id="headlines-for-deleted-models"></a>
 
-You may also define [group headlines](/deeper/aggregation#defining-group-headlines)
-and [headlines for deleted models](/deeper/deleted-models).
+You may also define [group headlines](/shaping/aggregation#defining-group-headlines)
+and [headlines for deleted models](/maintenance/deleted-models).
 
 <a id="overriding-package-stories"></a>
 
-See [Overriding a Package's Stories](/deeper/package-integration#overriding-package-stories) to change supplied definitions in your feed file.
+See [Overriding a Package's Stories](/packages/package-integration#overriding-package-stories) to change supplied definitions in your feed file.
 
 ## Listing Definitions
 

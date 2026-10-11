@@ -180,7 +180,7 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 #### Timestamps
 
 The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance,
-or `null` for a [dateless entry](/basics/composing-feeds#dateless-entries):
+or `null` for a [dateless entry](/retrieving/composing-feeds#dateless-entries):
 
 ```blade memo="resources/views/components/feed/time.blade.php"
 @props(['at'])
@@ -265,9 +265,9 @@ Combine the icon, headline, and timestamp in the activity component:
 
 #### Group Rows
 
-Use the `isGroup` method to identify a [group](/basics/retrieving-feeds#groups).
+Use the `isGroup` method to identify a [group](/retrieving/retrieving-feeds#groups).
 The `children` method returns its members as feed items for the activity
-component to render. See [Aggregation](/deeper/aggregation) for grouping rules
+component to render. See [Aggregation](/shaping/aggregation) for grouping rules
 and headline tokens.
 
 ```blade memo="resources/views/components/feed/group.blade.php"
@@ -338,7 +338,7 @@ To style the fallback headline separately, add a class to it:
 
 <FeedExample :items="[unnamed]" />
 
-See [Fallback Headlines](/deeper/aggregation#fallback-headlines).
+See [Fallback Headlines](/shaping/aggregation#fallback-headlines).
 
 <a id="digest-rows"></a>
 
@@ -449,7 +449,7 @@ words. This component shows the attribution only when `from` has a value:
 </FeedExample>
 
 See [Activity Content](/basics/activity-content#available-body-types) for body
-types and fields, or [Custom Body Types](/deeper/custom-body-types) to define your own.
+types and fields, or [Custom Body Types](/shaping/custom-body-types) to define your own.
 
 <a id="degraded-entities"></a>
 
@@ -464,7 +464,7 @@ recorded actor and uses a placeholder in its headline:
 |---|---|---|
 | an anonymous actor | `Someone` | `actor()` is `null` |
 | a missing label | `Someone` for the actor, `Something` for another role | `isDegraded()` |
-| a [deleted model](/deeper/deleted-models) | `a removed order`, `a former customer`, based on its former type | `isTombstone()`, `formerType()` |
+| a [deleted model](/maintenance/deleted-models) | `a removed order`, `a former customer`, based on its former type | `isTombstone()`, `formerType()` |
 | a group without a headline | `5 activities` | `headline()->isFallback()` |
 
 An entity without a URL is displayed as plain text. For anonymous activities,
@@ -519,7 +519,7 @@ the previous-page link is disabled and no links appear on the last page.
 ### Displaying the Feed
 
 Pass a paginator to the view. The `cursorPaginate` method retrieves the
-current request's cursor for [subsequent pages](/basics/retrieving-feeds#pagination):
+current request's cursor for [subsequent pages](/retrieving/retrieving-feeds#pagination):
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;

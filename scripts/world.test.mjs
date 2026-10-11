@@ -461,8 +461,12 @@ test('cookbook and reference use scenes with an anchored clock', () => {
   }
 })
 // Lane B must not silently regain the legacy cast through FeedExample padding.
+// The in-depth sections: the folders that were docs/deeper before the re-folder.
+const DEEPER = ['recording', 'shaping', 'maintenance', 'packages']
+const deeperFiles = () => DEEPER.flatMap(dir => files(resolve(docs, dir), /\.md$/))
+
 test('deeper pages use world scenes without legacy context padding', () => {
-  for (const file of files(resolve(docs, 'deeper'), /\.md$/)) {
+  for (const file of deeperFiles()) {
     const source = readFileSync(file, 'utf8')
     assert.doesNotMatch(source, /theme\/(samples|manifest)|\bscenes\.|2026-\d\d-\d\d|<FeedExample[^>]*\bcontext(?:\s|=|>)/, relative(docs, file))
   }
@@ -473,7 +477,7 @@ test('deeper pages use world scenes without legacy context padding', () => {
 test('every deeper feed expression produces dated payload nodes', async () => {
   const api = await import('../docs/.vitepress/theme/world.ts')
   let feeds = 0
-  for (const file of files(resolve(docs, 'deeper'), /\.md$/)) {
+  for (const file of [...deeperFiles(), ...files(resolve(docs, 'basics'), /\.md$/)]) {
     const source = readFileSync(file, 'utf8')
     const script = source.match(/<script setup>([\s\S]*?)<\/script>/)?.[1]
     if (!script) continue
@@ -496,7 +500,7 @@ test('every deeper feed expression produces dated payload nodes', async () => {
 // imports or FeedExample's context padding. Other lanes migrate independently.
 test('guide and basics examples use the world without legacy padding', () => {
   const leaks = []
-  for (const file of [...files(resolve(docs, 'guide'), /\.md$/), ...files(resolve(docs, 'basics'), /\.md$/)]) {
+  for (const file of ['getting-started', 'basics', 'retrieving'].flatMap(dir => files(resolve(docs, dir), /\.md$/))) {
     if (file.endsWith('/introduction.md')) continue
     const text = readFileSync(file, 'utf8')
     if (/theme\/(samples|manifest)|\bscenes\.|2026-\d\d-\d\d/.test(text)) leaks.push(relative(docs, file))

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-See [Diagnosing Your Feed](/deeper/diagnosing-your-feed) for running the doctor and
+See [Diagnosing Your Feed](/maintenance/diagnosing-your-feed) for running the doctor and
 fixing findings.
 
 <a id="running-the-doctor"></a>
@@ -45,7 +45,7 @@ other checks still run. An `--only=` name that matches no check is
 | `actorless` | anonymous activities whose verb has no anonymous headline (`actorless.missing`) | info |
 | `reflexive` | activities naming the same entity as actor and object (`reflexive.actor_object`) | info |
 | `verbs` | recorded verbs containing dots, recorded verbs you never registered, registered verbs never recorded, and headlines defined for a type the verb is never recorded on. `verbs.skipped` when there is no activities table. See [Definitions](#definitions) | warning · info |
-| `feeds` | verbs no restricted [named feed](/basics/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
+| `feeds` | verbs no restricted [named feed](/retrieving/named-feeds) includes or excludes. See [Feed Coverage](#feed-coverage) | warning · info |
 | `parties` | party names used but not declared, and declared parties with no activities. See [Parties](#parties) | warning · info |
 | `removals` | verbs named like removals (`cancel`, `trash`) whose activities are treated as being about the object. See [Deleted Models](#deleted-models) | info |
 | `labels` | `Feedable` models whose label is guessed. See [Deleted Models](#deleted-models) | info |
@@ -55,9 +55,9 @@ other checks still run. An `--only=` name that matches no check is
 | `links` | observed entities without URLs in sampled named feeds, or feeds that cannot be inspected. See [Link Sampling](#link-sampling) | info |
 | `hydration` | `Feedable` models that load their live model in `feedMedia()`, and the additional queries per page. See [Hydration](#hydration) | info |
 | `media` | a body that shows one of its model's `feedMedia()` pictures by slot, on a model whose `feedMedia()` never sets that slot. See [Media Slots](#media-slots) | error · info |
-| `body` | the [body types](/deeper/custom-body-types) stored (`body.type`, `body.unversioned`), a body with no `$body` key or a `$body` that is not a string (`body.untokenized`, `body.malformed_token`), and a body type versioned on some records but not others (`body.version_ambiguous`) | warning · info |
-| `role_constraints` | stored activities whose role types break the [declared constraints](/deeper/constraining-roles) | warning |
-| `keep_latest` | several active activities with the same [`keepLatest()`](/deeper/keeping-the-latest-activity) key (`keep_latest.split`), or superseded activities for a verb without a `keepLatest()` declaration (`keep_latest.undeclared`) | warning · info |
+| `body` | the [body types](/shaping/custom-body-types) stored (`body.type`, `body.unversioned`), a body with no `$body` key or a `$body` that is not a string (`body.untokenized`, `body.malformed_token`), and a body type versioned on some records but not others (`body.version_ambiguous`) | warning · info |
+| `role_constraints` | stored activities whose role types break the [declared constraints](/basics/constraining-roles) | warning |
+| `keep_latest` | several active activities with the same [`keepLatest()`](/shaping/keeping-the-latest-activity) key (`keep_latest.split`), or superseded activities for a verb without a `keepLatest()` declaration (`keep_latest.undeclared`) | warning · info |
 | `retention` | activities past their verb's retention window, and frequent verbs without a retention limit. See [Retention](#retention) | warning · info |
 | `actions` | Story class methods that accept a request and threw during job dispatch, or call `request()` instead of accepting a `Request` parameter. See [Actions](#actions) | warning |
 | `recording` | recording is disabled (`storyfeed.recording.enabled`, or `stopRecording()` at boot), so `publish()` stores no activities (`recording.disabled`); error outside the `testing` environment, info within it | error · info |
@@ -70,7 +70,7 @@ other checks still run. An `--only=` name that matches no check is
 | `hashes` | grouping hashes at or beyond the 255-character limit. See [Grouping Hashes](#grouping-hashes) | warning |
 | `shapes` | missing or mixed snapshot fingerprints. See [Snapshot Shapes](#snapshot-shapes) | warning · info |
 | `grouping` | activities with no grouping records, or grouping records without a selected display group. See [Grouping](#grouping) | warning |
-| `ancestors` | broken declared parent chains (`ancestors.unresolvable`), declared parents with no recorded path (`ancestors.missing`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/deeper/distant-relations#checking-parent-chains) | warning |
+| `ancestors` | broken declared parent chains (`ancestors.unresolvable`), declared parents with no recorded path (`ancestors.missing`) and actor-only self-acting containers (`ancestors.actor_only`). See [Distant Relations](/recording/distant-relations#checking-parent-chains) | warning |
 | `participants` | activities `involving()` cannot find (`participants.unindexed`), and participant rows whose `published_at` no longer matches their activity (`participants.drift`), as a query builder update leaves them. `storyfeed:participants` backfills and rewrites them | warning |
 | `dangling` | grouping and participant rows left behind when activities were deleted by a query (`dangling.groupings`, `dangling.participants`). They change nothing a feed shows | info |
 | `claims` | composite members still held by a deleted composite (`claims.parent_gone`). `storyfeed:curate --release` [releases them](/reference/commands#releasing-orphaned-composites) | info |
@@ -194,7 +194,7 @@ includes `acknowledged_count`.
 <span id="custom-query-exclusions"></span>
 
 To accept a finding that a custom query makes deliberate, see
-[Acknowledging a Custom Query Exclusion](/deeper/diagnosing-your-feed#acknowledging-a-custom-query-exclusion).
+[Acknowledging a Custom Query Exclusion](/maintenance/diagnosing-your-feed#acknowledging-a-custom-query-exclusion).
 
 | Policy Finding | Severity | Meaning |
 |---|---|---|
@@ -240,7 +240,7 @@ no fix and do not count as CI problems.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `verbs.dotted` | warning | a stored verb contains a dot. Reports the verb and activity count; the rows remain readable. Use the action alone as the verb, keep the type as the object, and use [story names](/deeper/named-stories) for dotted lookups |
+| `verbs.dotted` | warning | a stored verb contains a dot. Reports the verb and activity count; the rows remain readable. Use the action alone as the verb, keep the type as the object, and use [story names](/basics/named-stories) for dotted lookups |
 | `verbs.undeclared` | warning; info until the app registers its own verbs | a recorded verb is not registered. Usually a typo; otherwise [register it](/reference/verb-vocabulary#registering-verbs) |
 | `verbs.dead` | info | a registered verb is never recorded. Names the `file:line` that registered it |
 | `grammar.unrecorded` | info | a headline is defined for a type and verb that is never recorded, while the verb is recorded on other types. Names the `file:line`. Usually a copy-paste slip in `routes/feed.php`, or a definition written ahead of traffic |
@@ -280,7 +280,7 @@ that feed produce `feeds.unrestricted` (info) instead of `feeds.unclassified`
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `parties.ignored` | warning | an actor named a party that [`Storyfeed::parties()`](/deeper/parties-and-anonymous-actors#declaring-parties) does not declare, so the activity kept its usual actor. Declare the name if it is real |
+| `parties.ignored` | warning | an actor named a party that [`Storyfeed::parties()`](/recording/parties-and-anonymous-actors#declaring-parties) does not declare, so the activity kept its usual actor. Declare the name if it is real |
 | `parties.undeclared_actor` | warning | a verb's `->actor()` names an undeclared party: it throws in `local` and `testing` and is ignored elsewhere |
 | `parties.undeclared_list` | info | parties are in use and no list is declared, so any name becomes one |
 | `parties.unused` | info | a party has no activities: a typo, or one created ahead of traffic |
@@ -290,12 +290,12 @@ that feed produce `feeds.unrestricted` (info) instead of `feeds.unclassified`
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `removals.unclassified` | info | a recorded verb is named like a removal, but its activities are treated as being about their object, so they become [redundant](/deeper/deleted-models#redundant-roles) when the object is deleted. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
+| `removals.unclassified` | info | a recorded verb is named like a removal, but its activities are treated as being about their object, so they become [redundant](/maintenance/deleted-models#redundant-roles) when the object is deleted. If the verb records the removal, give it an Activity Streams 2.0 `Delete`, `Remove`, `Undo` or `Reject` type, or declare `->missing()` with no roles. If it is about its object, declare `->missing('object')`, which silences the finding |
 | `labels.guessed` | info | the listed models' labels are guessed. Acceptable when the inferred label is suitable; otherwise give each a label in `describeFeed()`, or in `toFeedUsing()` for a [registered class](/reference/feedable-api#models-you-don-t-own) |
 | `inherited.parent_deletes` | info | a `Feedable` subclass, such as `FeedablePhoto extends Media`, is deleted through a parent that is not `Feedable`, so its own model events are not dispatched. Reports whether its tombstone is written at the delete (a class in the morph map, or registered with `Storyfeed::feedable()`) or waits for `storyfeed:trickle`. An update through the parent waits for the trickle either way |
 
 A model's label is also what its tombstone keeps under `keepLabel()`.
-[Deleted Models](/deeper/deleted-models) covers both.
+[Deleted Models](/maintenance/deleted-models) covers both.
 
 <a id="surface"></a>
 
@@ -368,7 +368,7 @@ activity IDs.
 
 Tombstone discovery checks without global scopes, so a live row hidden by a
 scope is not treated as deleted. Explicit `forgetWhenMissing` rules are a
-separate deletion policy; see [Deleted Models](/deeper/deleted-models).
+separate deletion policy; see [Deleted Models](/maintenance/deleted-models).
 
 Affected entities display without labels or links. Existing entities whose
 labels are not cached yet are reported by `backlog`.
@@ -388,20 +388,20 @@ queries required per page.
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `role_constraints.violated` | warning | stored activities have role types outside the [declared constraints](/deeper/constraining-roles). Empty roles and deleted models are skipped. The activities stay in the feed |
+| `role_constraints.violated` | warning | stored activities have role types outside the [declared constraints](/basics/constraining-roles). Empty roles and deleted models are skipped. The activities stay in the feed |
 
 ### Retention
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `retention.backlog` | warning | activities are over a day past their [retention period](/deeper/retention); preview with `storyfeed:prune --pretend` before deleting them. Often caused by changed retention or an unscheduled pruning command |
+| `retention.backlog` | warning | activities are over a day past their [retention period](/maintenance/retention); preview with `storyfeed:prune --pretend` before deleting them. Often caused by changed retention or an unscheduled pruning command |
 | `retention.unbounded` | info | a verb recorded at least 10,000 times in 30 days has no retention limit; excludes verbs declaring `keepForever()` |
 
 ### Actions
 
 | Finding | Severity | Meaning |
 |---|---|---|
-| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/deeper/activity-scopes#request-based-actors) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
+| `actions.carry_failed` | warning | a [Story class method that takes the `Request`](/recording/activity-scopes#request-based-actors) threw when a job was dispatched. The job still ran, and published with the actor it would otherwise have had |
 | `actions.request_helper` | warning | a Story class method reads the request through `request()` or the `Request` facade instead of taking `Illuminate\Http\Request $request`. It accesses the request only when stories are compiled, never when an activity publishes. Take the `Request` as a parameter |
 
 ### Grouping
@@ -444,7 +444,7 @@ Story::for(Order::class)->verb('place')->grouped(fn (GroupBuilder $group) => $gr
 ```
 
 The `actors` stub contains two lists. Rewrite it to use one before adding it,
-as described in [Aggregation](/deeper/aggregation#plural-lists-in-headlines).
+as described in [Aggregation](/shaping/aggregation#plural-lists-in-headlines).
 
 Output omits headings and counts so it can be piped. `// Nothing to author`
 means no definitions can be generated, even if findings exist. With `--json`,

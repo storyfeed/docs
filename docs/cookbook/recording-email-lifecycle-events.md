@@ -81,7 +81,7 @@ fails before submission. Successful submission does not establish delivery.
 Keep the recipient address and provider name in activity data when they are
 values describing the event. An address does not need a party record. Use a
 role when the provider is a participant you need to identify or query; see
-[Parties](/deeper/parties-and-anonymous-actors#using-parties-in-other-roles) and
+[Parties](/recording/parties-and-anonymous-actors#using-parties-in-other-roles) and
 [Assigning Roles](/basics/recording-activities#assigning-roles).
 
 ## Defining Lifecycle Headlines
@@ -228,7 +228,7 @@ Otherwise, Storyfeed uses the ordinary headline. A required `:actor` token
 in that headline displays as “Someone” when the actor is empty. Define the
 anonymous sentence for every outcome. `missingHeadline()` applies to missing
 entities and is a separate mechanism; see
-[Anonymous Headlines](/deeper/parties-and-anonymous-actors#anonymous-headlines).
+[Anonymous Headlines](/recording/parties-and-anonymous-actors#anonymous-headlines).
 
 ## Retrieving a Document's Email Log
 
@@ -260,4 +260,4 @@ The document target keeps all its messages in the same log. The message
 object identifies which attempt each outcome belongs to. `log()` returns
 one item per activity, newest first. For a broader document feed that also
 includes its other activities, use `involving($document)`; see
-[Retrieving Feeds](/basics/retrieving-feeds#filtering-by-entity-or-role).
+[Retrieving Feeds](/retrieving/retrieving-feeds#filtering-by-entity-or-role).

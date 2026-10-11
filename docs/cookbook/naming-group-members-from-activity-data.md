@@ -149,5 +149,5 @@ application.
 
 This declaration covers only object groups for this verb. Keep its singular
 headline and icon definitions, and add headlines for any other axes your feeds
-can return. When `grouping.curate` is enabled, Storyfeed can select groups on other axes. See [Choosing a Read Mode](/deeper/aggregation#choosing-a-read-mode)
+can return. When `grouping.curate` is enabled, Storyfeed can select groups on other axes. See [Choosing a Read Mode](/shaping/aggregation#choosing-a-read-mode)
 and [Doctor Checks](/reference/doctor-checks#group-reachability).

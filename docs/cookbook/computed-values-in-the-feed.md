@@ -107,7 +107,7 @@ class MenuItem extends Model implements Feedable
 
 Models load once per model class for the page, with the requested counts
 loaded together. See
-[Deferring Body Construction](/deeper/resolving-bodies-when-retrieved#deferring-body-construction)
+[Deferring Body Construction](/shaping/resolving-bodies-when-retrieved#deferring-body-construction)
 for what happens when a body resolver throws.
 
 The menu item uses a `KeyValue` body to display its current order count:
@@ -127,4 +127,4 @@ is retrieved.
 Store a value in activity data when it describes history, such as a menu
 item's prices before and after a change. Use `toFeed()` for the model's own
 current facts, such as its name or description, which update with the model.
-See [Choosing Stored or Current Values](/deeper/resolving-bodies-when-retrieved#choosing-stored-or-current-values).
+See [Choosing Stored or Current Values](/shaping/resolving-bodies-when-retrieved#choosing-stored-or-current-values).

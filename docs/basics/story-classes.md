@@ -161,12 +161,12 @@ declaration may return a `Verb` or headline string.
 Registering it with `Story::verb('place', PlaceStory::class)` applies it to all
 object types, so its headline must describe each supported type.
 
-Package authors can [register Story classes in a service provider](/deeper/package-integration#registering-stories-in-a-service-provider).
+Package authors can [register Story classes in a service provider](/packages/package-integration#registering-stories-in-a-service-provider).
 
 ## Story Middleware
 
 Attach middleware to a verb binding or a group in `routes/feed.php`. See
-[Story Middleware](/deeper/story-middleware) for
+[Story Middleware](/recording/story-middleware) for
 registration, exclusions, and batching.
 
 <a id="every-activity-for-one-model"></a>
@@ -243,7 +243,7 @@ public function print(): string
 
 The supplied `Verb` supports every definition method, including
 `missingHeadline()` for deleted objects. See
-[Deleted Models](/deeper/deleted-models#missing-headlines).
+[Deleted Models](/maintenance/deleted-models#missing-headlines).
 
 <a id="conventional-verbs"></a>
 <a id="selecting-resource-verbs"></a>
@@ -297,8 +297,8 @@ Story::resources([
 The `Story::resources` method registers several models with shared options,
 as `Route::resources` does. A `null` class defines the four conventional verbs.
 The options accept `only` and `except`. Use this example in place of individual
-resource registrations. To share middleware or [role constraints](/deeper/constraining-roles), wrap it in a
-[group](/deeper/named-stories#shared-attributes).
+resource registrations. To share middleware or [role constraints](/basics/constraining-roles), wrap it in a
+[group](/basics/named-stories#shared-attributes).
 
 ### Supplementing Resource Stories
 
@@ -333,7 +333,7 @@ injection rules.
 <span id="tab-438"></span>
 
 A verb method can choose its actor from the request. See
-[Request-Based Actors](/deeper/activity-scopes#request-based-actors).
+[Request-Based Actors](/recording/activity-scopes#request-based-actors).
 
 ## Publishing Story Classes
 
@@ -350,7 +350,7 @@ A verb method can choose its actor from the request. See
 <span id="presentation-methods"></span>
 
 A Story class can also build one activity with its data and publish it, as a
-notification is sent. See [Publishing Story Classes](/deeper/publishing-story-classes).
+notification is sent. See [Publishing Story Classes](/recording/publishing-story-classes).
 
 <a id="generating-from-doctor-findings"></a>
 

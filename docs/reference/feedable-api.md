@@ -34,7 +34,7 @@ interface Feedable
 
 | Method | Runs At | Returns |
 |---|---|---|
-| `toFeed()` | publication and every model save; each read of a [composed feed](/basics/composing-feeds#composing-from-feedable-models) | snapshot labels, data, and bodies |
+| `toFeed()` | publication and every model save; each read of a [composed feed](/retrieving/composing-feeds#composing-from-feedable-models) | snapshot labels, data, and bodies |
 | `feedMedia()` | feed retrieval, called statically with snapshot data | current links and media |
 
 `InteractsWithFeed` implements both methods. You may use its defaults or
@@ -171,7 +171,7 @@ See [Custom Labels](/basics/feedable-models#custom-labels) to change the default
 
 Activities stay unless their verb declares `forgetWhenMissing()`.
 `deleteFromFeed()` and `forceDeleteFromFeed()` explicitly remove activities.
-[Deleted Models](/deeper/deleted-models) covers tombstones.
+[Deleted Models](/maintenance/deleted-models) covers tombstones.
 
 <span id="the-model-s-own-feed"></span>
 
@@ -224,7 +224,7 @@ FeedEntity::make(
 
 | Method | Type | On the Payload |
 |---|---|---|
-| `parent()` | `?Model` | not on the payload: the closest [container](/deeper/distant-relations), followed at publication |
+| `parent()` | `?Model` | not on the payload: the closest [container](/recording/distant-relations), followed at publication |
 | `label()` | `?string` | `entity.label` |
 | `data()` | array or `Arrayable`, merged; or a key and a value | `entity.data`, available to `feedMedia()` |
 | `body()` | a body, a string, or a list; each call appends | `entity.body` |
@@ -324,7 +324,7 @@ $this->feedEntity()
 `keepLabel()` applies only to model-event deletions. Tombstones created by
 `storyfeed:trickle` or `Storyfeed::tombstone()` omit labels. Use the verb's
 `forgetWhenMissing()` setting to delete affected activities.
-See [Deleted Models](/deeper/deleted-models).
+See [Deleted Models](/maintenance/deleted-models).
 
 ## `FeedContext`
 
@@ -400,7 +400,7 @@ applied to the activity's `data`. Keys support dot notation.
 
 | Method | Returns or behaviour |
 |---|---|
-| `get($key, $default = null)` | one value, or the default, as on Laravel's `Fluent`. A key the verb [casts](/deeper/casting-activity-data#reading-cast-values) is read through its cast, and the rest of a dotted path is read from the result |
+| `get($key, $default = null)` | one value, or the default, as on Laravel's `Fluent`. A key the verb [casts](/recording/casting-activity-data#reading-cast-values) is read through its cast, and the rest of a dotted path is read from the result |
 | `all($keys = null)` | all data, or selected keys; missing selected keys have `null` values |
 | `boolean($key = null, $default = false)` | a boolean |
 | `string($key, $default = null)` | an `Illuminate\Support\Stringable` |
@@ -569,7 +569,7 @@ FeedEntity::make(
 
 A `Component` body appears in `entity.body` with its `name` and `props`.
 Your frontend maps the name to a component. See
-[Custom Body Types](/deeper/custom-body-types#drawing-your-own-component).
+[Custom Body Types](/shaping/custom-body-types#drawing-your-own-component).
 
 ## Morph Aliases
 
@@ -581,5 +581,5 @@ Activities with unresolved role aliases remain in the payload without a
 label or link for that role. `storyfeed:trickle` counts them as unresolved
 and soft-deletes them only with `storyfeed.trickle.prune` or `--prune`.
 
-[Installation](/guide/installation#defining-morph-aliases) covers enforcing the
+[Installation](/getting-started/installation#defining-morph-aliases) covers enforcing the
 map.

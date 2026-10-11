@@ -16,10 +16,10 @@ Publish each transition from one site, so it is recorded once:
 
 | Call Site | Use For |
 |---|---|
-| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/deeper/publishing-from-events#publishing-from-an-event) |
+| domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/recording/publishing-from-events#publishing-from-an-event) |
 | model observer | model transitions while the application has no domain event |
 | action or service class | dispatching the domain event where the transition succeeds |
-| none: [compose it](/basics/composing-feeds#showing-a-record-s-progress) when read | a record's own page, from timestamps it already stores; nothing reaches other feeds |
+| none: [compose it](/retrieving/composing-feeds#showing-a-record-s-progress) when read | a record's own page, from timestamps it already stores; nothing reaches other feeds |
 
 <a id="publishing-a-status-transition"></a>
 
@@ -139,7 +139,7 @@ Without `by()`, Storyfeed records the signed-in user as the actor:
 <FeedExample :items="[confirmed]" />
 
 A save in a console command or a scheduled task has no signed-in user. The
-activity then uses the [default actor](/deeper/parties-and-anonymous-actors#setting-a-default-actor),
+activity then uses the [default actor](/recording/parties-and-anonymous-actors#setting-a-default-actor),
 or has no actor.
 
 <span id="choosing-transitions-to-record"></span>
@@ -147,7 +147,7 @@ or has no actor.
 ## Using One Verb per Transition
 
 Use a separate verb for each transition so each has its own headline and
-[`keepLatest()`](/deeper/keeping-the-latest-activity#replacing-earlier-activities)
+[`keepLatest()`](/shaping/keeping-the-latest-activity#replacing-earlier-activities)
 can keep its latest activity. A single `status` verb with the state in `data`
 does not distinguish transitions this way.
 
@@ -172,7 +172,7 @@ event can belong on an admin feed and not on a public one. For a customer feed:
 | order ready → completed | yes, as `complete` | each status transition describes an event |
 | question asked about a menu item | yes | the activity identifies the subject and can [quote the question](/basics/activity-content#adding-quoted-text) |
 | order placed | yes | others can follow the order's progress |
-| order viewed | temporarily | use the verb's [retention period](/deeper/retention) to limit how long it remains |
+| order viewed | temporarily | use the verb's [retention period](/maintenance/retention) to limit how long it remains |
 
 To leave a draft out, return `null` from the event's `toFeedActivity()`; see
-[Skipping Publication](/deeper/publishing-from-events#skipping-publication).
+[Skipping Publication](/recording/publishing-from-events#skipping-publication).

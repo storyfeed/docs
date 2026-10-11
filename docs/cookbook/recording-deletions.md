@@ -87,16 +87,16 @@ Story::for(MenuItem::class)
 
 <FeedExample :items="[deleted]" />
 
-`delete` is a [removal verb](/deeper/deleted-models#removal-verbs), so the
+`delete` is a [removal verb](/maintenance/deleted-models#removal-verbs), so the
 tombstone does not make its activity redundant.
 
 ## Choosing What Stays
 
 Other activities involving the menu item also remain with its tombstone.
-See [Deleted Models](/deeper/deleted-models) for their headlines and payloads.
+See [Deleted Models](/maintenance/deleted-models) for their headlines and payloads.
 
 | To | Use |
 |---|---|
-| keep the deleted model's label in earlier activities | [`keepLabel()`](/deeper/deleted-models#keeping-labels) on its tombstone |
-| remove activities made redundant by permanent deletion | [`forgetWhenMissing()`](/deeper/deleted-models#forgetting-redundant-activities) on those verbs |
-| remove all activities involving a model, such as when a customer asks to be forgotten | [`deleteFromFeed()` or `forceDeleteFromFeed()`](/deeper/deleted-models#removing-activities-explicitly) before deleting the model |
+| keep the deleted model's label in earlier activities | [`keepLabel()`](/maintenance/deleted-models#keeping-labels) on its tombstone |
+| remove activities made redundant by permanent deletion | [`forgetWhenMissing()`](/maintenance/deleted-models#forgetting-redundant-activities) on those verbs |
+| remove all activities involving a model, such as when a customer asks to be forgotten | [`deleteFromFeed()` or `forceDeleteFromFeed()`](/maintenance/deleted-models#removing-activities-explicitly) before deleting the model |

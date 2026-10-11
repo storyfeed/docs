@@ -82,7 +82,7 @@ class Photo extends Model implements Feedable
 The method receives a `FeedContext` with the snapshot's label, route key and
 data, and returns a `FeedMedia` or `null`. Resolving URLs here lets a route or
 thumbnail change without rewriting stored picture bodies.
-A [composed feed](/basics/composing-feeds#composing-from-feedable-models)
+A [composed feed](/retrieving/composing-feeds#composing-from-feedable-models)
 calls `feedMedia()` too, each time it is read.
 
 ### Using a Closure
@@ -174,7 +174,7 @@ class Photo extends Model implements Feedable
 <FeedExample :items="[linked]" />
 
 A link does not show a picture; see [Showing Pictures](#showing-pictures). A resolver can also
-choose a [different link for each feed](/basics/named-feeds#linking-each-feed-somewhere-different).
+choose a [different link for each feed](/retrieving/named-feeds#linking-each-feed-somewhere-different).
 
 ### Opening Links in a Modal
 
@@ -651,5 +651,5 @@ initials from the label and a colour from the type and key. An entity with an
 See the [Feedable API](/reference/feedable-api#feedmedia) for the complete method list.
 
 For bodies built from current model values, see
-[Resolving Bodies When Retrieved](/deeper/resolving-bodies-when-retrieved). Link and image
+[Resolving Bodies When Retrieved](/shaping/resolving-bodies-when-retrieved). Link and image
 resolvers can share the same `FeedMedia` with those bodies.

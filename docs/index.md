@@ -4,9 +4,9 @@ sidebar: true
 head:
   - - meta
     - http-equiv: refresh
-      content: 0; url=/guide/introduction
+      content: 0; url=/getting-started/introduction
 ---
 
 # Storyfeed
 
-Redirecting to the [introduction](/guide/introduction).
+Redirecting to the [introduction](/getting-started/introduction).

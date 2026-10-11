@@ -20,7 +20,7 @@ const grouped = liveOf(placements, {
 ## Counting Repeated Activities
 
 Suppose a customer places an order, then places it again after an amendment.
-[Keep both occurrences](/deeper/keeping-the-latest-activity#keeping-every-occurrence)
+[Keep both occurrences](/shaping/keeping-the-latest-activity#keeping-every-occurrence)
 so the feed can explain what happened. These are two `place` activities about
 one order:
 
@@ -69,7 +69,7 @@ The same two activities now have a headline that describes their group:
 <a id="mixed-type-groups"></a>
 
 For the declaration table, type and verb scope, and allowed tokens, see
-[Defining Group Headlines](/deeper/aggregation#defining-group-headlines).
+[Defining Group Headlines](/shaping/aggregation#defining-group-headlines).
 
 ## Keeping Individual Content Visible
 

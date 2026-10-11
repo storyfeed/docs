@@ -48,7 +48,7 @@ and the [Typography plugin](/ui/installing-the-kits#registering-the-typography-p
 The app fetches the next page from `next_cursor` and appends its `data` to
 `items`. `loading-more` disables
 the pager while loading. Keep the cursor opaque and follow the
-[feed's sync token](/basics/retrieving-feeds#handling-a-changed-feed).
+[feed's sync token](/retrieving/retrieving-feeds#handling-a-changed-feed).
 
 ## Replacing Row Content
 

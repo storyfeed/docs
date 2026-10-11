@@ -190,7 +190,7 @@ The disclosure says “Show less” when open and “Show all 3” for a collaps
 three-member group. A group shows its full member count even when the page
 holds fewer members. Expanding displays the supplied children; it does not
 fetch more: to page through every member, read them with
-[`members()`](/basics/retrieving-feeds#paginating-a-group-s-members). A
+[`members()`](/retrieving/retrieving-feeds#paginating-a-group-s-members). A
 collapsed group shows a strip of up to four member tiles, or three and a “+N”
 tile: a member's picture when its row draws one, else its featured entity's
 name. Expanding the group hides the strip.

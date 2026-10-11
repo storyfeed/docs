@@ -20,7 +20,7 @@ A verb is an action alone. It never names its object, before or after, with
 any separator: `accept`, not `offer.accept`, `accept_offer` or `acceptOffer`.
 A verb [never contains a dot](/basics/activity-verbs): declaring or publishing one
 throws `Storyfeed\Exceptions\DottedVerb`. Use a
-[story name](/deeper/named-stories) for dotted lookups such as `order.place`.
+[story name](/basics/named-stories) for dotted lookups such as `order.place`.
 
 The object identifies what the action happened to:
 
@@ -292,11 +292,11 @@ headline. Putting the document only in the target role would not select that
 definition. The activity stores the clause key as it was when the change
 occurred. Give the clause its own model if it needs a separate label, link or
 body. See [Activity Data](/basics/recording-activities#adding-activity-data)
-and [Casting](/deeper/casting-activity-data) for retrieving typed details, and
+and [Casting](/recording/casting-activity-data) for retrieving typed details, and
 [Activity Content](/basics/activity-content) for displaying them.
 
 To group a person's changes per document, use the
-[`object` axis](/deeper/aggregation#built-in-axes), which requires the same
+[`object` axis](/shaping/aggregation#built-in-axes), which requires the same
 document. The `repeat` axis requires only the same object type.
 
 ## Choosing Between Related Verbs

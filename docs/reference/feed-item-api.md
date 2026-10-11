@@ -56,7 +56,7 @@ A group's `id` is opaque: store it and pass it back unchanged.
 | `missingHeadline()` | `?Headline`: the verb's headline when the activity is redundant | `missing_headline_template`, `missing_headline` |
 | `glyph()` | `?string` | `glyph` |
 | `intent()` | `?string` | `glyph_intent` |
-| `data()` | `Fluent`, with each value read through the verb's [casts](/deeper/casting-activity-data#reading-cast-values) | `data` |
+| `data()` | `Fluent`, with each value read through the verb's [casts](/recording/casting-activity-data#reading-cast-values) | `data` |
 | `tombstoned()` | `array` of role names | `tombstoned` |
 | `isRedundant()` | `bool` | `redundant` |
 | `get($key, $default = null)` | any key, with dot notation: `get('object.label')` | any |

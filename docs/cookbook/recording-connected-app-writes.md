@@ -26,7 +26,7 @@ A token owner is not automatically the performer. Storyfeed has no built-in
 authorizer role. Store authorization in your app's audit record and copy
 relevant event-time values into activity data. A connected app with its own
 model can be [feedable](/basics/feedable-models); a service without a model can
-be a [party](/deeper/parties-and-anonymous-actors#using-parties-in-other-roles).
+be a [party](/recording/parties-and-anonymous-actors#using-parties-in-other-roles).
 
 Use `create` when the record is created and `update` or `edit` when it changes.
 The transport belongs in the instrument or activity data. See

@@ -82,14 +82,14 @@ non-null; an empty `content` string is preserved.
 
 Party nodes may carry an external home in the same `link` field in any role.
 Without an external home, `link` is `null`. See
-[Linking a Party](/deeper/parties-and-anonymous-actors#linking-a-party).
+[Linking a Party](/recording/parties-and-anonymous-actors#linking-a-party).
 
 <span id="tombstoned-entities"></span>
 
 ### Tombstones
 
 Deleted models are replaced by tombstones in existing activities.
-See [Deleted Models](/deeper/deleted-models) for the lifecycle.
+See [Deleted Models](/maintenance/deleted-models) for the lifecycle.
 
 ```jsonc
 "object": {
@@ -246,8 +246,8 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 |---|---|---|
 | `kind` | string | always `"activity"` |
 | `id` | string | the activity's stable, opaque id |
-| `verb` | string or null | the recorded verb; `null` only on a verbless entry of a [composed feed](/basics/composing-feeds#composing-a-feed) or source |
-| `published_at` | string or null | ISO 8601 with microseconds; `null` only on a [dateless entry](/basics/composing-feeds#dateless-entries) of a composed feed or source |
+| `verb` | string or null | the recorded verb; `null` only on a verbless entry of a [composed feed](/retrieving/composing-feeds#composing-a-feed) or source |
+| `published_at` | string or null | ISO 8601 with microseconds; `null` only on a [dateless entry](/retrieving/composing-feeds#dateless-entries) of a composed feed or source |
 | `starts_at`, `ends_at` | string or null | the time range set with `startsAt()` and `endsAt()`, ISO 8601 with microseconds; either end may be `null` |
 | `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
@@ -258,7 +258,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `data` | map or null | what the recording call passed to `data()` |
 | `tombstoned` | list | the roles (`"object"`, `"target"`, …) whose entity is a tombstone; `[]` when none |
 | `redundant` | boolean | `true` when a tombstoned role is selected for redundancy checks: the object by default, none for a removal verb, or what the verb's `missing()` selects |
-| `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/deeper/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
+| `missing_headline_template` | string or null | the verb's [`->missingHeadline()`](/maintenance/deleted-models#headlines-for-deleted-objects), when `redundant` is `true` and the verb declares one; otherwise `null`. `headline_template` keeps its value either way |
 | `missing_headline` | string or null | the finished text when `->missingHeadline()` is a closure that returns text without role tokens, as `headline` is for `headline_template`; otherwise `null` |
 
 A redundant activity still records what happened, but a relevant model has
@@ -333,8 +333,8 @@ been deleted. Your renderer may display the original or missing headline.
 | Key | Type | Holds |
 |---|---|---|
 | `kind` | string | always `"group"` |
-| `id` | string | `grp_` and an opaque key; stable, and accepted by [`members()`](/basics/retrieving-feeds#group-members) |
-| `axis` | string | the axis that grouped the members: a [built-in axis](/deeper/aggregation#built-in-axes) (`actors`, `actors_target`, `targets`, `object`, `repeat` or `composite`) or a [custom axis](/deeper/custom-axes)'s name. Render an unknown value as a generic group |
+| `id` | string | `grp_` and an opaque key; stable, and accepted by [`members()`](/retrieving/retrieving-feeds#group-members) |
+| `axis` | string | the axis that grouped the members: a [built-in axis](/shaping/aggregation#built-in-axes) (`actors`, `actors_target`, `targets`, `object`, `repeat` or `composite`) or a [custom axis](/shaping/custom-axes)'s name. Render an unknown value as a generic group |
 | `count` | int | the true number of members |
 | `verb` | string | the members' verb |
 | `published_at` | string | the newest member's; the sort key |
@@ -345,7 +345,7 @@ been deleted. Your renderer may display the original or missing headline.
 | `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
 | `sample.featured` | list | each sampled member's featured entity, newest first, one per member, so an entity can repeat; limited by `grouping.sample_limits.featured` (default three) |
 | `distinct` | map of ints | per role, the true count of distinct entities across all members; `featured` counts the members that feature an entity |
-| `children` | list | member activity nodes, newest first, at most `grouping.children_limit`; [`members()`](/basics/retrieving-feeds#group-members) pages through all of them |
+| `children` | list | member activity nodes, newest first, at most `grouping.children_limit`; [`members()`](/retrieving/retrieving-feeds#group-members) pages through all of them |
 | `children_truncated` | boolean | `true` when `count` is more than the `children` included |
 | `tombstoned` | list | the roles with at least one tombstone among their distinct entities |
 | `redundant` | boolean | `true` only when every member is redundant |
@@ -357,11 +357,11 @@ count is one. Otherwise it is `null`. Each plural role has a limited sample
 and a distinct count; empty roles use `[]` and `0`.
 
 Which activities group together, and when, is grouping policy, not part of
-the payload contract; see [Aggregation](/deeper/aggregation).
+the payload contract; see [Aggregation](/shaping/aggregation).
 
 <a id="digest-rows"></a>
 
-[Live](/basics/retrieving-feeds#live) groups one action within a burst, using the
+[Live](/retrieving/retrieving-feeds#live) groups one action within a burst, using the
 group shape above.
 
 ## Presentation Fields
@@ -395,9 +395,9 @@ Both fields are null when no headline describes every group member.
 Renderers must handle this case; see
 [Building Your Own Components](/ui/building-your-own-components#groups-without-headlines).
 
-See [Aggregation](/deeper/aggregation) for allowed group tokens. Singular
+See [Aggregation](/shaping/aggregation) for allowed group tokens. Singular
 tokens require a shared grouping role. The
-[singular fallback](/deeper/aggregation#group-headline-tokens) may also retain
+[singular fallback](/shaping/aggregation#group-headline-tokens) may also retain
 a role token when the group has exactly one distinct entity for that role.
 
 Noun substitution can change the emitted template even for the same headline
@@ -425,7 +425,7 @@ needs a 24 by 24 pixel target at level AA.
 ### Cursors
 
 - Store cursors and return them unchanged; do not parse them.
-- Results are ordered by `published_at`, newest first, with [dateless entries](/basics/composing-feeds#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/basics/composing-feeds#keeping-your-order).
+- Results are ordered by `published_at`, newest first, with [dateless entries](/retrieving/composing-feeds#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/retrieving/composing-feeds#keeping-your-order).
 - `next_cursor: null` marks the end.
 
 <span id="sync-token"></span>

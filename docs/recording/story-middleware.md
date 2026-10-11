@@ -1,0 +1,219 @@
+# Story Middleware
+
+## Introduction
+
+Use story middleware to add shared data, supply roles, or decide whether to
+publish an activity. The built-in `batch` middleware collects one actor's
+activities into a batch; see [Batching Activities](/shaping/batching-activities).
+
+<span id="batching-activities"></span>
+<span id="setting-a-batch-window"></span>
+<span id="batch-windows"></span>
+<span id="publishing-outside-a-batch"></span>
+<span id="listening-for-closed-batches"></span>
+
+<script setup>
+import { scene } from '../.vitepress/theme/world'
+const placed = { ...scene.order, data: null, glyph_intent: null }
+const marked = { ...placed, data: { reviewed: true } }
+</script>
+
+<a id="writing-story-middleware"></a>
+
+## Defining Story Middleware
+
+```php memo="app/StoryMiddleware/MarkReviewed.php"
+<?php
+
+namespace App\StoryMiddleware;
+
+use Closure;
+use Storyfeed\PendingActivity;
+
+class MarkReviewed
+{
+    public function handle(PendingActivity $activity, Closure $next): mixed
+    {
+        $activity->data([
+            ...($activity->activity->data ?? []),
+            'reviewed' => true,
+        ]);
+
+        return $next($activity);
+    }
+}
+```
+
+Middleware receives a `PendingActivity` and passes it to `$next`. Code after
+`$next($activity)` can inspect the returned activity. Check its `exists` property
+before performing work that requires a stored activity.
+
+Return `null` without calling `$next` to skip publishing. The builder's
+`publish` method then returns an unsaved activity (`exists === false`). To
+continue publishing, return the result of `$next($activity)`. Middleware cannot
+change the verb or object type.
+
+### Closure Middleware
+
+You may also define middleware as a closure:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Closure;
+use Storyfeed\Facades\Story;
+use Storyfeed\PendingActivity;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag')
+    ->middleware(
+    static function (PendingActivity $activity, Closure $next) {
+        return $next($activity->data([
+            ...($activity->activity->data ?? []),
+            'reviewed' => true,
+        ]));
+    },
+);
+```
+
+<FeedExample :items="[marked]" expanded />
+
+`Storyfeed::fake()` runs the same middleware pipeline.
+
+<a id="registering-aliases-and-groups"></a>
+
+## Registering Middleware
+
+<a id="aliases"></a>
+<a id="groups"></a>
+
+Register aliases and named groups in a service provider, because cached
+stories do not load `routes/feed.php`:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use App\StoryMiddleware\MarkReviewed;
+use Storyfeed\Facades\Story;
+
+Story::aliasMiddleware('reviewed', MarkReviewed::class);
+Story::middlewareGroup('review', ['reviewed']);
+```
+
+`aliasMiddleware` gives a class a short name. `middlewareGroup` registers a
+list of middleware under one name: the `review` group contains the `reviewed`
+alias, and either may be assigned to a story.
+
+## Assigning Middleware to Stories
+
+Attach the class to the verb:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use App\StoryMiddleware\MarkReviewed;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')
+    ->headline(':actor placed :object with :target')
+    ->icon('shopping-bag')
+    ->middleware(MarkReviewed::class);
+```
+
+<FeedExample :items="[marked]" expanded />
+
+Use the group in the feed file:
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::middleware('review')->group(function () {
+    Story::for(Order::class)->verb('place')
+        ->headline(':actor placed :object with :target')
+        ->icon('shopping-bag');
+    Story::for(Order::class)->verb('complete')
+        ->headline(':actor completed :object')
+        ->withoutMiddleware('reviewed');
+});
+```
+
+The `place` activity receives the review data; `complete` skips that middleware:
+
+<FeedExample :items="[marked]" expanded />
+
+### Execution Order
+
+The built-in `default` group runs first, followed by enclosing groups and the
+verb's middleware. Identical resolved middleware strings run once. The
+`default` group contains `batch`. To run middleware for every verb, push it
+onto the `default` group:
+
+```php memo="app/Providers/AppServiceProvider.php" at="boot()"
+use Storyfeed\Facades\Story;
+
+Story::pushMiddlewareToGroup('default', 'reviewed');
+```
+
+`prependMiddlewareToGroup` adds middleware to the start of a group instead.
+Neither adds middleware a group already contains. To replace the whole group,
+redefine it with `Story::middlewareGroup('default', [...])`.
+
+A queued activity runs its story middleware on the worker.
+
+### Excluding Middleware
+
+Exclusions match resolved strings exactly: `withoutMiddleware('batch')` leaves
+`batch:5 minutes` in place. Use `unbatched()` to remove batching altogether.
+
+### Parameters
+
+A middleware string may name a class, alias, or group. Append arguments after a
+colon, as in `batch:5 minutes`. A custom class receives them after `$next` in
+its `handle` method. A Story may declare middleware in `middleware(): array`,
+but that method cannot use constructor data.
+
+<a id="preserving-an-actor-or-context"></a>
+<a id="preserving-actor-and-context-values"></a>
+
+## Supplying Default Roles
+
+```php memo="app/StoryMiddleware/UseServiceActor.php"
+<?php
+
+namespace App\StoryMiddleware;
+
+use Closure;
+use Storyfeed\PendingActivity;
+
+class UseServiceActor
+{
+    public function handle(PendingActivity $activity, Closure $next): mixed
+    {
+        if (! $activity->hasActor()) {
+            $activity->by('System'); // A declared party.
+        }
+
+        return $next($activity);
+    }
+}
+```
+
+Call `hasActor()` before supplying an actor; it also returns `true` for explicit
+anonymity. Call `has('context')` before supplying context. These checks preserve
+[actor and context precedence](/recording/activity-scopes#role-precedence).
+Declare party names in the [party list](/recording/parties-and-anonymous-actors#declaring-parties),
+because the `by` method does not check that list.
+
+<a id="resolving-role-precedence"></a>
+
+A role supplied by story middleware gives way to the call site and any scope;
+see [Role Precedence](/recording/activity-scopes#role-precedence) for the full
+order.
+
+<a id="caching-closure-middleware"></a>
+<a id="inspecting-middleware"></a>
+
+## Caching and Inspecting Middleware
+
+The [`storyfeed:cache` command](/basics/the-feed-file#caching-definitions) caches
+middleware declarations, including closures. Register aliases and named groups
+in a service provider so they remain available when the feed file is cached.
+Use `storyfeed:list -v` to inspect each verb's resolved middleware and arguments.

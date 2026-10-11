@@ -72,7 +72,7 @@ role as a named argument.
 | `generator` | the app or agent that produced the activity | the app the order was placed from |
 
 Containers above the object, target or context come from each model's
-[`parent()` declaration](/deeper/distant-relations).
+[`parent()` declaration](/recording/distant-relations).
 
 Choose the role based on the entity's involvement. A tablet is a `target` when
 an order is sent to it, or an `instrument` when used to take the order.
@@ -115,7 +115,7 @@ Storyfeed::record(
 > those values. [Recording Value Changes](/cookbook/recording-value-changes)
 > compares the roles, data, and party queries for a rename.
 
-These roles come from [W3C Activity Streams 2.0](/deeper/activity-streams).
+These roles come from [W3C Activity Streams 2.0](/shaping/activity-streams).
 
 <a id="reading-as-a-sentence"></a>
 
@@ -272,10 +272,10 @@ Storyfeed::record(
 With the default configuration and no scoped or verb-specific actor, omitting
 `by` records the authenticated user, or no actor when nobody is signed in.
 Other sources can supply the actor; see
-[Role Precedence](/deeper/activity-scopes#role-precedence).
+[Role Precedence](/recording/activity-scopes#role-precedence).
 
 Use `by(null)` to bypass default actor selection explicitly. An
-[anonymous activity](/deeper/parties-and-anonymous-actors#recording-anonymous-activities) has no
+[anonymous activity](/recording/parties-and-anonymous-actors#recording-anonymous-activities) has no
 recorded actor.
 
 ## Adding Activity Data
@@ -594,7 +594,7 @@ class PhotoController extends Controller
 ```
 :::
 
-See [Composites](/deeper/composites) for how these activities appear in the feed
+See [Composites](/shaping/composites) for how these activities appear in the feed
 and how to define their headlines.
 
 ## Featuring Another Role

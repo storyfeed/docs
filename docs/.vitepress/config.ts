@@ -8,9 +8,8 @@ import { uiResolve, uiSource } from '../../scripts/ui-kit.mjs'
 const rnd = process.argv.includes('dev')
 import container from 'markdown-it-container'
 import { createHighlighter } from 'shiki'
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { REDIRECTS, redirectPage } from './redirects.ts'
+import { cpSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 
 // Inline code's highlighter (see code_inline below), with VitePress's own
 // colour replacements so a token matches the same token in a code block.
@@ -38,7 +37,7 @@ export default defineConfig({
   // Served at the root of docs.storyfeed.dev, so no base path.
   base: '/',
 
-  // GitHub Pages resolves /guide/installation → /guide/installation.html.
+  // GitHub Pages resolves /getting-started/installation → /getting-started/installation.html.
   cleanUrls: true,
   lastUpdated: true,
 
@@ -48,15 +47,8 @@ export default defineConfig({
   // convention somebody can defeat with `git add -f`.
   srcExclude: rnd ? ['briefs/**'] : ['briefs/**', 'rnd/**'],
 
-  // A page at every old URL, sending the reader on (see redirects.ts), and
-  // the plain-text pages llms.txt links to.
+  // Each page's plain-text copy, which llms.txt links to (scripts/llms.mjs).
   buildEnd({ outDir, srcDir }) {
-    for (const [from, to] of Object.entries(REDIRECTS)) {
-      const title = readFileSync(join(srcDir, `${to.split('#')[0]}.md`), 'utf8').match(/^# (.+)$/m)![1]
-      mkdirSync(dirname(join(outDir, from)), { recursive: true })
-      writeFileSync(join(outDir, `${from}.html`), redirectPage(to, title))
-    }
-    // Each page's plain-text copy, which llms.txt links to (scripts/llms.mjs).
     const copies = join(srcDir, '.vitepress/llms')
     if (existsSync(copies)) cpSync(copies, outDir, { recursive: true })
   },
@@ -230,7 +222,7 @@ export default defineConfig({
     // order everywhere — storyfeed.dev pitches, this site teaches, the
     // Newsroom proves.
     nav: [
-      { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
+      { text: 'Guide', link: '/getting-started/introduction', activeMatch: '/getting-started/' },
       { text: 'storyfeed.dev', link: 'https://storyfeed.dev' },
       { text: 'Live demo', link: 'https://newsroom.storyfeed.dev' },
       { text: 'Sponsor', link: 'https://github.com/sponsors/storyfeed' },
@@ -255,10 +247,10 @@ export default defineConfig({
         // Laravel's order: set up, get it working, then see what it can do.
         text: 'Getting Started',
         items: [
-          { text: 'Introduction', link: '/guide/introduction' },
-          { text: 'Installation', link: '/guide/installation' },
-          { text: 'Quickstart', link: '/guide/quickstart' },
-          { text: 'What You Can Build', link: '/guide/what-you-can-build' },
+          { text: 'Introduction', link: '/getting-started/introduction' },
+          { text: 'Installation', link: '/getting-started/installation' },
+          { text: 'Quickstart', link: '/getting-started/quickstart' },
+          { text: 'What You Can Build', link: '/getting-started/what-you-can-build' },
         ],
       },
       {
@@ -270,8 +262,8 @@ export default defineConfig({
           { text: 'Recording Activities', link: '/basics/recording-activities' },
           { text: 'The Feed File', link: '/basics/the-feed-file' },
           { text: 'Story Classes', link: '/basics/story-classes' },
-          { text: 'Constraining Roles', link: '/deeper/constraining-roles' },
-          { text: 'Named Stories', link: '/deeper/named-stories' },
+          { text: 'Constraining Roles', link: '/basics/constraining-roles' },
+          { text: 'Named Stories', link: '/basics/named-stories' },
           { text: 'Activity Verbs', link: '/basics/activity-verbs' },
           { text: 'Activity Content', link: '/basics/activity-content' },
           { text: 'Feed Media', link: '/basics/feed-media' },
@@ -281,10 +273,10 @@ export default defineConfig({
         // Choose and retrieve the feed before using a rendering kit.
         text: 'Retrieving and Rendering',
         items: [
-          { text: 'Retrieving Feeds', link: '/basics/retrieving-feeds' },
-          { text: 'Composing Feeds', link: '/basics/composing-feeds' },
-          { text: 'Named Feeds', link: '/basics/named-feeds' },
-          { text: 'Feed Sources', link: '/basics/feed-sources' },
+          { text: 'Retrieving Feeds', link: '/retrieving/retrieving-feeds' },
+          { text: 'Composing Feeds', link: '/retrieving/composing-feeds' },
+          { text: 'Named Feeds', link: '/retrieving/named-feeds' },
+          { text: 'Feed Sources', link: '/retrieving/feed-sources' },
         ],
       },
       {
@@ -307,48 +299,48 @@ export default defineConfig({
         // build on them: no page leans on one further down.
         text: 'Recording in Depth',
         items: [
-          { text: 'Parties & Anonymous Actors', link: '/deeper/parties-and-anonymous-actors' },
-          { text: 'Publishing From Events', link: '/deeper/publishing-from-events' },
-          { text: 'Publishing Story Classes', link: '/deeper/publishing-story-classes' },
-          { text: 'Containers & Context', link: '/deeper/containers-and-context' },
-          { text: 'Distant Relations', link: '/deeper/distant-relations' },
-          { text: 'Casting Activity Data', link: '/deeper/casting-activity-data' },
-          { text: 'Activity Scopes', link: '/deeper/activity-scopes' },
-          { text: 'Story Middleware', link: '/deeper/story-middleware' },
-          { text: 'Queued Publishing', link: '/deeper/queued-publishing' },
+          { text: 'Parties & Anonymous Actors', link: '/recording/parties-and-anonymous-actors' },
+          { text: 'Publishing From Events', link: '/recording/publishing-from-events' },
+          { text: 'Publishing Story Classes', link: '/recording/publishing-story-classes' },
+          { text: 'Containers & Context', link: '/recording/containers-and-context' },
+          { text: 'Distant Relations', link: '/recording/distant-relations' },
+          { text: 'Casting Activity Data', link: '/recording/casting-activity-data' },
+          { text: 'Activity Scopes', link: '/recording/activity-scopes' },
+          { text: 'Story Middleware', link: '/recording/story-middleware' },
+          { text: 'Queued Publishing', link: '/recording/queued-publishing' },
         ],
       },
       {
         // How stored activities become the rows a feed shows, grouping first.
         text: 'Shaping the Feed',
         items: [
-          { text: 'Aggregation', link: '/deeper/aggregation' },
-          { text: 'Live Burst Windows', link: '/deeper/live-burst-windows' },
-          { text: 'Batching Activities', link: '/deeper/batching-activities' },
-          { text: 'Custom Axes', link: '/deeper/custom-axes' },
-          { text: 'Keeping the Latest Activity', link: '/deeper/keeping-the-latest-activity' },
-          { text: 'Composites', link: '/deeper/composites' },
-          { text: 'Resolving Bodies When Retrieved', link: '/deeper/resolving-bodies-when-retrieved' },
-          { text: 'Custom Body Types', link: '/deeper/custom-body-types' },
-          { text: 'Localization', link: '/deeper/localization' },
-          { text: 'Activity Streams 2.0', link: '/deeper/activity-streams' },
+          { text: 'Aggregation', link: '/shaping/aggregation' },
+          { text: 'Live Burst Windows', link: '/shaping/live-burst-windows' },
+          { text: 'Batching Activities', link: '/shaping/batching-activities' },
+          { text: 'Custom Axes', link: '/shaping/custom-axes' },
+          { text: 'Keeping the Latest Activity', link: '/shaping/keeping-the-latest-activity' },
+          { text: 'Composites', link: '/shaping/composites' },
+          { text: 'Resolving Bodies When Retrieved', link: '/shaping/resolving-bodies-when-retrieved' },
+          { text: 'Custom Body Types', link: '/shaping/custom-body-types' },
+          { text: 'Localization', link: '/shaping/localization' },
+          { text: 'Activity Streams 2.0', link: '/shaping/activity-streams' },
         ],
       },
       {
         // Keeping a feed correct over time.
         text: 'Testing and Maintenance',
         items: [
-          { text: 'Testing', link: '/deeper/testing' },
-          { text: 'Diagnosing Your Feed', link: '/deeper/diagnosing-your-feed' },
-          { text: 'Deleted Models', link: '/deeper/deleted-models' },
-          { text: 'Retention', link: '/deeper/retention' },
-          { text: 'Healing a Feed', link: '/deeper/healing-a-feed' },
+          { text: 'Testing', link: '/maintenance/testing' },
+          { text: 'Diagnosing Your Feed', link: '/maintenance/diagnosing-your-feed' },
+          { text: 'Deleted Models', link: '/maintenance/deleted-models' },
+          { text: 'Retention', link: '/maintenance/retention' },
+          { text: 'Healing a Feed', link: '/maintenance/healing-a-feed' },
         ],
       },
       {
         text: 'Package Authors',
         items: [
-          { text: 'Package Integration', link: '/deeper/package-integration' },
+          { text: 'Package Integration', link: '/packages/package-integration' },
         ],
       },
       {

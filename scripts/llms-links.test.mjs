@@ -22,7 +22,7 @@ for (const file of ['llms.txt', 'llms-full.txt']) {
 }
 
 test('a page\'s .md copy is its text, not the page\'s HTML', () => {
-  const copy = readFileSync(join(dist, 'basics/retrieving-feeds.md'), 'utf8');
+  const copy = readFileSync(join(dist, 'retrieving/retrieving-feeds.md'), 'utf8');
   assert.match(copy, /^# Retrieving Feeds/m);
   assert.doesNotMatch(copy, /<script setup>|<html/);
 });

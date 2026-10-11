@@ -53,7 +53,7 @@ no verb and no feed file definition.
   activities.
 - It reads as Log unless you call `live()`.
 - `involving()`, `query()` and `members()` throw. See
-  [Source Limitations](/basics/feed-sources#source-limitations).
+  [Source Limitations](/retrieving/feed-sources#source-limitations).
 
 To show both on one page, record the events and compose the rest into a
 separate feed.

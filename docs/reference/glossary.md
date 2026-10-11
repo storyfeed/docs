@@ -13,7 +13,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **actor / object / target / context** | Who acted, what they acted on, what the action was directed at, and its container. [Recording](/basics/recording-activities#roles) covers all nine roles. |
 | **entity** | A model or party filling a role. Each payload role contains an [entity object](/reference/payload-contract#entities) or `null`. |
 | **[Feedable](/basics/feedable-models)** | A model that can appear in an activity and provide its label, link, and other feed details. |
-| **party** | A [named participant without an application model](/deeper/parties-and-anonymous-actors), such as a system or integration. |
+| **party** | A [named participant without an application model](/recording/parties-and-anonymous-actors), such as a system or integration. |
 | **anonymous** | No actor was recorded, so who acted is unknown. This includes deliberately using `Storyfeed::anonymous()` or `by(null)`; it does not mean nobody acted. |
 | **empty role** | A role with no recorded entity. Roles other than the actor are empty, never anonymous. |
 
@@ -25,24 +25,24 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **[feed file](/basics/the-feed-file)** | `routes/feed.php`, where `Story::` declares headlines and activity behaviour. It defines no HTTP routes. |
 | **headline** | The displayed wording for an activity or group. |
 | **headline template** | A headline with tokens such as `:actor`, returned in `headline_template`. See [The Feed File](/basics/the-feed-file). |
-| **[keep latest](/deeper/keeping-the-latest-activity)** | A verb policy that keeps only the latest matching activity in the feed. |
+| **[keep latest](/shaping/keeping-the-latest-activity)** | A verb policy that keeps only the latest matching activity in the feed. |
 
 ## Grouping
 
 | Term | Meaning |
 |---|---|
-| **[aggregation](/deeper/aggregation)** | Combining activities that share values, such as the same actor or target, into one feed item. |
-| **group** | Related activities represented by one item, such as one customer's orders at the same shop. See [Retrieving Feeds](/basics/retrieving-feeds#groups). |
-| **axis** | What a group has in common, such as the same actor, verb, and target. This is the API term for its grouping rule. See [Aggregation](/deeper/aggregation#built-in-axes). |
+| **[aggregation](/shaping/aggregation)** | Combining activities that share values, such as the same actor or target, into one feed item. |
+| **group** | Related activities represented by one item, such as one customer's orders at the same shop. See [Retrieving Feeds](/retrieving/retrieving-feeds#groups). |
+| **axis** | What a group has in common, such as the same actor, verb, and target. This is the API term for its grouping rule. See [Aggregation](/shaping/aggregation#built-in-axes). |
 | **repeat** | The fallback group for one actor repeating a verb on the same object type with the same target and context. |
-| **[threshold](/deeper/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
+| **[threshold](/shaping/aggregation#thresholds)** | The minimum needed to form a group, such as three distinct actors. Set in `grouping.policy`. |
 | **winning group** | The one group selected for an activity in `live()`, marked by `winner` on its `feed_groupings` row; `repeat` when none is selected. |
 | **group selection** | Selecting among groups whose thresholds are met, with `repeat` as the fallback. This runs at publication and through [`storyfeed:curate`](/reference/commands#other-maintenance-commands). With `grouping.curate` set to `false`, `live()` shows repeats and composites only. |
-| **[burst window](/deeper/live-burst-windows)** | A quiet gap and maximum duration that bound a Live group. See [Live Burst Windows](/deeper/live-burst-windows) for defaults. |
+| **[burst window](/shaping/live-burst-windows)** | A quiet gap and maximum duration that bound a Live group. See [Live Burst Windows](/shaping/live-burst-windows) for defaults. |
 | **group node** | A group represented in the payload. See [Group Nodes](/reference/payload-contract#group-node). |
 | **sample** | A limited list of distinct entities in a group; `distinct` contains the full counts. |
 | **count** | The number of activities in a group. `distinct.actors` counts different actors. |
-| **[composite](/deeper/composites)** | One activity about multiple objects. |
+| **[composite](/shaping/composites)** | One activity about multiple objects. |
 | **batch** | An actor's activities collected together. This is not a Laravel job batch. |
 | **window** | How long Storyfeed waits for more activities before closing a batch. |
 
@@ -56,15 +56,15 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **return** | Produce a PHP value. |
 | **item** | One entry in a feed, represented by `FeedItem` or its payload array. |
 | **node** | A payload representation, such as an activity node or group node. |
-| **[named feed](/basics/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
-| **[composed feed](/basics/composing-feeds#composing-a-feed)** | A feed built in PHP with `Storyfeed::compose()` from data the app already has. Nothing is recorded. Not a [composite](/deeper/composites). |
+| **[named feed](/retrieving/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
+| **[composed feed](/retrieving/composing-feeds#composing-a-feed)** | A feed built in PHP with `Storyfeed::compose()` from data the app already has. Nothing is recorded. Not a [composite](/shaping/composites). |
 | **entry** | One item of a composed feed or a source, built with `Storyfeed\Sources\Entry`. |
-| **[dateless entry](/basics/composing-feeds#dateless-entries)** | An entry with no `publishedAt`. Its node's `published_at` is `null`, and it never groups. |
+| **[dateless entry](/retrieving/composing-feeds#dateless-entries)** | An entry with no `publishedAt`. Its node's `published_at` is `null`, and it never groups. |
 | **[inline entity](/basics/recording-activities#entities-without-a-model)** | An entity given as an array, with a `type` and a `label`, instead of a model. Stored as given and never refreshed. |
-| **[source](/basics/feed-sources#naming-sources)** | Where a feed reads its items: the database by default, or an array, a config entry, or a custom driver. |
-| **read mode** | The API choice of `log()` or `live()`. See [Retrieving Feeds](/basics/retrieving-feeds). |
-| **[live](/basics/retrieving-feeds#live)** | The default read mode, with each activity shown in one selected group. |
-| **[log](/basics/retrieving-feeds#log)** | The mode that returns one item per activity without grouping. |
+| **[source](/retrieving/feed-sources#naming-sources)** | Where a feed reads its items: the database by default, or an array, a config entry, or a custom driver. |
+| **read mode** | The API choice of `log()` or `live()`. See [Retrieving Feeds](/retrieving/retrieving-feeds). |
+| **[live](/retrieving/retrieving-feeds#live)** | The default read mode, with each activity shown in one selected group. |
+| **[log](/retrieving/retrieving-feeds#log)** | The mode that returns one item per activity without grouping. |
 | **cursor** | An opaque page position passed back when requesting another page. |
 | **sync_token** | An opaque value that changes when existing feed history changes. Discard accumulated nodes and fetch again when it changes. See [Synchronization](/reference/payload-contract#sync-tokens). |
 
@@ -82,7 +82,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **[body](/basics/activity-content#adding-entity-bodies)** | Typed content beneath a headline, such as an excerpt or list. Its kind is its **body type**. |
 | **[excerpt](/basics/activity-content#adding-quoted-text)** | A body containing quoted words, optional source attribution, and a flag indicating whether the text is partial. It belongs to the entity snapshot. |
 | **degraded** | An entity with no snapshot yet, returned with `label: null` and `link: null`. Its activity still appears. See [Handling Missing Values](/ui/building-your-own-components#degraded-entities). |
-| **redundant** | An activity with a tombstone in a role selected by its verb for redundancy checks. It still records what happened. See [Redundant Roles](/deeper/deleted-models#roles-that-determine-redundancy). |
+| **redundant** | An activity with a tombstone in a role selected by its verb for redundancy checks. It still records what happened. See [Redundant Roles](/maintenance/deleted-models#roles-that-determine-redundancy). |
 
 <span id="storage-maintenance"></span>
 
@@ -92,7 +92,7 @@ Terms used to define, publish, retrieve, and render an activity feed.
 |---|---|
 | **snapshot** | Cached label, data, and body fields for an entity. |
 | **trickle** | Maintenance that creates missing snapshots, refreshes outdated ones, and finds deletions not reported by model events. |
-| **[tombstone](/deeper/deleted-models)** | A reference to a deleted model, including its former type and deletion time. Its activities may remain. |
-| **[retention](/deeper/retention)** | How long activities remain before `storyfeed:prune` permanently deletes them. |
-| **[healer](/deeper/healing-a-feed)** | An application policy that selects activities for soft-deletion because their source is permanently gone. |
+| **[tombstone](/maintenance/deleted-models)** | A reference to a deleted model, including its former type and deletion time. Its activities may remain. |
+| **[retention](/maintenance/retention)** | How long activities remain before `storyfeed:prune` permanently deletes them. |
+| **[healer](/maintenance/healing-a-feed)** | An application policy that selects activities for soft-deletion because their source is permanently gone. |
 | **soft-delete** | Mark an activity deleted without permanently removing its stored record. This is what `storyfeed:heal` does. |

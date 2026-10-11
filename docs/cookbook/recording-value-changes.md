@@ -192,7 +192,7 @@ store that value in `data` and include it through a dynamic headline.
 | Presentation change | the page or document | font and spacing settings |
 
 [Assigning Roles](/basics/recording-activities#assigning-roles) defines the participants.
-Use [Containers & Context](/deeper/containers-and-context#choosing-between-target-and-context)
+Use [Containers & Context](/recording/containers-and-context#choosing-between-target-and-context)
 when the activity also needs a containing entity.
 
 For a link's intended recipient, see

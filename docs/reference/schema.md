@@ -449,7 +449,7 @@ Indexes each activity's filled roles for `involving()` and
 
 Stores a tombstone for each deleted model, referenced by its activities.
 The alias is always `storyfeed.tombstone`, regardless of the morph map.
-See [Deleted Models](/deeper/deleted-models).
+See [Deleted Models](/maintenance/deleted-models).
 
 The `meta` column holds application metadata. Neither the public tombstone
 entry point nor `PendingTombstone` provides a metadata setter. Applications

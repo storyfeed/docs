@@ -39,7 +39,7 @@ for each person:
 
 The sentence names the place as well as the people. Prefer that to an isolated
 “5 check-ins”. A reaction group should likewise name the thing people reacted
-to. Choose a [grouping axis](/deeper/aggregation#built-in-axes) whose activities
+to. Choose a [grouping axis](/shaping/aggregation#built-in-axes) whose activities
 share the role you want to name. The built-in `actors` axis requires the same
 object. The `actors_target` axis requires the same target; its objects may differ.
 
@@ -92,7 +92,7 @@ inspect:
 <FeedExample :items="bulk" />
 
 For work deliberately submitted together, consider a
-[composite](/deeper/composites): one published activity with a collection of
+[composite](/shaping/composites): one published activity with a collection of
 objects. Activities that merely happen near each other can use ordinary
 aggregation. Neither approach replaces the member content with the headline.
 
@@ -101,7 +101,7 @@ by the remaining count. [Naming Group Members From Activity Data](/cookbook/nami
 shows how to limit the displayed names. Count all members, including those
 omitted from the response. A group node nests at most `grouping.children_limit`
 members; a “Show all” control fetches the rest with
-[`members()`](/basics/retrieving-feeds#paginating-a-group-s-members).
+[`members()`](/retrieving/retrieving-feeds#paginating-a-group-s-members).
 
 <a id="show-system-outcomes-not-every-step"></a>
 
@@ -115,7 +115,7 @@ The actor and the affected order explain the event. Indexing, cache rebuilds
 and successful retries usually add no comparable information for the reader.
 [Choose what to record](/cookbook/choosing-when-to-publish#choosing-events-to-record) before trying to
 hide that volume in a group. For already-recorded events, a feed's
-[`only()` or `except()`](/basics/retrieving-feeds#filtering-by-verb) filters can select
+[`only()` or `except()`](/retrieving/retrieving-feeds#filtering-by-verb) filters can select
 what its readers need.
 
 <a id="choose-the-read-mode-for-that-feed"></a>
@@ -124,10 +124,10 @@ what its readers need.
 
 Offer a grouped overview and a separate history of the same data when
 readers need both. See
-[Choosing a Read Mode](/basics/retrieving-feeds#choosing-a-read-mode) for `live()` and
+[Choosing a Read Mode](/retrieving/retrieving-feeds#choosing-a-read-mode) for `live()` and
 `log()`.
 
-[`keepLatest()`](/deeper/keeping-the-latest-activity) and
-[retention](/deeper/retention) change which events remain available. Use them
+[`keepLatest()`](/shaping/keeping-the-latest-activity) and
+[retention](/maintenance/retention) change which events remain available. Use them
 only when that matches the history you intend to keep, rather than as display
 settings for a crowded feed.

@@ -52,7 +52,7 @@ The copied `shared/` directory makes the imports self-contained. Configure
 
 The app fetches the next page from `next_cursor` and appends its `data` to
 `items`. `loadingMore` disables the pager.
-Follow the [feed's sync token](/basics/retrieving-feeds#handling-a-changed-feed).
+Follow the [feed's sync token](/retrieving/retrieving-feeds#handling-a-changed-feed).
 `empty` accepts a React node for an empty page.
 
 ## Replacing Row Content

@@ -71,7 +71,7 @@ A **body** contains an entity's structured content. Define it in the model's
 the entity appears. With `InteractsWithFeed`, saving the model refreshes its
 shared snapshot while recording is enabled. That can change the body shown on
 older activities too. Use activity `data` to capture values as they were at the event.
-A [composed feed](/basics/composing-feeds#composing-from-feedable-models) reads
+A [composed feed](/retrieving/composing-feeds#composing-from-feedable-models) reads
 `toFeed()` each time it is read instead.
 
 Every entity in the payload carries its own bodies, in any role. An
@@ -931,8 +931,8 @@ its type in `$body`, such as `Storyfeed/Body/KeyValue`, and its version in `$v`.
 Your renderer uses these fields to display the body. A body may also carry
 `$meta`, its renderer settings. Passing a string as a body creates a `Prose` body.
 
-See [Resolving Bodies When Retrieved](/deeper/resolving-bodies-when-retrieved) for current
-and deferred values, or [Custom Body Types](/deeper/custom-body-types) to render custom
+See [Resolving Bodies When Retrieved](/shaping/resolving-bodies-when-retrieved) for current
+and deferred values, or [Custom Body Types](/shaping/custom-body-types) to render custom
 components and define your own body types.
 
 <a id="featuring"></a>
