@@ -46,6 +46,13 @@ export const REDIRECTS: Record<string, string> = {
   '/cookbook/recording-signed-link-access': '/cookbook/activities-without-an-actor#a-link-sent-to-someone',
   '/cookbook/repeating-activities': '/deeper/keeping-the-latest-activity#choosing-every-occurrence-or-the-latest',
 
+  // 2026-10-11: the last meta-refresh stubs.
+  '/reference/compatibility': '/guide/installation#requirements',
+  '/guide/anatomy': '/guide/introduction',
+  '/cookbook/counts-that-keep-moving': '/cookbook/computed-values-in-the-feed',
+  '/basics/the-payload': '/basics/retrieving-feeds#the-payload',
+  '/basics/rendering': '/ui/building-your-own-components',
+
   // Earlier moves.
   '/basics/headlines': '/basics/the-feed-file',
   '/deeper/details': '/deeper/custom-body-types',

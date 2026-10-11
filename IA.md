@@ -492,16 +492,7 @@ the one obvious path and link here.
 
 ### Routes Outside the Sidebar
 
-These files retain old URLs or anchors and point readers to the canonical page:
-
-| File | Canonical Home |
-|---|---|
-| `docs/index.md` | `guide/introduction` |
-| `guide/anatomy.md` | `guide/introduction` |
-| `reference/compatibility.md` | `guide/installation#requirements` |
-| `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values-in-the-feed` |
-| `basics/the-payload.md` | `basics/retrieving-feeds#the-payload` |
-| `basics/rendering.md` | `ui/building-your-own-components`, keeping the anchor in the URL |
+`docs/index.md` is the home page; it points to `guide/introduction`.
 
 Every page's URL follows its title. Each old URL is listed in
 `docs/.vitepress/redirects.ts`, which writes a page there that sends the reader
