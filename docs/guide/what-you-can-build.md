@@ -15,6 +15,7 @@ const withKeyValue = { ...content.confirmed,
 const paidByWebhook = logOf([scene.cookbook.actorless.paid])
 const orderStory = logOf(scene.deeper.latestPerObject.timeline)
 const live = liveOf(everything())
+const progress = ['j84', 'a-confirm', 'a-ready'].map((id) => everything().find((node) => node.id === id))
 </script>
 
 <a id="one-activity"></a>
@@ -109,6 +110,39 @@ Route::get('/orders/{order}/history', function (Order $order) {
 ```
 
 <FeedExample :items="orderStory" />
+
+## Showing Records You Already Have
+
+[Compose a feed](/basics/composing-feeds) from data your app already stores,
+such as the timestamps an order went through. Nothing is recorded, and the
+same kits draw it.
+
+```php memo="routes/web.php"
+use App\Models\Order;
+use Illuminate\Support\Facades\Route;
+use Storyfeed\Facades\Storyfeed;
+
+Route::get('/orders/{order}/progress', function (Order $order) {
+    return Storyfeed::compose()
+        ->add(fn ($entry) => $entry
+            ->by($order->customer)
+            ->action('place', $order)
+            ->to($order->shop)
+            ->publishedAt($order->placed_at))
+        ->add(fn ($entry) => $entry
+            ->by($order->confirmedBy)
+            ->action('confirm', $order)
+            ->publishedAt($order->confirmed_at))
+        ->add(fn ($entry) => $entry
+            ->by($order->confirmedBy)
+            ->action('ready', $order)
+            ->publishedAt($order->ready_at))
+        ->inOrder()
+        ->get();
+});
+```
+
+<FeedExample :items="progress" />
 
 <a id="grouping-activities"></a>
 <a id="a-week-at-a-glance"></a>
