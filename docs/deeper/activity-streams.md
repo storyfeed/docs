@@ -142,7 +142,7 @@ enum OrderActivity: string implements FeedVerb
 |---|---|
 | `type` and deletion rules | The mapping sets the document's type. Without an app or built-in AS2 mapping, the type is `Activity`. Intransitive types also fall back to `Activity` when an object is present. `Delete`, `Remove`, `Undo` and `Reject` have no constitutive roles by default; other types use the object. Explicit rules can override this; see [Deleted Models](/deeper/deleted-models). |
 | `sf:verb` | Always holds the verb. The JSON-LD context, `https://ns.storyfeed.dev`, defines it. |
-| `summary` | The activity's headline as one HTML-escaped sentence. Omitted when the verb has no headline. |
+| `summary` | The activity's headline as one HTML-escaped sentence. Omitted when the verb has no headline, or when a role the headline names has no label. |
 | `startTime`, `endTime` | The activity's `starts_at` and `ends_at` in UTC, each only when recorded. |
 | `duration` | The time from `startTime` to `endTime` in days and time, such as `P1DT2H`. Only when both are recorded. |
 | composite `object` | Serializes as `OrderedCollection`. |
