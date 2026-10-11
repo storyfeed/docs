@@ -80,7 +80,7 @@ Use its methods to access the [payload](/reference/payload-contract):
 @foreach ($page as $item)
     {{ $item->headline() }}
     {{ $item->actor()?->label() }}
-    {{ $item->publishedAt()->diffForHumans() }}
+    {{ $item->publishedAt()?->diffForHumans() }}
 @endforeach
 ```
 
@@ -179,14 +179,17 @@ each `Entity` and returns HTML. Escape values included in that HTML:
 
 #### Timestamps
 
-The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance:
+The `publishedAt` method returns `published_at` as a `CarbonImmutable` instance,
+or `null` for a [dateless entry](/basics/feed-sources#dateless-entries):
 
 ```blade memo="resources/views/components/feed/time.blade.php"
 @props(['at'])
 
-<time datetime="{{ $at->toAtomString() }}" {{ $attributes }}>
-    {{ $at->diffForHumans() }}
-</time>
+@if ($at)
+    <time datetime="{{ $at->toAtomString() }}" {{ $attributes }}>
+        {{ $at->diffForHumans() }}
+    </time>
+@endif
 ```
 
 <FeedExample :items="[one]">
