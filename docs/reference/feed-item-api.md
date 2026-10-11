@@ -26,6 +26,20 @@ See [Rendering](/ui/custom-rendering) for examples.
 Call `FeedItem::of($array)` to wrap an existing array, such as an item from a
 page's JSON.
 
+### Group Anchors
+
+A group's `id` encodes a `Storyfeed\Grouping\Anchor`, as a cursor string
+encodes Laravel's `Cursor`. `members()` takes either:
+
+| Method | Returns |
+|---|---|
+| `Anchor::fromEncoded($id)` | the anchor a group's `id` encodes, or `null` for a string that is not a group id |
+| `$anchor->encode()` | the group's `id` |
+| `$anchor->parameter('axis')`, `parameter('hash')` | one part; another name throws `UnexpectedValueException` |
+| `$anchor->parameters(['axis', 'hash'])`, `toArray()` | the parts, as a list or keyed |
+
+A group's `id` is opaque: store it and pass it back unchanged.
+
 ## FeedItem
 
 ### Item Methods
