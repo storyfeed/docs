@@ -158,6 +158,44 @@ written reason:
 See [Acknowledgment Policy](/reference/doctor-checks#acknowledgment-policy) for the
 supported codes and how accepted findings are counted.
 
+### Acknowledging a Custom Query Exclusion
+
+For example, a `portal` feed may exclude clause rewrites from repeat groups
+in its custom query while rendering them on the object axis. The doctor can
+still report `aggregates.missing` for `repeat.agreement.rewrite`, because the
+declared Live mode and verb filter admit that pair. First verify that no
+surface can return the group, then inspect its complete subject:
+
+```sh
+php artisan storyfeed:doctor --only=aggregates --json
+```
+
+If the finding's subject is exactly the example below, add this entry to
+the `doctor.acknowledgments` list in `config/storyfeed.php`:
+
+```php memo="config/storyfeed.php" at="doctor.acknowledgments"
+[
+    'code' => 'aggregates.missing',
+    'subject' => [
+        'axis' => 'repeat',
+        'verb' => 'rewrite',
+        'key' => 'repeat.agreement.rewrite',
+        'read_by' => 'portal',
+    ],
+    'reason' => 'The portal custom query excludes rewrite repeat groups; rewrites render on the object axis.',
+],
+```
+
+Copy your own subject rather than adapting only the key: `read_by` must match
+the complete comma-separated reader string, or `null`, from the finding.
+Rebuild the configuration cache if your deployment uses one, then rerun
+`php artisan storyfeed:doctor --fail-on=error`. The accepted finding stays
+visible with its reason and no longer fails the command or generates stubs.
+Other missing headlines still fail. If a reader is added or removed, the
+subject no longer matches: review the exclusion again before updating the
+acknowledgment. Changes within an existing custom query are opaque to the
+doctor, so revisit the reason whenever that query changes.
+
 ## Generating Missing Definitions
 
 Use `--stubs` to print suggested definitions for `routes/feed.php`:
