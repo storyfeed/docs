@@ -156,7 +156,7 @@ case:
 | `anonymous($object = null)` | the same, with no actor recorded |
 | `publish($object = null)` | the published `Activity` |
 | `record(object:, actor:, target:, …)` | the published `Activity`; takes the named arguments of `Storyfeed::record()`, except `verb` and `anonymous` |
-| `by()`, `to()`, `object()`, `data()`, and the other `PendingActivity` methods | a `PendingActivity` with this verb, after calling that method on it |
+| `by()`, `to()`, `object()` and the other role methods, `objects()`, the `featuring…()` methods, `withoutFeature()`, `anonymously()`, `data()`, `publishedAt()`, `startsAt()` and `endsAt()` | a `PendingActivity` with this verb, after calling that method on it |
 
 ## Unregistered Verbs
 
