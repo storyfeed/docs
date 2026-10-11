@@ -59,6 +59,8 @@ Terms used to define, publish, retrieve, and render an activity feed.
 | **[named feed](/basics/named-feeds)** | A reusable definition of a feed's scope, verbs, and read mode. |
 | **[composed feed](/basics/composing-feeds#composing-a-feed)** | A feed built in PHP with `Storyfeed::compose()` from data the app already has. Nothing is recorded. Not a [composite](/deeper/composites). |
 | **entry** | One item of a composed feed or a source, built with `Storyfeed\Sources\Entry`. |
+| **[dateless entry](/basics/composing-feeds#dateless-entries)** | An entry with no `publishedAt`. Its node's `published_at` is `null`, and it never groups. |
+| **[inline entity](/basics/recording-activities#entities-without-a-model)** | An entity given as an array, with a `type` and a `label`, instead of a model. Stored as given and never refreshed. |
 | **[source](/basics/feed-sources#naming-sources)** | Where a feed reads its items: the database by default, or an array, a config entry, or a custom driver. |
 | **read mode** | The API choice of `log()` or `live()`. See [Retrieving Feeds](/basics/retrieving-feeds). |
 | **[live](/basics/retrieving-feeds#live)** | The default read mode, with each activity shown in one selected group. |
