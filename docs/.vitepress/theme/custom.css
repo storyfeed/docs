@@ -9,7 +9,7 @@
  * BUTTON TEXT IS WHITE HERE, which INVERTS the rule this file used to carry.
  * White on `#356F78` is 5.68; ink on it is 2.63. The old rule said ink-never-
  * white, and it was right about amber for exactly the same reason it is wrong
- * about teal. See brand/README.md rule 3.
+ * about teal.
  */
 :root {
   --vp-c-brand-1: #356F78; /* teal, darkened — links, active nav */
