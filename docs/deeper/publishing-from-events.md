@@ -70,8 +70,9 @@ When an event implementing `PublishesToFeed` is dispatched, Storyfeed calls its
 <FeedExample :items="[scene.basics.recording.paid]" />
 
 > [!NOTE]
-> Do not call the `publish` method on the event's activity. Storyfeed publishes
-> it automatically, so another call would record it twice.
+> Return the activity without calling its `publish` method. Storyfeed publishes
+> what `toFeedActivity` returns, and `publish` returns the stored `Activity`,
+> not the `PendingActivity` the method must return.
 
 ### Skipping Publication
 
