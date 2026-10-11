@@ -211,9 +211,9 @@ Story::for(Order::class)->verb('update')->headline(':actor changed :object');
 ```
 
 Two inline definitions of the same verb that set the same field, such as two
-headlines or two icons, throw, naming both locations. A later
-[method or invokable binding](/basics/story-classes#supplementing-resource-stories)
-replaces the resource definition for that type and verb.
+headlines or two icons, throw, naming both locations. To replace one resource
+verb with its own class, see
+[Supplementing Resource Stories](/basics/story-classes#supplementing-resource-stories).
 
 ## Definition Precedence
 
