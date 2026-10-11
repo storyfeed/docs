@@ -123,7 +123,7 @@ A role has one of these states:
 | Empty | `null`; for the actor, this means anonymous: no actor was recorded |
 | Degraded | the model's own `type`, `label: null`, `link: null`, `tombstone: null` |
 | Tombstoned | `type: "storyfeed.tombstone"`, `link: null`, `tombstone: {…}` |
-| No model | an entity recorded as an array: its `type` and `label` as recorded, `link` from its `url`, `id` as given or `null`, and the derived avatar. Never hydrated or refreshed; without an `id` it is in no `involving()` index |
+| No model | an entity given as an array: its `type` and `label` as given, `link` from its `url`, and `media` from its `media`, or the derived avatar. `id` as given; without one, `null` on a recorded activity and the `label` on a composed entry or source item. Never hydrated or refreshed; a recorded one without an `id` is in no `involving()` index |
 
 When `approximate` is true, `deleted` records when `storyfeed:trickle` found
 the model missing. It is not the exact deletion time. Headlines, icons, and
@@ -425,7 +425,7 @@ needs a 24 by 24 pixel target at level AA.
 ### Cursors
 
 - Store cursors and return them unchanged; do not parse them.
-- Results are ordered by `published_at`, newest first, unless a composed feed or source [keeps its order](/basics/feed-sources#keeping-your-order).
+- Results are ordered by `published_at`, newest first, with [dateless entries](/basics/feed-sources#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/basics/feed-sources#keeping-your-order).
 - `next_cursor: null` marks the end.
 
 <span id="sync-token"></span>
