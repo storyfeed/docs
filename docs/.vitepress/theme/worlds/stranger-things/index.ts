@@ -105,9 +105,10 @@ const fare = build(FARE, (id, label, key) => entity('menu_item', id, label, `/me
 const tasks = build(TASKS, (id, label) => entity('task', id, label, `/tasks/${id}`))
 const tickets = build(TICKETS, (id, label) => entity('ticket', id, `Ticket #${id}: ${label}`, `/tickets/${id}`))
 const worldNotes = build(WORLD_NOTES, (id, label) => note(id, label))
-const stripe = entity('storyfeed.party', '101', SERVICES.billing, null)
+// Parties are core's own rows, numbered as the generator records them.
+const stripe = entity('storyfeed.party', '1', SERVICES.billing, null, { data: { key: 'stripe', type: 'Service' } })
 // The shop's till, acting when a scheduled command runs.
-const register = entity('storyfeed.party', '102', 'Scoops Register', null)
+const register = entity('storyfeed.party', '2', 'Scoops Register', null, { data: { key: 'scoops-register', type: 'Service' } })
 
 const holding: Record<keyof typeof HOLDINGS, [string, string]> = {
   repo: ['repository', '/repositories/cerebro'],

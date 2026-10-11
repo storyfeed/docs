@@ -1,407 +1,4 @@
 {
-  "k61": {
-    "kind": "activity",
-    "id": "k61",
-    "verb": "complete",
-    "published_at": "1985-07-04T20:35:00.000000Z",
-    "starts_at": null,
-    "ends_at": null,
-    "headline_template": ":actor completed :object on :target",
-    "headline": null,
-    "glyph": "square-check",
-    "glyph_intent": null,
-    "actor": {
-      "type": "user",
-      "id": "103",
-      "label": "Dustin Henderson",
-      "link": {
-        "href": "/users/103",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": {
-          "src": "/media/worlds/stranger-things/avatars/radio.jpg",
-          "mediaType": "image/jpeg",
-          "width": 256,
-          "height": 256,
-          "alt": null
-        },
-        "image": null,
-        "preview": null,
-        "initials": null,
-        "color": null,
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "object": {
-      "type": "task",
-      "id": "108",
-      "label": "Find Planck's constant",
-      "link": {
-        "href": "/tasks/108",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "FC",
-        "color": "#15803d",
-        "files": [],
-        "slots": []
-      },
-      "body": [
-        {
-          "$body": "Storyfeed/Body/Prose",
-          "$v": 2,
-          "content": "Get Planck's constant to open the safe. Suzie knows it.",
-          "title": "Find Planck's constant"
-        }
-      ],
-      "tombstone": null
-    },
-    "target": {
-      "type": "project",
-      "id": "103",
-      "label": "the Scoops Troop board",
-      "link": {
-        "href": "/projects/scoops-troop",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "TB",
-        "color": "#15803d",
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "context": null,
-    "origin": null,
-    "result": null,
-    "instrument": null,
-    "location": null,
-    "generator": null,
-    "featured": "object",
-    "data": null,
-    "tombstoned": [],
-    "redundant": false,
-    "missing_headline_template": null,
-    "missing_headline": null
-  },
-  "k60": {
-    "kind": "activity",
-    "id": "k60",
-    "verb": "call",
-    "published_at": "1985-07-04T20:30:00.000000Z",
-    "starts_at": null,
-    "ends_at": null,
-    "headline_template": ":actor radioed :target",
-    "headline": null,
-    "glyph": "radio",
-    "glyph_intent": null,
-    "actor": {
-      "type": "user",
-      "id": "103",
-      "label": "Dustin Henderson",
-      "link": {
-        "href": "/users/103",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": {
-          "src": "/media/worlds/stranger-things/avatars/radio.jpg",
-          "mediaType": "image/jpeg",
-          "width": 256,
-          "height": 256,
-          "alt": null
-        },
-        "image": null,
-        "preview": null,
-        "initials": null,
-        "color": null,
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "object": null,
-    "target": {
-      "type": "user",
-      "id": "119",
-      "label": "Suzie",
-      "link": {
-        "href": "/users/119",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "S",
-        "color": "#0f766e",
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "context": null,
-    "origin": null,
-    "result": null,
-    "instrument": null,
-    "location": null,
-    "generator": null,
-    "featured": "object",
-    "data": null,
-    "tombstoned": [],
-    "redundant": false,
-    "missing_headline_template": null,
-    "missing_headline": null
-  },
-  "k64": {
-    "kind": "activity",
-    "id": "k64",
-    "verb": "check_in",
-    "published_at": "1985-07-04T20:02:00.000000Z",
-    "starts_at": null,
-    "ends_at": null,
-    "headline_template": ":actor checked in at :target",
-    "headline": null,
-    "glyph": "ferris-wheel",
-    "glyph_intent": null,
-    "actor": {
-      "type": "user",
-      "id": "114",
-      "label": "Murray Bauman",
-      "link": {
-        "href": "/users/114",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": {
-          "src": "/media/worlds/stranger-things/avatars/investigator.jpg",
-          "mediaType": "image/jpeg",
-          "width": 256,
-          "height": 256,
-          "alt": null
-        },
-        "image": null,
-        "preview": null,
-        "initials": null,
-        "color": null,
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "object": null,
-    "target": {
-      "type": "venue",
-      "id": "102",
-      "label": "Starcourt Mall",
-      "link": {
-        "href": "/venues/mall",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "SM",
-        "color": "#a21caf",
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "context": null,
-    "origin": null,
-    "result": null,
-    "instrument": null,
-    "location": null,
-    "generator": null,
-    "featured": "object",
-    "data": null,
-    "tombstoned": [],
-    "redundant": false,
-    "missing_headline_template": null,
-    "missing_headline": null
-  },
-  "k63": {
-    "kind": "activity",
-    "id": "k63",
-    "verb": "check_in",
-    "published_at": "1985-07-04T20:01:00.000000Z",
-    "starts_at": null,
-    "ends_at": null,
-    "headline_template": ":actor checked in at :target",
-    "headline": null,
-    "glyph": "ferris-wheel",
-    "glyph_intent": null,
-    "actor": {
-      "type": "user",
-      "id": "106",
-      "label": "Joyce Byers",
-      "link": {
-        "href": "/users/106",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": {
-          "src": "/media/worlds/stranger-things/avatars/clerk.jpg",
-          "mediaType": "image/jpeg",
-          "width": 256,
-          "height": 256,
-          "alt": null
-        },
-        "image": null,
-        "preview": null,
-        "initials": null,
-        "color": null,
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "object": null,
-    "target": {
-      "type": "venue",
-      "id": "102",
-      "label": "Starcourt Mall",
-      "link": {
-        "href": "/venues/mall",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "SM",
-        "color": "#a21caf",
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "context": null,
-    "origin": null,
-    "result": null,
-    "instrument": null,
-    "location": null,
-    "generator": null,
-    "featured": "object",
-    "data": null,
-    "tombstoned": [],
-    "redundant": false,
-    "missing_headline_template": null,
-    "missing_headline": null
-  },
-  "k62": {
-    "kind": "activity",
-    "id": "k62",
-    "verb": "check_in",
-    "published_at": "1985-07-04T20:00:00.000000Z",
-    "starts_at": null,
-    "ends_at": null,
-    "headline_template": ":actor checked in at :target",
-    "headline": null,
-    "glyph": "ferris-wheel",
-    "glyph_intent": null,
-    "actor": {
-      "type": "user",
-      "id": "107",
-      "label": "Jim Hopper",
-      "link": {
-        "href": "/users/107",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": {
-          "src": "/media/worlds/stranger-things/avatars/chief.jpg",
-          "mediaType": "image/jpeg",
-          "width": 256,
-          "height": 256,
-          "alt": null
-        },
-        "image": null,
-        "preview": null,
-        "initials": null,
-        "color": null,
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "object": null,
-    "target": {
-      "type": "venue",
-      "id": "102",
-      "label": "Starcourt Mall",
-      "link": {
-        "href": "/venues/mall",
-        "modal": false,
-        "attributes": []
-      },
-      "data": [],
-      "media": {
-        "icon": null,
-        "image": null,
-        "preview": null,
-        "initials": "SM",
-        "color": "#a21caf",
-        "files": [],
-        "slots": []
-      },
-      "body": null,
-      "tombstone": null
-    },
-    "context": null,
-    "origin": null,
-    "result": null,
-    "instrument": null,
-    "location": null,
-    "generator": null,
-    "featured": "object",
-    "data": null,
-    "tombstoned": [],
-    "redundant": false,
-    "missing_headline_template": null,
-    "missing_headline": null
-  },
   "prose-planck": {
     "kind": "activity",
     "id": "prose-planck",
@@ -6459,16 +6056,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -6545,16 +6145,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -6731,16 +6334,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -7059,16 +6665,19 @@
     "glyph_intent": "danger",
     "actor": {
       "type": "storyfeed.party",
-      "id": "102",
+      "id": "2",
       "label": "Scoops Register",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "scoops-register",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "SR",
-        "color": "#c2410c",
+        "color": "#be123c",
         "files": [],
         "slots": []
       },
@@ -8908,16 +8517,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -9538,16 +9150,19 @@
     "glyph_intent": "success",
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -10483,16 +10098,19 @@
     "glyph_intent": "success",
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -11222,16 +10840,19 @@
     "glyph_intent": "success",
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -15542,16 +15163,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -19472,16 +19096,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -19558,16 +19185,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },
@@ -19644,16 +19274,19 @@
     "glyph_intent": null,
     "actor": {
       "type": "storyfeed.party",
-      "id": "101",
+      "id": "1",
       "label": "Stripe",
       "link": null,
-      "data": [],
+      "data": {
+        "key": "stripe",
+        "type": "Service"
+      },
       "media": {
         "icon": null,
         "image": null,
         "preview": null,
         "initials": "S",
-        "color": "#be123c",
+        "color": "#9f1239",
         "files": [],
         "slots": []
       },

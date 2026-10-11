@@ -98,13 +98,17 @@ and supplies it in every pack. It never reaches into one pack.
 
 ## Core's nodes
 
-Each row's payload node is Storyfeed's own: `npm run payloads` reads every
-row through core's `array` source, with the pack's verb wording registered as
-definitions, and writes `payloads.json` beside the pack. A row's own
-`headline` and an entity's `media` are laid over core's node in world.ts,
-because a source item has no key for either. Edit a row, then run
-`npm run payloads`; the drift guard fails the build when the file is stale.
-`liveOf()` still folds Live groups for the subsets a page passes it.
+Each row's payload node is Storyfeed's own. `npm run payloads` runs core's docs
+generator (`workbench/docs/generate.php` in storyfeed/storyfeed): it records
+every row through real models into an empty SQLite database, with the pack's
+verb wording registered as definitions, and reads them back. It writes two
+files beside the pack: `payloads.json`, every row's Log node, and
+`scenes.json`, each named scene read in Live, plus a real deletion and a real
+composite. A row's own `headline` is laid over core's node in world.ts. Edit a
+row, then run `npm run payloads` with `STORYFEED_CORE` pointing at a
+storyfeed/storyfeed checkout; the drift guard fails the build when either file
+is stale, and CI regenerates both against core's main. `liveOf()` still folds
+Live groups for the subsets a page passes it, checked against `scenes.json`.
 
 ## The anchor
 

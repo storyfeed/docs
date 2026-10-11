@@ -188,7 +188,7 @@ export function worldOf(p: WorldPack, anchor = Date.parse(p.canonicalNow)) {
   const canonicalNow = Date.parse(p.canonicalNow)
   const byId = new Map(p.rows.map((r) => [r.id, r]))
 
-  // Every row's node is core's, read through its array source by
+  // Every row's node is core's, generated through real models by
   // `npm run payloads` (scripts/payloads.mjs), and moved onto the anchor.
   const order = new Map(Object.keys(p.payloads).map((id, i) => [id, i]))
   const inCoreOrder = (nodes: any[]) => [...nodes].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
