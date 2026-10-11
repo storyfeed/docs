@@ -1,7 +1,8 @@
 # Blade
 
 The Blade kit renders a feed page with one component.
-Install `storyfeed/ui` and [scan its Tailwind utilities](/ui/installing-the-kits#scanning-tailwind-utilities).
+Install `storyfeed/ui`, [scan its Tailwind utilities](/ui/installing-the-kits#scanning-tailwind-utilities)
+and register the [Typography plugin](/ui/installing-the-kits#registering-the-typography-plugin).
 
 ```php memo="routes/web.php"
 use Illuminate\Support\Facades\Route;

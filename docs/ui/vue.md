@@ -58,7 +58,8 @@ the pager while loading. Keep the cursor opaque and follow the
 | `#annotations` | `{ node }` | app annotations |
 | `#time` | `{ node, label }` | timestamp content |
 
-These slots reach activities, groups and expanded children.
+These slots reach activities, groups and expanded children. The `#empty`
+slot replaces the empty-page text.
 Built-in bodies render from the object’s bodies and data, and the activity’s data.
 [Host seams](/ui/customizing-the-kits#host-seams) supply links, app components and media.
 
