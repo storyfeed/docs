@@ -359,6 +359,23 @@ A role may be any of these:
 An entity array may also carry an `id`, which defaults to its label, plus
 `data` and a `body`.
 
+It may also carry `media`, the pictures a model would give from its
+`feedMedia()`: an `icon`, an `image` or a `preview`, each a URL or an array
+with `src`, `alt`, `width` and `height`. An entity with an `icon` draws it as
+its avatar:
+
+```php memo="A controller, or wherever the feed is read"
+$entry->by([
+    'type' => 'product',
+    'label' => 'InvoiceJam',
+    'media' => ['icon' => 'https://teylabs.com/marks/invoicejam.svg'],
+])->headline(':actor sends invoices');
+```
+
+An `Image` or `MediaObject` body that names a slot the entity doesn't declare,
+such as `preview`, throws an `InvalidArgumentException` rather than drawing
+nothing. Declare the picture in `media`, or give the body its own image.
+
 To build items in PHP rather than as arrays, use `Entry::make()`, which takes
 the same values as named arguments:
 
