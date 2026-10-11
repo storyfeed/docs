@@ -223,10 +223,11 @@ Story::for(Order::class)->verb('book')->headline(':actor booked :result for :obj
 |---|---|
 | `type` | the entity's type; required |
 | `label` | the entity's label; required |
-| `id` | an identifier of up to 36 characters |
+| `id` | an identifier of up to 36 printable ASCII characters, without spaces |
 | `url` | the entity's link |
 | `data` | values stored with the entity |
 | `body` | the entity's [bodies](/basics/activity-content) |
+| `media` | the entity's pictures: `icon`, `image` and `preview` (each a URL), and `initials` and `color` for its avatar |
 
 Storyfeed stores the entity with the activity, exactly as recorded: nothing
 refreshes it later. The activity's `inlineEntity` method returns the stored
