@@ -621,7 +621,7 @@
   },
   "source/motion09-notes.md": {
     "source": "iteration-09/README.md",
-    "sha256": "0f4ddab195fe7553ad5f2e725d13c7f492c6d4885671a96538a9d8f9942607d9"
+    "sha256": "9a8e8d923f630e5c1ed6f446cfb92e30a2eae541eff7a8c6f806dede94b3c05a"
   },
   "source/website/package-lock.json": {
     "source": "kit-08/source/website/package-lock.json",

@@ -38,7 +38,7 @@ Pause freezes the current timeline value; resume continues it. Replay explicitly
 
 Core revision: `c6ae5864f199ce80429b1bf2fbbc3e1bff55a271`. Read-only contract snapshots for Prose, Excerpt, Image, MediaObject, FileAttachment, KeyValue, ItemList and Component are included under `source/`. `source/provenance.json` records their original paths and hashes, plus the six unchanged kit-08 font/wordmark/mark copies. Contract snapshots document semantics; PHP is not executed by this prototype.
 
-Original mark concept: Tim Wood, with permission to adapt reported by Jasper. No broader artwork licence or sponsor relationship is asserted. Instrument Sans, Rodrigo Fuenzalida and Jordan Egstad, Google Fonts revision `6e8069ff8ba3dab2a397fb30e7fbd243aba9b57a`, SIL OFL 1.1. The font and OFL are copied unchanged from kit-08, including upstream trailing whitespace. The previous kit retains the full historical identity provenance.
+Original mark concept by an outside designer, adapted with permission. No broader artwork licence or sponsor relationship is asserted. Instrument Sans, Rodrigo Fuenzalida and Jordan Egstad, Google Fonts revision `6e8069ff8ba3dab2a397fb30e7fbd243aba9b57a`, SIL OFL 1.1. The font and OFL are copied unchanged from kit-08, including upstream trailing whitespace. The previous kit retains the full historical identity provenance.
 
 ## Use and focused verification
 

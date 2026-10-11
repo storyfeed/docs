@@ -18,7 +18,7 @@ After extracting the ZIP, run `python3 -m http.server 8802` in its `storyfeed-cu
 
 The frozen donor is the isolated Storyfeed study at commit `da8b64aea9d1a014ae34f5d5b78125f9f86b54f3`. `source/frozen-assets.json` records every copied file's original study path and SHA-256; `manifest.json` records distribution hashes. Existing artwork is copied unchanged; only packaging/review paths and new README derivatives are authored here.
 
-Selected mark: front/middle/back #17434B / #438D98 / #8EB8BD, white actor/headline, gold #D9A008 light / #FBBF24 dark, orange #B65326 and teal #438D98 media tiles. Concept by Tim Wood; permission to adapt reported by Jasper. `source/tim-wood-original.png` preserves the supplied reference. No broader artwork licence, endorsement or sponsor claim is asserted.
+Selected mark: front/middle/back #17434B / #438D98 / #8EB8BD, white actor/headline, gold #D9A008 light / #FBBF24 dark, orange #B65326 and teal #438D98 media tiles. Mark concept by an outside designer, adapted with permission. The supplied reference is preserved under `source/`. No broader artwork licence, endorsement or sponsor claim is asserted.
 
 Instrument Sans by Rodrigo Fuenzalida and Jordan Egstad, Google Fonts revision `6e8069ff8ba3dab2a397fb30e7fbd243aba9b57a`, SIL OFL1.1: see `fonts/OFL.txt`, font and metadata. Runtime dependency licences are in `source/licenses/`.
 
