@@ -95,7 +95,7 @@ together, these are the photos:
 
 | Key | Holds |
 |---|---|
-| `featured` | the role every member features, when every member shares that role's entity, which is then in the role's key; otherwise `null` |
+| `featured` | the role every member features, when the axis pins that role to one entity, which is then in the role's key; otherwise `null` |
 | `sample.featured` | each sampled member's featured entity, newest first; a member that features nothing adds no entry |
 | `distinct.featured` | how many members across the whole group feature an entity |
 | `distinct_tombstoned.featured` | how many of those entities are tombstones |
@@ -282,9 +282,9 @@ Storyfeed does not check nouns beside `:count`.
 
 When no group headline is defined, Storyfeed uses the single-activity headline
 if its roles can be represented for the group. A role
-that differs across the group becomes a plain noun, such as "dishes", when all
-its entities are one type. Otherwise both `headline_template` and `headline`
-are `null`. See [Groups Without Headlines](/ui/custom-rendering#groups-without-headlines) for rendering the count.
+that differs across the group becomes a plain noun, such as "dishes", when the
+axis pins its type, as `repeat` pins the object type. Otherwise both
+`headline_template` and `headline` are `null`. See [Groups Without Headlines](/ui/custom-rendering#groups-without-headlines) for rendering the count.
 Single-activity headline closures cannot supply this fallback because they
 access one member's data rather than the whole group.
 
