@@ -17,8 +17,9 @@ See [Rendering](/ui/custom-rendering) for examples.
 | Method | Returns |
 |---|---|
 | `Storyfeed::feed()->get()` | a `Collection` of `FeedItem` |
+| `$page = Storyfeed::feed()->cursorPaginate()` | Laravel's cursor paginator of `FeedItem`; `simplePaginate()` and `members()` return the same items |
 | `foreach ($page as $item)` | each item of a paginator as a `FeedItem` |
-| `$page->nextCursor()` | the next page's cursor, or `null` |
+| `$page->nextCursor()` | the next page's `Cursor` (`->encode()` for the string), or `null` |
 | `$page->syncToken()` | the page's sync token, or `null` |
 | `$item->toArray()` | the item's payload array |
 
