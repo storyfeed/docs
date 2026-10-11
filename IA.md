@@ -385,36 +385,36 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Introduction — `guide/introduction`
 - ✅ Installation — `guide/installation`
 - ✅ Quickstart — `guide/quickstart`: five steps: models, headline, publication, retrieval, then the installed Blade kit and its rendered result
-- ✅ What You Can Build — `guide/usage-examples`
+- ✅ What You Can Build — `guide/what-you-can-build`
 
 ### The Basics
 
 - ✅ Feedable Models — `basics/feedable-models`: default labels, toFeed(), describeFeed(), custom labels and external model registration; API tables remain in Reference
-- ✅ Recording Activities — `basics/recording`
+- ✅ Recording Activities — `basics/recording-activities`
 - ✅ The Feed File — `basics/the-feed-file`
-- ✅ Story Classes — `basics/stories`
-- ✅ Activity Verbs — `basics/verbs`
+- ✅ Story Classes — `basics/story-classes`
+- ✅ Activity Verbs — `basics/activity-verbs`
 - ✅ Activity Content — `basics/activity-content`: body definition, Prose and KeyValue, one Excerpt section, images, files, lists, multiple bodies, MediaObject, links and the type table
 - ✅ Feed Media — `basics/feed-media`: current links, picture slots, files and avatars; comes after Activity Content teaches bodies
 
 ### Retrieving and Rendering
 
-- ✅ Retrieving Feeds — `basics/reading`: retrieval, groups, Live and Log, filters, pagination and The Payload
+- ✅ Retrieving Feeds — `basics/retrieving-feeds`: retrieval, groups, Live and Log, filters, pagination and The Payload
 - ✅ Named Feeds — `basics/named-feeds`
 - ✅ Feed Sources — `basics/feed-sources`: the array source, named sources, custom drivers, what other sources cannot read, and rendering a page you build yourself
 
 ### Storyfeed UI
 
-- ✅ Installing the Kits — `ui/installation`
+- ✅ Installing the Kits — `ui/installing-the-kits`
 - ✅ Blade — `ui/blade`
 - ✅ Vue — `ui/vue`
 - ✅ React — `ui/react`
-- ✅ Customizing the Kits — `ui/customizing`
+- ✅ Customizing the Kits — `ui/customizing-the-kits`
 - ✅ Custom Rendering — `ui/custom-rendering`: custom Blade components; kit installation and usage live in Storyfeed UI
-- ✅ Blade Components — `ui/reference/blade`: every component, attribute, slot and renderer
-- ✅ Vue Components — `ui/reference/vue`: every component, prop, slot, event and injection key
-- ✅ React Components — `ui/reference/react`: every component, prop, render prop and provider option
-- ✅ Pages, Rails and Styles — `ui/reference/options`: page shapes, rails, dividers, group state, CSS variables
+- ✅ Blade Components — `ui/reference/blade-components`: every component, attribute, slot and renderer
+- ✅ Vue Components — `ui/reference/vue-components`: every component, prop, slot, event and injection key
+- ✅ React Components — `ui/reference/react-components`: every component, prop, render prop and provider option
+- ✅ Pages, Rails and Styles — `ui/reference/pages-rails-and-styles`: page shapes, rails, dividers, group state, CSS variables
 
 The four reference pages are exhaustive and checked against the kits' source
 (`scripts/ui-reference.mjs`, part of `npm run build`): a documented name or
@@ -423,36 +423,36 @@ the one obvious path and link here.
 
 ### Recording in Depth
 
-- ✅ Parties & Anonymous Actors — `deeper/parties`
-- ✅ Publishing From Events — `deeper/events`
-- ✅ Containers & Context — `deeper/context`
+- ✅ Parties & Anonymous Actors — `deeper/parties-and-anonymous-actors`
+- ✅ Publishing From Events — `deeper/publishing-from-events`
+- ✅ Containers & Context — `deeper/containers-and-context`
 - ✅ Distant Relations — `deeper/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
 - ✅ Casting Activity Data — `deeper/casting-activity-data`
 - ✅ Activity Scopes — `deeper/activity-scopes`
 - ✅ Constraining Roles — `deeper/constraining-roles`
 - ✅ Story Middleware & Batching — `deeper/story-middleware-and-batching`
 - ✅ Named Stories — `deeper/named-stories`
-- ✅ Queued Publishing — `deeper/queues`
+- ✅ Queued Publishing — `deeper/queued-publishing`
 
 ### Shaping the Feed
 
 - ✅ Aggregation — `deeper/aggregation`: built-in axes, thresholds, group headlines, tokens and fallback nouns; links to the read-mode guide
-- ✅ Live Burst Windows — `deeper/grouping-periods`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
+- ✅ Live Burst Windows — `deeper/live-burst-windows`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
 - ✅ Custom Axes — `deeper/custom-axes`: custom keys, eligibility, calendar periods and priority; default grouping keys live in Reference Configuration
 - ✅ Keeping the Latest Activity — `deeper/keeping-the-latest-activity`
 - ✅ Composites — `deeper/composites`
-- ✅ Resolving Bodies When Retrieved — `deeper/resolving-bodies`
-- ✅ Custom Body Types — `deeper/body`
+- ✅ Resolving Bodies When Retrieved — `deeper/resolving-bodies-when-retrieved`
+- ✅ Custom Body Types — `deeper/custom-body-types`
 - ✅ Localization — `deeper/localization`
 - ✅ Activity Streams 2.0 — `deeper/activity-streams`
 
 ### Testing and Maintenance
 
 - ✅ Testing — `deeper/testing`
-- ✅ Diagnosing Your Feed — `deeper/diagnosing`
+- ✅ Diagnosing Your Feed — `deeper/diagnosing-your-feed`
 - ✅ Deleted Models — `deeper/deleted-models`
 - ✅ Retention — `deeper/retention`
-- ✅ Healing a Feed — `deeper/healing`
+- ✅ Healing a Feed — `deeper/healing-a-feed`
 
 ### Package Authors
 
@@ -460,34 +460,34 @@ the one obvious path and link here.
 
 ### Cookbook
 
-- ✅ Composing a Coherent Activity — `cookbook/read-the-fields-back`
+- ✅ Composing a Coherent Activity — `cookbook/composing-a-coherent-activity`
 - ✅ Recording Value Changes — `cookbook/recording-value-changes`: rename values in data, dynamic headlines, and party-query comparison
 - ✅ Choosing a Verb — `cookbook/choosing-a-verb`
 - ✅ Choosing When to Publish — `cookbook/choosing-when-to-publish`: choosing a publish site, model observers when there is no domain event, and one verb per transition
 - ✅ Choosing What Not to Record — `cookbook/choosing-what-not-to-record`
 - ✅ Repeating Activities — `cookbook/repeating-activities`
-- ✅ Recording Deletions — `cookbook/activities-about-deletions`
+- ✅ Recording Deletions — `cookbook/recording-deletions`
 - ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`
 - ✅ Recording Signed-Link Access — `cookbook/recording-signed-link-access`: recipient data, anonymous fetch evidence, authenticated actors, and recipient search
-- ✅ Recording Email Lifecycle Events — `cookbook/email-lifecycle-events`: message objects, document targets, anonymous outcomes, and document logs
-- ✅ Recording an Authoriser — `cookbook/an-authoriser-who-is-not-an-actor`: approvals by a second person, filtering approvals, and finding the approver
+- ✅ Recording Email Lifecycle Events — `cookbook/recording-email-lifecycle-events`: message objects, document targets, anonymous outcomes, and document logs
+- ✅ Recording an Authoriser — `cookbook/recording-an-authoriser`: approvals by a second person, filtering approvals, and finding the approver
 - ✅ Recording Connected App Writes — `cookbook/recording-connected-app-writes`: operator actors, app instruments, companion audit entries, and the instrument filter
 - ✅ Choosing What to Group — `cookbook/choosing-what-to-group`
-- ✅ Headlines for Grouped Activities — `cookbook/grouped-headlines`
-- ✅ Naming Group Members From Activity Data — `cookbook/naming-group-members`
-- ✅ Computed Values in the Feed — `cookbook/computed-values`
+- ✅ Headlines for Grouped Activities — `cookbook/headlines-for-grouped-activities`
+- ✅ Naming Group Members From Activity Data — `cookbook/naming-group-members-from-activity-data`
+- ✅ Computed Values in the Feed — `cookbook/computed-values-in-the-feed`
 
 ### Reference
 
 - ✅ Configuration — `reference/configuration`
 - ✅ Commands — `reference/commands`
-- ✅ Doctor Checks — `reference/doctor`
-- ✅ Feedable API — `reference/feedable`
-- ✅ FeedItem API — `reference/feed-item`
-- ✅ Verb Vocabulary — `reference/verbs`
-- ✅ The Payload Contract — `reference/payload`
+- ✅ Doctor Checks — `reference/doctor-checks`
+- ✅ Feedable API — `reference/feedable-api`
+- ✅ FeedItem API — `reference/feed-item-api`
+- ✅ Verb Vocabulary — `reference/verb-vocabulary`
+- ✅ The Payload Contract — `reference/payload-contract`
 - ✅ Schema — `reference/schema`: generated table, column and index blocks; edit surrounding prose, not generated blocks
-- ✅ Storage Architecture — `reference/storage`: writes, retrieval, snapshot refresh and storage costs
+- ✅ Storage Architecture — `reference/storage-architecture`: writes, retrieval, snapshot refresh and storage costs
 - ✅ Glossary — `reference/glossary`
 
 ### Routes Outside the Sidebar
@@ -499,15 +499,14 @@ These files retain old URLs or anchors and point readers to the canonical page:
 | `docs/index.md` | `guide/introduction` |
 | `guide/anatomy.md` | `guide/introduction` |
 | `reference/compatibility.md` | `guide/installation#requirements` |
-| `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values` |
-| `basics/the-payload.md` | `basics/reading#the-payload` |
+| `cookbook/counts-that-keep-moving.md` | `cookbook/computed-values-in-the-feed` |
+| `basics/the-payload.md` | `basics/retrieving-feeds#the-payload` |
 | `basics/rendering.md` | `ui/custom-rendering`, keeping the anchor in the URL |
 
-The stable routes `basics/reading`,
-`deeper/grouping-periods`, `cookbook/read-the-fields-back`,
-`cookbook/an-authoriser-who-is-not-an-actor` and
-`cookbook/activities-about-deletions` intentionally retain their URLs despite
-title changes. Moved sections on Feedable API, Aggregation and The Feed File
+Every page's URL follows its title. Each old URL is listed in
+`docs/.vitepress/redirects.ts`, which writes a page there that sends the reader
+on, keeping the anchor; `scripts/redirects.test.mjs` checks each lands in one
+hop. Moved sections on Feedable API, Aggregation and The Feed File
 retain their anchors and link to their canonical homes. Do not add tutorials
 to these compatibility sections.
 
