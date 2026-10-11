@@ -259,9 +259,7 @@ class Note extends Model implements Feedable
         return FeedEntity::make()
             ->label('Order note')
             ->body(
-                Excerpt::make()
-                    ->text($this->body)
-                    ->truncated(false),
+                Excerpt::make()->text($this->body),
             );
     }
 }
@@ -286,18 +284,15 @@ class Note extends Model implements Feedable
     {
         return FeedEntity::make(
             label: 'Order note',
-            body: Excerpt::make(
-                text: $this->body,
-                truncated: false,
-            ),
+            body: Excerpt::make(text: $this->body),
         );
     }
 }
 ```
 :::
 
-Set `truncated(false)` when the body contains the complete text. The headline
-names the note's author, so the quotation needs no separate attribution:
+The headline names the note's author, so the quotation needs no separate
+attribution:
 
 <FeedExample :items="[quotedNote]" />
 
@@ -406,12 +401,11 @@ FeedEntity::make(
 
 <FeedExample :items="[withExcerpt]" />
 
-Excerpts are marked as `truncated` by default. Call `truncated(false)` when the
-text is complete. For the entity's own text, such as an article's opening
-paragraph, use `Prose` instead.
+Excerpts are complete by default. Call `truncated()` when you cut the text,
+and the kits mark the cut. For the entity's own text, such as an article's
+opening paragraph, use `Prose` instead.
 
-A record of an answer taken down word for word quotes the person who gave it,
-and marks the text as complete:
+A record of an answer taken down word for word quotes the person who gave it:
 
 ::: code-group
 
@@ -424,8 +418,7 @@ FeedEntity::make()
     ->body(
         Excerpt::make()
             ->text($this->answer)
-            ->from($this->answered_by)
-            ->truncated(false),
+            ->from($this->answered_by),
     );
 ```
 
@@ -438,7 +431,6 @@ FeedEntity::make(
     body: Excerpt::make(
         text: $this->answer,
         from: $this->answered_by,
-        truncated: false,
     ),
 );
 ```
@@ -911,7 +903,7 @@ action text as the fallback. Other body types store none.
 | Body Type | Content | Payload Keys | Left Out at Their Default |
 |---|---|---|---|
 | `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` | `title`, `defaultPlaceholder`; a row's `verbatim` (`false`) and `placeholder` (the body's `defaultPlaceholder`) |
-| `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` | `from`, `truncated` (`true`) |
+| `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` | `from`, `truncated` (`false`) |
 | `Image` | a picture and caption | `src`, `mediaType`, `caption`, `alt`, `width`, `height`, `image` (slot name) | all |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` | all |
 | `Prose` | text and its format | `content`, `mediaType`, `verbatim`, `title` | `mediaType` (`text/plain`), `verbatim` (`false`), `title` |

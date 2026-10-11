@@ -432,10 +432,10 @@ words. This component shows the attribution only when `from` has a value:
 
 <figure {{ $attributes }}>
     <blockquote>
-        {{ $body['text'] }}@if ($body['truncated'])…@endif
+        {{ $body['text'] }}@if ($body['truncated'] ?? false)…@endif
     </blockquote>
 
-    @if ($body['from'])
+    @if ($body['from'] ?? null)
         <figcaption>{{ $body['from'] }}</figcaption>
     @endif
 </figure>
