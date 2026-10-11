@@ -393,6 +393,8 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 - ✅ Recording Activities — `basics/recording-activities`
 - ✅ The Feed File — `basics/the-feed-file`
 - ✅ Story Classes — `basics/story-classes`
+- ✅ Constraining Roles — `deeper/constraining-roles`
+- ✅ Named Stories — `deeper/named-stories`
 - ✅ Activity Verbs — `basics/activity-verbs`
 - ✅ Activity Content — `basics/activity-content`: body definition, Prose and KeyValue, one Excerpt section, images, files, lists, multiple bodies, MediaObject, links and the type table
 - ✅ Feed Media — `basics/feed-media`: current links, picture slots, files and avatars; comes after Activity Content teaches bodies
@@ -400,8 +402,9 @@ Retrieval comes before the UI kits; custom rendering follows the kits.
 ### Retrieving and Rendering
 
 - ✅ Retrieving Feeds — `basics/retrieving-feeds`: retrieval, groups, Live and Log, filters, pagination and The Payload
+- ✅ Composing Feeds — `basics/composing-feeds`: compose(), entries, headlines, addMany, inOrder, dateless entries, grouping, composing from Feedable models, common composed feeds and rendering one
 - ✅ Named Feeds — `basics/named-feeds`
-- ✅ Feed Sources — `basics/feed-sources`: the array source, named sources, custom drivers, what other sources cannot read, and rendering a page you build yourself
+- ✅ Feed Sources — `basics/feed-sources`: the array source, item keys, named sources, custom drivers and what sources cannot read
 
 ### Storyfeed UI
 
@@ -425,21 +428,21 @@ the one obvious path and link here.
 
 - ✅ Parties & Anonymous Actors — `deeper/parties-and-anonymous-actors`
 - ✅ Publishing From Events — `deeper/publishing-from-events`
+- ✅ Publishing Story Classes — `deeper/publishing-story-classes`: Story subclasses that build and publish one activity, casts, queueing and presentation methods
 - ✅ Containers & Context — `deeper/containers-and-context`
 - ✅ Distant Relations — `deeper/distant-relations`: parent declarations, recorded ancestry, moves and offline rebuilds
 - ✅ Casting Activity Data — `deeper/casting-activity-data`
 - ✅ Activity Scopes — `deeper/activity-scopes`
-- ✅ Constraining Roles — `deeper/constraining-roles`
 - ✅ Story Middleware — `deeper/story-middleware`
-- ✅ Named Stories — `deeper/named-stories`
 - ✅ Queued Publishing — `deeper/queued-publishing`
 
 ### Shaping the Feed
 
 - ✅ Aggregation — `deeper/aggregation`: built-in axes, thresholds, group headlines, tokens and fallback nouns; links to the read-mode guide
 - ✅ Live Burst Windows — `deeper/live-burst-windows`: quiet gaps and ceilings; rebuilding existing history with writers paused, resume and restart
+- ✅ Batching Activities — `deeper/batching-activities`: batch windows, publishing outside a batch and BatchClosed; how a closing batch becomes a composite
 - ✅ Custom Axes — `deeper/custom-axes`: custom keys, eligibility, calendar periods and priority; default grouping keys live in Reference Configuration
-- ✅ Keeping the Latest Activity — `deeper/keeping-the-latest-activity`
+- ✅ Keeping the Latest Activity — `deeper/keeping-the-latest-activity`: keepLatest(), matching roles, time windows, and every occurrence vs the latest
 - ✅ Composites — `deeper/composites`
 - ✅ Resolving Bodies When Retrieved — `deeper/resolving-bodies-when-retrieved`
 - ✅ Custom Body Types — `deeper/custom-body-types`
@@ -463,12 +466,10 @@ the one obvious path and link here.
 - ✅ Composing a Coherent Activity — `cookbook/composing-a-coherent-activity`
 - ✅ Recording Value Changes — `cookbook/recording-value-changes`: rename values in data, dynamic headlines, and party-query comparison
 - ✅ Choosing a Verb — `cookbook/choosing-a-verb`
-- ✅ Choosing When to Publish — `cookbook/choosing-when-to-publish`: choosing a publish site, model observers when there is no domain event, and one verb per transition
-- ✅ Choosing What Not to Record — `cookbook/choosing-what-not-to-record`
-- ✅ Repeating Activities — `cookbook/repeating-activities`
+- ✅ Choosing When to Publish — `cookbook/choosing-when-to-publish`: choosing a publish site, model observers when there is no domain event, one verb per transition, and choosing events to record
+- ✅ Choosing to Record or Compose — `cookbook/choosing-to-record-or-compose`: the decision table, composing from a history table, and the limits
 - ✅ Recording Deletions — `cookbook/recording-deletions`
-- ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`
-- ✅ Recording Signed-Link Access — `cookbook/recording-signed-link-access`: recipient data, anonymous fetch evidence, authenticated actors, and recipient search
+- ✅ Activities Without an Actor — `cookbook/activities-without-an-actor`: choosing an actor, system parties, no actor, and a link sent to someone
 - ✅ Recording Email Lifecycle Events — `cookbook/recording-email-lifecycle-events`: message objects, document targets, anonymous outcomes, and document logs
 - ✅ Recording an Authoriser — `cookbook/recording-an-authoriser`: approvals by a second person, filtering approvals, and finding the approver
 - ✅ Recording Connected App Writes — `cookbook/recording-connected-app-writes`: operator actors, app instruments, companion audit entries, and the instrument filter
@@ -484,6 +485,7 @@ the one obvious path and link here.
 - ✅ Doctor Checks — `reference/doctor-checks`
 - ✅ Feedable API — `reference/feedable-api`
 - ✅ FeedItem API — `reference/feed-item-api`
+- ✅ Entry API — `reference/entry-api`: compose(), Entry methods, role values, headline replacements, make() and the array form
 - ✅ Verb Vocabulary — `reference/verb-vocabulary`
 - ✅ The Payload Contract — `reference/payload-contract`
 - ✅ Schema — `reference/schema`: generated table, column and index blocks; edit surrounding prose, not generated blocks
