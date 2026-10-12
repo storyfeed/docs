@@ -10,21 +10,5 @@
 </script>
 
 <template>
-    <div class="sf-body-placeholder" aria-hidden="true">body</div>
+    <div class="sf-body-placeholder flex items-center [justify-content:center] [min-height:72px] [margin:0.5rem_0_0.25rem] [border:1.4px_dashed_var(--vp-c-text-3)] [border-radius:8px] [color:var(--vp-c-text-3)] [font-family:var(--vp-font-family-mono)] [font-size:13px] [letter-spacing:0.08em]" aria-hidden="true">body</div>
 </template>
-
-<style scoped>
-.sf-body-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 72px;
-    margin: 0.5rem 0 0.25rem;
-    border: 1.4px dashed var(--vp-c-text-3);
-    border-radius: 8px;
-    color: var(--vp-c-text-3);
-    font-family: var(--vp-font-family-mono);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-}
-</style>

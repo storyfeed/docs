@@ -20,6 +20,6 @@
 }
 
 /* Utilities belong to examples in the article, never VitePress chrome. */
-@scope (.vp-doc) {
+@scope (.vp-doc, .sf-status, .sf-partner-sponsors, .sf-sample-modal) {
   @tailwind utilities;
 }

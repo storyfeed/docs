@@ -67,34 +67,11 @@ function activate() {
         <slot />
     </a>
 
-    <dialog v-if="modal" ref="panel" class="sf-sample-modal" :open="open">
-        <p class="sf-sample-modal__body">
+    <dialog v-if="modal" ref="panel" class="sf-sample-modal [position:fixed] [inset:auto_0_2rem] [z-index:60] [max-width:28rem] [margin:0_auto] [padding:1rem_1.25rem] [border:1px_solid_var(--vp-c-divider)] [border-radius:10px] [background:var(--vp-c-bg-elv)] [box-shadow:0_12px_32px_rgb(0_0_0_/_0.18)] [&_button]:[padding:0.25rem_0.7rem] [&_button]:[border:1px_solid_var(--vp-c-divider)] [&_button]:[border-radius:6px] [&_button]:[font-size:12.5px] [&_button]:[cursor:pointer]" :open="open">
+        <p class="sf-sample-modal__body [margin:0_0_0.75rem] [font-size:14px]">
             Your renderer opens <code>{{ href }}</code> here, without leaving
             the feed. <code>entity.modal</code> is the payload asking for it.
         </p>
         <button type="button" @click="open = false">Close</button>
     </dialog>
 </template>
-
-<style scoped>
-.sf-sample-modal {
-    position: fixed;
-    inset: auto 0 2rem;
-    z-index: 60;
-    max-width: 28rem;
-    margin: 0 auto;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 10px;
-    background: var(--vp-c-bg-elv);
-    box-shadow: 0 12px 32px rgb(0 0 0 / 0.18);
-}
-.sf-sample-modal__body { margin: 0 0 0.75rem; font-size: 14px; }
-.sf-sample-modal button {
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 6px;
-    font-size: 12.5px;
-    cursor: pointer;
-}
-</style>
