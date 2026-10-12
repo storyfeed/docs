@@ -31,3 +31,14 @@ test('exceptions accept CRLF but reject edits, additions, duplicates and removal
     }
   }
 });
+
+
+test('requires kind and rejects new debt, including entries in an existing file', () => {
+  const entry = { pattern: 'style={color}', reason: 'Runtime colour.', count: 1 };
+  for (const kind of [undefined, 'unknown', 'debt']) {
+    assert.notDeepEqual(violations('new.tsx', entry.pattern, { 'new.tsx': [{ ...entry, kind }] }), []);
+  }
+  const allowlist = JSON.parse(readFileSync(new URL('./tailwind-allowlist.json', import.meta.url)));
+  const file = 'docs/.vitepress/theme/custom.css';
+  assert.notDeepEqual(violations(file, readFileSync(file, 'utf8'), { [file]: [...allowlist[file], { ...entry, kind: 'debt', conversion: 'Use utilities.' }] }), []);
+});

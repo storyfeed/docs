@@ -2,27 +2,32 @@
   "docs/.vitepress/theme/custom.css": [
     {
       "sha256": "e6a61be2f319b804c74535f2dbab6859216719b04f78eb43ab054c449665c561",
-      "reason": "VitePress theme integration: third-party theme variables, generated Markdown/Shiki selectors and print page rules require a theme stylesheet."
+      "reason": "Legacy VitePress theme overrides retained to keep this guard PR focused.",
+      "kind": "debt",
+      "conversion": "Move feed, Markdown and chrome selectors to literal utilities in owned layout/renderer markup; move brand tokens to @theme and dark utility variables. Retain only genuine VitePress/print page configuration as CSS."
     }
   ],
   "docs/.vitepress/theme/tailwind.css": [
     {
       "sha256": "8bdf01073d9ce45e04abc9b38bb1679afd4314193be8ee9f694d08fdb161fd84",
-      "reason": "Tailwind compiler entry: no preflight, VitePress palette mapping and scoped generated utilities."
+      "reason": "Tailwind compiler entry: no preflight, VitePress palette mapping and scoped generated utilities.",
+      "kind": "genuine"
     }
   ],
   "docs/.vitepress/theme/components/FeedExample.vue": [
     {
       "pattern": ":style=\"maxHeight ? { maxHeight } : undefined\"",
       "count": 1,
-      "reason": "Example maxHeight is an arbitrary caller-supplied runtime CSS length."
+      "reason": "Example maxHeight is an arbitrary caller-supplied runtime CSS length.",
+      "kind": "genuine"
     }
   ],
   "docs/.vitepress/config.ts": [
     {
       "pattern": "return `<span style=\"${tokenStyles}\">${md.utils.escapeHtml(t.content)}</span>`",
       "count": 1,
-      "reason": "Shiki supplies token styles from the selected grammar and themes; token colours are computed by the highlighter."
+      "reason": "Shiki supplies token styles from the selected grammar and themes; token colours are computed by the highlighter.",
+      "kind": "genuine"
     }
   ]
 }

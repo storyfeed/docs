@@ -5,6 +5,14 @@ import { resolve, relative, extname } from 'node:path';
 export function violations(file, source, allowlist = {}) {
   source = source.replaceAll('\r\n', '\n');
   const entries = allowlist[file] ?? [];
+  // Freeze legacy debt to this one existing theme override file. Burn down,
+  // never add debt entries, including additions in already allowed files.
+  for (const entry of entries) {
+    if (!['genuine', 'debt'].includes(entry.kind)) return [`${file}: missing or invalid exception kind`];
+    if (entry.kind === 'debt' && (file !== 'docs/.vitepress/theme/custom.css' || entries.length !== 1 || !entry.conversion?.trim())) {
+      return [`${file}: debt must be burned down, never added; existing debt needs a conversion plan`];
+    }
+  }
   if (extname(file).toLowerCase() === '.css') {
     const entry = entries[0];
     return entry?.reason && entry.sha256 === createHash('sha256').update(source).digest('hex')
