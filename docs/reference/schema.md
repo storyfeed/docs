@@ -267,6 +267,7 @@ removing or changing an alias leaves affected roles unresolved.
 | index | `instrument_type`, `instrument_id` |
 | index | `location_type`, `location_id` |
 | index | `generator_type`, `generator_id` |
+| index | `object_type`, `object_id`, `verb`, `published_at` |
 <!-- /schema -->
 
 ### `feed_snapshots`

@@ -73,83 +73,22 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <dl class="sf-mapping">
+  <dl class="sf-mapping flex [flex-wrap:wrap] [gap:5px_18px] [margin:9px_0_2px] [font-size:12.5px] [&_.sf-mapping-pair--wide]:[flex:0_0_100%] [&_dt]:[color:var(--vp-c-text-3,_#8a94a6)] [&_dt]:[font-family:var(--vp-font-family-mono)] [&_dt]:[font-size:11px] [&_dt]:[align-self:center] [&_dt::after]:[content:':'] [&_dd]:[margin:0] [&_dd]:[color:var(--vp-c-text-2,_#4b5563)] [&_code]:[font-size:11px] [&_code]:[padding:0_4px]">
     <div
       v-for="row in rows"
       :key="row.slot"
-      class="sf-mapping-pair"
+      class="sf-mapping-pair flex [gap:6px] [max-width:100%]"
       :class="{ 'sf-mapping-pair--wide': !row.empty && row.value.length > LONG }"
     >
       <dt>{{ row.slot }}</dt>
       <dd>
         <code v-if="row.code">{{ row.value }}</code>
-        <em v-else-if="row.empty" class="sf-mapping-null">null</em>
+        <em v-else-if="row.empty" class="sf-mapping-null [font-family:var(--vp-font-family-mono)] [font-size:11px] [font-style:normal] [color:var(--vp-c-text-3,_#8a94a6)] [opacity:0.75]">null</em>
         <template v-else>
-          <span v-if="row.type" class="sf-mapping-type">{{ row.type }}</span>
+          <span v-if="row.type" class="sf-mapping-type [font-family:var(--vp-font-family-mono)] [font-size:11px] [color:var(--vp-c-text-3,_#8a94a6)] [&::after]:[content:'_·']">{{ row.type }}</span>
           {{ row.value }}
         </template>
       </dd>
     </div>
   </dl>
 </template>
-
-<style scoped>
-.sf-mapping-null {
-  font-family: var(--vp-font-family-mono);
-  font-size: 11px;
-  font-style: normal;
-  color: var(--vp-c-text-3, #8a94a6);
-  opacity: 0.75;
-}
-
-.sf-mapping {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px 18px;
-  margin: 9px 0 2px;
-  font-size: 12.5px;
-}
-
-.sf-mapping-pair {
-  display: flex;
-  gap: 6px;
-  max-width: 100%;
-}
-
-/* A sentence-length value gets the whole row, so it is readable in full rather
-   than squeezed between two other pairs. */
-.sf-mapping-pair--wide {
-  flex: 0 0 100%;
-}
-
-.sf-mapping dt {
-  color: var(--vp-c-text-3, #8a94a6);
-  font-family: var(--vp-font-family-mono);
-  font-size: 11px;
-  align-self: center;
-}
-
-.sf-mapping dt::after {
-  content: ':';
-}
-
-.sf-mapping dd {
-  margin: 0;
-  color: var(--vp-c-text-2, #4b5563);
-}
-
-.sf-mapping-type {
-  font-family: var(--vp-font-family-mono);
-  font-size: 11px;
-  color: var(--vp-c-text-3, #8a94a6);
-}
-
-.sf-mapping-type::after {
-  content: ' ·';
-}
-
-.sf-mapping code {
-  font-size: 11px;
-  padding: 0 4px;
-}
-</style>

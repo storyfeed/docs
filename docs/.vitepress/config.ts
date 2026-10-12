@@ -153,8 +153,8 @@ export default defineConfig({
           return all
         }, [] as typeof kept)
         const spans = merged.map((t) => {
-          const style = Object.entries(t.htmlStyle ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
-          return `<span style="${style}">${md.utils.escapeHtml(t.content)}</span>`
+          const tokenStyles = Object.entries(t.htmlStyle ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
+          return `<span style="${tokenStyles}">${md.utils.escapeHtml(t.content)}</span>`
         })
         return `<code class="shiki sf-inline-code" v-pre>${spans.join('').replace(/^(<span[^>]*>)\s+/, '$1')}</code>`
       }

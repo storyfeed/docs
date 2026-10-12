@@ -7,16 +7,5 @@ defineProps<{ excerpt?: string | null }>();
 </script>
 
 <template>
-    <blockquote v-if="excerpt" class="sf-note">{{ excerpt }}</blockquote>
+    <blockquote v-if="excerpt" class="sf-note [margin:6px_0_0] [border-left:2px_solid_var(--vp-c-divider)] [padding:0_0_0_12px] [font-size:13.5px] [font-style:italic] [color:var(--vp-c-text-2)]">{{ excerpt }}</blockquote>
 </template>
-
-<style scoped>
-.sf-note {
-    margin: 6px 0 0;
-    border-left: 2px solid var(--vp-c-divider);
-    padding: 0 0 0 12px;
-    font-size: 13.5px;
-    font-style: italic;
-    color: var(--vp-c-text-2);
-}
-</style>

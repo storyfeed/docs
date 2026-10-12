@@ -168,14 +168,14 @@ async function copy() {
 </script>
 
 <template>
-    <div class="sf-example" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
-        <div v-if="slots.default" class="sf-example__caption">
+    <div class="sf-example [margin:1rem_0] [border:1px_solid_var(--vp-c-divider)] [border-radius:10px] overflow-hidden [background:var(--vp-c-bg)] [&_.sf-example\_\_preview--scroll]:overflow-y-auto [&_.sf-example\_\_preview--scroll]:[overscroll-behavior:contain] [&_.sf-example\_\_preview--scroll:focus-visible]:[outline:2px_solid_var(--vp-c-brand-1)] [&_.sf-example\_\_preview--scroll:focus-visible]:[outline-offset:-2px] [&:has(.sf-example\_\_caption)]:[margin:1.75rem_0] [&.sf-example--pad-1_[role='listitem']:nth-child(-n_+_1)]:[filter:blur(1.6px)] [&.sf-example--pad-1_[role='listitem']:nth-child(-n_+_1)]:[opacity:0.4] [&.sf-example--pad-1_[role='listitem']:nth-child(-n_+_1)]:[user-select:none] [&.sf-example--pad-1_[role='listitem']:nth-last-child(-n_+_1)]:[filter:blur(1.6px)] [&.sf-example--pad-1_[role='listitem']:nth-last-child(-n_+_1)]:[opacity:0.4] [&.sf-example--pad-1_[role='listitem']:nth-last-child(-n_+_1)]:[user-select:none] [&.sf-example--pad-2_[role='listitem']:nth-child(-n_+_2)]:[filter:blur(1.6px)] [&.sf-example--pad-2_[role='listitem']:nth-child(-n_+_2)]:[opacity:0.4] [&.sf-example--pad-2_[role='listitem']:nth-child(-n_+_2)]:[user-select:none] [&.sf-example--pad-2_[role='listitem']:nth-last-child(-n_+_2)]:[filter:blur(1.6px)] [&.sf-example--pad-2_[role='listitem']:nth-last-child(-n_+_2)]:[opacity:0.4] [&.sf-example--pad-2_[role='listitem']:nth-last-child(-n_+_2)]:[user-select:none] [&.sf-example--pad-3_[role='listitem']:nth-child(-n_+_3)]:[filter:blur(1.6px)] [&.sf-example--pad-3_[role='listitem']:nth-child(-n_+_3)]:[opacity:0.4] [&.sf-example--pad-3_[role='listitem']:nth-child(-n_+_3)]:[user-select:none] [&.sf-example--pad-3_[role='listitem']:nth-last-child(-n_+_3)]:[filter:blur(1.6px)] [&.sf-example--pad-3_[role='listitem']:nth-last-child(-n_+_3)]:[opacity:0.4] [&.sf-example--pad-3_[role='listitem']:nth-last-child(-n_+_3)]:[user-select:none]" :class="pad > 0 ? `sf-example--pad-${pad}` : ''">
+        <div v-if="slots.default" class="sf-example__caption [padding:0.6rem_1.25rem] [border-bottom:1px_solid_var(--vp-c-divider)] [background:var(--vp-code-block-bg)] [font-size:14px] [line-height:1.6] [color:var(--vp-c-text-2)] [&_p]:[margin:0] [&:has(.sf-inline-code)]:[overflow-x:auto] [&:has(.sf-inline-code)]:whitespace-nowrap [&_.sf-inline-code]:whitespace-nowrap [&_code]:[padding:0] [&_code]:[border-radius:0] [&_code]:[background:none] [&_code]:[font-size:0.93em] [&_code]:[color:var(--vp-c-text-1)] [&_strong]:[color:var(--vp-c-text-1)]">
             <slot />
         </div>
 
         <div
             v-if="!payload"
-            class="sf-example__preview"
+            class="sf-example__preview [padding:1.1rem_1.25rem]"
             :class="{ 'sf-example__preview--scroll': maxHeight }"
             :style="maxHeight ? { maxHeight } : undefined"
             :tabindex="maxHeight ? 0 : undefined"
@@ -189,22 +189,22 @@ async function copy() {
             </slot>
         </div>
 
-        <div v-if="!hidePayload" class="sf-example__code" :class="{ 'is-open': open, 'is-alone': payload }">
+        <div v-if="!hidePayload" class="sf-example__code [border-top:1px_solid_var(--vp-c-divider)] [background:var(--vp-code-block-bg)] [&.is-alone]:[border-top:0] [&.is-alone_.sf-example\_\_source]:[border-top:0] [&.is-open_.sf-example\_\_chevron]:[transform:rotate(90deg)]" :class="{ 'is-open': open, 'is-alone': payload }">
             <button
                 v-if="!payload"
                 type="button"
-                class="sf-example__toggle"
+                class="sf-example__toggle flex items-center [gap:0.4rem] w-full [padding:0.5rem_1rem] [font-size:12.5px] [font-family:var(--vp-font-family-mono)] [color:var(--vp-c-text-2)] [text-align:left] [cursor:pointer] [&:hover]:[color:var(--vp-c-text-1)]"
                 :aria-expanded="open"
                 @click="open = !open"
             >
-                <span class="sf-example__chevron" aria-hidden="true">▸</span>
+                <span class="sf-example__chevron [display:inline-block] [transition:transform_0.15s_ease]" aria-hidden="true">▸</span>
                 {{ label }}
             </button>
 
-            <div v-if="open" class="sf-example__source">
+            <div v-if="open" class="sf-example__source relative [border-top:1px_solid_var(--vp-c-divider)] [&_pre]:[margin:0] [&_pre]:[padding:0.9rem_1rem] [&_pre]:[max-height:24rem] [&_pre]:[overflow:auto] [&_pre]:[font-size:12.5px] [&_pre]:[line-height:1.55] [&_code]:[font-family:var(--vp-font-family-mono)] [&_code]:[color:var(--vp-c-text-2)] [&_code]:[white-space:pre] [&_.j-key]:[color:var(--vp-c-brand-1)] [&_.j-str]:[color:var(--vp-c-green-2)] [&_.j-lit]:[color:var(--vp-c-purple-2)] [&_.j-num]:[color:var(--vp-c-yellow-2)]">
                 <button
                     type="button"
-                    class="sf-example__copy"
+                    class="sf-example__copy absolute [top:0.5rem] [right:0.6rem] [padding:0.2rem_0.55rem] [border:1px_solid_var(--vp-c-divider)] [border-radius:6px] [background:var(--vp-c-bg)] [font-size:11.5px] [color:var(--vp-c-text-2)] [cursor:pointer] [&:hover]:[color:var(--vp-c-text-1)] [&:hover]:[border-color:var(--vp-c-text-3)]"
                     :aria-label="copied ? 'Copied' : 'Copy payload'"
                     @click="copy"
                 >
@@ -215,149 +215,3 @@ async function copy() {
         </div>
     </div>
 </template>
-
-<style scoped>
-.sf-example {
-    margin: 1rem 0;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--vp-c-bg);
-}
-.sf-example__preview {
-    padding: 1.1rem 1.25rem;
-}
-/* A capped feed scrolls inside the card, and the scroll never hands off to
-   the page at either end. */
-.sf-example__preview--scroll {
-    overflow-y: auto;
-    overscroll-behavior: contain;
-}
-.sf-example__preview--scroll:focus-visible {
-    outline: 2px solid var(--vp-c-brand-1);
-    outline-offset: -2px;
-}
-/* The caption: what the example shows, in the card's own header bar, as a
-   code block's memo sits in its bar. */
-.sf-example__caption {
-    padding: 0.6rem 1.25rem;
-    border-bottom: 1px solid var(--vp-c-divider);
-    background: var(--vp-code-block-bg);
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--vp-c-text-2);
-}
-.sf-example__caption :deep(p) {
-    margin: 0;
-}
-/* A caption that is the code producing the example stays one line, and
-   scrolls inside the bar where the page is too narrow for it. */
-.sf-example__caption:has(.sf-inline-code) {
-    overflow-x: auto;
-    white-space: nowrap;
-}
-.sf-example__caption :deep(.sf-inline-code) {
-    white-space: nowrap;
-}
-/* Code in a caption is part of the sentence: its tokens sit on the bar like
-   text, without the chip inline code wears in prose. */
-.sf-example__caption :deep(code) {
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    font-size: 0.93em;
-    color: var(--vp-c-text-1);
-}
-.sf-example__caption :deep(strong) {
-    color: var(--vp-c-text-1);
-}
-/* A captioned example is a unit: give consecutive ones room to read apart. */
-.sf-example:has(.sf-example__caption) {
-    margin: 1.75rem 0;
-}
-.sf-example__code {
-    border-top: 1px solid var(--vp-c-divider);
-    background: var(--vp-code-block-bg);
-}
-.sf-example__code.is-alone {
-    border-top: 0;
-}
-.sf-example__code.is-alone .sf-example__source {
-    border-top: 0;
-}
-.sf-example__toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    font-size: 12.5px;
-    font-family: var(--vp-font-family-mono);
-    color: var(--vp-c-text-2);
-    text-align: left;
-    cursor: pointer;
-}
-.sf-example__toggle:hover {
-    color: var(--vp-c-text-1);
-}
-.sf-example__chevron {
-    display: inline-block;
-    transition: transform 0.15s ease;
-}
-.sf-example__code.is-open .sf-example__chevron {
-    transform: rotate(90deg);
-}
-.sf-example__source {
-    position: relative;
-    border-top: 1px solid var(--vp-c-divider);
-}
-.sf-example__copy {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.6rem;
-    padding: 0.2rem 0.55rem;
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 6px;
-    background: var(--vp-c-bg);
-    font-size: 11.5px;
-    color: var(--vp-c-text-2);
-    cursor: pointer;
-}
-.sf-example__copy:hover {
-    color: var(--vp-c-text-1);
-    border-color: var(--vp-c-text-3);
-}
-.sf-example__source pre {
-    margin: 0;
-    padding: 0.9rem 1rem;
-    max-height: 24rem;
-    overflow: auto;
-    font-size: 12.5px;
-    line-height: 1.55;
-}
-.sf-example__source code {
-    font-family: var(--vp-font-family-mono);
-    color: var(--vp-c-text-2);
-    white-space: pre;
-}
-.sf-example__source :deep(.j-key) { color: var(--vp-c-brand-1); }
-.sf-example__source :deep(.j-str) { color: var(--vp-c-green-2); }
-.sf-example__source :deep(.j-lit) { color: var(--vp-c-purple-2); }
-.sf-example__source :deep(.j-num) { color: var(--vp-c-yellow-2); }
-
-/*
- * THE ROWS AROUND THE EXAMPLE. Blurred rather than greyed, because grey reads
- * as a disabled state and blur reads as depth of field — the eye lands on the
- * sharp row without being told which one matters.
- */
-.sf-example--pad-1 :deep([role='listitem']:nth-child(-n + 1)),
-.sf-example--pad-1 :deep([role='listitem']:nth-last-child(-n + 1)),
-.sf-example--pad-2 :deep([role='listitem']:nth-child(-n + 2)),
-.sf-example--pad-2 :deep([role='listitem']:nth-last-child(-n + 2)),
-.sf-example--pad-3 :deep([role='listitem']:nth-child(-n + 3)),
-.sf-example--pad-3 :deep([role='listitem']:nth-last-child(-n + 3)) {
-    filter: blur(1.6px);
-    opacity: 0.4;
-    user-select: none;
-}
-</style>

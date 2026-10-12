@@ -34,46 +34,11 @@
 </script>
 
 <template>
-  <div class="sf-status">
-    <p class="sf-status__text">
+  <div class="sf-status [border-bottom:1px_solid_var(--vp-c-divider)] [background:var(--vp-c-bg-alt)] [&_strong]:[color:var(--vp-c-text-1)] [&_strong]:[font-weight:600] [&_a]:[color:var(--vp-c-brand-1)] [&_a]:[font-weight:500] [&_a]:[text-decoration:underline] [&_a]:[text-underline-offset:2px] [&_a]:whitespace-nowrap">
+    <p class="sf-status__text [margin:0_auto] [max-width:1440px] [padding:7px_24px] [font-size:13px] [line-height:1.5] [color:var(--vp-c-text-2)] max-[768px]:[padding:7px_16px]">
       <strong>Pre-1.0. Not intended for public use yet.</strong>
       The API is subject to undocumented change, and these pages may already be
       wrong about it.
     </p>
   </div>
 </template>
-
-<style scoped>
-.sf-status {
-  border-bottom: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-alt);
-}
-
-.sf-status__text {
-  margin: 0 auto;
-  max-width: 1440px;
-  padding: 7px 24px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--vp-c-text-2);
-}
-
-.sf-status strong {
-  color: var(--vp-c-text-1);
-  font-weight: 600;
-}
-
-.sf-status a {
-  color: var(--vp-c-brand-1);
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  white-space: nowrap;
-}
-
-@media (max-width: 767px) {
-  .sf-status__text {
-    padding: 7px 16px;
-  }
-}
-</style>

@@ -1,0 +1,28 @@
+{
+  "docs/.vitepress/theme/custom.css": [
+    {
+      "sha256": "e6a61be2f319b804c74535f2dbab6859216719b04f78eb43ab054c449665c561",
+      "reason": "VitePress theme integration: third-party theme variables, generated Markdown/Shiki selectors and print page rules require a theme stylesheet."
+    }
+  ],
+  "docs/.vitepress/theme/tailwind.css": [
+    {
+      "sha256": "8bdf01073d9ce45e04abc9b38bb1679afd4314193be8ee9f694d08fdb161fd84",
+      "reason": "Tailwind compiler entry: no preflight, VitePress palette mapping and scoped generated utilities."
+    }
+  ],
+  "docs/.vitepress/theme/components/FeedExample.vue": [
+    {
+      "pattern": ":style=\"maxHeight ? { maxHeight } : undefined\"",
+      "count": 1,
+      "reason": "Example maxHeight is an arbitrary caller-supplied runtime CSS length."
+    }
+  ],
+  "docs/.vitepress/config.ts": [
+    {
+      "pattern": "return `<span style=\"${tokenStyles}\">${md.utils.escapeHtml(t.content)}</span>`",
+      "count": 1,
+      "reason": "Shiki supplies token styles from the selected grammar and themes; token colours are computed by the highlighter."
+    }
+  ]
+}
