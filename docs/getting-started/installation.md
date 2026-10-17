@@ -24,7 +24,8 @@ without configuration. Storyfeed stores model IDs as strings.
 composer require storyfeed/storyfeed:dev-main
 ```
 
-The service provider registers through package discovery.
+The service provider registers through package discovery. For an existing installation,
+see [Updating Dependencies](/maintenance/updating-dependencies).
 
 ### Running the Installer
 
