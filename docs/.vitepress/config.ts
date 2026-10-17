@@ -331,6 +331,7 @@ export default defineConfig({
         text: 'Testing and Maintenance',
         items: [
           { text: 'Testing', link: '/maintenance/testing' },
+          { text: 'Updating Dependencies', link: '/maintenance/updating-dependencies' },
           { text: 'Diagnosing Your Feed', link: '/maintenance/diagnosing-your-feed' },
           { text: 'Deleted Models', link: '/maintenance/deleted-models' },
           { text: 'Retention', link: '/maintenance/retention' },
