@@ -356,6 +356,7 @@ export default defineConfig({
           { text: 'Recording Deletions', link: '/cookbook/recording-deletions' },
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },
           { text: 'Recording Email Lifecycle Events', link: '/cookbook/recording-email-lifecycle-events' },
+          { text: 'Keeping a Pulse Per Record', link: '/cookbook/keeping-a-pulse-per-record' },
           { text: 'Recording an Authoriser', link: '/cookbook/recording-an-authoriser' },
           { text: 'Recording Connected App Writes', link: '/cookbook/recording-connected-app-writes' },
           { text: 'Choosing What to Group', link: '/cookbook/choosing-what-to-group' },
