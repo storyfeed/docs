@@ -401,7 +401,8 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2026–present <a href="https://teylabs.com">Tey Labs</a>',
+      // The brand footer (teylabs/brand README): two lines, no ©.
+      copyright: 'Storyfeed<br>Built by <a href="https://teylabs.com" target="_blank" rel="noopener">Tey Labs</a>.',
     },
   },
 })
