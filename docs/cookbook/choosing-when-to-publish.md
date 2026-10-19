@@ -1,5 +1,13 @@
 # Choosing When to Publish
 
+## Introduction
+
+An order is saved many times while it is being prepared: a note is added, the
+table changes, a line is corrected. Only a few of those saves matter to
+someone reading the feed, such as when the order was placed, confirmed or
+cancelled. Publishing from every save fills the feed with near-identical rows.
+Publishing from the status changes records what happened.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 const confirmed = scene.cookbook.transitions.confirmed

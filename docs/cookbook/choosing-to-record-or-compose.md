@@ -1,5 +1,13 @@
 # Choosing to Record or Compose
 
+## Introduction
+
+A menu item's page should show its price history, and the shop's feed should
+show what staff did today. The app already keeps a `price_changes` table.
+Recording every price change as an activity would store the same history
+twice, but composing the shop feed at read time would miss events the app
+never stored. Each need has a better fit.
+
 <script setup>
 import { priceHistory } from '../.vitepress/theme/recipes/record-or-compose'
 </script>

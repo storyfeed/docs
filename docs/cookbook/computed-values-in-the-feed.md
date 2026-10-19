@@ -1,5 +1,12 @@
 # Computed Values in the Feed
 
+## Introduction
+
+A menu item's activity says how many times the dish has been ordered. Orders
+keep arriving after the activity was recorded, but the menu item itself is
+never saved again. A count stored at publish time goes stale, and the feed
+shows an old number next to a current page.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 </script>

@@ -1,5 +1,12 @@
 # Recording Connected App Writes
 
+## Introduction
+
+An operator asks an AI assistant, connected to the app, to update a supplier's
+prices. The assistant makes the change through the app's API. The feed should
+say who asked for the change and which app made it. An audit later needs who
+authorised the app to act.
+
 When an operator uses a connected app to create or change a record, record the
 operator as the actor and the app as the instrument. Keep who authorised the
 write in a companion audit entry, and retrieve everything done through the app

@@ -1,5 +1,14 @@
 # Activities Without an Actor
 
+## Introduction
+
+A restaurant's app records what people do, but some things happen with no
+person behind them. A nightly job closes the day's orders, a payment provider
+confirms a charge, and someone opens a link that was emailed to a supplier.
+The owner reading the feed wants to know who or what did each thing. If every
+one of these is recorded with an empty actor, the feed can't tell the nightly
+job from a stranger.
+
 <script setup>
 import { scene } from '../.vitepress/theme/world'
 import { linkFetch } from '../.vitepress/theme/recipes/signed-links'
