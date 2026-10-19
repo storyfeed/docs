@@ -1,5 +1,12 @@
 # Recording an Authoriser
 
+## Introduction
+
+A junior chef changes the menu, and the head chef approves it before it goes
+live. The feed should credit the junior chef with the change. The owner still
+needs to answer who approved it. Recording the head chef as the actor hides
+who did the work, and leaving the approval out loses it.
+
 When one person acts and another approves, keep the person who acted as the
 activity's actor. Record approval separately and exclude it from displayed
 feeds so you can still query who approved. If the model already stores the

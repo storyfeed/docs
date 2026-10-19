@@ -1,5 +1,13 @@
 # Recording Email Lifecycle Events
 
+## Introduction
+
+An app emails an invoice to a customer. The email is sent, delivered, maybe
+opened, and sometimes bounced or reported as spam. Someone looking at the
+invoice wants to see whether it reached the customer. Recording each event
+against the invoice alone mixes up separate sends, while recording only the
+email hides it from the invoice's page.
+
 Record the message as the object and the document it carries as the target.
 A document's log can then show each send and its delivery outcomes.
 

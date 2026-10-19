@@ -1,5 +1,12 @@
 # Naming Group Members From Activity Data
 
+## Introduction
+
+A lawyer rewrites five clauses of one agreement in an afternoon. The clauses
+are not models, so each activity's object is the agreement, and its clause
+name is in the activity's data. Grouped, the feed says "rewrote the agreement
+5 times". The reader wants to know which clauses changed.
+
 Record a clause rewrite on its agreement and store the clause name in activity
 data. The `:objects` token names agreements, so use a group headline callback
 to list clause names.

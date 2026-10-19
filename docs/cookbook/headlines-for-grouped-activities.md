@@ -1,5 +1,12 @@
 # Headlines for Grouped Activities
 
+## Introduction
+
+A customer places an order, changes it, and places it again. The feed groups
+the placements, and a headline such as "placed 3 orders" tells the owner there
+are three orders when there is one. The owner needs the count of what
+happened, in words that don't overstate it.
+
 An order can be placed more than once. A headline that calls every placement
 an order overstates how many orders there are. Keep the events, and choose
 wording that counts what actually happened.

@@ -1,5 +1,12 @@
 # Recording Value Changes
 
+## Introduction
+
+A manager renames the "Summer" menu to "Late Summer". The feed should say
+"renamed Summer to Late Summer". Passing the two names as roles makes each
+name a participant, so a search for a party named "Summer" finds a menu name.
+The names are values, and the recipe records them that way.
+
 Record the entity being renamed as the object. Store its old and new names in
 activity data so the names remain values throughout filtering and serialization.
 

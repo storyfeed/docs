@@ -1,5 +1,13 @@
 # Choosing a Verb
 
+## Introduction
+
+A team adds activities to an app one feature at a time. One developer records
+`create` for a new order, another records `order_placed`, and a third records
+`update` for every change to an agreement. The feed reads unevenly, and nobody
+can filter it by what actually happened. Choosing verbs by one rule keeps
+headlines readable and filters useful as the app grows.
+
 Choose a verb that describes the event, then use roles to identify what was involved.
 
 <script setup>

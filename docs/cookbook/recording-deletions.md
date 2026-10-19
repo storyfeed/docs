@@ -1,5 +1,12 @@
 # Recording Deletions
 
+## Introduction
+
+A manager deletes a menu item that was ordered for months. The menu item's
+activities still matter: the shop's history should keep showing what was sold
+and when. If the model is gone and nothing was recorded, the feed shows broken
+rows or loses them, with no sign the item was deleted.
+
 <script setup>
 import { variants } from '../.vitepress/theme/world'
 

@@ -234,6 +234,10 @@ wanting to try the package. The register is Laravel's own docs. Concretely:
     gaps (`bursts()`). **Digest** is never used.
 28. **Cookbook owns best practices.** Guidance tables ("choosing a publish
     site", "when to…") live in the cookbook, not on the concept page.
+    **Every cookbook page opens with `## Introduction`** (owner, 2026-10-19):
+    a short real-world scenario told end to end (what happens in the app,
+    what the reader of the feed wants to see, and what goes wrong without the
+    recipe), then the recipe's answer in a sentence or two, before any how-to.
 29. **Title Case everywhere** — sidebar, H1, H2, H3. Section shapes: "What
     Is X?", "Using X", "Examples of X". No numbers in headings ("1. Make the
     Models Feedable"): VitePress does not number them, and hand numbers have to

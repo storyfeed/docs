@@ -1,5 +1,14 @@
 # Keeping a Pulse Per Record
 
+## Introduction
+
+An agency shares a proposal with a client through a link. The client opens it
+on Monday, again on Tuesday with a colleague, then downloads the PDF. Each
+open is a request, and each request becomes an activity, so one client reading
+one document puts a dozen rows in the agency's feed. The agency wants a full
+timeline on the proposal's own page, and one line in the feed that says the
+proposal is being read, with the latest visit on top.
+
 Keep every view and download in your own table, and publish one activity per
 document that moves to the top of the feed each time someone opens it.
 

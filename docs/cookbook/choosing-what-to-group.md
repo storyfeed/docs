@@ -1,5 +1,13 @@
 # Choosing What to Group
 
+## Introduction
+
+A busy restaurant records dozens of activities an hour: orders placed, menus
+edited, dishes marked sold out. A manager scanning the feed wants the
+overview, such as who was busy and where. A chef reading reviews wants each
+one in full. Grouping everything hides the reviews, and grouping nothing
+buries the overview.
+
 Group activities when the reader needs an overview of who acted and where.
 Keep separate rows when each event's words, time or recorded details matter.
 

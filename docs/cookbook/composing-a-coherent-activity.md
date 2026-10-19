@@ -1,5 +1,13 @@
 # Composing a Coherent Activity
 
+## Introduction
+
+A developer adds a new kind of activity, for example a clause rewritten in an
+agreement. They pick a verb, an object and a headline, and the feed shows it.
+Weeks later, the headline names the wrong thing, a filter by agreement misses
+it, or a token prints empty. Checking each field before the first publish
+catches these while they are cheap to fix.
+
 Before recording a new kind of activity, list its fields and check that they
 describe what happened. The headline states the minimal fact, no less and no
 more; evidence and detail belong in the body.
