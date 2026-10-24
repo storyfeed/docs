@@ -132,6 +132,10 @@ use App\Feeds\CustomerFeed;
 CustomerFeed::make($order)->get();
 ```
 
+A feed class takes its subject through the constructor. The name `for()` is
+reserved: it throws, and because it returns `never`, a subclass cannot
+redeclare it.
+
 <FeedExample :items="customer" />
 
 See [Commands](/reference/commands) for all `make:feed` options.
