@@ -142,6 +142,24 @@ an array to `per`; the verb is always part of the match. An activity replaces
 nothing if a matching role is empty. For example, an anonymous save has no
 recorded actor, so it replaces nothing under `per: ['object', 'actor']`.
 
+## Keeping the Latest Per Record
+
+When the object is new each time, such as an interaction row, nothing ever
+matches. Key on the record the activity concerns instead:
+
+```php memo="routes/feed.php"
+use App\Models\DocumentInteraction;
+use Storyfeed\Facades\Story;
+
+Story::for(DocumentInteraction::class)->verb('engage')
+    ->headline(':actor opened :target')
+    ->keepLatest(per: 'target'); // Use 'context' to key on the context instead.
+```
+
+The feed keeps one `engage` activity per document, whichever interaction
+came last. See [Keeping a Pulse Per Record](/cookbook/keeping-a-pulse-per-record)
+for the full recipe.
+
 ## Limiting the Time Window
 
 Add a time window to that declaration:
@@ -165,6 +183,7 @@ Only matching activities within ten minutes of the new activity's
 |---|---|
 | `keepLatest()` | same object and verb, without a time limit |
 | `keepLatest(per: ['object', 'actor'])` | same object, actor and verb |
+| `keepLatest(per: 'target')` | same target and verb, whatever the object |
 | `keepLatest(within: '10 minutes')` | same object and verb, within ten minutes |
 | no declaration | every activity remains |
 
