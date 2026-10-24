@@ -171,8 +171,8 @@ Check the type and verb pairs your application records:
 ```php memo="tests/Feature/FeedCoverageTest.php" at="After exercising the application"
 use Storyfeed\Testing\HeadlineCoverage;
 
-HeadlineCoverage::assertCoversRecorded();  // Pairs in the database.
-HeadlineCoverage::assertCoversPublished(); // Pairs published in this test.
+HeadlineCoverage::assertCoversRecorded();  // Pairs recorded by Storyfeed::fake().
+HeadlineCoverage::assertCoversPublished(); // Distinct pairs in the activities table.
 ```
 
 ### Possible Groups
