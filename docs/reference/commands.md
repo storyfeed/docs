@@ -174,7 +174,7 @@ how historical activities appear, see
 | Command | Description |
 |---|---|
 | `storyfeed:rebuild` | rebuilds every entity snapshot and link from `toFeed()`; `--recent=N` limits the pass to entities named by the newest N activities |
-| `storyfeed:cache-snapshots` | bounded snapshot refresh run by `php artisan optimize`; skips when the database is unavailable |
+| `storyfeed:cache-snapshots` | bounded snapshot refresh run after every `php artisan migrate`, even with nothing to migrate; warns and skips when it can't run |
 
 `storyfeed:rebuild` does not change the recorded verb, roles, or activity data.
 

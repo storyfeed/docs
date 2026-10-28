@@ -162,7 +162,7 @@ rules:
 
 | Copy | Rewritten when |
 |---|---|
-| a snapshot | the model is saved, the model appears in a publish, `storyfeed:trickle` finds it stale, `storyfeed:rebuild` runs, or `php artisan optimize` invokes `storyfeed:cache-snapshots` for a bounded recent refresh (skipped when the database is unavailable) |
+| a snapshot | the model is saved, the model appears in a publish, `storyfeed:trickle` finds it stale, `storyfeed:rebuild` runs, or `php artisan migrate` invokes `storyfeed:cache-snapshots` for a bounded recent refresh (skipped with a warning when it can't run) |
 | a stale snapshot | `toFeed()` changes shape: each snapshot stores a `shape` fingerprint, and the trickle refreshes rows whose fingerprint differs |
 | `winner` | an activity is published into the group, or deleted from it; the [scheduled](/reference/commands#scheduling-maintenance) `storyfeed:curate`, with a configurable lookback |
 | `hash` | `storyfeed:curate --rehash` |

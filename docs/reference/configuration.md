@@ -162,7 +162,7 @@ These keys identify shared roles within built-in Live bursts. See
 
 | Key | Default | Description |
 |---|---|---|
-| `snapshots.compile` | `env('STORYFEED_SNAPSHOTS', 'cached')` | when `toFeed()` output is recompiled. `'cached'`: `php artisan optimize` recompiles the snapshots of the newest 1,000 activities ([`storyfeed:cache-snapshots`](/reference/commands#rebuilding-snapshots)) and `storyfeed:trickle` catches up the rest. `'sync'`: when a feedable model or Story class file changes, the next feed read runs that same pass once. Any other value throws |
+| `snapshots.compile` | `env('STORYFEED_SNAPSHOTS', 'cached')` | when `toFeed()` output is recompiled. `'cached'`: every `php artisan migrate` recompiles the snapshots of the newest 1,000 activities ([`storyfeed:cache-snapshots`](/reference/commands#rebuilding-snapshots)) and `storyfeed:trickle` catches up the rest. `'sync'`: when a feedable model or Story class file changes, the next feed read runs that same pass once. Any other value throws |
 
 [`storyfeed:install`](/reference/commands#installing-storyfeed) writes
 `STORYFEED_SNAPSHOTS=sync` to `.env`. The doctor warns when `sync` is set
