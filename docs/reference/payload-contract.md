@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Payload v1 describes each feed node for rendering without domain-specific knowledge.
+Payload v1 is stable. This page defines its node contract for renderers.
 
 Payload v1 only grows: a later release may add keys, add values to open
 strings such as `axis`, or fill a key that is `null` today. Ignore keys you
@@ -24,7 +24,7 @@ with two keys after Laravel's own:
   // opaque string, or null at the end of the feed
   "next_cursor": "eyJ...",
   "next_page_url": "https://example.com/feed?cursor=eyJ...",
-  // null until backward paging is supported
+  // null on the first page; points towards newer nodes on later pages
   "prev_cursor": null,
   "prev_page_url": null,
   "payload_version": 1,
@@ -35,6 +35,10 @@ with two keys after Laravel's own:
 
 `simplePaginate()` returns Laravel's simple paginator, with the nodes in
 `data` and the same two keys after Laravel's.
+
+Its keys are `current_page`, `current_page_url`, `data`, `first_page_url`,
+`from`, `next_page_url`, `path`, `per_page`, `prev_page_url`, `to`,
+`payload_version` and `sync_token`. There is no total.
 
 Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
@@ -77,7 +81,9 @@ The static `Feedable::feedMedia(FeedContext): ?FeedMedia` resolver supplies
 the snapshot, which supplies `type`, `id`, `data`, and `label`; the resolver
 may override `label`. The `body` list contains stored bodies followed by
 resolved bodies, each identifying its type with `$body`.
-See [Activity Content](/basics/activity-content#built-in-body-types) and
+The [body field tables](/basics/activity-content#available-body-types) and
+[body envelope](/shaping/custom-body-types#reserved-keys) are part of this contract.
+See also [Activity Content](/basics/activity-content) and
 [Feedable API](/reference/feedable-api#feedcontext).
 
 `FeedEntity` also accepts `content` (authored text), `mediaType` (its encoding),
@@ -213,7 +219,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 ```jsonc
 {
   "kind": "activity",
-  // a ULID
+  // a ULID for stored activities; an opaque string for composed/source entries
   "id": "01J1K2M3N4P5Q6R7S8T9V0W1X2",
   "verb": "confirm",
   "published_at": "1985-07-04T14:03:22.000000Z",
@@ -286,7 +292,7 @@ been deleted. Your renderer may display the original or missing headline.
   // true total members
   "count": 5,
   "verb": "place",
-  // max of members; the sort key
+  // the first member's time; null on a dateless composite
   "published_at": "1985-07-04T14:03:22.000000Z",
   "headline_template": ":actors ordered from :target",
   "headline": null,
@@ -322,7 +328,7 @@ been deleted. Your renderer may display the original or missing headline.
     "origins": 0, "results": 0, "instruments": 0,
     "locations": 0, "generators": 0, "featured": 5
   },
-  "children": [ /* member activity nodes, newest first, possibly truncated */ ],
+  "children": [ /* member activity nodes in feed order, possibly truncated */ ],
   "children_truncated": false,
   // roles with a tombstone among the distinct entities
   "tombstoned": [],
@@ -341,22 +347,22 @@ been deleted. Your renderer may display the original or missing headline.
 |---|---|---|
 | `kind` | string | always `"group"` |
 | `id` | string | `grp_` and an opaque key; stable, and accepted by [`members()`](/retrieving/retrieving-feeds#group-members) |
-| `axis` | string | the axis that grouped the members: a [built-in axis](/shaping/aggregation#built-in-axes) (`actors`, `actors_target`, `targets`, `object`, `repeat` or `composite`) or a [custom axis](/shaping/custom-axes)'s name. Render an unknown value as a generic group |
+| `axis` | string | a [built-in axis](/shaping/aggregation#built-in-axes) (`actors`, `actors_target`, `targets`, `object`, `repeat`, `composite`, `batch`, `context`) or a [custom axis](/shaping/custom-axes)'s name. Render an unknown value as a generic group |
 | `count` | int | the true number of members |
-| `verb` | string | the members' verb |
-| `published_at` | string | the newest member's; the sort key |
+| `verb` | string | the first member's verb; a custom axis without a verb pin can group different verbs |
+| `published_at` | string or null | the first member's time, normally the newest; `null` on a dateless composite |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
-| `glyph`, `glyph_intent` | string or null | as on an activity node |
+| `glyph`, `glyph_intent` | string or null | resolved from the first member, as on an activity node |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the role's one entity, when every member shares it; see below |
 | `featured` | string or null | the role every member features, when that role holds one entity across the group; otherwise `null` |
 | `sample` | map of lists | distinct entities per role, limited by `grouping.sample_limits` (default three) and the loaded members; live ones before tombstoned ones |
-| `sample.featured` | list | each sampled member's featured entity, newest first, one per member, so an entity can repeat; limited by `grouping.sample_limits.featured` (default three) |
+| `sample.featured` | list | each sampled member's featured entity in feed order, one per member, so an entity can repeat; limited by the loaded members and `grouping.sample_limits.featured` (default three) |
 | `distinct` | map of ints | per role, the true count of distinct entities across all members; `featured` counts the members that feature an entity |
-| `children` | list | member activity nodes, newest first, at most `grouping.children_limit`; [`members()`](/retrieving/retrieving-feeds#group-members) pages through all of them |
+| `children` | list | member activity nodes in feed order, at most `grouping.children_limit`; [`members()`](/retrieving/retrieving-feeds#group-members) pages through all of them |
 | `children_truncated` | boolean | `true` when `count` is more than the `children` included |
 | `tombstoned` | list | the roles with at least one tombstone among their distinct entities |
 | `redundant` | boolean | `true` only when every member is redundant |
-| `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones; `featured`, how many featured entities are |
+| `distinct_tombstoned` | map of ints | per role, how many of the `distinct` entities are tombstones; `featured` counts member occurrences whose featured entity is a tombstone, including repeats |
 
 A singular role contains an entity only when the grouping rule uses that
 role, every member shares it, its sample has one entry, and its distinct
@@ -365,6 +371,11 @@ and a distinct count; empty roles use `[]` and `0`.
 
 When a feed is filtered or scoped, `count`, `distinct`, `sample` and
 `children` describe only the members inside it.
+
+A composed composite keeps its entry's timestamp, which may be `null`.
+Its children follow [the feed's order](/retrieving/composing-feeds#keeping-your-order):
+newest first by default, authored order with `inOrder()`. Dateless children
+keep their authored order.
 
 Which activities group together, and when, is grouping policy, not part of
 the payload contract; see [Aggregation](/shaping/aggregation).
@@ -451,6 +462,9 @@ own, sort them the same way.
 - Store cursors and return them unchanged; do not parse them.
 - Results are ordered by `published_at`, newest first (see [Ordering](#ordering)), with [dateless entries](/retrieving/composing-feeds#dateless-entries) after them in the order given, unless a composed feed or source [keeps its order](/retrieving/composing-feeds#keeping-your-order).
 - `next_cursor: null` marks the end.
+- `prev_cursor: null` marks the newest page. On later pages it points back
+  towards newer nodes; `prev_page_url` carries it. This also works for `members()`
+  and sources.
 
 <span id="sync-token"></span>
 

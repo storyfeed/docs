@@ -429,7 +429,8 @@ For the three placements, page one responds with:
 | `data` | the two newest placements | the remaining placement |
 | `next_cursor` | an opaque string | `null` |
 | `next_page_url` | the URL containing that cursor | `null` |
-| `prev_cursor`, `prev_page_url` | `null` | `null` |
+| `prev_cursor` | `null` | an opaque cursor towards the newer page |
+| `prev_page_url` | `null` | the URL containing that cursor |
 | `payload_version` | `1` | `1` |
 | `sync_token` | the feed's token, or `null` | the same token while the feed's history is unchanged |
 

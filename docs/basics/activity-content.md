@@ -193,6 +193,16 @@ or pass `defaultPlaceholder:` to `KeyValue::make()`.
 The `KeyValue::verbatim` method marks a value for display without formatting,
 such as a reference number.
 
+`disclosure()` gives optional details a label:
+
+```php
+KeyValue::make(['Reference' => 'R-1042'])->disclosure('Request details');
+```
+
+The label travels as `disclosure`; blank or null omits it. All rows remain
+in the payload, so authorize them before recording. Older renderers may
+show the rows without collapsing them.
+
 ### Formatted Text and Raw Output
 
 For code or raw output, create the body with `Prose::verbatim`. The body
@@ -227,6 +237,27 @@ Prose::markdown($this->notes, title: $this->title);
 ```
 
 <FeedExample :items="[content.caseMemo, content.labReport]" />
+
+### Code and Callouts
+
+`Code` carries source text with an optional highlighter language:
+
+```php
+use Storyfeed\Body\Code;
+
+Code::make('SELECT 1')->language('sql')->title('Health check');
+```
+
+`Callout` carries a short note with an app-defined intent, defaulting to `note`:
+
+```php
+use Storyfeed\Body\Callout;
+
+Callout::make('Pickup closes at 4 pm.')->title('Today')->intent('warning');
+```
+
+Both use their title as the fallback line when set; otherwise `Code` uses
+the first source line and `Callout` uses its content.
 
 <a id="headlines"></a>
 
@@ -489,6 +520,17 @@ For a URL that changes, such as a signed link, pass one of the model's
 body stores the slot's name, and
 [Feed Media](/basics/feed-media#showing-pictures) resolves the picture each
 time the feed is read.
+
+`size()` chooses the picture's presentation:
+
+```php
+Image::make('/photos/88.jpg')->size('card');
+```
+
+The value travels in `$meta.size`: `thumbnail`, `inline`, `card`, `feature`
+or `full`. Omit it to use the kit's feed default, or `full` when no default
+is set. Explicit `full` overrides the feed default. Kits choose the lengths
+and keep pictures uncropped.
 
 <a id="file-attachment"></a>
 
@@ -902,7 +944,7 @@ action text as the fallback. Other body types store none.
 
 | Body Type | Content | Payload Keys | Left Out at Their Default |
 |---|---|---|---|
-| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `items[]` of `key`, `value`, `verbatim`, `placeholder` | `title`, `defaultPlaceholder`; a row's `verbatim` (`false`) and `placeholder` (the body's `defaultPlaceholder`) |
+| `KeyValue` | labelled values | `title`, `defaultPlaceholder`, `disclosure`, `items[]` of `key`, `value`, `verbatim`, `placeholder` | `title`, `defaultPlaceholder`, `disclosure`; a row's `verbatim` (`false`) and `placeholder` (the body's `defaultPlaceholder`) |
 | `Excerpt` | a quoted passage with optional source attribution | `text`, `from`, `truncated` | `from`, `truncated` (`false`) |
 | `Image` | a picture and caption | `src`, `mediaType`, `caption`, `alt`, `width`, `height`, `image` (slot name) | all |
 | `FileAttachment` | file name, size, and media type | `name`, `size`, `mediaType` | all |
@@ -912,6 +954,8 @@ action text as the fallback. Other body types store none.
 | `Table` | rows and columns | `title`, `headers`, `rows`, `footer` | `title`, `headers` (`[]`), `footer` (`[]`) |
 | `CallToAction` | a heading, text, and one action | `subject`, `content`, `action` of `label`, `link` | `subject`, `content` |
 | `Component` | a custom component name and props | `name`, `props` | `props` (`[]`) |
+| `Code` | source text and an optional language | `title`, `language`, `source` | `title`, `language` |
+| `Callout` | a short note with an intent | `title`, `content`, `intent` | `title`, `intent` (`note`) |
 
 A stored body leaves out each key that holds its default, which is `null`
 unless the table says otherwise. A body class's static `upgrade($payload,
