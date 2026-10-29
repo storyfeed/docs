@@ -5,7 +5,7 @@ import { WORLD_ANCHOR, activity, entity, everything, scene } from '../.vitepress
 
 const day = 86_400_000
 const at = (days, hours = 0) => new Date(WORLD_ANCHOR - days * day - hours * 3_600_000).toISOString().replace(/\.(\d{3})Z$/, '.$1000Z')
-const party = (name, key) => entity('storyfeed.party', key, name, null, { data: { key, type: 'Service' } })
+const party = (name, key) => entity('storyfeed.entity', key, name, null, { data: { key, type: 'Service' } })
 
 // A dateless entry has no verb, no icon and no date: its headline is its own.
 const entry = (id, over) => activity({ id, verb: null, glyph: null, published_at: null, data: null, ...over })

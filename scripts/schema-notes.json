@@ -45,7 +45,6 @@
     "model_type": "The entity's morph alias.",
     "model_id": "The entity's key.",
     "label": "The label from `toFeed()`.",
-    "component": "Not written by Storyfeed.",
     "data": "The `data` from `toFeed()`.",
     "shape": "A fingerprint of the `toFeed()` output's structure. `storyfeed:trickle` refreshes rows whose fingerprint no longer matches.",
     "created_at": "When the snapshot was first written.",
@@ -62,29 +61,15 @@
     "activity_id": "The activity this row places in a group.",
     "hash": "The group's key on this axis. Activities sharing a `bucket` and `hash` form one group.",
     "bucket": "The axis: `actors`, `actors_target`, `targets`, `object`, `repeat`, `batch` or `composite`.",
-    "winner": "True on the row curation chose for `live()`. Null on rows that are never curated.",
-    "created_at": "When the row was written.",
-    "updated_at": "When the row last changed."
+    "winner": "True on the row curation chose for `live()`. Null on rows that are never curated."
   },
   "feed_participants": {
-    "id": "Primary key.",
     "activity_id": "The activity.",
     "role": "A direct role or ancestor; each entity has one row per activity.",
     "entity_type": "The entity's morph alias.",
     "entity_id": "The entity's key, as a string.",
     "published_at": "Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query.",
-    "created_at": "When the row was written.",
-    "updated_at": "When the row last changed.",
-    "distance": "Stored distance: zero for direct participation; the minimum distance from object, target or context for an ancestor. Unindexed and unused by reads."
-  },
-  "feed_parties": {
-    "id": "Primary key.",
-    "key": "The party's name as a slug, unless a key is given.",
-    "name": "The party's label in the feed.",
-    "type": "The party's Activity Streams type.",
-    "data": "The data given to `Party::make()`.",
-    "created_at": "When the party was created.",
-    "updated_at": "When the party last changed."
+    "distance": "Stored distance: zero for direct participation; the minimum distance from object, target or context for an ancestor. Included in the covering entity index."
   },
   "feed_batches": {
     "id": "Primary key.",
@@ -133,5 +118,15 @@
     "within_seconds": "Quiet gap used for the current burst.",
     "ceiling_seconds": "Maximum duration used for the current burst.",
     "locked_at": "When a publisher last locked this key."
+  },
+  "feed_entities": {
+    "id": "Primary key.",
+    "key": "The party's name as a slug, unless a key is given.",
+    "name": "The party's label in the feed.",
+    "type": "The party's Activity Streams type.",
+    "data": "The data given to `Party::make()`.",
+    "created_at": "When the party was created.",
+    "updated_at": "When the party last changed.",
+    "kind": "Entity kind: party for a named participant; record is reserved for non-model objects."
   }
 }

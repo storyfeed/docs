@@ -28,9 +28,9 @@ Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
 <path class="e" d="M380 117 H340 V51 H313" marker-end="url(#arr)"/>
 <path class="e d" d="M380 139 H358 V481 H313" marker-end="url(#arr)"/>
-<path class="e d" d="M358 341 H313" marker-end="url(#arr)"/>
+<path class="e d" d="M358 326 H313" marker-end="url(#arr)"/>
 <path class="e" d="M680 408 H698 V51 H683" marker-end="url(#arr)"/>
-<path class="e" d="M680 638 H698 V408"/>
+<path class="e" d="M680 616 H698 V408"/>
 <path class="e d" d="M680 452 H714 V868 H683" marker-end="url(#arr)"/>
 <path class="e d" d="M310 853 H350 V846 H377" marker-end="url(#arr)"/>
 <text class="el" x="10" y="1075">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>
@@ -82,17 +82,19 @@ Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and
 <text class="c" x="12" y="222">meta</text>
 <text class="n" x="288" y="222" text-anchor="end">json</text>
 </g>
-<g transform="translate(10,300)">
-<rect class="box" width="300" height="124" rx="8"/>
+<g transform="translate(10,285)">
+<rect class="box" width="300" height="146" rx="8"/>
 <path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
-<text class="tn" x="12" y="20">feed_parties</text>
+<text class="tn" x="12" y="20">feed_entities</text>
 <text class="c" x="12" y="46">id</text>
 <text class="n" x="288" y="46" text-anchor="end">PK</text>
 <text class="c" x="12" y="68">key</text>
 <text class="n" x="288" y="68" text-anchor="end">unique</text>
 <text class="c" x="12" y="90">name, type</text>
-<text class="c" x="12" y="112">data</text>
-<text class="n" x="288" y="112" text-anchor="end">json</text>
+<text class="c" x="12" y="112">kind</text>
+<text class="n" x="288" y="112" text-anchor="end">party or record</text>
+<text class="c" x="12" y="134">data</text>
+<text class="n" x="288" y="134" text-anchor="end">json</text>
 </g>
 <g transform="translate(10,440)">
 <rect class="box" width="300" height="146" rx="8"/>
@@ -124,25 +126,24 @@ Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and
 <text class="n" x="288" y="134" text-anchor="end">bool or null</text>
 <line class="sep" x1="8" x2="292" y1="144" y2="144"/>
 <text class="i" x="12" y="160" xml:space="preserve">unique (activity_id, bucket)</text>
-<text class="i" x="12" y="178" xml:space="preserve">(bucket, hash)</text>
-<text class="i" x="12" y="196" xml:space="preserve">(winner, bucket, hash)</text>
+<text class="i" x="12" y="178" xml:space="preserve">(activity_id, winner, bucket)</text>
+<text class="i" x="12" y="196" xml:space="preserve">(bucket, hash, activity_id, winner)</text>
 </g>
 <g transform="translate(380,575)">
-<rect class="box" width="300" height="204" rx="8"/>
+<rect class="box" width="300" height="200" rx="8"/>
 <path class="head" d="M0 8a8 8 0 0 1 8-8h284a8 8 0 0 1 8 8v22h-300z"/>
 <text class="tn" x="12" y="20">feed_participants</text>
-<text class="c" x="12" y="46">id</text>
-<text class="n" x="288" y="46" text-anchor="end">PK</text>
-<text class="c" x="12" y="68">activity_id</text>
-<text class="n" x="288" y="68" text-anchor="end">→ activity</text>
-<text class="c" x="12" y="90">role</text>
-<text class="c" x="12" y="112">entity_type, entity_id</text>
-<text class="c" x="12" y="134">published_at</text>
-<text class="n" x="288" y="134" text-anchor="end">copied</text>
-<line class="sep" x1="8" x2="292" y1="144" y2="144"/>
-<text class="i" x="12" y="160" xml:space="preserve">unique (activity_id, role)</text>
-<text class="i" x="12" y="178" xml:space="preserve">(entity_type, entity_id,</text>
-<text class="i" x="12" y="196" xml:space="preserve">   published_at, activity_id)</text>
+<text class="c" x="12" y="46">activity_id</text>
+<text class="n" x="288" y="46" text-anchor="end">→ activity</text>
+<text class="c" x="12" y="68">role</text>
+<text class="c" x="12" y="90">entity_type, entity_id</text>
+<text class="c" x="12" y="112">published_at</text>
+<text class="n" x="288" y="112" text-anchor="end">copied</text>
+<line class="sep" x1="8" x2="292" y1="122" y2="122"/>
+<text class="i" x="12" y="138" xml:space="preserve">PK (activity_id,</text>
+<text class="i" x="12" y="156" xml:space="preserve">   entity_type, entity_id)</text>
+<text class="i" x="12" y="174" xml:space="preserve">(entity_type, entity_id,</text>
+<text class="i" x="12" y="192" xml:space="preserve">   published_at, activity_id, distance)</text>
 </g>
 <g transform="translate(380,805)">
 <rect class="box" width="300" height="208" rx="8"/>
@@ -158,8 +159,8 @@ Every entity key column (each role's `{role}_id`, `model_id`, `entity_id` and
 <text class="n" x="288" y="134" text-anchor="end">null = open</text>
 <text class="c" x="12" y="156">activities_count</text>
 <line class="sep" x1="8" x2="292" y1="166" y2="166"/>
-<text class="i" x="12" y="182" xml:space="preserve">(actor_type, actor_id, closed_at)</text>
-<text class="i" x="12" y="200" xml:space="preserve">(closed_at, closes_at)</text>
+<text class="i" x="12" y="182" xml:space="preserve">(actor_type, actor_id)</text>
+<text class="i" x="12" y="200" xml:space="preserve">(closed_at)</text>
 </g>
 <g transform="translate(10,790)">
 <rect class="box" width="300" height="102" rx="8"/>
@@ -222,51 +223,47 @@ removing or changing an alias leaves affected roles unresolved.
 | `target_id` | string(36) | nullable | The target's key. |
 | `context_type` | string(255) | nullable | The context's morph alias. |
 | `context_id` | string(36) | nullable | The context's key. |
+| `origin_type` | string(255) | nullable | The origin's morph alias. |
+| `origin_id` | string(36) | nullable | The origin's key. |
+| `result_type` | string(255) | nullable | The result's morph alias. |
+| `result_id` | string(36) | nullable | The result's key. |
+| `instrument_type` | string(255) | nullable | The instrument's morph alias. |
+| `instrument_id` | string(36) | nullable | The instrument's key. |
+| `location_type` | string(255) | nullable | The location's morph alias. |
+| `location_id` | string(36) | nullable | The location's key. |
+| `generator_type` | string(255) | nullable | The generator's morph alias. |
+| `generator_id` | string(36) | nullable | The generator's key. |
 | `cached_actor_id` | unsigned bigint | index, nullable | The actor's row in `feed_snapshots`. |
 | `cached_object_id` | unsigned bigint | index, nullable | The object's row in `feed_snapshots`. |
 | `cached_target_id` | unsigned bigint | index, nullable | The target's row in `feed_snapshots`. |
 | `cached_context_id` | unsigned bigint | index, nullable | The context's row in `feed_snapshots`. |
+| `cached_origin_id` | unsigned bigint | nullable | The origin's row in `feed_snapshots`. |
+| `cached_result_id` | unsigned bigint | nullable | The result's row in `feed_snapshots`. |
+| `cached_instrument_id` | unsigned bigint | nullable | The instrument's row in `feed_snapshots`. |
+| `cached_location_id` | unsigned bigint | nullable | The location's row in `feed_snapshots`. |
+| `cached_generator_id` | unsigned bigint | nullable | The generator's row in `feed_snapshots`. |
 | `data` | json | nullable | The values passed to `data()`. |
+| `entities` | json | nullable | Roles filled by an entity with no model behind it, stored inline with the activity: label, url, data and body by role. Null when every role has a model. |
+| `featured` | string(16) | nullable, default `'object'` | The role whose entity the row draws as its body, set with `featuring…()`. Null draws none. |
 | `published_at` | timestamp(6) | nullable | When the activity happened. The feed orders by it, and only shows activities whose time has come. |
+| `starts_at` | timestamp(6) | nullable | When what the activity describes began, set with `startsAt()`. Null when the range has no start. |
+| `ends_at` | timestamp(6) | nullable | When what the activity describes ended, set with `endsAt()`. Null when the range has no end. |
 | `created_at` | timestamp(6) | nullable | When the row was written. |
 | `updated_at` | timestamp(6) | nullable | When the row last changed. |
 | `deleted_at` | timestamp(6) | nullable | Set when an activity is soft-deleted, by `deleteFromFeed()` for example. Soft-deleted activities are not shown. |
-| `origin_type` | string(255) | nullable | The origin's morph alias. |
-| `origin_id` | string(36) | nullable | The origin's key. |
-| `cached_origin_id` | unsigned bigint | nullable | The origin's row in `feed_snapshots`. |
-| `result_type` | string(255) | nullable | The result's morph alias. |
-| `result_id` | string(36) | nullable | The result's key. |
-| `cached_result_id` | unsigned bigint | nullable | The result's row in `feed_snapshots`. |
-| `instrument_type` | string(255) | nullable | The instrument's morph alias. |
-| `instrument_id` | string(36) | nullable | The instrument's key. |
-| `cached_instrument_id` | unsigned bigint | nullable | The instrument's row in `feed_snapshots`. |
-| `starts_at` | timestamp(6) | nullable | When what the activity describes began, set with `startsAt()`. Null when the range has no start. |
-| `ends_at` | timestamp(6) | nullable | When what the activity describes ended, set with `endsAt()`. Null when the range has no end. |
-| `entities` | json | nullable | Roles filled by an entity with no model behind it, stored inline with the activity: label, url, data and body by role. Null when every role has a model. |
-| `location_type` | string(255) | nullable | The location's morph alias. |
-| `location_id` | string(36) | nullable | The location's key. |
-| `cached_location_id` | unsigned bigint | nullable | The location's row in `feed_snapshots`. |
-| `generator_type` | string(255) | nullable | The generator's morph alias. |
-| `generator_id` | string(36) | nullable | The generator's key. |
-| `cached_generator_id` | unsigned bigint | nullable | The generator's row in `feed_snapshots`. |
-| `featured` | string(16) | nullable, default `'object'` | The role whose entity the row draws as its body, set with `featuring…()`. Null draws none. |
 
 | Index | Columns |
 |---|---|
-| index | `actor_type`, `actor_id` |
-| index | `object_type`, `object_id` |
-| index | `target_type`, `target_id` |
-| index | `context_type`, `context_id` |
-| index | `published_at`, `id` |
-| index | `actor_type`, `actor_id`, `published_at`, `id` |
-| index | `object_type`, `object_id`, `published_at`, `id` |
-| index | `target_type`, `target_id`, `published_at`, `id` |
-| index | `context_type`, `context_id`, `published_at`, `id` |
 | index | `origin_type`, `origin_id` |
 | index | `result_type`, `result_id` |
 | index | `instrument_type`, `instrument_id` |
 | index | `location_type`, `location_id` |
 | index | `generator_type`, `generator_id` |
+| index | `published_at`, `id` |
+| index | `actor_type`, `actor_id`, `published_at`, `id` |
+| index | `object_type`, `object_id`, `published_at`, `id` |
+| index | `target_type`, `target_id`, `published_at`, `id` |
+| index | `context_type`, `context_id`, `published_at`, `id` |
 | index | `object_type`, `object_id`, `verb`, `published_at` |
 <!-- /schema -->
 
@@ -286,17 +283,16 @@ all work, including a mix of them in one app.
 | `model_type` | string(255) |  | The entity's morph alias. |
 | `model_id` | string(36) |  | The entity's key. |
 | `label` | string(255) | nullable | The label from `toFeed()`. |
-| `component` | string(255) | nullable | Not written by Storyfeed. |
 | `data` | json | nullable | The `data` from `toFeed()`. |
 | `shape` | string(40) | nullable | A fingerprint of the `toFeed()` output's structure. `storyfeed:trickle` refreshes rows whose fingerprint no longer matches. |
-| `created_at` | timestamp | nullable | When the snapshot was first written. |
-| `updated_at` | timestamp | nullable | When the snapshot was last written. |
 | `content` | text | nullable | The entity's authored text, from `toFeed()`. |
 | `media_type` | text | nullable | The encoding of `content`. |
 | `attributed_to` | text | nullable | The entity's author IRI, from `toFeed()`. |
 | `body` | json | nullable | The entity's bodies, from `toFeed()`. |
-| `source_updated_at` | datetime(6) | nullable | The model's `updated_at` when the snapshot was taken, in UTC. Older writes are rejected only when both source timestamps are known; an incoming unknown timestamp is accepted and clears this watermark. |
 | `meta` | json | nullable | Package metadata: the route key and closest-parent identity when declared. |
+| `source_updated_at` | datetime(6) | nullable | The model's `updated_at` when the snapshot was taken, in UTC. Older writes are rejected only when both source timestamps are known; an incoming unknown timestamp is accepted and clears this watermark. |
+| `created_at` | timestamp | nullable | When the snapshot was first written. |
+| `updated_at` | timestamp | nullable | When the snapshot was last written. |
 
 | Index | Columns |
 |---|---|
@@ -315,18 +311,14 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. |
-| `activity_id` | unsigned bigint | index | The activity this row places in a group. |
+| `activity_id` | unsigned bigint |  | The activity this row places in a group. |
 | `hash` | string(255) |  | The group's key on this axis. Activities sharing a `bucket` and `hash` form one group. |
 | `bucket` | string(255) | nullable | The axis: `actors`, `actors_target`, `targets`, `object`, `repeat`, `batch` or `composite`. |
 | `winner` | boolean | nullable | True on the row curation chose for `live()`. Null on rows that are never curated. |
-| `created_at` | timestamp | nullable | When the row was written. |
-| `updated_at` | timestamp | nullable | When the row last changed. |
 
 | Index | Columns |
 |---|---|
 | unique | `activity_id`, `bucket` |
-| index | `bucket`, `hash` |
-| index | `winner`, `bucket`, `hash` |
 | index | `activity_id`, `winner`, `bucket` |
 | index | `bucket`, `hash`, `activity_id`, `winner` |
 <!-- /schema -->
@@ -379,8 +371,6 @@ listeners receive a frozen copy in the batch snapshot's `meta` field.
 | Index | Columns |
 |---|---|
 | index | `actor_type`, `actor_id` |
-| index | `actor_type`, `actor_id`, `closed_at` |
-| index | `closed_at`, `closes_at` |
 <!-- /schema -->
 
 ### `feed_batch_locks`
@@ -402,17 +392,22 @@ Stores one lock per batched actor so concurrent publications join the same batch
 
 ## Participants
 
-### `feed_parties`
+### `feed_entities`
 
-Named participants with no model in your app.
+Named participants with no model in your app. The `kind` column distinguishes
+parties from the reserved record kind.
 
-<!-- schema:feed_parties -->
+Pre-0.23 installs keep `feed_parties` and `storyfeed.party` when their published
+configuration pins the old table name and morph alias.
+
+<!-- schema:feed_entities -->
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
 | `id` | bigint, increments | PK | Primary key. |
 | `key` | string(255) | unique | The party's name as a slug, unless a key is given. |
 | `name` | string(255) |  | The party's label in the feed. |
 | `type` | string(255) | default `'Service'` | The party's Activity Streams type. |
+| `kind` | string(16) | default `'party'` | Entity kind: party for a named participant; record is reserved for non-model objects. |
 | `data` | json | nullable | The data given to `Party::make()`. |
 | `created_at` | timestamp | nullable | When the party was created. |
 | `updated_at` | timestamp | nullable | When the party last changed. |
@@ -427,20 +422,17 @@ Indexes each activity's filled roles for `involving()` and
 <!-- schema:feed_participants -->
 | Column | Type | Attributes | Purpose |
 |---|---|---|---|
-| `id` | bigint, increments | PK | Primary key. |
 | `activity_id` | unsigned bigint |  | The activity. |
 | `role` | string(20) |  | A direct role or ancestor; each entity has one row per activity. |
 | `entity_type` | string(255) |  | The entity's morph alias. |
 | `entity_id` | string(36) |  | The entity's key, as a string. |
+| `distance` | unsigned tinyint | default `0` | Stored distance: zero for direct participation; the minimum distance from object, target or context for an ancestor. Included in the covering entity index. |
 | `published_at` | timestamp(6) | nullable | Copied from the activity. The entity index narrows matching activity IDs for `involving()`; final ordering is on the outer activity query. |
-| `created_at` | timestamp | nullable | When the row was written. |
-| `updated_at` | timestamp | nullable | When the row last changed. |
-| `distance` | unsigned tinyint | default `0` | Stored distance: zero for direct participation; the minimum distance from object, target or context for an ancestor. Unindexed and unused by reads. |
 
 | Index | Columns |
 |---|---|
-| index | `entity_type`, `entity_id`, `published_at`, `activity_id` |
-| unique | `activity_id`, `entity_type`, `entity_id` |
+| primary key | `activity_id`, `entity_type`, `entity_id` |
+| index | `entity_type`, `entity_id`, `published_at`, `activity_id`, `distance` |
 <!-- /schema -->
 
 ## Deletion and Metadata

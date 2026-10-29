@@ -6189,7 +6189,7 @@
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -6202,7 +6202,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -6624,7 +6624,7 @@
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -6637,7 +6637,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -10499,7 +10499,7 @@
     "scene.repeats[3]": [
       {
         "kind": "group",
-        "id": "grp_djIfcmVwZWF0H2IxOjZiZjQzMjY2ODIzZGQ0ZDg0YTk4NzQ5NDA5ZTcyMDA3OTFlYjA0ZDk5NTM0NTAzNTUzZDExOWNiZTU2YmI0ODg6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwMDE",
+        "id": "grp_djIfcmVwZWF0H2IxOjI0N2FhMjk2MDM1YWFiMTk3YmQ0MzhiOTNkMTk4MDg2MzZmZTViNWMzMzhjYjBiZTdkMWU2Y2E4Y2VmMWYwNTY6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwMDE",
         "axis": "repeat",
         "count": 3,
         "verb": "pay",
@@ -10509,7 +10509,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -10522,7 +10522,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -10541,7 +10541,7 @@
         "sample": {
           "actors": [
             {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -10554,7 +10554,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -10857,7 +10857,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -10870,7 +10870,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -10946,7 +10946,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -10959,7 +10959,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -11035,7 +11035,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -11048,7 +11048,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -11599,7 +11599,7 @@
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -11612,7 +11612,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -13318,7 +13318,7 @@
       },
       {
         "kind": "group",
-        "id": "grp_djIfcmVwZWF0H2IxOjZiZjQzMjY2ODIzZGQ0ZDg0YTk4NzQ5NDA5ZTcyMDA3OTFlYjA0ZDk5NTM0NTAzNTUzZDExOWNiZTU2YmI0ODg6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwMGQ",
+        "id": "grp_djIfcmVwZWF0H2IxOjI0N2FhMjk2MDM1YWFiMTk3YmQ0MzhiOTNkMTk4MDg2MzZmZTViNWMzMzhjYjBiZTdkMWU2Y2E4Y2VmMWYwNTY6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwMGQ",
         "axis": "repeat",
         "count": 3,
         "verb": "pay",
@@ -13328,7 +13328,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -13341,7 +13341,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -13360,7 +13360,7 @@
         "sample": {
           "actors": [
             {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -13373,7 +13373,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -13676,7 +13676,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -13689,7 +13689,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -13765,7 +13765,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -13778,7 +13778,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -13854,7 +13854,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -13867,7 +13867,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -25852,7 +25852,7 @@
       },
       {
         "kind": "group",
-        "id": "grp_djIfcmVwZWF0H2IxOjZiZjQzMjY2ODIzZGQ0ZDg0YTk4NzQ5NDA5ZTcyMDA3OTFlYjA0ZDk5NTM0NTAzNTUzZDExOWNiZTU2YmI0ODg6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwOWs",
+        "id": "grp_djIfcmVwZWF0H2IxOjI0N2FhMjk2MDM1YWFiMTk3YmQ0MzhiOTNkMTk4MDg2MzZmZTViNWMzMzhjYjBiZTdkMWU2Y2E4Y2VmMWYwNTY6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwOWs",
         "axis": "repeat",
         "count": 3,
         "verb": "pay",
@@ -25862,7 +25862,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -25875,7 +25875,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -25894,7 +25894,7 @@
         "sample": {
           "actors": [
             {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -25907,7 +25907,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -26210,7 +26210,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -26223,7 +26223,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -26299,7 +26299,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -26312,7 +26312,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -26388,7 +26388,7 @@
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -26401,7 +26401,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -26836,7 +26836,7 @@
         "glyph": "circle-x",
         "glyph_intent": "danger",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "2",
           "label": "Scoops Register",
           "link": null,
@@ -26849,7 +26849,7 @@
             "image": null,
             "preview": null,
             "initials": "SR",
-            "color": "#be123c",
+            "color": "#7e22ce",
             "files": [],
             "slots": []
           },
@@ -29155,7 +29155,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -29168,7 +29168,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -30136,7 +30136,7 @@
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -30149,7 +30149,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -32164,7 +32164,7 @@
       },
       {
         "kind": "group",
-        "id": "grp_djIfb2JqZWN0H2IxOjI2NWRmMjA3YWM5NDhkYWY3ZDQ4MWQwMTVjNTVhNWIwMjQ0MjY5ZGM4Y2ZiY2YxM2RlMGRkODJhNDY0MGUxZmY6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwNnk",
+        "id": "grp_djIfb2JqZWN0H2IxOmRmNjAzOWJjODY3ZDYxMzYxZmQxNjQ5M2Q3M2Q1ZjdkZDQ2MDAwM2ZmMTRlZjhjZmJiN2ZlZWZjZTk5MmJmMGI6MDBlN3F0MW53MDAwMDAwMDAwMDAwMDAwNnk",
         "axis": "object",
         "count": 2,
         "verb": "pay",
@@ -32174,7 +32174,7 @@
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -32187,7 +32187,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -32227,7 +32227,7 @@
         "sample": {
           "actors": [
             {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -32240,7 +32240,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -32351,7 +32351,7 @@
             "glyph": "receipt",
             "glyph_intent": "success",
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -32364,7 +32364,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -32419,7 +32419,7 @@
             "glyph": "receipt",
             "glyph_intent": "success",
             "actor": {
-              "type": "storyfeed.party",
+              "type": "storyfeed.entity",
               "id": "1",
               "label": "Stripe",
               "link": null,
@@ -32432,7 +32432,7 @@
                 "image": null,
                 "preview": null,
                 "initials": "S",
-                "color": "#9f1239",
+                "color": "#0e7490",
                 "files": [],
                 "slots": []
               },
@@ -38483,7 +38483,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -38496,7 +38496,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -43557,7 +43557,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -43570,7 +43570,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -43646,7 +43646,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -43659,7 +43659,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },
@@ -43735,7 +43735,7 @@
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
-          "type": "storyfeed.party",
+          "type": "storyfeed.entity",
           "id": "1",
           "label": "Stripe",
           "link": null,
@@ -43748,7 +43748,7 @@
             "image": null,
             "preview": null,
             "initials": "S",
-            "color": "#9f1239",
+            "color": "#0e7490",
             "files": [],
             "slots": []
           },

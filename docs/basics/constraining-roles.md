@@ -72,7 +72,7 @@ Story::for(Order::class)->verb('place')
 <FeedExample :items="[placed]" />
 
 Replace the preceding declaration with this example to also allow a party actor.
-The `'party'` value resolves to the configured morph alias, `storyfeed.party`
+The `'party'` value resolves to the configured morph alias, `storyfeed.entity`
 by default. You may also use `Storyfeed\Models\Party::class`.
 
 Actor defaults are resolved before the constraint is checked. If the verb or
@@ -98,7 +98,7 @@ With only `User::class` allowed, publishing `place` about an order with a party
 actor throws `Storyfeed\Exceptions\StoryRoleMismatch`:
 
 ```txt
-Wrong actor for [Verb: place] [Key: order.place] [Expected: user] [Given: storyfeed.party].
+Wrong actor for [Verb: place] [Key: order.place] [Expected: user] [Given: storyfeed.entity].
 The verb's ->whereActor() says which types may be its actor; add 'party' to allow
 a Party, or publish ->anonymously() when nobody is known.
 ```

@@ -9,7 +9,7 @@ const priced = { ...recorded, object: { ...recorded.object, body: null }, data: 
 // The same change, imported with a date from long ago.
 const backdated = { ...priced, published_at: scene.distant.published_at }
 // The order again, placed at the mall from the shop's app: a string names a party.
-const app = entity('storyfeed.party', 'ios-app', 'iOS app', null, { data: { key: 'ios-app', type: 'Service' } })
+const app = entity('storyfeed.entity', 'ios-app', 'iOS app', null, { data: { key: 'ios-app', type: 'Service' } })
 const placedInApp = { ...scene.order, location: role.mall, generator: app }
 // A delivery booked with a courier's API: an entity with no model behind it.
 const delivery = entity('delivery', 'DL-4821', 'Delivery DL-4821', 'https://courier.example/track/DL-4821')

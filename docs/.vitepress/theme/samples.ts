@@ -65,7 +65,7 @@ export function entity(
 ) {
   const { media, ...rest } = over
   // Core hashes a party's colour by its key, not its row id.
-  const key = type === 'storyfeed.party' && typeof rest.data?.key === 'string' ? rest.data.key : id
+  const key = type === 'storyfeed.entity' && typeof rest.data?.key === 'string' ? rest.data.key : id
   return {
     type,
     id,

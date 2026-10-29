@@ -85,13 +85,15 @@ function value(arg, where, literals = new Map()) {
   throw new Error(`schema: cannot read the argument ${arg} in ${where}`);
 }
 
-/** The table a `config('storyfeed.tables.x', 'feed_x')` expression names. */
+/** The default fresh-install table named by config() or SchemaState::table(). */
 function tableName(expr, file, body) {
   const literal = expr.match(/^config\('storyfeed\.tables\.\w+',\s*'(\w+)'\)$/);
   if (literal) return literal[1];
+  const state = expr.match(/^SchemaState::table\('(\w+)'\)$/);
+  if (state) return `feed_${state[1]}`;
   const variable = expr.match(/^\$(\w+)$/);
   if (variable) {
-    const assigned = body.match(new RegExp(`\\$${variable[1]}\\s*=\\s*(config\\([^;]*\\));`));
+    const assigned = body.match(new RegExp(`\\$${variable[1]}\\s*=\\s*((?:config|SchemaState::table)\\([^;]*\\));`));
     if (assigned) return tableName(assigned[1], file, body);
   }
   throw new Error(`schema: cannot name the table ${expr} in ${file}`);
@@ -350,14 +352,14 @@ const DIAGRAM = {
     ['(published_at, id)', '({role}_type, {role}_id,', '   published_at, id)', '   actor, object, target, context']],
   feed_snapshots: [LEFT, 10, [['id', 'PK'], ['model_type, model_id', 'unique'], ['label', ''], ['data, body', 'json'],
     ['content, media_type', ''], ['attributed_to', ''], ['shape', 'index'], ['source_updated_at', ''], ['meta', 'json']], []],
-  feed_parties: [LEFT, 300, [['id', 'PK'], ['key', 'unique'], ['name, type', ''], ['data', 'json']], []],
+  feed_entities: [LEFT, 285, [['id', 'PK'], ['key', 'unique'], ['name, type', ''], ['kind', 'party or record'], ['data', 'json']], []],
   feed_tombstones: [LEFT, 440, [['id', 'PK'], ['model_type, model_id', 'unique'], ['restorable, approximate', 'bool'], ['deleted_at, label', ''], ['meta', 'json']], []],
   feed_groupings: [RIGHT, 345, [['id', 'PK'], ['activity_id', '→ activity'], ['bucket', 'axis name'], ['hash', 'group key'], ['winner', 'bool or null']],
-    ['unique (activity_id, bucket)', '(bucket, hash)', '(winner, bucket, hash)']],
-  feed_participants: [RIGHT, 575, [['id', 'PK'], ['activity_id', '→ activity'], ['role', ''], ['entity_type, entity_id', ''], ['published_at', 'copied']],
-    ['unique (activity_id, role)', '(entity_type, entity_id,', '   published_at, activity_id)']],
+    ['unique (activity_id, bucket)', '(activity_id, winner, bucket)', '(bucket, hash, activity_id, winner)']],
+  feed_participants: [RIGHT, 575, [['activity_id', '→ activity'], ['role', ''], ['entity_type, entity_id', ''], ['published_at', 'copied']],
+    ['PK (activity_id,', '   entity_type, entity_id)', '(entity_type, entity_id,', '   published_at, activity_id, distance)']],
   feed_batches: [RIGHT, 805, [['id', 'PK'], ['uid', 'ULID · unique'], ['actor_type, actor_id', ''], ['opened_at, closes_at', ''], ['closed_at', 'null = open'], ['activities_count', '']],
-    ['(actor_type, actor_id, closed_at)', '(closed_at, closes_at)']],
+    ['(actor_type, actor_id)', '(closed_at)']],
   feed_batch_locks: [LEFT, 790, [['actor_type, actor_id', 'PK'], ['open_batches', 'json'], ['locked_at', '']], []],
   feed_grouping_bursts: [LEFT, 900, [['key', 'PK'], ['hash', 'burst hash'], ['opened_at, last_activity_at', ''], ['within_seconds, ceiling_seconds', ''], ['locked_at', '']], []],
   feed_meta: [LEFT, 640, [['key', 'unique'], ['value', 'sync_token']], []],
@@ -386,9 +388,9 @@ export function renderDiagram(tables) {
   const edges = [
     `<path class="e" d="M${RIGHT} ${ry('feed_activities', 3)} H${LE + 30} V${ry('feed_snapshots', 0)} H${LE + 3}" ${A}/>`,
     `<path class="e d" d="M${RIGHT} ${ry('feed_activities', 4)} H${LE + 48} V${ry('feed_tombstones', 0)} H${LE + 3}" ${A}/>`,
-    `<path class="e d" d="M${LE + 48} ${ry('feed_parties', 0)} H${LE + 3}" ${A}/>`,
+    `<path class="e d" d="M${LE + 48} ${ry('feed_entities', 0)} H${LE + 3}" ${A}/>`,
     `<path class="e" d="M${RE} ${ry('feed_groupings', 1)} H${RE + 18} V${ry('feed_activities', 0)} H${RE + 3}" ${A}/>`,
-    `<path class="e" d="M${RE} ${ry('feed_participants', 1)} H${RE + 18} V${ry('feed_groupings', 1)}"/>`,
+    `<path class="e" d="M${RE} ${ry('feed_participants', 0)} H${RE + 18} V${ry('feed_groupings', 1)}"/>`,
     `<path class="e d" d="M${RE} ${ry('feed_groupings', 3)} H${RE + 34} V${ry('feed_batches', 1)} H${RE + 3}" ${A}/>`,
     `<path class="e d" d="M${LE} ${ry('feed_batch_locks', 1)} H${LE + 40} V${ry('feed_batches', 0)} H${RIGHT - 3}" ${A}/>`,
     `<text class="el" x="${LEFT}" y="1075">solid: an id column Storyfeed joins on · dashed: a morph reference, or a key</text>`,

@@ -37,7 +37,7 @@ After editing cached definitions, run `storyfeed:cache` again.
 | `tables.grouping_bursts` | `'feed_grouping_bursts'` | latest Live burst window and lock per logical axis key |
 | `tables.groupings` | `'feed_groupings'` | each activity's groupings |
 | `tables.participants` | `'feed_participants'` | index queried by `involving()` |
-| `tables.parties` | `'feed_parties'` | named participants |
+| `tables.entities` | `'feed_entities'` | named participants |
 | `tables.batches` | `'feed_batches'` | an actor's collected activities |
 | `tables.meta` | `'feed_meta'` | sync tokens and maintenance metadata |
 | `tables.tombstones` | `'feed_tombstones'` | deleted models |
@@ -58,11 +58,14 @@ See [Schema](/reference/schema) for each table.
 
 | Key | Default | Description |
 |---|---|---|
-| `morph_alias` | `'storyfeed.party'` | the morph alias for parties |
+| `morph_alias` | `'storyfeed.entity'` | the morph alias for parties |
 | `morph_map` | `[]` | merged into the app's morph map at boot |
 | `actor_resolver` | `null` | invokable class resolving the default actor; `null` = authenticated user |
 | `parties.fallback` | `null` | fallback party when no actor is resolved, such as in jobs or commands |
 | `parties.strict` | `null` | reject undeclared party names after registering a list with [`Storyfeed::parties()`](/recording/parties-and-anonymous-actors#declaring-parties); ignored without a list. `null` enables this only in local/testing |
+
+Pre-0.23 published configurations can keep `tables.parties` (`feed_parties`)
+and `morph_alias` (`storyfeed.party`); those pins preserve existing rows.
 
 See [Parties & Anonymous Actors](/recording/parties-and-anonymous-actors) for named system actors and
 activities without a recorded actor.

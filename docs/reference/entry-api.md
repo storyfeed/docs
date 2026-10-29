@@ -67,7 +67,7 @@ Each role method takes a role value. An entry has no `from()` target alias:
 | Value | Example | In the Payload |
 |---|---|---|
 | a Feedable model | `$project` | the model's entity, from `toFeed()` and `feedMedia()` when the feed is read |
-| a party name | `'Storyfeed'` | a party entity, `type: "storyfeed.party"` |
+| a party name | `'Storyfeed'` | a party entity, `type: "storyfeed.entity"` |
 | an entity with no model | `['type' => 'release', 'label' => 'v0.18.0']` | an entity with that `type` and `label` |
 
 A model that is not Feedable throws an `InvalidArgumentException`. An entity

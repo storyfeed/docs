@@ -9,7 +9,7 @@ import { scene, everything, WORLD_ANCHOR, logOf, liveOf, live } from '../.vitepr
 // Parties and anonymous activities come later in the docs, so only people act here.
 const rows = everything()
   .filter(node => Date.parse(node.published_at) >= WORLD_ANCHOR - 7 * 86400000)
-  .filter(node => node.actor && node.actor.type !== 'storyfeed.party')
+  .filter(node => node.actor && node.actor.type !== 'storyfeed.entity')
 const weekLog = logOf(rows)
 const weekLive = liveOf(rows)
 const scoped = live('guide.usageExamples.repeatOrders')

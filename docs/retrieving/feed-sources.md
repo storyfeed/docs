@@ -5,7 +5,7 @@ import { WORLD_ANCHOR, activity, entity } from '../.vitepress/theme/world'
 
 const day = 86_400_000
 const at = (days, hours = 0) => new Date(WORLD_ANCHOR - days * day - hours * 3_600_000).toISOString().replace(/\.(\d{3})Z$/, '.$1000Z')
-const party = (name, key) => entity('storyfeed.party', key, name, null, { data: { key, type: 'Service' } })
+const party = (name, key) => entity('storyfeed.entity', key, name, null, { data: { key, type: 'Service' } })
 const storyfeed = party('Storyfeed', 'storyfeed')
 const release = (version, over = {}) =>
   entity('release', version, version, `https://github.com/storyfeed/storyfeed/releases/tag/${version}`, over)
@@ -122,7 +122,7 @@ A role may be any of these:
 | Role Value | Example | In the Payload |
 |---|---|---|
 | a Feedable model | `$project` | the model's entity, from its `toFeed()` |
-| a party name | `'Storyfeed'` | a party entity, `type: "storyfeed.party"` |
+| a party name | `'Storyfeed'` | a party entity, `type: "storyfeed.entity"` |
 | an entity with no model | `['type' => 'release', 'label' => 'v0.18.0', 'url' => '…']` | an entity with that `type` and `label`, linked to the `url` |
 
 An entity array may also carry an `id`, which defaults to its label, plus

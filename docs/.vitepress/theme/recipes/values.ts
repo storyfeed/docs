@@ -3,7 +3,7 @@ import { entity } from '../samples'
 import { menuNames } from './manifest'
 
 const menu = entity('menu', 'menu-rename', menuNames.to, '/menus/menu-rename')
-const party = (id: string, label: string) => entity('storyfeed.party', id, label, null)
+const party = (id: string, label: string) => entity('storyfeed.entity', id, label, null)
 const shared = {
   verb: 'rename', published_at: scene.order.published_at, actor: role.staff,
   object: menu, glyph: 'pencil',

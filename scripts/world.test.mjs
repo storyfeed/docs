@@ -44,7 +44,7 @@ for (const [name, pack] of Object.entries(PACKS)) {
       for (const role of ['actor', 'object', 'target', 'context', 'origin', 'result', 'instrument', 'location', 'generator']) {
         const entity = node[role]
         if (!entity || entity.media.icon) continue
-        const key = entity.type === 'storyfeed.party' && typeof entity.data?.key === 'string' ? entity.data.key : entity.id
+        const key = entity.type === 'storyfeed.entity' && typeof entity.data?.key === 'string' ? entity.data.key : entity.id
         const derived = avatar(entity.type, key, entity.label)
         assert.equal(derived.initials, entity.media.initials, `${node.id}.${role}: initials`)
         assert.equal(derived.color, entity.media.color, `${node.id}.${role}: color`)

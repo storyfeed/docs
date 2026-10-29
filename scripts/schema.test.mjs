@@ -147,3 +147,21 @@ test('guarded upgrades resolve literal index names and reject ambiguous variable
     assert.throws(() => extract([['create', create], ['upgrade', ambiguous]]), /cannot read the argument \$identityUnique/)
   }
 })
+
+
+test('SchemaState table defaults work directly and through assigned variables', () => {
+  for (const table of ['widgets', 'entities']) {
+    const direct = create.replace("config('storyfeed.tables.widgets', 'feed_widgets')", `SchemaState::table('${table}')`)
+    const assigned = direct.replace(`Schema::create(SchemaState::table('${table}')`, `$name = SchemaState::table('${table}');\n        Schema::create($name`)
+    for (const source of [direct, assigned]) {
+      const tables = extract([['create', source]])
+      assert.deepEqual([...tables.keys()], [`feed_${table}`])
+      assert.equal(tables.get(`feed_${table}`).columns[0].name, 'id')
+    }
+  }
+})
+
+test('SchemaState rejects computed table keys', () => {
+  const source = create.replace("config('storyfeed.tables.widgets', 'feed_widgets')", 'SchemaState::table($key)')
+  assert.throws(() => extract([['create', source]]), /cannot name the table SchemaState::table/)
+})

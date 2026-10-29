@@ -15,7 +15,7 @@ const { anonymous } = scene.cookbook.actorless
 |  | Means | In the Payload |
 |---|---|---|
 | **anonymous** | no recorded actor | `actor: null`; the headline uses the [anonymous headline](#anonymous-headlines) |
-| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.party"`, a `label`, and an optional external `link` |
+| **party** | a named participant with no model in your app | an entity with `type: "storyfeed.entity"`, a `label`, and an optional external `link` |
 
 <a id="parties"></a>
 
