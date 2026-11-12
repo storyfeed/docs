@@ -13,5 +13,5 @@ export const valuesBefore = activity({ ...shared, id: 'rename-before',
   headline_template: ':actor renamed :context to :target',
 })
 export const valuesAfter = activity({ ...shared, id: 'rename-after',
-  data: menuNames, headline_template: `:actor renamed ${menuNames.from} to ${menuNames.to}`,
+  bindings: { old: menuNames.from, new: menuNames.to }, headline_template: ':actor renamed :old to :new',
 })

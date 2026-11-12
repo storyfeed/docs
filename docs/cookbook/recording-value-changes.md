@@ -7,8 +7,9 @@ A manager renames the "Summer" menu to "Late Summer". The feed should say
 name a participant, so a search for a party named "Summer" finds a menu name.
 The names are values, and the recipe records them that way.
 
-Record the entity being renamed as the object. Store its old and new names in
-activity data so the names remain values throughout filtering and serialization.
+Record the entity being renamed as the object. Bind its old and new names to
+headline tokens so the names remain values throughout filtering and
+serialization, and print exactly as the manager typed them.
 
 <script setup>
 import { valuesBefore, valuesAfter } from '../.vitepress/theme/recipes/values'
@@ -77,23 +78,20 @@ Route::patch('/menus/{menu}/name', function (Request $request, Menu $menu) {
 
 <FeedExample :items="[valuesBefore]" expanded />
 
-## Storing the Names in Data
+## Binding the Names
 
-Replace the definition with a [dynamic headline](/basics/the-feed-file#dynamic-headlines)
-that uses the recorded names:
+Replace the definition with a headline that names a token for each value:
 
 ```php memo="routes/feed.php"
 use App\Models\Menu;
-use Storyfeed\ActivityContext;
 use Storyfeed\Facades\Story;
 
 Story::for(Menu::class)->verb('rename')
-    ->headline(fn (ActivityContext $activity) =>
-        ':actor renamed '.$activity->string('from').' to '.$activity->string('to')
-    );
+    ->headline(':actor renamed :old to :new');
 ```
 
-Replace the route with this recording. The menu is still the object:
+Replace the route with this recording. The menu is still the object, and
+[`bind()`](/basics/recording-activities#binding-literal-values) supplies each name:
 
 ::: code-group
 ```php [Fluent Syntax] memo="routes/web.php"
@@ -110,7 +108,8 @@ Route::patch('/menus/{menu}/name', function (Request $request, Menu $menu) {
     Storyfeed::activity()
         ->by($request->user())
         ->action('rename', $menu)
-        ->data(['from' => $from, 'to' => $menu->name])
+        ->bind('old', $from)
+        ->bind('new', $menu->name)
         ->publish();
 
     return back();
@@ -132,7 +131,7 @@ Route::patch('/menus/{menu}/name', function (Request $request, Menu $menu) {
         verb: 'rename',
         object: $menu,
         actor: $request->user(),
-        data: ['from' => $from, 'to' => $menu->name],
+        bind: ['old' => $from, 'new' => $menu->name],
     );
 
     return back();
@@ -142,16 +141,24 @@ Route::patch('/menus/{menu}/name', function (Request $request, Menu $menu) {
 
 <FeedExample :items="[valuesAfter]" expanded />
 
-| Field | String Roles | Activity Data |
+| Field | String Roles | Bindings |
 |---|---|---|
 | `actor` | the staff member | the staff member |
 | `object` | the menu | the menu |
 | `target` | a party named after the new name | empty |
 | `context` | a party named after the old name | empty |
-| `data` | empty | `from` and `to` names |
+| `bindings` | empty | `old` and `new` names |
 
 The headline has the same words in both examples. The second composition
 keeps the menu's identity separate from its names.
+
+Don't build the headline by concatenating the names into it, as in
+`':actor renamed '.$from.' to '.$to`. A name is user-entered text: a menu
+called `Brunch [weekends]` or `Specials :object` would be read as an optional
+segment or a token. A bound value never enters the template, so it prints
+exactly as entered, and the payload carries it in
+[`bindings`](/reference/payload-contract#bound-values) beside the template's
+`:old` and `:new`.
 
 ## Inspecting Parties
 
@@ -170,28 +177,29 @@ Party::query()->whereIn('key', $keys)->orderBy('name')->pluck('name')->all();
 | Composition | Party Query Result |
 |---|---|
 | String roles | `['Counter menu', 'Seasonal menu']` |
-| Activity data | `[]` |
+| Bindings | `[]` |
 
-The data composition creates no parties for the names. It does not remove
+The bound composition creates no parties for the names. It does not remove
 parties or change activities already recorded with the first composition.
 `Storyfeed::feed()->involving($menu)` finds either activity by the menu model.
 A party filter such as `involving('Counter menu')` finds the first composition.
-It does not search the second activity's `data` values.
+It does not search the second activity's bound values.
 
 ### Doctor Findings
 
 `storyfeed:doctor` lists the parties your activities use; see its
 [`parties.*` findings](/reference/doctor-checks#parties). They do not decide whether
-a name belongs in activity data.
+a name belongs in a binding.
 
 ## Choosing Participants and Values
 
 Ask whether the thing has an identity you want to retrieve activities for or
 list as a participant. A shop, document, or payment service does. A changed
 name, destination email address, amount, date, or setting describes an event;
-store that value in `data` and include it through a dynamic headline.
+bind it to a headline token with `bind()`, and store it in `data` as well
+when your own code needs to read it.
 
-| Change or Detail | Participant | Activity Data |
+| Change or Detail | Participant | Bound Value |
 |---|---|---|
 | Rename or legal-name change | the entity being renamed | old and new names |
 | Email delivery | the document or message | destination address |

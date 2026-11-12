@@ -172,6 +172,7 @@ export function activity(over: Record<string, any>) {
     ends_at: over.ends_at ?? null,
     headline_template: over.headline_template,
     headline: null,
+    bindings: over.bindings ?? null,
     glyph: over.glyph ?? null,
     // Resolved from the registry rather than written per node, for the same
     // reason the whole file exists: a page that spells its own intent out will

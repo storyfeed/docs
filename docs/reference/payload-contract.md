@@ -229,6 +229,8 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
   "headline_template": ":actor confirmed :object for :target",
   // pre-rendered fallback; see below
   "headline": null,
+  // literal values for tokens in the headline, or null
+  "bindings": null,
   "glyph": "circle-check",
   // the app's own word for what the glyph means
   "glyph_intent": null,
@@ -264,6 +266,7 @@ If `feedMedia()` throws, Storyfeed reports the exception and returns
 | `starts_at`, `ends_at` | string or null | the time range set with `startsAt()` and `endsAt()`, ISO 8601 with microseconds; either end may be `null` |
 | `headline_template` | string or null | the headline, with its tokens; see [Headlines](#headlines) |
 | `headline` | string or null | the pre-rendered fallback; see [Headlines](#headlines) |
+| `bindings` | map or null | literal text for named headline tokens, `{name: text}`, set with [`bind()`](/basics/recording-activities#binding-literal-values); `null` when the activity binds nothing. See [Bound Values](#bound-values) |
 | `glyph` | string or null | the icon token; see [Icons](#glyphs) |
 | `glyph_intent` | string or null | the icon's meaning; see [Icons](#glyphs) |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the [entity](#entities) in each role |
@@ -296,6 +299,8 @@ been deleted. Your renderer may display the original or missing headline.
   "published_at": "1985-07-04T14:03:22.000000Z",
   "headline_template": ":actors ordered from :target",
   "headline": null,
+  // the bindings every member shares, or null
+  "bindings": null,
   "glyph": "shopping-bag",
   "glyph_intent": null,
   "actor": null,
@@ -352,6 +357,7 @@ been deleted. Your renderer may display the original or missing headline.
 | `verb` | string | the first member's verb; a custom axis without a verb pin can group different verbs |
 | `published_at` | string or null | the first member's time, normally the newest; `null` on a dateless composite |
 | `headline_template`, `headline` | string or null | the group headline; both `null` when no sentence is true of the whole group |
+| `bindings` | map or null | the [bound values](#bound-values) every member holds with the same text; `null` when none are shared |
 | `glyph`, `glyph_intent` | string or null | resolved from the first member, as on an activity node |
 | `actor`, `object`, `target`, `context`, `origin`, `result`, `instrument`, `location`, `generator` | entity or null | the role's one entity, when every member shares it; see below |
 | `featured` | string or null | the role every member features, when that role holds one entity across the group; otherwise `null` |
@@ -423,6 +429,37 @@ a role token when the group has exactly one distinct entity for that role.
 
 Noun substitution can change the emitted template even for the same headline
 definition, so cache rendered headlines per node, not per definition.
+
+#### Bound Values
+
+`bindings` holds literal text for tokens the recording named with
+[`bind()`](/basics/recording-activities#binding-literal-values), as
+`{name: text}`, or `null`. `headline_template` keeps the token:
+
+```jsonc
+{
+  "headline_template": ":actor sent :object to :recipient",
+  "bindings": { "recipient": "Pat [x] :object <b>" }
+}
+```
+
+Replace a token whose name is a key of `bindings` with its value, drawn as
+plain text: escape it, never parse it as markup, never link it, and never look
+for tokens or segments inside it. The example reads "Pat [x] :object &lt;b&gt;"
+in place of `:recipient`. A binding name is never a role token, `count`,
+`others` or `verb`, so a bound token never competes with an entity. A renderer
+that predates `bindings` draws the token as an unknown token.
+
+A group node carries only the bindings that every member holds with the same
+text, and only when the slice holds all of the group's members. A value that
+differs between members is left out, and a group headline that would need it
+is `null` rather than naming one member's value.
+
+When a closure headline returns finished text that uses only bound tokens,
+Storyfeed fills them in once and `headline` holds the literal text.
+
+`bindings` is an additive field of Payload v1. Read it as absent or `null`
+when it is missing.
 
 <a id="headline-links"></a>
 

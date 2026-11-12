@@ -53,6 +53,7 @@ A group's `id` is opaque: store it and pass it back unchanged.
 | `publishedAt()` | `?CarbonImmutable` | `published_at` |
 | `startsAt()`, `endsAt()` | `?CarbonImmutable`: the time range the activity describes | `starts_at`, `ends_at` |
 | `headline()` | `Headline` | `headline_template`, `headline` |
+| `bindings()` | `array` of name => text: the headline's [bound values](/reference/payload-contract#bound-values); `[]` when none | `bindings` |
 | `missingHeadline()` | `?Headline`: the verb's headline when the activity is redundant | `missing_headline_template`, `missing_headline` |
 | `glyph()` | `?string` | `glyph` |
 | `intent()` | `?string` | `glyph_intent` |
@@ -127,6 +128,7 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 | `:actors`, `:objects`, … | the sample, joined, and the rest as a number: `Ana, Ben, Cy and 2 more` |
 | `:count` | `count()` |
 | `:others` | the actors not in the sample: `2 others` |
+| a [bound token](/reference/payload-contract#bound-values) | its value, as plain text |
 | any other token | itself |
 
 <a id="items-without-a-sentence"></a>
@@ -144,7 +146,7 @@ Setting or unsetting a key throws `LogicException`; the wrapper is immutable.
 
 | `type` | Also Has |
 |---|---|
-| `text` | |
+| `text` | `token` and `binding` (its name) when the text is a [bound value](/reference/payload-contract#bound-values), escaped like other text |
 | `entity` | `role`, and `entity`: an `Entity`, or `null` when the role is empty |
 | `entities` | `role`, `entities`: a `Collection` of `Entity`, and `total` |
 

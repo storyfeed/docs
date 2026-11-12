@@ -10,6 +10,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -83,6 +84,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -155,6 +157,7 @@
         "published_at": "1985-07-04T18:30:00.000000Z",
         "headline_template": ":actor sent items to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "send",
         "glyph_intent": null,
         "actor": {
@@ -435,6 +438,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -534,6 +538,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -633,6 +638,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -749,6 +755,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -821,6 +828,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -895,6 +903,7 @@
         "published_at": "1985-07-04T18:03:00.000000Z",
         "headline_template": ":actor rewrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -1108,6 +1117,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -1186,6 +1196,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -1264,6 +1275,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -1361,6 +1373,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -1471,6 +1484,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -1546,6 +1560,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -1658,6 +1673,7 @@
         "ends_at": null,
         "headline_template": ":actor changed the price of :object",
         "headline": null,
+        "bindings": null,
         "glyph": "tag",
         "glyph_intent": null,
         "actor": {
@@ -1757,6 +1773,7 @@
         "ends_at": null,
         "headline_template": ":actor added a menu item, :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -1858,6 +1875,7 @@
         "published_at": "1985-07-01T11:02:00.000000Z",
         "headline_template": ":actor placed :count orders with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -2166,6 +2184,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -2276,6 +2295,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -2386,6 +2406,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -2515,6 +2536,7 @@
         "published_at": "1985-07-01T12:02:00.000000Z",
         "headline_template": ":actors ordered from :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": null,
@@ -2829,6 +2851,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -2939,6 +2962,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -3049,6 +3073,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -3178,6 +3203,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -3288,6 +3314,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -3400,6 +3427,7 @@
         "published_at": "1985-07-02T12:20:00.000000Z",
         "headline_template": ":actor placed :count orders with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -3708,6 +3736,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -3818,6 +3847,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -3928,6 +3958,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4057,6 +4088,7 @@
         "published_at": "1985-07-02T13:04:00.000000Z",
         "headline_template": ":actors ordered from :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": null,
@@ -4388,6 +4420,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4498,6 +4531,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4608,6 +4642,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4712,6 +4747,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4822,6 +4858,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -4951,6 +4988,7 @@
         "published_at": "1985-07-04T16:01:00.000000Z",
         "headline_template": ":actor added :count menu items",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -5235,6 +5273,7 @@
             "ends_at": null,
             "headline_template": ":actor added a menu item, :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -5331,6 +5370,7 @@
             "ends_at": null,
             "headline_template": ":actor added a menu item, :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -5470,6 +5510,7 @@
         "published_at": "1985-07-04T18:12:00.000000Z",
         "headline_template": null,
         "headline": null,
+        "bindings": null,
         "glyph": "message-circle",
         "glyph_intent": null,
         "actor": null,
@@ -5765,6 +5806,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -5899,6 +5941,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -6033,6 +6076,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -6186,6 +6230,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
@@ -6289,6 +6334,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object ready",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -6399,6 +6445,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -6509,6 +6556,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -6621,6 +6669,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
@@ -6724,6 +6773,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -6834,6 +6884,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -6946,6 +6997,7 @@
         "published_at": "1985-07-02T12:28:00.000000Z",
         "headline_template": ":actor confirmed :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -7254,6 +7306,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -7364,6 +7417,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -7474,6 +7528,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -7603,6 +7658,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -7678,6 +7734,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -7753,6 +7810,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -7830,6 +7888,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -7940,6 +7999,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -8050,6 +8110,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -8162,6 +8223,7 @@
         "published_at": "1985-07-04T18:10:00.000000Z",
         "headline_template": ":actor viewed :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "eye",
         "glyph_intent": null,
         "actor": {
@@ -8398,6 +8460,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -8473,6 +8536,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -8548,6 +8612,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -8623,6 +8688,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -8698,6 +8764,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -8792,6 +8859,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -8895,6 +8963,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -9000,6 +9069,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -9075,6 +9145,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -9144,6 +9215,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -9221,6 +9293,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -9296,6 +9369,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -9373,6 +9447,7 @@
         "published_at": "1985-07-04T18:32:00.000000Z",
         "headline_template": ":actor played :object :count times",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": {
@@ -9618,6 +9693,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -9708,6 +9784,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -9798,6 +9875,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -9907,6 +9985,7 @@
         "published_at": "1985-07-04T18:15:00.000000Z",
         "headline_template": ":actor went on :count rides at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -10203,6 +10282,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -10293,6 +10373,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -10397,6 +10478,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -10506,6 +10588,7 @@
         "published_at": "1985-07-04T10:02:00.000000Z",
         "headline_template": ":actor processed :count payments",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -10854,6 +10937,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -10943,6 +11027,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -11032,6 +11117,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -11140,6 +11226,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object ready",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -11250,6 +11337,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -11360,6 +11448,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -11472,6 +11561,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -11596,6 +11686,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
@@ -11701,6 +11792,7 @@
         "ends_at": null,
         "headline_template": ":actor won :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -11791,6 +11883,7 @@
         "published_at": "1985-07-04T18:32:00.000000Z",
         "headline_template": ":actor played :object :count times",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": {
@@ -12036,6 +12129,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -12126,6 +12220,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -12216,6 +12311,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -12323,6 +12419,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -12398,6 +12495,7 @@
         "published_at": "1985-07-04T18:15:00.000000Z",
         "headline_template": ":actor went on :count rides at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -12694,6 +12792,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -12784,6 +12883,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -12888,6 +12988,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -12995,6 +13096,7 @@
         "ends_at": null,
         "headline_template": ":actor got :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -13085,6 +13187,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -13154,6 +13257,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -13229,6 +13333,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -13325,6 +13430,7 @@
         "published_at": "1985-07-04T10:02:00.000000Z",
         "headline_template": ":actor processed :count payments",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -13673,6 +13779,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -13762,6 +13869,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -13851,6 +13959,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -13957,6 +14066,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -14060,6 +14170,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -14129,6 +14240,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -14204,6 +14316,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -14279,6 +14392,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -14354,6 +14468,7 @@
         "ends_at": null,
         "headline_template": ":actor set a new high score on :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": {
@@ -14452,6 +14567,7 @@
         "published_at": "1985-07-02T12:02:00.000000Z",
         "headline_template": ":actor placed :count orders with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -14760,6 +14876,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -14870,6 +14987,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -14980,6 +15098,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -15109,6 +15228,7 @@
         "published_at": "1985-06-30T11:05:00.000000Z",
         "headline_template": ":actor uploaded :count photos to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "image",
         "glyph_intent": null,
         "actor": {
@@ -15461,6 +15581,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -15565,6 +15686,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -15669,6 +15791,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -15792,6 +15915,7 @@
         "published_at": "1985-06-30T11:05:00.000000Z",
         "headline_template": ":actor uploaded :count photos to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "image",
         "glyph_intent": null,
         "actor": {
@@ -16144,6 +16268,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -16248,6 +16373,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -16352,6 +16478,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -16475,6 +16602,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object ready",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -16585,6 +16713,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -16695,6 +16824,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -16805,6 +16935,7 @@
         "ends_at": null,
         "headline_template": ":actor changed the price of :object",
         "headline": null,
+        "bindings": null,
         "glyph": "tag",
         "glyph_intent": null,
         "actor": {
@@ -16939,6 +17070,7 @@
         "ends_at": null,
         "headline_template": ":actor put :object on the menu",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -17075,6 +17207,7 @@
         "ends_at": null,
         "headline_template": ":actor wrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "pencil",
         "glyph_intent": null,
         "actor": {
@@ -17154,6 +17287,7 @@
         "published_at": "1985-07-04T18:51:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -17329,6 +17463,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -17404,6 +17539,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -17479,6 +17615,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -17554,6 +17691,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -17646,6 +17784,7 @@
         "ends_at": null,
         "headline_template": ":actor rode :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -17756,6 +17895,7 @@
         "ends_at": null,
         "headline_template": ":actor waved at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -17825,6 +17965,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -17935,6 +18076,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -18008,6 +18150,7 @@
         "ends_at": null,
         "headline_template": ":actor won :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -18098,6 +18241,7 @@
         "published_at": "1985-07-04T18:32:00.000000Z",
         "headline_template": ":actor played :object :count times",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": {
@@ -18343,6 +18487,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -18433,6 +18578,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -18523,6 +18669,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -18630,6 +18777,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -18702,6 +18850,7 @@
         "published_at": "1985-07-04T18:30:00.000000Z",
         "headline_template": ":actor sent items to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "send",
         "glyph_intent": null,
         "actor": {
@@ -18982,6 +19131,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -19081,6 +19231,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -19180,6 +19331,7 @@
             "ends_at": null,
             "headline_template": ":actor sent :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "send",
             "glyph_intent": null,
             "actor": {
@@ -19296,6 +19448,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -19368,6 +19521,7 @@
         "published_at": "1985-07-04T18:23:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -19537,6 +19691,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -19612,6 +19767,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -19687,6 +19843,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -19756,6 +19913,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -19848,6 +20006,7 @@
         "ends_at": null,
         "headline_template": ":actor processed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": null,
@@ -19920,6 +20079,7 @@
         "published_at": "1985-07-04T18:15:00.000000Z",
         "headline_template": ":actor went on :count rides at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -20216,6 +20376,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -20306,6 +20467,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -20410,6 +20572,7 @@
             "ends_at": null,
             "headline_template": ":actor rode :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -20517,6 +20680,7 @@
         "published_at": "1985-07-04T18:12:00.000000Z",
         "headline_template": null,
         "headline": null,
+        "bindings": null,
         "glyph": "message-circle",
         "glyph_intent": null,
         "actor": null,
@@ -20812,6 +20976,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -20946,6 +21111,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -21080,6 +21246,7 @@
             "ends_at": null,
             "headline_template": ":actor asked about :target",
             "headline": null,
+            "bindings": null,
             "glyph": "message-circle",
             "glyph_intent": null,
             "actor": {
@@ -21231,6 +21398,7 @@
         "published_at": "1985-07-04T18:10:00.000000Z",
         "headline_template": ":actor viewed :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "eye",
         "glyph_intent": null,
         "actor": {
@@ -21467,6 +21635,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -21542,6 +21711,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -21617,6 +21787,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -21692,6 +21863,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -21767,6 +21939,7 @@
             "ends_at": null,
             "headline_template": ":actor viewed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "eye",
             "glyph_intent": null,
             "actor": {
@@ -21859,6 +22032,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -22009,6 +22183,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -22129,6 +22304,7 @@
         "ends_at": null,
         "headline_template": ":actor bought :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": null,
         "actor": {
@@ -22239,6 +22415,7 @@
         "published_at": "1985-07-04T18:03:00.000000Z",
         "headline_template": ":actor rewrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -22452,6 +22629,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -22530,6 +22708,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -22608,6 +22787,7 @@
             "ends_at": null,
             "headline_template": ":actor rewrote :object",
             "headline": null,
+            "bindings": null,
             "glyph": "file-pen",
             "glyph_intent": null,
             "actor": {
@@ -22703,6 +22883,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -22827,6 +23008,7 @@
         "ends_at": null,
         "headline_template": ":actor added a menu item, :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -22947,6 +23129,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -23046,6 +23229,7 @@
         "published_at": "1985-07-04T18:00:00.000000Z",
         "headline_template": ":actor removed :count parts from :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": {
@@ -23237,6 +23421,7 @@
             "ends_at": null,
             "headline_template": ":actor removed :object from :target",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-x",
             "glyph_intent": null,
             "actor": {
@@ -23314,6 +23499,7 @@
             "ends_at": null,
             "headline_template": ":actor removed :object from :target",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-x",
             "glyph_intent": null,
             "actor": {
@@ -23408,6 +23594,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -23504,6 +23691,7 @@
         "ends_at": null,
         "headline_template": ":actor invited :target to :object",
         "headline": null,
+        "bindings": null,
         "glyph": "mail",
         "glyph_intent": null,
         "actor": {
@@ -23606,6 +23794,7 @@
         "ends_at": null,
         "headline_template": ":actor sent :object to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "send",
         "glyph_intent": null,
         "actor": {
@@ -23708,6 +23897,7 @@
         "ends_at": null,
         "headline_template": ":actor accepted :object",
         "headline": null,
+        "bindings": null,
         "glyph": "check",
         "glyph_intent": null,
         "actor": {
@@ -23783,6 +23973,7 @@
         "ends_at": null,
         "headline_template": ":actor accepted :object",
         "headline": null,
+        "bindings": null,
         "glyph": "check",
         "glyph_intent": null,
         "actor": {
@@ -23858,6 +24049,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -23927,6 +24119,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -24031,6 +24224,7 @@
         "ends_at": null,
         "headline_template": ":actor got :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -24121,6 +24315,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -24190,6 +24385,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -24265,6 +24461,7 @@
         "ends_at": null,
         "headline_template": ":actor noted :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "sticky-note",
         "glyph_intent": null,
         "actor": {
@@ -24380,6 +24577,7 @@
         "ends_at": null,
         "headline_template": ":actor bought :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": null,
         "actor": {
@@ -24490,6 +24688,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -24586,6 +24785,7 @@
         "published_at": "1985-07-04T16:01:00.000000Z",
         "headline_template": ":actor added :count menu items",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -24870,6 +25070,7 @@
             "ends_at": null,
             "headline_template": ":actor added a menu item, :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -24966,6 +25167,7 @@
             "ends_at": null,
             "headline_template": ":actor added a menu item, :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -25103,6 +25305,7 @@
         "published_at": "1985-07-04T13:06:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -25272,6 +25475,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25347,6 +25551,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25422,6 +25627,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25491,6 +25697,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25560,6 +25767,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25629,6 +25837,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25698,6 +25907,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -25784,6 +25994,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -25859,6 +26070,7 @@
         "published_at": "1985-07-04T10:02:00.000000Z",
         "headline_template": ":actor processed :count payments",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -26207,6 +26419,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -26296,6 +26509,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -26385,6 +26599,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": null,
             "actor": {
@@ -26491,6 +26706,7 @@
         "ends_at": null,
         "headline_template": ":actor wrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "pencil",
         "glyph_intent": null,
         "actor": {
@@ -26591,6 +26807,7 @@
         "ends_at": null,
         "headline_template": ":object expired at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": null,
@@ -26674,6 +26891,7 @@
         "ends_at": null,
         "headline_template": ":actor rode :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -26764,6 +26982,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -26833,6 +27052,7 @@
         "ends_at": null,
         "headline_template": ":actor cancelled :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": "danger",
         "actor": {
@@ -26936,6 +27156,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -27039,6 +27260,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27108,6 +27330,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27177,6 +27400,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27246,6 +27470,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27315,6 +27540,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27390,6 +27616,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -27500,6 +27727,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -27590,6 +27818,7 @@
         "ends_at": null,
         "headline_template": ":actor served :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -27659,6 +27888,7 @@
         "ends_at": null,
         "headline_template": ":actor removed :object from :target",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": {
@@ -27793,6 +28023,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27868,6 +28099,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -27943,6 +28175,7 @@
         "published_at": "1985-07-02T21:10:00.000000Z",
         "headline_template": ":actor completed :count tasks on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -28207,6 +28440,7 @@
             "ends_at": null,
             "headline_template": ":actor completed :object on :target",
             "headline": null,
+            "bindings": null,
             "glyph": "square-check",
             "glyph_intent": null,
             "actor": {
@@ -28310,6 +28544,7 @@
             "ends_at": null,
             "headline_template": ":actor completed :object on :target",
             "headline": null,
+            "bindings": null,
             "glyph": "square-check",
             "glyph_intent": null,
             "actor": {
@@ -28430,6 +28665,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -28499,6 +28735,7 @@
         "published_at": "1985-07-02T19:04:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -28668,6 +28905,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -28737,6 +28975,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -28812,6 +29051,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -28887,6 +29127,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -28956,6 +29197,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -29042,6 +29284,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -29152,6 +29395,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -29241,6 +29485,7 @@
         "published_at": "1985-07-02T13:04:00.000000Z",
         "headline_template": ":actors ordered from :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": null,
@@ -29572,6 +29817,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -29682,6 +29928,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -29792,6 +30039,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -29896,6 +30144,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -30006,6 +30255,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -30133,6 +30383,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
@@ -30236,6 +30487,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object ready",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -30346,6 +30598,7 @@
         "published_at": "1985-07-02T12:30:00.000000Z",
         "headline_template": ":actor placed :count orders with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -30654,6 +30907,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -30764,6 +31018,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -30874,6 +31129,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -30984,6 +31240,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -31094,6 +31351,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -31204,6 +31462,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -31314,6 +31573,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -31441,6 +31701,7 @@
         "published_at": "1985-07-02T12:28:00.000000Z",
         "headline_template": ":actor confirmed :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -31749,6 +32010,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -31859,6 +32121,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -31969,6 +32232,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -32096,6 +32360,7 @@
         "ends_at": null,
         "headline_template": ":actor confirmed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -32171,6 +32436,7 @@
         "published_at": "1985-07-02T12:15:00.000000Z",
         "headline_template": ":actor marked :object paid :count times",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": "success",
         "actor": {
@@ -32348,6 +32614,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": "success",
             "actor": {
@@ -32416,6 +32683,7 @@
             "ends_at": null,
             "headline_template": ":actor marked :object paid",
             "headline": null,
+            "bindings": null,
             "glyph": "receipt",
             "glyph_intent": "success",
             "actor": {
@@ -32501,6 +32769,7 @@
         "published_at": "1985-07-02T12:15:00.000000Z",
         "headline_template": ":actors joined :target",
         "headline": null,
+        "bindings": null,
         "glyph": "user-plus",
         "glyph_intent": null,
         "actor": null,
@@ -32676,6 +32945,7 @@
             "ends_at": null,
             "headline_template": ":actor joined :target",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -32751,6 +33021,7 @@
             "ends_at": null,
             "headline_template": ":actor joined :target",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -32826,6 +33097,7 @@
             "ends_at": null,
             "headline_template": ":actor joined :target",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -32901,6 +33173,7 @@
             "ends_at": null,
             "headline_template": ":actor joined :target",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -32993,6 +33266,7 @@
         "ends_at": null,
         "headline_template": ":actor replied about :object",
         "headline": null,
+        "bindings": null,
         "glyph": "message-circle",
         "glyph_intent": null,
         "actor": {
@@ -33064,6 +33338,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": null,
@@ -33147,6 +33422,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": "success",
         "actor": {
@@ -33257,6 +33533,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object ready",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -33367,6 +33644,7 @@
         "published_at": "1985-07-02T12:05:00.000000Z",
         "headline_template": ":actor confirmed :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -33663,6 +33941,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -33789,6 +34068,7 @@
             "ends_at": null,
             "headline_template": ":actor confirmed :object",
             "headline": null,
+            "bindings": null,
             "glyph": "circle-check",
             "glyph_intent": null,
             "actor": {
@@ -33916,6 +34196,7 @@
         "ends_at": null,
         "headline_template": ":actor asked about :target",
         "headline": null,
+        "bindings": null,
         "glyph": "message-circle",
         "glyph_intent": null,
         "actor": {
@@ -34041,6 +34322,7 @@
         "ends_at": null,
         "headline_template": ":actor sent a note about :target",
         "headline": null,
+        "bindings": null,
         "glyph": "message-circle",
         "glyph_intent": null,
         "actor": {
@@ -34142,6 +34424,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -34252,6 +34535,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -34327,6 +34611,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -34402,6 +34687,7 @@
         "ends_at": null,
         "headline_template": ":actor saved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "save",
         "glyph_intent": null,
         "actor": {
@@ -34477,6 +34763,7 @@
         "ends_at": null,
         "headline_template": ":actor changed the price of :object",
         "headline": null,
+        "bindings": null,
         "glyph": "tag",
         "glyph_intent": null,
         "actor": {
@@ -34611,6 +34898,7 @@
         "ends_at": null,
         "headline_template": ":actor put :object on the menu",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -34745,6 +35033,7 @@
         "ends_at": null,
         "headline_template": ":actor let :target go from :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": {
@@ -34843,6 +35132,7 @@
         "ends_at": null,
         "headline_template": ":actor put :object on the menu",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -34977,6 +35267,7 @@
         "ends_at": null,
         "headline_template": ":actor let :target go from :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": {
@@ -35075,6 +35366,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -35150,6 +35442,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -35225,6 +35518,7 @@
         "published_at": "1985-07-02T09:05:00.000000Z",
         "headline_template": ":actor published items",
         "headline": null,
+        "bindings": null,
         "glyph": "megaphone",
         "glyph_intent": null,
         "actor": {
@@ -35537,6 +35831,7 @@
             "ends_at": null,
             "headline_template": ":actor published :object",
             "headline": null,
+            "bindings": null,
             "glyph": "megaphone",
             "glyph_intent": null,
             "actor": {
@@ -35659,6 +35954,7 @@
             "ends_at": null,
             "headline_template": ":actor published :object",
             "headline": null,
+            "bindings": null,
             "glyph": "megaphone",
             "glyph_intent": null,
             "actor": {
@@ -35798,6 +36094,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -35873,6 +36170,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -35948,6 +36246,7 @@
         "ends_at": null,
         "headline_template": ":actor uploaded :object to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "image",
         "glyph_intent": null,
         "actor": {
@@ -36052,6 +36351,7 @@
         "ends_at": null,
         "headline_template": ":actor merged :object into :target",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -36179,6 +36479,7 @@
         "ends_at": null,
         "headline_template": ":actor merged :object into :target",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -36306,6 +36607,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -36416,6 +36718,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -36519,6 +36822,7 @@
         "published_at": "1985-07-01T12:02:00.000000Z",
         "headline_template": ":actors ordered from :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": null,
@@ -36833,6 +37137,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -36943,6 +37248,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -37053,6 +37359,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -37180,6 +37487,7 @@
         "published_at": "1985-07-01T11:02:00.000000Z",
         "headline_template": ":actor placed :count orders with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -37488,6 +37796,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -37598,6 +37907,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -37708,6 +38018,7 @@
             "ends_at": null,
             "headline_template": ":actor placed :object with :target",
             "headline": null,
+            "bindings": null,
             "glyph": "shopping-bag",
             "glyph_intent": "pending",
             "actor": {
@@ -37835,6 +38146,7 @@
         "ends_at": null,
         "headline_template": ":actor resolved :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-check",
         "glyph_intent": null,
         "actor": {
@@ -37911,6 +38223,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -37986,6 +38299,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38055,6 +38369,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -38158,6 +38473,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -38261,6 +38577,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38336,6 +38653,7 @@
         "ends_at": null,
         "headline_template": ":actor booked a table at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -38411,6 +38729,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38480,6 +38799,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -38569,6 +38889,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38644,6 +38965,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38719,6 +39041,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -38788,6 +39111,7 @@
         "ends_at": null,
         "headline_template": ":actor served :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -38863,6 +39187,7 @@
         "ends_at": null,
         "headline_template": ":actor placed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": "pending",
         "actor": {
@@ -38973,6 +39298,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -39062,6 +39388,7 @@
         "published_at": "1985-06-30T11:07:00.000000Z",
         "headline_template": ":actor uploaded :count photos to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "image",
         "glyph_intent": null,
         "actor": {
@@ -39414,6 +39741,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -39518,6 +39846,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -39622,6 +39951,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -39726,6 +40056,7 @@
             "ends_at": null,
             "headline_template": ":actor uploaded :object to :target",
             "headline": null,
+            "bindings": null,
             "glyph": "image",
             "glyph_intent": null,
             "actor": {
@@ -39847,6 +40178,7 @@
         "ends_at": null,
         "headline_template": ":actor turned down :object",
         "headline": null,
+        "bindings": null,
         "glyph": "circle-x",
         "glyph_intent": null,
         "actor": {
@@ -39923,6 +40255,7 @@
         "ends_at": null,
         "headline_template": ":actor filed :object with :target",
         "headline": null,
+        "bindings": null,
         "glyph": "newspaper",
         "glyph_intent": null,
         "actor": {
@@ -40020,6 +40353,7 @@
         "ends_at": null,
         "headline_template": ":actor changed the price of :object",
         "headline": null,
+        "bindings": null,
         "glyph": "tag",
         "glyph_intent": null,
         "actor": {
@@ -40119,6 +40453,7 @@
         "ends_at": null,
         "headline_template": ":actor added a menu item, :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -40218,6 +40553,7 @@
         "ends_at": null,
         "headline_template": ":actor assigned :object to :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ticket",
         "glyph_intent": null,
         "actor": {
@@ -40321,6 +40657,7 @@
         "ends_at": null,
         "headline_template": ":actor opened :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ticket",
         "glyph_intent": null,
         "actor": {
@@ -40403,6 +40740,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -40472,6 +40810,7 @@
         "ends_at": null,
         "headline_template": ":actor wrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "pencil",
         "glyph_intent": null,
         "actor": {
@@ -40572,6 +40911,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -40647,6 +40987,7 @@
         "ends_at": null,
         "headline_template": ":actor checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": {
@@ -40716,6 +41057,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -40819,6 +41161,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -40894,6 +41237,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -40969,6 +41313,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -41044,6 +41389,7 @@
         "published_at": "1985-06-29T11:09:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -41213,6 +41559,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -41288,6 +41635,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -41363,6 +41711,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -41432,6 +41781,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -41501,6 +41851,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -41593,6 +41944,7 @@
         "ends_at": null,
         "headline_template": ":actor starred :object",
         "headline": null,
+        "bindings": null,
         "glyph": "star",
         "glyph_intent": null,
         "actor": {
@@ -41678,6 +42030,7 @@
         "ends_at": null,
         "headline_template": ":actor joined :target",
         "headline": null,
+        "bindings": null,
         "glyph": "user-plus",
         "glyph_intent": null,
         "actor": {
@@ -41753,6 +42106,7 @@
         "ends_at": null,
         "headline_template": ":actor opened :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ticket",
         "glyph_intent": null,
         "actor": {
@@ -41835,6 +42189,7 @@
         "published_at": "1985-06-28T18:32:00.000000Z",
         "headline_template": ":actors watched :objects at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "film",
         "glyph_intent": null,
         "actor": null,
@@ -42195,6 +42550,7 @@
             "ends_at": null,
             "headline_template": ":actor watched :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "film",
             "glyph_intent": null,
             "actor": {
@@ -42307,6 +42663,7 @@
             "ends_at": null,
             "headline_template": ":actor watched :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "film",
             "glyph_intent": null,
             "actor": {
@@ -42419,6 +42776,7 @@
             "ends_at": null,
             "headline_template": ":actor watched :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "film",
             "glyph_intent": null,
             "actor": {
@@ -42525,6 +42883,7 @@
             "ends_at": null,
             "headline_template": ":actor watched :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "film",
             "glyph_intent": null,
             "actor": {
@@ -42648,6 +43007,7 @@
         "ends_at": null,
         "headline_template": ":actor served :object",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -42723,6 +43083,7 @@
         "published_at": "1985-06-28T13:05:00.000000Z",
         "headline_template": ":actor served :count orders",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": {
@@ -42915,6 +43276,7 @@
             "ends_at": null,
             "headline_template": ":actor served :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -42990,6 +43352,7 @@
             "ends_at": null,
             "headline_template": ":actor served :object",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": {
@@ -43082,6 +43445,7 @@
         "ends_at": null,
         "headline_template": ":actor merged :object into :target",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -43209,6 +43573,7 @@
         "ends_at": null,
         "headline_template": ":actor merged :object into :target",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -43336,6 +43701,7 @@
         "ends_at": null,
         "headline_template": ":actor merged :object into :target",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -43463,6 +43829,7 @@
         "ends_at": null,
         "headline_template": ":actor created :object",
         "headline": null,
+        "bindings": null,
         "glyph": "git-merge",
         "glyph_intent": null,
         "actor": {
@@ -43554,6 +43921,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -43643,6 +44011,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -43732,6 +44101,7 @@
         "ends_at": null,
         "headline_template": ":actor marked :object paid",
         "headline": null,
+        "bindings": null,
         "glyph": "receipt",
         "glyph_intent": null,
         "actor": {
@@ -43821,6 +44191,7 @@
         "ends_at": null,
         "headline_template": ":actor signed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -43898,6 +44269,7 @@
         "ends_at": null,
         "headline_template": ":actor signed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -43975,6 +44347,7 @@
         "ends_at": null,
         "headline_template": ":actor signed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -44058,6 +44431,7 @@
         "ends_at": null,
         "headline_template": ":actor signed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -44141,6 +44515,7 @@
         "published_at": "1984-12-15T19:25:00.000000Z",
         "headline_template": ":actors went to :objects",
         "headline": null,
+        "bindings": null,
         "glyph": "user-plus",
         "glyph_intent": null,
         "actor": null,
@@ -44377,6 +44752,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44446,6 +44822,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44521,6 +44898,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44596,6 +44974,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44671,6 +45050,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44740,6 +45120,7 @@
             "ends_at": null,
             "headline_template": ":actor went to :object",
             "headline": null,
+            "bindings": null,
             "glyph": "user-plus",
             "glyph_intent": null,
             "actor": {
@@ -44826,6 +45207,7 @@
         "ends_at": null,
         "headline_template": ":actor signed :object",
         "headline": null,
+        "bindings": null,
         "glyph": "file-pen",
         "glyph_intent": null,
         "actor": {
@@ -44903,6 +45285,7 @@
         "ends_at": null,
         "headline_template": ":actor completed :object on :target",
         "headline": null,
+        "bindings": null,
         "glyph": "square-check",
         "glyph_intent": null,
         "actor": {
@@ -44972,6 +45355,7 @@
         "published_at": "1984-11-03T18:03:00.000000Z",
         "headline_template": ":actor put :count items on the menu",
         "headline": null,
+        "bindings": null,
         "glyph": "ice-cream-cone",
         "glyph_intent": null,
         "actor": null,
@@ -45168,6 +45552,7 @@
             "ends_at": null,
             "headline_template": ":actor put :object on the menu",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": null,
@@ -45241,6 +45626,7 @@
             "ends_at": null,
             "headline_template": ":actor put :object on the menu",
             "headline": null,
+            "bindings": null,
             "glyph": "ice-cream-cone",
             "glyph_intent": null,
             "actor": null,
@@ -45331,6 +45717,7 @@
         "ends_at": null,
         "headline_template": ":actor wrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "pencil",
         "glyph_intent": null,
         "actor": {
@@ -45425,6 +45812,7 @@
         "ends_at": null,
         "headline_template": ":actor left :object for :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -45521,6 +45909,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -45611,6 +46000,7 @@
         "published_at": "1984-10-28T16:12:00.000000Z",
         "headline_template": ":actors played :objects at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": null,
@@ -45891,6 +46281,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -45987,6 +46378,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -46077,6 +46469,7 @@
             "ends_at": null,
             "headline_template": ":actor played :object at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "gamepad-2",
             "glyph_intent": null,
             "actor": {
@@ -46190,6 +46583,7 @@
         "ends_at": null,
         "headline_template": ":actor set a new high score on :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "gamepad-2",
         "glyph_intent": null,
         "actor": {
@@ -46286,6 +46680,7 @@
         "ends_at": null,
         "headline_template": ":actor left :object for :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -46382,6 +46777,7 @@
         "published_at": "1983-11-12T19:03:00.000000Z",
         "headline_template": ":actors checked in at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "ferris-wheel",
         "glyph_intent": null,
         "actor": null,
@@ -46551,6 +46947,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -46620,6 +47017,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -46695,6 +47093,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -46770,6 +47169,7 @@
             "ends_at": null,
             "headline_template": ":actor checked in at :target",
             "headline": null,
+            "bindings": null,
             "glyph": "ferris-wheel",
             "glyph_intent": null,
             "actor": {
@@ -46856,6 +47256,7 @@
         "ends_at": null,
         "headline_template": ":actor bought :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "shopping-bag",
         "glyph_intent": null,
         "actor": {
@@ -46946,6 +47347,7 @@
         "ends_at": null,
         "headline_template": ":actor hung :object",
         "headline": null,
+        "bindings": null,
         "glyph": "eye",
         "glyph_intent": null,
         "actor": {
@@ -47021,6 +47423,7 @@
         "ends_at": null,
         "headline_template": ":actor wrote :object",
         "headline": null,
+        "bindings": null,
         "glyph": "pencil",
         "glyph_intent": null,
         "actor": {
@@ -47103,6 +47506,7 @@
         "ends_at": null,
         "headline_template": ":actor radioed :target",
         "headline": null,
+        "bindings": null,
         "glyph": "radio",
         "glyph_intent": null,
         "actor": {
@@ -47151,6 +47555,7 @@
         "ends_at": null,
         "headline_template": ":actor had :object at :target",
         "headline": null,
+        "bindings": null,
         "glyph": "utensils",
         "glyph_intent": null,
         "actor": {
@@ -47244,6 +47649,7 @@
       "ends_at": null,
       "headline_template": ":actor deleted :object from :target",
       "headline": null,
+      "bindings": null,
       "glyph": "circle-x",
       "glyph_intent": null,
       "actor": {
@@ -47358,6 +47764,7 @@
           "published_at": "1985-07-01T14:00:00.000000Z",
           "headline_template": ":actor completed :count tasks",
           "headline": null,
+          "bindings": null,
           "glyph": "square-check",
           "glyph_intent": null,
           "actor": {
@@ -47622,6 +48029,7 @@
               "ends_at": null,
               "headline_template": ":actor completed :object on :target",
               "headline": null,
+              "bindings": null,
               "glyph": "square-check",
               "glyph_intent": null,
               "actor": {
@@ -47725,6 +48133,7 @@
               "ends_at": null,
               "headline_template": ":actor completed :object on :target",
               "headline": null,
+              "bindings": null,
               "glyph": "square-check",
               "glyph_intent": null,
               "actor": {
@@ -47847,6 +48256,7 @@
           "ends_at": null,
           "headline_template": ":actor completed :object on :target",
           "headline": null,
+          "bindings": null,
           "glyph": "square-check",
           "glyph_intent": null,
           "actor": {
@@ -47950,6 +48360,7 @@
           "ends_at": null,
           "headline_template": ":actor completed :object on :target",
           "headline": null,
+          "bindings": null,
           "glyph": "square-check",
           "glyph_intent": null,
           "actor": {
