@@ -244,6 +244,7 @@ removing or changing an alias leaves affected roles unresolved.
 | `cached_generator_id` | unsigned bigint | nullable | The generator's row in `feed_snapshots`. |
 | `data` | json | nullable | The values passed to `data()`. |
 | `entities` | json | nullable | Roles filled by an entity with no model behind it, stored inline with the activity: label, url, data and body by role. Null when every role has a model. |
+| `bindings` | json | nullable | Literal headline values passed to `bind()`, by token name; see [Binding Literal Values](/basics/recording-activities#binding-literal-values). |
 | `featured` | string(16) | nullable, default `'object'` | The role whose entity the row draws as its body, set with `featuring…()`. Null draws none. |
 | `published_at` | timestamp(6) | nullable | When the activity happened. The feed orders by it, and only shows activities whose time has come. |
 | `starts_at` | timestamp(6) | nullable | When what the activity describes began, set with `startsAt()`. Null when the range has no start. |

@@ -112,7 +112,8 @@ Storyfeed::record(
 > passed to a role method creates or reuses a named party.
 > Store names, email addresses, amounts, dates, and settings in activity data.
 > Use a [dynamic headline](/basics/the-feed-file#dynamic-headlines) to display
-> those values. [Recording Value Changes](/cookbook/recording-value-changes)
+> those values, or [bind](#binding-literal-values) them to headline tokens.
+> [Recording Value Changes](/cookbook/recording-value-changes)
 > compares the roles, data, and party queries for a rename.
 
 These roles come from [W3C Activity Streams 2.0](/shaping/activity-streams).
@@ -359,6 +360,79 @@ use Storyfeed\Facades\Story;
 Story::for(MenuItem::class)->verb('reprice')
     ->headline(':actor changed the price of :object');
 ```
+
+## Binding Literal Values
+
+A headline that shows user-entered text, such as a recipient's name or a menu's
+new title, should never build its template by concatenating that text in.
+Storyfeed reads `[...]` in a template as an optional segment and `:word` as a
+token, so a name like `Pat [x]` or `Specials :object` would not print as
+entered. Name a token in the headline instead, and bind the value when
+recording:
+
+```php memo="routes/feed.php"
+use App\Models\Invoice;
+use Storyfeed\Facades\Story;
+
+Story::for(Invoice::class)->verb('send')
+    ->headline(':actor sent :object to :recipient');
+```
+
+::: code-group
+```php [Fluent Syntax] memo="app/Http/Controllers/InvoiceSendController.php"
+Storyfeed::activity()
+    ->by($request->user())
+    ->action('send', $invoice)
+    ->bind('recipient', $request->string('name'))
+    ->publish();
+```
+
+```php [Named Arguments] memo="app/Http/Controllers/InvoiceSendController.php"
+Storyfeed::record(
+    verb: 'send',
+    object: $invoice,
+    actor: $request->user(),
+    bind: ['recipient' => $request->string('name')],
+);
+```
+
+```php [Verb Enum] memo="app/Http/Controllers/InvoiceSendController.php"
+InvoiceActivity::Sent->by($request->user())
+    ->object($invoice)
+    ->bind('recipient', $request->string('name'))
+    ->publish();
+```
+:::
+
+The value prints exactly as entered: brackets, colons, backslashes, `%` and
+markup are text. It never enters the template, so nothing reads it again. The
+payload keeps `:recipient` in `headline_template` and carries the text in
+[`bindings`](/reference/payload-contract#bound-values), which renderers draw
+as plain text. `FeedItem::bindings()` reads the map.
+
+`bind()` accepts a string, an integer, a float or a `Stringable`, and stores it
+as text. A binding name is lowercase letters only, as in `:recipient`. A name
+that is already a headline token throws an `InvalidArgumentException`: a role
+in the singular or plural (`target`, `targets`), `count`, `others` or `verb`.
+Binding the same name twice keeps the last value.
+
+A group headline can use a bound token only when every member binds it to the
+same text; otherwise that value stays out of the group.
+
+### Upgrading an Existing Install
+
+Bindings are stored in a nullable `bindings` JSON column on `feed_activities`.
+New installs get it from the `create_feed_activities_table` migration. An
+install from before v0.24.0 publishes and runs the additive
+`add_bindings_to_feed_activities_table` migration before it binds anything:
+
+```bash
+php artisan vendor:publish --tag=storyfeed-migrations
+php artisan migrate
+```
+
+An app that never binds can skip it; `storyfeed:doctor` doesn't require the
+column.
 
 ## Setting the Publication Time
 
