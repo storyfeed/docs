@@ -419,6 +419,76 @@ Binding the same name twice keeps the last value.
 A group headline can use a bound token only when every member binds it to the
 same text; otherwise that value stays out of the group.
 
+### Binding at Render Time
+
+A headline can also bind its values when the feed is read, storing nothing.
+Return `FeedHeadline::make()` from a headline closure and bind the value there:
+
+```php memo="routes/feed.php"
+use App\Models\Invoice;
+use Storyfeed\ActivityContext;
+use Storyfeed\Facades\Story;
+use Storyfeed\FeedHeadline;
+
+Story::for(Invoice::class)->verb('send')->headline(
+    fn (ActivityContext $c) => FeedHeadline::make(':actor sent :object to :recipient')
+        ->bind('recipient', $c->object?->recipientName() ?? 'a customer'),
+);
+```
+
+`FeedHeadline::make()` takes a literal template, used as written. `bind()`
+returns a new headline that carries the value; the original is unchanged. A
+headline registered directly, without a closure, can carry bindings too:
+
+```php memo="routes/feed.php"
+Story::for(Invoice::class)->verb('send')
+    ->headline(FeedHeadline::make(':actor sent :object to :recipient')->bind('recipient', 'accounts'));
+```
+
+A render-time value reaches every place a stored one does: the payload
+[`bindings`](/reference/payload-contract#bound-values), the resolved
+`headline`, the PHP `Headline` reader and the Activity Streams `summary`. It
+prints exactly as given, so renderers draw it with no change. Nothing is
+written to the `bindings` column, so render-time binding needs no migration.
+
+#### Merging With Stored Bindings
+
+Render-time bindings merge with the bindings an activity stored with
+`->bind()` when it was recorded. When both bind the same name, **the
+render-time value wins**. The other stored values stay as they were.
+
+#### Groups
+
+A group carries only the values every member holds with the same text,
+counting stored and render-time values together. A value that differs between
+members stays out of the group, and a group headline that needs it is `null`.
+A group headline closure that returns a bound `FeedHeadline` adds its own
+values to the group.
+
+#### Choosing Render Time or Publish Time
+
+Bind when publishing when the value belongs to the moment it happened: the
+name a user typed, a title before it was renamed. The stored value is the
+record, and it reads the same forever.
+
+Bind at render time when the value must not, or cannot, be stored:
+
+- **A privacy rule.** An app that may not keep a recipient's name in its
+  activity log binds the name from the live model as the feed is read. Erase
+  the name from the model, and it is gone from the feed too.
+- **Old stories.** Activities recorded before a headline named a token never
+  stored a value for it. A render-time binding fills it for every activity,
+  old and new.
+- **Values that should follow the source**, such as a current display name.
+
+#### Name Rules
+
+Render-time names follow the same rules as stored ones. A binding name is
+lowercase letters only. A role in the singular or plural (`target`,
+`targets`), `count`, `others`, `verb` or any name that isn't lowercase letters
+throws an `InvalidArgumentException`. Binding the same name twice keeps the
+last value.
+
 ### Upgrading an Existing Install
 
 Bindings are stored in a nullable `bindings` JSON column on `feed_activities`.
