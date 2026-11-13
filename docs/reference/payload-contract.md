@@ -434,7 +434,11 @@ definition, so cache rendered headlines per node, not per definition.
 
 `bindings` holds literal text for tokens the recording named with
 [`bind()`](/basics/recording-activities#binding-literal-values), as
-`{name: text}`, or `null`. `headline_template` keeps the token:
+`{name: text}`, or `null`. It also holds values a headline closure
+[binds at render time](/basics/recording-activities#binding-at-render-time),
+which are never stored; the payload doesn't tell them apart, and a render-time
+value wins over a stored one with the same name. `headline_template` keeps the
+token:
 
 ```jsonc
 {
