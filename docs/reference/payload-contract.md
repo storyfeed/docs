@@ -479,6 +479,14 @@ applies after the headline, the pinned roles and `featured` are read, so
 `count`, `distinct`, `distinct_tombstoned`, the headline and the pinned roles
 are unchanged. A negative limit throws.
 
+`children($limit)` does the same for a group's presented `children`, at most
+`$limit` members; `children(0)` sends none. It is a presentation cap: members
+are still loaded up to `grouping.children_limit`, so `count`, `distinct`, the
+headline, the pinned roles, `sample` and `redundant` are unchanged, and the
+dropped members are never presented. `children` stays a list (`[]` at 0), and
+`children_truncated`, always present, is `true` when the cap drops members.
+Use it per read or in a named feed's definition. A negative limit throws.
+
 A composed composite keeps its entry's timestamp, which may be `null`.
 Its children follow [the feed's order](/retrieving/composing-feeds#keeping-your-order):
 newest first by default, authored order with `inOrder()`. Dateless children

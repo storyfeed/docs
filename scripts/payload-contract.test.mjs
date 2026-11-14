@@ -78,3 +78,10 @@ test('the contract page documents the sample cap', () => {
   assert.match(page, /`samples\(0\)` sends none/)
   assert.match(page, /never a missing key/)
 })
+
+test('the contract page documents the children cap', () => {
+  assert.match(page, /`children\(\$limit\)`/)
+  assert.match(page, /`children\(0\)` sends none/)
+  assert.match(page, /`children` stays a list \(`\[\]` at 0\)/)
+  assert.match(page, /`children_truncated`, always present, is `true` when the cap drops members/)
+})
