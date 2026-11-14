@@ -221,9 +221,17 @@ serializes as `[]`.
 
 By default every entity also keeps its inline `link` and `media`. Setting
 `storyfeed.payload.inline_media` to `false` (env `STORYFEED_INLINE_MEDIA`)
-drops `link` and `media` from entities in paginated output, so a page carries
-each signed URL once. `get()` always keeps them, because it has no map.
-Turn it off only once your renderer reads the map.
+drops `link` and `media` from entities in paginated output
+(`cursorPaginate()` or `simplePaginate()`), so a page carries each signed URL
+once. It never applies to `get()`: those entities always keep their inline
+`link` and `media`, because there is no map. Turn it off only once your
+renderer reads the map.
+
+Pass the renderer the whole paginator, or its full array, never
+`->toArray()['data']`. The nodes alone lose the top-level `media` map, so with
+`inline_media` off their entities render without a link or media. For
+load-more, append pages with storyfeed/ui's `appendPage()`, which merges each
+page's map.
 
 A renderer resolves an entity's `link` and `media` from `media[media_ref]`,
 and falls back to the entity's inline copies. Treat a missing `media` key, an

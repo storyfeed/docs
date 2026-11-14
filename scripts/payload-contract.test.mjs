@@ -56,4 +56,7 @@ test('the contract page documents the page media map', () => {
   assert.match(page, /storyfeed\.payload\.inline_media/)
   assert.match(page, /STORYFEED_INLINE_MEDIA/)
   assert.match(page, /falls back to the entity's inline copies/)
+  assert.match(page, /never applies to `get\(\)`/)
+  assert.match(page, /never\n`->toArray\(\)\['data'\]`/)
+  assert.match(page, /`appendPage\(\)`/)
 })
