@@ -48,3 +48,12 @@ test('the contract page explains bound values', () => {
   assert.match(page, /#### Bound Values/)
   assert.match(page, /"bindings": \{ "recipient": /)
 })
+
+test('the contract page documents the page media map', () => {
+  assert.match(page, /"sync_token": "01J3…",\n\s+\/\/ .*\n\s+"media": \{/)
+  assert.match(page, /"media_ref": "m[0-9a-f]{16}"/)
+  assert.match(page, /### Page Media Map/)
+  assert.match(page, /storyfeed\.payload\.inline_media/)
+  assert.match(page, /STORYFEED_INLINE_MEDIA/)
+  assert.match(page, /falls back to the entity's inline copies/)
+})
