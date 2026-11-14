@@ -31,7 +31,9 @@ with three keys after Laravel's own:
   // opaque string, or null
   "sync_token": "01J3…",
   // the page's media map; see Page Media Map
-  "media": { "m3f2a9c41d07e6b58": { "link": { /* … */ }, "media": { /* … */ } } }
+  "media": { "m3f2a9c41d07e6b58": { "link": { /* … */ }, "media": { /* … */ } } },
+  // the page's entity map; see Page Entity Map
+  "entities": { "e9b41c07d2a6f3e58": { "type": "delivery", "id": "42", /* … */ } }
 }
 ```
 
@@ -40,7 +42,7 @@ with three keys after Laravel's own:
 
 Its keys are `current_page`, `current_page_url`, `data`, `first_page_url`,
 `from`, `next_page_url`, `path`, `per_page`, `prev_page_url`, `to`,
-`payload_version`, `sync_token` and `media`. There is no total.
+`payload_version`, `sync_token`, `media` and `entities`. There is no total.
 
 Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
@@ -76,7 +78,9 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
   // null, or what a deleted entity left behind
   "tombstone": null,
   // key into the page's media map; null off a page
-  "media_ref": "m3f2a9c41d07e6b58"
+  "media_ref": "m3f2a9c41d07e6b58",
+  // key into the page's entity map; null off a page
+  "entity_ref": "e9b41c07d2a6f3e58"
 }
 ```
 
@@ -228,8 +232,9 @@ once. It never applies to `get()`: those entities always keep their inline
 renderer reads the map.
 
 Pass the renderer the whole paginator, or its full array, never
-`->toArray()['data']`. The nodes alone lose the top-level `media` map, so with
-`inline_media` off their entities render without a link or media. For
+`->toArray()['data']`. The nodes alone lose the top-level `media` and
+`entities` maps, so with `inline_media` off their entities render without a
+link or media, and with `inline_entities` off they are bare stubs. For
 load-more, append pages with storyfeed/ui's `appendPage()`, which merges each
 page's map.
 
@@ -237,6 +242,46 @@ A renderer resolves an entity's `link` and `media` from `media[media_ref]`,
 and falls back to the entity's inline copies. Treat a missing `media` key, an
 empty object or `[]` as no map. When you append pages, merge each page's map
 into your store.
+
+<span id="page-entity-map"></span>
+
+### Page Entity Map
+
+Every entity on a paginated page carries an `entity_ref`: `e` followed by 16
+hexadecimal characters, a content hash of everything the entity serializes,
+`media_ref` included. The same entity output gets the same ref on every page,
+and two snapshot versions of one entity never share one. Treat the ref as
+opaque. `entity_ref` is `null` off a page, for example in `get()` output or a
+lone node.
+
+The paginator's top-level `entities` map lists each distinct entity once,
+keyed by its `entity_ref`, exactly as it would appear inline. By default
+entities stay inline and the map is empty, serialized as `[]`.
+`$paginator->entities()` returns the map.
+
+Setting `storyfeed.payload.inline_entities` to `false` (env
+`STORYFEED_INLINE_ENTITIES`) replaces every entity in paginated output with a
+stub, at every depth: activity roles, a group's pinned roles, its `sample`
+lists, `sample.featured` and its `children`:
+
+```jsonc
+"actor": { "type": "user", "id": "7", "entity_ref": "e9b41c07d2a6f3e58" }
+```
+
+The map then holds the whole entities. It never applies to `get()`: those
+entities always stay inline. Turn it off only once your renderer reads the map.
+
+With `inline_entities` off, map entries keep their `link` and `media` inline,
+and the `media` map is always empty, whatever `inline_media` says. Each entity
+already travels once, so a separate media map would only repeat its pictures.
+With `inline_entities` on (the default), `inline_media` works as described in
+[Page Media Map](#page-media-map).
+
+A renderer resolves entities before media: it reads an entity from
+`entities[entity_ref]`, falling back to the inline copy, and only then
+resolves `link` and `media` through `media[media_ref]`. Treat a missing
+`entities` key, an empty object or `[]` as no map. When you append pages,
+merge each page's `entities` map into your store, as for `media`.
 
 ### Feed-Specific Resolution
 
@@ -423,6 +468,24 @@ and a distinct count; empty roles use `[]` and `0`.
 
 When a feed is filtered or scoped, `count`, `distinct`, `sample` and
 `children` describe only the members inside it.
+
+<span id="sample-cap"></span>
+
+`samples($limit)` on the feed builder caps every group's `sample` lists,
+`sample.featured` included, at `$limit` entities; `samples(0)` sends none.
+Use it per read (`Storyfeed::feed()->samples(0)->cursorPaginate()`) or in a
+named feed's definition. A capped list is `[]`, never a missing key. The cap
+applies after the headline, the pinned roles and `featured` are read, so
+`count`, `distinct`, `distinct_tombstoned`, the headline and the pinned roles
+are unchanged. A negative limit throws.
+
+`children($limit)` does the same for a group's presented `children`, at most
+`$limit` members; `children(0)` sends none. It is a presentation cap: members
+are still loaded up to `grouping.children_limit`, so `count`, `distinct`, the
+headline, the pinned roles, `sample` and `redundant` are unchanged, and the
+dropped members are never presented. `children` stays a list (`[]` at 0), and
+`children_truncated`, always present, is `true` when the cap drops members.
+Use it per read or in a named feed's definition. A negative limit throws.
 
 A composed composite keeps its entry's timestamp, which may be `null`.
 Its children follow [the feed's order](/retrieving/composing-feeds#keeping-your-order):
