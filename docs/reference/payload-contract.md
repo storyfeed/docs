@@ -14,7 +14,7 @@ don't recognise, and skip a node whose `kind` you don't recognise.
 
 `get()` returns a collection whose JSON is a plain array of nodes, newest
 first ([Ordering](#ordering)). `cursorPaginate()` and `members()` return Laravel's cursor paginator,
-with two keys after Laravel's own:
+with three keys after Laravel's own:
 
 ```jsonc
 {
@@ -29,16 +29,18 @@ with two keys after Laravel's own:
   "prev_page_url": null,
   "payload_version": 1,
   // opaque string, or null
-  "sync_token": "01J3…"
+  "sync_token": "01J3…",
+  // the page's media map; see Page Media Map
+  "media": { "m3f2a9c41d07e6b58": { "link": { /* … */ }, "media": { /* … */ } } }
 }
 ```
 
 `simplePaginate()` returns Laravel's simple paginator, with the nodes in
-`data` and the same two keys after Laravel's.
+`data` and the same three keys after Laravel's.
 
 Its keys are `current_page`, `current_page_url`, `data`, `first_page_url`,
 `from`, `next_page_url`, `path`, `per_page`, `prev_page_url`, `to`,
-`payload_version` and `sync_token`. There is no total.
+`payload_version`, `sync_token` and `media`. There is no total.
 
 Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
@@ -72,7 +74,9 @@ Every role (`actor`, `object`, `target`, `context`, `origin`, `result`, `instrum
   // a list of bodies, or null when there are none
   "body": null,
   // null, or what a deleted entity left behind
-  "tombstone": null
+  "tombstone": null,
+  // key into the page's media map; null off a page
+  "media_ref": "m3f2a9c41d07e6b58"
 }
 ```
 
@@ -191,6 +195,40 @@ slot. Group `sample` entities use the same media structure.
 and `name` from `FeedResource`. Each resource defaults to type `Document`.
 
 <span id="one-payload-one-feed"></span>
+
+<span id="page-media-map"></span>
+
+### Page Media Map
+
+A paginated page builds each distinct entity's `link` and `media` once, and
+lists them in the paginator's top-level `media` map:
+
+```jsonc
+"media": {
+  "m3f2a9c41d07e6b58": {
+    "link": { "href": "https://…/photos/7", "modal": false, "attributes": [] },
+    "media": { /* see Media */ }
+  }
+}
+```
+
+The map has one entry per distinct `{link, media}` pair. Each entity's
+`media_ref` names its entry: `m` followed by 16 hexadecimal characters, a
+content hash of the pair. Identical pairs share an entry, and the same output
+gets the same ref on every page. Treat the ref as opaque. `media_ref` is
+`null` off a page, for example in `get()` output or a lone node. An empty map
+serializes as `[]`.
+
+By default every entity also keeps its inline `link` and `media`. Setting
+`storyfeed.payload.inline_media` to `false` (env `STORYFEED_INLINE_MEDIA`)
+drops `link` and `media` from entities in paginated output, so a page carries
+each signed URL once. `get()` always keeps them, because it has no map.
+Turn it off only once your renderer reads the map.
+
+A renderer resolves an entity's `link` and `media` from `media[media_ref]`,
+and falls back to the entity's inline copies. Treat a missing `media` key, an
+empty object or `[]` as no map. When you append pages, merge each page's map
+into your store.
 
 ### Feed-Specific Resolution
 
