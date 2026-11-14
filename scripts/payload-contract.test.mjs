@@ -60,3 +60,21 @@ test('the contract page documents the page media map', () => {
   assert.match(page, /never\n`->toArray\(\)\['data'\]`/)
   assert.match(page, /`appendPage\(\)`/)
 })
+
+test('the contract page documents the page entity map', () => {
+  assert.match(page, /"media": \{ "m[0-9a-f]{16}".*\},\n\s+\/\/ .*\n\s+"entities": \{/)
+  assert.match(page, /"entity_ref": "e[0-9a-f]{16}"/)
+  assert.match(page, /### Page Entity Map/)
+  assert.match(page, /storyfeed\.payload\.inline_entities/)
+  assert.match(page, /STORYFEED_INLINE_ENTITIES/)
+  assert.match(page, /"actor": \{ "type": "user", "id": "7", "entity_ref": "e[0-9a-f]{16}" \}/)
+  assert.match(page, /the `media` map is always empty/)
+  assert.match(page, /resolves entities before media/)
+  assert.match(page, /`media` and\n`entities` maps/)
+})
+
+test('the contract page documents the sample cap', () => {
+  assert.match(page, /`samples\(\$limit\)`/)
+  assert.match(page, /`samples\(0\)` sends none/)
+  assert.match(page, /never a missing key/)
+})
