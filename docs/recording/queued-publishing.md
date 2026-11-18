@@ -236,6 +236,8 @@ See [Carrying Roles Into Queued Jobs](/recording/activity-scopes#passing-scopes-
 for inherited scopes and [Role Precedence](/recording/activity-scopes#role-precedence)
 for the full order.
 
+Only Storyfeed's own scopes travel this way. Another package that adds to the job payload when it is dispatched, such as a tenant-aware queue that reads the current tenant, runs at the commit under `afterCommit()`. By then a block that set the tenant inside the transaction has closed. Keep that block open until after the commit, or dispatch from inside it once the transaction has committed.
+
 <a id="publishing-from-your-own-job"></a>
 
 ## Publishing From Application Jobs
