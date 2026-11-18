@@ -199,6 +199,26 @@ You may also call `deleteWhenMissingModels()` on the builder. A Story class
 can set `public bool $deleteWhenMissingModels = true`, which overrides the
 declaration. Models must still be restored when you use `snapshotNow()`.
 
+<a id="duplicates"></a>
+
+### Duplicates on a Unique Index
+
+```php memo="routes/feed.php"
+use App\Models\Order;
+use Storyfeed\Facades\Story;
+
+Story::for(Order::class)->verb('place')->idempotent();
+```
+
+When your app adds its own unique index to the activities table, a retried
+job can hit it and fail into `failed_jobs`. `idempotent()` treats the
+`UniqueConstraintViolationException` as done: the job finishes, and
+`publish()` returns the unsaved activity. The insert rolls back to its own
+savepoint, so a surrounding transaction stays usable. Call `->idempotent()` on
+one builder, or pass `record(..., idempotent: true)`; `idempotent(false)`
+overrides the declaration. Prefer it to an `exists()` check before
+publishing, which two workers can both pass.
+
 <a id="carrying-the-actor-and-context"></a>
 <a id="request-based-actors"></a>
 <a id="scoped-actors"></a>
@@ -209,6 +229,9 @@ declaration. Models must still be restored when you use `snapshotNow()`.
 
 By default, a queued activity uses the user authenticated when it was queued
 and any `Storyfeed::actor()` or `Storyfeed::context()` scope active then.
+The actor, the context and the signed-in user travel with the job, so this
+holds with `afterCommit()` too: the job dispatches after the commit, when the
+scope has already closed, and the worker still publishes as that actor.
 See [Carrying Roles Into Queued Jobs](/recording/activity-scopes#passing-scopes-to-queued-jobs)
 for inherited scopes and [Role Precedence](/recording/activity-scopes#role-precedence)
 for the full order.
