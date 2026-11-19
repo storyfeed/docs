@@ -92,5 +92,45 @@ Run your application's tests, including its feed and browser checks, before
 committing. If the diff includes unexpected packages, investigate them before
 accepting the update.
 
+## Run Core's New Migrations
+
+A core release that changes the schema ships its migrations as stubs. Composer
+does not publish or run them, so an app that jumps several versions can read a
+column it never created and fail with errors such as `no such column: featured`.
+
+These releases add schema:
+
+| Release | Migration |
+| --- | --- |
+| v0.17 | `add_time_range_to_feed_activities_table` |
+| v0.18 | `add_entities_to_feed_activities_table`, `change_feed_references_to_strings` |
+| v0.19 | `add_featured_to_feed_activities_table`, `add_location_and_generator_to_feed_activities_table` |
+| v0.20.6 | `add_keep_latest_index_to_feed_activities_table` |
+| v0.23 | consolidates every migration into one `create_*` migration per table |
+| v0.24 | `add_bindings_to_feed_activities_table` |
+
+Publish the stubs you don't have yet and migrate:
+
+```bash
+php artisan vendor:publish --tag=storyfeed-migrations
+php artisan migrate
+```
+
+Crossing v0.23 from an earlier release, stop at v0.22 first: publish and run
+the missing migrations there, then update past v0.23. From v0.23 core ships only
+the consolidated `create_*` migrations, which skip tables that already exist
+and do not add their columns. Core's v0.23.0 changelog covers the
+rebuild-or-keep choice and the config to pin.
+
+Then check the schema:
+
+```bash
+php artisan storyfeed:doctor
+```
+
+The [`columns` check](/reference/doctor-checks) reports every missing package
+column as an error, and `references` reports reference columns that still need
+`change_feed_references_to_strings`.
+
 See Composer's [update command reference](https://getcomposer.org/doc/03-cli.md#update-u-upgrade)
 for partial updates, temporary constraints and dependency flags.
