@@ -22,3 +22,10 @@ test('the upgrade guide publishes, migrates and checks with the doctor', () => {
     assert.ok(section.includes(step), step)
   }
 })
+
+test('the payload contract documents page() and the per-read inline overrides', () => {
+  const contract = readFileSync(new URL('../docs/reference/payload-contract.md', import.meta.url), 'utf8')
+  for (const term of ['page()', 'Storyfeed\\FeedResult', 'inlineEntities(bool)', 'inlineMedia(bool)']) {
+    assert.ok(contract.includes(term), term)
+  }
+})
