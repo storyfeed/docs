@@ -44,6 +44,18 @@ Its keys are `current_page`, `current_page_url`, `data`, `first_page_url`,
 `from`, `next_page_url`, `path`, `per_page`, `prev_page_url`, `to`,
 `payload_version`, `sync_token`, `media` and `entities`. There is no total.
 
+`page()` reads the items `get()` reads in the shape of a page: a
+`Storyfeed\FeedResult` with `data`, `payload_version`, `sync_token`, `media`
+and `entities`, and no links or cursors. Use it for a widget that shows a fixed
+number of items and wants the maps:
+
+```php
+return Storyfeed::feed()->limit(8)->inlineEntities(false)->page();
+```
+
+It iterates as `FeedItem` readers and serializes to JSON, so a route can return
+it. `get()` is unchanged.
+
 Empty PHP maps such as `data` and `link.attributes` serialize as `[]`; populated
 string-keyed maps serialize as JSON objects.
 
@@ -270,6 +282,20 @@ lists, `sample.featured` and its `children`:
 
 The map then holds the whole entities. It never applies to `get()`: those
 entities always stay inline. Turn it off only once your renderer reads the map.
+
+### Per-Read Overrides
+
+`inlineEntities(bool)` and `inlineMedia(bool)` on a feed builder override
+`inline_entities` and `inline_media` for one read, or in a named feed's
+definition, so a web feed can stub entities while an API reader of the same
+feed keeps them whole:
+
+```php
+Storyfeed::feed('activity')->inlineEntities(false)->cursorPaginate();
+```
+
+They apply to `cursorPaginate()`, `simplePaginate()`, `members()` and
+`page()`, and default to the config. `get()` ignores them and stays inline.
 
 With `inline_entities` off, map entries keep their `link` and `media` inline,
 and the `media` map is always empty, whatever `inline_media` says. Each entity
