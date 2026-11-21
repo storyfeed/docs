@@ -322,6 +322,7 @@ Rebuild it with [`storyfeed:curate --rehash`](/reference/commands#rehashing-exis
 | unique | `activity_id`, `bucket` |
 | index | `activity_id`, `winner`, `bucket` |
 | index | `bucket`, `hash`, `activity_id`, `winner` |
+| index | `winner`, `bucket`, `hash` |
 <!-- /schema -->
 
 <span id="live-burst-boundaries"></span>
