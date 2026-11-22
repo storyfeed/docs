@@ -6,9 +6,15 @@ import { scene } from '../.vitepress/theme/world'
 
 ## Introduction
 
-An event class can publish an activity whenever your application dispatches
-it. Your listeners can also react when Storyfeed publishes or deletes an
-activity.
+Storyfeed is a side effect, never the source. Dispatch your own domain event
+where the transition succeeds and have it implement
+`Storyfeed\Contracts\PublishesToFeed`; core's listener publishes the activity
+its `toFeedActivity()` returns. This is the default way to publish. Publish
+inline with the builder only where there is no domain transition: imports,
+backfills, console commands and one-offs.
+
+Your listeners can also react when Storyfeed publishes or deletes an activity,
+for feed presentation only.
 
 ## Publishing From an Event
 
@@ -100,6 +106,14 @@ must run to call the `toFeedActivity` method.
 ## Listening for Storyfeed Events
 
 <a id="publication-and-deletion-events"></a>
+
+> [!WARNING]
+> Never put business logic (access rules, billing, subscriptions, mail,
+> notification routing) in a listener on `ActivityPublished` or
+> `ActivityDeleted`. Those events don't fire while recording is off, under
+> `Storyfeed::fake()`, or for an idempotent duplicate, so the logic would
+> silently stop. Put it on your own domain events, and use Storyfeed's events
+> only for feed presentation, such as cache busting or a live-feed broadcast.
 
 Storyfeed dispatches an event when an activity is published or deleted:
 

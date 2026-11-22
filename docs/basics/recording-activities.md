@@ -28,8 +28,13 @@ const featuringShop = { ...scene.order, featured: 'target' }
 
 ## Introduction
 
-An activity records a verb and its participants. Publish it from the code that
-handles the action, such as a controller, observer, or event listener.
+An activity records a verb and its participants. Storyfeed is a side effect,
+never the source: in application code, publish from your own domain events
+that implement `Storyfeed\Contracts\PublishesToFeed`, as
+[Publishing From Events](/recording/publishing-from-events#publishing-from-an-event)
+shows, and let business listeners subscribe to those events. The builder below
+is what `toFeedActivity()` returns; call `publish()` on it directly only for
+imports, backfills, console commands and one-offs.
 
 <a id="the-builder"></a>
 
