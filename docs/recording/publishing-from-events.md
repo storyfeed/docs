@@ -80,6 +80,20 @@ When an event implementing `PublishesToFeed` is dispatched, Storyfeed calls its
 > what `toFeedActivity` returns, and `publish` returns the stored `Activity`,
 > not the `PendingActivity` the method must return.
 
+### Listener Order
+
+Core's listener is registered on the `PublishesToFeed` interface, so it runs
+after the event's own class listeners. With a sync queue, your business
+listeners run before the feed row is written. That is intended: business
+logic must not depend on the feed.
+
+### Publishing a Deletion
+
+An event that publishes a delete verb must not use `SerializesModels`. A
+queued listener cannot restore a hard-deleted model, so pass the event the
+data the activity needs, such as the model's key and label, instead of the
+model.
+
 ### Skipping Publication
 
 Return `null` to skip publishing for this event:

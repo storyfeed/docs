@@ -122,6 +122,10 @@ the consolidated `create_*` migrations, which skip tables that already exist
 and do not add their columns. Core's v0.23.0 changelog covers the
 rebuild-or-keep choice and the config to pin.
 
+Run upgrade migrations, such as `add_winner_index_to_feed_groupings_table`,
+as the database role that owns the Storyfeed tables. On hosts that split roles
+for row-level security, the runtime role fails with `must be owner of table`.
+
 Then check the schema:
 
 ```bash
