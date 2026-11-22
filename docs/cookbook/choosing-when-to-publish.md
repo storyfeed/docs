@@ -2,6 +2,13 @@
 
 ## Introduction
 
+Storyfeed is a side effect, never the source. Your own domain events are the
+source of truth, and the feed is one subscriber to them: dispatch an app event
+where the transition succeeds, have it implement
+`Storyfeed\Contracts\PublishesToFeed`, and return the activity from
+`toFeedActivity()`. Business listeners subscribe to your event, not to
+Storyfeed's. See [Publishing From Events](/recording/publishing-from-events#publishing-from-an-event).
+
 An order is saved many times while it is being prepared: a note is added, the
 table changes, a line is corrected. Only a few of those saves matter to
 someone reading the feed, such as when the order was placed, confirmed or
@@ -27,6 +34,7 @@ Publish each transition from one site, so it is recorded once:
 | domain event via `PublishesToFeed` | meaningful application events; create an event when the transition needs one. See [Publishing From Events](/recording/publishing-from-events#publishing-from-an-event) |
 | model observer | model transitions while the application has no domain event |
 | action or service class | dispatching the domain event where the transition succeeds |
+| inline `Storyfeed::activity()->publish()` | imports, backfills, console commands and one-offs, where there is no domain transition |
 | none: [compose it](/retrieving/composing-feeds#showing-a-record-s-progress) when read | a record's own page, from timestamps it already stores; nothing reaches other feeds |
 
 <a id="publishing-a-status-transition"></a>

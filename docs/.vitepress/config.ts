@@ -299,6 +299,7 @@ export default defineConfig({
         // build on them: no page leans on one further down.
         text: 'Recording in Depth',
         items: [
+          { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Parties & Anonymous Actors', link: '/recording/parties-and-anonymous-actors' },
           { text: 'Publishing From Events', link: '/recording/publishing-from-events' },
           { text: 'Publishing Story Classes', link: '/recording/publishing-story-classes' },
@@ -351,7 +352,6 @@ export default defineConfig({
           { text: 'Composing a Coherent Activity', link: '/cookbook/composing-a-coherent-activity' },
           { text: 'Recording Value Changes', link: '/cookbook/recording-value-changes' },
           { text: 'Choosing a Verb', link: '/cookbook/choosing-a-verb' },
-          { text: 'Choosing When to Publish', link: '/cookbook/choosing-when-to-publish' },
           { text: 'Choosing to Record or Compose', link: '/cookbook/choosing-to-record-or-compose' },
           { text: 'Recording Deletions', link: '/cookbook/recording-deletions' },
           { text: 'Activities Without an Actor', link: '/cookbook/activities-without-an-actor' },

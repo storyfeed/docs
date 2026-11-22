@@ -52,6 +52,14 @@ Storyfeed then dispatches `ActivityPublished`, after the outermost transaction
 commits. On the way back out of the middleware, the `batch` middleware adds
 the activity to the actor's current batch in a transaction of its own.
 
+> [!WARNING]
+> Never put business logic (access rules, billing, subscriptions, mail,
+> notification routing) in a listener on `ActivityPublished` or
+> `ActivityDeleted`. Those events don't fire while recording is off, under
+> `Storyfeed::fake()`, or for an idempotent duplicate, so the logic would
+> silently stop. Put it on your own domain events, and use Storyfeed's events
+> only for feed presentation, such as cache busting or a live-feed broadcast.
+
 <a id="the-rows-one-publish-writes"></a>
 
 ### Rows Written per Publish

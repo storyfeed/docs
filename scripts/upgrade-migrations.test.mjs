@@ -29,3 +29,17 @@ test('the payload contract documents page() and the per-read inline overrides', 
     assert.ok(contract.includes(term), term)
   }
 })
+
+test('recording docs lead with domain events and warn off business listeners', () => {
+  const read = (p) => readFileSync(new URL(`../docs/${p}`, import.meta.url), 'utf8')
+  for (const p of ['cookbook/choosing-when-to-publish.md', 'recording/publishing-from-events.md', 'basics/recording-activities.md']) {
+    const intro = read(p).split('## Introduction')[1].split('\n## ')[0]
+    assert.match(intro, /side\s+effect,\s+never\s+the\s+source[\s\S]*PublishesToFeed/, p)
+  }
+  for (const p of ['recording/publishing-from-events.md', 'reference/storage-architecture.md']) {
+    assert.match(read(p), /> \[!WARNING\]\n> Never put business logic[\s\S]*?recording is off[\s\S]*?Storyfeed::fake\(\)[\s\S]*?idempotent duplicate/, p)
+  }
+  const config = read('.vitepress/config.ts')
+  const recording = config.split("text: 'Recording in Depth'")[1]
+  assert.match(recording, /^[\s\S]*?items: \[\s*\{ text: 'Choosing When to Publish'/)
+})
