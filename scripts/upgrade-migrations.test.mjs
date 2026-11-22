@@ -43,3 +43,11 @@ test('recording docs lead with domain events and warn off business listeners', (
   const recording = config.split("text: 'Recording in Depth'")[1]
   assert.match(recording, /^[\s\S]*?items: \[\s*\{ text: 'Choosing When to Publish'/)
 })
+
+test('adoption notes: listener order, deletions without SerializesModels, owner role for migrations', () => {
+  const read = (p) => readFileSync(new URL(`../docs/${p}`, import.meta.url), 'utf8')
+  const events = read('recording/publishing-from-events.md')
+  assert.match(events, /must not use `SerializesModels`/)
+  assert.match(events, /registered on the `PublishesToFeed` interface/)
+  assert.match(section, /role that owns the Storyfeed tables[\s\S]*must be owner of table/)
+})
